@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+This file contains the lines needed for visualizing the Dymaxion Orientation of the
+icosahedron, which is the base solid for the H3 grid. It is used for development
+purposes, and is not part of the build process.
+-->
+<kml xmlns="http://earth.google.com/kml/2.1">
+<Folder>
+   <name>Dymaxion Icosahedron</name>
+   <description>Spherical Icosahedron with Dymaxion Orientation</description>
+   <Style id="lineStyle1">
+      <LineStyle id="lineStyle2">
+         <color>ff000000</color>
+         <width>6</width>
+      </LineStyle>
+   </Style>
+<Placemark>
+<name>0</name>
+      <styleUrl>#lineStyle1</styleUrl>
+      <LineString>
+         <tessellate>1</tessellate>
+         <coordinates>
+            10.536199,64.700000,0.0
+            58.157706,10.447345,0.0
+            122.300000,39.100000,0.0
+            10.536199,64.700000,0.0
+         </coordinates>
+      </LineString>
+</Placemark>
+<Placemark>
+<name>1</name>
+      <styleUrl>#lineStyle1</styleUrl>
+      <LineString>
+         <tessellate>1</tessellate>
+         <coordinates>
+            10.536199,64.700000,0.0
+            122.300000,39.100000,0.0
+            -143.478490,50.103201,0.0
+            10.536199,64.700000,0.0
+         </coordinates>
+      </LineString>
+</Placemark>
+<Placemark>
+<name>2</name>
+      <styleUrl>#lineStyle1</styleUrl>
+      <LineString>
+         <tessellate>1</tessellate>
+         <coordinates>
+            10.536199,64.700000,0.0
+            -143.478490,50.103201,0.0
+            -67.132326,23.717925,0.0
+            10.536199,64.700000,0.0
+         </coordinates>
+      </LineString>
+</Placemark>
+<Placemark>
+<name>3</name>
+      <styleUrl>#lineStyle1</styleUrl>
+      <LineString>
+         <tessellate>1</tessellate>
+         <coordinates>
+            10.536199,64.700000,0.0
+            -67.132326,23.717925,0.0
+            -5.245390,2.300882,0.0
+            10.536199,64.700000,0.0
+         </coordinates>
+      </LineString>
+</Placemark>
+<Placemark>
+<name>4</name>
+      <styleUrl>#lineStyle1</styleUrl>
+      <LineString>
+         <tessellate>1</tessellate>
+         <coordinates>
+            10.536199,64.700000,0.0
+            -5.245390,2.300882,0.0
+            58.157706,10.447345,0.0
+            10.536199,64.700000,0.0
+         </coordinates>
+      </LineString>
+</Placemark>
+<Placemark>
+<name>5</name>
+      <styleUrl>#lineStyle1</styleUrl>
+      <LineString>
+         <tessellate>1</tessellate>
+         <coordinates>
+            112.867674,-23.717925,0.0
+            122.300000,39.100000,0.0
+            58.157706,10.447345,0.0
+            112.867674,-23.717925,0.0
+         </coordinates>
+      </LineString>
+</Placemark>
+<Placemark>
+<name>6</name>
+      <styleUrl>#lineStyle1</styleUrl>
+      <LineString>
+         <tessellate>1</tessellate>
+         <coordinates>
+            174.754610,-2.300882,0.0
+            -143.478490,50.103201,0.0
+            122.300000,39.100000,0.0
+            174.754610,-2.300882,0.0
+         </coordinates>
+      </LineString>
+</Placemark>
+<Placemark>
+<name>7</name>
+      <styleUrl>#lineStyle1</styleUrl>
+      <LineString>
+         <tessellate>1</tessellate>
+         <coordinates>
+            -121.842294,-10.447345,0.0
+            -67.132326,23.717925,0.0
+            -143.478490,50.103201,0.0
+            -121.842294,-10.447345,0.0
+         </coordinates>
+      </LineString>
+</Placemark>
+<Placemark>
+<name>8</name>
+      <styleUrl>#lineStyle1</styleUrl>
+      <LineString>
+         <tessellate>1</tessellate>
+         <coordinates>
+            -57.700000,-39.100000,0.0
+            -5.245390,2.300882,0.0
+            -67.132326,23.717925,0.0
+            -57.700000,-39.100000,0.0
+         </coordinates>
+      </LineString>
+</Placemark>
+<Placemark>
+<name>9</name>
+      <styleUrl>#lineStyle1</styleUrl>
+      <LineString>
+         <tessellate>1</tessellate>
+         <coordinates>
+            36.521510,-50.103201,0.0
+            58.157706,10.447345,0.0
+            -5.245390,2.300882,0.0
+            36.521510,-50.103201,0.0
+         </coordinates>
+      </LineString>
+</Placemark>
+<Placemark>
+<name>10</name>
+      <styleUrl>#lineStyle1</styleUrl>
+      <LineString>
+         <tessellate>1</tessellate>
+         <coordinates>
+            122.300000,39.100000,0.0
+            112.867674,-23.717925,0.0
+            174.754610,-2.300882,0.0
+            122.300000,39.100000,0.0
+         </coordinates>
+      </LineString>
+</Placemark>
+<Placemark>
+<name>11</name>
+      <styleUrl>#lineStyle1</styleUrl>
+      <LineString>
+         <tessellate>1</tessellate>
+         <coordinates>
+            -143.478490,50.103201,0.0
+            174.754610,-2.300882,0.0
+            -121.842294,-10.447345,0.0
+            -143.478490,50.103201,0.0
+         </coordinates>
+      </LineString>
+</Placemark>
+<Placemark>
+<name>12</name>
+      <styleUrl>#lineStyle1</styleUrl>
+      <LineString>
+         <tessellate>1</tessellate>
+         <coordinates>
+            -67.132326,23.717925,0.0
+            -121.842294,-10.447345,0.0
+            -57.700000,-39.100000,0.0
+            -67.132326,23.717925,0.0
+         </coordinates>
+      </LineString>
+</Placemark>
+<Placemark>
+<name>13</name>
+      <styleUrl>#lineStyle1</styleUrl>
+      <LineString>
+         <tessellate>1</tessellate>
+         <coordinates>
+            -5.245390,2.300882,0.0
+            -57.700000,-39.100000,0.0
+            36.521510,-50.103201,0.0
+            -5.245390,2.300882,0.0
+         </coordinates>
+      </LineString>
+</Placemark>
+<Placemark>
+<name>14</name>
+      <styleUrl>#lineStyle1</styleUrl>
+      <LineString>
+         <tessellate>1</tessellate>
+         <coordinates>
+            58.157706,10.447345,0.0
+            36.521510,-50.103201,0.0
+            112.867674,-23.717925,0.0
+            58.157706,10.447345,0.0
+         </coordinates>
+      </LineString>
+</Placemark>
+<Placemark>
+<name>15</name>
+      <styleUrl>#lineStyle1</styleUrl>
+      <LineString>
+         <tessellate>1</tessellate>
+         <coordinates>
+            -169.463801,-64.700000,0.0
+            174.754610,-2.300882,0.0
+            112.867674,-23.717925,0.0
+            -169.463801,-64.700000,0.0
+         </coordinates>
+      </LineString>
+</Placemark>
+<Placemark>
+<name>16</name>
+      <styleUrl>#lineStyle1</styleUrl>
+      <LineString>
+         <tessellate>1</tessellate>
+         <coordinates>
+            -169.463801,-64.700000,0.0
+            -121.842294,-10.447345,0.0
+            174.754610,-2.300882,0.0
+            -169.463801,-64.700000,0.0
+         </coordinates>
+      </LineString>
+</Placemark>
+<Placemark>
+<name>17</name>
+      <styleUrl>#lineStyle1</styleUrl>
+      <LineString>
+         <tessellate>1</tessellate>
+         <coordinates>
+            -169.463801,-64.700000,0.0
+            -57.700000,-39.100000,0.0
+            -121.842294,-10.447345,0.0
+            -169.463801,-64.700000,0.0
+         </coordinates>
+      </LineString>
+</Placemark>
+<Placemark>
+<name>18</name>
+      <styleUrl>#lineStyle1</styleUrl>
+      <LineString>
+         <tessellate>1</tessellate>
+         <coordinates>
+            -169.463801,-64.700000,0.0
+            36.521510,-50.103201,0.0
+            -57.700000,-39.100000,0.0
+            -169.463801,-64.700000,0.0
+         </coordinates>
+      </LineString>
+</Placemark>
+<Placemark>
+<name>19</name>
+      <styleUrl>#lineStyle1</styleUrl>
+      <LineString>
+         <tessellate>1</tessellate>
+         <coordinates>
+            -169.463801,-64.700000,0.0
+            112.867674,-23.717925,0.0
+            36.521510,-50.103201,0.0
+            -169.463801,-64.700000,0.0
+         </coordinates>
+      </LineString>
+</Placemark>
+</Folder>
+</kml>

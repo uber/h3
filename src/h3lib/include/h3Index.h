@@ -1,0 +1,149 @@
+/*
+ * Copyright 2016-2017 Uber Technologies, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/** @file h3Index.h
+ * @brief   H3Index functions.
+ */
+
+#ifndef H3INDEX_H
+#define H3INDEX_H
+
+#include "faceijk.h"
+#include "h3IndexFat.h"
+#include "h3api.h"
+
+// define's of constants and macros for bitwise manipulation of H3Index's.
+
+/** The number of bits in an H3 index. */
+#define H3_NUM_BITS 64
+
+/** The bit offset of the max resolution digit in an H3 index. */
+#define H3_MAX_OFFSET 63
+
+/** The bit offset of the mode in an H3 index. */
+#define H3_MODE_OFFSET 59
+
+/** The bit offset of the base cell in an H3 index. */
+#define H3_BC_OFFSET 45
+
+/** The bit offset of the resolution in an H3 index. */
+#define H3_RES_OFFSET 52
+
+/** The bit offset of the reserved bits in an H3 index. */
+#define H3_RESERVED_OFFSET 56
+
+/** The number of bits in a single H3 resolution digit. */
+#define H3_PER_DIGIT_OFFSET 3
+
+/** 1's in the 4 mode bits, 0's everywhere else. */
+#define H3_MODE_MASK ((uint64_t)(15) << H3_MODE_OFFSET)
+
+/** 0's in the 4 mode bits, 1's everywhere else. */
+#define H3_MODE_MASK_NEGATIVE (~H3_MODE_MASK)
+
+/** 1's in the 7 base cell bits, 0's everywhere else. */
+#define H3_BC_MASK ((uint64_t)(127) << H3_BC_OFFSET)
+
+/** 0's in the 7 base cell bits, 1's everywhere else. */
+#define H3_BC_MASK_NEGATIVE (~H3_BC_MASK)
+
+/** 1's in the 4 resolution bits, 0's everywhere else. */
+#define H3_RES_MASK (UINT64_C(15) << H3_RES_OFFSET)
+
+/** 0's in the 4 resolution bits, 1's everywhere else. */
+#define H3_RES_MASK_NEGATIVE (~H3_RES_MASK)
+
+/** 1's in the 3 reserved bits, 0's everywhere else. */
+#define H3_RESERVED_MASK ((uint64_t)(7) << H3_RESERVED_OFFSET)
+
+/** 0's in the 3 reserved bits, 1's everywhere else. */
+#define H3_RESERVED_MASK_NEGATIVE (~H3_RESERVED_MASK)
+
+/** 1's in the 3 bits of res 15 digit bits, 0's everywhere else. */
+#define H3_DIGIT_MASK ((uint64_t)(7))
+
+/** 0's in the 7 base cell bits, 1's everywhere else. */
+#define H3_DIGIT_MASK_NEGATIVE (~H3_DIGIT_MASK_NEGATIVE)
+
+/** H3 index with mode 0, res 0, base cell 0, and 7 for all index digits. */
+#define H3_INIT (UINT64_C(35184372088831))
+
+/**
+ * Gets the integer mode of h3.
+ */
+#define H3_GET_MODE(h3) ((int)((((h3)&H3_MODE_MASK) >> H3_MODE_OFFSET)))
+
+/**
+ * Sets the integer mode of h3 to v.
+ */
+#define H3_SET_MODE(h3, v) \
+    (h3) = (((h3)&H3_MODE_MASK_NEGATIVE) | (((uint64_t)(v)) << H3_MODE_OFFSET))
+
+/**
+ * Gets the integer base cell of h3.
+ */
+#define H3_GET_BASE_CELL(h3) ((int)((((h3)&H3_BC_MASK) >> H3_BC_OFFSET)))
+
+/**
+ * Sets the integer base cell of h3 to bc.
+ */
+#define H3_SET_BASE_CELL(h3, bc) \
+    (h3) = (((h3)&H3_BC_MASK_NEGATIVE) | (((uint64_t)(bc)) << H3_BC_OFFSET))
+
+/**
+ * Gets the integer resolution of h3.
+ */
+#define H3_GET_RESOLUTION(h3) ((int)((((h3)&H3_RES_MASK) >> H3_RES_OFFSET)))
+
+/**
+ * Sets the integer resolution of h3.
+ */
+#define H3_SET_RESOLUTION(h3, res) \
+    (h3) = (((h3)&H3_RES_MASK_NEGATIVE) | (((uint64_t)(res)) << H3_RES_OFFSET))
+
+/**
+ * Gets the resolution res integer digit (0-7) of h3.
+ */
+#define H3_GET_INDEX_DIGIT(h3, res)                                  \
+    ((int)((((h3) >> ((MAX_H3_RES - (res)) * H3_PER_DIGIT_OFFSET)) & \
+            H3_DIGIT_MASK)))
+
+/**
+ * Sets a value in the reserved space. USE WISELY, PRODUCES INVALID ADDRESSES
+ */
+#define H3_SET_RESERVED_BITS(h3, v)            \
+    (h3) = (((h3)&H3_RESERVED_MASK_NEGATIVE) | \
+            (((uint64_t)(v)) << H3_RESERVED_OFFSET))
+
+/**
+ * Gets a value in the reserved space. SHOULD ALWAYS BE ZERO
+ */
+#define H3_GET_RESERVED_BITS(h3) \
+    ((int)((((h3)&H3_RESERVED_MASK) >> H3_RESERVED_OFFSET)))
+
+/**
+ * Sets the resolution res digit of h3 to the integer digit (0-7)
+ */
+#define H3_SET_INDEX_DIGIT(h3, res, digit)                                  \
+    (h3) = (((h3) & ~((H3_DIGIT_MASK                                        \
+                       << ((MAX_H3_RES - (res)) * H3_PER_DIGIT_OFFSET)))) | \
+            (((uint64_t)(digit))                                            \
+             << ((MAX_H3_RES - (res)) * H3_PER_DIGIT_OFFSET)))
+
+void h3ToH3Fat(H3Index h, H3IndexFat* hf);
+H3Index h3FatToH3(const H3IndexFat* hf);
+void setH3Index(H3Index* h, int res, int baseCell, int initDigit);
+
+#endif

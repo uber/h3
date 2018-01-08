@@ -1,0 +1,10 @@
+# Change Log
+All notable changes to this project will be documented in this file.
+This project adheres to [Semantic Versioning](http://semver.org/).
+
+The public API of this library consists of the functions declared in file
+`h3api.h`.
+
+## [3.0.0] - 2018-01-08
+### Added
+- First public release.
