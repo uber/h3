@@ -40,6 +40,7 @@ TEST(empty) {
 
     H3_EXPORT(destroyLinkedPolygon)(polygon);
     free(set);
+    free(polygon);
 }
 
 TEST(singleHex) {
@@ -55,6 +56,7 @@ TEST(singleHex) {
 
     H3_EXPORT(destroyLinkedPolygon)(polygon);
     free(set);
+    free(polygon);
 }
 
 TEST(contiguous2) {
@@ -71,6 +73,7 @@ TEST(contiguous2) {
 
     H3_EXPORT(destroyLinkedPolygon)(polygon);
     free(set);
+    free(polygon);
 }
 
 // TODO: This test asserts incorrect behavior - we should be creating multiple
@@ -92,6 +95,7 @@ TEST(nonContiguous2) {
 
     H3_EXPORT(destroyLinkedPolygon)(polygon);
     free(set);
+    free(polygon);
 }
 
 TEST(contiguous3) {
@@ -108,6 +112,7 @@ TEST(contiguous3) {
 
     H3_EXPORT(destroyLinkedPolygon)(polygon);
     free(set);
+    free(polygon);
 }
 
 TEST(hole) {
@@ -127,6 +132,7 @@ TEST(hole) {
 
     H3_EXPORT(destroyLinkedPolygon)(polygon);
     free(set);
+    free(polygon);
 }
 
 TEST(pentagon) {
@@ -143,6 +149,7 @@ TEST(pentagon) {
 
     H3_EXPORT(destroyLinkedPolygon)(polygon);
     free(set);
+    free(polygon);
 }
 
 TEST(2Ring) {
@@ -166,6 +173,7 @@ TEST(2Ring) {
 
     H3_EXPORT(destroyLinkedPolygon)(polygon);
     free(set);
+    free(polygon);
 }
 
 TEST(2RingUnordered) {
@@ -189,6 +197,7 @@ TEST(2RingUnordered) {
 
     H3_EXPORT(destroyLinkedPolygon)(polygon);
     free(set);
+    free(polygon);
 }
 
 END_TESTS();

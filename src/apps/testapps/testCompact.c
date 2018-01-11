@@ -98,6 +98,7 @@ TEST(res0) {
     }
     t_assert(count2 == hexCount, "got expected uncompacted count");
 
+    free(res0Hexes);
     free(compressed);
     free(decompressed);
 }

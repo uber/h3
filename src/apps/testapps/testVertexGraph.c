@@ -118,6 +118,8 @@ TEST(addVertexNodeDupe) {
     addedNode = addVertexNode(&graph, &vertex1, &vertex2);
     t_assert(node == addedNode, "addVertexNode returned the original node");
     t_assert(graph.size == 1, "Graph size not incremented");
+
+    destroyVertexGraph(&graph);
 }
 
 TEST(findNodeForEdge) {

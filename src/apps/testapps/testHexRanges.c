@@ -73,6 +73,7 @@ TEST(ring2of1) {
                      "The beginning of the segment is the correct hexagon");
         }
     }
+    free(allKrings2);
 }
 
 END_TESTS();
