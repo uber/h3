@@ -46,6 +46,12 @@ cmake .
 make
 ```
 
+You can install system-wide with:
+
+```
+sudo make install
+```
+
 #### Testing
 
 After making the project, you can test with `make test`, and if `lcov` is installed you can `make coverage` to generate a code coverage report.
@@ -108,9 +114,8 @@ This will produce some coordinate:
 The above features of H3 can also be used from C. For example, you can compile and run [examples/index.c](./examples/index.c) like so:
 
 ```
-cc -Isrc/h3lib/include/ -Llib -lh3.1 examples/index.c -o example
-# LD_LIBRARY_PATH is needed if you did not install the library system-wide.
-LD_LIBRARY_PATH=lib ./example
+cc -lh3.1 examples/index.c -o example
+./example
 ```
 
 You should get output like:
