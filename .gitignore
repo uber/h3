@@ -7,6 +7,8 @@
 # built binaries
 /bin/
 /lib/
+# Travis CI build directory
+/build/
 
 # random temp files
 .DS_Store

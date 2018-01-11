@@ -63,6 +63,7 @@ BEGIN_TESTS(polyfill);
 sfGeofence.numVerts = 6;
 sfGeofence.verts = sfVerts;
 sfGeoPolygon.geofence = sfGeofence;
+sfGeoPolygon.numHoles = 0;
 
 holeGeofence.numVerts = 3;
 holeGeofence.verts = holeVerts;
@@ -73,14 +74,17 @@ holeGeoPolygon.holes = &holeGeofence;
 emptyGeofence.numVerts = 3;
 emptyGeofence.verts = emptyVerts;
 emptyGeoPolygon.geofence = emptyGeofence;
+emptyGeoPolygon.numHoles = 0;
 
 primeMeridianGeofence.numVerts = 4;
 primeMeridianGeofence.verts = primeMeridianVerts;
 primeMeridianGeoPolygon.geofence = primeMeridianGeofence;
+primeMeridianGeoPolygon.numHoles = 0;
 
 transMeridianGeofence.numVerts = 4;
 transMeridianGeofence.verts = transMeridianVerts;
 transMeridianGeoPolygon.geofence = transMeridianGeofence;
+transMeridianGeoPolygon.numHoles = 0;
 
 transMeridianHoleGeofence.numVerts = 4;
 transMeridianHoleGeofence.verts = transMeridianHoleVerts;
@@ -89,6 +93,7 @@ transMeridianHoleGeoPolygon.numHoles = 1;
 transMeridianHoleGeoPolygon.holes = &transMeridianHoleGeofence;
 
 transMeridianFilledHoleGeoPolygon.geofence = transMeridianHoleGeofence;
+transMeridianFilledHoleGeoPolygon.numHoles = 0;
 
 TEST(maxPolyfillSize) {
     int numHexagons = H3_EXPORT(maxPolyfillSize)(&sfGeoPolygon, 9);
@@ -114,6 +119,7 @@ TEST(polyfill) {
     }
 
     t_assert(actualNumHexagons == 1253, "got expected polyfill size");
+    free(hexagons);
 }
 
 TEST(polyfillHole) {
@@ -129,6 +135,7 @@ TEST(polyfillHole) {
     }
 
     t_assert(actualNumHexagons == 1214, "got expected polyfill size (hole)");
+    free(hexagons);
 }
 
 TEST(polyfillEmpty) {
@@ -144,6 +151,7 @@ TEST(polyfillEmpty) {
     }
 
     t_assert(actualNumHexagons == 0, "got expected polyfill size (empty)");
+    free(hexagons);
 }
 
 TEST(polyfillExact) {
@@ -163,6 +171,7 @@ TEST(polyfillExact) {
     someGeofence.verts = verts;
     GeoPolygon someHexagon;
     someHexagon.geofence = someGeofence;
+    someHexagon.numHoles = 0;
 
     int numHexagons = H3_EXPORT(maxPolyfillSize)(&someHexagon, 9);
     H3Index* hexagons = calloc(numHexagons, sizeof(H3Index));
@@ -177,6 +186,8 @@ TEST(polyfillExact) {
     }
 
     t_assert(actualNumHexagons == 1, "got expected polyfill size (1)");
+    free(hexagons);
+    free(verts);
 }
 
 TEST(polyfillTransmeridian) {
@@ -243,6 +254,11 @@ TEST(polyfillTransmeridian) {
 
     t_assert(actualNumHexagons == expectedSize - actualNumHoleHexagons,
              "got expected polyfill size (transmeridian hole)");
+
+    free(hexagons);
+    free(hexagonsTM);
+    free(hexagonsTMFH);
+    free(hexagonsTMH);
 }
 
 TEST(polyfillPentagon) {
@@ -279,6 +295,7 @@ TEST(polyfillPentagon) {
 
     GeoPolygon polygon;
     polygon.geofence = geofence;
+    polygon.numHoles = 0;
 
     int numHexagons = H3_EXPORT(maxPolyfillSize)(&polygon, 9);
     H3Index* hexagons = calloc(numHexagons, sizeof(H3Index));
@@ -297,6 +314,7 @@ TEST(polyfillPentagon) {
     }
     t_assert(found == 1, "one index found");
     t_assert(numPentagons == 1, "one pentagon found");
+    free(hexagons);
 }
 
 TEST(_pointInPolyContainsLoop) {

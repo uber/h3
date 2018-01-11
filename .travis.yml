@@ -1,0 +1,51 @@
+# Copyright 2018 Uber Technologies, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+language: c
+
+os: linux
+dist: trusty
+
+compiler:
+  - gcc
+  - clang
+
+# Docs are built during the normal compile/test check.
+addons:
+  apt:
+    packages:
+      - doxygen
+      - graphviz
+
+matrix:
+  include:
+      # Check that clang-format doesn't detect some files are not formatted.
+    - env: NAME="Formatting check"
+      compiler: clang
+      addons:
+        apt:
+          sources:
+            - llvm-toolchain-trusty-5.0
+          packages:
+            - clang-format-5.0
+      script: make format && git diff --exit-code
+
+# Configure the build script, out of source.
+before_script:
+  - mkdir build
+  - cd build
+  - cmake ..
+
+# Build and test the library.
+script: make && make test
