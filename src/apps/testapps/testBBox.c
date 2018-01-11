@@ -17,6 +17,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include "bbox.h"
+#include "constants.h"
 #include "geoCoord.h"
 #include "test.h"
 

@@ -67,6 +67,7 @@ TEST(createLinkedGeo) {
     t_assert(countLinkedPolygons(polygon) == 2, "Polygon count correct");
 
     H3_EXPORT(destroyLinkedPolygon)(polygon);
+    free(polygon);
 }
 
 END_TESTS();

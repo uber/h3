@@ -33,13 +33,13 @@
 void randomGeo(GeoCoord* g) {
     static int init = 0;
     if (!init) {
-        srandom((unsigned int)time(0));
+        srand((unsigned int)time(0));
         init = 1;
     }
 
     g->lat = H3_EXPORT(degsToRads)(
-        (((float)random() / (float)(RAND_MAX)) * 180.0) - 90.0);
-    g->lon = H3_EXPORT(degsToRads)((float)random() / (float)(RAND_MAX)) * 360.0;
+        (((float)rand() / (float)(RAND_MAX)) * 180.0) - 90.0);
+    g->lon = H3_EXPORT(degsToRads)((float)rand() / (float)(RAND_MAX)) * 360.0;
 }
 
 int main(int argc, char* argv[]) {

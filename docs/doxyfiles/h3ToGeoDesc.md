@@ -11,7 +11,7 @@ The conversion is performed as a series of coordinate system conversions describ
    * It is possible that the the cell center point lies on an adjacent face (termed an _overage_ in the code), in which case we would need to use a projection centered on that adjacent face instead. We recall that normalized _ijk_ coordinates have at most two non-zero components, and that in a face-centered Class II system the sum of those components is a resolution-specific constant value for cells that lie on the edge of that icosahedral face.
      We determine whether an overage exists by taking the sum of the _ijk_ components, and if there is an overage the positive _ijk_ components indicate which adjacent face the cell center lies on. A lookup operation is then performed to find the appropriate rotation and translation to transform the _ijk_ coordinates into the adjacent face-centered _ijk_ system.
 
-\image html triedge.png
+\image html triEdge.png
 
 * The face-centered _ijk_ coordinates are then converted into corresponding _Hex2d_ coordinates using the function ::\_ijkToHex2d.
 * The function ::\_hex2dToGeo takes the _Hex2d_ coordinates and scales them into face-centered gnomonic coordinates, and then performs an inverse gnomonic projection to get the latitude/longitude coordinates.

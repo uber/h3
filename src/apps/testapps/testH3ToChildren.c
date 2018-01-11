@@ -106,6 +106,7 @@ TEST(sameRes) {
     H3_EXPORT(h3ToChildren)(sfHex8, 8, children);
 
     verifyCountAndUniqueness(children, paddedCount, expectedCount);
+    free(children);
 }
 
 TEST(childResTooHigh) {
@@ -116,6 +117,7 @@ TEST(childResTooHigh) {
     H3_EXPORT(h3ToChildren)(sfHex8, 7, children);
 
     verifyCountAndUniqueness(children, paddedCount, expectedCount);
+    free(children);
 }
 
 END_TESTS();

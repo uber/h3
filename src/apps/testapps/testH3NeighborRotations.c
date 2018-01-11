@@ -26,6 +26,7 @@
  *  are the number of test cases that failed validation.
  */
 
+#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "algos.h"
@@ -109,7 +110,7 @@ void doCell(const H3IndexFat* hf, int maxK, TestOutput* testOutput) {
             if (!foundPent) {
                 // Failed to find the pentagon that caused hexRange
                 // to fail.
-                printf("NO C k=%d h=%llx\n", k, h);
+                printf("NO C k=%d h=%" PRIx64 "\n", k, h);
                 testOutput->ret1ValidationFailures++;
                 return;
             }
