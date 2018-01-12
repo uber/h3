@@ -18,13 +18,14 @@
  * and then finds the vertices and center coordinates of the index.
  */
 
-#include <h3api.h>
+#include <h3/h3api.h>
 #include <stdio.h>
 
 int main(int argc, char *argv[]) {
     // Get the H3 index of some location and print it.
     GeoCoord location;
-    setGeoDegs(&location, 40.689167, -74.044444);
+    location.lat = degsToRads(40.689167);
+    location.lon = degsToRads(-74.044444);
     int resolution = 10;
     H3Index indexed = geoToH3(&location, resolution);
     printf("The index is: %llx\n", indexed);

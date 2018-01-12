@@ -65,6 +65,7 @@ else()
     add_library(h3.1 SHARED ${SOURCE_FILES})
 endif()
 
+# Automatic code formatting
 option(ENABLE_FORMAT "Enable running clang-format before compiling." ON)
 find_program(CLANG_FORMAT_PATH clang-format)
 if (CLANG_FORMAT_PATH AND ENABLE_FORMAT)
@@ -319,3 +320,17 @@ if(ENABLE_TESTS)
     add_h3_benchmark(benchmarkH3Api src/apps/benchmarks/benchmarkH3Api.c)
     add_h3_benchmark(benchmarkPolyfill src/apps/benchmarks/benchmarkPolyfill.c)
 endif()
+
+# Installing the library and filters system-wide. Does not include miscapps.
+install(TARGETS h3.1
+        geoToH3
+        h3ToComponents
+        h3ToGeo
+        h3ToGeoBoundary
+        hexRange
+        kRing
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib/static)
+# Only the h3api.h header is needed by applications using H3.
+install(FILES src/h3lib/include/h3api.h DESTINATION include/h3)
