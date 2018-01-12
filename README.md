@@ -1,6 +1,6 @@
 # H3: A Hexagonal Hierarchical Geospatial Indexing System
 
-[![Build Status](https://travis-ci.com/uber/h3.svg?branch=master)](https://travis-ci.com/uber/h3)
+[![Build Status](https://travis-ci.org/uber/h3.svg?branch=master)](https://travis-ci.org/uber/h3)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 H3 is a geospatial indexing system using a hexagonal grid that can be (approximately) subdivided into finer and finer hexagonal grids, combining the benefits of a hexagonal grid with [S2](https://code.google.com/archive/p/s2-geometry-library/)'s hierarchical subdivisions.
