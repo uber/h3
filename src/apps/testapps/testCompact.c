@@ -85,7 +85,7 @@ TEST(res0) {
     }
 
     H3Index* decompressed = calloc(
-        H3_EXPORT(maxUncompactSize)(compressed, hexCount, 9), sizeof(H3Index));
+        H3_EXPORT(maxUncompactSize)(compressed, hexCount, 0), sizeof(H3Index));
     int err2 =
         H3_EXPORT(uncompact)(compressed, hexCount, decompressed, hexCount, 0);
     t_assert(err2 == 0, "no error on uncompact");
