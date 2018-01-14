@@ -30,9 +30,8 @@ BEGIN_TESTS(h3SetToLinkedGeo);
 
 TEST(empty) {
     LinkedGeoPolygon* polygon = calloc(1, sizeof(LinkedGeoPolygon));
-    char* hexes[0];
     int numHexes = 0;
-    H3Index* set = makeSet(hexes, numHexes);
+    H3Index* set = makeSet(NULL, numHexes);
 
     H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, polygon);
 

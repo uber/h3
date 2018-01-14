@@ -46,7 +46,10 @@ TEST(h3FatNegativeResInvalid) {
 
 TEST(h3FatLargeResolutionInvalid) {
     H3IndexFat hfLargeRes;
-    setH3IndexFat(&hfLargeRes, 16, 0, 0);
+    setH3IndexFat(&hfLargeRes, 15, 0, 0);
+    // Can't set resolution to 16 using setH3IndexFat
+    // since it would corrupt the stack.
+    hfLargeRes.res = 16;
     t_assert(!h3FatIsValid(&hfLargeRes),
              "h3FatIsValid failed on large resolution");
 }

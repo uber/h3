@@ -33,16 +33,16 @@
  *  Examples:
  *  ---------
  *
- *     `h3ToGeoHier 36e9bfffffffff`
+ *     `h3ToGeoHier 836e9bfffffffff`
  *        - outputs the cell center point in lat/lon for cell
- *          `36e9bfffffffff` as plain text
+ *          `836e9bfffffffff` as plain text
  *
  *     `h3ToGeoHier 820ceffffffffff 4 1 > pts.kml`
  *        - outputs the cell center points of all of the resolution 4
  *          descendants of cell `820ceffffffffff` as a KML file (redirected to
  *          `pts.kml`).
  *
- *     `h3ToGeoHier 6283082fffffff 9 1 > uber9pts.kml`
+ *     `h3ToGeoHier 86283082fffffff 9 1 > uber9pts.kml`
  *        - creates a KML file containing the cell center points of all of the
  *          resolution 9 hexagons covering Uber HQ and the surrounding region of
  *          San Francisco.
