@@ -37,7 +37,7 @@ endif()
 set(CMAKE_MACOSX_RPATH 1)
 
 if(CMAKE_BUILD_TYPE MATCHES Debug)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0 -Wall -fno-inline -fno-eliminate-unused-debug-types --coverage")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0 -Wall -fno-inline -fno-eliminate-unused-debug-types --coverage -std=c1x")
 else()
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -fPIC -std=c1x")
 endif()

@@ -40,6 +40,21 @@ matrix:
           packages:
             - clang-format-5.0
       script: make format && git diff --exit-code
+      # Submit coverage report to Coveralls.io
+    - env: NAME="Coverage report"
+      compiler: gcc
+      addons:
+        apt:
+          packages:
+            - lcov
+      install:
+        - pip install --user cpp-coveralls
+      before_script:
+        - cmake -DCMAKE_BUILD_TYPE=Debug .
+      script:
+        - make && make coverage
+      after_success:
+        - coveralls --lcov-file coverage.cleaned.info --verbose
 
 # Configure the build script, out of source.
 before_script:
