@@ -136,14 +136,22 @@
 /**
  * Sets the resolution res digit of h3 to the integer digit (0-7)
  */
-#define H3_SET_INDEX_DIGIT(h3, res, digit)                                  \
-    (h3) = (((h3) & ~((H3_DIGIT_MASK                                        \
-                       << ((MAX_H3_RES - (res)) * H3_PER_DIGIT_OFFSET)))) | \
-            (((uint64_t)(digit))                                            \
+#define H3_SET_INDEX_DIGIT(h3, res, digit)                           \
+    (h3) = (((h3) &                                                  \
+             ~((H3_DIGIT_MASK                                        \
+                << ((MAX_H3_RES - (res)) * H3_PER_DIGIT_OFFSET)))) | \
+            (((uint64_t)(digit))                                     \
              << ((MAX_H3_RES - (res)) * H3_PER_DIGIT_OFFSET)))
 
 void h3ToH3Fat(H3Index h, H3IndexFat* hf);
 H3Index h3FatToH3(const H3IndexFat* hf);
 void setH3Index(H3Index* h, int res, int baseCell, int initDigit);
+
+// Internal functions
+
+int _h3LeadingNonZeroDigit(H3Index h);
+H3Index _h3RotatePent60ccw(H3Index h);
+H3Index _h3Rotate60ccw(H3Index h);
+H3Index _h3Rotate60cw(H3Index h);
 
 #endif
