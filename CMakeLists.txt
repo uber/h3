@@ -35,17 +35,21 @@ endif()
 
 # Needed due to CMP0042
 set(CMAKE_MACOSX_RPATH 1)
+# H3 doesn't export selected symbols right now
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 if(WIN32)
     set(SHELL PowerShell -Command)
 else()
     set(SHELL sh -c)
-endif()
 
-if(CMAKE_BUILD_TYPE MATCHES Debug)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0 -Wall -fno-inline -fno-eliminate-unused-debug-types --coverage -std=c1x")
-else()
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -fPIC -std=c1x")
+    # Compiler options are set only on non-Windows, since these options
+    # are not correct for MSVC.
+    if(CMAKE_BUILD_TYPE MATCHES Debug)
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0 -Wall -fno-inline -fno-eliminate-unused-debug-types --coverage -std=c1x")
+    else()
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -fPIC -std=c1x")
+    endif()
 endif()
 
 file(READ VERSION H3_VERSION LIMIT_COUNT 1)
