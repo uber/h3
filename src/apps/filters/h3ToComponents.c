@@ -45,20 +45,21 @@ char resDigitToChar(int d) {
 }
 
 void doCell(H3Index h, int verboseMode) {
-    H3IndexFat hf;
-    h3ToH3Fat(h, &hf);
+    int h3Mode = H3_GET_MODE(h);
+    int h3Res = H3_GET_RESOLUTION(h);
+    int h3BaseCell = H3_GET_BASE_CELL(h);
     if (verboseMode == 0) {
-        if (hf.mode == H3_HEXAGON_MODE) {
-            printf("%d:%d:%d:", hf.mode, hf.res, hf.baseCell);
-            for (int i = 0; i < hf.res; i++) {
-                printf("%c", resDigitToChar(hf.index[i]));
+        if (h3Mode == H3_HEXAGON_MODE) {
+            printf("%d:%d:%d:", h3Mode, h3Res, h3BaseCell);
+            for (int i = 1; i <= h3Res; i++) {
+                printf("%c", resDigitToChar(H3_GET_INDEX_DIGIT(h, i)));
             }
             printf("\n");
-        } else if (hf.mode == H3_UNIEDGE_MODE) {
-            printf("%d:%d:%d:%d:", hf.mode, H3_GET_RESERVED_BITS(h), hf.res,
-                   hf.baseCell);
-            for (int i = 0; i < hf.res; i++) {
-                printf("%c", resDigitToChar(hf.index[i]));
+        } else if (h3Mode == H3_UNIEDGE_MODE) {
+            printf("%d:%d:%d:%d:", h3Mode, H3_GET_RESERVED_BITS(h), h3Res,
+                   h3BaseCell);
+            for (int i = 1; i <= h3Res; i++) {
+                printf("%c", resDigitToChar(H3_GET_INDEX_DIGIT(h, i)));
             }
             printf("\n");
         } else {
@@ -88,14 +89,15 @@ void doCell(H3Index h, int verboseMode) {
         H3_EXPORT(h3ToString)(h, hStr, BUFF_SIZE);
         printf("║ H3Index    ║ %s\n", hStr);
         printf("╠════════════╣\n");
-        printf("║ Mode       ║ %s (%i)\n", modes[hf.mode], hf.mode);
-        printf("║ Resolution ║ %i\n", hf.res);
-        if (hf.mode == H3_UNIEDGE_MODE) {
+        printf("║ Mode       ║ %s (%i)\n", modes[h3Mode], h3Mode);
+        printf("║ Resolution ║ %i\n", h3Res);
+        if (h3Mode == H3_UNIEDGE_MODE) {
             printf("║ Edge       ║ %i\n", H3_GET_RESERVED_BITS(h));
         }
-        printf("║ Base Cell  ║ %i\n", hf.baseCell);
-        for (int i = 0; i < hf.res; i++) {
-            printf("║%3i Child   ║ %c\n", i + 1, resDigitToChar(hf.index[i]));
+        printf("║ Base Cell  ║ %i\n", h3BaseCell);
+        for (int i = 1; i <= h3Res; i++) {
+            printf("║%3i Child   ║ %c\n", i,
+                   resDigitToChar(H3_GET_INDEX_DIGIT(h, i)));
         }
         printf("╚════════════╝\n\n");
     }
