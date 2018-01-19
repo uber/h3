@@ -18,33 +18,8 @@
  */
 
 #include "h3api.h"
-#include <math.h>
 #include <stdio.h>
 #include "h3Index.h"
-
-/**
- * Encodes a coordinate on the sphere to the H3 index of the containing cell at
- * the specified resolution.
- *
- * Returns 0 on invalid input.
- *
- * @param g The spherical coordinates to encode.
- * @param res The desired H3 resolution for the encoding.
- * @return The encoded H3Index (or 0 on failure).
- */
-H3Index H3_EXPORT(geoToH3)(const GeoCoord* g, int res) {
-    H3IndexFat hf;
-
-    if (res < 0 || res > MAX_H3_RES) {
-        return 0;
-    }
-    if (!isfinite(g->lat) || !isfinite(g->lon)) {
-        return 0;
-    }
-
-    geoToH3Fat(g, res, &hf);
-    return h3FatToH3(&hf);
-}
 
 /**
  * Determines the spherical coordinates of the center point of an H3 index.
