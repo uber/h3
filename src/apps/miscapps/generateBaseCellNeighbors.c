@@ -22,8 +22,7 @@
  *  60 degree ccw rotations into the coordinate system of that base cell.
  *
  *  INVALID_BASE_CELL is generated for neighbors that are deleted (the deleted
- * neighbor
- *  of a pentagon.)
+ *  neighbor of a pentagon.)
  */
 
 #include <baseCells.h>
@@ -80,7 +79,7 @@ void auditBaseCellNeighbors(int baseCellNeighbors[NUM_BASE_CELLS][7],
     }
 }
 
-char* getBaseCellOutput(baseCell) {
+char* getBaseCellOutput(int baseCell) {
     int maxLen = 17;  // "INVALID_BASE_CELL\0"
     char* baseCellOutput = calloc(maxLen, sizeof(char));
     if (baseCell != INVALID_BASE_CELL) {
@@ -237,15 +236,26 @@ void generate() {
 
     printf("const int baseCellNeighbors[NUM_BASE_CELLS][7] = {\n");
     for (int i = 0; i < NUM_BASE_CELLS; i++) {
+        char* neighborStrings[7] = {0, 0, 0, 0, 0, 0, 0};
+        neighborStrings[0] = getBaseCellOutput(baseCellNeighbors[i][0]);
+        neighborStrings[1] = getBaseCellOutput(baseCellNeighbors[i][1]);
+        neighborStrings[2] = getBaseCellOutput(baseCellNeighbors[i][2]);
+        neighborStrings[3] = getBaseCellOutput(baseCellNeighbors[i][3]);
+        neighborStrings[4] = getBaseCellOutput(baseCellNeighbors[i][4]);
+        neighborStrings[5] = getBaseCellOutput(baseCellNeighbors[i][5]);
+        neighborStrings[6] = getBaseCellOutput(baseCellNeighbors[i][6]);
         printf("{%s, %s, %s, %s, %s, %s, %s}, // base cell %d%s\n",
-               getBaseCellOutput(baseCellNeighbors[i][0]),
-               getBaseCellOutput(baseCellNeighbors[i][1]),
-               getBaseCellOutput(baseCellNeighbors[i][2]),
-               getBaseCellOutput(baseCellNeighbors[i][3]),
-               getBaseCellOutput(baseCellNeighbors[i][4]),
-               getBaseCellOutput(baseCellNeighbors[i][5]),
-               getBaseCellOutput(baseCellNeighbors[i][6]), i,
+               neighborStrings[0], neighborStrings[1], neighborStrings[2],
+               neighborStrings[3], neighborStrings[4], neighborStrings[5],
+               neighborStrings[6], i,
                _isBaseCellPentagon(i) ? " (pentagon)" : "");
+        free(neighborStrings[0]);
+        free(neighborStrings[1]);
+        free(neighborStrings[2]);
+        free(neighborStrings[3]);
+        free(neighborStrings[4]);
+        free(neighborStrings[5]);
+        free(neighborStrings[6]);
     }
     printf("};\n");
     printf("\n");
