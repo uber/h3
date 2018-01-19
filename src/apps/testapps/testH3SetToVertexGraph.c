@@ -30,9 +30,8 @@ BEGIN_TESTS(h3SetToVertexGraph);
 
 TEST(empty) {
     VertexGraph graph;
-    char* hexes[0];
     int numHexes = 0;
-    H3Index* set = makeSet(hexes, numHexes);
+    H3Index* set = makeSet(NULL, numHexes);
 
     h3SetToVertexGraph(set, numHexes, &graph);
 

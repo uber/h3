@@ -38,6 +38,10 @@ brew install cmake
 brew install clang-format lcov doxygen
 ```
 
+* Windows (Visual Studio)
+
+You will need to install CMake and Visual Studio, including the Visual C++ compiler. For building on Windows, please follow the [Windows build instructions](./docs/build_windows.md).
+
 #### Compilation
 
 From the repository you would then compile like so:

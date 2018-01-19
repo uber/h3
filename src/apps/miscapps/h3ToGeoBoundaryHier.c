@@ -33,15 +33,15 @@
  *  Examples:
  *  ---------
  *
- *     `h3ToGeoBoundaryHier 36e9bfffffffff`
- *        - outputs the cell boundary in lat/lon for cell `36e9bfffffffff` as
+ *     `h3ToGeoBoundaryHier 836e9bfffffffff`
+ *        - outputs the cell boundary in lat/lon for cell `836e9bfffffffff` as
  *          plain text
  *
  *     `h3ToGeoBoundaryHier 820ceffffffffff 4 1 > cells.kml`
  *        - outputs the cell boundaries of all of the resolution 4 descendants
  *          of cell `820ceffffffffff` as a KML file (redirected to `cells.kml`).
  *
- *     `h3ToGeoBoundaryHier 6283082fffffff 9 1 > uber9cells.kml`
+ *     `h3ToGeoBoundaryHier 86283082fffffff 9 1 > uber9cells.kml`
  *        - creates a KML file containing the cell boundaries of all of the
  *          resolution 9 hexagons covering Uber HQ and the surrounding region of
  *          San Francisco

@@ -159,11 +159,10 @@ TEST(containsEdgesTransmeridian) {
 }
 
 TEST(noVertices) {
-    const GeoCoord verts[] = {};
     const BBox expected = {0.0, 0.0, 0.0, 0.0};
 
     BBox result;
-    bboxFromVertices(verts, 0, &result);
+    bboxFromVertices(NULL, 0, &result);
 
     t_assert(bboxEquals(&result, &expected), "Got expected bbox");
 }

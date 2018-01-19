@@ -35,11 +35,21 @@ endif()
 
 # Needed due to CMP0042
 set(CMAKE_MACOSX_RPATH 1)
+# H3 doesn't export selected symbols right now
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
-if(CMAKE_BUILD_TYPE MATCHES Debug)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0 -Wall -fno-inline -fno-eliminate-unused-debug-types --coverage -std=c1x")
+if(WIN32)
+    set(SHELL PowerShell -Command)
 else()
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -fPIC -std=c1x")
+    set(SHELL sh -c)
+
+    # Compiler options are set only on non-Windows, since these options
+    # are not correct for MSVC.
+    if(CMAKE_BUILD_TYPE MATCHES Debug)
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0 -Wall -fno-inline -fno-eliminate-unused-debug-types --coverage -std=c1x")
+    else()
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -fPIC -std=c1x")
+    endif()
 endif()
 
 file(READ VERSION H3_VERSION LIMIT_COUNT 1)
@@ -108,7 +118,8 @@ endif()
 # Metadata for bindings
 if (WIN32)
     add_custom_target(binding-functions
-        COMMAND echo "Windows not yet supported"
+        COMMAND PowerShell -ExecutionPolicy Bypass -File ${PROJECT_SOURCE_DIR}/scripts/binding_functions.ps1
+        WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
         )
 else()
     add_custom_target(binding-functions
@@ -122,7 +133,10 @@ macro(add_h3_executable name)
     # invoke built-in add_executable
     add_executable(${ARGV})
     if(TARGET ${name})
-        target_link_libraries(${name} h3.1 ${M_LIB})
+        target_link_libraries(${name} h3.1)
+        if (M_LIB)
+            target_link_libraries(${name} ${M_LIB})
+        endif()
         target_include_directories(${name} PUBLIC src/apps/applib/include)
     endif()
 endmacro()
@@ -152,11 +166,11 @@ foreach(resolution RANGE 3)
     set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "KML/res${resolution}cells.kml")
     set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "KML/res${resolution}centers.kml")
     add_custom_target(kml_cells_${resolution}
-        COMMAND sh -c "$<TARGET_FILE:h3ToHier> ${resolution} | $<TARGET_FILE:h3ToGeoBoundary> 1 res${resolution}cells.kml \"Res ${resolution} Cells\" > KML/res${resolution}cells.kml"
+        COMMAND ${SHELL} "$<TARGET_FILE:h3ToHier> ${resolution} | $<TARGET_FILE:h3ToGeoBoundary> 1 res${resolution}cells.kml \"Res ${resolution} Cells\" > KML/res${resolution}cells.kml"
         VERBATIM
         DEPENDS create-kml-dir)
     add_custom_target(kml_centers_${resolution}
-        COMMAND sh -c "$<TARGET_FILE:h3ToHier> ${resolution} | $<TARGET_FILE:h3ToGeo> 1 res${resolution}centers.kml \"Res ${resolution} Centers\" > KML/res${resolution}centers.kml"
+        COMMAND ${SHELL} "$<TARGET_FILE:h3ToHier> ${resolution} | $<TARGET_FILE:h3ToGeo> 1 res${resolution}centers.kml \"Res ${resolution} Centers\" > KML/res${resolution}centers.kml"
         VERBATIM
         DEPENDS create-kml-dir)
     add_dependencies(kml
@@ -222,7 +236,7 @@ if(ENABLE_TESTS)
         add_h3_test_common(${name} ${srcfile})
         # add a special command (so we don't need to read the test file from the test program)
         add_test(NAME ${name}_test${test_number}
-            COMMAND sh -c "$<TARGET_FILE:${name}> < ${argfile}"
+            COMMAND ${SHELL} "$<TARGET_FILE:${name}> < ${argfile}"
             )
         if(PRINT_TEST_FILES)
             message("${name}_test${test_number} - ${argfile}")
@@ -321,16 +335,19 @@ if(ENABLE_TESTS)
     add_h3_benchmark(benchmarkPolyfill src/apps/benchmarks/benchmarkPolyfill.c)
 endif()
 
-# Installing the library and filters system-wide. Does not include miscapps.
+# Installing the library and filters system-wide.
 install(TARGETS h3.1
-        geoToH3
-        h3ToComponents
-        h3ToGeo
-        h3ToGeoBoundary
-        hexRange
-        kRing
-        RUNTIME DESTINATION bin
-        LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib/static)
+    geoToH3
+    h3ToComponents
+    h3ToGeo
+    h3ToGeoBoundary
+    hexRange
+    kRing
+    h3ToGeoBoundaryHier
+    h3ToGeoHier
+    h3ToHier
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib/static)
 # Only the h3api.h header is needed by applications using H3.
 install(FILES src/h3lib/include/h3api.h DESTINATION include/h3)
