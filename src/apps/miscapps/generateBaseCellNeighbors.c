@@ -79,8 +79,12 @@ void auditBaseCellNeighbors(int baseCellNeighbors[NUM_BASE_CELLS][7],
     }
 }
 
+/**
+ * Returns how the base cell should be referenced in generated source code.
+ * Caller should free the returned pointer.
+ */
 char* getBaseCellOutput(int baseCell) {
-    int maxLen = 17;  // "INVALID_BASE_CELL\0"
+    int maxLen = 18;  // "INVALID_BASE_CELL\0"
     char* baseCellOutput = calloc(maxLen, sizeof(char));
     if (baseCell != INVALID_BASE_CELL) {
         sprintf(baseCellOutput, "%d", baseCell);
@@ -237,25 +241,17 @@ void generate() {
     printf("const int baseCellNeighbors[NUM_BASE_CELLS][7] = {\n");
     for (int i = 0; i < NUM_BASE_CELLS; i++) {
         char* neighborStrings[7] = {0, 0, 0, 0, 0, 0, 0};
-        neighborStrings[0] = getBaseCellOutput(baseCellNeighbors[i][0]);
-        neighborStrings[1] = getBaseCellOutput(baseCellNeighbors[i][1]);
-        neighborStrings[2] = getBaseCellOutput(baseCellNeighbors[i][2]);
-        neighborStrings[3] = getBaseCellOutput(baseCellNeighbors[i][3]);
-        neighborStrings[4] = getBaseCellOutput(baseCellNeighbors[i][4]);
-        neighborStrings[5] = getBaseCellOutput(baseCellNeighbors[i][5]);
-        neighborStrings[6] = getBaseCellOutput(baseCellNeighbors[i][6]);
+        for (int j = 0; j < 7; j++) {
+            neighborStrings[j] = getBaseCellOutput(baseCellNeighbors[i][j]);
+        }
         printf("{%s, %s, %s, %s, %s, %s, %s}, // base cell %d%s\n",
                neighborStrings[0], neighborStrings[1], neighborStrings[2],
                neighborStrings[3], neighborStrings[4], neighborStrings[5],
                neighborStrings[6], i,
                _isBaseCellPentagon(i) ? " (pentagon)" : "");
-        free(neighborStrings[0]);
-        free(neighborStrings[1]);
-        free(neighborStrings[2]);
-        free(neighborStrings[3]);
-        free(neighborStrings[4]);
-        free(neighborStrings[5]);
-        free(neighborStrings[6]);
+        for (int j = 0; j < 7; j++) {
+            free(neighborStrings[j]);
+        }
     }
     printf("};\n");
     printf("\n");
