@@ -36,7 +36,6 @@
 #include "coordijk.h"
 #include "geoCoord.h"
 #include "h3Index.h"
-#include "h3IndexFat.h"
 #include "h3api.h"
 #include "kml.h"
 #include "utility.h"
@@ -44,25 +43,22 @@
 
 #include "algos.h"
 
-void doCell(const H3IndexFat* hf) {
-    H3Index h = h3FatToH3(hf);
-
-    h3Println(h);
-}
-
-void recursiveH3IndexToHier(H3IndexFat* c, int res) {
+void recursiveH3IndexToHier(H3Index h, int res) {
     for (int d = 0; d < 7; d++) {
-        c->index[res - 1] = d;
+        H3_SET_INDEX_DIGIT(h, res, d);
 
         // skip the pentagonal deleted subsequence
 
-        if (_isBaseCellPentagon(c->baseCell) && _leadingNonZeroDigit(c) == 1)
+        if (_isBaseCellPentagon(H3_GET_BASE_CELL(h)) &&
+            _h3LeadingNonZeroDigit(h) == 1) {
             continue;
+        }
 
-        if (res == c->res)
-            doCell(c);
-        else
-            recursiveH3IndexToHier(c, res + 1);
+        if (res == H3_GET_RESOLUTION(h)) {
+            h3Println(h);
+        } else {
+            recursiveH3IndexToHier(h, res + 1);
+        }
     }
 }
 
@@ -81,42 +77,34 @@ int main(int argc, char* argv[]) {
     H3Index prefixIndex = 0;
     if (argc > 2) {
         prefixIndex = H3_EXPORT(stringToH3)(argv[2]);
-
-        H3IndexFat prefixIndexHf;
-        h3ToH3Fat(prefixIndex, &prefixIndexHf);
-        if (prefixIndexHf.baseCell < 0 ||
-            prefixIndexHf.baseCell >= NUM_BASE_CELLS)
+        int h3BaseCell = H3_GET_BASE_CELL(prefixIndex);
+        if (h3BaseCell < 0 || h3BaseCell >= NUM_BASE_CELLS) {
             error("invalid base cell number");
+        }
     }
 
     if (prefixIndex == 0) {
         // Generate all
         for (int bc = 0; bc < NUM_BASE_CELLS; bc++) {
-            H3IndexFat rootCellHf;
-            initH3IndexFat(&rootCellHf, 0);
-            rootCellHf.baseCell = bc;
-
-            // the base cell H3IndexFat is the target
-            if (res <= rootCellHf.res)
-                doCell(&rootCellHf);
-            else {
-                int rootRes = rootCellHf.res;
-                rootCellHf.res = res;
-                recursiveH3IndexToHier(&rootCellHf, rootRes + 1);
+            H3Index rootCell = H3_INIT;
+            H3_SET_MODE(rootCell, H3_HEXAGON_MODE);
+            H3_SET_BASE_CELL(rootCell, bc);
+            if (res == 0) {
+                h3Println(rootCell);
+            } else {
+                H3_SET_RESOLUTION(rootCell, res);
+                recursiveH3IndexToHier(rootCell, 1);
             }
         }
     } else {
-        H3IndexFat rootCellHf;
-        h3ToH3Fat(prefixIndex, &rootCellHf);
-
         // prefix is the same or higher resolution than
         // the target.
-        if (res <= rootCellHf.res)
-            doCell(&rootCellHf);
-        else {
-            int rootRes = rootCellHf.res;
-            rootCellHf.res = res;
-            recursiveH3IndexToHier(&rootCellHf, rootRes + 1);
+        if (res <= H3_GET_RESOLUTION(prefixIndex)) {
+            h3Println(prefixIndex);
+        } else {
+            int rootRes = H3_GET_RESOLUTION(prefixIndex);
+            H3_SET_RESOLUTION(prefixIndex, res);
+            recursiveH3IndexToHier(prefixIndex, rootRes + 1);
         }
     }
 }
