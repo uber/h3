@@ -466,3 +466,96 @@ int H3_EXPORT(h3IsPentagon)(H3Index h) {
     h3ToH3Fat(h, &hFat);
     return isPentagon(&hFat);
 }
+
+/**
+ * Returns the highest resolution non-zero digit in an H3Index.
+ * @param h The H3Index.
+ * @return The highest resolution non-zero digit in the H3Index.
+ */
+int _h3LeadingNonZeroDigit(H3Index h) {
+    for (int r = 1; r <= H3_GET_RESOLUTION(h); r++)
+        if (H3_GET_INDEX_DIGIT(h, r)) return H3_GET_INDEX_DIGIT(h, r);
+
+    // if we're here it's all 0's
+    return 0;
+}
+
+/**
+ * Rotate an H3Index 60 degrees counter-clockwise about a pentagonal center.
+ * @param h The H3Index.
+ */
+H3Index _h3RotatePent60ccw(H3Index h) {
+    // rotate in place; skips any leading 1 digits (k-axis)
+    const int rotDigit[] = {
+        0,  // original digit 0
+        5,  // original digit 1
+        3,  // original digit 2
+        1,  // original digit 3
+        6,  // original digit 4
+        4,  // original digit 5
+        2   // original digit 6
+    };
+
+    int foundFirstNonZeroDigit = 0;
+    for (int r = 1, res = H3_GET_RESOLUTION(h); r <= res; r++) {
+        // rotate this digit
+        H3_SET_INDEX_DIGIT(h, r, rotDigit[H3_GET_INDEX_DIGIT(h, r)]);
+
+        // look for the first non-zero digit so we
+        // can adjust for deleted k-axes sequence
+        // if neccessary
+        if (!foundFirstNonZeroDigit && H3_GET_INDEX_DIGIT(h, r) != 0) {
+            foundFirstNonZeroDigit = 1;
+
+            // adjust for deleted k-axes sequence
+            if (_h3LeadingNonZeroDigit(h) == K_AXES_DIGIT)
+                h = _h3Rotate60ccw(h);
+        }
+    }
+    return h;
+}
+
+/**
+ * Rotate an H3Index 60 degrees counter-clockwise.
+ * @param h The H3Index.
+ */
+H3Index _h3Rotate60ccw(H3Index h) {
+    const int rotDigit[] = {
+        0,  // original digit 0
+        5,  // original digit 1
+        3,  // original digit 2
+        1,  // original digit 3
+        6,  // original digit 4
+        4,  // original digit 5
+        2   // original digit 6
+    };
+
+    for (int r = 1, res = H3_GET_RESOLUTION(h); r <= res; r++) {
+        int oldDigit = H3_GET_INDEX_DIGIT(h, r);
+        H3_SET_INDEX_DIGIT(h, r, rotDigit[oldDigit]);
+    }
+
+    return h;
+}
+
+/**
+ * Rotate an H3Index 60 degrees clockwise.
+ * @param h The H3Index.
+ */
+H3Index _h3Rotate60cw(H3Index h) {
+    const int rotDigit[] = {
+        0,  // original digit 0
+        3,  // original digit 1
+        6,  // original digit 2
+        2,  // original digit 3
+        5,  // original digit 4
+        1,  // original digit 5
+        4   // original digit 6
+    };
+
+    for (int r = 1, res = H3_GET_RESOLUTION(h); r <= res; r++) {
+        H3_SET_INDEX_DIGIT(h, r, rotDigit[H3_GET_INDEX_DIGIT(h, r)]);
+    }
+
+    return h;
+}

@@ -35,6 +35,7 @@ typedef struct {
                           /// faces?
 } BaseCellData;
 
+#define INVALID_BASE_CELL 127
 extern const int baseCellNeighbors[NUM_BASE_CELLS][7];
 extern const int baseCellNeighbor60CCWRots[NUM_BASE_CELLS][7];
 

@@ -21,8 +21,8 @@
  *  The program generates a table of neighbors of base cells, and the
  *  60 degree ccw rotations into the coordinate system of that base cell.
  *
- *  -1 is generated for neighbors that are deleted (the deleted neighbor
- *  of a pentagon.)
+ *  INVALID_BASE_CELL is generated for neighbors that are deleted (the deleted
+ *  neighbor of a pentagon.)
  */
 
 #include <baseCells.h>
@@ -41,7 +41,7 @@ void auditBaseCellNeighbors(int baseCellNeighbors[NUM_BASE_CELLS][7],
                             int baseCellRotations[NUM_BASE_CELLS][7]) {
     for (int i = 0; i < NUM_BASE_CELLS; i++) {
         for (int j = 0; j <= NUM_DIRS; j++) {
-            if (baseCellNeighbors[i][j] == -1) continue;
+            if (baseCellNeighbors[i][j] == INVALID_BASE_CELL) continue;
 
             CoordIJK ourDir = {0, 0, 0};
             _neighbor(&ourDir, j);
@@ -79,6 +79,17 @@ void auditBaseCellNeighbors(int baseCellNeighbors[NUM_BASE_CELLS][7],
     }
 }
 
+char* getBaseCellOutput(int baseCell) {
+    int maxLen = 17;  // "INVALID_BASE_CELL\0"
+    char* baseCellOutput = calloc(maxLen, sizeof(char));
+    if (baseCell != INVALID_BASE_CELL) {
+        sprintf(baseCellOutput, "%d", baseCell);
+    } else {
+        sprintf(baseCellOutput, "INVALID_BASE_CELL");
+    }
+    return baseCellOutput;
+}
+
 /**
  * Generates and prints the baseCellNeighbors and baseCellRotations tables.
  */
@@ -109,7 +120,7 @@ void generate() {
             baseCellRotations[i][0] = 0;
 
             for (int dir = 1; dir <= NUM_DIRS; dir++) {
-                baseCellNeighbors[i][dir] = -1;
+                baseCellNeighbors[i][dir] = INVALID_BASE_CELL;
                 baseCellRotations[i][dir] = -1;
             }
 
@@ -200,11 +211,13 @@ void generate() {
                         // derive the neighbors than to write the generation
                         // program.
                         if (i == 4) {
-                            int realNeighbors[] = {4, -1, 15, 8, 3, 0, 12};
+                            int realNeighbors[] = {
+                                4, INVALID_BASE_CELL, 15, 8, 3, 0, 12};
                             neighborBc = realNeighbors[dir];
                         } else if (i == 117) {
-                            int realNeighbors[] = {117, -1,  109, 118,
-                                                   113, 121, 106};
+                            int realNeighbors[] = {
+                                117, INVALID_BASE_CELL, 109, 118, 113, 121,
+                                106};
                             neighborBc = realNeighbors[dir];
                         }
 
@@ -223,12 +236,26 @@ void generate() {
 
     printf("const int baseCellNeighbors[NUM_BASE_CELLS][7] = {\n");
     for (int i = 0; i < NUM_BASE_CELLS; i++) {
-        printf("{%d, %d, %d, %d, %d, %d, %d}, // base cell %d%s\n",
-               baseCellNeighbors[i][0], baseCellNeighbors[i][1],
-               baseCellNeighbors[i][2], baseCellNeighbors[i][3],
-               baseCellNeighbors[i][4], baseCellNeighbors[i][5],
-               baseCellNeighbors[i][6], i,
+        char* neighborStrings[7] = {0, 0, 0, 0, 0, 0, 0};
+        neighborStrings[0] = getBaseCellOutput(baseCellNeighbors[i][0]);
+        neighborStrings[1] = getBaseCellOutput(baseCellNeighbors[i][1]);
+        neighborStrings[2] = getBaseCellOutput(baseCellNeighbors[i][2]);
+        neighborStrings[3] = getBaseCellOutput(baseCellNeighbors[i][3]);
+        neighborStrings[4] = getBaseCellOutput(baseCellNeighbors[i][4]);
+        neighborStrings[5] = getBaseCellOutput(baseCellNeighbors[i][5]);
+        neighborStrings[6] = getBaseCellOutput(baseCellNeighbors[i][6]);
+        printf("{%s, %s, %s, %s, %s, %s, %s}, // base cell %d%s\n",
+               neighborStrings[0], neighborStrings[1], neighborStrings[2],
+               neighborStrings[3], neighborStrings[4], neighborStrings[5],
+               neighborStrings[6], i,
                _isBaseCellPentagon(i) ? " (pentagon)" : "");
+        free(neighborStrings[0]);
+        free(neighborStrings[1]);
+        free(neighborStrings[2]);
+        free(neighborStrings[3]);
+        free(neighborStrings[4]);
+        free(neighborStrings[5]);
+        free(neighborStrings[6]);
     }
     printf("};\n");
     printf("\n");

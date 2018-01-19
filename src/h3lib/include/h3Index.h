@@ -146,4 +146,11 @@ void h3ToH3Fat(H3Index h, H3IndexFat* hf);
 H3Index h3FatToH3(const H3IndexFat* hf);
 void setH3Index(H3Index* h, int res, int baseCell, int initDigit);
 
+// Internal functions
+
+int _h3LeadingNonZeroDigit(H3Index h);
+H3Index _h3RotatePent60ccw(H3Index h);
+H3Index _h3Rotate60ccw(H3Index h);
+H3Index _h3Rotate60cw(H3Index h);
+
 #endif

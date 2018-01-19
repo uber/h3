@@ -193,9 +193,7 @@ void _kRingInternal(H3Index origin, int k, H3Index* out, int* distances,
  */
 H3Index h3NeighborRotations(H3Index origin, const CoordIJK* translationIjk,
                             int* rotations) {
-    H3IndexFat hf;
-    h3ToH3Fat(origin, &hf);
-
+    H3Index out = origin;
     CoordIJK adjustment = *translationIjk;
 
     for (int i = 0; i < *rotations; i++) {
@@ -205,26 +203,27 @@ H3Index h3NeighborRotations(H3Index origin, const CoordIJK* translationIjk,
     int dir = _unitIjkToDigit(&adjustment);
 
     int newRotations = 0;
-    int oldBaseCell = hf.baseCell;
-    int oldLeadingDigit = _leadingNonZeroDigit(&hf);
+    int oldBaseCell = H3_GET_BASE_CELL(out);
+    int oldLeadingDigit = _h3LeadingNonZeroDigit(out);
 
     // Adjust the indexing digits and, if needed, the base cell.
-    int r = hf.res - 1;
+    int r = H3_GET_RESOLUTION(out) - 1;
     while (true) {
         if (r == -1) {
-            hf.baseCell = baseCellNeighbors[oldBaseCell][dir];
+            H3_SET_BASE_CELL(out, baseCellNeighbors[oldBaseCell][dir]);
             newRotations = baseCellNeighbor60CCWRots[oldBaseCell][dir];
 
-            if (hf.baseCell == -1) {
+            if (H3_GET_BASE_CELL(out) == INVALID_BASE_CELL) {
                 // Adjust for the deleted k vertex at the base cell level.
                 // This edge actually borders a different neighbor.
-                hf.baseCell = baseCellNeighbors[oldBaseCell][IK_AXES_DIGIT];
+                H3_SET_BASE_CELL(out,
+                                 baseCellNeighbors[oldBaseCell][IK_AXES_DIGIT]);
                 newRotations =
                     baseCellNeighbor60CCWRots[oldBaseCell][IK_AXES_DIGIT];
 
                 // perform the adjustment for the k-subsequence we're skipping
                 // over.
-                _h3FatRotate60ccw(&hf);
+                out = _h3Rotate60ccw(out);
                 *rotations = *rotations + 1;
             }
 
@@ -256,13 +255,13 @@ H3Index h3NeighborRotations(H3Index origin, const CoordIJK* translationIjk,
                 {0, 0, 0, 0, 4, 5, 4}, {0, 1, 0, 0, 5, 5, 0},
                 {0, 0, 6, 0, 4, 0, 6}};
 
-            int oldDigit = hf.index[r];
+            int oldDigit = H3_GET_INDEX_DIGIT(out, r + 1);
             int nextDir;
             if (isResClassIII(r + 1)) {
-                hf.index[r] = NEW_DIGIT_II[oldDigit][dir];
+                H3_SET_INDEX_DIGIT(out, r + 1, NEW_DIGIT_II[oldDigit][dir]);
                 nextDir = NEW_ADJUSTMENT_II[oldDigit][dir];
             } else {
-                hf.index[r] = NEW_DIGIT_III[oldDigit][dir];
+                H3_SET_INDEX_DIGIT(out, r + 1, NEW_DIGIT_III[oldDigit][dir]);
                 nextDir = NEW_ADJUSTMENT_III[oldDigit][dir];
             }
 
@@ -276,27 +275,28 @@ H3Index h3NeighborRotations(H3Index origin, const CoordIJK* translationIjk,
         }
     }
 
-    if (_isBaseCellPentagon(hf.baseCell)) {
+    int newBaseCell = H3_GET_BASE_CELL(out);
+    if (_isBaseCellPentagon(newBaseCell)) {
         int alreadyAdjustedKSubsequence = 0;
 
         // force rotation out of missing k-axes sub-sequence
-        if (_leadingNonZeroDigit(&hf) == K_AXES_DIGIT) {
-            if (oldBaseCell != hf.baseCell) {
+        if (_h3LeadingNonZeroDigit(out) == K_AXES_DIGIT) {
+            if (oldBaseCell != newBaseCell) {
                 // in this case, we traversed into the deleted
                 // k subsequence of a pentagon base cell.
                 // We need to rotate out of that case depending
                 // on how we got here.
                 // check for a cw/ccw offset face; default is ccw
 
-                if (baseCellData[hf.baseCell].cwOffsetPent[0] ==
+                if (baseCellData[newBaseCell].cwOffsetPent[0] ==
                         baseCellData[oldBaseCell].homeFijk.face ||
-                    baseCellData[hf.baseCell].cwOffsetPent[1] ==
+                    baseCellData[newBaseCell].cwOffsetPent[1] ==
                         baseCellData[oldBaseCell].homeFijk.face) {
-                    _h3FatRotate60cw(&hf);
+                    out = _h3Rotate60cw(out);
                 } else {
                     // See cwOffsetPent in testKRing.c for why this is
                     // unreachable.
-                    _h3FatRotate60ccw(&hf);  // LCOV_EXCL_LINE
+                    out = _h3Rotate60ccw(out);  // LCOV_EXCL_LINE
                 }
                 alreadyAdjustedKSubsequence = 1;
             } else {
@@ -310,13 +310,13 @@ H3Index h3NeighborRotations(H3Index origin, const CoordIJK* translationIjk,
                     // Rotate out of the deleted k subsequence
                     // We also need an additional change to the direction we're
                     // moving in
-                    _h3FatRotate60ccw(&hf);
+                    out = _h3Rotate60ccw(out);
                     *rotations = *rotations + 1;
                 } else if (oldLeadingDigit == IK_AXES_DIGIT) {
                     // Rotate out of the deleted k subsequence
                     // We also need an additional change to the direction we're
                     // moving in
-                    _h3FatRotate60cw(&hf);
+                    out = _h3Rotate60cw(out);
                     *rotations = *rotations + 5;
                 } else {
                     // Should never occur
@@ -325,19 +325,19 @@ H3Index h3NeighborRotations(H3Index origin, const CoordIJK* translationIjk,
             }
         }
 
-        for (int i = 0; i < newRotations; i++) _h3FatRotatePent60ccw(&hf);
+        for (int i = 0; i < newRotations; i++) out = _h3RotatePent60ccw(out);
 
         // Account for differing orientation of the base cells (this edge
         // might not follow properties of some other edges.)
-        if (oldBaseCell != hf.baseCell) {
-            if (hf.baseCell == 4 || hf.baseCell == 117) {
+        if (oldBaseCell != newBaseCell) {
+            if (newBaseCell == 4 || newBaseCell == 117) {
                 // 'polar' base cells behave differently because they have all
                 // i neighbors.
                 if (oldBaseCell != 118 && oldBaseCell != 8 &&
-                    _leadingNonZeroDigit(&hf) != JK_AXES_DIGIT) {
+                    _h3LeadingNonZeroDigit(out) != JK_AXES_DIGIT) {
                     *rotations = *rotations + 1;
                 }
-            } else if (_leadingNonZeroDigit(&hf) == IK_AXES_DIGIT &&
+            } else if (_h3LeadingNonZeroDigit(out) == IK_AXES_DIGIT &&
                        !alreadyAdjustedKSubsequence) {
                 // account for distortion introduced to the 5 neighbor by the
                 // deleted k subsequence.
@@ -345,12 +345,12 @@ H3Index h3NeighborRotations(H3Index origin, const CoordIJK* translationIjk,
             }
         }
     } else {
-        for (int i = 0; i < newRotations; i++) _h3FatRotate60ccw(&hf);
+        for (int i = 0; i < newRotations; i++) out = _h3Rotate60ccw(out);
     }
 
     *rotations = (*rotations + newRotations) % 6;
 
-    return h3FatToH3(&hf);
+    return out;
 }
 
 /**
@@ -408,9 +408,7 @@ int H3_EXPORT(hexRangeDistances)(H3Index origin, int k, H3Index* out,
     }
     idx++;
 
-    H3IndexFat hf;
-    h3ToH3Fat(origin, &hf);
-    if (isPentagon(&hf)) {
+    if (H3_EXPORT(h3IsPentagon)(origin)) {
         // Pentagon was encountered; bail out as user doesn't want this.
         return HEX_RANGE_PENTAGON;
     }
@@ -437,9 +435,7 @@ int H3_EXPORT(hexRangeDistances)(H3Index origin, int k, H3Index* out,
                 return HEX_RANGE_K_SUBSEQUENCE;  // LCOV_EXCL_LINE
             }
 
-            H3IndexFat hf;
-            h3ToH3Fat(origin, &hf);
-            if (isPentagon(&hf)) {
+            if (H3_EXPORT(h3IsPentagon)(origin)) {
                 // Pentagon was encountered; bail out as user doesn't want this.
                 return HEX_RANGE_PENTAGON;
             }
@@ -470,9 +466,7 @@ int H3_EXPORT(hexRangeDistances)(H3Index origin, int k, H3Index* out,
             }
         }
 
-        H3IndexFat hf;
-        h3ToH3Fat(origin, &hf);
-        if (isPentagon(&hf)) {
+        if (H3_EXPORT(h3IsPentagon)(origin)) {
             // Pentagon was encountered; bail out as user doesn't want this.
             return HEX_RANGE_PENTAGON;
         }
@@ -524,9 +518,7 @@ int H3_EXPORT(hexRing)(H3Index origin, int k, H3Index* out) {
     // which faces have been crossed.)
     int rotations = 0;
     // Scratch structure for checking for pentagons
-    H3IndexFat hf;
-    h3ToH3Fat(origin, &hf);
-    if (isPentagon(&hf)) {
+    if (H3_EXPORT(h3IsPentagon)(origin)) {
         // Pentagon was encountered; bail out as user doesn't want this.
         return HEX_RANGE_PENTAGON;
     }
@@ -539,8 +531,7 @@ int H3_EXPORT(hexRing)(H3Index origin, int k, H3Index* out) {
             return HEX_RANGE_K_SUBSEQUENCE;  // LCOV_EXCL_LINE
         }
 
-        h3ToH3Fat(origin, &hf);
-        if (isPentagon(&hf)) {
+        if (H3_EXPORT(h3IsPentagon)(origin)) {
             return HEX_RANGE_PENTAGON;
         }
     }
@@ -567,8 +558,7 @@ int H3_EXPORT(hexRing)(H3Index origin, int k, H3Index* out) {
                 out[idx] = origin;
                 idx++;
 
-                h3ToH3Fat(origin, &hf);
-                if (isPentagon(&hf)) {
+                if (H3_EXPORT(h3IsPentagon)(origin)) {
                     return HEX_RANGE_PENTAGON;
                 }
             }
@@ -799,7 +789,6 @@ void H3_EXPORT(polyfill)(const GeoPolygon* geoPolygon, int res, H3Index* out) {
  */
 void h3SetToVertexGraph(const H3Index* h3Set, const int numHexes,
                         VertexGraph* graph) {
-    H3IndexFat hf;
     GeoBoundary vertices;
     GeoCoord* fromVtx;
     GeoCoord* toVtx;
@@ -810,16 +799,14 @@ void h3SetToVertexGraph(const H3Index* h3Set, const int numHexes,
         initVertexGraph(graph, 0, 0);
         return;
     }
-    h3ToH3Fat(h3Set[0], &hf);
-    int res = hf.res;
+    int res = H3_GET_RESOLUTION(h3Set[0]);
     const int minBuckets = 6;
     // TODO: Better way to calculate/guess?
     int numBuckets = numHexes > minBuckets ? numHexes : minBuckets;
     initVertexGraph(graph, numBuckets, res);
     // Iterate through every hexagon
     for (int i = 0; i < numHexes; i++) {
-        h3ToH3Fat(h3Set[i], &hf);
-        h3FatToGeoBoundary(&hf, &vertices);
+        H3_EXPORT(h3ToGeoBoundary)(h3Set[i], &vertices);
         // iterate through every edge
         for (int j = 0; j < vertices.numVerts; j++) {
             fromVtx = &vertices.verts[j];
