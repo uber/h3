@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 The public API of this library consists of the functions declared in file
 `h3api.h`.
 
+## [3.0.1] - 2018-01-18
+### Added
+- Added a `make install` target.
+### Changed
+- Improved compatability with building on Windows.
+- Fixed various cases where the test suite could crash or not compile.
+
 ## [3.0.0] - 2018-01-08
 ### Added
 - First public release.
