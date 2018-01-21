@@ -24,7 +24,6 @@
 #include <string.h>
 #include "baseCells.h"
 #include "faceijk.h"
-#include "h3IndexFat.h"
 #include "mathExtensions.h"
 
 /**
@@ -70,42 +69,30 @@ void H3_EXPORT(h3ToString)(H3Index h, char* str, size_t sz) {
 }
 
 /**
- * Converts an H3 index into an H3Fat representation.
- * @param h The H3 index to convert.
- * @param hf The corresponding H3Fat representation.
- */
-void h3ToH3Fat(H3Index h, H3IndexFat* hf) {
-    initH3IndexFat(hf, H3_GET_RESOLUTION(h));
-    hf->mode = H3_GET_MODE(h);
-    hf->baseCell = H3_GET_BASE_CELL(h);
-    for (int r = 1; r <= MAX_H3_RES; r++)
-        hf->index[r - 1] = H3_GET_INDEX_DIGIT(h, r);
-}
-
-/**
- * Converts an H3Fat index into an H3 index.
- * @param hf The H3Fat index to convert.
- * @return The H3 index corresponding to the H3Fat index.
- */
-H3Index h3FatToH3(const H3IndexFat* hf) {
-    H3Index h = H3_INIT;
-    H3_SET_MODE(h, hf->mode);
-    H3_SET_RESOLUTION(h, hf->res);
-    H3_SET_BASE_CELL(h, hf->baseCell);
-    for (int r = 1; r < hf->res + 1; r++)
-        H3_SET_INDEX_DIGIT(h, r, hf->index[r - 1]);
-    return h;
-}
-
-/**
  * Returns whether or not an H3 index is valid.
  * @param h The H3 index to validate.
  * @return 1 if the H3 index if valid, and 0 if it is not.
  */
 int H3_EXPORT(h3IsValid)(H3Index h) {
-    H3IndexFat hf;
-    h3ToH3Fat(h, &hf);
-    return h3FatIsValid(&hf);
+    if (H3_GET_MODE(h) != H3_HEXAGON_MODE) return 0;
+
+    int baseCell = H3_GET_BASE_CELL(h);
+    if (baseCell < 0 || baseCell >= NUM_BASE_CELLS) return 0;
+
+    int res = H3_GET_RESOLUTION(h);
+    if (res < 0 || res > MAX_H3_RES) return 0;
+
+    for (int r = 1; r <= res; r++) {
+        int digit = H3_GET_INDEX_DIGIT(h, r);
+        if (digit < 0 || digit > 6) return 0;
+    }
+
+    for (int r = res + 1; r <= MAX_H3_RES; r++) {
+        int digit = H3_GET_INDEX_DIGIT(h, r);
+        if (digit != 7) return 0;
+    }
+
+    return 1;
 }
 
 /**
@@ -202,9 +189,7 @@ void H3_EXPORT(h3ToChildren)(H3Index h, int childRes, H3Index* children) {
     }
     int bufferSize = H3_EXPORT(maxH3ToChildrenSize)(h, childRes);
     int bufferChildStep = (bufferSize / 7);
-    H3IndexFat hFat;
-    h3ToH3Fat(h, &hFat);
-    int isAPentagon = isPentagon(&hFat);
+    int isAPentagon = h3IsPentagon(h);
     for (int i = 0; i < 7; i++) {
         if (!isAPentagon || i != K_AXES_DIGIT) {
             H3_EXPORT(h3ToChildren)(makeDirectChild(h, i), childRes, children);
@@ -295,10 +280,8 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
         for (int i = 0; i < numRemainingHexes; i++) {
             if (hashSetArray[i] == 0) continue;
             int count = H3_GET_RESERVED_BITS(hashSetArray[i]) + 1;
-            H3IndexFat tempFat = {0};
-            h3ToH3Fat(hashSetArray[i] & H3_RESERVED_MASK_NEGATIVE, &tempFat);
             // Include the deleted direction for pentagons as implicitly "there"
-            if (isPentagon(&tempFat)) {
+            if (h3IsPentagon(hashSetArray[i] & H3_RESERVED_MASK_NEGATIVE)) {
                 // We need this later on, no need to recalculate
                 H3_SET_RESERVED_BITS(hashSetArray[i], count);
                 // Increment count after setting the reserved bits,
@@ -464,9 +447,8 @@ int H3_EXPORT(h3IsResClassIII)(H3Index h) { return H3_GET_RESOLUTION(h) % 2; }
  * @return Returns 1 if it is a pentagon, otherwise 0.
  */
 int H3_EXPORT(h3IsPentagon)(H3Index h) {
-    H3IndexFat hFat;
-    h3ToH3Fat(h, &hFat);
-    return isPentagon(&hFat);
+    return _isBaseCellPentagon(H3_GET_BASE_CELL(h)) &&
+           !_h3LeadingNonZeroDigit(h);
 }
 
 /**
@@ -584,7 +566,7 @@ H3Index _faceIjkToH3(const FaceIJK* fijk, int res) {
     // in that face's coordinate system
     FaceIJK fijkBC = *fijk;
 
-    // build the H3Fat index from finest res up
+    // build the H3Index from finest res up
     // adjust r for the fact that the res 0 base cell offsets the index array
     CoordIJK* ijk = &fijkBC.coord;
     for (int r = res - 1; r >= 0; r--) {
@@ -663,3 +645,118 @@ H3Index H3_EXPORT(geoToH3)(const GeoCoord* g, int res) {
     _geoToFaceIjk(g, res, &fijk);
     return _faceIjkToH3(&fijk, res);
 }
+
+/**
+ * Convert an H3Index to the FaceIJK address on a specified icosahedral face.
+ * @param h The H3Index.
+ * @param fijk The FaceIJK address, initialized with the desired face
+ *        and normalized base cell coordinates.
+ * @return Returns 1 if the possibility of overage exists, otherwise 0.
+ */
+int _h3ToFaceIjkWithInitializedFijk(H3Index h, FaceIJK* fijk) {
+    CoordIJK* ijk = &fijk->coord;
+    int res = H3_GET_RESOLUTION(h);
+
+    // center base cell hierarchy is entirely on this face
+    int possibleOverage = 1;
+    if (!_isBaseCellPentagon(H3_GET_BASE_CELL(h)) &&
+        (res == 0 ||
+         (fijk->coord.i == 0 && fijk->coord.j == 0 && fijk->coord.k == 0)))
+        possibleOverage = 0;
+
+    for (int r = 1; r <= res; r++) {
+        if (isResClassIII(r)) {
+            // Class III == rotate ccw
+            _downAp7(ijk);
+        } else {
+            // Class II == rotate cw
+            _downAp7r(ijk);
+        }
+
+        _neighbor(ijk, H3_GET_INDEX_DIGIT(h, r));
+    }
+
+    return possibleOverage;
+}
+
+/**
+ * Convert an H3Index to a FaceIJK address.
+ * @param h The H3Index.
+ * @param fijk The corresponding FaceIJK address.
+ */
+void _h3ToFaceIjk(H3Index h, FaceIJK* fijk) {
+    int baseCell = H3_GET_BASE_CELL(h);
+    // adjust for the pentagonal missing sequence; all of sub-sequence 5 needs
+    // to be adjusted (and some of sub-sequence 4 below)
+    if (_isBaseCellPentagon(baseCell) && _h3LeadingNonZeroDigit(h) == 5)
+        h = _h3Rotate60cw(h);
+
+    // start with the "home" face and ijk+ coordinates for the base cell of c
+    *fijk = baseCellData[baseCell].homeFijk;
+    if (!_h3ToFaceIjkWithInitializedFijk(h, fijk))
+        return;  // no overage is possible; h lies on this face
+
+    // if we're here we have the potential for an "overage"; i.e., it is
+    // possible that c lies on an adjacent face
+
+    CoordIJK origIJK = fijk->coord;
+
+    // if we're in Class III, drop into the next finer Class II grid
+    int res = H3_GET_RESOLUTION(h);
+    if (isResClassIII(res)) {
+        // Class III
+        _downAp7r(&fijk->coord);
+        res++;
+    }
+
+    // adjust for overage if needed
+    // a pentagon base cell with a leading 4 digit requires special handling
+    int pentLeading4 =
+        (_isBaseCellPentagon(baseCell) && _h3LeadingNonZeroDigit(h) == 4);
+    if (_adjustOverageClassII(fijk, res, pentLeading4, 0)) {
+        // if the base cell is a pentagon we have the potential for secondary
+        // overages
+        if (_isBaseCellPentagon(baseCell)) {
+            while (1) {
+                if (!_adjustOverageClassII(fijk, res, 0, 0)) break;
+            }
+        }
+
+        if (res != H3_GET_RESOLUTION(h)) _upAp7r(&fijk->coord);
+    } else if (res != H3_GET_RESOLUTION(h)) {
+        fijk->coord = origIJK;
+    }
+}
+
+/**
+ * Determines the spherical coordinates of the center point of an H3 index.
+ *
+ * @param h3 The H3 index.
+ * @param g The spherical coordinates of the H3 cell center.
+ */
+void H3_EXPORT(h3ToGeo)(H3Index h3, GeoCoord* g) {
+    FaceIJK fijk;
+    _h3ToFaceIjk(h3, &fijk);
+    _faceIjkToGeo(&fijk, H3_GET_RESOLUTION(h3), g);
+}
+
+/**
+ * Determines the cell boundary in spherical coordinates for an H3 index.
+ *
+ * @param h3 The H3 index.
+ * @param gb The boundary of the H3 cell in spherical coordinates.
+ */
+void H3_EXPORT(h3ToGeoBoundary)(H3Index h3, GeoBoundary* gb) {
+    FaceIJK fijk;
+    _h3ToFaceIjk(h3, &fijk);
+    _faceIjkToGeoBoundary(&fijk, H3_GET_RESOLUTION(h3), h3IsPentagon(h3), gb);
+}
+
+/**
+ * Returns whether or not a resolution is a Class III grid. Note that odd
+ * resolutions are Class III and even resolutions are Class II.
+ * @param res The H3 resolution.
+ * @return 1 if the resolution is a Class III grid, and 0 if the resolution is
+ *         a Class II grid.
+ */
+int isResClassIII(int res) { return res % 2; }

@@ -5,7 +5,6 @@ This operation is performed by function ::h3ToGeoBoundary. See the comments in t
 
 The conversion is performed as a series of coordinate system conversions described below. See the page <a href="./md_doxyfiles_coordsystems.html">Coordinate Systems used by the __H3 Core Library__</a> for more information on each of these coordinate systems.
 
-* The `H3Index` representation is converted into an `H3FatIndex` representation using function ::h3ToH3Fat.
 * We note that the cell vertices are the center points of cells in an aperture 3 grid one resolution finer than the cell resolution, which we term a _substrate_ grid. We precalculate the substrate _ijk_ coordinates of a cell with _ijk_ coordinates (0,0,0), adding additional aperture 3 and aperture 7 (if required, by Class III cell grid) substrate grid resolutions as required to transform the vertex coordinates into a Class II substrate grid.
 
 \image html substrate3.png

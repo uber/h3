@@ -55,15 +55,12 @@
 #include "coordijk.h"
 #include "geoCoord.h"
 #include "h3Index.h"
-#include "h3IndexFat.h"
 #include "h3api.h"
 #include "kml.h"
 #include "utility.h"
 #include "vec2d.h"
 
-void doCell(const H3IndexFat* hf, int isKmlOut) {
-    H3Index h = h3FatToH3(hf);
-
+void doCell(H3Index h, int isKmlOut) {
     GeoCoord g;
     H3_EXPORT(h3ToGeo)(h, &g);
 
@@ -78,19 +75,22 @@ void doCell(const H3IndexFat* hf, int isKmlOut) {
     }
 }
 
-void recursiveH3IndexToGeo(H3IndexFat* c, int res, int isKmlOut) {
+void recursiveH3IndexToGeo(H3Index h, int res, int isKmlOut) {
     for (int d = 0; d < 7; d++) {
-        c->index[res - 1] = d;
+        H3_SET_INDEX_DIGIT(h, res, d);
 
         // skip the pentagonal deleted subsequence
 
-        if (_isBaseCellPentagon(c->baseCell) && _leadingNonZeroDigit(c) == 1)
+        if (_isBaseCellPentagon(H3_GET_BASE_CELL(h)) &&
+            _h3LeadingNonZeroDigit(h) == 1) {
             continue;
+        }
 
-        if (res == c->res)
-            doCell(c, isKmlOut);
-        else
-            recursiveH3IndexToGeo(c, res + 1, isKmlOut);
+        if (res == H3_GET_RESOLUTION(h)) {
+            doCell(h, isKmlOut);
+        } else {
+            recursiveH3IndexToGeo(h, res + 1, isKmlOut);
+        }
     }
 }
 
@@ -102,10 +102,11 @@ int main(int argc, char* argv[]) {
     }
 
     H3Index rootCell = H3_EXPORT(stringToH3)(argv[1]);
-    H3IndexFat rootCellHf;
-    h3ToH3Fat(rootCell, &rootCellHf);
-    if (rootCellHf.baseCell < 0 || rootCellHf.baseCell >= NUM_BASE_CELLS)
+    int baseCell = H3_GET_BASE_CELL(rootCell);
+    int rootRes = H3_GET_RESOLUTION(rootCell);
+    if (baseCell < 0 || baseCell >= NUM_BASE_CELLS) {
         error("invalid base cell number");
+    }
 
     int res = 0;
     int isKmlOut = 0;
@@ -130,7 +131,7 @@ int main(int argc, char* argv[]) {
 
                 H3_EXPORT(h3ToString)(rootCell, index, BUFF_SIZE);
                 sprintf(name, "Cell %s Res %d", index,
-                        ((res <= rootCellHf.res) ? rootCellHf.res : res));
+                        ((res <= rootRes) ? rootRes : res));
                 sprintf(desc, "cell boundary");
 
                 kmlBoundaryHeader(name, desc);
@@ -140,12 +141,11 @@ int main(int argc, char* argv[]) {
 
     // generate the points
 
-    if (res <= rootCellHf.res)
-        doCell(&rootCellHf, isKmlOut);
-    else {
-        int rootRes = rootCellHf.res;
-        rootCellHf.res = res;
-        recursiveH3IndexToGeo(&rootCellHf, rootRes + 1, isKmlOut);
+    if (res <= rootRes) {
+        doCell(rootCell, isKmlOut);
+    } else {
+        H3_SET_RESOLUTION(rootCell, res);
+        recursiveH3IndexToGeo(rootCell, rootRes + 1, isKmlOut);
     }
 
     if (isKmlOut) kmlBoundaryFooter();

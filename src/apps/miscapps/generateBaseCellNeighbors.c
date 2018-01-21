@@ -26,7 +26,6 @@
  */
 
 #include <baseCells.h>
-#include <h3IndexFat.h>
 #include <stdlib.h>
 
 const int NUM_DIRS = 6;

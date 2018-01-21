@@ -47,6 +47,20 @@ TEST(h3IsValidDigits) {
              "h3IsValid failed on invalid unused digits");
 }
 
+TEST(h3IsValidBaseCell) {
+    for (int i = 0; i < NUM_BASE_CELLS; i++) {
+        H3Index h = H3_INIT;
+        H3_SET_MODE(h, H3_HEXAGON_MODE);
+        H3_SET_BASE_CELL(h, i);
+        char failureMessage[BUFF_SIZE];
+        sprintf(failureMessage, "h3IsValid failed on base cell %d", i);
+        t_assert(h3IsValid(h), failureMessage);
+
+        t_assert(H3_EXPORT(h3GetBaseCell)(h) == i,
+                 "failed to recover base cell");
+    }
+}
+
 TEST(h3ToString) {
     const size_t bufSz = 17;
     char buf[17] = {0};

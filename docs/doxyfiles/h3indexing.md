@@ -97,8 +97,3 @@ The layout of an __H3Index__ is shown below in table form. The interpretation of
   <td colspan="3">Digit 15</td>
 </tr>
 </table>
-
-H3IndexFat Representation
----
-
-The __H3 Core Library__ sometimes manipulates __H3__ indexes internally in the form of the structure type __H3IndexFat__. This heavyweight representation stores an integer mode, base cell and resolution, along with an array of integer digits. It is not meant to be used outside of the C library.
