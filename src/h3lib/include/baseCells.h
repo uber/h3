@@ -46,5 +46,8 @@ extern const BaseCellData baseCellData[NUM_BASE_CELLS];
 int _isBaseCellPentagon(int baseCell);
 int _faceIjkToBaseCell(const FaceIJK* h);
 int _faceIjkToBaseCellCCWrot60(const FaceIJK* h);
+void _baseCellToFaceIjk(int baseCell, FaceIJK* h);
+bool _baseCellIsCwOffset(int origin, int test);
+int _getBaseCellNeighbor(int baseCell, int dir);
 
 #endif

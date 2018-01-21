@@ -848,3 +848,22 @@ int _faceIjkToBaseCellCCWrot60(const FaceIJK* h) {
     return faceIjkBaseCells[h->face][h->coord.i][h->coord.j][h->coord.k]
         .ccwRot60;
 }
+
+/** @brief Find the FaceIJK given a base cell.
+ */
+void _baseCellToFaceIjk(int baseCell, FaceIJK* h) {
+    *h = baseCellData[baseCell].homeFijk;
+}
+
+/** @brief Return whether or not the tested face is a cw offset face.
+ */
+bool _baseCellIsCwOffset(int origin, int test) {
+    return baseCellData[origin].cwOffsetPent[0] == test ||
+           baseCellData[origin].cwOffsetPent[1] == test;
+}
+
+/** @brief Return the neighboring base cell in the given direction.
+ */
+int _getBaseCellNeighbor(int baseCell, int dir) {
+    return baseCellNeighbors[baseCell][dir];
+}

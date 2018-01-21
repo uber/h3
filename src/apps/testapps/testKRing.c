@@ -341,16 +341,16 @@ TEST(cwOffsetPent) {
         }
 
         for (int neighbor = 0; neighbor < NUM_BASE_CELLS; neighbor++) {
-            int neighborFace = baseCellData[neighbor].homeFijk.face;
+            FaceIJK homeFaceIjk;
+            _baseCellToFaceIjk(neighbor, &homeFaceIjk);
+            int neighborFace = homeFaceIjk.face;
 
             // Only direction 2 needs to be checked, because that is the only
             // direction where we can move from digit 2 to digit 1, and into the
             // deleted k subsequence.
-            t_assert(
-                baseCellNeighbors[neighbor][2] != pentagon ||
-                    baseCellData[pentagon].cwOffsetPent[0] == neighborFace ||
-                    baseCellData[pentagon].cwOffsetPent[1] == neighborFace,
-                "cwOffsetPent is reachable");
+            t_assert(_getBaseCellNeighbor(neighbor, 2) != pentagon ||
+                         _baseCellIsCwOffset(pentagon, neighborFace),
+                     "cwOffsetPent is reachable");
         }
     }
 }

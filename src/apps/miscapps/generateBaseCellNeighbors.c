@@ -67,7 +67,7 @@ void auditBaseCellNeighbors(int baseCellNeighbors[NUM_BASE_CELLS][7],
 
             // This is wrong for moving into pentagons. One neighbor for most
             // pentagons, and four neighbors for the polar pentagons 4 and 117.
-            if (!baseCellData[baseCellNeighbors[i][j]].isPentagon) {
+            if (!_isBaseCellPentagon(baseCellNeighbors[i][j])) {
                 if (ourDir.i != theirDir.i || ourDir.j != theirDir.j ||
                     ourDir.k != theirDir.k) {
                     printf("WRONG DIRECTION between %d and %d\n", i,
@@ -101,16 +101,14 @@ void generate() {
     int baseCellRotations[NUM_BASE_CELLS][7];
 
     for (int i = 0; i < NUM_BASE_CELLS; i++) {
-        if (!baseCellData[i].isPentagon) {
+        if (!_isBaseCellPentagon(i)) {
             for (int dir = 0; dir <= NUM_DIRS; dir++) {
-                CoordIJK ijk = baseCellData[i].homeFijk.coord;
-                _neighbor(&ijk, dir);
+                FaceIJK fijk;
+                _baseCellToFaceIjk(i, &fijk);
+                _neighbor(&fijk.coord, dir);
 
                 // Should never happen, but just in case :)
-                if (ijk.i < 3 && ijk.j < 3 && ijk.k < 3) {
-                    FaceIJK fijk;
-                    fijk.face = baseCellData[i].homeFijk.face;
-                    fijk.coord = ijk;
+                if (fijk.coord.i < 3 && fijk.coord.j < 3 && fijk.coord.k < 3) {
                     baseCellNeighbors[i][dir] = _faceIjkToBaseCell(&fijk);
                     baseCellRotations[i][dir] =
                         _faceIjkToBaseCellCCWrot60(&fijk);

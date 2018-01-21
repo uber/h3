@@ -40,6 +40,9 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 if(WIN32)
     set(SHELL PowerShell -Command)
+
+    set(EXECUTABLE_OUTPUT_PATH bin)
+    set(LIBRARY_OUTPUT_PATH bin)
 else()
     set(SHELL sh -c)
 
@@ -50,6 +53,9 @@ else()
     else()
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -fPIC -std=c1x")
     endif()
+
+    set(EXECUTABLE_OUTPUT_PATH bin)
+    set(LIBRARY_OUTPUT_PATH lib)
 endif()
 
 file(READ VERSION H3_VERSION LIMIT_COUNT 1)
@@ -57,9 +63,6 @@ file(READ VERSION H3_VERSION LIMIT_COUNT 1)
 string(REPLACE "\n" "" H3_VERSION "${H3_VERSION}")
 
 find_library(M_LIB m)
-
-set(EXECUTABLE_OUTPUT_PATH bin)
-set(LIBRARY_OUTPUT_PATH lib)
 
 include_directories(src/h3lib/include)
 

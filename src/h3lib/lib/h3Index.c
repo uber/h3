@@ -605,8 +605,7 @@ H3Index _faceIjkToH3(const FaceIJK* fijk, int res) {
         // force rotation out of missing k-axes sub-sequence
         if (_h3LeadingNonZeroDigit(h) == K_AXES_DIGIT) {
             // check for a cw/ccw offset face; default is ccw
-            if (baseCellData[baseCell].cwOffsetPent[0] == fijkBC.face ||
-                baseCellData[baseCell].cwOffsetPent[1] == fijkBC.face) {
+            if (_baseCellIsCwOffset(baseCell, fijkBC.face)) {
                 h = _h3Rotate60cw(h);
             } else {
                 h = _h3Rotate60ccw(h);

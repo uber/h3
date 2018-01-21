@@ -287,10 +287,8 @@ H3Index h3NeighborRotations(H3Index origin, const CoordIJK* translationIjk,
                 // on how we got here.
                 // check for a cw/ccw offset face; default is ccw
 
-                if (baseCellData[newBaseCell].cwOffsetPent[0] ==
-                        baseCellData[oldBaseCell].homeFijk.face ||
-                    baseCellData[newBaseCell].cwOffsetPent[1] ==
-                        baseCellData[oldBaseCell].homeFijk.face) {
+                if (_baseCellIsCwOffset(
+                        newBaseCell, baseCellData[oldBaseCell].homeFijk.face)) {
                     out = _h3Rotate60cw(out);
                 } else {
                     // See cwOffsetPent in testKRing.c for why this is
