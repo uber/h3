@@ -16,6 +16,7 @@
 
 #include <stdlib.h>
 #include "algos.h"
+#include "constants.h"
 #include "geoCoord.h"
 #include "h3Index.h"
 #include "test.h"

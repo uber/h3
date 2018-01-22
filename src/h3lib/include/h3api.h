@@ -43,9 +43,6 @@
 /* For size_t */
 #include <stdlib.h>
 
-/* For constants used throughout H3 */
-#include "constants.h"
-
 /*
  * H3 is compiled as C, not C++ code. `extern "C"` is needed for C++ code
  * to be able to use the library.

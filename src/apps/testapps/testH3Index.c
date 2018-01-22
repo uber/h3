@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "constants.h"
 #include "h3Index.h"
 #include "test.h"
 #include "utility.h"
@@ -59,6 +60,14 @@ TEST(h3IsValidBaseCell) {
         t_assert(H3_EXPORT(h3GetBaseCell)(h) == i,
                  "failed to recover base cell");
     }
+}
+
+TEST(h3FatIsValidBaseCellInvalid) {
+    H3Index hWrongBaseCell = H3_INIT;
+    H3_SET_MODE(hWrongBaseCell, H3_HEXAGON_MODE);
+    H3_SET_BASE_CELL(hWrongBaseCell, NUM_BASE_CELLS);
+    t_assert(!h3IsValid(hWrongBaseCell),
+             "h3IsValid failed on invalid base cell");
 }
 
 TEST(h3ToString) {
