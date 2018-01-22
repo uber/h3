@@ -75,7 +75,7 @@ TEST(h3IsValidWithMode) {
         H3Index h = H3_INIT;
         H3_SET_MODE(h, i);
         char failureMessage[BUFF_SIZE];
-        sprintf(failureMessage, "h3FatIsValid failed on mode %d", i);
+        sprintf(failureMessage, "h3IsValid failed on mode %d", i);
         t_assert(!h3IsValid(h) || i == 1, failureMessage);
     }
 }
