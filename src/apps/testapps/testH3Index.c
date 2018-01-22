@@ -62,12 +62,29 @@ TEST(h3IsValidBaseCell) {
     }
 }
 
-TEST(h3FatIsValidBaseCellInvalid) {
+TEST(h3IsValidBaseCellInvalid) {
     H3Index hWrongBaseCell = H3_INIT;
     H3_SET_MODE(hWrongBaseCell, H3_HEXAGON_MODE);
     H3_SET_BASE_CELL(hWrongBaseCell, NUM_BASE_CELLS);
     t_assert(!h3IsValid(hWrongBaseCell),
              "h3IsValid failed on invalid base cell");
+}
+
+TEST(h3IsValidWithMode) {
+    for (int i = 0; i <= 0xf; i++) {
+        H3Index h = H3_INIT;
+        H3_SET_MODE(h, i);
+        char failureMessage[BUFF_SIZE];
+        sprintf(failureMessage, "h3FatIsValid failed on mode %d", i);
+        t_assert(!h3IsValid(h) || i == 1, failureMessage);
+    }
+}
+
+TEST(h3BadDigitInvalid) {
+    H3Index h = H3_INIT;
+    H3_SET_MODE(h, H3_HEXAGON_MODE);
+    H3_SET_RESOLUTION(h, 1);
+    t_assert(!h3IsValid(h), "h3IsValid failed on too large digit");
 }
 
 TEST(h3ToString) {
