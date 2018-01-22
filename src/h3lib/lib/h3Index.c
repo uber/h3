@@ -19,8 +19,10 @@
  */
 #include "h3Index.h"
 #include <inttypes.h>
+#include <math.h>
 #include <stdlib.h>
 #include <string.h>
+#include "baseCells.h"
 #include "faceijk.h"
 #include "h3IndexFat.h"
 #include "mathExtensions.h"
@@ -558,4 +560,106 @@ H3Index _h3Rotate60cw(H3Index h) {
     }
 
     return h;
+}
+
+/**
+ * Convert an FaceIJK address to the corresponding H3Index.
+ * @param fijk The FaceIJK address.
+ * @param res The cell resolution.
+ */
+H3Index _faceIjkToH3(const FaceIJK* fijk, int res) {
+    // initialize the index
+    H3Index h = H3_INIT;
+    H3_SET_MODE(h, H3_HEXAGON_MODE);
+    H3_SET_RESOLUTION(h, res);
+
+    // check for res 0/base cell
+    if (res == 0) {
+        H3_SET_BASE_CELL(h, _faceIjkToBaseCell(fijk));
+        return h;
+    }
+
+    // we need to find the correct base cell FaceIJK for this H3 index;
+    // start with the passed in face and resolution res ijk coordinates
+    // in that face's coordinate system
+    FaceIJK fijkBC = *fijk;
+
+    // build the H3Fat index from finest res up
+    // adjust r for the fact that the res 0 base cell offsets the index array
+    CoordIJK* ijk = &fijkBC.coord;
+    for (int r = res - 1; r >= 0; r--) {
+        CoordIJK lastIJK = *ijk;
+        CoordIJK lastCenter;
+        if (isResClassIII(r + 1)) {
+            // rotate ccw
+            _upAp7(ijk);
+            lastCenter = *ijk;
+            _downAp7(&lastCenter);
+        } else {
+            // rotate cw
+            _upAp7r(ijk);
+            lastCenter = *ijk;
+            _downAp7r(&lastCenter);
+        }
+
+        CoordIJK diff;
+        _ijkSub(&lastIJK, &lastCenter, &diff);
+        _ijkNormalize(&diff);
+
+        H3_SET_INDEX_DIGIT(h, r + 1, _unitIjkToDigit(&diff));
+    }
+
+    // fijkBC should now hold the IJK of the base cell in the
+    // coordinate system of the current face
+
+    // lookup the correct base cell
+    int baseCell = _faceIjkToBaseCell(&fijkBC);
+    H3_SET_BASE_CELL(h, baseCell);
+
+    // rotate if necessary to get canonical base cell orientation
+    // for this base cell
+    int numRots = _faceIjkToBaseCellCCWrot60(&fijkBC);
+    if (_isBaseCellPentagon(baseCell)) {
+        // force rotation out of missing k-axes sub-sequence
+        if (_h3LeadingNonZeroDigit(h) == K_AXES_DIGIT) {
+            // check for a cw/ccw offset face; default is ccw
+            if (baseCellData[baseCell].cwOffsetPent[0] == fijkBC.face ||
+                baseCellData[baseCell].cwOffsetPent[1] == fijkBC.face) {
+                h = _h3Rotate60cw(h);
+            } else {
+                h = _h3Rotate60ccw(h);
+            }
+        }
+
+        for (int i = 0; i < numRots; i++) h = _h3RotatePent60ccw(h);
+    } else {
+        for (int i = 0; i < numRots; i++) {
+            h = _h3Rotate60ccw(h);
+        }
+    }
+
+    return h;
+}
+
+/**
+ * Encodes a coordinate on the sphere to the H3 index of the containing cell at
+ * the specified resolution.
+ *
+ * Returns 0 on invalid input.
+ *
+ * @param g The spherical coordinates to encode.
+ * @param res The desired H3 resolution for the encoding.
+ * @return The encoded H3Index (or 0 on failure).
+ */
+H3Index H3_EXPORT(geoToH3)(const GeoCoord* g, int res) {
+    if (res < 0 || res > MAX_H3_RES) {
+        return 0;
+    }
+    if (!isfinite(g->lat) || !isfinite(g->lon)) {
+        return 0;
+    }
+
+    FaceIJK fijk;
+    _geoToFaceIjk(g, res, &fijk);
+    return _faceIjkToH3(&fijk, res);
 }

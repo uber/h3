@@ -25,20 +25,6 @@ static const H3IndexFat emptyH3IndexFat = {
     -1, -1, -1, {7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7}};
 
 /**
- * Encodes a coordinate on the sphere to the H3Fat index of the containing cell
- * at the specified resolution.
- *
- * @param g The spherical coordinates to encode.
- * @param res The desired H3 resolution for the encoding.
- * @param c The encoded H3Fat index.
- */
-void geoToH3Fat(const GeoCoord* g, int res, H3IndexFat* c) {
-    FaceIJK h;
-    _geoToFaceIjk(g, res, &h);
-    _faceIjkToH3Fat(&h, res, c);
-}
-
-/**
  * Determines the spherical coordinates of the center point of an H3Fat index.
  *
  * @param c The H3Fat index.
@@ -118,79 +104,6 @@ void copyH3IndexFat(const H3IndexFat* orig, H3IndexFat* copy) {
     initH3IndexFat(copy, orig->res);
     copy->baseCell = orig->baseCell;
     for (int r = 0; r < orig->res; r++) copy->index[r] = orig->index[r];
-}
-
-/**
- * Convert an FaceIJK address to the corresponding H3Fat index.
- * @param fijk The FaceIJK address.
- * @param res The cell resolution.
- * @param c The corresponding H3Fat index.
- */
-void _faceIjkToH3Fat(const FaceIJK* fijk, int res, H3IndexFat* c) {
-    // initialize the index
-    initH3IndexFat(c, res);
-
-    // check for res 0/base cell
-    if (res == 0) {
-        c->baseCell = _faceIjkToBaseCell(fijk);
-        c->res = 0;
-        return;
-    }
-
-    // we need to find the correct base cell FaceIJK for this H3 index;
-    // start with the passed in face and resolution res ijk coordinates
-    // in that face's coordinate system
-    FaceIJK fijkBC = *fijk;
-
-    // build the H3Fat index from finest res up
-    // adjust r for the fact that the res 0 base cell offsets the index array
-    CoordIJK* ijk = &fijkBC.coord;
-    for (int r = res - 1; r >= 0; r--) {
-        CoordIJK lastIJK = *ijk;
-        CoordIJK lastCenter;
-        if (isResClassIII(r + 1))  // Class III == rotate ccw
-        {
-            _upAp7(ijk);
-            lastCenter = *ijk;
-            _downAp7(&lastCenter);
-        } else  // Class II == rotate cw
-        {
-            _upAp7r(ijk);
-            lastCenter = *ijk;
-            _downAp7r(&lastCenter);
-        }
-
-        CoordIJK diff;
-        _ijkSub(&lastIJK, &lastCenter, &diff);
-        _ijkNormalize(&diff);
-
-        c->index[r] = _unitIjkToDigit(&diff);
-    }
-
-    // fijkBC should now hold the IJK of the base cell in the
-    // coordinate system of the current face
-
-    // lookup the correct base cell
-    c->baseCell = _faceIjkToBaseCell(&fijkBC);
-
-    // rotate if necessary to get canonical base cell orientation
-    // for this base cell
-    int numRots = _faceIjkToBaseCellCCWrot60(&fijkBC);
-    if (_isBaseCellPentagon(c->baseCell)) {
-        // force rotation out of missing k-axes sub-sequence
-        if (_leadingNonZeroDigit(c) == K_AXES_DIGIT) {
-            // check for a cw/ccw offset face; default is ccw
-            if (baseCellData[c->baseCell].cwOffsetPent[0] == fijkBC.face ||
-                baseCellData[c->baseCell].cwOffsetPent[1] == fijkBC.face)
-                _h3FatRotate60cw(c);
-            else
-                _h3FatRotate60ccw(c);
-        }
-
-        for (int i = 0; i < numRots; i++) _h3FatRotatePent60ccw(c);
-    } else {
-        for (int i = 0; i < numRots; i++) _h3FatRotate60ccw(c);
-    }
 }
 
 /**
@@ -294,58 +207,6 @@ void _h3FatToFaceIjk(const H3IndexFat* cIn, FaceIJK* fijk) {
         if (res != c.res) _upAp7r(&fijk->coord);
     } else if (res != c.res)
         fijk->coord = origIJK;
-}
-
-/**
- * Rotate an H3Fat index 60 degrees counter-clockwise about a pentagonal center.
- * Works in place.
- * @param c The H3Fat index.
- */
-void _h3FatRotatePent60ccw(H3IndexFat* c) {
-    // rotate in place; skips any leading 1 digits (k-axis)
-    const int rotDigit[] = {
-        0,  // original digit 0
-        5,  // original digit 1
-        3,  // original digit 2
-        1,  // original digit 3
-        6,  // original digit 4
-        4,  // original digit 5
-        2   // original digit 6
-    };
-
-    int foundFirstNonZeroDigit = 0;
-    for (int r = 0; r < c->res; r++) {
-        // rotate this digit
-        c->index[r] = rotDigit[c->index[r]];
-
-        // look for the first non-zero digit so we
-        // can adjust for deleted k-axes sequence
-        // if neccessary
-        if (!foundFirstNonZeroDigit && c->index[r] != 0) {
-            foundFirstNonZeroDigit = 1;
-
-            // adjust for deleted k-axes sequence
-            if (_leadingNonZeroDigit(c) == K_AXES_DIGIT) _h3FatRotate60ccw(c);
-        }
-    }
-}
-
-/**
- * Rotate an H3Fat index 60 degrees counter-clockwise. Works in place.
- * @param c The H3Fat index.
- */
-void _h3FatRotate60ccw(H3IndexFat* c) {
-    const int rotDigit[] = {
-        0,  // original digit 0
-        5,  // original digit 1
-        3,  // original digit 2
-        1,  // original digit 3
-        6,  // original digit 4
-        4,  // original digit 5
-        2   // original digit 6
-    };
-
-    for (int r = 0; r < c->res; r++) c->index[r] = rotDigit[c->index[r]];
 }
 
 /**
