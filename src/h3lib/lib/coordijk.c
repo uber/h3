@@ -23,8 +23,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "constants.h"
 #include "geoCoord.h"
-#include "h3IndexFat.h"
 
 /** 1.0/sqrt(7) */
 #define M_1_SQRT7 0.3779644730092272272145165362341800608157L

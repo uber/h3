@@ -47,9 +47,7 @@ typedef struct {
     int ret2;
 } TestOutput;
 
-void doCell(const H3IndexFat* hf, int maxK, TestOutput* testOutput) {
-    H3Index h = h3FatToH3(hf);
-
+void doCell(H3Index h, int maxK, TestOutput* testOutput) {
     for (int k = 0; k < maxK; k++) {
         int maxSz = H3_EXPORT(maxKringSize)(k);
         H3Index* kRingInternalOutput = calloc(sizeof(H3Index), maxSz);
@@ -99,9 +97,7 @@ void doCell(const H3IndexFat* hf, int maxK, TestOutput* testOutput) {
             testOutput->ret1++;
             int foundPent = 0;
             for (int i = 0; i < maxSz; i++) {
-                H3IndexFat possiblePent;
-                h3ToH3Fat(kRingInternalOutput[i], &possiblePent);
-                if (isPentagon(&possiblePent)) {
+                if (h3IsPentagon(kRingInternalOutput[i])) {
                     foundPent = 1;
                     break;
                 }
@@ -122,20 +118,23 @@ void doCell(const H3IndexFat* hf, int maxK, TestOutput* testOutput) {
     }
 }
 
-void recursiveH3IndexToGeo(H3IndexFat* c, int res, int maxK,
+void recursiveH3IndexToGeo(H3Index h, int res, int maxK,
                            TestOutput* testOutput) {
     for (int d = 0; d < 7; d++) {
-        c->index[res - 1] = d;
+        H3_SET_INDEX_DIGIT(h, res, d);
 
         // skip the pentagonal deleted subsequence
 
-        if (_isBaseCellPentagon(c->baseCell) && _leadingNonZeroDigit(c) == 1)
+        if (_isBaseCellPentagon(H3_GET_BASE_CELL(h)) &&
+            _h3LeadingNonZeroDigit(h) == 1) {
             continue;
+        }
 
-        if (res == c->res)
-            doCell(c, maxK, testOutput);
-        else
-            recursiveH3IndexToGeo(c, res + 1, maxK, testOutput);
+        if (res == H3_GET_RESOLUTION(h)) {
+            doCell(h, maxK, testOutput);
+        } else {
+            recursiveH3IndexToGeo(h, res + 1, maxK, testOutput);
+        }
     }
 }
 
@@ -158,16 +157,16 @@ int main(int argc, char* argv[]) {
 
     // generate the test cases
     for (int bc = 0; bc < NUM_BASE_CELLS; bc++) {
-        H3IndexFat rootCellHf;
-        initH3IndexFat(&rootCellHf, 0);
-        rootCellHf.baseCell = bc;
+        H3Index rootCell = H3_INIT;
+        H3_SET_MODE(rootCell, H3_HEXAGON_MODE);
+        H3_SET_BASE_CELL(rootCell, bc);
 
-        if (res <= rootCellHf.res)
-            doCell(&rootCellHf, maxK, &testOutput);
-        else {
-            int rootRes = rootCellHf.res;
-            rootCellHf.res = res;
-            recursiveH3IndexToGeo(&rootCellHf, rootRes + 1, maxK, &testOutput);
+        if (res == 0) {
+            doCell(rootCell, maxK, &testOutput);
+        } else {
+            int rootRes = H3_GET_RESOLUTION(rootCell);
+            H3_SET_RESOLUTION(rootCell, res);
+            recursiveH3IndexToGeo(rootCell, rootRes + 1, maxK, &testOutput);
         }
     }
 

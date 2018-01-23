@@ -21,7 +21,6 @@
 #define H3INDEX_H
 
 #include "faceijk.h"
-#include "h3IndexFat.h"
 #include "h3api.h"
 
 // define's of constants and macros for bitwise manipulation of H3Index's.
@@ -142,9 +141,8 @@
             (((uint64_t)(digit))                                            \
              << ((MAX_H3_RES - (res)) * H3_PER_DIGIT_OFFSET)))
 
-void h3ToH3Fat(H3Index h, H3IndexFat* hf);
-H3Index h3FatToH3(const H3IndexFat* hf);
 void setH3Index(H3Index* h, int res, int baseCell, int initDigit);
+int isResClassIII(int res);
 
 // Internal functions
 

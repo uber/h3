@@ -27,7 +27,6 @@
 #include "faceijk.h"
 #include "geoCoord.h"
 #include "h3Index.h"
-#include "h3IndexFat.h"
 #include "h3api.h"
 #include "linkedGeo.h"
 #include "vertexGraph.h"
