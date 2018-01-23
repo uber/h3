@@ -47,7 +47,7 @@ int _isBaseCellPentagon(int baseCell);
 int _faceIjkToBaseCell(const FaceIJK* h);
 int _faceIjkToBaseCellCCWrot60(const FaceIJK* h);
 void _baseCellToFaceIjk(int baseCell, FaceIJK* h);
-bool _baseCellIsCwOffset(int origin, int test);
+bool _baseCellIsCwOffset(int baseCell, int testFace);
 int _getBaseCellNeighbor(int baseCell, int dir);
 
 #endif

@@ -857,9 +857,9 @@ void _baseCellToFaceIjk(int baseCell, FaceIJK* h) {
 
 /** @brief Return whether or not the tested face is a cw offset face.
  */
-bool _baseCellIsCwOffset(int origin, int test) {
-    return baseCellData[origin].cwOffsetPent[0] == test ||
-           baseCellData[origin].cwOffsetPent[1] == test;
+bool _baseCellIsCwOffset(int baseCell, int testFace) {
+    return baseCellData[baseCell].cwOffsetPent[0] == testFace ||
+           baseCellData[baseCell].cwOffsetPent[1] == testFace;
 }
 
 /** @brief Return the neighboring base cell in the given direction.
