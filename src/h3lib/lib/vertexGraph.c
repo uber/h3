@@ -64,8 +64,8 @@ void destroyVertexGraph(VertexGraph* graph) {
 uint32_t _hashVertex(const GeoCoord* vertex, int res, int numBuckets) {
     // Simple hash: Take the sum of the lat and lon with a precision level
     // determined by the resolution, converted to int, modulo bucket count.
-    return (uint32_t)((vertex->lat + vertex->lon) * pow(10, 15 - res)) %
-           numBuckets;
+    return (uint32_t)fmod((vertex->lat + vertex->lon) * pow(10, 15 - res),
+                          numBuckets);
 }
 
 void _initVertexNode(VertexNode* node, const GeoCoord* fromVtx,
