@@ -236,6 +236,9 @@ TEST(removeVertexNode) {
 
     // Remove non-existent node
     node = malloc(sizeof(VertexNode));
+    node->next = NULL;
+    setGeoDegs(&node->from, 0, 0);
+    setGeoDegs(&node->to, 0, 0);
     success = removeVertexNode(&graph, node) == 0;
 
     t_assert(!success, "Removal of non-existent node fails");

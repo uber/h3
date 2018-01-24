@@ -96,6 +96,7 @@ TEST(multipleResSteps) {
     H3_EXPORT(h3ToChildren)(sfHex8, 10, children);
 
     verifyCountAndUniqueness(children, paddedCount, expectedCount);
+    free(children);
 }
 
 TEST(sameRes) {
