@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 The public API of this library consists of the functions declared in file
 `h3api.h`.
 
+## [3.0.2] - 2018-01-24
+### Changed
+- Removed the `H3IndexFat` internal structure.
+- Simplified build process on Windows.
+- Fixed an issue where tests would fail on ARM systems.
+
 ## [3.0.1] - 2018-01-18
 ### Added
 - Added a `make install` target.
