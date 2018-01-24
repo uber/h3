@@ -3,12 +3,16 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 The public API of this library consists of the functions declared in file
-`h3api.h`.
+[h3api.h](./src/h3lib/include/h3api.h).
+
+## [Unreleased]
 
 ## [3.0.2] - 2018-01-24
-### Changed
+### Removed
 - Removed the `H3IndexFat` internal structure.
+### Changed
 - Simplified build process on Windows.
+### Fixed
 - Fixed an issue where tests would fail on ARM systems.
 
 ## [3.0.1] - 2018-01-18
