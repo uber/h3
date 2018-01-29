@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Uber Technologies, Inc.
+ * Copyright 2018 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,18 @@
 #include <math.h>
 #include <stdio.h>
 
-double dist(double th1, double ph1, double th2, double ph2) {
+/**
+ * @brief haversineDistance finds the
+ * [great-circle distance](https://en.wikipedia.org/wiki/Great-circle_distance)
+ * between two points on a sphere.
+ * @see https://en.wikipedia.org/wiki/Haversine_formula.
+ *
+ * Parameters are the latitude and longitude of the first and second point in
+ * radians, respectively.
+ *
+ * @return the great-circle distance in kilometers.
+ */
+double haversineDistance(double th1, double ph1, double th2, double ph2) {
     double dx, dy, dz;
     ph1 -= ph2;
 
@@ -41,8 +52,6 @@ int main(int argc, char *argv[]) {
     // 555 Market St @ resolution 15
     H3Index h3HQ2 = stringToH3("8f283082a30e623");
 
-    double distance = 0;
-
     GeoCoord geoHQ1, geoHQ2;
     h3ToGeo(h3HQ1, &geoHQ1);
     h3ToGeo(h3HQ2, &geoHQ2);
@@ -53,7 +62,7 @@ int main(int argc, char *argv[]) {
         "distance: %lfkm\n",
         radsToDegs(geoHQ1.lat), radsToDegs(geoHQ1.lon), radsToDegs(geoHQ2.lat),
         radsToDegs(geoHQ2.lon),
-        dist(geoHQ1.lat, geoHQ1.lon, geoHQ2.lat, geoHQ2.lon));
+        haversineDistance(geoHQ1.lat, geoHQ1.lon, geoHQ2.lat, geoHQ2.lon));
     // Output:
     // origin: (37.775236, 237.580245)
     // destination: (37.789991, 237.597879)
