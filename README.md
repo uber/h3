@@ -6,7 +6,7 @@
 
 H3 is a geospatial indexing system using a hexagonal grid that can be (approximately) subdivided into finer and finer hexagonal grids, combining the benefits of a hexagonal grid with [S2](https://code.google.com/archive/p/s2-geometry-library/)'s hierarchical subdivisions.
 
-Documentation is available at [https://uber.github.io/h3/]. Developer documentation in Markdown format is available under the [dev-docs](./dev-docs/) directory.
+Documentation is available at [https://uber.github.io/h3/](https://uber.github.io/h3/). Developer documentation in Markdown format is available under the [dev-docs](./dev-docs/) directory.
 
 ## Installing
 
