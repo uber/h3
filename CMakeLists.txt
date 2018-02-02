@@ -101,15 +101,15 @@ endif()
 find_package(Doxygen)
 option(ENABLE_DOCS "Enable building documentation." ON)
 if(DOXYGEN_FOUND AND ENABLE_DOCS)
-    set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${PROJECT_BINARY_DIR}/docs/_build")
-    configure_file(docs/Doxyfile.in
-        docs/Doxyfile
+    set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${PROJECT_BINARY_DIR}/dev-docs/_build")
+    configure_file(dev-docs/Doxyfile.in
+        dev-docs/Doxyfile
         ESCAPE_QUOTES
         )
     add_custom_target(docs
         ALL
-        ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/docs/Doxyfile
-        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/docs
+        ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/dev-docs/Doxyfile
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/dev-docs
         COMMENT "Generating API documentation with Doxygen" VERBATIM
         )
 else()

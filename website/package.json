@@ -1,0 +1,18 @@
+{
+  "name": "h3-website",
+  "description": "Website for H3",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/uber/h3.git"
+  },
+  "scripts": {
+    "start": "ocular start open",
+    "build": "ocular build",
+    "lint": "ocular lint"
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "ocular": "^0.3.6"
+  }
+}

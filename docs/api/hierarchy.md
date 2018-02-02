@@ -1,0 +1,53 @@
+# Hierarchical grid functions
+
+## h3ToParent
+
+```
+H3Index h3ToParent(H3Index h, int parentRes);
+```
+
+Returns the parent (coarser) index containing `h`.
+
+## h3ToChildren
+
+```
+void h3ToChildren(H3Index h, int childRes, H3Index *children);
+```
+
+Populates `children` with the indexes contained by `h`. `children` must be an array of at least size `maxH3ToChildrenSize(h, childRes)`.
+
+### maxH3ToChildrenSize
+
+```
+int maxH3ToChildrenSize(H3Index h, int childRes);
+```
+
+Returns the size of the array needed by `h3ToChildren` for these inputs.
+
+## compact
+
+```
+int compact(const H3Index *h3Set, H3Index *compactedSet, const int numHexes);
+```
+
+Compacts the set `h3Set` of indexes as best as possible, into the array `compactedSet`. `compactedSet` must be at least the size of `h3Set`.
+
+Returns 0 on success.
+
+## uncompact
+
+```
+int uncompact(const H3Index *compactedSet, const int numHexes, H3Index *h3Set, const int maxHexes, const int res);
+```
+
+Uncompacts the set `compactedSet` of indexes to the resolution `res`. `h3Set` must be of size `maxUncompactSize(compactedSet, numHexes, res)`.
+
+Returns 0 on success.
+
+### maxUncompactSize
+
+```
+int maxUncompactSize(const H3Index *compactedSet, const int numHexes, const int res)
+```
+
+Returns the size of the array needed by `uncompact`.

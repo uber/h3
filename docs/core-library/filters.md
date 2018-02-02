@@ -5,7 +5,7 @@ The directory `src/apps/filters` contains unix-style stdin/stdout filters that p
 
 Filters are experimental and are not part of the semantic version of the H3 library.
 
-All latitude/longitude coordinates are in decimal degrees. See the <a href="./md_doxyfiles_h3indexing.html"> __H3__ Index Representations</a> page for information on the integer `H3Index`.
+All latitude/longitude coordinates are in decimal degrees. See the <a href="#/documentation/core-library/h3-index-representations"> __H3__ Index Representations</a> page for information on the integer `H3Index`.
 
 
 | filter           | input     | outputs

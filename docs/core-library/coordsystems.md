@@ -6,9 +6,11 @@ IJK Coordinates
 
 Discrete hexagon planar grid systems naturally have 3 coordinate axes spaced 120&deg; apart. We refer to such a system as an _ijk coordinate system_, for the three coordinate axes _i_, _j_, and _k_. A single _ijk_ coordinate triplet is represented in the __H3 Core Library__ using the structure type CoordIJK.
 
-Using an _ijk_ coordinate system to address hexagon grid cells provides multiple valid addresses for each cell. _Normalizing_ an _ijk_ address (function ::\_ijkNormalize) creates a unique address consisting of the minimal positive _ijk_ components; this always results in at most two non-zero components.
+Using an _ijk_ coordinate system to address hexagon grid cells provides multiple valid addresses for each cell. _Normalizing_ an _ijk_ address (function `_ijkNormalize`) creates a unique address consisting of the minimal positive _ijk_ components; this always results in at most two non-zero components.
 
-\image html ijkp.png
+<div align="center">
+  <img height="300" src="images/ijkp.png" />
+</div>
 
 FaceIJK Coordinates
 ---
@@ -17,7 +19,9 @@ The __H3 Core Library__ centers an _ijk_ coordinate system on each face of the i
 
 Each grid resolution is rotated ~19.1&deg; relative to the next coarser resolution. The rotation alternates between counterclockwise and clockwise at each successive resolution, so that each resolution will have one of two possible orientations: _Class II_ or _Class III_ (using a terminology coined by R. Buckminster Fuller). The base cells, which make up resolution 0, are _Class II_.
 
-\image html classII.III.png
+<div align="center">
+  <img height="300" src="images/classII.III.png" />
+</div>
 
 Hex2d Coordinates
 ---
