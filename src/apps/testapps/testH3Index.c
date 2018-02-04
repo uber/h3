@@ -29,6 +29,18 @@
 
 BEGIN_TESTS(h3Index);
 
+TEST(geoToH3ExtremeCoordinates) {
+    GeoCoord g = { 0, 1E45 };
+    t_assert(H3_EXPORT(geoToH3)(&g, 14) == 0, "extreme longitude");
+
+    GeoCoord g2 = { 1E46, 1E45 };
+    t_assert(H3_EXPORT(geoToH3)(&g2, 15) == 0, "extreme latitude longitude");
+
+    GeoCoord g4;
+    setGeoDegs(&g4, 2, -3E39);
+    t_assert(H3_EXPORT(geoToH3)(&g4, 0) == 0, "extreme negative longitude");
+}
+
 TEST(h3IsValidAtResolution) {
     for (int i = 0; i <= MAX_H3_RES; i++) {
         GeoCoord geoCoord = {0, 0};

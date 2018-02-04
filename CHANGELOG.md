@@ -6,6 +6,8 @@ The public API of this library consists of the functions declared in file
 [h3api.h](./src/h3lib/include/h3api.h).
 
 ## [Unreleased]
+### Changed
+- Improved resilience to out of range inputs.
 
 ## [3.0.2] - 2018-01-24
 ### Removed

@@ -557,6 +557,11 @@ H3Index _faceIjkToH3(const FaceIJK* fijk, int res) {
 
     // check for res 0/base cell
     if (res == 0) {
+        if (fijk->coord.i > 2 || fijk->coord.j > 2 || fijk->coord.k > 2) {
+            // out of range input
+            return 0;
+        }
+
         H3_SET_BASE_CELL(h, _faceIjkToBaseCell(fijk));
         return h;
     }
@@ -593,6 +598,11 @@ H3Index _faceIjkToH3(const FaceIJK* fijk, int res) {
 
     // fijkBC should now hold the IJK of the base cell in the
     // coordinate system of the current face
+
+    if (fijkBC.coord.i > 2 || fijkBC.coord.j > 2 || fijkBC.coord.k > 2) {
+        // out of range input
+        return 0;
+    }
 
     // lookup the correct base cell
     int baseCell = _faceIjkToBaseCell(&fijkBC);
