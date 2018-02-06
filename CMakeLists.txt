@@ -185,6 +185,14 @@ option(ENABLE_TESTS "Enable building tests." ON)
 if(ENABLE_TESTS)
     option(PRINT_TEST_FILES "Print which test files correspond to which tests." OFF)
 
+    find_program(VALGRIND valgrind)
+    option(WRAP_VALGRIND "Wrap tests in valgrind." OFF)
+    if(WRAP_VALGRIND AND VALGRIND)
+        set(TEST_WRAPPER ${VALGRIND} --leak-check=full --error-exitcode=99)
+    else()
+        set(TEST_WRAPPER)
+    endif()
+
     enable_testing()
 
     # Macros and support code needed to build and add the tests
@@ -222,7 +230,7 @@ if(ENABLE_TESTS)
 
     macro(add_h3_test name srcfile)
         add_h3_test_common(${name} ${srcfile})
-        add_test(NAME ${name}_test${test_number} COMMAND ${name})
+        add_test(NAME ${name}_test${test_number} COMMAND ${TEST_WRAPPER} "$<TARGET_FILE:${name}>")
 
         if(ENABLE_COVERAGE)
             add_custom_target(${name}_coverage${test_number}
@@ -239,7 +247,7 @@ if(ENABLE_TESTS)
         add_h3_test_common(${name} ${srcfile})
         # add a special command (so we don't need to read the test file from the test program)
         add_test(NAME ${name}_test${test_number}
-            COMMAND ${SHELL} "$<TARGET_FILE:${name}> < ${argfile}"
+            COMMAND ${TEST_WRAPPER} ${SHELL} "$<TARGET_FILE:${name}> < ${argfile}"
             )
         if(PRINT_TEST_FILES)
             message("${name}_test${test_number} - ${argfile}")
@@ -259,7 +267,7 @@ if(ENABLE_TESTS)
     macro(add_h3_test_with_arg name srcfile arg)
         add_h3_test_common(${name} ${srcfile})
         add_test(NAME ${name}_test${test_number}
-            COMMAND $<TARGET_FILE:${name}> ${arg}
+            COMMAND ${TEST_WRAPPER} $<TARGET_FILE:${name}> ${arg}
             )
         if(PRINT_TEST_FILES)
             message("${name}_test${test_number} - ${arg}")
