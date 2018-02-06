@@ -140,7 +140,7 @@ Center coordinates: 40.689422, 285.955569
 
 Pull requests and Github issues are welcome. Please include tests that show the bug is fixed or feature works as intended. Please add a description of your change to the Unreleased section of the [changelog](./CHANGELOG.md). Please open issues to discuss large features or changes which would break compatibility, before submitting pull requests.
 
-Before we can merge your changes, you must agree to the [Uber Contributor License Agreement](http://t.uber.com/cla).
+Before we can merge your changes, you must agree to the [Uber Contributor License Agreement](https://cla-assistant.io/uber/h3).
 
 ## Legal and Licensing
 
