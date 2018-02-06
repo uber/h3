@@ -235,10 +235,7 @@ TEST(removeVertexNode) {
     t_assert(graph.size == 2, "Graph size decremented");
 
     // Remove non-existent node
-    node = malloc(sizeof(VertexNode));
-    node->next = NULL;
-    setGeoDegs(&node->from, 0, 0);
-    setGeoDegs(&node->to, 0, 0);
+    node = calloc(1, sizeof(VertexNode));
     success = removeVertexNode(&graph, node) == 0;
 
     t_assert(!success, "Removal of non-existent node fails");
