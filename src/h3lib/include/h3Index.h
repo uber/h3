@@ -120,14 +120,15 @@
             H3_DIGIT_MASK)))
 
 /**
- * Sets a value in the reserved space. USE WISELY, PRODUCES INVALID ADDRESSES
+ * Sets a value in the reserved space. Setting to non-zero may produce invalid
+ * indexes.
  */
 #define H3_SET_RESERVED_BITS(h3, v)            \
     (h3) = (((h3)&H3_RESERVED_MASK_NEGATIVE) | \
             (((uint64_t)(v)) << H3_RESERVED_OFFSET))
 
 /**
- * Gets a value in the reserved space. SHOULD ALWAYS BE ZERO
+ * Gets a value in the reserved space. Should always be zero for valid indexes.
  */
 #define H3_GET_RESERVED_BITS(h3) \
     ((int)((((h3)&H3_RESERVED_MASK) >> H3_RESERVED_OFFSET)))
@@ -140,6 +141,11 @@
                        << ((MAX_H3_RES - (res)) * H3_PER_DIGIT_OFFSET)))) | \
             (((uint64_t)(digit))                                            \
              << ((MAX_H3_RES - (res)) * H3_PER_DIGIT_OFFSET)))
+
+/**
+ * Invalid index used to indicate an error from geoToH3 and related functions.
+ */
+#define H3_INVALID_INDEX 0
 
 void setH3Index(H3Index* h, int res, int baseCell, int initDigit);
 int isResClassIII(int res);

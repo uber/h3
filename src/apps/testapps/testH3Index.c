@@ -30,10 +30,10 @@
 BEGIN_TESTS(h3Index);
 
 TEST(geoToH3ExtremeCoordinates) {
-    GeoCoord g = { 0, 1E45 };
+    GeoCoord g = {0, 1E45};
     t_assert(H3_EXPORT(geoToH3)(&g, 14) == 0, "extreme longitude");
 
-    GeoCoord g2 = { 1E46, 1E45 };
+    GeoCoord g2 = {1E46, 1E45};
     t_assert(H3_EXPORT(geoToH3)(&g2, 15) == 0, "extreme latitude longitude");
 
     GeoCoord g4;

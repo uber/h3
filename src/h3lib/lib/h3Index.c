@@ -46,7 +46,7 @@ int H3_EXPORT(h3GetBaseCell)(H3Index h) { return H3_GET_BASE_CELL(h); }
  * @return The H3 index corresponding to the string argument, or 0 if invalid.
  */
 H3Index H3_EXPORT(stringToH3)(const char* str) {
-    H3Index h = 0;
+    H3Index h = H3_INVALID_INDEX;
     // If failed, h will be unmodified and we should return 0 anyways.
     sscanf(str, "%" PRIx64, &h);
     return h;
@@ -122,11 +122,11 @@ void setH3Index(H3Index* hp, int res, int baseCell, int initDigit) {
 H3Index H3_EXPORT(h3ToParent)(H3Index h, int parentRes) {
     int childRes = H3_GET_RESOLUTION(h);
     if (parentRes > childRes) {
-        return 0;
+        return H3_INVALID_INDEX;
     } else if (parentRes == childRes) {
         return h;
     } else if (parentRes < 0 || parentRes > MAX_H3_RES) {
-        return 0;
+        return H3_INVALID_INDEX;
     }
     H3Index parentH = H3_SET_RESOLUTION(h, parentRes);
     for (int i = parentRes + 1; i <= childRes; i++) {
@@ -557,9 +557,10 @@ H3Index _faceIjkToH3(const FaceIJK* fijk, int res) {
 
     // check for res 0/base cell
     if (res == 0) {
-        if (fijk->coord.i > 2 || fijk->coord.j > 2 || fijk->coord.k > 2) {
+        if (fijk->coord.i > MAX_FACE_COORD || fijk->coord.j > MAX_FACE_COORD ||
+            fijk->coord.k > MAX_FACE_COORD) {
             // out of range input
-            return 0;
+            return H3_INVALID_INDEX;
         }
 
         H3_SET_BASE_CELL(h, _faceIjkToBaseCell(fijk));
@@ -599,9 +600,10 @@ H3Index _faceIjkToH3(const FaceIJK* fijk, int res) {
     // fijkBC should now hold the IJK of the base cell in the
     // coordinate system of the current face
 
-    if (fijkBC.coord.i > 2 || fijkBC.coord.j > 2 || fijkBC.coord.k > 2) {
+    if (fijkBC.coord.i > MAX_FACE_COORD || fijkBC.coord.j > MAX_FACE_COORD ||
+        fijkBC.coord.k > MAX_FACE_COORD) {
         // out of range input
-        return 0;
+        return H3_INVALID_INDEX;
     }
 
     // lookup the correct base cell
@@ -644,10 +646,10 @@ H3Index _faceIjkToH3(const FaceIJK* fijk, int res) {
  */
 H3Index H3_EXPORT(geoToH3)(const GeoCoord* g, int res) {
     if (res < 0 || res > MAX_H3_RES) {
-        return 0;
+        return H3_INVALID_INDEX;
     }
     if (!isfinite(g->lat) || !isfinite(g->lon)) {
-        return 0;
+        return H3_INVALID_INDEX;
     }
 
     FaceIJK fijk;

@@ -96,7 +96,7 @@ H3Index H3_EXPORT(getH3UnidirectionalEdge)(H3Index origin,
                                            H3Index destination) {
     // Short-circuit and return an invalid index value if they are not neighbors
     if (H3_EXPORT(h3IndexesAreNeighbors)(origin, destination) == 0) {
-        return 0;
+        return H3_INVALID_INDEX;
     }
 
     // Otherwise, determine the IJK direction from the origin to the destination
@@ -116,7 +116,7 @@ H3Index H3_EXPORT(getH3UnidirectionalEdge)(H3Index origin,
     }
 
     // This should be impossible, return an invalid H3Index in this case;
-    return 0;  // LCOV_EXCL_LINE
+    return H3_INVALID_INDEX;  // LCOV_EXCL_LINE
 }
 
 /**
