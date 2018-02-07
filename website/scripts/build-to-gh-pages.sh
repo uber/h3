@@ -18,15 +18,18 @@
 #
 # The script expects to be run from the `website` directory.
 
-set -x
+set -ex
 
 TARGET_BRANCH=gh-pages
+CURRENT_COMMIT=`git rev-parse HEAD`
 
 npm install
 npm run build
 # The dist directory is not removed because it is gitignore'd.
 git checkout "$TARGET_BRANCH"
 cd ..
+# Copy over the .gitignore file
+git checkout $CURRENT_COMMIT -- .gitignore
 cp -R website/dist/* .
 git add .
 git commit
