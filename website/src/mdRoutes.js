@@ -35,6 +35,8 @@ import api_neighbor from '../../docs/api/neighbor.md';
 import api_regions from '../../docs/api/regions.md';
 import api_uniedge from '../../docs/api/uniedge.md';
 
+import community_bindings from '../../docs/community/bindings.md';
+
 export default [{
     name: 'Documentation',
     path: '/documentation',
@@ -120,6 +122,14 @@ export default [{
             {
                 name: 'Miscellaneous',
                 markdown: api_misc
+            }
+        ]
+    }, {
+        name: 'Community',
+        children: [
+            {
+                name: 'Bindings',
+                markdown: community_bindings
             }
         ]
     }]

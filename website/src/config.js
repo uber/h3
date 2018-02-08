@@ -31,7 +31,7 @@ export const HOME_HEADING =
 export const HOME_BULLETS = [{
   text: 'Partition data into a hexagonal grid',
   desc: `H3 has an easy API for indexing coordinates into a hexagonal, global grid.`,
-  img: 'images/icon-layers.svg'
+  img: 'images/icon-high-precision.svg'
 }, {
   text: 'Hierarchical grid system',
   desc: `Easy, bitwise truncation to coarser, approximate cells, along with area compression/decompression \
@@ -40,7 +40,7 @@ algorithms.`,
 }, {
   text: 'Fully global',
   desc: `Along with twelve pentagons, the entire world is addressable in H3, down to square meter resolution.`,
-  img: 'images/icon-layers.svg'
+  img: 'images/icon-chart.svg'
 }];
 
 export const ADDITIONAL_LINKS = [];
