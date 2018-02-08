@@ -548,6 +548,7 @@ H3Index _h3Rotate60cw(H3Index h) {
  * Convert an FaceIJK address to the corresponding H3Index.
  * @param fijk The FaceIJK address.
  * @param res The cell resolution.
+ * @return The encoded H3Index (or 0 on failure).
  */
 H3Index _faceIjkToH3(const FaceIJK* fijk, int res) {
     // initialize the index
