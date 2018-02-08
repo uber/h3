@@ -42,6 +42,9 @@ extern const int baseCellNeighbor60CCWRots[NUM_BASE_CELLS][7];
 // resolution 0 base cell data lookup-table (global)
 extern const BaseCellData baseCellData[NUM_BASE_CELLS];
 
+/** Maximum input for any component to face-to-base-cell lookup functions */
+#define MAX_FACE_COORD 2
+
 // Internal functions
 int _isBaseCellPentagon(int baseCell);
 int _faceIjkToBaseCell(const FaceIJK* h);
