@@ -52,7 +52,7 @@ all neighboring indexes, and so on.
 Output is placed in the provided array in order of increasing distance from
 the origin.
 
-Returns 0 if not pentagonal distortion is encountered.
+Returns 0 if no pentagonal distortion is encountered.
  
 ## hexRangeDistances
 

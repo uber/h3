@@ -8,7 +8,7 @@ int h3IndexesAreNeighbors(H3Index origin, H3Index destination);
 
 Returns whether or not the provided H3Indexes are neighbors.
 
-Returns 1 if the indexes are neighbors, 0 otherwise;
+Returns 1 if the indexes are neighbors, 0 otherwise.
 
 ## getH3UnidirectionalEdge
 
