@@ -6,7 +6,7 @@
 
 H3 is a geospatial indexing system using a hexagonal grid that can be (approximately) subdivided into finer and finer hexagonal grids, combining the benefits of a hexagonal grid with [S2](https://code.google.com/archive/p/s2-geometry-library/)'s hierarchical subdivisions.
 
-Developer documentation in Markdown format is available under the [docs](./docs/doxyfiles) directory.
+Documentation is available at [https://uber.github.io/h3/](https://uber.github.io/h3/). Developer documentation in Markdown format is available under the [dev-docs](./dev-docs/) directory.
 
 ## Installing
 
@@ -40,7 +40,7 @@ brew install clang-format lcov doxygen
 
 * Windows (Visual Studio)
 
-You will need to install CMake and Visual Studio, including the Visual C++ compiler. For building on Windows, please follow the [Windows build instructions](./docs/build_windows.md).
+You will need to install CMake and Visual Studio, including the Visual C++ compiler. For building on Windows, please follow the [Windows build instructions](dev-docs/build_windows.md).
 
 #### Compilation
 
@@ -63,9 +63,11 @@ After making the project, you can test with `make test`, and if `lcov` is instal
 
 #### Documentation
 
-You can build documentation with `make docs` if Doxygen was installed when CMake was run. Index of the documentation will be `docs/_build/html/index.html`.
+You can build developer documentation with `make docs` if Doxygen was installed when CMake was run. Index of the documentation will be `dev-docs/_build/html/index.html`.
 
 After making the project, you can build KML files to visualize the hexagon grid with `make kml`. The files will be placed in `KML`.
+
+To build the documentation website, see the [website/](./website/) directory.
 
 ## Usage
 

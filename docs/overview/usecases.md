@@ -16,23 +16,31 @@ Using a regular grid can avoid these drawbacks by providing smooth gradients and
 
 | Triangle | Square | Hexagon
 | -------- | ------ | -------
-| \imageStyled{neighbors-triangle.png,Triangles have 12 neighbors,width:400px} | \imageStyled{neighbors-square.png,Squares have 8 neighbors,width:400px} | \imageStyled{neighbors-hexagon.png,Hexagons have 6 neighbors,width:400px}
+| <img src="images/neighbors-triangle.png" style="width:400px"> | <img src="images/neighbors-square.png" style="width:400px"> | <img src="images/neighbors-hexagon.png" style="width:400px">
+| Triangles have 12 neighbors | Squares have 8 neighbors | Hexagons have 6 neighbors
 
 In addition to indexing locations to cells, H3 provides a number of algorithms operating on indexes.
 
-Hexagons have the property of expanding rings of neighbors (::kRing) approximating circles:
+Hexagons have the property of expanding rings of neighbors (`kRing`) approximating circles:
 
-\imageStyled{neighbors.png,All six neighbors of a hexagon (ring 1),width:400px}
+<div align="center">
+  <img src="images/neighbors.png" style="width:400px"><br>
+  <i>All six neighbors of a hexagon (ring 1)</i>
+</div>
 
-Squares cleanly subdivide into four finer squares. Hexagons do not cleanly subdivide into seven finer hexagons. However, by alternating the orientation of grids a subdivision into seven cells (referred to as *aperture 7*) can be approximated. This makes it possible to truncate the precision (within a fixed margin of error) of an H3 index using a few bitwise operations (::h3ToParent). It is also possible to determine all the children of a parent H3 index (::h3ToChildren). Approximate containment only applies when truncating the precision of an H3 index. The borders of hexagons indexed at a specific resolution are not approximate.
+Squares cleanly subdivide into four finer squares. Hexagons do not cleanly subdivide into seven finer hexagons. However, by alternating the orientation of grids a subdivision into seven cells (referred to as *aperture 7*) can be approximated. This makes it possible to truncate the precision (within a fixed margin of error) of an H3 index using a few bitwise operations (`h3ToParent`). It is also possible to determine all the children of a parent H3 index (`h3ToChildren`). Approximate containment only applies when truncating the precision of an H3 index. The borders of hexagons indexed at a specific resolution are not approximate.
 
-\imageStyled{parent-child.png,A parent hexagon approximately contains seven children,width:400px}
+<div align="center">
+  <img src="images/parent-child.png" style="width:400px"><br>
+  <i>A parent hexagon approximately contains seven children</i>
+</div>
 
-Hierarchical containment allows for use cases like making contiguous sets of hexagons ::compact. It is then possible to ::uncompact to the same input set of hexagons.
+Hierarchical containment allows for use cases like making contiguous sets of hexagons `compact`. It is then possible to `uncompact` to the same input set of hexagons.
 
 | Uncompact (dense) | Compact (sparse)
 | ----------------- | ----------------
-| \imageStyled{ca_uncompact_6_10633.png,California represented by 10633 uncompact hexagons,width:500px} | \imageStyled{ca_compact_6_901.png,California represented by 901 compact hexagons,width:500px}
+| <img src="images/ca_uncompact_6_10633.png" style="width:500px"> | <img src="images/ca_compact_6_901.png" style="width:500px">
+| California represented by 10633 uncompact hexagons | California represented by 901 compact hexagons
 
 Comparisons
 ---

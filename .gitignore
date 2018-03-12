@@ -49,10 +49,12 @@
 *.dSYM/
 
 # Docs builds
-docs/_build/
+dev-docs/_build/
 env_docs/
+node_modules/
+website/dist/
 # Generated Doxyfile
-docs/Doxyfile
+dev-docs/Doxyfile
 
 # CMake generated
 CMakeFiles

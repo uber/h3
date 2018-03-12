@@ -8,7 +8,9 @@ The __H3__ system assigns a unique hierarchical index to each cell. The __H3__ i
 
 Child hexagons are linearly smaller than their parent hexagons.
 
-\image html cpidigits.png
+<div align="center">
+  <img height="300" src="images/cpidigits.png" />
+</div>
 
 
 H3Index Representation

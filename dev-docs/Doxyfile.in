@@ -30,7 +30,7 @@ PROJECT_NUMBER         = "Version @H3_VERSION@"
 # If a relative path is entered, it will be relative to the location
 # where doxygen was started. If left blank the current directory will be used.
 
-OUTPUT_DIRECTORY       = "@PROJECT_BINARY_DIR@/docs/_build"
+OUTPUT_DIRECTORY       = "@PROJECT_BINARY_DIR@/dev-docs/_build"
 # If the CREATE_SUBDIRS tag is set to YES, then doxygen will create
 # 4096 sub-directories (in 2 levels) under the output directory of each output
 # format and will distribute the generated files over these directories.
