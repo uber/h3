@@ -35,13 +35,6 @@ if(WIN32)
 else()
     set(SHELL sh -c)
 
-    # Compiler options are set only on non-Windows, since these options
-    # are not correct for MSVC.
-    set(CMAKE_C_FLAGS "-Wall")
-    set(CMAKE_C_FLAGS_DEBUG
-       "${CMAKE_C_FLAGS_DEBUG} -g -gdwarf-2 -g3 -O0 -fno-inline "
-       "-fno-eliminate-unused-debug-types --coverage")
-
     set(EXECUTABLE_OUTPUT_PATH bin)
     set(LIBRARY_OUTPUT_PATH lib)
 endif()
@@ -59,79 +52,79 @@ include(CTest)
 find_library(M_LIB m)
 
 set(LIB_SOURCE_FILES
-  src/h3lib/include/bbox.h
-  src/h3lib/include/h3Index.h
-  src/h3lib/include/h3UniEdge.h
-  src/h3lib/include/geoCoord.h
-  src/h3lib/include/vec2d.h
-  src/h3lib/include/linkedGeo.h
-  src/h3lib/include/baseCells.h
-  src/h3lib/include/faceijk.h
-  src/h3lib/include/vertexGraph.h
-  src/h3lib/include/mathExtensions.h
-  src/h3lib/include/constants.h
-  src/h3lib/include/coordijk.h
-  src/h3lib/include/algos.h
-  src/h3lib/include/h3api.h
-  src/h3lib/lib/algos.c
-  src/h3lib/lib/coordijk.c
-  src/h3lib/lib/bbox.c
-  src/h3lib/lib/h3Index.c
-  src/h3lib/lib/vec2d.c
-  src/h3lib/lib/linkedGeo.c
-  src/h3lib/lib/geoCoord.c
-  src/h3lib/lib/h3UniEdge.c
-  src/h3lib/lib/mathExtensions.c
-  src/h3lib/lib/vertexGraph.c
-  src/h3lib/lib/faceijk.c
-  src/h3lib/lib/baseCells.c)
+    src/h3lib/include/bbox.h
+    src/h3lib/include/h3Index.h
+    src/h3lib/include/h3UniEdge.h
+    src/h3lib/include/geoCoord.h
+    src/h3lib/include/vec2d.h
+    src/h3lib/include/linkedGeo.h
+    src/h3lib/include/baseCells.h
+    src/h3lib/include/faceijk.h
+    src/h3lib/include/vertexGraph.h
+    src/h3lib/include/mathExtensions.h
+    src/h3lib/include/constants.h
+    src/h3lib/include/coordijk.h
+    src/h3lib/include/algos.h
+    src/h3lib/include/h3api.h
+    src/h3lib/lib/algos.c
+    src/h3lib/lib/coordijk.c
+    src/h3lib/lib/bbox.c
+    src/h3lib/lib/h3Index.c
+    src/h3lib/lib/vec2d.c
+    src/h3lib/lib/linkedGeo.c
+    src/h3lib/lib/geoCoord.c
+    src/h3lib/lib/h3UniEdge.c
+    src/h3lib/lib/mathExtensions.c
+    src/h3lib/lib/vertexGraph.c
+    src/h3lib/lib/faceijk.c
+    src/h3lib/lib/baseCells.c)
 set(APP_SOURCE_FILES
-  src/apps/applib/include/test.h
-  src/apps/applib/include/kml.h
-  src/apps/applib/include/benchmark.h
-  src/apps/applib/include/utility.h
-  src/apps/applib/lib/kml.c
-  src/apps/applib/lib/utility.c
-  src/apps/applib/lib/test.c)
+    src/apps/applib/include/test.h
+    src/apps/applib/include/kml.h
+    src/apps/applib/include/benchmark.h
+    src/apps/applib/include/utility.h
+    src/apps/applib/lib/kml.c
+    src/apps/applib/lib/utility.c
+    src/apps/applib/lib/test.c)
 set(EXAMPLE_SOURCE_FILES
-  examples/index.c
-  examples/distance.c)
+    examples/index.c
+    examples/distance.c)
 set(OTHER_SOURCE_FILES
-  src/apps/filters/h3ToGeo.c
-  src/apps/filters/h3ToComponents.c
-  src/apps/filters/geoToH3.c
-  src/apps/filters/h3ToGeoBoundary.c
-  src/apps/filters/kRing.c
-  src/apps/filters/hexRange.c
-  src/apps/testapps/testVertexGraph.c
-  src/apps/testapps/testCompact.c
-  src/apps/testapps/testPolyfill.c
-  src/apps/testapps/testKRing.c
-  src/apps/testapps/testH3ToGeoBoundary.c
-  src/apps/testapps/testH3ToParent.c
-  src/apps/testapps/testH3Index.c
-  src/apps/testapps/mkRandGeoBoundary.c
-  src/apps/testapps/testGeoToH3.c
-  src/apps/testapps/testH3NeighborRotations.c
-  src/apps/testapps/testMaxH3ToChildrenSize.c
-  src/apps/testapps/testHexRanges.c
-  src/apps/testapps/testH3ToGeo.c
-  src/apps/testapps/testH3ToChildren.c
-  src/apps/testapps/testGeoCoord.c
-  src/apps/testapps/testHexRing.c
-  src/apps/testapps/testH3SetToVertexGraph.c
-  src/apps/testapps/testBBox.c
-  src/apps/testapps/testH3UniEdge.c
-  src/apps/testapps/testLinkedGeo.c
-  src/apps/testapps/mkRandGeo.c
-  src/apps/testapps/testH3Api.c
-  src/apps/testapps/testH3SetToLinkedGeo.c
-  src/apps/miscapps/h3ToGeoBoundaryHier.c
-  src/apps/miscapps/h3ToGeoHier.c
-  src/apps/miscapps/generateBaseCellNeighbors.c
-  src/apps/miscapps/h3ToHier.c
-  src/apps/benchmarks/benchmarkPolyfill.c
-  src/apps/benchmarks/benchmarkH3Api.c)
+    src/apps/filters/h3ToGeo.c
+    src/apps/filters/h3ToComponents.c
+    src/apps/filters/geoToH3.c
+    src/apps/filters/h3ToGeoBoundary.c
+    src/apps/filters/kRing.c
+    src/apps/filters/hexRange.c
+    src/apps/testapps/testVertexGraph.c
+    src/apps/testapps/testCompact.c
+    src/apps/testapps/testPolyfill.c
+    src/apps/testapps/testKRing.c
+    src/apps/testapps/testH3ToGeoBoundary.c
+    src/apps/testapps/testH3ToParent.c
+    src/apps/testapps/testH3Index.c
+    src/apps/testapps/mkRandGeoBoundary.c
+    src/apps/testapps/testGeoToH3.c
+    src/apps/testapps/testH3NeighborRotations.c
+    src/apps/testapps/testMaxH3ToChildrenSize.c
+    src/apps/testapps/testHexRanges.c
+    src/apps/testapps/testH3ToGeo.c
+    src/apps/testapps/testH3ToChildren.c
+    src/apps/testapps/testGeoCoord.c
+    src/apps/testapps/testHexRing.c
+    src/apps/testapps/testH3SetToVertexGraph.c
+    src/apps/testapps/testBBox.c
+    src/apps/testapps/testH3UniEdge.c
+    src/apps/testapps/testLinkedGeo.c
+    src/apps/testapps/mkRandGeo.c
+    src/apps/testapps/testH3Api.c
+    src/apps/testapps/testH3SetToLinkedGeo.c
+    src/apps/miscapps/h3ToGeoBoundaryHier.c
+    src/apps/miscapps/h3ToGeoHier.c
+    src/apps/miscapps/generateBaseCellNeighbors.c
+    src/apps/miscapps/h3ToHier.c
+    src/apps/benchmarks/benchmarkPolyfill.c
+    src/apps/benchmarks/benchmarkH3Api.c)
 
 set(ALL_SOURCE_FILES
     ${LIB_SOURCE_FILES} ${APP_SOURCE_FILES} ${OTHER_SOURCE_FILES})
@@ -139,7 +132,7 @@ set(ALL_SOURCE_FILES
 # Build the H3 library
 add_library(h3 ${LIB_SOURCE_FILES})
 if(BUILD_SHARED_LIBS)
-  set_target_properties(h3 PROPERTIES SOVERSION ${H3_SOVERSION})
+    set_target_properties(h3 PROPERTIES SOVERSION ${H3_SOVERSION})
 endif()
 
 target_compile_definitions(h3 PUBLIC H3_PREFIX=${H3_PREFIX})
@@ -149,8 +142,8 @@ target_include_directories(h3 PUBLIC
 # Automatic code formatting
 find_program(CLANG_FORMAT_PATH clang-format)
 cmake_dependent_option(
-  ENABLE_FORMAT "Enable running clang-format before compiling" ON
-  "CLANG_FORMAT_PATH" OFF)
+    ENABLE_FORMAT "Enable running clang-format before compiling" ON
+    "CLANG_FORMAT_PATH" OFF)
 if(ENABLE_FORMAT)
     # Format
     add_custom_target(format
@@ -172,12 +165,12 @@ endif()
 option(ENABLE_LINTING "Run clang-tidy on source files" ON)
 find_program(CLANG_TIDY_PATH "clang-tidy")
 cmake_dependent_option(
-  ENABLE_LINTING "Enable running clang-tidy on sources during compilation" ON
-  "CLANG_TIDY_PATH" OFF)
+    ENABLE_LINTING "Enable running clang-tidy on sources during compilation" ON
+    "CLANG_TIDY_PATH" OFF)
 if(ENABLE_LINTING)
-  set_target_properties(h3 PROPERTIES C_CLANG_TIDY "${CLANG_TIDY_PATH}")
+    set_target_properties(h3 PROPERTIES C_CLANG_TIDY "${CLANG_TIDY_PATH}")
 elseif(NOT CLANG_TIDY_PATH)
-  message(WARNING "clang-tidy was not detected, "
+    message(WARNING "clang-tidy was not detected, "
                   "so source code linting is disabled")
 endif()
 
@@ -221,9 +214,7 @@ macro(add_h3_executable name)
     add_executable(${ARGV})
     if(TARGET ${name})
         target_link_libraries(${name} PUBLIC h3)
-        if (M_LIB)
-            target_link_libraries(${name} PUBLIC ${M_LIB})
-        endif()
+        target_link_libraries(${name} PUBLIC ${M_LIB})
         target_include_directories(${name} PUBLIC
           $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/apps/applib/include>)
     endif()
