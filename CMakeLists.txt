@@ -1,4 +1,4 @@
-# Copyright 2017 Uber Technologies, Inc.
+# Copyright 2017, 2018 Uber Technologies, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,31 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 2.8.7)
-project(h3)
+cmake_minimum_required(VERSION 3.1)
 
 set(H3_PREFIX "" CACHE STRING "Prefix for exported symbols")
-add_definitions(-DH3_PREFIX=${H3_PREFIX})
-
-set(H3_COMPILER "Default" CACHE STRING "C Compiler to use for H3")
-set_property(
-    CACHE H3_COMPILER
-    PROPERTY STRINGS
-    "Default" "clang" "gcc" "cc"
-)
-
-if(H3_COMPILER MATCHES clang)
-    set(CMAKE_C_COMPILER clang)
-elseif(H3_COMPILER MATCHES gcc)
-    set(CMAKE_C_COMPILER gcc)
-elseif(H3_COMPILER MATCHES cc)
-    set(CMAKE_C_COMPILER cc)
-endif()
 
 # Needed due to CMP0042
 set(CMAKE_MACOSX_RPATH 1)
 # H3 doesn't export selected symbols right now
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+# YCM needs compilation database
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cmake/toolchain.cmake"
+    CACHE FILEPATH
+    "Toolchain to use for building this project")
 
 if(WIN32)
     set(SHELL PowerShell -Command)
@@ -46,14 +35,6 @@ if(WIN32)
 else()
     set(SHELL sh -c)
 
-    # Compiler options are set only on non-Windows, since these options
-    # are not correct for MSVC.
-    if(CMAKE_BUILD_TYPE MATCHES Debug)
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -gdwarf-2 -g3 -O0 -Wall -fno-inline -fno-eliminate-unused-debug-types --coverage -std=c1x")
-    else()
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -fPIC -std=c1x")
-    endif()
-
     set(EXECUTABLE_OUTPUT_PATH bin)
     set(LIBRARY_OUTPUT_PATH lib)
 endif()
@@ -61,40 +42,136 @@ endif()
 file(READ VERSION H3_VERSION LIMIT_COUNT 1)
 # Clean any newlines
 string(REPLACE "\n" "" H3_VERSION "${H3_VERSION}")
+set(H3_SOVERSION 1)
+
+project(h3 VERSION ${H3_VERSION})
+
+include(CMakeDependentOption)
+include(CTest)
 
 find_library(M_LIB m)
 
-include_directories(src/h3lib/include)
+set(LIB_SOURCE_FILES
+    src/h3lib/include/bbox.h
+    src/h3lib/include/h3Index.h
+    src/h3lib/include/h3UniEdge.h
+    src/h3lib/include/geoCoord.h
+    src/h3lib/include/vec2d.h
+    src/h3lib/include/linkedGeo.h
+    src/h3lib/include/baseCells.h
+    src/h3lib/include/faceijk.h
+    src/h3lib/include/vertexGraph.h
+    src/h3lib/include/mathExtensions.h
+    src/h3lib/include/constants.h
+    src/h3lib/include/coordijk.h
+    src/h3lib/include/algos.h
+    src/h3lib/include/h3api.h
+    src/h3lib/lib/algos.c
+    src/h3lib/lib/coordijk.c
+    src/h3lib/lib/bbox.c
+    src/h3lib/lib/h3Index.c
+    src/h3lib/lib/vec2d.c
+    src/h3lib/lib/linkedGeo.c
+    src/h3lib/lib/geoCoord.c
+    src/h3lib/lib/h3UniEdge.c
+    src/h3lib/lib/mathExtensions.c
+    src/h3lib/lib/vertexGraph.c
+    src/h3lib/lib/faceijk.c
+    src/h3lib/lib/baseCells.c)
+set(APP_SOURCE_FILES
+    src/apps/applib/include/test.h
+    src/apps/applib/include/kml.h
+    src/apps/applib/include/benchmark.h
+    src/apps/applib/include/utility.h
+    src/apps/applib/lib/kml.c
+    src/apps/applib/lib/utility.c
+    src/apps/applib/lib/test.c)
+set(EXAMPLE_SOURCE_FILES
+    examples/index.c
+    examples/distance.c)
+set(OTHER_SOURCE_FILES
+    src/apps/filters/h3ToGeo.c
+    src/apps/filters/h3ToComponents.c
+    src/apps/filters/geoToH3.c
+    src/apps/filters/h3ToGeoBoundary.c
+    src/apps/filters/kRing.c
+    src/apps/filters/hexRange.c
+    src/apps/testapps/testVertexGraph.c
+    src/apps/testapps/testCompact.c
+    src/apps/testapps/testPolyfill.c
+    src/apps/testapps/testKRing.c
+    src/apps/testapps/testH3ToGeoBoundary.c
+    src/apps/testapps/testH3ToParent.c
+    src/apps/testapps/testH3Index.c
+    src/apps/testapps/mkRandGeoBoundary.c
+    src/apps/testapps/testGeoToH3.c
+    src/apps/testapps/testH3NeighborRotations.c
+    src/apps/testapps/testMaxH3ToChildrenSize.c
+    src/apps/testapps/testHexRanges.c
+    src/apps/testapps/testH3ToGeo.c
+    src/apps/testapps/testH3ToChildren.c
+    src/apps/testapps/testGeoCoord.c
+    src/apps/testapps/testHexRing.c
+    src/apps/testapps/testH3SetToVertexGraph.c
+    src/apps/testapps/testBBox.c
+    src/apps/testapps/testH3UniEdge.c
+    src/apps/testapps/testLinkedGeo.c
+    src/apps/testapps/mkRandGeo.c
+    src/apps/testapps/testH3Api.c
+    src/apps/testapps/testH3SetToLinkedGeo.c
+    src/apps/miscapps/h3ToGeoBoundaryHier.c
+    src/apps/miscapps/h3ToGeoHier.c
+    src/apps/miscapps/generateBaseCellNeighbors.c
+    src/apps/miscapps/h3ToHier.c
+    src/apps/benchmarks/benchmarkPolyfill.c
+    src/apps/benchmarks/benchmarkH3Api.c)
 
-file(GLOB_RECURSE ALL_SOURCE_FILES src/*.c src/*.h)
-file(GLOB_RECURSE EXAMPLE_SOURCE_FILES examples/*.c)
+set(ALL_SOURCE_FILES
+    ${LIB_SOURCE_FILES} ${APP_SOURCE_FILES} ${OTHER_SOURCE_FILES})
 
 # Build the H3 library
-file(GLOB_RECURSE SOURCE_FILES src/h3lib/*.c src/h3lib/*.h)
-option(BUILD_STATIC "Build a static version of the h3 library." OFF)
-if (BUILD_STATIC)
-    add_library(h3.1 STATIC ${SOURCE_FILES})
-else()
-    add_library(h3.1 SHARED ${SOURCE_FILES})
+add_library(h3 ${LIB_SOURCE_FILES})
+if(BUILD_SHARED_LIBS)
+    set_target_properties(h3 PROPERTIES SOVERSION ${H3_SOVERSION})
 endif()
 
+target_compile_definitions(h3 PUBLIC H3_PREFIX=${H3_PREFIX})
+target_include_directories(h3 PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/h3lib/include>)
+
 # Automatic code formatting
-option(ENABLE_FORMAT "Enable running clang-format before compiling." ON)
 find_program(CLANG_FORMAT_PATH clang-format)
-if (CLANG_FORMAT_PATH AND ENABLE_FORMAT)
+cmake_dependent_option(
+    ENABLE_FORMAT "Enable running clang-format before compiling" ON
+    "CLANG_FORMAT_PATH" OFF)
+if(ENABLE_FORMAT)
     # Format
     add_custom_target(format
         COMMAND ${CLANG_FORMAT_PATH}
-        -style='{BasedOnStyle: Google, IndentWidth: 4}'
+        -style=file
         -i
         ${ALL_SOURCE_FILES}
         ${EXAMPLE_SOURCE_FILES}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMENT "Formatting sources"
         )
     # Always do formatting
-    add_dependencies(h3.1 format)
-elseif(ENABLE_FORMAT)
-    message(WARNING "clang-format was not detected, so automatic source code reformatting is disabled.")
+    add_dependencies(h3 format)
+elseif(NOT CLANG_FORMAT_PATH)
+    message(WARNING "clang-format was not detected, "
+                    "so automatic source code reformatting is disabled")
+endif()
+
+option(ENABLE_LINTING "Run clang-tidy on source files" ON)
+find_program(CLANG_TIDY_PATH "clang-tidy")
+cmake_dependent_option(
+    ENABLE_LINTING "Enable running clang-tidy on sources during compilation" ON
+    "CLANG_TIDY_PATH" OFF)
+if(ENABLE_LINTING)
+    set_target_properties(h3 PROPERTIES C_CLANG_TIDY "${CLANG_TIDY_PATH}")
+elseif(NOT CLANG_TIDY_PATH)
+    message(WARNING "clang-tidy was not detected, "
+                  "so source code linting is disabled")
 endif()
 
 # Docs
@@ -136,16 +213,14 @@ macro(add_h3_executable name)
     # invoke built-in add_executable
     add_executable(${ARGV})
     if(TARGET ${name})
-        target_link_libraries(${name} h3.1)
-        if (M_LIB)
-            target_link_libraries(${name} ${M_LIB})
+        target_link_libraries(${name} PUBLIC h3)
+        if(M_LIB)
+          target_link_libraries(${name} PUBLIC ${M_LIB})
         endif()
-        target_include_directories(${name} PUBLIC src/apps/applib/include)
+        target_include_directories(${name} PUBLIC
+          $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/apps/applib/include>)
     endif()
 endmacro()
-
-# Additional source files common to the applications
-file(GLOB_RECURSE APP_SOURCE_FILES src/apps/applib/lib/*.c src/apps/applib/include/*.h)
 
 add_h3_executable(geoToH3 src/apps/filters/geoToH3.c ${APP_SOURCE_FILES})
 add_h3_executable(h3ToComponents src/apps/filters/h3ToComponents.c ${APP_SOURCE_FILES})
@@ -181,13 +256,13 @@ foreach(resolution RANGE 3)
         kml_centers_${resolution})
 endforeach()
 
-option(ENABLE_TESTS "Enable building tests." ON)
-if(ENABLE_TESTS)
-    option(PRINT_TEST_FILES "Print which test files correspond to which tests." OFF)
+if(BUILD_TESTING)
+    option(PRINT_TEST_FILES "Print which test files correspond to which tests" OFF)
 
     find_program(VALGRIND valgrind)
-    option(WRAP_VALGRIND "Wrap tests in valgrind." OFF)
-    if(WRAP_VALGRIND AND VALGRIND)
+    cmake_dependent_option(WRAP_VALGRIND "Wrap tests in valgrind" OFF
+                           "VALGRIND" OFF)
+    if(WRAP_VALGRIND)
         set(TEST_WRAPPER ${VALGRIND} --leak-check=full --error-exitcode=99)
     else()
         set(TEST_WRAPPER)
@@ -345,19 +420,78 @@ if(ENABLE_TESTS)
     add_h3_benchmark(benchmarkPolyfill src/apps/benchmarks/benchmarkPolyfill.c)
 endif()
 
+# Installation (https://github.com/forexample/package-example)
+
+# Layout. This works for all platforms:
+#   * <prefix>/lib/cmake/<PROJECT-NAME>
+#   * <prefix>/lib/
+#   * <prefix>/include/
+set(config_install_dir "lib/cmake/${PROJECT_NAME}")
+set(include_install_dir "include")
+
+set(generated_dir "${CMAKE_CURRENT_BINARY_DIR}/generated")
+
+# Configuration
+set(version_config "${generated_dir}/${PROJECT_NAME}ConfigVersion.cmake")
+set(project_config "${generated_dir}/${PROJECT_NAME}Config.cmake")
+set(TARGETS_EXPORT_NAME "${PROJECT_NAME}Targets")
+set(namespace "${PROJECT_NAME}::")
+
+# Include module with fuction 'write_basic_package_version_file'
+include(CMakePackageConfigHelpers)
+
+# Configure '<PROJECT-NAME>ConfigVersion.cmake'
+# Use:
+#   * PROJECT_VERSION
+write_basic_package_version_file(
+    "${version_config}" COMPATIBILITY SameMajorVersion
+)
+
+# Configure '<PROJECT-NAME>Config.cmake'
+# Use variables:
+#   * TARGETS_EXPORT_NAME
+#   * PROJECT_NAME
+configure_package_config_file(
+    "cmake/Config.cmake.in"
+    "${project_config}"
+    INSTALL_DESTINATION "${config_install_dir}"
+)
+
+# Targets:
+#   * <prefix>/lib/libh3.so
+#   * header location after install: <prefix>/include/h3/h3api.h
+#   * headers can be included by C++ code `#include <h3/h3api.h>`
 # Installing the library and filters system-wide.
-install(TARGETS h3.1
-    geoToH3
-    h3ToComponents
-    h3ToGeo
-    h3ToGeoBoundary
-    hexRange
-    kRing
-    h3ToGeoBoundaryHier
-    h3ToGeoHier
-    h3ToHier
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib/static)
+install(
+    TARGETS h3 geoToH3 h3ToComponents h3ToGeo h3ToGeoBoundary hexRange
+            kRing h3ToGeoBoundaryHier h3ToGeoHier h3ToHier
+    EXPORT "${TARGETS_EXPORT_NAME}"
+    LIBRARY DESTINATION "lib"
+    ARCHIVE DESTINATION "lib"
+    RUNTIME DESTINATION "bin"
+    INCLUDES DESTINATION "${include_install_dir}"
+)
+
+# Headers:
+#   * src/h3lib/include/h3api.h -> <prefix>/include/h3/h3api.h
 # Only the h3api.h header is needed by applications using H3.
-install(FILES src/h3lib/include/h3api.h DESTINATION include/h3)
+install(
+    FILES src/h3lib/include/h3api.h
+    DESTINATION "${include_install_dir}/h3"
+)
+
+# Config
+#   * <prefix>/lib/cmake/h3/h3Config.cmake
+#   * <prefix>/lib/cmake/h3/h3ConfigVersion.cmake
+install(
+    FILES "${project_config}" "${version_config}"
+    DESTINATION "${config_install_dir}"
+)
+
+# Config
+#   * <prefix>/lib/cmake/h3/h3Targets.cmake
+install(
+    EXPORT "${TARGETS_EXPORT_NAME}"
+    NAMESPACE "${namespace}"
+    DESTINATION "${config_install_dir}"
+)
