@@ -6,8 +6,22 @@ The public API of this library consists of the functions declared in file
 [h3api.h](./src/h3lib/include/h3api.h).
 
 ## [Unreleased]
+### Added
+- CMake config installation to ease use of h3 from CMake projects.
+- Add CMake toolchain file to set build options upfront.
+- Add CMake `C_CLANG_TIDY` property to integrate clang-tidy checks during build.
+- YouCompleteMe completion support.
 ### Changed
 - Improved resilience to out of range inputs.
+- Minimum CMake version to 3.1.
+- Set `CMAKE_C_STANDARD` to `11` instead of using compiler flag `-std=c1x`.
+- Use `CMAKE_POSITION_INDEPENDENT_CODE` instead of using compiler flag `-fPIC`.
+- Rename library target from `h3.1` to `h3` with `SONAME` property of 1.
+### Removed
+- CMake `H3_COMPILER` option in favor of built-in `CMAKE_C_COMPILER`.
+- CMake `BUILD_STATIC` option in favor of built-in `BUILD_SHARED_LIBS`.
+- CMake `ENABLE_TESTS` option in favor of built-in `BUILD_TESTING`.
+- File globbing in CMake in favor of listing source files.
 
 ## [3.0.2] - 2018-01-24
 ### Removed

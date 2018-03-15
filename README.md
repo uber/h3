@@ -121,7 +121,7 @@ This will produce some coordinate:
 The above features of H3 can also be used from C. For example, you can compile and run [examples/index.c](./examples/index.c) like so:
 
 ```
-cc -lh3.1 examples/index.c -o example
+cc -lh3 examples/index.c -o example
 ./example
 ```
 
