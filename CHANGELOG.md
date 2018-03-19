@@ -6,6 +6,8 @@ The public API of this library consists of the functions declared in file
 [h3api.h](./src/h3lib/include/h3api.h).
 
 ## [Unreleased]
+
+## [3.0.3] - 2018-03-19
 ### Added
 - CMake config installation to ease use of h3 from CMake projects.
 - Add CMake toolchain file to set build options upfront.
