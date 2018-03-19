@@ -92,6 +92,7 @@ int H3_EXPORT(maxKringSize)(int k) {
 void H3_EXPORT(kRing)(H3Index origin, int k, H3Index* out) {
     int maxIdx = H3_EXPORT(maxKringSize)(k);
     int distances[maxIdx];
+    memset(distances, 0, sizeof(distances));
     H3_EXPORT(kRingDistances)(origin, k, out, distances);
 }
 
