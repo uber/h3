@@ -120,7 +120,6 @@ southernGeofence.verts = southernVerts;
 southernGeoPolygon.geofence = southernGeofence;
 
 int numHexagons;
-H3Index* hexagons;
 
 BENCHMARK(polyfillSF, 500, {
     numHexagons = H3_EXPORT(maxPolyfillSize)(&sfGeoPolygon, 9);
