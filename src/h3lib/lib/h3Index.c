@@ -273,7 +273,7 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
         if (maxCompactableCount == 0) {
             memcpy(compactedSetOffset, remainingHexes,
                    numRemainingHexes * sizeof(remainingHexes[0]));
-            return 0;
+            break;
         }
         H3Index compactableHexes[maxCompactableCount];
         memset(compactableHexes, 0, sizeof(compactableHexes));
