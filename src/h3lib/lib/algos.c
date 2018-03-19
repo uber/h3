@@ -743,7 +743,7 @@ void H3_EXPORT(polyfill)(const GeoPolygon* geoPolygon, int res, H3Index* out) {
 
     // Get the bounding boxes for the polygon and any holes
     BBox bboxes[geoPolygon->numHoles + 1];
-    memset(bboxes, 0, sizeof(BBox));
+    memset(bboxes, 0, sizeof(bboxes));
     bboxesFromGeoPolygon(geoPolygon, bboxes);
     int minK = bboxHexRadius(&bboxes[0], res);
     int numHexagons = H3_EXPORT(maxKringSize)(minK);
