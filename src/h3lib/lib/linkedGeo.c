@@ -51,6 +51,7 @@ void initLinkedLoop(LinkedGeoLoop* loop) {
 LinkedGeoPolygon* addLinkedPolygon(LinkedGeoPolygon* polygon) {
     assert(polygon->next == NULL);
     LinkedGeoPolygon* next = calloc(1, sizeof(*next));
+    assert(next != NULL);
     polygon->next = next;
     return next;
 }
@@ -62,6 +63,7 @@ LinkedGeoPolygon* addLinkedPolygon(LinkedGeoPolygon* polygon) {
  */
 LinkedGeoLoop* addLinkedLoop(LinkedGeoPolygon* polygon) {
     LinkedGeoLoop* loop = calloc(1, sizeof(*loop));
+    assert(loop != NULL);
     initLinkedLoop(loop);
     LinkedGeoLoop* last = polygon->last;
     if (last == NULL) {
@@ -83,6 +85,7 @@ LinkedGeoLoop* addLinkedLoop(LinkedGeoPolygon* polygon) {
  */
 LinkedGeoCoord* addLinkedCoord(LinkedGeoLoop* loop, const GeoCoord* vertex) {
     LinkedGeoCoord* coord = calloc(1, sizeof(*coord));
+    assert(coord != NULL);
     coord->vertex = *vertex;
     coord->next = NULL;
     LinkedGeoCoord* last = loop->last;
@@ -103,35 +106,27 @@ LinkedGeoCoord* addLinkedCoord(LinkedGeoLoop* loop, const GeoCoord* vertex) {
  * @param polygon Pointer to the first polygon in the structure
  */
 void H3_EXPORT(destroyLinkedPolygon)(LinkedGeoPolygon* polygon) {
-    LinkedGeoPolygon* currentPolygon = polygon;
-    LinkedGeoPolygon* nextPolygon;
-    LinkedGeoLoop* currentLoop;
-    LinkedGeoLoop* nextLoop;
-    LinkedGeoCoord* currentCoord;
-    LinkedGeoCoord* nextCoord;
     // flag to skip the input polygon
-    int skip = 1;
-    while (currentPolygon != NULL) {
-        currentLoop = currentPolygon->first;
-        while (currentLoop != NULL) {
-            currentCoord = currentLoop->first;
-            while (currentCoord != NULL) {
+    bool skip = true;
+    for (LinkedGeoPolygon *currentPolygon = polygon, *nextPolygon;
+         currentPolygon != NULL; currentPolygon = nextPolygon) {
+        for (LinkedGeoLoop *currentLoop = currentPolygon->first, *nextLoop;
+             currentLoop != NULL; currentLoop = nextLoop) {
+            for (LinkedGeoCoord *currentCoord = currentLoop->first, *nextCoord;
+                 currentCoord != NULL; currentCoord = nextCoord) {
                 nextCoord = currentCoord->next;
                 free(currentCoord);
-                currentCoord = nextCoord;
             }
             nextLoop = currentLoop->next;
             free(currentLoop);
-            currentLoop = nextLoop;
         }
         nextPolygon = currentPolygon->next;
-        if (skip == 1) {
+        if (skip) {
             // do not free the input polygon
-            skip = 0;
+            skip = false;
         } else {
             free(currentPolygon);
         }
-        currentPolygon = nextPolygon;
     }
 }
 

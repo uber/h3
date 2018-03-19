@@ -27,6 +27,7 @@
 
 #include <baseCells.h>
 #include <stdlib.h>
+#include <string.h>
 
 const int NUM_DIRS = 6;
 
@@ -36,8 +37,8 @@ const int NUM_DIRS = 6;
  * @param baseCellNeighbors
  * @param baseCellRotations
  */
-void auditBaseCellNeighbors(int baseCellNeighbors[NUM_BASE_CELLS][7],
-                            int baseCellRotations[NUM_BASE_CELLS][7]) {
+static void auditBaseCellNeighbors(int baseCellNeighbors[NUM_BASE_CELLS][7],
+                                   int baseCellRotations[NUM_BASE_CELLS][7]) {
     for (int i = 0; i < NUM_BASE_CELLS; i++) {
         for (int j = 0; j <= NUM_DIRS; j++) {
             if (baseCellNeighbors[i][j] == INVALID_BASE_CELL) continue;
@@ -78,25 +79,13 @@ void auditBaseCellNeighbors(int baseCellNeighbors[NUM_BASE_CELLS][7],
     }
 }
 
-/**
- * Returns how the base cell should be referenced in generated source code.
- * Caller should free the returned pointer.
- */
-char* getBaseCellOutput(int baseCell) {
-    int maxLen = 18;  // "INVALID_BASE_CELL\0"
-    char* baseCellOutput = calloc(maxLen, sizeof(char));
-    if (baseCell != INVALID_BASE_CELL) {
-        sprintf(baseCellOutput, "%d", baseCell);
-    } else {
-        sprintf(baseCellOutput, "INVALID_BASE_CELL");
-    }
-    return baseCellOutput;
-}
+/** Maximum length of base cell reference string. */
+#define BASE_CELL_STRING_LENGTH 18
 
 /**
  * Generates and prints the baseCellNeighbors and baseCellRotations tables.
  */
-void generate() {
+static void generate() {
     int baseCellNeighbors[NUM_BASE_CELLS][7];
     int baseCellRotations[NUM_BASE_CELLS][7];
 
@@ -237,18 +226,19 @@ void generate() {
 
     printf("const int baseCellNeighbors[NUM_BASE_CELLS][7] = {\n");
     for (int i = 0; i < NUM_BASE_CELLS; i++) {
-        char* neighborStrings[7] = {0, 0, 0, 0, 0, 0, 0};
+        printf("{");
         for (int j = 0; j < 7; j++) {
-            neighborStrings[j] = getBaseCellOutput(baseCellNeighbors[i][j]);
+            if (j > 0) {
+                printf(", ");
+            }
+            if (baseCellNeighbors[i][j] != INVALID_BASE_CELL) {
+                printf("%d", baseCellNeighbors[i][j]);
+            } else {
+                printf("INVALID_BASE_CELL");
+            }
         }
-        printf("{%s, %s, %s, %s, %s, %s, %s}, // base cell %d%s\n",
-               neighborStrings[0], neighborStrings[1], neighborStrings[2],
-               neighborStrings[3], neighborStrings[4], neighborStrings[5],
-               neighborStrings[6], i,
+        printf("}, // base cell %d%s\n", i,
                _isBaseCellPentagon(i) ? " (pentagon)" : "");
-        for (int j = 0; j < 7; j++) {
-            free(neighborStrings[j]);
-        }
     }
     printf("};\n");
     printf("\n");

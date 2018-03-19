@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include <string.h>
 #include "algos.h"
 #include "benchmark.h"
 #include "h3api.h"
@@ -123,23 +124,23 @@ H3Index* hexagons;
 
 BENCHMARK(polyfillSF, 500, {
     numHexagons = H3_EXPORT(maxPolyfillSize)(&sfGeoPolygon, 9);
-    hexagons = calloc(numHexagons, sizeof(H3Index));
+    H3Index hexagons[numHexagons];
+    memset(hexagons, 0, sizeof(hexagons));
     H3_EXPORT(polyfill)(&sfGeoPolygon, 9, hexagons);
-    free(hexagons);
 });
 
 BENCHMARK(polyfillAlameda, 500, {
     numHexagons = H3_EXPORT(maxPolyfillSize)(&alamedaGeoPolygon, 9);
-    hexagons = calloc(numHexagons, sizeof(H3Index));
+    H3Index hexagons[numHexagons];
+    memset(hexagons, 0, sizeof(hexagons));
     H3_EXPORT(polyfill)(&alamedaGeoPolygon, 9, hexagons);
-    free(hexagons);
 });
 
 BENCHMARK(polyfillSouthernExpansion, 10, {
     numHexagons = H3_EXPORT(maxPolyfillSize)(&southernGeoPolygon, 9);
-    hexagons = calloc(numHexagons, sizeof(H3Index));
+    H3Index hexagons[numHexagons];
+    memset(hexagons, 0, sizeof(hexagons));
     H3_EXPORT(polyfill)(&southernGeoPolygon, 9, hexagons);
-    free(hexagons);
 });
 
 END_BENCHMARKS();

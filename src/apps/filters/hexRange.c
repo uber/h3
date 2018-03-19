@@ -30,13 +30,15 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "algos.h"
 #include "h3Index.h"
 #include "utility.h"
 
 void doCell(H3Index h, int k) {
     int maxSize = H3_EXPORT(maxKringSize)(k);
-    H3Index* rings = calloc(maxSize, sizeof(H3Index));
+    H3Index rings[maxSize];
+    memset(rings, 0, sizeof(rings));
 
     if (!H3_EXPORT(hexRange)(h, k, rings)) {
         for (int i = 0; i < maxSize; i++) {
@@ -45,8 +47,6 @@ void doCell(H3Index h, int k) {
     } else {
         printf("0\n");
     }
-
-    free(rings);
 }
 
 int main(int argc, char* argv[]) {

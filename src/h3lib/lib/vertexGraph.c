@@ -31,7 +31,11 @@
  * @param  res        Resolution of the hexagons whose vertices we're storing
  */
 void initVertexGraph(VertexGraph* graph, int numBuckets, int res) {
-    graph->buckets = calloc(numBuckets, sizeof(VertexNode*));
+    if (numBuckets > 0) {
+        graph->buckets = calloc(numBuckets, sizeof(VertexNode*));
+    } else {
+        graph->buckets = NULL;
+    }
     graph->numBuckets = numBuckets;
     graph->size = 0;
     graph->res = res;
