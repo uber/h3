@@ -33,6 +33,7 @@
 void initVertexGraph(VertexGraph* graph, int numBuckets, int res) {
     if (numBuckets > 0) {
         graph->buckets = calloc(numBuckets, sizeof(VertexNode*));
+        assert(graph->buckets != NULL);
     } else {
         graph->buckets = NULL;
     }
@@ -90,6 +91,7 @@ VertexNode* addVertexNode(VertexGraph* graph, const GeoCoord* fromVtx,
                           const GeoCoord* toVtx) {
     // Make the new node
     VertexNode* node = malloc(sizeof(VertexNode));
+    assert(node != NULL);
     _initVertexNode(node, fromVtx, toVtx);
     // Determine location
     uint32_t index = _hashVertex(fromVtx, graph->res, graph->numBuckets);
