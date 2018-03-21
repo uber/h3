@@ -25,6 +25,7 @@
 #include "baseCells.h"
 #include "faceijk.h"
 #include "mathExtensions.h"
+#include "stackAlloc.h"
 
 /**
  * Returns the H3 resolution of an H3 index.
@@ -219,10 +220,9 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
         }
         return 0;
     }
-    H3Index remainingHexes[numHexes];
+    STACK_ARRAY_CALLOC(H3Index, remainingHexes, numHexes);
     memcpy(remainingHexes, h3Set, sizeof(remainingHexes));
-    H3Index hashSetArray[numHexes];
-    memset(hashSetArray, 0, sizeof(hashSetArray));
+    STACK_ARRAY_CALLOC(H3Index, hashSetArray, numHexes);
     H3Index* compactedSetOffset = compactedSet;
     int numRemainingHexes = numHexes;
     while (numRemainingHexes) {
@@ -275,8 +275,7 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
                    numRemainingHexes * sizeof(remainingHexes[0]));
             break;
         }
-        H3Index compactableHexes[maxCompactableCount];
-        memset(compactableHexes, 0, sizeof(compactableHexes));
+        STACK_ARRAY_CALLOC(H3Index, compactableHexes, maxCompactableCount);
         for (int i = 0; i < numRemainingHexes; i++) {
             if (hashSetArray[i] == 0) continue;
             int count = H3_GET_RESERVED_BITS(hashSetArray[i]) + 1;
