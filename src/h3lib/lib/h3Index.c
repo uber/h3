@@ -221,7 +221,7 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
         return 0;
     }
     STACK_ARRAY_CALLOC(H3Index, remainingHexes, numHexes);
-    memcpy(remainingHexes, h3Set, sizeof(remainingHexes));
+    memcpy(remainingHexes, h3Set, numHexes * sizeof(H3Index));
     STACK_ARRAY_CALLOC(H3Index, hashSetArray, numHexes);
     H3Index* compactedSetOffset = compactedSet;
     int numRemainingHexes = numHexes;
@@ -336,9 +336,9 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
             }
         }
         // Set up for the next loop
-        memset(hashSetArray, 0, sizeof(hashSetArray));
+        memset(hashSetArray, 0, numHexes * sizeof(H3Index));
         compactedSetOffset += uncompactableCount;
-        memcpy(remainingHexes, compactableHexes, sizeof(compactableHexes));
+        memcpy(remainingHexes, compactableHexes, numHexes * sizeof(H3Index));
         numRemainingHexes = compactableCount;
     }
     return 0;
