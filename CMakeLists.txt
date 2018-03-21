@@ -23,6 +23,7 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 # YCM needs compilation database
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cmake/toolchain.cmake"
     CACHE FILEPATH
     "Toolchain to use for building this project")
@@ -47,7 +48,14 @@ set(H3_SOVERSION 1)
 project(h3 VERSION ${H3_VERSION})
 
 include(CMakeDependentOption)
+include(CheckIncludeFile)
 include(CTest)
+
+include(CheckAlloca)
+include(CheckVLA)
+
+check_alloca(have_alloca)
+check_vla(have_vla)
 
 set(LIB_SOURCE_FILES
     src/h3lib/include/bbox.h
@@ -140,6 +148,12 @@ if(BUILD_SHARED_LIBS)
 endif()
 
 target_compile_definitions(h3 PUBLIC H3_PREFIX=${H3_PREFIX})
+if(have_vla)
+    target_compile_definitions(h3 PUBLIC H3_HAVE_VLA)
+endif()
+if(have_alloca)
+    target_compile_definitions(h3 PUBLIC H3_HAVE_ALLOCA)
+endif()
 target_include_directories(h3 PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/h3lib/include>)
 
