@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <string.h>
 #include "algos.h"
 #include "benchmark.h"
 #include "h3api.h"
+#include "stackAlloc.h"
 
 // Fixtures
 GeoCoord sfVerts[] = {
@@ -123,22 +123,19 @@ int numHexagons;
 
 BENCHMARK(polyfillSF, 500, {
     numHexagons = H3_EXPORT(maxPolyfillSize)(&sfGeoPolygon, 9);
-    H3Index hexagons[numHexagons];
-    memset(hexagons, 0, sizeof(hexagons));
+    STACK_ARRAY_CALLOC(H3Index, hexagons, numHexagons);
     H3_EXPORT(polyfill)(&sfGeoPolygon, 9, hexagons);
 });
 
 BENCHMARK(polyfillAlameda, 500, {
     numHexagons = H3_EXPORT(maxPolyfillSize)(&alamedaGeoPolygon, 9);
-    H3Index hexagons[numHexagons];
-    memset(hexagons, 0, sizeof(hexagons));
+    STACK_ARRAY_CALLOC(H3Index, hexagons, numHexagons);
     H3_EXPORT(polyfill)(&alamedaGeoPolygon, 9, hexagons);
 });
 
 BENCHMARK(polyfillSouthernExpansion, 10, {
     numHexagons = H3_EXPORT(maxPolyfillSize)(&southernGeoPolygon, 9);
-    H3Index hexagons[numHexagons];
-    memset(hexagons, 0, sizeof(hexagons));
+    STACK_ARRAY_CALLOC(H3Index, hexagons, numHexagons);
     H3_EXPORT(polyfill)(&southernGeoPolygon, 9, hexagons);
 });
 

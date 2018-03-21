@@ -30,15 +30,14 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include "algos.h"
 #include "h3Index.h"
+#include "stackAlloc.h"
 #include "utility.h"
 
 void doCell(H3Index h, int k) {
     int maxSize = H3_EXPORT(maxKringSize)(k);
-    H3Index rings[maxSize];
-    memset(rings, 0, sizeof(rings));
+    STACK_ARRAY_CALLOC(H3Index, rings, maxSize);
 
     if (!H3_EXPORT(hexRange)(h, k, rings)) {
         for (int i = 0; i < maxSize; i++) {
