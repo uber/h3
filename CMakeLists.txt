@@ -49,8 +49,6 @@ project(h3 VERSION ${H3_VERSION})
 include(CMakeDependentOption)
 include(CTest)
 
-find_library(M_LIB m)
-
 set(LIB_SOURCE_FILES
     src/h3lib/include/bbox.h
     src/h3lib/include/h3Index.h
@@ -131,6 +129,12 @@ set(ALL_SOURCE_FILES
 
 # Build the H3 library
 add_library(h3 ${LIB_SOURCE_FILES})
+
+find_library(M_LIB m)
+if(M_LIB)
+    target_link_libraries(h3 PUBLIC ${M_LIB})
+endif()
+
 if(BUILD_SHARED_LIBS)
     set_target_properties(h3 PROPERTIES SOVERSION ${H3_SOVERSION})
 endif()
@@ -214,9 +218,6 @@ macro(add_h3_executable name)
     add_executable(${ARGV})
     if(TARGET ${name})
         target_link_libraries(${name} PUBLIC h3)
-        if(M_LIB)
-          target_link_libraries(${name} PUBLIC ${M_LIB})
-        endif()
         target_include_directories(${name} PUBLIC
           $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/apps/applib/include>)
     endif()
