@@ -52,11 +52,9 @@ include(CheckIncludeFile)
 include(CTest)
 
 include(CheckAlloca)
-include(CheckGmtime)
 include(CheckVLA)
 
 check_alloca(have_alloca)
-check_gmtime(have_reentrant_gmtime)
 check_vla(have_vla)
 
 set(LIB_SOURCE_FILES
@@ -153,9 +151,6 @@ endif()
 target_compile_definitions(h3 PUBLIC H3_PREFIX=${H3_PREFIX})
 if(have_alloca)
     target_compile_definitions(h3 PUBLIC H3_HAVE_ALLOCA)
-endif()
-if(have_reentrant_gmtime)
-    target_compile_definitions(h3 PUBLIC H3_HAVE_REENTRANT_GMTIME)
 endif()
 if(have_vla)
     target_compile_definitions(h3 PUBLIC H3_HAVE_VLA)

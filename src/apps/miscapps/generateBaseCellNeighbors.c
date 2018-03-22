@@ -27,28 +27,6 @@
 
 #include <baseCells.h>
 #include <stdlib.h>
-#include <time.h>
-
-#ifdef H3_HAVE_REENTRANT_GMTIME
-#ifdef _MSC_VER
-#define reentrant_gmtime(tmStruct, epochTime) \
-    do {                                      \
-        gmtime_s((tmStruct), (epochTime));    \
-    } while (0)
-#else
-#define reentrant_gmtime(tmStruct, epochTime) \
-    do {                                      \
-        gmtime_r((epochTime), (tmStruct));    \
-    } while (0)
-#endif
-#else
-#include <string.h>
-/* Fallback on non-reentrant when nothing available. */
-#define reentrant_gmtime(tmStruct, epochTime)                        \
-    do {                                                             \
-        memcpy(*(tmStruct), sizeof(*(tmStruct)), gmtime(epochTime)); \
-    } while (0)
-#endif
 
 const int NUM_DIRS = 6;
 
@@ -87,9 +65,8 @@ static void auditBaseCellNeighbors(int baseCellNeighbors[NUM_BASE_CELLS][7],
                 _ijkRotate60ccw(&ourDir);
             }
 
-            /* This is wrong for moving into pentagons. One neighbor for most
-               pentagons, and four neighbors for the polar pentagons 4 and
-               117. */
+            // This is wrong for moving into pentagons. One neighbor for most
+            // pentagons, and four neighbors for the polar pentagons 4 and 117.
             if (!_isBaseCellPentagon(baseCellNeighbors[i][j])) {
                 if (ourDir.i != theirDir.i || ourDir.j != theirDir.j ||
                     ourDir.k != theirDir.k) {
@@ -115,7 +92,7 @@ static void generate() {
                 _baseCellToFaceIjk(i, &fijk);
                 _neighbor(&fijk.coord, dir);
 
-                /* Should never happen, but just in case :) */
+                // Should never happen, but just in case :)
                 if (fijk.coord.i < 3 && fijk.coord.j < 3 && fijk.coord.k < 3) {
                     baseCellNeighbors[i][dir] = _faceIjkToBaseCell(&fijk);
                     baseCellRotations[i][dir] =
@@ -148,42 +125,42 @@ static void generate() {
                             break;
                     }
 
-                    /* Determine if we found a face that can traverse to the
-                       pentagon */
+                    // Determine if we found a face that can traverse to the
+                    // pentagon
                     if (_faceIjkToBaseCell(&fijk) == i) {
-                        /* fijk of the neighboring base cell */
+                        // fijk of the neighboring base cell
                         FaceIJK neighborFijk = {
                             fijk.face,
                             {fijk.coord.i / 2, fijk.coord.j / 2,
                              fijk.coord.k / 2}};
 
-                        /* number of rotations from the neighboring base cell
-                           into the pentagon */
+                        // number of rotations from the neighboring base cell
+                        // into the pentagon
                         int rotations = _faceIjkToBaseCellCCWrot60(&fijk);
 
-                        /* direction from the neighboring base cell to the
-                           pentagon */
+                        // direction from the neighboring base cell to the
+                        // pentagon
                         CoordIJK ijk = neighborFijk.coord;
-                        /* turn that into the direction within the pentagon
-                           (direction for continuing straight inside the
-                           pentagon) */
+                        // turn that into the direction within the pentagon
+                        // (direction for continuing straight inside the
+                        // pentagon)
                         for (int currRot = 0; currRot < rotations; currRot++) {
                             _ijkRotate60ccw(&ijk);
                         }
-                        /* invert that */
+                        // invert that
                         for (int currRot = 0; currRot < 3; currRot++) {
                             _ijkRotate60ccw(&ijk);
                         }
-                        /* direction from the pentagon towards the neighboring
-                           base cell */
+                        // direction from the pentagon towards the neighboring
+                        // base cell
                         int dir = _unitIjkToDigit(&ijk);
 
-                        /* the direction was detected as being the i direction,
-                           but this can't be because i is deleted from the
-                           pentagon. We need to choose a different direction. */
+                        // the direction was detected as being the i direction,
+                        // but this can't be because i is deleted from the
+                        // pentagon. We need to choose a different direction.
                         if (dir == 1) {
-                            /* 4 and 117 are 'polar' type pentagons, which have
-                               some different behavior. */
+                            // 4 and 117 are 'polar' type pentagons, which have
+                            // some different behavior.
                             if (i == 4 || i == 117) {
                                 _ijkRotate60cw(&ijk);
                                 _ijkRotate60cw(&ijk);
@@ -193,19 +170,19 @@ static void generate() {
                             dir = _unitIjkToDigit(&ijk);
                         }
 
-                        /* Adjust for the deleted k-subsequence distortion */
+                        // Adjust for the deleted k-subsequence distortion
                         int rotAdj = 0;
                         if (i == 4 || i == 117) {
-                            /* 'polar' type pentagon with all faces pointing
-                               towards i */
+                            // 'polar' type pentagon with all faces pointing
+                            // towards i
                             if (dir == 5) {
                                 rotAdj = 2;
                             } else if (dir == 6) {
                                 rotAdj = 4;
                             }
                         } else {
-                            /* the deleted k subsequence causes 4 and 5 to
-                               'warp', need to adjust for that. */
+                            // the deleted k subsequence causes 4 and 5 to
+                            // 'warp', need to adjust for that.
                             if (dir == 4 || dir == 5) {
                                 rotAdj = dir;
                             }
@@ -214,11 +191,11 @@ static void generate() {
 
                         int neighborBc = _faceIjkToBaseCell(&neighborFijk);
 
-                        /* The poles are totally different, although the
-                           rotations are correctly generated, so only overwrite
-                           the neighbor information. It was easier to manually
-                           derive the neighbors than to write the generation
-                           program. */
+                        // The poles are totally different, although the
+                        // rotations are correctly generated, so only overwrite
+                        // the neighbor information. It was easier to manually
+                        // derive the neighbors than to write the generation
+                        // program.
                         if (i == 4) {
                             int realNeighbors[] = {
                                 4, INVALID_BASE_CELL, 15, 8, 3, 0, 12};
@@ -230,10 +207,10 @@ static void generate() {
                             neighborBc = realNeighbors[dir];
                         }
 
-                        /* the actual neighboring base cell */
+                        // the actual neighboring base cell
                         baseCellNeighbors[i][dir] = neighborBc;
-                        /* rotations from the pentagon into the neighboring base
-                           cell */
+                        // rotations from the pentagon into the neighboring base
+                        // cell
                         baseCellRotations[i][dir] = rotations;
                     }
                 }
@@ -242,49 +219,6 @@ static void generate() {
     }
 
     auditBaseCellNeighbors(baseCellNeighbors, baseCellRotations);
-
-    time_t rawTime;
-    time(&rawTime);
-    struct tm tmStruct;
-    reentrant_gmtime(&tmStruct, &rawTime);
-    const char prologFormat[] =
-        "/*\n"
-        " * Copyright 2016-%d Uber Technologies, Inc.\n"
-        " *\n"
-        " * Licensed under the Apache License, Version 2.0 (the \"License\");\n"
-        " * you may not use this file except in compliance with the License.\n"
-        " * You may obtain a copy of the License at\n"
-        " *\n"
-        " *         http://www.apache.org/licenses/LICENSE-2.0\n"
-        " *\n"
-        " * Unless required by applicable law or agreed to in writing, "
-        "software\n"
-        " * distributed under the License is distributed on an \"AS IS\" "
-        "BASIS,\n"
-        " * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or "
-        "implied.\n"
-        " * See the License for the specific language governing permissions "
-        "and\n"
-        " * limitations under the License.\n"
-        " */\n"
-        "/** @file baseCells.c\n"
-        " * Base cell related lookup tables and access functions.\n"
-        " */\n\n"
-        "#include \"baseCells.h\"\n\n"
-        "/** base cell at a given ijk and required rotations into its "
-        "system */\n"
-        "typedef struct {\n"
-        "    int baseCell;  /** base cell number */\n"
-        "    int ccwRot60;  /** number of ccw 60 degree rotations relative to "
-        "current */\n"
-        "} BaseCellOrient;\n\n"
-        "/** @brief Neighboring base cell ID in each IJK direction.\n"
-        " *\n"
-        " * For each base cell, for each direction, the neighboring base\n"
-        " * cell ID is given. 127 indicates there is no neighbor in that "
-        "direction.\n"
-        " */\n";
-    printf(prologFormat, 1900 + tmStruct.tm_year);
 
     printf("const int baseCellNeighbors[NUM_BASE_CELLS][7] = {\n");
     for (int i = 0; i < NUM_BASE_CELLS; i++) {
@@ -299,14 +233,14 @@ static void generate() {
                 printf("INVALID_BASE_CELL");
             }
         }
-        printf("}, /* base cell %d%s */\n", i,
+        printf("}, // base cell %d%s\n", i,
                _isBaseCellPentagon(i) ? " (pentagon)" : "");
     }
     printf("};\n");
     printf("\n");
     printf("const int baseCellNeighbor60CCWRots[NUM_BASE_CELLS][7] = {\n");
     for (int i = 0; i < NUM_BASE_CELLS; i++) {
-        printf("    {%d, %d, %d, %d, %d, %d, %d}, /* base cell %d */%s\n",
+        printf("    {%d, %d, %d, %d, %d, %d, %d}, // base cell %d%s\n",
                baseCellRotations[i][0], baseCellRotations[i][1],
                baseCellRotations[i][2], baseCellRotations[i][3],
                baseCellRotations[i][4], baseCellRotations[i][5],
