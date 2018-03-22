@@ -97,7 +97,7 @@ void doCell(H3Index h, int maxK, TestOutput* testOutput) {
             testOutput->ret1++;
             int foundPent = 0;
             for (int i = 0; i < maxSz; i++) {
-                if (h3IsPentagon(kRingInternalOutput[i])) {
+                if (H3_EXPORT(h3IsPentagon)(kRingInternalOutput[i])) {
                     foundPent = 1;
                     break;
                 }

@@ -189,7 +189,7 @@ void H3_EXPORT(h3ToChildren)(H3Index h, int childRes, H3Index* children) {
     }
     int bufferSize = H3_EXPORT(maxH3ToChildrenSize)(h, childRes);
     int bufferChildStep = (bufferSize / 7);
-    int isAPentagon = h3IsPentagon(h);
+    int isAPentagon = H3_EXPORT(h3IsPentagon)(h);
     for (int i = 0; i < 7; i++) {
         if (!isAPentagon || i != K_AXES_DIGIT) {
             H3_EXPORT(h3ToChildren)(makeDirectChild(h, i), childRes, children);
@@ -281,7 +281,8 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
             if (hashSetArray[i] == 0) continue;
             int count = H3_GET_RESERVED_BITS(hashSetArray[i]) + 1;
             // Include the deleted direction for pentagons as implicitly "there"
-            if (h3IsPentagon(hashSetArray[i] & H3_RESERVED_MASK_NEGATIVE)) {
+            if (H3_EXPORT(h3IsPentagon)(hashSetArray[i] &
+                                        H3_RESERVED_MASK_NEGATIVE)) {
                 // We need this later on, no need to recalculate
                 H3_SET_RESERVED_BITS(hashSetArray[i], count);
                 // Increment count after setting the reserved bits,
@@ -761,7 +762,8 @@ void H3_EXPORT(h3ToGeo)(H3Index h3, GeoCoord* g) {
 void H3_EXPORT(h3ToGeoBoundary)(H3Index h3, GeoBoundary* gb) {
     FaceIJK fijk;
     _h3ToFaceIjk(h3, &fijk);
-    _faceIjkToGeoBoundary(&fijk, H3_GET_RESOLUTION(h3), h3IsPentagon(h3), gb);
+    _faceIjkToGeoBoundary(&fijk, H3_GET_RESOLUTION(h3),
+                          H3_EXPORT(h3IsPentagon)(h3), gb);
 }
 
 /**
