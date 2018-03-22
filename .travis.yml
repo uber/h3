@@ -55,6 +55,8 @@ matrix:
         - make && make coverage
       after_success:
         - coveralls --lcov-file coverage.cleaned.info --verbose
+    - env: NAME="Mac OSX (Xcode 8)"
+      os: osx
 
 # Configure the build script, out of source.
 before_script:
