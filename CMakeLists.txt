@@ -279,7 +279,7 @@ if(BUILD_TESTING)
     cmake_dependent_option(WRAP_VALGRIND "Wrap tests in valgrind" OFF
                            "VALGRIND" OFF)
     if(WRAP_VALGRIND)
-        set(TEST_WRAPPER ${VALGRIND} --leak-check=full --error-exitcode=99)
+        set(TEST_WRAPPER ${VALGRIND} --track-origins=yes --leak-check=full --error-exitcode=99)
     else()
         set(TEST_WRAPPER)
     endif()
@@ -343,7 +343,7 @@ if(BUILD_TESTING)
             set(dump_command "cat")
         endif()
         add_test(NAME ${name}_test${test_number}
-                 COMMAND "${dump_command} ${argfile} | $<TARGET_FILE:${name}>")
+                 COMMAND ${SHELL} "${dump_command} ${argfile} | ${TEST_WRAPPER} $<TARGET_FILE:${name}>")
 
         if(PRINT_TEST_FILES)
             message("${name}_test${test_number} - ${argfile}")
