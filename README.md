@@ -10,7 +10,9 @@ Documentation is available at [https://uber.github.io/h3/](https://uber.github.i
 
 ## Installing
 
-For now, you can only install H3 by building from source. However, bindings for several languages are coming. If you're using a language with bindings, it's recommended you follow their instructions instead.
+We recommend using prebuilt bindings if they are available for your programming language. Bindings for [Java](https://github.com/uber/h3-java) and [others](https://uber.github.io/h3/#/documentation/community/bindings) are available.
+
+If no bindings are available, you can only install H3 by building from source.
 
 ### Building from source
 
