@@ -12,22 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-if(__check_alloca)
+if(__check_gmtime)
   return()
 endif()
-set(__check_alloca 1)
+set(__check_gmtime 1)
 
-function(check_alloca var)
-    if(NOT DEFINED have_alloca)
-        try_compile(have_alloca
-            ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/alloca_test
-            ${CMAKE_CURRENT_SOURCE_DIR}/cmake/alloca_test.c)
+include(CheckFunctionExists)
+
+function(check_gmtime var)
+    if(NOT DEFINED have_reentrant_gmtime)
+        if(MSVC)
+            check_function_exists(gmtime_s have_reentrant_gmtime)
+        else()
+            check_function_exists(gmtime_r have_reentrant_gmtime)
+        endif()
     endif()
-    set(description "Checking for stack allocation function (alloca)")
-    if(have_alloca)
+
+    if(have_reentrant_gmtime)
         set(${var} ON PARENT_SCOPE)
-        message(STATUS "${description} - Success")
-    else()
-        message(STATUS "${description} - Failed")
     endif()
 endfunction()

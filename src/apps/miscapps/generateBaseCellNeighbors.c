@@ -27,6 +27,28 @@
 
 #include <baseCells.h>
 #include <stdlib.h>
+#include <time.h>
+
+#ifdef H3_HAVE_REENTRANT_GMTIME
+#ifdef _MSC_VER
+#define reentrant_gmtime(tmStruct, epochTime) \
+    do {                                      \
+        gmtime_s((tmStruct), (epochTime));    \
+    } while (0)
+#else
+#define reentrant_gmtime(tmStruct, epochTime) \
+    do {                                      \
+        gmtime_r((epochTime), (tmStruct));    \
+    } while (0)
+#endif
+#else
+#include <string.h>
+/* Fallback on non-reentrant when nothing available. */
+#define reentrant_gmtime(tmStruct, epochTime)                        \
+    do {                                                             \
+        memcpy(*(tmStruct), sizeof(*(tmStruct)), gmtime(epochTime)); \
+    } while (0)
+#endif
 
 const int NUM_DIRS = 6;
 
@@ -221,9 +243,52 @@ static void generate() {
 
     auditBaseCellNeighbors(baseCellNeighbors, baseCellRotations);
 
+    time_t rawTime;
+    time(&rawTime);
+    struct tm tmStruct;
+    reentrant_gmtime(&tmStruct, &rawTime);
+    const char licenseFormat[] =
+        "/*\n"
+        " * Copyright 2016-%d Uber Technologies, Inc.\n"
+        " *\n"
+        " * Licensed under the Apache License, Version 2.0 (the \"License\");\n"
+        " * you may not use this file except in compliance with the License.\n"
+        " * You may obtain a copy of the License at\n"
+        " *\n"
+        " *         http://www.apache.org/licenses/LICENSE-2.0\n"
+        " *\n"
+        " * Unless required by applicable law or agreed to in writing, "
+        "software\n"
+        " * distributed under the License is distributed on an \"AS IS\" "
+        "BASIS,\n"
+        " * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or "
+        "implied.\n"
+        " * See the License for the specific language governing permissions "
+        "and\n"
+        " * limitations under the License.\n"
+        " */\n"
+        "/** @file baseCells.c\n"
+        " * Base cell related lookup tables and access functions.\n"
+        " */\n\n"
+        "#include \"baseCells.h\"\n\n"
+        "/** base cell at a given ijk and required rotations into its "
+        "system */\n"
+        "typedef struct {\n"
+        "    int baseCell;  /** base cell number */\n"
+        "    int ccwRot60;  /** number of ccw 60 degree rotations relative to "
+        "current */\n"
+        "} BaseCellOrient;\n\n"
+        "/** @brief Neighboring base cell ID in each IJK direction.\n"
+        " *\n"
+        " * For each base cell, for each direction, the neighboring base\n"
+        " * cell ID is given. 127 indicates there is no neighbor in that "
+        "direction.\n"
+        " */\n";
+    printf(licenseFormat, 1900 + tmStruct.tm_year);
+
     printf("const int baseCellNeighbors[NUM_BASE_CELLS][7] = {\n");
     for (int i = 0; i < NUM_BASE_CELLS; i++) {
-        printf("{");
+        printf("    {");
         for (int j = 0; j < 7; j++) {
             if (j > 0) {
                 printf(", ");
@@ -241,7 +306,7 @@ static void generate() {
     printf("\n");
     printf("const int baseCellNeighbor60CCWRots[NUM_BASE_CELLS][7] = {\n");
     for (int i = 0; i < NUM_BASE_CELLS; i++) {
-        printf("{%d, %d, %d, %d, %d, %d, %d}, /* base cell %d */%s\n",
+        printf("    {%d, %d, %d, %d, %d, %d, %d}, /* base cell %d */%s\n",
                baseCellRotations[i][0], baseCellRotations[i][1],
                baseCellRotations[i][2], baseCellRotations[i][3],
                baseCellRotations[i][4], baseCellRotations[i][5],
