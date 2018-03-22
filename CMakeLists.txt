@@ -337,9 +337,14 @@ if(BUILD_TESTING)
     macro(add_h3_test_with_file name srcfile argfile)
         add_h3_test_common(${name} ${srcfile})
         # add a special command (so we don't need to read the test file from the test program)
+        if(WIN32)
+            set(dump_command "Get-Content")
+        else()
+            set(dump_command "cat")
+        endif()
         add_test(NAME ${name}_test${test_number}
-            COMMAND ${TEST_WRAPPER} ${SHELL} "$<TARGET_FILE:${name}> < ${argfile}"
-            )
+                 COMMAND "${dump_command} ${argfile} | $<TARGET_FILE:${name}>")
+
         if(PRINT_TEST_FILES)
             message("${name}_test${test_number} - ${argfile}")
         endif()
