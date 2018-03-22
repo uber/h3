@@ -91,7 +91,7 @@ TEST(h3IsValidBaseCell) {
         H3_SET_BASE_CELL(h, i);
         char failureMessage[BUFF_SIZE];
         sprintf(failureMessage, "h3IsValid failed on base cell %d", i);
-        t_assert(h3IsValid(h), failureMessage);
+        t_assert(H3_EXPORT(h3IsValid)(h), failureMessage);
 
         t_assert(H3_EXPORT(h3GetBaseCell)(h) == i,
                  "failed to recover base cell");
@@ -102,7 +102,7 @@ TEST(h3IsValidBaseCellInvalid) {
     H3Index hWrongBaseCell = H3_INIT;
     H3_SET_MODE(hWrongBaseCell, H3_HEXAGON_MODE);
     H3_SET_BASE_CELL(hWrongBaseCell, NUM_BASE_CELLS);
-    t_assert(!h3IsValid(hWrongBaseCell),
+    t_assert(!H3_EXPORT(h3IsValid)(hWrongBaseCell),
              "h3IsValid failed on invalid base cell");
 }
 
@@ -112,7 +112,7 @@ TEST(h3IsValidWithMode) {
         H3_SET_MODE(h, i);
         char failureMessage[BUFF_SIZE];
         sprintf(failureMessage, "h3IsValid failed on mode %d", i);
-        t_assert(!h3IsValid(h) || i == 1, failureMessage);
+        t_assert(!H3_EXPORT(h3IsValid)(h) || i == 1, failureMessage);
     }
 }
 
@@ -120,7 +120,7 @@ TEST(h3BadDigitInvalid) {
     H3Index h = H3_INIT;
     H3_SET_MODE(h, H3_HEXAGON_MODE);
     H3_SET_RESOLUTION(h, 1);
-    t_assert(!h3IsValid(h), "h3IsValid failed on too large digit");
+    t_assert(!H3_EXPORT(h3IsValid)(h), "h3IsValid failed on too large digit");
 }
 
 TEST(h3ToString) {

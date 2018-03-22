@@ -28,12 +28,12 @@ BEGIN_TESTS(compact);
 
 TEST(roundtrip) {
     int k = 9;
-    int hexCount = maxKringSize(k);
+    int hexCount = H3_EXPORT(maxKringSize)(k);
     int expectedCompactCount = 73;
 
     // Generate a set of hexagons to compact
     H3Index* sunnyvaleExpanded = calloc(hexCount, sizeof(H3Index));
-    kRing(sunnyvale, k, sunnyvaleExpanded);
+    H3_EXPORT(kRing)(sunnyvale, k, sunnyvaleExpanded);
 
     H3Index* compressed = calloc(hexCount, sizeof(H3Index));
     int err = H3_EXPORT(compact)(sunnyvaleExpanded, compressed, hexCount);
