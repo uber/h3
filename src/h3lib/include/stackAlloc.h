@@ -14,7 +14,7 @@
 
 #elif defined(H3_HAVE_ALLOCA)
 
-#ifdef _MSC_VERSION
+#ifdef _MSC_VER
 
 #include <malloc.h>
 
