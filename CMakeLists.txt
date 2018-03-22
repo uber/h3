@@ -280,8 +280,7 @@ if(BUILD_TESTING)
                            "VALGRIND" OFF)
     if(WRAP_VALGRIND)
         set(TEST_WRAPPER ${VALGRIND} --track-origins=yes --leak-check=full --error-exitcode=99)
-    else()
-        set(TEST_WRAPPER)
+        string(REPLACE ";" " " TEST_WRAPPER_STR "${TEST_WRAPPER}")
     endif()
 
     enable_testing()
@@ -342,8 +341,9 @@ if(BUILD_TESTING)
         else()
             set(dump_command "cat")
         endif()
+
         add_test(NAME ${name}_test${test_number}
-                 COMMAND ${SHELL} "${dump_command} ${argfile} | ${TEST_WRAPPER} $<TARGET_FILE:${name}>")
+                 COMMAND ${SHELL} "${dump_command} ${argfile} | ${TEST_WRAPPER_STR} $<TARGET_FILE:${name}>")
 
         if(PRINT_TEST_FILES)
             message("${name}_test${test_number} - ${argfile}")
