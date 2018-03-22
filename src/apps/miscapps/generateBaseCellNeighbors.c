@@ -247,7 +247,7 @@ static void generate() {
     time(&rawTime);
     struct tm tmStruct;
     reentrant_gmtime(&tmStruct, &rawTime);
-    const char licenseFormat[] =
+    const char prologFormat[] =
         "/*\n"
         " * Copyright 2016-%d Uber Technologies, Inc.\n"
         " *\n"
@@ -284,7 +284,7 @@ static void generate() {
         " * cell ID is given. 127 indicates there is no neighbor in that "
         "direction.\n"
         " */\n";
-    printf(licenseFormat, 1900 + tmStruct.tm_year);
+    printf(prologFormat, 1900 + tmStruct.tm_year);
 
     printf("const int baseCellNeighbors[NUM_BASE_CELLS][7] = {\n");
     for (int i = 0; i < NUM_BASE_CELLS; i++) {
