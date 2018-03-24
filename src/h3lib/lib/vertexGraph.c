@@ -18,6 +18,7 @@
  */
 
 #include "vertexGraph.h"
+#include <assert.h>
 #include <math.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -31,7 +32,12 @@
  * @param  res        Resolution of the hexagons whose vertices we're storing
  */
 void initVertexGraph(VertexGraph* graph, int numBuckets, int res) {
-    graph->buckets = calloc(numBuckets, sizeof(VertexNode*));
+    if (numBuckets > 0) {
+        graph->buckets = calloc(numBuckets, sizeof(VertexNode*));
+        assert(graph->buckets != NULL);
+    } else {
+        graph->buckets = NULL;
+    }
     graph->numBuckets = numBuckets;
     graph->size = 0;
     graph->res = res;
@@ -86,6 +92,7 @@ VertexNode* addVertexNode(VertexGraph* graph, const GeoCoord* fromVtx,
                           const GeoCoord* toVtx) {
     // Make the new node
     VertexNode* node = malloc(sizeof(VertexNode));
+    assert(node != NULL);
     _initVertexNode(node, fromVtx, toVtx);
     // Determine location
     uint32_t index = _hashVertex(fromVtx, graph->res, graph->numBuckets);

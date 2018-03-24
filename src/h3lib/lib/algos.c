@@ -29,6 +29,7 @@
 #include "h3Index.h"
 #include "h3api.h"
 #include "linkedGeo.h"
+#include "stackAlloc.h"
 #include "vertexGraph.h"
 
 /*
@@ -90,9 +91,8 @@ int H3_EXPORT(maxKringSize)(int k) {
  */
 void H3_EXPORT(kRing)(H3Index origin, int k, H3Index* out) {
     int maxIdx = H3_EXPORT(maxKringSize)(k);
-    int* distances = calloc(maxIdx, sizeof(int));
+    STACK_ARRAY_CALLOC(int, distances, maxIdx);
     H3_EXPORT(kRingDistances)(origin, k, out, distances);
-    free(distances);
 }
 
 /**
@@ -741,7 +741,7 @@ void H3_EXPORT(polyfill)(const GeoPolygon* geoPolygon, int res, H3Index* out) {
     // This first part is identical to the maxPolyfillSize above.
 
     // Get the bounding boxes for the polygon and any holes
-    BBox* bboxes = calloc(sizeof(BBox), geoPolygon->numHoles + 1);
+    STACK_ARRAY_CALLOC(BBox, bboxes, geoPolygon->numHoles + 1);
     bboxesFromGeoPolygon(geoPolygon, bboxes);
     int minK = bboxHexRadius(&bboxes[0], res);
     int numHexagons = H3_EXPORT(maxKringSize)(minK);
@@ -772,7 +772,6 @@ void H3_EXPORT(polyfill)(const GeoPolygon* geoPolygon, int res, H3Index* out) {
             out[i] = 0;
         }
     }
-    free(bboxes);
 }
 
 /**

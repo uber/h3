@@ -23,6 +23,7 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 # YCM needs compilation database
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cmake/toolchain.cmake"
     CACHE FILEPATH
     "Toolchain to use for building this project")
@@ -47,9 +48,14 @@ set(H3_SOVERSION 1)
 project(h3 VERSION ${H3_VERSION})
 
 include(CMakeDependentOption)
+include(CheckIncludeFile)
 include(CTest)
 
-find_library(M_LIB m)
+include(CheckAlloca)
+include(CheckVLA)
+
+check_alloca(have_alloca)
+check_vla(have_vla)
 
 set(LIB_SOURCE_FILES
     src/h3lib/include/bbox.h
@@ -66,6 +72,7 @@ set(LIB_SOURCE_FILES
     src/h3lib/include/coordijk.h
     src/h3lib/include/algos.h
     src/h3lib/include/h3api.h
+    src/h3lib/include/stackAlloc.h
     src/h3lib/lib/algos.c
     src/h3lib/lib/coordijk.c
     src/h3lib/lib/bbox.c
@@ -131,13 +138,25 @@ set(ALL_SOURCE_FILES
 
 # Build the H3 library
 add_library(h3 ${LIB_SOURCE_FILES})
+
+find_library(M_LIB m)
+if(M_LIB)
+    target_link_libraries(h3 PUBLIC ${M_LIB})
+endif()
+
 if(BUILD_SHARED_LIBS)
     set_target_properties(h3 PROPERTIES SOVERSION ${H3_SOVERSION})
 endif()
 
 target_compile_definitions(h3 PUBLIC H3_PREFIX=${H3_PREFIX})
+if(have_alloca)
+    target_compile_definitions(h3 PUBLIC H3_HAVE_ALLOCA)
+endif()
+if(have_vla)
+    target_compile_definitions(h3 PUBLIC H3_HAVE_VLA)
+endif()
 target_include_directories(h3 PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/h3lib/include>)
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/h3lib/include>)
 
 # Automatic code formatting
 find_program(CLANG_FORMAT_PATH clang-format)
@@ -214,9 +233,6 @@ macro(add_h3_executable name)
     add_executable(${ARGV})
     if(TARGET ${name})
         target_link_libraries(${name} PUBLIC h3)
-        if(M_LIB)
-          target_link_libraries(${name} PUBLIC ${M_LIB})
-        endif()
         target_include_directories(${name} PUBLIC
           $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/apps/applib/include>)
     endif()
@@ -263,9 +279,8 @@ if(BUILD_TESTING)
     cmake_dependent_option(WRAP_VALGRIND "Wrap tests in valgrind" OFF
                            "VALGRIND" OFF)
     if(WRAP_VALGRIND)
-        set(TEST_WRAPPER ${VALGRIND} --leak-check=full --error-exitcode=99)
-    else()
-        set(TEST_WRAPPER)
+        set(TEST_WRAPPER ${VALGRIND} --track-origins=yes --leak-check=full --error-exitcode=99)
+        string(REPLACE ";" " " TEST_WRAPPER_STR "${TEST_WRAPPER}")
     endif()
 
     enable_testing()
@@ -321,9 +336,15 @@ if(BUILD_TESTING)
     macro(add_h3_test_with_file name srcfile argfile)
         add_h3_test_common(${name} ${srcfile})
         # add a special command (so we don't need to read the test file from the test program)
+        if(WIN32)
+            set(dump_command "Get-Content")
+        else()
+            set(dump_command "cat")
+        endif()
+
         add_test(NAME ${name}_test${test_number}
-            COMMAND ${TEST_WRAPPER} ${SHELL} "$<TARGET_FILE:${name}> < ${argfile}"
-            )
+                 COMMAND ${SHELL} "${dump_command} ${argfile} | ${TEST_WRAPPER_STR} $<TARGET_FILE:${name}>")
+
         if(PRINT_TEST_FILES)
             message("${name}_test${test_number} - ${argfile}")
         endif()
