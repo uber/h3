@@ -7,6 +7,12 @@ The public API of this library consists of the functions declared in file
 
 ## [Unreleased]
 
+## [3.0.4] - 2018-04-16
+### Added
+- Assertions when allocating memory on the heap.
+### Changed
+- Most internal memory allocations happen on the stack instead of the heap.
+
 ## [3.0.3] - 2018-03-19
 ### Added
 - CMake config installation to ease use of h3 from CMake projects.
