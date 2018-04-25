@@ -2,7 +2,7 @@
 
 H3 is a C library, in part to make it simpler to create bindings for different programming languages. Each language usually has its own way to bind to C functions, but this document can serve as a starting point and list of tips.
 
-There may already be [H3 bindings](https://uber.github.io/h3/#/documentation/community/bindings) available for your language of choice. There are planned bindings for Java, Javascript, Python, and Go coming.
+There may already be [H3 bindings](https://uber.github.io/h3/#/documentation/community/bindings) available for your language of choice. There are planned bindings for Javascript, Python, and Go coming.
 
 ## Function naming
 
