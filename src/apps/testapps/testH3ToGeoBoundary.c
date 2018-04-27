@@ -56,6 +56,6 @@ int main(int argc, char* argv[]) {
         GeoBoundary b;
         readBoundary(stdin, &b);
 
-        assertExpectedBoundary(h3, &b);
+        t_assertBoundary(h3, &b);
     }
 }

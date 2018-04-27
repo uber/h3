@@ -21,8 +21,12 @@
 #define TEST_H
 
 #include <stdio.h>
+#include "geoCoord.h"
+#include "h3api.h"
 
 void t_assert(int value, const char* msg);
+void t_assertBoundary(H3Index h3, const GeoBoundary* b1);
+
 int testCount();
 
 #define BEGIN_TESTS(NAME)              \
