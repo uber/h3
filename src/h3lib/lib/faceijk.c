@@ -748,9 +748,14 @@ void _faceIjkToGeoBoundary(const FaceIJK* h, int res, int isPentagon,
             // find the intersection and add the lat/lon point to the result
             Vec2d inter;
             _v2dIntersect(&orig2d0, &orig2d1, edge0, edge1, &inter);
-            _hex2dToGeo(&inter, centerIJK.face, adjRes, 1,
-                        &g->verts[g->numVerts]);
-            g->numVerts++;
+            // if the intersection is the same as one of the edge endpoints,
+            // the additional vertex is on the edge itself and unnecessary
+            if (!(_v2dEquals(&orig2d0, &inter) ||
+                  _v2dEquals(&orig2d1, &inter))) {
+                _hex2dToGeo(&inter, centerIJK.face, adjRes, 1,
+                            &g->verts[g->numVerts]);
+                g->numVerts++;
+            }
         }
 
         // convert vertex to lat/lon and add to the result

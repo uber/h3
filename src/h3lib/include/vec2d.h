@@ -20,6 +20,8 @@
 #ifndef VEC2D_H
 #define VEC2D_H
 
+#include <stdbool.h>
+
 /** @struct Vec2d
  *  @brief 2D floating-point vector
  */
@@ -33,5 +35,6 @@ typedef struct {
 double _v2dMag(const Vec2d* v);
 void _v2dIntersect(const Vec2d* p0, const Vec2d* p1, const Vec2d* p2,
                    const Vec2d* p3, Vec2d* inter);
+bool _v2dEquals(const Vec2d* p0, const Vec2d* p1);
 
 #endif

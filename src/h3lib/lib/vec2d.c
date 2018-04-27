@@ -52,3 +52,7 @@ void _v2dIntersect(const Vec2d* p0, const Vec2d* p1, const Vec2d* p2,
     inter->x = p0->x + (t * s1.x);
     inter->y = p0->y + (t * s1.y);
 }
+
+bool _v2dEquals(const Vec2d* p0, const Vec2d* p1) {
+    return p0->x == p1->x && p0->y == p1->y;
+}

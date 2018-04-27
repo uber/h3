@@ -42,4 +42,6 @@ void geoBoundaryPrint(const GeoBoundary* b);
 void geoBoundaryPrintln(const GeoBoundary* b);
 int readBoundary(FILE* f, GeoBoundary* b);
 
+void assertExpectedBoundary(H3Index h3, const GeoBoundary* b1);
+
 #endif
