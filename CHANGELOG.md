@@ -6,8 +6,12 @@ The public API of this library consists of the functions declared in file
 [h3api.h](./src/h3lib/include/h3api.h).
 
 ## [Unreleased]
+
+## [3.0.5] - 2018-04-27
 ### Fixed
 - Fixed duplicate vertex in h3ToGeoBoundary for certain class III hexagons (#46)
+### Added
+- Release guide
 
 ## [3.0.4] - 2018-04-16
 ### Added
