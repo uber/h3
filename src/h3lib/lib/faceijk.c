@@ -708,9 +708,15 @@ void _faceIjkToGeoBoundary(const FaceIJK* h, int res, int isPentagon,
         int pentLeading4 = 0;
         int overage = _adjustOverageClassII(&fijk, adjRes, pentLeading4, 1);
 
-        // check for edge-crossing
-        // note that Class II cell edges have vertices on the face edge, with no
-        // edge line intersections
+        /*
+        Check for edge-crossing. Each face of the underlying icosahedron is a
+        different projection plane. So if an edge of the hexagon crosses an
+        icosahedron edge, an additional vertex must be introduced at that
+        intersection point. Then each half of the cell edge can be projected
+        to geographic coordinates using the appropriate icosahedron face
+        projection. Note that Class II cell edges have vertices on the face
+        edge, with no edge line intersections.
+        */
         if (isResClassIII(res) && vert > 0 && fijk.face != lastFace &&
             lastOverage != 1) {
             // find hex2d of the two vertexes on original face
@@ -748,9 +754,18 @@ void _faceIjkToGeoBoundary(const FaceIJK* h, int res, int isPentagon,
             // find the intersection and add the lat/lon point to the result
             Vec2d inter;
             _v2dIntersect(&orig2d0, &orig2d1, edge0, edge1, &inter);
-            _hex2dToGeo(&inter, centerIJK.face, adjRes, 1,
-                        &g->verts[g->numVerts]);
-            g->numVerts++;
+            /*
+            If a point of intersection occurs at a hexagon vertex, then each
+            adjacent hexagon edge will lie completely on a single icosahedron
+            face, and no additional vertex is required.
+            */
+            bool isIntersectionAtVertex =
+                _v2dEquals(&orig2d0, &inter) || _v2dEquals(&orig2d1, &inter);
+            if (!isIntersectionAtVertex) {
+                _hex2dToGeo(&inter, centerIJK.face, adjRes, 1,
+                            &g->verts[g->numVerts]);
+                g->numVerts++;
+            }
         }
 
         // convert vertex to lat/lon and add to the result

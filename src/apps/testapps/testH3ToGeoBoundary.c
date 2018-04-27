@@ -33,19 +33,6 @@
 #include "test.h"
 #include "utility.h"
 
-void assertExpected(H3Index h3, const GeoBoundary* b1) {
-    // generate cell boundary for the h3 index
-    GeoBoundary b2;
-    H3_EXPORT(h3ToGeoBoundary)(h3, &b2);
-
-    t_assert(b1->numVerts == b2.numVerts, "expected cell boundary count");
-
-    for (int v = 0; v < b1->numVerts; v++) {
-        t_assert(geoAlmostEqual(&b1->verts[v], &b2.verts[v]),
-                 "got expected vertex");
-    }
-}
-
 int main(int argc, char* argv[]) {
     // check command line args
     if (argc > 1) {
@@ -69,6 +56,6 @@ int main(int argc, char* argv[]) {
         GeoBoundary b;
         readBoundary(stdin, &b);
 
-        assertExpected(h3, &b);
+        t_assertBoundary(h3, &b);
     }
 }

@@ -81,6 +81,19 @@ TEST(contiguous2) {
     free(set);
 }
 
+TEST(contiguous2distorted) {
+    VertexGraph graph;
+    char* hexes[] = {"894cc5365afffff", "894cc536537ffff"};
+    int numHexes = sizeof(hexes) / sizeof(hexes[0]);
+    H3Index* set = makeSet(hexes, numHexes);
+
+    h3SetToVertexGraph(set, numHexes, &graph);
+    t_assert(graph.size == 12, "All edges except 2 shared added to graph");
+
+    destroyVertexGraph(&graph);
+    free(set);
+}
+
 TEST(contiguous3) {
     VertexGraph graph;
     char* hexes[] = {"8928308288bffff", "892830828d7ffff", "8928308289bffff"};

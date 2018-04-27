@@ -121,6 +121,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testHexRing.c
     src/apps/testapps/testH3SetToVertexGraph.c
     src/apps/testapps/testBBox.c
+    src/apps/testapps/testVec2d.c
     src/apps/testapps/testH3UniEdge.c
     src/apps/testapps/testLinkedGeo.c
     src/apps/testapps/mkRandGeo.c
@@ -419,6 +420,7 @@ if(BUILD_TESTING)
     add_h3_test(testH3UniEdge src/apps/testapps/testH3UniEdge.c)
     add_h3_test(testGeoCoord src/apps/testapps/testGeoCoord.c)
     add_h3_test(testBBox src/apps/testapps/testBBox.c)
+    add_h3_test(testVec2d src/apps/testapps/testVec2d.c)
 
     add_h3_test_with_arg(testH3NeighborRotations src/apps/testapps/testH3NeighborRotations.c 0)
     add_h3_test_with_arg(testH3NeighborRotations src/apps/testapps/testH3NeighborRotations.c 1)

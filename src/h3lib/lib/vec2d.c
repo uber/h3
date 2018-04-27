@@ -52,3 +52,14 @@ void _v2dIntersect(const Vec2d* p0, const Vec2d* p1, const Vec2d* p2,
     inter->x = p0->x + (t * s1.x);
     inter->y = p0->y + (t * s1.y);
 }
+
+/**
+ * Whether two 2D vectors are equal. Does not consider possible false
+ * negatives due to floating-point errors.
+ * @param v1 First vector to compare
+ * @param v2 Second vector to compare
+ * @return Whether the vectors are equal
+ */
+bool _v2dEquals(const Vec2d* v1, const Vec2d* v2) {
+    return v1->x == v2->x && v1->y == v2->y;
+}

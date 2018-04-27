@@ -67,6 +67,10 @@ cmake-build-debug/
 generated/
 h3Config.cmake
 h3ConfigVersion.cmake
+CMakeDoxyfile.in
+CMakeDoxygenDefaults.cmake
+DartConfiguration.tcl
+compile_commands.json
 
 # CTest / coverage
 CTestTestfile.cmake

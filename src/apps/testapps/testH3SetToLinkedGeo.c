@@ -199,4 +199,21 @@ TEST(2RingUnordered) {
     free(polygon);
 }
 
+TEST(contiguous2distorted) {
+    LinkedGeoPolygon* polygon = calloc(1, sizeof(LinkedGeoPolygon));
+    char* hexes[] = {"894cc5365afffff", "894cc536537ffff"};
+    int numHexes = sizeof(hexes) / sizeof(hexes[0]);
+    H3Index* set = makeSet(hexes, numHexes);
+
+    H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, polygon);
+
+    t_assert(countLinkedLoops(polygon) == 1, "1 loop added to polygon");
+    t_assert(countLinkedCoords(polygon->first) == 12,
+             "All coords added to loop except 2 shared");
+
+    H3_EXPORT(destroyLinkedPolygon)(polygon);
+    free(set);
+    free(polygon);
+}
+
 END_TESTS();
