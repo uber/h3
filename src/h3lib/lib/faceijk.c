@@ -19,6 +19,7 @@
  */
 
 #include "faceijk.h"
+#include <assert.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -593,7 +594,8 @@ void _faceIjkPentToGeoBoundary(const FaceIJK* h, int res, GeoBoundary* g) {
                     edge0 = &v1;
                     edge1 = &v2;
                     break;
-                case KI:
+                default:
+                    assert(adjacentFaceDir[tmpFijk.face][fijk.face] == KI);
                     edge0 = &v2;
                     edge1 = &v0;
                     break;
@@ -745,7 +747,8 @@ void _faceIjkToGeoBoundary(const FaceIJK* h, int res, int isPentagon,
                     edge0 = &v1;
                     edge1 = &v2;
                     break;
-                case KI:
+                default:
+                    assert(adjacentFaceDir[centerIJK.face][face2] == KI);
                     edge0 = &v2;
                     edge1 = &v0;
                     break;
