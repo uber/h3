@@ -401,10 +401,7 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories
 # with spaces.
 
-INPUT                  = doxyfiles ../src
-
-INPUT += doxyfiles/mainpage.md
-USE_MDFILE_AS_MAINPAGE = mainpage.md
+INPUT                  = ../src
 
 # If the value of the INPUT tag contains directories, you can use the
 # FILE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp
@@ -462,7 +459,7 @@ EXAMPLE_RECURSIVE      = NO
 # directories that contain image that are included in the documentation (see
 # the \image command).
 
-IMAGE_PATH             = ./doxyfiles ./doxyfiles/images
+IMAGE_PATH             = ../website/static/images/
 
 # The INPUT_FILTER tag can be used to specify a program that doxygen should
 # invoke to filter for each input file. Doxygen will invoke the filter program
