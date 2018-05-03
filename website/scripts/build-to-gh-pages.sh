@@ -30,6 +30,7 @@ git checkout "$TARGET_BRANCH"
 cd ..
 # Copy over the .gitignore file
 git checkout $CURRENT_COMMIT -- .gitignore
+git rm bundle-*.js styles-*.css
 cp -R website/dist/* .
 git add .
 git commit
