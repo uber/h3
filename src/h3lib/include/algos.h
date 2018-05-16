@@ -27,8 +27,7 @@
 #include "vertexGraph.h"
 
 // neighbor along the ijk coordinate system of the current face, rotated
-H3Index h3NeighborRotations(H3Index origin, const CoordIJK* translationIjk,
-                            int* rotations);
+H3Index h3NeighborRotations(H3Index origin, int dir, int* rotations);
 
 // k-ring implementation
 void _kRingInternal(H3Index origin, int k, H3Index* out, int* distances,

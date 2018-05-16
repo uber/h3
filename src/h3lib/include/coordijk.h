@@ -54,6 +54,23 @@ static const CoordIJK UNIT_VECS[] = {
     {1, 1, 0}   // direction 6
 };
 
+// H3 digit representing ijk+ axes direction
+// see also unitVecs in coordijk.c
+/** H3 digit in center */
+#define CENTER_DIGIT 0
+/** H3 digit in k-axes direction */
+#define K_AXES_DIGIT 1
+/** H3 digit in j-axes direction */
+#define J_AXES_DIGIT 2
+/** H3 digit in j == k direction */
+#define JK_AXES_DIGIT (K_AXES_DIGIT | J_AXES_DIGIT) /* 3 */
+/** H3 digit in i-axes direction */
+#define I_AXES_DIGIT 4
+/** H3 digit in i == k direction */
+#define IK_AXES_DIGIT (I_AXES_DIGIT | K_AXES_DIGIT) /* 5 */
+/** H3 digit in i == j direction */
+#define IJ_AXES_DIGIT (I_AXES_DIGIT | J_AXES_DIGIT) /* 6 */
+
 // Internal functions
 
 void _setIJK(CoordIJK* ijk, int i, int j, int k);
@@ -74,5 +91,7 @@ void _downAp3r(CoordIJK* ijk);
 void _neighbor(CoordIJK* ijk, int digit);
 void _ijkRotate60ccw(CoordIJK* ijk);
 void _ijkRotate60cw(CoordIJK* ijk);
+int _rotate60ccw(int digit);
+int _rotate60cw(int digit);
 
 #endif

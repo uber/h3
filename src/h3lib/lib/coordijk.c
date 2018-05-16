@@ -258,11 +258,12 @@ int _unitIjkToDigit(const CoordIJK* ijk) {
     _ijkNormalize(&c);
 
     int digit = INVALID_DIGIT;
-    for (int i = 0; i < 7; i++)
+    for (int i = 0; i < 7; i++) {
         if (_ijkMatches(&c, &UNIT_VECS[i])) {
             digit = i;
             break;
         }
+    }
 
     return digit;
 }
@@ -400,6 +401,54 @@ void _ijkRotate60cw(CoordIJK* ijk) {
     _ijkAdd(ijk, &kVec, ijk);
 
     _ijkNormalize(ijk);
+}
+
+/**
+ * Rotates indexing digit 60 degrees counter-clockwise. Returns result.
+ *
+ * @param digit Indexing digit (between 1 and 6 inclusive)
+ */
+int _rotate60ccw(int digit) {
+    switch (digit) {
+        case K_AXES_DIGIT:
+            return IK_AXES_DIGIT;
+        case IK_AXES_DIGIT:
+            return I_AXES_DIGIT;
+        case I_AXES_DIGIT:
+            return IJ_AXES_DIGIT;
+        case IJ_AXES_DIGIT:
+            return J_AXES_DIGIT;
+        case J_AXES_DIGIT:
+            return JK_AXES_DIGIT;
+        case JK_AXES_DIGIT:
+            return K_AXES_DIGIT;
+        default:
+            return digit;
+    }
+}
+
+/**
+ * Rotates indexing digit 60 degrees clockwise. Returns result.
+ *
+ * @param digit Indexing digit (between 1 and 6 inclusive)
+ */
+int _rotate60cw(int digit) {
+    switch (digit) {
+        case K_AXES_DIGIT:
+            return JK_AXES_DIGIT;
+        case JK_AXES_DIGIT:
+            return J_AXES_DIGIT;
+        case J_AXES_DIGIT:
+            return IJ_AXES_DIGIT;
+        case IJ_AXES_DIGIT:
+            return I_AXES_DIGIT;
+        case I_AXES_DIGIT:
+            return IK_AXES_DIGIT;
+        case IK_AXES_DIGIT:
+            return K_AXES_DIGIT;
+        default:
+            return digit;
+    }
 }
 
 /**

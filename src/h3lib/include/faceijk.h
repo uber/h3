@@ -59,23 +59,6 @@ typedef struct {
 /** JK quadrant faceNeighbors table direction */
 #define JK 3
 
-// H3 digit representing ijk+ axes direction
-// see also unitVecs in coordijk.c
-/** H3 digit in center */
-#define CENTER_DIGIT 0
-/** H3 digit in k-axes direction */
-#define K_AXES_DIGIT 1
-/** H3 digit in j-axes direction */
-#define J_AXES_DIGIT 2
-/** H3 digit in j == k direction */
-#define JK_AXES_DIGIT (K_AXES_DIGIT | J_AXES_DIGIT) /* 3 */
-/** H3 digit in i-axes direction */
-#define I_AXES_DIGIT 4
-/** H3 digit in i == k direction */
-#define IK_AXES_DIGIT (I_AXES_DIGIT | K_AXES_DIGIT) /* 5 */
-/** H3 digit in i == j direction */
-#define IJ_AXES_DIGIT (I_AXES_DIGIT | J_AXES_DIGIT) /* 6 */
-
 // Internal functions
 
 void _geoToFaceIjk(const GeoCoord* g, int res, FaceIJK* h);

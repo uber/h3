@@ -6,6 +6,8 @@ The public API of this library consists of the functions declared in file
 [h3api.h](./src/h3lib/include/h3api.h).
 
 ## [Unreleased]
+### Changed
+- Changed signature of internal function h3NeighborRotations.
 
 ## [3.0.5] - 2018-04-27
 ### Fixed

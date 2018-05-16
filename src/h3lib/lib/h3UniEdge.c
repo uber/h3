@@ -108,7 +108,7 @@ H3Index H3_EXPORT(getH3UnidirectionalEdge)(H3Index origin,
     H3Index neighbor;
     for (int i = 1; i < 7; i++) {
         int rotations = 0;
-        neighbor = h3NeighborRotations(origin, &UNIT_VECS[i], &rotations);
+        neighbor = h3NeighborRotations(origin, i, &rotations);
         if (neighbor == destination) {
             H3_SET_RESERVED_BITS(output, i);
             return output;
@@ -140,8 +140,8 @@ H3Index H3_EXPORT(getDestinationH3IndexFromUnidirectionalEdge)(H3Index edge) {
     int direction = H3_GET_RESERVED_BITS(edge);
     int rotations = 0;
     H3Index destination = h3NeighborRotations(
-        H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(edge),
-        &UNIT_VECS[direction], &rotations);
+        H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(edge), direction,
+        &rotations);
     return destination;
 }
 
