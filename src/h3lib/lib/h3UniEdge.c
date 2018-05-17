@@ -106,11 +106,11 @@ H3Index H3_EXPORT(getH3UnidirectionalEdge)(H3Index origin,
     // Checks each neighbor, in order, to determine which direction the
     // destination neighbor is located.
     H3Index neighbor;
-    for (int i = 1; i < 7; i++) {
+    for (int direction = 1; direction < 7; direction++) {
         int rotations = 0;
-        neighbor = h3NeighborRotations(origin, i, &rotations);
+        neighbor = h3NeighborRotations(origin, direction, &rotations);
         if (neighbor == destination) {
-            H3_SET_RESERVED_BITS(output, i);
+            H3_SET_RESERVED_BITS(output, direction);
             return output;
         }
     }
