@@ -4,6 +4,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/61431y4sc5w0tsuk/branch/master?svg=true)](https://ci.appveyor.com/project/IsaacBrodsky/h3/branch/master)
 [![Coverage Status](https://coveralls.io/repos/github/uber/h3/badge.svg?branch=master)](https://coveralls.io/github/uber/h3?branch=master)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fuber%2Fh3.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fuber%2Fh3?ref=badge_shield)
 
 H3 is a geospatial indexing system using a hexagonal grid that can be (approximately) subdivided into finer and finer hexagonal grids, combining the benefits of a hexagonal grid with [S2](https://code.google.com/archive/p/s2-geometry-library/)'s hierarchical subdivisions.
 
@@ -153,3 +154,6 @@ H3 is licensed under the [Apache 2.0 License](./LICENSE).
 
 DGGRID
 Copyright (c) 2015 Southern Oregon University
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fuber%2Fh3.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fuber%2Fh3?ref=badge_large)
