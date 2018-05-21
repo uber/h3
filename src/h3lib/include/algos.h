@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 Uber Technologies, Inc.
+ * Copyright 2016-2018 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,7 @@
 #include "vertexGraph.h"
 
 // neighbor along the ijk coordinate system of the current face, rotated
-H3Index h3NeighborRotations(H3Index origin, const CoordIJK* translationIjk,
-                            int* rotations);
+H3Index h3NeighborRotations(H3Index origin, int dir, int* rotations);
 
 // k-ring implementation
 void _kRingInternal(H3Index origin, int k, H3Index* out, int* distances,

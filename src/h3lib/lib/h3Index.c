@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 Uber Technologies, Inc.
+ * Copyright 2016-2018 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -461,20 +461,11 @@ int _h3LeadingNonZeroDigit(H3Index h) {
  */
 H3Index _h3RotatePent60ccw(H3Index h) {
     // rotate in place; skips any leading 1 digits (k-axis)
-    const int rotDigit[] = {
-        0,  // original digit 0
-        5,  // original digit 1
-        3,  // original digit 2
-        1,  // original digit 3
-        6,  // original digit 4
-        4,  // original digit 5
-        2   // original digit 6
-    };
 
     int foundFirstNonZeroDigit = 0;
     for (int r = 1, res = H3_GET_RESOLUTION(h); r <= res; r++) {
         // rotate this digit
-        H3_SET_INDEX_DIGIT(h, r, rotDigit[H3_GET_INDEX_DIGIT(h, r)]);
+        H3_SET_INDEX_DIGIT(h, r, _rotate60ccw(H3_GET_INDEX_DIGIT(h, r)));
 
         // look for the first non-zero digit so we
         // can adjust for deleted k-axes sequence
@@ -495,19 +486,9 @@ H3Index _h3RotatePent60ccw(H3Index h) {
  * @param h The H3Index.
  */
 H3Index _h3Rotate60ccw(H3Index h) {
-    const int rotDigit[] = {
-        0,  // original digit 0
-        5,  // original digit 1
-        3,  // original digit 2
-        1,  // original digit 3
-        6,  // original digit 4
-        4,  // original digit 5
-        2   // original digit 6
-    };
-
     for (int r = 1, res = H3_GET_RESOLUTION(h); r <= res; r++) {
         int oldDigit = H3_GET_INDEX_DIGIT(h, r);
-        H3_SET_INDEX_DIGIT(h, r, rotDigit[oldDigit]);
+        H3_SET_INDEX_DIGIT(h, r, _rotate60ccw(oldDigit));
     }
 
     return h;
@@ -518,18 +499,8 @@ H3Index _h3Rotate60ccw(H3Index h) {
  * @param h The H3Index.
  */
 H3Index _h3Rotate60cw(H3Index h) {
-    const int rotDigit[] = {
-        0,  // original digit 0
-        3,  // original digit 1
-        6,  // original digit 2
-        2,  // original digit 3
-        5,  // original digit 4
-        1,  // original digit 5
-        4   // original digit 6
-    };
-
     for (int r = 1, res = H3_GET_RESOLUTION(h); r <= res; r++) {
-        H3_SET_INDEX_DIGIT(h, r, rotDigit[H3_GET_INDEX_DIGIT(h, r)]);
+        H3_SET_INDEX_DIGIT(h, r, _rotate60cw(H3_GET_INDEX_DIGIT(h, r)));
     }
 
     return h;

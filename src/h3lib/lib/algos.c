@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 Uber Technologies, Inc.
+ * Copyright 2016-2018 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,13 +54,13 @@
  *     \\2/
  * </pre>
  */
-static const CoordIJK DIRECTIONS[6] = {{0, 1, 0}, {0, 1, 1}, {0, 0, 1},
-                                       {1, 0, 1}, {1, 0, 0}, {1, 1, 0}};
+static const int DIRECTIONS[6] = {J_AXES_DIGIT,  JK_AXES_DIGIT, K_AXES_DIGIT,
+                                  IK_AXES_DIGIT, I_AXES_DIGIT,  IJ_AXES_DIGIT};
 
 /**
  * Direction used for traversing to the next outward hexagonal ring.
  */
-static const CoordIJK NEXT_RING_DIRECTION = {1, 0, 0};
+static const int NEXT_RING_DIRECTION = I_AXES_DIGIT;
 
 /**
  * Maximum number of indices that result from the kRing algorithm with the given
@@ -166,40 +166,32 @@ void _kRingInternal(H3Index origin, int k, H3Index* out, int* distances,
     // Recurse to all neighbors in no particular order.
     for (int i = 0; i < 6; i++) {
         int rotations = 0;
-        _kRingInternal(h3NeighborRotations(origin, &DIRECTIONS[i], &rotations),
+        _kRingInternal(h3NeighborRotations(origin, DIRECTIONS[i], &rotations),
                        k, out, distances, maxIdx, curK + 1);
     }
 }
 
 /**
- * Returns the hexagon index neighboring the origin, in the direction of
- * translationIjk.
- *
- * Calling this function with the absolute value of i, j, or k greater than 1
- * results in undefined behavior.
+ * Returns the hexagon index neighboring the origin, in the direction dir.
  *
  * Implementation note: The only reachable case where this returns 0 is if the
  * origin is a pentagon and the translation is in the k direction. Thus,
  * 0 can only be returned if origin is a pentagon.
  *
  * @param origin Origin index
- * @param translationIjk Direction to move in
+ * @param dir Direction to move in
  * @param rotations Number of ccw rotations to perform to reorient the
  *                  translation vector. Will be modified to the new number of
  *                  rotations to perform (such as when crossing a face edge.)
  * @return H3Index of the specified neighbor or 0 if deleted k-subsequence
  *         distortion is encountered.
  */
-H3Index h3NeighborRotations(H3Index origin, const CoordIJK* translationIjk,
-                            int* rotations) {
+H3Index h3NeighborRotations(H3Index origin, int dir, int* rotations) {
     H3Index out = origin;
-    CoordIJK adjustment = *translationIjk;
 
     for (int i = 0; i < *rotations; i++) {
-        _ijkRotate60ccw(&adjustment);
+        dir = _rotate60ccw(dir);
     }
-
-    int dir = _unitIjkToDigit(&adjustment);
 
     int newRotations = 0;
     int oldBaseCell = H3_GET_BASE_CELL(out);
@@ -425,7 +417,7 @@ int H3_EXPORT(hexRangeDistances)(H3Index origin, int k, H3Index* out,
             // Not putting in the output set as it will be done later, at
             // the end of this ring.
             origin =
-                h3NeighborRotations(origin, &NEXT_RING_DIRECTION, &rotations);
+                h3NeighborRotations(origin, NEXT_RING_DIRECTION, &rotations);
             if (origin == 0) {
                 // Should not be possible because `origin` would have to be a
                 // pentagon
@@ -438,8 +430,7 @@ int H3_EXPORT(hexRangeDistances)(H3Index origin, int k, H3Index* out,
             }
         }
 
-        origin =
-            h3NeighborRotations(origin, &DIRECTIONS[direction], &rotations);
+        origin = h3NeighborRotations(origin, DIRECTIONS[direction], &rotations);
         if (origin == 0) {
             // Should not be possible because `origin` would have to be a
             // pentagon
@@ -521,7 +512,7 @@ int H3_EXPORT(hexRing)(H3Index origin, int k, H3Index* out) {
     }
 
     for (int ring = 0; ring < k; ring++) {
-        origin = h3NeighborRotations(origin, &NEXT_RING_DIRECTION, &rotations);
+        origin = h3NeighborRotations(origin, NEXT_RING_DIRECTION, &rotations);
         if (origin == 0) {
             // Should not be possible because `origin` would have to be a
             // pentagon
@@ -541,7 +532,7 @@ int H3_EXPORT(hexRing)(H3Index origin, int k, H3Index* out) {
     for (int direction = 0; direction < 6; direction++) {
         for (int pos = 0; pos < k; pos++) {
             origin =
-                h3NeighborRotations(origin, &DIRECTIONS[direction], &rotations);
+                h3NeighborRotations(origin, DIRECTIONS[direction], &rotations);
             if (origin == 0) {
                 // Should not be possible because `origin` would have to be a
                 // pentagon

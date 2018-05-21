@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Uber Technologies, Inc.
+ * Copyright 2017-2018 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -325,6 +325,14 @@ TEST(kRing_equals_kRingInternal) {
             free(children);
         }
     }
+}
+
+TEST(h3NeighborRotations_identity) {
+    // This is undefined behavior, but it's helpful for it to make sense.
+    H3Index origin = 0x811d7ffffffffffL;
+    int rotations = 0;
+    t_assert(h3NeighborRotations(origin, CENTER_DIGIT, &rotations) == origin,
+             "Moving to self goes to self");
 }
 
 TEST(cwOffsetPent) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Uber Technologies, Inc.
+ * Copyright 2017-2018 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -106,11 +106,11 @@ H3Index H3_EXPORT(getH3UnidirectionalEdge)(H3Index origin,
     // Checks each neighbor, in order, to determine which direction the
     // destination neighbor is located.
     H3Index neighbor;
-    for (int i = 1; i < 7; i++) {
+    for (int direction = 1; direction < 7; direction++) {
         int rotations = 0;
-        neighbor = h3NeighborRotations(origin, &UNIT_VECS[i], &rotations);
+        neighbor = h3NeighborRotations(origin, direction, &rotations);
         if (neighbor == destination) {
-            H3_SET_RESERVED_BITS(output, i);
+            H3_SET_RESERVED_BITS(output, direction);
             return output;
         }
     }
@@ -140,8 +140,8 @@ H3Index H3_EXPORT(getDestinationH3IndexFromUnidirectionalEdge)(H3Index edge) {
     int direction = H3_GET_RESERVED_BITS(edge);
     int rotations = 0;
     H3Index destination = h3NeighborRotations(
-        H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(edge),
-        &UNIT_VECS[direction], &rotations);
+        H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(edge), direction,
+        &rotations);
     return destination;
 }
 
