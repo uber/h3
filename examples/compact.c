@@ -31,35 +31,41 @@ int main(int argc, char* argv[]) {
         // These don't have the same parent indexas above.
         0x8a2a1070c96ffffL, 0x8a2a1072b4b7fffL, 0x8a2a1072b4a7fffL};
     int inputSize = sizeof(input) / sizeof(H3Index);
+    printf("Starting with %d indexes.\n", inputSize);
 
     H3Index* compacted = calloc(inputSize, sizeof(H3Index));
-    // neighboring is the input set to be compacted
     int err = compact(input, compacted, inputSize);
+    // An error case can occur on e.g. duplicate input.
     assert(err == 0);
 
-    int count = 0;
+    int compactedCount = 0;
     printf("Compacted:\n");
     for (int i = 0; i < inputSize; i++) {
         if (compacted[i] != 0) {
             printf("%llx\n", compacted[i]);
-            count++;
+            compactedCount++;
         }
     }
-    printf("Compacted to %d indexes.\n", count);
+    printf("Compacted to %d indexes.\n", compactedCount);
 
     int uncompactRes = 10;
     int uncompactedSize = maxUncompactSize(compacted, inputSize, uncompactRes);
     H3Index* uncompacted = calloc(uncompactedSize, sizeof(H3Index));
-    int err2 =
-        uncompact(compacted, count, uncompacted, uncompactedSize, uncompactRes);
+    int err2 = uncompact(compacted, compactedCount, uncompacted,
+                         uncompactedSize, uncompactRes);
+    // An error case could happen if the output array is too small, or indexes
+    // have a higher resolution than uncompactRes.
     assert(err2 == 0);
 
+    int uncompactedCount = 0;
     printf("Uncompacted:\n");
     for (int i = 0; i < uncompactedSize; i++) {
         if (uncompacted[i] != 0) {
             printf("%llx\n", uncompacted[i]);
+            uncompactedCount++;
         }
     }
+    printf("Uncompacted to %d indexes.\n", uncompactedCount);
 
     free(compacted);
     free(uncompacted);
