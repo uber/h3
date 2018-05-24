@@ -20,6 +20,7 @@
 
 #include <assert.h>
 #include <h3/h3api.h>
+#include <inttypes.h>
 #include <stdio.h>
 
 int main(int argc, char* argv[]) {
@@ -42,7 +43,7 @@ int main(int argc, char* argv[]) {
     printf("Compacted:\n");
     for (int i = 0; i < inputSize; i++) {
         if (compacted[i] != 0) {
-            printf("%llx\n", compacted[i]);
+            printf("%" PRIx64 "\n", compacted[i]);
             compactedCount++;
         }
     }
@@ -61,7 +62,7 @@ int main(int argc, char* argv[]) {
     printf("Uncompacted:\n");
     for (int i = 0; i < uncompactedSize; i++) {
         if (uncompacted[i] != 0) {
-            printf("%llx\n", uncompacted[i]);
+            printf("%" PRIx64 "\n", uncompacted[i]);
             uncompactedCount++;
         }
     }

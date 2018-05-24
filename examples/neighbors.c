@@ -19,6 +19,7 @@
  */
 
 #include <h3/h3api.h>
+#include <inttypes.h>
 #include <stdio.h>
 
 int main(int argc, char* argv[]) {
@@ -35,7 +36,7 @@ int main(int argc, char* argv[]) {
         // Some indexes may be 0 to indicate fewer than the maximum
         // number of indexes.
         if (neighboring[i] != 0) {
-            printf("%llx\n", neighboring[i]);
+            printf("%" PRIx64 "\n", neighboring[i]);
         }
     }
 

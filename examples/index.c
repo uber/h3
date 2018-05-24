@@ -19,6 +19,7 @@
  */
 
 #include <h3/h3api.h>
+#include <inttypes.h>
 #include <stdio.h>
 
 int main(int argc, char *argv[]) {
@@ -28,7 +29,7 @@ int main(int argc, char *argv[]) {
     location.lon = degsToRads(-74.044444);
     int resolution = 10;
     H3Index indexed = geoToH3(&location, resolution);
-    printf("The index is: %llx\n", indexed);
+    printf("The index is: %" PRIx64 "\n", indexed);
 
     // Get the vertices of the H3 index.
     GeoBoundary boundary;

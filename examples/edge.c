@@ -19,6 +19,7 @@
  */
 
 #include <h3/h3api.h>
+#include <inttypes.h>
 #include <stdio.h>
 
 int main(int argc, char *argv[]) {
@@ -26,7 +27,7 @@ int main(int argc, char *argv[]) {
     H3Index destination = 0x8a2a1072b597fffL;  // north of the origin
 
     H3Index edge = getH3UnidirectionalEdge(origin, destination);
-    printf("The edge is %llx\n", edge);
+    printf("The edge is %" PRIx64 "\n", edge);
 
     GeoBoundary boundary;
     getH3UnidirectionalEdgeBoundary(edge, &boundary);
