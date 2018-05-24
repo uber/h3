@@ -28,7 +28,7 @@ int main(int argc, char* argv[]) {
         0x8a2a1072b587fffL, 0x8a2a1072b5b7fffL, 0x8a2a1072b597fffL,
         0x8a2a1072b59ffffL, 0x8a2a1072b58ffffL, 0x8a2a1072b5affffL,
         0x8a2a1072b5a7fffL,
-        // These don't have the same parent indexas above.
+        // These don't have the same parent index as above.
         0x8a2a1070c96ffffL, 0x8a2a1072b4b7fffL, 0x8a2a1072b4a7fffL};
     int inputSize = sizeof(input) / sizeof(H3Index);
     printf("Starting with %d indexes.\n", inputSize);
