@@ -354,8 +354,7 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
  * @param maxHexes The size of the output array to bound check against
  * @param res The hexagon resolution to decompress to
  * @return An error code if output array is too small or any hexagon is
- * smaller
- * than the output resolution.
+ * smaller than the output resolution.
  */
 int H3_EXPORT(uncompact)(const H3Index* compactedSet, const int numHexes,
                          H3Index* h3Set, const int maxHexes, const int res) {

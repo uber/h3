@@ -95,7 +95,10 @@ set(APP_SOURCE_FILES
     src/apps/applib/lib/test.c)
 set(EXAMPLE_SOURCE_FILES
     examples/index.c
-    examples/distance.c)
+    examples/distance.c
+    examples/neighbors.c
+    examples/compact.c
+    examples/edge.c)
 set(OTHER_SOURCE_FILES
     src/apps/filters/h3ToGeo.c
     src/apps/filters/h3ToComponents.c
