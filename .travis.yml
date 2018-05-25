@@ -64,5 +64,13 @@ before_script:
   - cd build
   - cmake ..
 
-# Build and test the library.
-script: make && make test
+# Build and test the library, then build and test the examples.
+script:
+  - make
+  - make test
+  - sudo make install
+  - mkdir examples
+  - cd examples
+  - cmake ../../examples
+  - make
+  - make test
