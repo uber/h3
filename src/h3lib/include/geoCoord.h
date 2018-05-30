@@ -30,6 +30,15 @@
 /** epsilon of ~0.1mm in radians */
 #define EPSILON_RAD (EPSILON_DEG * M_PI_180)
 
+/** @struct Vec3D
+ *  @brief 3D floating point structure
+ */
+typedef struct {
+    double x;  ///< x component
+    double y;  ///< y component
+    double z;  ///< z component
+} Vec3d;
+
 void setGeoDegs(GeoCoord* p, double latDegs, double lonDegs);
 double constrainLat(double lat);
 double constrainLng(double lng);
@@ -48,8 +57,7 @@ double _geoAzimuthRads(const GeoCoord* p1, const GeoCoord* p2);
 void _geoAzDistanceRads(const GeoCoord* p1, double az, double distance,
                         GeoCoord* p2);
 
-void _geoToPoint(const GeoCoord* geo, Point* point);
-void _pointToGeo(const Point* point, GeoCoord* geo);
-double _pointSquareDist(const Point* p1, const Point* p2);
+void _geoToVec3d(const GeoCoord* geo, Vec3d* point);
+double _pointSquareDist(const Vec3d* p1, const Vec3d* p2);
 
 #endif

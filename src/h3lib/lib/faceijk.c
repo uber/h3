@@ -56,7 +56,8 @@ static const GeoCoord faceCenterGeo[NUM_ICOSA_FACES] = {
     {-1.054751253523952054, 1.794075294689396615},   // face 19
 };
 
-static const Point faceCenterPoint[NUM_ICOSA_FACES] = {
+/** @brief icosahedron face centers in x/y/z on the unit sphere */
+static const Vec3d faceCenterPoint[NUM_ICOSA_FACES] = {
     {0.2199307791404606, 0.6583691780274996, 0.7198475378926182},     // face  0
     {-0.2139234834501421, 0.1478171829550703, 0.9656017935214205},    // face  1
     {0.1092625278784797, -0.4811951572873209, 0.8697775121287253},    // face  2
@@ -384,17 +385,16 @@ void _geoToFaceIjk(const GeoCoord* g, int res, FaceIJK* h) {
  */
 
 void _geoToHex2d(const GeoCoord* g, int res, int* face, Vec2d* v) {
-    Point p;
-    _geoToPoint(g, &p);
+    Vec3d v3d;
+    _geoToVec3d(g, &v3d);
 
     // determine the icosahedron face
     *face = 0;
 
-    double sqd = _pointSquareDist(&faceCenterPoint[0], &p);
+    double sqd = _pointSquareDist(&faceCenterPoint[0], &v3d);
 
-    // double r = _geoDistRads(&faceCenterGeo[0], g);
     for (int f = 1; f < NUM_ICOSA_FACES; f++) {
-        double sqdT = _pointSquareDist(&faceCenterPoint[f], &p);
+        double sqdT = _pointSquareDist(&faceCenterPoint[f], &v3d);
         if (sqdT < sqd) {
             *face = f;
             sqd = sqdT;

@@ -67,15 +67,6 @@ typedef struct {
     double lon;  ///< longitude in radians
 } GeoCoord;
 
-/** @struct Point
- *  @brief x, y, z location of GeoCoord on unit sphere
- */
-typedef struct {
-    double x;
-    double y;
-    double z;
-} Point;
-
 /** @struct GeoBoundary
     @brief cell boundary in latitude/longitude
 */
