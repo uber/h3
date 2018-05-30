@@ -136,10 +136,11 @@
 /**
  * Sets the resolution res digit of h3 to the integer digit (0-7)
  */
-#define H3_SET_INDEX_DIGIT(h3, res, digit)                                  \
-    (h3) = (((h3) & ~((H3_DIGIT_MASK                                        \
-                       << ((MAX_H3_RES - (res)) * H3_PER_DIGIT_OFFSET)))) | \
-            (((uint64_t)(digit))                                            \
+#define H3_SET_INDEX_DIGIT(h3, res, digit)                           \
+    (h3) = (((h3) &                                                  \
+             ~((H3_DIGIT_MASK                                        \
+                << ((MAX_H3_RES - (res)) * H3_PER_DIGIT_OFFSET)))) | \
+            (((uint64_t)(digit))                                     \
              << ((MAX_H3_RES - (res)) * H3_PER_DIGIT_OFFSET)))
 
 /**

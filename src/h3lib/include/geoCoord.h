@@ -47,4 +47,9 @@ double _geoDistKm(const GeoCoord* p1, const GeoCoord* p2);
 double _geoAzimuthRads(const GeoCoord* p1, const GeoCoord* p2);
 void _geoAzDistanceRads(const GeoCoord* p1, double az, double distance,
                         GeoCoord* p2);
+
+void _geoToPoint(const GeoCoord* geo, Point* point);
+void _pointToGeo(const Point* point, GeoCoord* geo);
+double _pointSquareDist(const Point* p1, const Point* p2);
+
 #endif
