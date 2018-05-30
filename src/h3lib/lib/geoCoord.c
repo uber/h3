@@ -287,33 +287,6 @@ void _geoToPoint(const GeoCoord* geo, Point* point) {
     point->y = sin(geo->lon) * r;
 }
 
-/**
- * Calculate the latitude and longitude from the 3D coordinate.
- *
- * @param point The 3D coordinate of the point.
- * @param geo The latitude and longitude of the point.
- */
-void _pointToGeo(const Point* point, GeoCoord* geo) {
-    double x2 = _square(point->x);
-    double y2 = _square(point->y);
-    double z2 = _square(point->z);
-    double r2 = x2 + y2 + z2;
-
-    // Apply the equation "cos(2a) = 1 - 2 sin^2(a)" to avoid the sqrt call.
-    geo->lat = acos(1.0L - 2.0L * z2 / r2) / 2.0L;  // lat in [0, PI/2]
-    if (point->z < 0.0L) {
-        geo->lat = -geo->lat;  // lat in [-PI/2, PI/2]
-    }
-
-    geo->lon = acos(1.0L - 2.0L * y2 / (x2 + y2)) / 2.0L;  // lon in [0, PI/2]
-    if (point->x < 0.0L) {
-        geo->lon = M_PI - geo->lon;  // lon in [0, PI/2]
-    }
-    if (point->y < 0.0L && geo->lon > 0.0L) {  // lon in [0, 2 * PI)
-        geo->lon = M_2PI - geo->lon;
-    }
-}
-
 /*
  * The following functions provide meta information about the H3 hexagons at
  * each zoom level. Since there are only 16 total levels, these are current
