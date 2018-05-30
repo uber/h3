@@ -161,6 +161,19 @@ void H3_EXPORT(h3ToGeoBoundary)(H3Index h3, GeoBoundary *gp);
 /** @brief maximum number of hexagons in k-ring */
 int H3_EXPORT(maxKringSize)(int k);
 
+/** @brief hexagons neighbors in all directions, assuming no pentagons */
+int H3_EXPORT(hexRange)(H3Index origin, int k, H3Index *out);
+/** @} */
+
+/** @brief hexagons neighbors in all directions, assuming no pentagons,
+ * reporting
+ * distance from origin */
+int H3_EXPORT(hexRangeDistances)(H3Index origin, int k, H3Index *out,
+                                 int *distances);
+
+/** @brief collection of hex rings sorted by ring for all given hexagons */
+int H3_EXPORT(hexRanges)(H3Index *h3Set, int length, int k, H3Index *out);
+
 /** @brief hexagon neighbors in all directions */
 void H3_EXPORT(kRing)(H3Index origin, int k, H3Index *out);
 /** @} */
@@ -173,33 +186,6 @@ void H3_EXPORT(kRing)(H3Index origin, int k, H3Index *out);
  */
 void H3_EXPORT(kRingDistances)(H3Index origin, int k, H3Index *out,
                                int *distances);
-/** @} */
-
-/** @defgroup hexRange hexRange
- * Functions for hexRange
- * @{
- */
-/** @brief hexagons neighbors in all directions, assuming no pentagons */
-int H3_EXPORT(hexRange)(H3Index origin, int k, H3Index *out);
-/** @} */
-
-/** @defgroup hexRangeDistances hexRangeDistances
- * Functions for hexRangeDistances
- * @{
- */
-/** @brief hexagons neighbors in all directions, assuming no pentagons,
- * reporting
- * distance from origin */
-int H3_EXPORT(hexRangeDistances)(H3Index origin, int k, H3Index *out,
-                                 int *distances);
-/** @} */
-
-/** @defgroup hexRanges hexRanges
- * Functions for hexRanges
- * @{
- */
-/** @brief collection of hex rings sorted by ring for all given hexagons */
-int H3_EXPORT(hexRanges)(H3Index *h3Set, int length, int k, H3Index *out);
 /** @} */
 
 /** @defgroup hexRing hexRing
