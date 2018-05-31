@@ -383,16 +383,13 @@ void _geoToFaceIjk(const GeoCoord* g, int res, FaceIJK* h) {
  * @param face The icosahedral face containing the spherical coordinates.
  * @param v The 2D hex coordinates of the cell containing the point.
  */
-
 void _geoToHex2d(const GeoCoord* g, int res, int* face, Vec2d* v) {
     Vec3d v3d;
     _geoToVec3d(g, &v3d);
 
     // determine the icosahedron face
     *face = 0;
-
     double sqd = _pointSquareDist(&faceCenterPoint[0], &v3d);
-
     for (int f = 1; f < NUM_ICOSA_FACES; f++) {
         double sqdT = _pointSquareDist(&faceCenterPoint[f], &v3d);
         if (sqdT < sqd) {
