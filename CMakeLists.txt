@@ -432,7 +432,7 @@ if(BUILD_TESTING)
 
     macro(add_h3_benchmark name srcfile)
         add_h3_executable(${name} ${srcfile} ${APP_SOURCE_FILES})
-        add_custom_target(bench_${name} COMMAND ${name})
+        add_custom_target(bench_${name} COMMAND ${TEST_WRAPPER} $<TARGET_FILE:${name}>)
         add_dependencies(benchmarks bench_${name})
     endmacro()
 

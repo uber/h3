@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Support code for wrapping tests or other executables with Valgrind.
+
 if(__test_wrap_valgrind)
   return()
 endif()
@@ -23,6 +25,12 @@ find_program(VALGRIND valgrind)
 cmake_dependent_option(WRAP_VALGRIND "Wrap tests in valgrind" OFF
                        "VALGRIND" OFF)
 if(WRAP_VALGRIND)
-    set(TEST_WRAPPER ${VALGRIND} --track-origins=yes --leak-check=full --error-exitcode=99)
+    # TEST_WRAPPER could be used to configure the Valgrind parameters, or
+    # to use a different wrapper entirely.
+    set(TEST_WRAPPER ${VALGRIND} --track-origins=yes --leak-check=full --error-exitcode=99 CACHE STRING
+        "Wrapper executable for tests and benchmarks")
+    mark_as_advanced(TEST_WRAPPER)
+    # Convert from semicolon separated list of values to a form
+    # that can be used by a shell.
     string(REPLACE ";" " " TEST_WRAPPER_STR "${TEST_WRAPPER}")
 endif()
