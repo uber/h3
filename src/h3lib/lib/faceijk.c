@@ -28,6 +28,7 @@
 #include "coordijk.h"
 #include "geoCoord.h"
 #include "h3Index.h"
+#include "vec3d.h"
 
 /** square root of 7 */
 #define M_SQRT7 2.6457513110645905905016157536392604257102L
