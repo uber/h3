@@ -13,3 +13,11 @@ Keeping similar names and purposes for functions can make it easier for your use
 ## Community
 
 When ready, make a [pull request](https://github.com/uber/h3/edit/master/docs/community/bindings.md) to add your binding to the H3 documentation website.
+
+## Documentation
+
+To be included in the H3 [API reference](https://uber.github.io/h3/#/documentation/api-reference/), your binding should:
+
+* Be reasonably up to date with uber/h3.
+* Include bindings for the relevant functions in the output of `make binding-functions`. For example, `stringToH3` may not be necessary if your bindings only supports string H3 indexes.
+* Use the major and minor version of the version of H3 bound. For example, when binding H3 version 3.2.1, a valid binding version would be 3.2.0, but 4.2.1 would not be valid.
