@@ -56,6 +56,30 @@ static const GeoCoord faceCenterGeo[NUM_ICOSA_FACES] = {
     {-1.054751253523952054, 1.794075294689396615},   // face 19
 };
 
+/** @brief icosahedron face centers in x/y/z on the unit sphere */
+static const Vec3d faceCenterPoint[NUM_ICOSA_FACES] = {
+    {0.2199307791404606, 0.6583691780274996, 0.7198475378926182},     // face  0
+    {-0.2139234834501421, 0.1478171829550703, 0.9656017935214205},    // face  1
+    {0.1092625278784797, -0.4811951572873209, 0.8697775121287253},    // face  2
+    {0.7428567301586791, -0.3593941678278028, 0.5648005936517033},    // face  3
+    {0.8112534709140969, 0.3448953237639384, 0.4721387736413930},     // face  4
+    {-0.1055498149613921, 0.9794457296411413, 0.1718874610009365},    // face  5
+    {-0.8075407579970092, 0.1533552485898819, 0.5695261994882688},    // face  6
+    {-0.2846148069787907, -0.8644080972654206, 0.4144792552473539},   // face  7
+    {0.7405621473854481, -0.6673299564565524, -0.0789837646326737},   // face  8
+    {0.8512303986474293, 0.4722343788582681, -0.2289137388687808},    // face  9
+    {-0.7405621473854481, 0.6673299564565525, 0.0789837646326737},    // face 10
+    {-0.8512303986474292, -0.4722343788582682, 0.2289137388687808},   // face 11
+    {0.1055498149613920, -0.9794457296411413, -0.1718874610009365},   // face 12
+    {0.8075407579970092, -0.1533552485898819, -0.5695261994882688},   // face 13
+    {0.2846148069787908, 0.8644080972654204, -0.4144792552473539},    // face 14
+    {-0.7428567301586791, 0.3593941678278027, -0.5648005936517033},   // face 15
+    {-0.8112534709140971, -0.3448953237639383, -0.4721387736413930},  // face 16
+    {-0.2199307791404607, -0.6583691780274996, -0.7198475378926182},  // face 17
+    {0.2139234834501420, -0.1478171829550704, -0.9656017935214205},   // face 18
+    {-0.1092625278784796, 0.4811951572873209, -0.8697775121287253},   // face 19
+};
+
 /** @brief icosahedron face ijk axes as azimuth in radians from face center to
  * vertex 0/1/2 respectively
  */
@@ -360,16 +384,22 @@ void _geoToFaceIjk(const GeoCoord* g, int res, FaceIJK* h) {
  * @param v The 2D hex coordinates of the cell containing the point.
  */
 void _geoToHex2d(const GeoCoord* g, int res, int* face, Vec2d* v) {
+    Vec3d v3d;
+    _geoToVec3d(g, &v3d);
+
     // determine the icosahedron face
     *face = 0;
-    double r = _geoDistRads(&faceCenterGeo[0], g);
+    double sqd = _pointSquareDist(&faceCenterPoint[0], &v3d);
     for (int f = 1; f < NUM_ICOSA_FACES; f++) {
-        double dist = _geoDistRads(&faceCenterGeo[f], g);
-        if (dist < r) {
+        double sqdT = _pointSquareDist(&faceCenterPoint[f], &v3d);
+        if (sqdT < sqd) {
             *face = f;
-            r = dist;
+            sqd = sqdT;
         }
     }
+
+    // cos(r) = 1 - 2 * sin^2(r/2) = 1 - 2 * (sqd / 4) = 1 - sqd/2
+    double r = acos(1 - sqd / 2);
 
     if (r < EPSILON) {
         v->x = v->y = 0.0L;
