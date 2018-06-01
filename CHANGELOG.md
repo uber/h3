@@ -5,9 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 The public API of this library consists of the functions declared in file
 [h3api.h](./src/h3lib/include/h3api.h).
 
-## [Unreleased]
+## [3.0.6] - 2018-06-01
 ### Changed
 - Changed signature of internal function h3NeighborRotations.
+- Do not require support for `hexRange`, `hexRanges`, or `hexRangeDistances` in the bindings. These functions may be deprecated in the public API in future releases; consumers should use `kRing` and `kRingDistances` instead.
+- Performance improvement in core indexing logic for `geoToH3` (thanks @wewei!)
 
 ## [3.0.5] - 2018-04-27
 ### Fixed
