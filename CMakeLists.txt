@@ -136,6 +136,7 @@ set(OTHER_SOURCE_FILES
     src/apps/miscapps/h3ToGeoBoundaryHier.c
     src/apps/miscapps/h3ToGeoHier.c
     src/apps/miscapps/generateBaseCellNeighbors.c
+    src/apps/miscapps/generateFaceCenterPoint.c
     src/apps/miscapps/h3ToHier.c
     src/apps/benchmarks/benchmarkPolyfill.c
     src/apps/benchmarks/benchmarkH3Api.c)
@@ -252,6 +253,7 @@ add_h3_executable(h3ToGeoBoundary src/apps/filters/h3ToGeoBoundary.c ${APP_SOURC
 add_h3_executable(hexRange src/apps/filters/hexRange.c ${APP_SOURCE_FILES})
 add_h3_executable(kRing src/apps/filters/kRing.c ${APP_SOURCE_FILES})
 add_h3_executable(generateBaseCellNeighbors src/apps/miscapps/generateBaseCellNeighbors.c ${APP_SOURCE_FILES})
+add_h3_executable(generateFaceCenterPoint src/apps/miscapps/generateFaceCenterPoint.c ${APP_SOURCE_FILES})
 add_h3_executable(h3ToGeoBoundaryHier src/apps/miscapps/h3ToGeoBoundaryHier.c ${APP_SOURCE_FILES})
 add_h3_executable(h3ToGeoHier src/apps/miscapps/h3ToGeoHier.c ${APP_SOURCE_FILES})
 add_h3_executable(h3ToHier src/apps/miscapps/h3ToHier.c ${APP_SOURCE_FILES})
