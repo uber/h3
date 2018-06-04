@@ -32,7 +32,7 @@ static void generate() {
         GeoCoord centerCoords = faceCenterGeo[i];
         Vec3d centerPoint;
         _geoToVec3d(&centerCoords, &centerPoint);
-        printf("{%.16f, %.16f, %.16f}, // face %2d\n", centerPoint.x,
+        printf("    {%.16f, %.16f, %.16f}, // face %2d\n", centerPoint.x,
                centerPoint.y, centerPoint.z, i);
     }
     printf("};\n");
