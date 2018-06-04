@@ -18,7 +18,7 @@ set(CMAKE_C_STANDARD 11)
 if(NOT WIN32)
     # Compiler options are set only on non-Windows, since these options
     # are not correct for MSVC.
-    set(CMAKE_C_FLAGS_INIT "-Wall")
+    set(CMAKE_C_FLAGS_INIT "-Wall -Werror")
     string(CONCAT CMAKE_C_FLAGS_DEBUG_INIT
            "-g -gdwarf-2 -g3 -O0 -fno-inline -fno-eliminate-unused-debug-types "
            "--coverage")
