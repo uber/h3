@@ -49,9 +49,22 @@ project(h3 VERSION ${H3_VERSION})
 
 set(H3_FLAGS "")
 if(NOT WIN32)
+    # Compiler options are set only on non-Windows, since these options
+    # are not correct for MSVC.
+    string(CONCAT H3_FLAGS ${H3_FLAGS} "-Wall ")
+
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        string(CONCAT H3_FLAGS
+                ${H3_FLAGS}
+                "-g -gdwarf-2 -g3 -O0 -fno-inline -fno-eliminate-unused-debug-types ")
+        if(ENABLE_COVERAGE)
+            string(CONCAT H3_FLAGS ${H3_FLAGS} "--coverage ")
+        endif()
+    endif()
+
     option(WARNINGS_AS_ERRORS "Warnings are treated as errors" ON)
     if(WARNINGS_AS_ERRORS)
-        set(H3_FLAGS "-Werror")
+        string(CONCAT H3_FLAGS ${H3_FLAGS} "-Werror ")
     endif()
 endif()
 
