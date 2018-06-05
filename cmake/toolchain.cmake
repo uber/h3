@@ -22,8 +22,4 @@ if(NOT WIN32)
     string(CONCAT CMAKE_C_FLAGS_DEBUG_INIT
            "-g -gdwarf-2 -g3 -O0 -fno-inline -fno-eliminate-unused-debug-types "
            "--coverage")
-    option(WARNINGS_AS_ERRORS "Warnings are treated as errors" ON)
-    if(WARNINGS_AS_ERRORS)
-        add_compile_options(-Werror)
-    endif()
 endif()

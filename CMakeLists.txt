@@ -47,6 +47,14 @@ set(H3_SOVERSION 1)
 
 project(h3 VERSION ${H3_VERSION})
 
+set(H3_FLAGS "")
+if(NOT WIN32)
+    option(WARNINGS_AS_ERRORS "Warnings are treated as errors" ON)
+    if(WARNINGS_AS_ERRORS)
+        set(H3_FLAGS "-Werror")
+    endif()
+endif()
+
 include(CMakeDependentOption)
 include(CheckIncludeFile)
 include(CTest)
@@ -147,6 +155,8 @@ set(ALL_SOURCE_FILES
 # Build the H3 library
 add_library(h3 ${LIB_SOURCE_FILES})
 
+target_compile_options(h3 PRIVATE ${H3_FLAGS})
+
 find_library(M_LIB m)
 if(M_LIB)
     target_link_libraries(h3 PUBLIC ${M_LIB})
@@ -243,6 +253,7 @@ macro(add_h3_executable name)
         target_link_libraries(${name} PUBLIC h3)
         target_include_directories(${name} PUBLIC
           $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/apps/applib/include>)
+        target_compile_options(${name} PRIVATE ${H3_FLAGS})
     endif()
 endmacro()
 
