@@ -56,7 +56,7 @@ if(NOT WIN32)
     # are not correct for MSVC.
     list(APPEND H3_COMPILE_FLAGS -Wall)
 
-    list(APPEND H3_COMPILE_FLAGS $<$<CONFIG:Debug>:-g -gdwarf-2 -g3 -O0 -fno-inline -fno-eliminate-unused-debug-types>)
+    list(APPEND H3_COMPILE_FLAGS $<$<CONFIG:Debug>:-gdwarf-2 -g3 -O0 -fno-inline -fno-eliminate-unused-debug-types>)
 
     if(ENABLE_COVERAGE)
         list(APPEND H3_COMPILE_FLAGS $<$<CONFIG:DEBUG>:--coverage>)
@@ -172,7 +172,7 @@ set(ALL_SOURCE_FILES
 add_library(h3 ${LIB_SOURCE_FILES})
 
 target_compile_options(h3 PRIVATE ${H3_COMPILE_FLAGS})
-target_link_libraries(h3 PUBLIC ${H3_LINK_FLAGS})
+target_link_libraries(h3 PRIVATE ${H3_LINK_FLAGS})
 
 find_library(M_LIB m)
 if(M_LIB)
@@ -271,6 +271,7 @@ macro(add_h3_executable name)
         target_include_directories(${name} PUBLIC
           $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/apps/applib/include>)
         target_compile_options(${name} PRIVATE ${H3_COMPILE_FLAGS})
+        target_link_libraries(${name} PRIVATE ${H3_LINK_FLAGS})
     endif()
 endmacro()
 
