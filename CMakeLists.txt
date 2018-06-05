@@ -56,15 +56,13 @@ if(NOT WIN32)
     # are not correct for MSVC.
     list(APPEND H3_COMPILE_FLAGS -Wall)
 
-    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        list(APPEND H3_COMPILE_FLAGS
-                -g -gdwarf-2 -g3 -O0 -fno-inline -fno-eliminate-unused-debug-types)
-        if(ENABLE_COVERAGE)
-            list(APPEND H3_COMPILE_FLAGS --coverage)
-            # --coverage is not passed to the linker, so this option is needed
-            # to fully enable coverage.
-            list(APPEND H3_LINK_FLAGS -fprofile-arcs)
-        endif()
+    list(APPEND H3_COMPILE_FLAGS $<$<CONFIG:Debug>:-g -gdwarf-2 -g3 -O0 -fno-inline -fno-eliminate-unused-debug-types>)
+
+    if(ENABLE_COVERAGE)
+        list(APPEND H3_COMPILE_FLAGS $<$<CONFIG:DEBUG>:--coverage>)
+        # --coverage is not passed to the linker, so this option is needed
+        # to fully enable coverage.
+        list(APPEND H3_LINK_FLAGS $<$<CONFIG:DEBUG>:-fprofile-arcs>)
     endif()
 
     option(WARNINGS_AS_ERRORS "Warnings are treated as errors" ON)
