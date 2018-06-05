@@ -62,7 +62,7 @@ if(NOT WIN32)
         list(APPEND H3_COMPILE_FLAGS $<$<CONFIG:DEBUG>:--coverage>)
         # --coverage is not passed to the linker, so this option is needed
         # to fully enable coverage.
-        list(APPEND H3_LINK_FLAGS $<$<CONFIG:DEBUG>:-fprofile-arcs>)
+        list(APPEND H3_LINK_FLAGS $<$<CONFIG:DEBUG>:--coverage>)
     endif()
 
     option(WARNINGS_AS_ERRORS "Warnings are treated as errors" ON)
