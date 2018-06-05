@@ -47,6 +47,8 @@ typedef struct {
                    /// face
 } FaceOrientIJK;
 
+extern const GeoCoord faceCenterGeo[NUM_ICOSA_FACES];
+
 // indexes for faceNeighbors table
 /** Invalid faceNeighbors table direction */
 #define INVALID -1
