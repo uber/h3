@@ -63,6 +63,7 @@ set(LIB_SOURCE_FILES
     src/h3lib/include/h3UniEdge.h
     src/h3lib/include/geoCoord.h
     src/h3lib/include/vec2d.h
+    src/h3lib/include/vec3d.h
     src/h3lib/include/linkedGeo.h
     src/h3lib/include/baseCells.h
     src/h3lib/include/faceijk.h
@@ -78,6 +79,7 @@ set(LIB_SOURCE_FILES
     src/h3lib/lib/bbox.c
     src/h3lib/lib/h3Index.c
     src/h3lib/lib/vec2d.c
+    src/h3lib/lib/vec3d.c
     src/h3lib/lib/linkedGeo.c
     src/h3lib/lib/geoCoord.c
     src/h3lib/lib/h3UniEdge.c
@@ -125,6 +127,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testH3SetToVertexGraph.c
     src/apps/testapps/testBBox.c
     src/apps/testapps/testVec2d.c
+    src/apps/testapps/testVec3d.c
     src/apps/testapps/testH3UniEdge.c
     src/apps/testapps/testLinkedGeo.c
     src/apps/testapps/mkRandGeo.c
@@ -134,6 +137,7 @@ set(OTHER_SOURCE_FILES
     src/apps/miscapps/h3ToGeoHier.c
     src/apps/miscapps/generateBaseCellNeighbors.c
     src/apps/miscapps/generateNumHexagons.c
+    src/apps/miscapps/generateFaceCenterPoint.c
     src/apps/miscapps/h3ToHier.c
     src/apps/benchmarks/benchmarkPolyfill.c
     src/apps/benchmarks/benchmarkH3Api.c)
@@ -251,6 +255,7 @@ add_h3_executable(hexRange src/apps/filters/hexRange.c ${APP_SOURCE_FILES})
 add_h3_executable(kRing src/apps/filters/kRing.c ${APP_SOURCE_FILES})
 add_h3_executable(generateBaseCellNeighbors src/apps/miscapps/generateBaseCellNeighbors.c ${APP_SOURCE_FILES})
 add_h3_executable(generateNumHexagons src/apps/miscapps/generateNumHexagons.c ${APP_SOURCE_FILES})
+add_h3_executable(generateFaceCenterPoint src/apps/miscapps/generateFaceCenterPoint.c ${APP_SOURCE_FILES})
 add_h3_executable(h3ToGeoBoundaryHier src/apps/miscapps/h3ToGeoBoundaryHier.c ${APP_SOURCE_FILES})
 add_h3_executable(h3ToGeoHier src/apps/miscapps/h3ToGeoHier.c ${APP_SOURCE_FILES})
 add_h3_executable(h3ToHier src/apps/miscapps/h3ToHier.c ${APP_SOURCE_FILES})
@@ -420,6 +425,7 @@ if(BUILD_TESTING)
     add_h3_test(testGeoCoord src/apps/testapps/testGeoCoord.c)
     add_h3_test(testBBox src/apps/testapps/testBBox.c)
     add_h3_test(testVec2d src/apps/testapps/testVec2d.c)
+    add_h3_test(testVec3d src/apps/testapps/testVec3d.c)
 
     add_h3_test_with_arg(testH3NeighborRotations src/apps/testapps/testH3NeighborRotations.c 0)
     add_h3_test_with_arg(testH3NeighborRotations src/apps/testapps/testH3NeighborRotations.c 1)
