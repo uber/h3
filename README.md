@@ -9,6 +9,9 @@ H3 is a geospatial indexing system using a hexagonal grid that can be (approxima
 
 Documentation is available at [https://uber.github.io/h3/](https://uber.github.io/h3/). Developer documentation in Markdown format is available under the [dev-docs](./dev-docs/) directory.
 
+ * Post **bug reports or feature requests** to the [GitHub Issues page](https://github.com/uber/h3/issues)
+ * Ask **questions** by posting to the [H3 tag on StackOverflow](https://stackoverflow.com/questions/tagged/h3)
+
 ## Installing
 
 We recommend using prebuilt bindings if they are available for your programming language. Bindings for [Java](https://github.com/uber/h3-java) and [others](https://uber.github.io/h3/#/documentation/community/bindings) are available.
