@@ -104,6 +104,25 @@ TEST(getH3UnidirectionalEdgeAndFriends) {
     t_assert(notEdge == 0, "Non-neighbors can't have edges");
 }
 
+TEST(getOriginH3IndexFromUnidirectionalEdgeBadInput) {
+    H3Index hexagon = 0x891ea6d6533ffffl;
+
+    t_assert(H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(hexagon) == 0,
+             "getting the origin from a hexagon index returns 0");
+    t_assert(H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(0) == 0,
+             "getting the origin from a null index returns 0");
+}
+
+TEST(getDestinationH3IndexFromUnidirectionalEdge) {
+    H3Index hexagon = 0x891ea6d6533ffffl;
+
+    t_assert(
+        H3_EXPORT(getDestinationH3IndexFromUnidirectionalEdge)(hexagon) == 0,
+        "getting the destination from a hexagon index returns 0");
+    t_assert(H3_EXPORT(getDestinationH3IndexFromUnidirectionalEdge)(0) == 0,
+             "getting the destination from a null index returns 0");
+}
+
 TEST(getH3UnidirectionalEdgeFromPentagon) {
     H3Index pentagon;
     setH3Index(&pentagon, 0, 4, 0);
