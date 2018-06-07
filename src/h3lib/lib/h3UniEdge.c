@@ -126,7 +126,7 @@ H3Index H3_EXPORT(getH3UnidirectionalEdge)(H3Index origin,
  */
 H3Index H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(H3Index edge) {
     if (H3_GET_MODE(edge) != H3_UNIEDGE_MODE) {
-        return 0;
+        return H3_INVALID_INDEX;
     }
     H3Index origin = edge;
     H3_SET_MODE(origin, H3_HEXAGON_MODE);
@@ -141,7 +141,7 @@ H3Index H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(H3Index edge) {
  */
 H3Index H3_EXPORT(getDestinationH3IndexFromUnidirectionalEdge)(H3Index edge) {
     if (H3_GET_MODE(edge) != H3_UNIEDGE_MODE) {
-        return 0;
+        return H3_INVALID_INDEX;
     }
     int direction = H3_GET_RESERVED_BITS(edge);
     int rotations = 0;
