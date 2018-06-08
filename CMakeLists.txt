@@ -28,6 +28,8 @@ set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cmake/toolchain.cmake"
     CACHE FILEPATH
     "Toolchain to use for building this project")
 
+option(ENABLE_COVERAGE "Enable compiling tests with coverage." ON)
+
 if(WIN32)
     set(SHELL PowerShell -Command)
 
@@ -46,6 +48,28 @@ string(REPLACE "\n" "" H3_VERSION "${H3_VERSION}")
 set(H3_SOVERSION 1)
 
 project(h3 VERSION ${H3_VERSION})
+
+set(H3_COMPILE_FLAGS "")
+set(H3_LINK_FLAGS "")
+if(NOT WIN32)
+    # Compiler options are set only on non-Windows, since these options
+    # are not correct for MSVC.
+    list(APPEND H3_COMPILE_FLAGS -Wall)
+
+    list(APPEND H3_COMPILE_FLAGS $<$<CONFIG:Debug>:-gdwarf-2 -g3 -O0 -fno-inline -fno-eliminate-unused-debug-types>)
+
+    if(ENABLE_COVERAGE)
+        list(APPEND H3_COMPILE_FLAGS $<$<CONFIG:DEBUG>:--coverage>)
+        # --coverage is not passed to the linker, so this option is needed
+        # to fully enable coverage.
+        list(APPEND H3_LINK_FLAGS $<$<CONFIG:DEBUG>:--coverage>)
+    endif()
+
+    option(WARNINGS_AS_ERRORS "Warnings are treated as errors" ON)
+    if(WARNINGS_AS_ERRORS)
+        list(APPEND H3_COMPILE_FLAGS -Werror)
+    endif()
+endif()
 
 include(CMakeDependentOption)
 include(CheckIncludeFile)
@@ -147,6 +171,9 @@ set(ALL_SOURCE_FILES
 # Build the H3 library
 add_library(h3 ${LIB_SOURCE_FILES})
 
+target_compile_options(h3 PRIVATE ${H3_COMPILE_FLAGS})
+target_link_libraries(h3 PRIVATE ${H3_LINK_FLAGS})
+
 find_library(M_LIB m)
 if(M_LIB)
     target_link_libraries(h3 PUBLIC ${M_LIB})
@@ -243,6 +270,8 @@ macro(add_h3_executable name)
         target_link_libraries(${name} PUBLIC h3)
         target_include_directories(${name} PUBLIC
           $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/apps/applib/include>)
+        target_compile_options(${name} PRIVATE ${H3_COMPILE_FLAGS})
+        target_link_libraries(${name} PRIVATE ${H3_LINK_FLAGS})
     endif()
 endmacro()
 
@@ -291,7 +320,6 @@ if(BUILD_TESTING)
     # Macros and support code needed to build and add the tests
     set(test_number 0)
 
-    option(ENABLE_COVERAGE "Enable compiling tests with coverage." ON)
     if(ENABLE_COVERAGE)
         set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "coverage.info")
         set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "coverage.cleaned.info")

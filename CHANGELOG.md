@@ -10,6 +10,7 @@ The public API of this library consists of the functions declared in file
 - Generator for the faceCenterPoint table (#67)
 ### Changed
 - Moved Vec3d structure to `vec3d.h` (#67)
+- Added CMake `WARNINGS_AS_ERRORS` option, default on, for Clang and GCC (#70)
 
 ## [3.0.6] - 2018-06-01
 ### Changed
