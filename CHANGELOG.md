@@ -6,6 +6,8 @@ The public API of this library consists of the functions declared in file
 [h3api.h](./src/h3lib/include/h3api.h).
 
 ## [Unreleased]
+
+## [3.0.7] - 2018-06-08
 ### Added
 - Generator for the faceCenterPoint table (#67)
 - Generator for number of indexes per resolution (#69)
