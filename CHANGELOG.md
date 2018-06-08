@@ -8,9 +8,12 @@ The public API of this library consists of the functions declared in file
 ## [Unreleased]
 ### Added
 - Generator for the faceCenterPoint table (#67)
+- Generator for number of indexes per resolution (#69)
+- Added CMake `WARNINGS_AS_ERRORS` option, default on, for Clang and GCC (#70)
+- Added CMake `TEST_WRAPPER` setting when `WRAP_VALGRIND` is on (#66)
 ### Changed
 - Moved Vec3d structure to `vec3d.h` (#67)
-- Added CMake `WARNINGS_AS_ERRORS` option, default on, for Clang and GCC (#70)
+- Added input validation when getting the origin or destination of an edge (#74)
 
 ## [3.0.6] - 2018-06-01
 ### Changed
