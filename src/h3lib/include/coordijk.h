@@ -65,7 +65,7 @@ typedef enum {
     /** H3 digit in j-axes direction */
     J_AXES_DIGIT = 2,
     /** H3 digit in j == k direction */
-    JK_AXES_DIGIT = K_AXES_DIGIT | J_AXES_DIGIT, /* 3 */
+    JK_AXES_DIGIT = J_AXES_DIGIT | K_AXES_DIGIT, /* 3 */
     /** H3 digit in i-axes direction */
     I_AXES_DIGIT = 4,
     /** H3 digit in i == k direction */
