@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 Uber Technologies, Inc.
+ * Copyright 2016-2018 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -153,12 +153,12 @@ static void generate() {
                         }
                         // direction from the pentagon towards the neighboring
                         // base cell
-                        int dir = _unitIjkToDigit(&ijk);
+                        Direction dir = _unitIjkToDigit(&ijk);
 
                         // the direction was detected as being the i direction,
                         // but this can't be because i is deleted from the
                         // pentagon. We need to choose a different direction.
-                        if (dir == 1) {
+                        if (dir == K_AXES_DIGIT) {
                             // 4 and 117 are 'polar' type pentagons, which have
                             // some different behavior.
                             if (i == 4 || i == 117) {
@@ -175,15 +175,15 @@ static void generate() {
                         if (i == 4 || i == 117) {
                             // 'polar' type pentagon with all faces pointing
                             // towards i
-                            if (dir == 5) {
+                            if (dir == IK_AXES_DIGIT) {
                                 rotAdj = 2;
-                            } else if (dir == 6) {
+                            } else if (dir == IJ_AXES_DIGIT) {
                                 rotAdj = 4;
                             }
                         } else {
                             // the deleted k subsequence causes 4 and 5 to
                             // 'warp', need to adjust for that.
-                            if (dir == 4 || dir == 5) {
+                            if (dir == I_AXES_DIGIT || dir == IK_AXES_DIGIT) {
                                 rotAdj = dir;
                             }
                         }

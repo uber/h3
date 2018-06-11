@@ -26,11 +26,6 @@
 #include "constants.h"
 #include "geoCoord.h"
 
-/** 1.0/sqrt(7) */
-#define M_1_SQRT7 0.3779644730092272272145165362341800608157L
-/** Value indicating an invalid H3 digit */
-#define INVALID_DIGIT -1
-
 /**
  * Sets an IJK coordinate to the specified component values.
  *
@@ -253,12 +248,12 @@ void _ijkNormalize(CoordIJK* c) {
  * @return The H3 digit (0-6) corresponding to the ijk unit vector, or
  * INVALID_DIGIT on failure.
  */
-int _unitIjkToDigit(const CoordIJK* ijk) {
+Direction _unitIjkToDigit(const CoordIJK* ijk) {
     CoordIJK c = *ijk;
     _ijkNormalize(&c);
 
-    int digit = INVALID_DIGIT;
-    for (int i = 0; i < 7; i++) {
+    Direction digit = INVALID_DIGIT;
+    for (Direction i = CENTER_DIGIT; i < INVALID_DIGIT; i++) {
         if (_ijkMatches(&c, &UNIT_VECS[i])) {
             digit = i;
             break;
@@ -354,8 +349,8 @@ void _downAp7r(CoordIJK* ijk) {
  * @param ijk The ijk coordinates.
  * @param digit The digit direction from the original ijk coordinates.
  */
-void _neighbor(CoordIJK* ijk, int digit) {
-    if (digit != 0) {
+void _neighbor(CoordIJK* ijk, Direction digit) {
+    if (digit > CENTER_DIGIT && digit < INVALID_DIGIT) {
         _ijkAdd(ijk, &UNIT_VECS[digit], ijk);
         _ijkNormalize(ijk);
     }
@@ -408,7 +403,7 @@ void _ijkRotate60cw(CoordIJK* ijk) {
  *
  * @param digit Indexing digit (between 1 and 6 inclusive)
  */
-int _rotate60ccw(int digit) {
+Direction _rotate60ccw(Direction digit) {
     switch (digit) {
         case K_AXES_DIGIT:
             return IK_AXES_DIGIT;
@@ -432,7 +427,7 @@ int _rotate60ccw(int digit) {
  *
  * @param digit Indexing digit (between 1 and 6 inclusive)
  */
-int _rotate60cw(int digit) {
+Direction _rotate60cw(Direction digit) {
     switch (digit) {
         case K_AXES_DIGIT:
             return JK_AXES_DIGIT;

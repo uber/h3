@@ -55,16 +55,21 @@ int H3_EXPORT(h3IndexesAreNeighbors)(H3Index origin, H3Index destination) {
     int parentRes = H3_GET_RESOLUTION(origin) - 1;
     if (parentRes > 0 && (H3_EXPORT(h3ToParent)(origin, parentRes) ==
                           H3_EXPORT(h3ToParent)(destination, parentRes))) {
-        int originResDigit = H3_GET_INDEX_DIGIT(origin, parentRes + 1);
-        int destinationResDigit =
+        Direction originResDigit = H3_GET_INDEX_DIGIT(origin, parentRes + 1);
+        Direction destinationResDigit =
             H3_GET_INDEX_DIGIT(destination, parentRes + 1);
-        if (originResDigit == 0 || destinationResDigit == 0) {
+        if (originResDigit == CENTER_DIGIT ||
+            destinationResDigit == CENTER_DIGIT) {
             return 1;
         }
         // These sets are the relevant neighbors in the clockwise
         // and counter-clockwise
-        const int neighborSetClockwise[] = {0, 3, 6, 2, 5, 1, 4};
-        const int neighborSetCounterclockwise[] = {0, 5, 3, 1, 6, 4, 2};
+        const Direction neighborSetClockwise[] = {
+            CENTER_DIGIT,  JK_AXES_DIGIT, IJ_AXES_DIGIT, J_AXES_DIGIT,
+            IK_AXES_DIGIT, K_AXES_DIGIT,  I_AXES_DIGIT};
+        const Direction neighborSetCounterclockwise[] = {
+            CENTER_DIGIT,  IK_AXES_DIGIT, JK_AXES_DIGIT, K_AXES_DIGIT,
+            IJ_AXES_DIGIT, I_AXES_DIGIT,  J_AXES_DIGIT};
         if (neighborSetClockwise[originResDigit] == destinationResDigit ||
             neighborSetCounterclockwise[originResDigit] ==
                 destinationResDigit) {
@@ -106,7 +111,8 @@ H3Index H3_EXPORT(getH3UnidirectionalEdge)(H3Index origin,
     // Checks each neighbor, in order, to determine which direction the
     // destination neighbor is located.
     H3Index neighbor;
-    for (int direction = 1; direction < 7; direction++) {
+    for (Direction direction = K_AXES_DIGIT; direction < INVALID_DIGIT;
+         direction++) {
         int rotations = 0;
         neighbor = h3NeighborRotations(origin, direction, &rotations);
         if (neighbor == destination) {
@@ -143,7 +149,7 @@ H3Index H3_EXPORT(getDestinationH3IndexFromUnidirectionalEdge)(H3Index edge) {
     if (H3_GET_MODE(edge) != H3_UNIEDGE_MODE) {
         return H3_INVALID_INDEX;
     }
-    int direction = H3_GET_RESERVED_BITS(edge);
+    Direction direction = H3_GET_RESERVED_BITS(edge);
     int rotations = 0;
     H3Index destination = h3NeighborRotations(
         H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(edge), direction,
@@ -161,8 +167,9 @@ int H3_EXPORT(h3UnidirectionalEdgeIsValid)(H3Index edge) {
         return 0;
     }
 
-    int neighborDirection = H3_GET_RESERVED_BITS(edge);
-    if (neighborDirection < 1 || neighborDirection > 6) {
+    Direction neighborDirection = H3_GET_RESERVED_BITS(edge);
+    if (neighborDirection <= CENTER_DIGIT ||
+        neighborDirection >= INVALID_DIGIT) {
         return 0;
     }
 
@@ -202,8 +209,8 @@ void H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(H3Index origin,
     // slightly for each direction, except the 'k' direction in pentagons,
     // which is zeroed.
     for (int i = 0; i < 6; i++) {
-        if (isPentagon == 1 && i == 0) {
-            edges[i] = 0;
+        if (isPentagon && i == 0) {
+            edges[i] = H3_INVALID_INDEX;
         } else {
             edges[i] = origin;
             H3_SET_MODE(edges[i], H3_UNIEDGE_MODE);

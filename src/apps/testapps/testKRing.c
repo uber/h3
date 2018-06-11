@@ -356,7 +356,7 @@ TEST(cwOffsetPent) {
             // Only direction 2 needs to be checked, because that is the only
             // direction where we can move from digit 2 to digit 1, and into the
             // deleted k subsequence.
-            t_assert(_getBaseCellNeighbor(neighbor, 2) != pentagon ||
+            t_assert(_getBaseCellNeighbor(neighbor, J_AXES_DIGIT) != pentagon ||
                          _baseCellIsCwOffset(pentagon, neighborFace),
                      "cwOffsetPent is reachable");
         }

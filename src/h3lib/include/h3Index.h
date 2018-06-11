@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 Uber Technologies, Inc.
+ * Copyright 2016-2018 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -115,9 +115,9 @@
 /**
  * Gets the resolution res integer digit (0-7) of h3.
  */
-#define H3_GET_INDEX_DIGIT(h3, res)                                  \
-    ((int)((((h3) >> ((MAX_H3_RES - (res)) * H3_PER_DIGIT_OFFSET)) & \
-            H3_DIGIT_MASK)))
+#define H3_GET_INDEX_DIGIT(h3, res)                                        \
+    ((Direction)((((h3) >> ((MAX_H3_RES - (res)) * H3_PER_DIGIT_OFFSET)) & \
+                  H3_DIGIT_MASK)))
 
 /**
  * Sets a value in the reserved space. Setting to non-zero may produce invalid
@@ -147,13 +147,13 @@
  */
 #define H3_INVALID_INDEX 0
 
-void setH3Index(H3Index* h, int res, int baseCell, int initDigit);
+void setH3Index(H3Index* h, int res, int baseCell, Direction initDigit);
 int isResClassIII(int res);
 
 // Internal functions
 
 H3Index _faceIjkToH3(const FaceIJK* fijk, int res);
-int _h3LeadingNonZeroDigit(H3Index h);
+Direction _h3LeadingNonZeroDigit(H3Index h);
 H3Index _h3RotatePent60ccw(H3Index h);
 H3Index _h3Rotate60ccw(H3Index h);
 H3Index _h3Rotate60cw(H3Index h);
