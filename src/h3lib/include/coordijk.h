@@ -73,7 +73,9 @@ typedef enum {
     /** H3 digit in i == j direction */
     IJ_AXES_DIGIT = I_AXES_DIGIT | J_AXES_DIGIT, /* 6 */
     /** H3 digit in the invalid direction */
-    INVALID_DIGIT = 7
+    INVALID_DIGIT = 7,
+    /** Valid digits will not be as high as this value. Same value as INVALID_DIGIT. */
+    LAST_DIGIT = INVALID_DIGIT
 } Direction;
 
 // Internal functions

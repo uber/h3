@@ -85,7 +85,7 @@ int H3_EXPORT(h3IsValid)(H3Index h) {
 
     for (int r = 1; r <= res; r++) {
         Direction digit = H3_GET_INDEX_DIGIT(h, r);
-        if (digit < CENTER_DIGIT || digit >= INVALID_DIGIT) return 0;
+        if (digit < CENTER_DIGIT || digit >= LAST_DIGIT) return 0;
     }
 
     for (int r = res + 1; r <= MAX_H3_RES; r++) {
