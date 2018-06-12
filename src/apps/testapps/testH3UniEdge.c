@@ -21,6 +21,7 @@
 
 #include <stdlib.h>
 #include "constants.h"
+#include "geoCoord.h"
 #include "h3Index.h"
 #include "test.h"
 
@@ -208,34 +209,113 @@ TEST(getH3UnidirectionalEdgesFromHexagon) {
 }
 
 TEST(getH3UnidirectionalEdgeBoundary) {
-    H3Index sf = H3_EXPORT(geoToH3)(&sfGeo, 9);
+    H3Index sf;
+    GeoBoundary boundary;
+    GeoBoundary edgeBoundary;
     H3Index* edges = calloc(6, sizeof(H3Index));
-    H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(sf, edges);
 
-    GeoBoundary gb;
-    for (int i = 0; i < 6; i++) {
-        H3_EXPORT(getH3UnidirectionalEdgeBoundary)(edges[i], &gb);
-        t_assert(gb.numVerts == 2, "Got the expected number of vertices back");
-    }
-    free(edges);
+    int expectedVertices[][2] = {{3, 4}, {1, 2}, {2, 3},
+                                 {5, 0}, {4, 5}, {0, 1}};
 
-    H3Index pentagon = 0x811c0ffffffffff;
-    edges = calloc(6, sizeof(H3Index));
-    H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(pentagon, edges);
+    for (int res = 0; res < 13; res++) {
+        sf = H3_EXPORT(geoToH3)(&sfGeo, res);
+        H3_EXPORT(h3ToGeoBoundary)(sf, &boundary);
+        H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(sf, edges);
 
-    int missingEdgeCount = 0;
-    for (int i = 0; i < 6; i++) {
-        if (edges[i] == 0) {
-            missingEdgeCount++;
-        } else {
-            H3_EXPORT(getH3UnidirectionalEdgeBoundary)(edges[i], &gb);
-            t_assert(gb.numVerts == 3,
-                     "Got the expected number of vertices back for a Class III "
-                     "pentagon");
+        for (int i = 0; i < 6; i++) {
+            H3_EXPORT(getH3UnidirectionalEdgeBoundary)(edges[i], &edgeBoundary);
+            t_assert(edgeBoundary.numVerts == 2,
+                     "Got the expected number of vertices back");
+            for (int j = 0; j < edgeBoundary.numVerts; j++) {
+                t_assert(
+                    geoAlmostEqual(&edgeBoundary.verts[j],
+                                   &boundary.verts[expectedVertices[i][j]]),
+                    "Got expected vertex");
+            }
         }
     }
-    t_assert(missingEdgeCount == 1,
-             "Only one edge was deleted for the pentagon");
+    free(edges);
+}
+
+TEST(getH3UnidirectionalEdgeBoundaryPentagonClassIII) {
+    H3Index pentagon;
+    GeoBoundary boundary;
+    GeoBoundary edgeBoundary;
+    H3Index* edges = calloc(6, sizeof(H3Index));
+
+    int expectedVertices[][3] = {{-1, -1, -1}, {2, 3, 4}, {4, 5, 6},
+                                 {8, 9, 0},    {6, 7, 8}, {0, 1, 2}};
+
+    for (int res = 1; res < 13; res += 2) {
+        setH3Index(&pentagon, res, 24, 0);
+        H3_EXPORT(h3ToGeoBoundary)(pentagon, &boundary);
+        H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(pentagon, edges);
+
+        int missingEdgeCount = 0;
+        for (int i = 0; i < 6; i++) {
+            if (edges[i] == 0) {
+                missingEdgeCount++;
+            } else {
+                H3_EXPORT(getH3UnidirectionalEdgeBoundary)
+                (edges[i], &edgeBoundary);
+                t_assert(
+                    edgeBoundary.numVerts == 3,
+                    "Got the expected number of vertices back for a Class III "
+                    "pentagon");
+                for (int j = 0; j < edgeBoundary.numVerts; j++) {
+                    t_assert(
+                        geoAlmostEqual(&edgeBoundary.verts[j],
+                                       &boundary.verts[expectedVertices[i][j]]),
+                        "Got expected vertex");
+                }
+            }
+        }
+        t_assert(missingEdgeCount == 1,
+                 "Only one edge was deleted for the pentagon");
+    }
+    free(edges);
+}
+
+TEST(getH3UnidirectionalEdgeBoundaryPentagonClassII) {
+    H3Index pentagon;
+    GeoBoundary boundary;
+    GeoBoundary edgeBoundary;
+    H3Index* edges = calloc(6, sizeof(H3Index));
+
+    int expectedVertices[][3] = {{-1, -1}, {1, 2}, {2, 3},
+                                 {4, 0},   {3, 4}, {0, 1}};
+
+    for (int res = 0; res < 12; res += 2) {
+        setH3Index(&pentagon, res, 24, 0);
+        H3_EXPORT(h3ToGeoBoundary)(pentagon, &boundary);
+        H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(pentagon, edges);
+
+        int missingEdgeCount = 0;
+        for (int i = 0; i < 6; i++) {
+            if (edges[i] == 0) {
+                missingEdgeCount++;
+            } else {
+                H3_EXPORT(getH3UnidirectionalEdgeBoundary)
+                (edges[i], &edgeBoundary);
+                t_assert(
+                    edgeBoundary.numVerts == 2,
+                    "Got the expected number of vertices back for a Class II "
+                    "pentagon");
+                for (int j = 0; j < edgeBoundary.numVerts; j++) {
+                    printf("%lf,%lf\n%lf, %lf\n", edgeBoundary.verts[j].lat,
+                           edgeBoundary.verts[j].lon,
+                           boundary.verts[expectedVertices[i][j]].lat,
+                           boundary.verts[expectedVertices[i][j]].lon);
+                    t_assert(
+                        geoAlmostEqual(&edgeBoundary.verts[j],
+                                       &boundary.verts[expectedVertices[i][j]]),
+                        "Got expected vertex");
+                }
+            }
+        }
+        t_assert(missingEdgeCount == 1,
+                 "Only one edge was deleted for the pentagon");
+    }
     free(edges);
 }
 

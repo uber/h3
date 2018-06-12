@@ -18,6 +18,7 @@
  */
 
 #include <inttypes.h>
+#include <stdbool.h>
 #include "algos.h"
 #include "constants.h"
 #include "coordijk.h"
@@ -212,6 +213,15 @@ void H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(H3Index origin,
     }
 }
 
+bool _hasMatchingVertex(GeoCoord* vertex, GeoBoundary* boundary) {
+    for (int i = 0; i < boundary->numVerts; i++) {
+        if (geoAlmostEqualThreshold(vertex, &boundary->verts[i], 0.000001)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 /**
  * Provides the coordinates defining the unidirectional edge.
  * @param edge The unidirectional edge H3Index
@@ -221,6 +231,8 @@ void H3_EXPORT(getH3UnidirectionalEdgeBoundary)(H3Index edge, GeoBoundary* gb) {
     // TODO: More efficient solution :)
     GeoBoundary origin = {0};
     GeoBoundary destination = {0};
+    GeoCoord postponedVertex = {0};
+
     H3_EXPORT(h3ToGeoBoundary)
     (H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(edge), &origin);
     H3_EXPORT(h3ToGeoBoundary)
@@ -229,14 +241,26 @@ void H3_EXPORT(getH3UnidirectionalEdgeBoundary)(H3Index edge, GeoBoundary* gb) {
 
     int k = 0;
     for (int i = 0; i < origin.numVerts; i++) {
-        for (int j = 0; j < destination.numVerts; j++) {
-            if (geoAlmostEqualThreshold(&origin.verts[i], &destination.verts[j],
-                                        0.000001)) {
-                gb->verts[k].lat = origin.verts[i].lat;
-                gb->verts[k].lon = origin.verts[i].lon;
+        if (_hasMatchingVertex(&origin.verts[i], &destination)) {
+            // If we are on vertex 0, we need to handle the case where it's the
+            // end of the edge, not the beginning.
+            // TODO: This is fine for this limited case, but it might be
+            // better/cleaner to use a VertexGraph for this
+            printf("%d, %d\n", i,
+                   _hasMatchingVertex(&origin.verts[i + 1], &destination));
+            if (i == 0 &&
+                !_hasMatchingVertex(&origin.verts[i + 1], &destination)) {
+                postponedVertex = origin.verts[i];
+            } else {
+                gb->verts[k] = origin.verts[i];
                 k++;
             }
         }
+    }
+    // If we postponed adding the last vertex, add it now
+    if (postponedVertex.lat && postponedVertex.lon) {
+        gb->verts[k] = postponedVertex;
+        k++;
     }
     gb->numVerts = k;
 }
