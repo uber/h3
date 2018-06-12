@@ -253,7 +253,7 @@ Direction _unitIjkToDigit(const CoordIJK* ijk) {
     _ijkNormalize(&c);
 
     Direction digit = INVALID_DIGIT;
-    for (Direction i = CENTER_DIGIT; i < LAST_DIGIT; i++) {
+    for (Direction i = CENTER_DIGIT; i < NUM_DIGITS; i++) {
         if (_ijkMatches(&c, &UNIT_VECS[i])) {
             digit = i;
             break;
@@ -350,7 +350,7 @@ void _downAp7r(CoordIJK* ijk) {
  * @param digit The digit direction from the original ijk coordinates.
  */
 void _neighbor(CoordIJK* ijk, Direction digit) {
-    if (digit > CENTER_DIGIT && digit < LAST_DIGIT) {
+    if (digit > CENTER_DIGIT && digit < NUM_DIGITS) {
         _ijkAdd(ijk, &UNIT_VECS[digit], ijk);
         _ijkNormalize(ijk);
     }

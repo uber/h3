@@ -112,7 +112,7 @@ H3Index H3_EXPORT(getH3UnidirectionalEdge)(H3Index origin,
     // destination neighbor is located. Skips CENTER_DIGIT since that
     // would be this index.
     H3Index neighbor;
-    for (Direction direction = K_AXES_DIGIT; direction < LAST_DIGIT;
+    for (Direction direction = K_AXES_DIGIT; direction < NUM_DIGITS;
          direction++) {
         int rotations = 0;
         neighbor = h3NeighborRotations(origin, direction, &rotations);
@@ -169,13 +169,12 @@ int H3_EXPORT(h3UnidirectionalEdgeIsValid)(H3Index edge) {
     }
 
     Direction neighborDirection = H3_GET_RESERVED_BITS(edge);
-    if (neighborDirection <= CENTER_DIGIT ||
-        neighborDirection >= LAST_DIGIT) {
+    if (neighborDirection <= CENTER_DIGIT || neighborDirection >= NUM_DIGITS) {
         return 0;
     }
 
     H3Index origin = H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(edge);
-    if (H3_EXPORT(h3IsPentagon)(origin) && neighborDirection == 1) {
+    if (H3_EXPORT(h3IsPentagon)(origin) && neighborDirection == K_AXES_DIGIT) {
         return 0;
     }
 
