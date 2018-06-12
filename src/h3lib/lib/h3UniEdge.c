@@ -213,7 +213,7 @@ void H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(H3Index origin,
     }
 }
 
-bool _hasMatchingVertex(GeoCoord* vertex, GeoBoundary* boundary) {
+bool _hasMatchingVertex(const GeoCoord* vertex, const GeoBoundary* boundary) {
     for (int i = 0; i < boundary->numVerts; i++) {
         if (geoAlmostEqualThreshold(vertex, &boundary->verts[i], 0.000001)) {
             return true;
@@ -232,6 +232,7 @@ void H3_EXPORT(getH3UnidirectionalEdgeBoundary)(H3Index edge, GeoBoundary* gb) {
     GeoBoundary origin = {0};
     GeoBoundary destination = {0};
     GeoCoord postponedVertex = {0};
+    bool hasPostponedVertex = false;
 
     H3_EXPORT(h3ToGeoBoundary)
     (H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(edge), &origin);
@@ -246,11 +247,10 @@ void H3_EXPORT(getH3UnidirectionalEdgeBoundary)(H3Index edge, GeoBoundary* gb) {
             // end of the edge, not the beginning.
             // TODO: This is fine for this limited case, but it might be
             // better/cleaner to use a VertexGraph for this
-            printf("%d, %d\n", i,
-                   _hasMatchingVertex(&origin.verts[i + 1], &destination));
             if (i == 0 &&
                 !_hasMatchingVertex(&origin.verts[i + 1], &destination)) {
                 postponedVertex = origin.verts[i];
+                hasPostponedVertex = true;
             } else {
                 gb->verts[k] = origin.verts[i];
                 k++;
@@ -258,7 +258,7 @@ void H3_EXPORT(getH3UnidirectionalEdgeBoundary)(H3Index edge, GeoBoundary* gb) {
         }
     }
     // If we postponed adding the last vertex, add it now
-    if (postponedVertex.lat && postponedVertex.lon) {
+    if (hasPostponedVertex) {
         gb->verts[k] = postponedVertex;
         k++;
     }
