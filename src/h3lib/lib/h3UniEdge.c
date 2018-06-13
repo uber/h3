@@ -213,7 +213,14 @@ void H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(H3Index origin,
     }
 }
 
-bool _hasMatchingVertex(const GeoCoord* vertex, const GeoBoundary* boundary) {
+/**
+ * Whether the given coordinate has a matching vertex in the given geo boundary.
+ * @param  vertex   Coordinate to check
+ * @param  boundary Geo boundary to look in
+ * @return          Whether a match was found
+ */
+static bool _hasMatchingVertex(const GeoCoord* vertex,
+                               const GeoBoundary* boundary) {
     for (int i = 0; i < boundary->numVerts; i++) {
         if (geoAlmostEqualThreshold(vertex, &boundary->verts[i], 0.000001)) {
             return true;
@@ -245,8 +252,6 @@ void H3_EXPORT(getH3UnidirectionalEdgeBoundary)(H3Index edge, GeoBoundary* gb) {
         if (_hasMatchingVertex(&origin.verts[i], &destination)) {
             // If we are on vertex 0, we need to handle the case where it's the
             // end of the edge, not the beginning.
-            // TODO: This is fine for this limited case, but it might be
-            // better/cleaner to use a VertexGraph for this
             if (i == 0 &&
                 !_hasMatchingVertex(&origin.verts[i + 1], &destination)) {
                 postponedVertex = origin.verts[i];
