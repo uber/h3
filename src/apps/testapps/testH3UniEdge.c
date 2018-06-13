@@ -210,7 +210,7 @@ TEST(getH3UnidirectionalEdgeBoundary) {
     GeoBoundary edgeBoundary;
     STACK_ARRAY_CALLOC(H3Index, edges, 6);
 
-    int expectedVertices[][2] = {{3, 4}, {1, 2}, {2, 3},
+    const int expectedVertices[][2] = {{3, 4}, {1, 2}, {2, 3},
                                  {5, 0}, {4, 5}, {0, 1}};
 
     for (int res = 0; res < 13; res++) {
@@ -238,7 +238,7 @@ TEST(getH3UnidirectionalEdgeBoundaryPentagonClassIII) {
     GeoBoundary edgeBoundary;
     STACK_ARRAY_CALLOC(H3Index, edges, 6);
 
-    int expectedVertices[][3] = {{-1, -1, -1}, {2, 3, 4}, {4, 5, 6},
+    const int expectedVertices[][3] = {{-1, -1, -1}, {2, 3, 4}, {4, 5, 6},
                                  {8, 9, 0},    {6, 7, 8}, {0, 1, 2}};
 
     for (int res = 1; res < 13; res += 2) {
@@ -276,7 +276,7 @@ TEST(getH3UnidirectionalEdgeBoundaryPentagonClassII) {
     GeoBoundary edgeBoundary;
     STACK_ARRAY_CALLOC(H3Index, edges, 6);
 
-    int expectedVertices[][3] = {{-1, -1}, {1, 2}, {2, 3},
+    const int expectedVertices[][3] = {{-1, -1}, {1, 2}, {2, 3},
                                  {4, 0},   {3, 4}, {0, 1}};
 
     for (int res = 0; res < 12; res += 2) {
