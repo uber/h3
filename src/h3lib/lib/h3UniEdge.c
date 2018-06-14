@@ -18,6 +18,7 @@
  */
 
 #include <inttypes.h>
+#include <stdbool.h>
 #include "algos.h"
 #include "constants.h"
 #include "coordijk.h"
@@ -213,6 +214,22 @@ void H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(H3Index origin,
 }
 
 /**
+ * Whether the given coordinate has a matching vertex in the given geo boundary.
+ * @param  vertex   Coordinate to check
+ * @param  boundary Geo boundary to look in
+ * @return          Whether a match was found
+ */
+static bool _hasMatchingVertex(const GeoCoord* vertex,
+                               const GeoBoundary* boundary) {
+    for (int i = 0; i < boundary->numVerts; i++) {
+        if (geoAlmostEqualThreshold(vertex, &boundary->verts[i], 0.000001)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
  * Provides the coordinates defining the unidirectional edge.
  * @param edge The unidirectional edge H3Index
  * @param gb The geoboundary object to store the edge coordinates.
@@ -221,6 +238,9 @@ void H3_EXPORT(getH3UnidirectionalEdgeBoundary)(H3Index edge, GeoBoundary* gb) {
     // TODO: More efficient solution :)
     GeoBoundary origin = {0};
     GeoBoundary destination = {0};
+    GeoCoord postponedVertex = {0};
+    bool hasPostponedVertex = false;
+
     H3_EXPORT(h3ToGeoBoundary)
     (H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(edge), &origin);
     H3_EXPORT(h3ToGeoBoundary)
@@ -229,14 +249,23 @@ void H3_EXPORT(getH3UnidirectionalEdgeBoundary)(H3Index edge, GeoBoundary* gb) {
 
     int k = 0;
     for (int i = 0; i < origin.numVerts; i++) {
-        for (int j = 0; j < destination.numVerts; j++) {
-            if (geoAlmostEqualThreshold(&origin.verts[i], &destination.verts[j],
-                                        0.000001)) {
-                gb->verts[k].lat = origin.verts[i].lat;
-                gb->verts[k].lon = origin.verts[i].lon;
+        if (_hasMatchingVertex(&origin.verts[i], &destination)) {
+            // If we are on vertex 0, we need to handle the case where it's the
+            // end of the edge, not the beginning.
+            if (i == 0 &&
+                !_hasMatchingVertex(&origin.verts[i + 1], &destination)) {
+                postponedVertex = origin.verts[i];
+                hasPostponedVertex = true;
+            } else {
+                gb->verts[k] = origin.verts[i];
                 k++;
             }
         }
+    }
+    // If we postponed adding the last vertex, add it now
+    if (hasPostponedVertex) {
+        gb->verts[k] = postponedVertex;
+        k++;
     }
     gb->numVerts = k;
 }
