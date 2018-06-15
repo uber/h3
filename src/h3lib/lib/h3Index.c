@@ -84,13 +84,13 @@ int H3_EXPORT(h3IsValid)(H3Index h) {
     if (res < 0 || res > MAX_H3_RES) return 0;
 
     for (int r = 1; r <= res; r++) {
-        int digit = H3_GET_INDEX_DIGIT(h, r);
-        if (digit < 0 || digit > 6) return 0;
+        Direction digit = H3_GET_INDEX_DIGIT(h, r);
+        if (digit < CENTER_DIGIT || digit >= NUM_DIGITS) return 0;
     }
 
     for (int r = res + 1; r <= MAX_H3_RES; r++) {
-        int digit = H3_GET_INDEX_DIGIT(h, r);
-        if (digit != 7) return 0;
+        Direction digit = H3_GET_INDEX_DIGIT(h, r);
+        if (digit != INVALID_DIGIT) return 0;
     }
 
     return 1;
@@ -103,7 +103,7 @@ int H3_EXPORT(h3IsValid)(H3Index h) {
  * @param baseCell The H3 base cell to initialize the index to.
  * @param initDigit The H3 digit (0-7) to initialize all of the index digits to.
  */
-void setH3Index(H3Index* hp, int res, int baseCell, int initDigit) {
+void setH3Index(H3Index* hp, int res, int baseCell, Direction initDigit) {
     H3Index h = H3_INIT;
     H3_SET_MODE(h, H3_HEXAGON_MODE);
     H3_SET_RESOLUTION(h, res);
@@ -256,7 +256,7 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
                             return -2;
                         }
                         H3_SET_RESERVED_BITS(parent, count);
-                        hashSetArray[loc] = 0;
+                        hashSetArray[loc] = H3_INVALID_INDEX;
                     } else {
                         loc = (loc + 1) % numRemainingHexes;
                     }
@@ -301,7 +301,7 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
         int uncompactableCount = 0;
         for (int i = 0; i < numRemainingHexes; i++) {
             H3Index currIndex = remainingHexes[i];
-            if (currIndex != 0) {
+            if (currIndex != H3_INVALID_INDEX) {
                 H3Index parent = H3_EXPORT(h3ToParent)(currIndex, parentRes);
                 // Modulus hash the parent into the temp array
                 // to determine if this index was included in
@@ -446,12 +446,12 @@ int H3_EXPORT(h3IsPentagon)(H3Index h) {
  * @param h The H3Index.
  * @return The highest resolution non-zero digit in the H3Index.
  */
-int _h3LeadingNonZeroDigit(H3Index h) {
+Direction _h3LeadingNonZeroDigit(H3Index h) {
     for (int r = 1; r <= H3_GET_RESOLUTION(h); r++)
         if (H3_GET_INDEX_DIGIT(h, r)) return H3_GET_INDEX_DIGIT(h, r);
 
     // if we're here it's all 0's
-    return 0;
+    return CENTER_DIGIT;
 }
 
 /**
@@ -468,7 +468,7 @@ H3Index _h3RotatePent60ccw(H3Index h) {
 
         // look for the first non-zero digit so we
         // can adjust for deleted k-axes sequence
-        // if neccessary
+        // if necessary
         if (!foundFirstNonZeroDigit && H3_GET_INDEX_DIGIT(h, r) != 0) {
             foundFirstNonZeroDigit = 1;
 
@@ -486,7 +486,7 @@ H3Index _h3RotatePent60ccw(H3Index h) {
  */
 H3Index _h3Rotate60ccw(H3Index h) {
     for (int r = 1, res = H3_GET_RESOLUTION(h); r <= res; r++) {
-        int oldDigit = H3_GET_INDEX_DIGIT(h, r);
+        Direction oldDigit = H3_GET_INDEX_DIGIT(h, r);
         H3_SET_INDEX_DIGIT(h, r, _rotate60ccw(oldDigit));
     }
 

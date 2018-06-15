@@ -54,22 +54,30 @@ static const CoordIJK UNIT_VECS[] = {
     {1, 1, 0}   // direction 6
 };
 
-// H3 digit representing ijk+ axes direction
-// see also unitVecs in coordijk.c
-/** H3 digit in center */
-#define CENTER_DIGIT 0
-/** H3 digit in k-axes direction */
-#define K_AXES_DIGIT 1
-/** H3 digit in j-axes direction */
-#define J_AXES_DIGIT 2
-/** H3 digit in j == k direction */
-#define JK_AXES_DIGIT (K_AXES_DIGIT | J_AXES_DIGIT) /* 3 */
-/** H3 digit in i-axes direction */
-#define I_AXES_DIGIT 4
-/** H3 digit in i == k direction */
-#define IK_AXES_DIGIT (I_AXES_DIGIT | K_AXES_DIGIT) /* 5 */
-/** H3 digit in i == j direction */
-#define IJ_AXES_DIGIT (I_AXES_DIGIT | J_AXES_DIGIT) /* 6 */
+/** @brief H3 digit representing ijk+ axes direction.
+ * Values will be within the lowest 3 bits of an integer.
+ */
+typedef enum {
+    /** H3 digit in center */
+    CENTER_DIGIT = 0,
+    /** H3 digit in k-axes direction */
+    K_AXES_DIGIT = 1,
+    /** H3 digit in j-axes direction */
+    J_AXES_DIGIT = 2,
+    /** H3 digit in j == k direction */
+    JK_AXES_DIGIT = J_AXES_DIGIT | K_AXES_DIGIT, /* 3 */
+    /** H3 digit in i-axes direction */
+    I_AXES_DIGIT = 4,
+    /** H3 digit in i == k direction */
+    IK_AXES_DIGIT = I_AXES_DIGIT | K_AXES_DIGIT, /* 5 */
+    /** H3 digit in i == j direction */
+    IJ_AXES_DIGIT = I_AXES_DIGIT | J_AXES_DIGIT, /* 6 */
+    /** H3 digit in the invalid direction */
+    INVALID_DIGIT = 7,
+    /** Valid digits will be less than this value. Same value as INVALID_DIGIT.
+     */
+    NUM_DIGITS = INVALID_DIGIT
+} Direction;
 
 // Internal functions
 
@@ -81,17 +89,17 @@ void _ijkAdd(const CoordIJK* h1, const CoordIJK* h2, CoordIJK* sum);
 void _ijkSub(const CoordIJK* h1, const CoordIJK* h2, CoordIJK* diff);
 void _ijkScale(CoordIJK* c, int factor);
 void _ijkNormalize(CoordIJK* c);
-int _unitIjkToDigit(const CoordIJK* ijk);
+Direction _unitIjkToDigit(const CoordIJK* ijk);
 void _upAp7(CoordIJK* ijk);
 void _upAp7r(CoordIJK* ijk);
 void _downAp7(CoordIJK* ijk);
 void _downAp7r(CoordIJK* ijk);
 void _downAp3(CoordIJK* ijk);
 void _downAp3r(CoordIJK* ijk);
-void _neighbor(CoordIJK* ijk, int digit);
+void _neighbor(CoordIJK* ijk, Direction digit);
 void _ijkRotate60ccw(CoordIJK* ijk);
 void _ijkRotate60cw(CoordIJK* ijk);
-int _rotate60ccw(int digit);
-int _rotate60cw(int digit);
+Direction _rotate60ccw(Direction digit);
+Direction _rotate60cw(Direction digit);
 
 #endif

@@ -54,13 +54,98 @@
  *     \\2/
  * </pre>
  */
-static const int DIRECTIONS[6] = {J_AXES_DIGIT,  JK_AXES_DIGIT, K_AXES_DIGIT,
-                                  IK_AXES_DIGIT, I_AXES_DIGIT,  IJ_AXES_DIGIT};
+static const Direction DIRECTIONS[6] = {J_AXES_DIGIT, JK_AXES_DIGIT,
+                                        K_AXES_DIGIT, IK_AXES_DIGIT,
+                                        I_AXES_DIGIT, IJ_AXES_DIGIT};
 
 /**
  * Direction used for traversing to the next outward hexagonal ring.
  */
-static const int NEXT_RING_DIRECTION = I_AXES_DIGIT;
+static const Direction NEXT_RING_DIRECTION = I_AXES_DIGIT;
+
+/**
+ * New digit when traversing along class II grids.
+ *
+ * Current digit -> direction -> new digit.
+ */
+static const Direction NEW_DIGIT_II[7][7] = {
+    {CENTER_DIGIT, K_AXES_DIGIT, J_AXES_DIGIT, JK_AXES_DIGIT, I_AXES_DIGIT,
+     IK_AXES_DIGIT, IJ_AXES_DIGIT},
+    {K_AXES_DIGIT, I_AXES_DIGIT, JK_AXES_DIGIT, IJ_AXES_DIGIT, IK_AXES_DIGIT,
+     J_AXES_DIGIT, CENTER_DIGIT},
+    {J_AXES_DIGIT, JK_AXES_DIGIT, K_AXES_DIGIT, I_AXES_DIGIT, IJ_AXES_DIGIT,
+     CENTER_DIGIT, IK_AXES_DIGIT},
+    {JK_AXES_DIGIT, IJ_AXES_DIGIT, I_AXES_DIGIT, IK_AXES_DIGIT, CENTER_DIGIT,
+     K_AXES_DIGIT, J_AXES_DIGIT},
+    {I_AXES_DIGIT, IK_AXES_DIGIT, IJ_AXES_DIGIT, CENTER_DIGIT, J_AXES_DIGIT,
+     JK_AXES_DIGIT, K_AXES_DIGIT},
+    {IK_AXES_DIGIT, J_AXES_DIGIT, CENTER_DIGIT, K_AXES_DIGIT, JK_AXES_DIGIT,
+     IJ_AXES_DIGIT, I_AXES_DIGIT},
+    {IJ_AXES_DIGIT, CENTER_DIGIT, IK_AXES_DIGIT, J_AXES_DIGIT, K_AXES_DIGIT,
+     I_AXES_DIGIT, JK_AXES_DIGIT}};
+
+/**
+ * New traversal direction when traversing along class II grids.
+ *
+ * Current digit -> direction -> new ap7 move (at coarser level).
+ */
+static const Direction NEW_ADJUSTMENT_II[7][7] = {
+    {CENTER_DIGIT, CENTER_DIGIT, CENTER_DIGIT, CENTER_DIGIT, CENTER_DIGIT,
+     CENTER_DIGIT, CENTER_DIGIT},
+    {CENTER_DIGIT, K_AXES_DIGIT, CENTER_DIGIT, K_AXES_DIGIT, CENTER_DIGIT,
+     IK_AXES_DIGIT, CENTER_DIGIT},
+    {CENTER_DIGIT, CENTER_DIGIT, J_AXES_DIGIT, JK_AXES_DIGIT, CENTER_DIGIT,
+     CENTER_DIGIT, J_AXES_DIGIT},
+    {CENTER_DIGIT, K_AXES_DIGIT, JK_AXES_DIGIT, JK_AXES_DIGIT, CENTER_DIGIT,
+     CENTER_DIGIT, CENTER_DIGIT},
+    {CENTER_DIGIT, CENTER_DIGIT, CENTER_DIGIT, CENTER_DIGIT, I_AXES_DIGIT,
+     I_AXES_DIGIT, IJ_AXES_DIGIT},
+    {CENTER_DIGIT, IK_AXES_DIGIT, CENTER_DIGIT, CENTER_DIGIT, I_AXES_DIGIT,
+     IK_AXES_DIGIT, CENTER_DIGIT},
+    {CENTER_DIGIT, CENTER_DIGIT, J_AXES_DIGIT, CENTER_DIGIT, IJ_AXES_DIGIT,
+     CENTER_DIGIT, IJ_AXES_DIGIT}};
+
+/**
+ * New traversal direction when traversing along class III grids.
+ *
+ * Current digit -> direction -> new ap7 move (at coarser level).
+ */
+static const Direction NEW_DIGIT_III[7][7] = {
+    {CENTER_DIGIT, K_AXES_DIGIT, J_AXES_DIGIT, JK_AXES_DIGIT, I_AXES_DIGIT,
+     IK_AXES_DIGIT, IJ_AXES_DIGIT},
+    {K_AXES_DIGIT, J_AXES_DIGIT, JK_AXES_DIGIT, I_AXES_DIGIT, IK_AXES_DIGIT,
+     IJ_AXES_DIGIT, CENTER_DIGIT},
+    {J_AXES_DIGIT, JK_AXES_DIGIT, I_AXES_DIGIT, IK_AXES_DIGIT, IJ_AXES_DIGIT,
+     CENTER_DIGIT, K_AXES_DIGIT},
+    {JK_AXES_DIGIT, I_AXES_DIGIT, IK_AXES_DIGIT, IJ_AXES_DIGIT, CENTER_DIGIT,
+     K_AXES_DIGIT, J_AXES_DIGIT},
+    {I_AXES_DIGIT, IK_AXES_DIGIT, IJ_AXES_DIGIT, CENTER_DIGIT, K_AXES_DIGIT,
+     J_AXES_DIGIT, JK_AXES_DIGIT},
+    {IK_AXES_DIGIT, IJ_AXES_DIGIT, CENTER_DIGIT, K_AXES_DIGIT, J_AXES_DIGIT,
+     JK_AXES_DIGIT, I_AXES_DIGIT},
+    {IJ_AXES_DIGIT, CENTER_DIGIT, K_AXES_DIGIT, J_AXES_DIGIT, JK_AXES_DIGIT,
+     I_AXES_DIGIT, IK_AXES_DIGIT}};
+
+/**
+ * New traversal direction when traversing along class III grids.
+ *
+ * Current digit -> direction -> new ap7 move (at coarser level).
+ */
+static const Direction NEW_ADJUSTMENT_III[7][7] = {
+    {CENTER_DIGIT, CENTER_DIGIT, CENTER_DIGIT, CENTER_DIGIT, CENTER_DIGIT,
+     CENTER_DIGIT, CENTER_DIGIT},
+    {CENTER_DIGIT, K_AXES_DIGIT, CENTER_DIGIT, JK_AXES_DIGIT, CENTER_DIGIT,
+     K_AXES_DIGIT, CENTER_DIGIT},
+    {CENTER_DIGIT, CENTER_DIGIT, J_AXES_DIGIT, J_AXES_DIGIT, CENTER_DIGIT,
+     CENTER_DIGIT, IJ_AXES_DIGIT},
+    {CENTER_DIGIT, JK_AXES_DIGIT, J_AXES_DIGIT, JK_AXES_DIGIT, CENTER_DIGIT,
+     CENTER_DIGIT, CENTER_DIGIT},
+    {CENTER_DIGIT, CENTER_DIGIT, CENTER_DIGIT, CENTER_DIGIT, I_AXES_DIGIT,
+     IK_AXES_DIGIT, I_AXES_DIGIT},
+    {CENTER_DIGIT, K_AXES_DIGIT, CENTER_DIGIT, CENTER_DIGIT, IK_AXES_DIGIT,
+     IK_AXES_DIGIT, CENTER_DIGIT},
+    {CENTER_DIGIT, CENTER_DIGIT, IJ_AXES_DIGIT, CENTER_DIGIT, I_AXES_DIGIT,
+     CENTER_DIGIT, IJ_AXES_DIGIT}};
 
 /**
  * Maximum number of indices that result from the kRing algorithm with the given
@@ -118,7 +203,7 @@ void H3_EXPORT(kRingDistances)(H3Index origin, int k, H3Index* out,
         // Fast algo failed, fall back to slower, correct algo
         // and also wipe out array because contents untrustworthy
         for (int i = 0; i < maxIdx; i++) {
-            out[i] = 0;
+            out[i] = H3_INVALID_INDEX;
             distances[i] = 0;
         }
         _kRingInternal(origin, k, out, distances, maxIdx, 0);
@@ -186,7 +271,7 @@ void _kRingInternal(H3Index origin, int k, H3Index* out, int* distances,
  * @return H3Index of the specified neighbor or 0 if deleted k-subsequence
  *         distortion is encountered.
  */
-H3Index h3NeighborRotations(H3Index origin, int dir, int* rotations) {
+H3Index h3NeighborRotations(H3Index origin, Direction dir, int* rotations) {
     H3Index out = origin;
 
     for (int i = 0; i < *rotations; i++) {
@@ -195,7 +280,7 @@ H3Index h3NeighborRotations(H3Index origin, int dir, int* rotations) {
 
     int newRotations = 0;
     int oldBaseCell = H3_GET_BASE_CELL(out);
-    int oldLeadingDigit = _h3LeadingNonZeroDigit(out);
+    Direction oldLeadingDigit = _h3LeadingNonZeroDigit(out);
 
     // Adjust the indexing digits and, if needed, the base cell.
     int r = H3_GET_RESOLUTION(out) - 1;
@@ -220,34 +305,8 @@ H3Index h3NeighborRotations(H3Index origin, int dir, int* rotations) {
 
             break;
         } else {
-            // generated by hand
-            // Current digit -> direction -> new digit
-            const int NEW_DIGIT_II[7][7] = {
-                {0, 1, 2, 3, 4, 5, 6}, {1, 4, 3, 6, 5, 2, 0},
-                {2, 3, 1, 4, 6, 0, 5}, {3, 6, 4, 5, 0, 1, 2},
-                {4, 5, 6, 0, 2, 3, 1}, {5, 2, 0, 1, 3, 6, 4},
-                {6, 0, 5, 2, 1, 4, 3}};
-            // Current digit -> direction -> new ap7 move
-            const int NEW_ADJUSTMENT_II[7][7] = {
-                {0, 0, 0, 0, 0, 0, 0}, {0, 1, 0, 1, 0, 5, 0},
-                {0, 0, 2, 3, 0, 0, 2}, {0, 1, 3, 3, 0, 0, 0},
-                {0, 0, 0, 0, 4, 4, 6}, {0, 5, 0, 0, 4, 5, 0},
-                {0, 0, 2, 0, 6, 0, 6}};
-            // Current digit -> direction -> new digit
-            const int NEW_DIGIT_III[7][7] = {
-                {0, 1, 2, 3, 4, 5, 6}, {1, 2, 3, 4, 5, 6, 0},
-                {2, 3, 4, 5, 6, 0, 1}, {3, 4, 5, 6, 0, 1, 2},
-                {4, 5, 6, 0, 1, 2, 3}, {5, 6, 0, 1, 2, 3, 4},
-                {6, 0, 1, 2, 3, 4, 5}};
-            // Current digit -> direction -> new ap7 move
-            const int NEW_ADJUSTMENT_III[7][7] = {
-                {0, 0, 0, 0, 0, 0, 0}, {0, 1, 0, 3, 0, 1, 0},
-                {0, 0, 2, 2, 0, 0, 6}, {0, 3, 2, 3, 0, 0, 0},
-                {0, 0, 0, 0, 4, 5, 4}, {0, 1, 0, 0, 5, 5, 0},
-                {0, 0, 6, 0, 4, 0, 6}};
-
-            int oldDigit = H3_GET_INDEX_DIGIT(out, r + 1);
-            int nextDir;
+            Direction oldDigit = H3_GET_INDEX_DIGIT(out, r + 1);
+            Direction nextDir;
             if (isResClassIII(r + 1)) {
                 H3_SET_INDEX_DIGIT(out, r + 1, NEW_DIGIT_II[oldDigit][dir]);
                 nextDir = NEW_ADJUSTMENT_II[oldDigit][dir];
@@ -256,7 +315,7 @@ H3Index h3NeighborRotations(H3Index origin, int dir, int* rotations) {
                 nextDir = NEW_ADJUSTMENT_III[oldDigit][dir];
             }
 
-            if (nextDir != 0) {
+            if (nextDir != CENTER_DIGIT) {
                 dir = nextDir;
                 r--;
             } else {
@@ -294,7 +353,7 @@ H3Index h3NeighborRotations(H3Index origin, int dir, int* rotations) {
                 // base cell.
                 if (oldLeadingDigit == CENTER_DIGIT) {
                     // Undefined: the k direction is deleted from here
-                    return 0;
+                    return H3_INVALID_INDEX;
                 } else if (oldLeadingDigit == JK_AXES_DIGIT) {
                     // Rotate out of the deleted k subsequence
                     // We also need an additional change to the direction we're
@@ -309,7 +368,7 @@ H3Index h3NeighborRotations(H3Index origin, int dir, int* rotations) {
                     *rotations = *rotations + 5;
                 } else {
                     // Should never occur
-                    return 0;  // LCOV_EXCL_LINE
+                    return H3_INVALID_INDEX;  // LCOV_EXCL_LINE
                 }
             }
         }
@@ -760,7 +819,7 @@ void H3_EXPORT(polyfill)(const GeoPolygon* geoPolygon, int res, H3Index* out) {
         hexCenter.lon = constrainLng(hexCenter.lon);
         // And remove from list if not
         if (!_pointInPolyContains(geoPolygon, bboxes, &hexCenter)) {
-            out[i] = 0;
+            out[i] = H3_INVALID_INDEX;
         }
     }
 }

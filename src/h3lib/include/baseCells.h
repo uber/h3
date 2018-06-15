@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 Uber Technologies, Inc.
+ * Copyright 2016-2018 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,6 +51,6 @@ int _faceIjkToBaseCell(const FaceIJK* h);
 int _faceIjkToBaseCellCCWrot60(const FaceIJK* h);
 void _baseCellToFaceIjk(int baseCell, FaceIJK* h);
 bool _baseCellIsCwOffset(int baseCell, int testFace);
-int _getBaseCellNeighbor(int baseCell, int dir);
+int _getBaseCellNeighbor(int baseCell, Direction dir);
 
 #endif
