@@ -25,6 +25,7 @@
 #include <string.h>
 #include "constants.h"
 #include "geoCoord.h"
+#include "mathExtensions.h"
 
 /**
  * Sets an IJK coordinate to the specified component values.
@@ -489,4 +490,18 @@ void _downAp3r(CoordIJK* ijk) {
     _ijkAdd(ijk, &kVec, ijk);
 
     _ijkNormalize(ijk);
+}
+
+/**
+ * Finds the distance between the two coordinates. Returns result.
+ *
+ * @param c1 The first set of ijk coordinates.
+ * @param c2 The second set of ijk coordinates.
+ */
+int ijkDistance(const CoordIJK* c1, const CoordIJK* c2) {
+    CoordIJK diff;
+    _ijkSub(c1, c2, &diff);
+    _ijkNormalize(&diff);
+    CoordIJK absDiff = {abs(diff.i), abs(diff.j), abs(diff.k)};
+    return _imax(absDiff.i, _imax(absDiff.j, absDiff.k));
 }

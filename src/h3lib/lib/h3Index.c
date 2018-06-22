@@ -18,6 +18,7 @@
  *          (see h3api.h for the main library entry functions)
  */
 #include "h3Index.h"
+#include <faceijk.h>
 #include <inttypes.h>
 #include <math.h>
 #include <stdlib.h>
@@ -487,6 +488,31 @@ H3Index _h3RotatePent60ccw(H3Index h) {
 }
 
 /**
+ * Rotate an H3Index 60 degrees clockwise about a pentagonal center.
+ * @param h The H3Index.
+ */
+H3Index _h3RotatePent60cw(H3Index h) {
+    // rotate in place; skips any leading 1 digits (k-axis)
+
+    int foundFirstNonZeroDigit = 0;
+    for (int r = 1, res = H3_GET_RESOLUTION(h); r <= res; r++) {
+        // rotate this digit
+        H3_SET_INDEX_DIGIT(h, r, _rotate60cw(H3_GET_INDEX_DIGIT(h, r)));
+
+        // look for the first non-zero digit so we
+        // can adjust for deleted k-axes sequence
+        // if necessary
+        if (!foundFirstNonZeroDigit && H3_GET_INDEX_DIGIT(h, r) != 0) {
+            foundFirstNonZeroDigit = 1;
+
+            // adjust for deleted k-axes sequence
+            if (_h3LeadingNonZeroDigit(h) == K_AXES_DIGIT) h = _h3Rotate60cw(h);
+        }
+    }
+    return h;
+}
+
+/**
  * Rotate an H3Index 60 degrees counter-clockwise.
  * @param h The H3Index.
  */
@@ -740,3 +766,225 @@ void H3_EXPORT(h3ToGeoBoundary)(H3Index h3, GeoBoundary* gb) {
  *         a Class II grid.
  */
 int isResClassIII(int res) { return res % 2; }
+
+/**
+ * Produces ijk+ coordinates for an index anchored by an origin.
+ *
+ * The coordinate space used by this function may have a deleted
+ * region due to pentagonal distortion.
+ *
+ * Coordinates are only comparable if they come from the same
+ * origin index. Coordinates may not be comparable between versions
+ * of the H3 library, including minor/patch versions.
+ *
+ * @param origin An anchoring index for the ijk+ coordinate system.
+ * @param index Index to find the coordinates of
+ * @param out ijk+ coordinates of the index will be placed here on success
+ * @return 0 on success, or another value on failure.
+ */
+int H3_EXPORT(h3ToIjk)(H3Index origin, H3Index h3, CoordIJK* out) {
+    if (H3_GET_MODE(origin) != H3_GET_MODE(h3)) {
+        return 1;
+    }
+
+    int res = H3_GET_RESOLUTION(origin);
+
+    if (res != H3_GET_RESOLUTION(h3)) {
+        return 1;
+    }
+
+    int originBaseCell = H3_GET_BASE_CELL(origin);
+    int baseCell = H3_GET_BASE_CELL(h3);
+
+    // Direction from origin base cell to index base cell
+    int dir = 0;
+    int revDir = 0;
+    if (originBaseCell != baseCell) {
+        for (dir = 1; dir < 7; dir++) {
+            int testBaseCell = _getBaseCellNeighbor(originBaseCell, dir);
+            if (testBaseCell == baseCell) {
+                break;
+            }
+        }
+        if (dir == 7) {
+            // Base cells are not neighbors, can't unfold.
+            return 2;
+        }
+        for (revDir = 1; revDir < 7; revDir++) {
+            int testBaseCell = _getBaseCellNeighbor(baseCell, revDir);
+            if (testBaseCell == originBaseCell) {
+                break;
+            }
+        }
+        assert(revDir != 7);
+    }
+
+    int originOnPent = _isBaseCellPentagon(originBaseCell);
+    int indexOnPent = _isBaseCellPentagon(baseCell);
+
+    FaceIJK indexFijk = {0};
+    if (dir != 0) {
+        // Rotate index into the orientation of the origin base cell.
+        // cw because we are undoing the rotation into that base cell.
+        int baseCellRotations = baseCellNeighbor60CCWRots[originBaseCell][dir];
+        if (indexOnPent) {
+            for (int i = 0; i < baseCellRotations; i++) {
+                h3 = _h3RotatePent60cw(h3);
+
+                revDir = _rotate60cw(revDir);
+                if (revDir == 1) revDir = _rotate60cw(revDir);
+            }
+        } else {
+            for (int i = 0; i < baseCellRotations; i++) {
+                h3 = _h3Rotate60cw(h3);
+
+                revDir = _rotate60cw(revDir);
+            }
+        }
+    }
+    // Face is unused. This produces coordinates in base cell coordinate space.
+    _h3ToFaceIjkWithInitializedFijk(h3, &indexFijk);
+
+    // Origin leading digit -> index leading digit -> rotations 60 cw
+    // Either being 1 (K axis) is invalid.
+    // No good default at 0.
+    const int PENTAGON_ROTATIONS[7][7] = {
+        {0, -1, 0, 0, 0, 0, 0},        // 0
+        {-1, -1, -1, -1, -1, -1, -1},  // 1
+        {0, -1, 0, 0, 0, 1, 0},        // 2
+        {0, -1, 0, 0, 1, 1, 0},        // 3
+        {0, -1, 0, 5, 0, 0, 0},        // 4
+        {0, -1, 5, 5, 0, 0, 0},        // 5
+        {0, -1, 0, 0, 0, 0, 0},        // 6
+    };
+    // Simply prohibit many pentagon distortion cases rather than handling them.
+    const bool FAILED_DIRECTIONS_II[7][7] = {
+        {false, false, false, false, false, false, false},  // 0
+        {false, false, false, false, false, false, false},  // 1
+        {false, false, false, false, true, false, false},   // 2
+        {false, false, false, false, false, false, true},   // 3
+        {false, false, false, true, false, false, false},   // 4
+        {false, false, true, false, false, false, false},   // 5
+        {false, false, false, false, false, true, false},   // 6
+    };
+    const bool FAILED_DIRECTIONS_III[7][7] = {
+        {false, false, false, false, false, false, false},  // 0
+        {false, false, false, false, false, false, false},  // 1
+        {false, false, false, false, false, true, false},   // 2
+        {false, false, false, false, true, false, false},   // 3
+        {false, false, true, false, false, false, false},   // 4
+        {false, false, false, false, false, false, true},   // 5
+        {false, false, false, true, false, false, false},   // 6
+    };
+
+    if (dir != 0) {
+        assert(baseCell != originBaseCell);
+        assert(!(originOnPent && indexOnPent));
+
+        int pentagonRotations = 0;
+        int directionRotations = 0;
+
+        if (originOnPent) {
+            int originLeadingDigit = _h3LeadingNonZeroDigit(origin);
+
+            if ((isResClassIII(res) &&
+                 FAILED_DIRECTIONS_III[originLeadingDigit][dir]) ||
+                (!isResClassIII(res) &&
+                 FAILED_DIRECTIONS_II[originLeadingDigit][dir])) {
+                // TODO this part of the pentagon might not be unfolded
+                // correctly.
+                return 3;
+            }
+
+            directionRotations = PENTAGON_ROTATIONS[originLeadingDigit][dir];
+            pentagonRotations = directionRotations;
+        } else if (indexOnPent) {
+            int indexLeadingDigit = _h3LeadingNonZeroDigit(h3);
+
+            if ((isResClassIII(res) &&
+                 FAILED_DIRECTIONS_III[indexLeadingDigit][revDir]) ||
+                (!isResClassIII(res) &&
+                 FAILED_DIRECTIONS_II[indexLeadingDigit][revDir])) {
+                // TODO this part of the pentagon might not be unfolded
+                // correctly.
+                return 4;
+            }
+
+            pentagonRotations = PENTAGON_ROTATIONS[revDir][indexLeadingDigit];
+        }
+
+        assert(pentagonRotations >= 0);
+        assert(directionRotations >= 0);
+
+        for (int i = 0; i < pentagonRotations; i++) {
+            _ijkRotate60cw(&indexFijk.coord);
+        }
+
+        CoordIJK offset = {0};
+        _neighbor(&offset, dir);
+        // Scale offset based on resolution
+        for (int r = res - 1; r >= 0; r--) {
+            if (isResClassIII(r + 1)) {
+                // rotate ccw
+                _downAp7(&offset);
+            } else {
+                // rotate cw
+                _downAp7r(&offset);
+            }
+        }
+
+        for (int i = 0; i < directionRotations; i++) {
+            _ijkRotate60cw(&offset);
+        }
+
+        // Perform necessary translation
+        _ijkAdd(&indexFijk.coord, &offset, &indexFijk.coord);
+        _ijkNormalize(&indexFijk.coord);
+    } else if (originOnPent && indexOnPent) {
+        // If the origin and index are on pentagon, and we checked that the base
+        // cells are the same or neighboring, then they must be the same base
+        // cell.
+        assert(baseCell == originBaseCell);
+
+        int originLeadingDigit = _h3LeadingNonZeroDigit(origin);
+        int indexLeadingDigit = _h3LeadingNonZeroDigit(h3);
+
+        if (FAILED_DIRECTIONS_III[originLeadingDigit][indexLeadingDigit] ||
+            FAILED_DIRECTIONS_II[originLeadingDigit][indexLeadingDigit]) {
+            // TODO this part of the pentagon might not be unfolded
+            // correctly.
+            return 5;
+        }
+
+        int withinPentagonRotations =
+            PENTAGON_ROTATIONS[originLeadingDigit][indexLeadingDigit];
+
+        for (int i = 0; i < withinPentagonRotations; i++) {
+            _ijkRotate60cw(&indexFijk.coord);
+        }
+    }
+
+    *out = indexFijk.coord;
+    return 0;
+}
+
+/**
+ * Produces the grid distance between the two indexes.
+ *
+ * @param origin Index to find the distance from.
+ * @param index Index to find the distance to.
+ * @return The distance, or a negative number if the library could not
+ * compute the distance.
+ */
+int H3_EXPORT(h3Distance)(H3Index origin, H3Index h3) {
+    CoordIJK originIjk, h3Ijk;
+    if (H3_EXPORT(h3ToIjk)(origin, origin, &originIjk)) {
+        // This should never happen
+        return -1;
+    }
+    if (H3_EXPORT(h3ToIjk)(origin, h3, &h3Ijk)) {
+        return -1;
+    }
+
+    return H3_EXPORT(ijkDistance)(&originIjk, &h3Ijk);
+}

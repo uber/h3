@@ -37,3 +37,14 @@ int _ipow(int base, int exp) {
 
     return result;
 }
+
+/**
+ * _imax returns the maximum of two integers.
+ */
+int _imax(int a, int b) {
+    if (a > b) {
+        return a;
+    } else {
+        return b;
+    }
+}

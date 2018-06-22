@@ -22,5 +22,6 @@
 
 // Internal functions
 int _ipow(int base, int exp);
+int _imax(int a, int b);
 
 #endif

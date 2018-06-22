@@ -42,4 +42,8 @@ void geoBoundaryPrint(const GeoBoundary* b);
 void geoBoundaryPrintln(const GeoBoundary* b);
 int readBoundary(FILE* f, GeoBoundary* b);
 
+void iterateAllIndexesAtRes(int res, void (*callback)(H3Index));
+void iterateAllIndexesAtResPartial(int res, void (*callback)(H3Index),
+                                   int maxBaseCell);
+
 #endif

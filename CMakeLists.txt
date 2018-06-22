@@ -127,6 +127,7 @@ set(EXAMPLE_SOURCE_FILES
     examples/edge.c)
 set(OTHER_SOURCE_FILES
     src/apps/filters/h3ToGeo.c
+    src/apps/filters/h3ToIjk.c
     src/apps/filters/h3ToComponents.c
     src/apps/filters/geoToH3.c
     src/apps/filters/h3ToGeoBoundary.c
@@ -157,6 +158,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/mkRandGeo.c
     src/apps/testapps/testH3Api.c
     src/apps/testapps/testH3SetToLinkedGeo.c
+    src/apps/testapps/testH3ToIjk.c
     src/apps/miscapps/h3ToGeoBoundaryHier.c
     src/apps/miscapps/h3ToGeoHier.c
     src/apps/miscapps/generateBaseCellNeighbors.c
@@ -279,6 +281,7 @@ endmacro()
 add_h3_executable(geoToH3 src/apps/filters/geoToH3.c ${APP_SOURCE_FILES})
 add_h3_executable(h3ToComponents src/apps/filters/h3ToComponents.c ${APP_SOURCE_FILES})
 add_h3_executable(h3ToGeo src/apps/filters/h3ToGeo.c ${APP_SOURCE_FILES})
+add_h3_executable(h3ToIjk src/apps/filters/h3ToIjk.c ${APP_SOURCE_FILES})
 add_h3_executable(h3ToGeoBoundary src/apps/filters/h3ToGeoBoundary.c ${APP_SOURCE_FILES})
 add_h3_executable(hexRange src/apps/filters/hexRange.c ${APP_SOURCE_FILES})
 add_h3_executable(kRing src/apps/filters/kRing.c ${APP_SOURCE_FILES})
@@ -454,6 +457,7 @@ if(BUILD_TESTING)
     add_h3_test(testBBox src/apps/testapps/testBBox.c)
     add_h3_test(testVec2d src/apps/testapps/testVec2d.c)
     add_h3_test(testVec3d src/apps/testapps/testVec3d.c)
+    add_h3_test(testH3ToIjk src/apps/testapps/testH3ToIjk.c)
 
     add_h3_test_with_arg(testH3NeighborRotations src/apps/testapps/testH3NeighborRotations.c 0)
     add_h3_test_with_arg(testH3NeighborRotations src/apps/testapps/testH3NeighborRotations.c 1)

@@ -6,6 +6,10 @@ The public API of this library consists of the functions declared in file
 [h3api.h](./src/h3lib/include/h3api.h).
 
 ## [Unreleased]
+### Added
+- h3ToIjk function for getting IJK+ coordinates from an index
+- ijkDistance function for determining the grid distance between IJK+ coordinates
+- h3Distance function for determining the grid distance between H3 indexes
 
 ## [3.0.8] - 2018-07-18
 ### Added

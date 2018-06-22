@@ -24,6 +24,52 @@
 #include "baseCells.h"
 #include "h3Index.h"
 #include "test.h"
+#include "utility.h"
+
+void kRing_equals_kRingInternal_assertions(H3Index h3) {
+    for (int k = 0; k < 3; k++) {
+        int kSz = H3_EXPORT(maxKringSize)(k);
+
+        H3Index *neighbors = calloc(kSz, sizeof(H3Index));
+        int *distances = calloc(kSz, sizeof(int));
+        H3_EXPORT(kRingDistances)
+        (h3, k, neighbors, distances);
+
+        H3Index *internalNeighbors = calloc(kSz, sizeof(H3Index));
+        int *internalDistances = calloc(kSz, sizeof(int));
+        _kRingInternal(h3, k, internalNeighbors, internalDistances, kSz, 0);
+
+        int found = 0;
+        int internalFound = 0;
+        for (int iNeighbor = 0; iNeighbor < kSz; iNeighbor++) {
+            if (neighbors[iNeighbor] != 0) {
+                found++;
+
+                for (int iInternal = 0; iInternal < kSz; iInternal++) {
+                    if (internalNeighbors[iInternal] == neighbors[iNeighbor]) {
+                        internalFound++;
+
+                        t_assert(distances[iNeighbor] ==
+                                     internalDistances[iInternal],
+                                 "External and internal agree on "
+                                 "distance");
+
+                        break;
+                    }
+                }
+
+                t_assert(found == internalFound,
+                         "External and internal implementations "
+                         "produce same output");
+            }
+        }
+
+        free(neighbors);
+        free(distances);
+        free(internalNeighbors);
+        free(internalDistances);
+    }
+}
 
 BEGIN_TESTS(kRing);
 
@@ -263,67 +309,7 @@ TEST(kRing_equals_kRingInternal) {
     // since kRingDistances will sometimes use a different implementation.
 
     for (int res = 0; res < 2; res++) {
-        for (int i = 0; i < NUM_BASE_CELLS; i++) {
-            H3Index bc;
-            setH3Index(&bc, 0, i, 0);
-            int childrenSz = H3_EXPORT(maxUncompactSize)(&bc, 1, res);
-            H3Index *children = calloc(childrenSz, sizeof(H3Index));
-            H3_EXPORT(uncompact)(&bc, 1, children, childrenSz, res);
-
-            for (int j = 0; j < childrenSz; j++) {
-                if (children[j] == 0) {
-                    continue;
-                }
-
-                for (int k = 0; k < 3; k++) {
-                    int kSz = H3_EXPORT(maxKringSize)(k);
-
-                    H3Index *neighbors = calloc(kSz, sizeof(H3Index));
-                    int *distances = calloc(kSz, sizeof(int));
-                    H3_EXPORT(kRingDistances)
-                    (children[j], k, neighbors, distances);
-
-                    H3Index *internalNeighbors = calloc(kSz, sizeof(H3Index));
-                    int *internalDistances = calloc(kSz, sizeof(int));
-                    _kRingInternal(children[j], k, internalNeighbors,
-                                   internalDistances, kSz, 0);
-
-                    int found = 0;
-                    int internalFound = 0;
-                    for (int iNeighbor = 0; iNeighbor < kSz; iNeighbor++) {
-                        if (neighbors[iNeighbor] != 0) {
-                            found++;
-
-                            for (int iInternal = 0; iInternal < kSz;
-                                 iInternal++) {
-                                if (internalNeighbors[iInternal] ==
-                                    neighbors[iNeighbor]) {
-                                    internalFound++;
-
-                                    t_assert(distances[iNeighbor] ==
-                                                 internalDistances[iInternal],
-                                             "External and internal agree on "
-                                             "distance");
-
-                                    break;
-                                }
-                            }
-
-                            t_assert(found == internalFound,
-                                     "External and internal implementations "
-                                     "produce same output");
-                        }
-                    }
-
-                    free(neighbors);
-                    free(distances);
-                    free(internalNeighbors);
-                    free(internalDistances);
-                }
-            }
-
-            free(children);
-        }
+        iterateAllIndexesAtRes(res, kRing_equals_kRingInternal_assertions);
     }
 }
 

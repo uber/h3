@@ -31,16 +31,8 @@
 #define COORDIJK_H
 
 #include "geoCoord.h"
+#include "h3api.h"
 #include "vec2d.h"
-
-/** @struct CoordIJK
- * @brief IJK hexagon coordinates
- */
-typedef struct {
-    int i;  ///< i component
-    int j;  ///< j component
-    int k;  ///< k component
-} CoordIJK;
 
 /** @brief CoordIJK unit vectors corresponding to the 7 H3 digits.
  */
