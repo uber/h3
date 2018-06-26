@@ -195,7 +195,7 @@ void H3_EXPORT(h3ToChildren)(H3Index h, int childRes, H3Index* children) {
         if (!isAPentagon || i != K_AXES_DIGIT) {
             H3_EXPORT(h3ToChildren)(makeDirectChild(h, i), childRes, children);
         } else {
-            *children = 0;
+            *children = H3_INVALID_INDEX;
         }
         children += bufferChildStep;
     }
