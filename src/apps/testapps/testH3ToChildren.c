@@ -125,12 +125,12 @@ TEST(pentagonChildren) {
     H3Index pentagon;
     setH3Index(&pentagon, 1, 4, 0);
 
-    const int expectedCount = 6;
-    const int paddedCount = H3_EXPORT(maxH3ToChildrenSize)(pentagon, 2);
+    const int expectedCount = (5 * 7) + 6;
+    const int paddedCount = H3_EXPORT(maxH3ToChildrenSize)(pentagon, 3);
 
     H3Index* children = calloc(paddedCount, sizeof(H3Index));
-    H3_EXPORT(h3ToChildren)(sfHex8, 9, children);
-    H3_EXPORT(h3ToChildren)(pentagon, 2, children);
+    H3_EXPORT(h3ToChildren)(sfHex8, 10, children);
+    H3_EXPORT(h3ToChildren)(pentagon, 3, children);
 
     verifyCountAndUniqueness(children, paddedCount, expectedCount);
     free(children);

@@ -192,12 +192,16 @@ void H3_EXPORT(h3ToChildren)(H3Index h, int childRes, H3Index* children) {
     int bufferChildStep = (bufferSize / 7);
     int isAPentagon = H3_EXPORT(h3IsPentagon)(h);
     for (int i = 0; i < 7; i++) {
-        if (!isAPentagon || i != K_AXES_DIGIT) {
-            H3_EXPORT(h3ToChildren)(makeDirectChild(h, i), childRes, children);
+        if (isAPentagon && i == K_AXES_DIGIT) {
+            H3Index* nextChild = children + bufferChildStep;
+            while (children < nextChild) {
+                *children = H3_INVALID_INDEX;
+                children++;
+            }
         } else {
-            *children = H3_INVALID_INDEX;
+            H3_EXPORT(h3ToChildren)(makeDirectChild(h, i), childRes, children);
+            children += bufferChildStep;
         }
-        children += bufferChildStep;
     }
 }
 
