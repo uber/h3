@@ -8,7 +8,8 @@ The public API of this library consists of the functions declared in file
 ## [Unreleased]
 ### Added
 - Added Direction enum, replacing int and defined constants (#77)
-- Ensured unused memory is cleared for pentagon children.
+### Fixed
+- Ensured unused memory is cleared for pentagon children. (#84)
 
 ## [3.0.7] - 2018-06-08
 ### Added
