@@ -37,7 +37,7 @@ void h3Distance_identity_assertions(H3Index h3) {
     t_assert(H3_EXPORT(h3Distance)(h3, h3) == 0, "distance to self is 0");
 
     CoordIJK ijk;
-    t_assert(H3_EXPORT(h3ToIjk(h3, h3, &ijk)) == 0, "failed to get ijk");
+    t_assert(h3ToIjk(h3, h3, &ijk) == 0, "failed to get ijk");
     if (r == 0) {
         t_assert(_ijkMatches(&ijk, &UNIT_VECS[0]) == 1, "not at 0,0,0 (res 0)");
     } else if (r == 1) {
@@ -225,9 +225,20 @@ TEST(h3DistanceBaseCells) {
              "distance to neighbor is invalid");
 
     CoordIJK ijk;
-    t_assert(H3_EXPORT(h3ToIjk(pent1, bc1, &ijk)) == 0,
-             "failed to get ijk (4, 15)");
+    t_assert(h3ToIjk(pent1, bc1, &ijk) == 0, "failed to get ijk (4, 15)");
     t_assert(_ijkMatches(&ijk, &UNIT_VECS[2]) == 1, "not at 0,1,0");
+}
+
+TEST(h3DistanceFailed) {
+    H3Index h3 = 0x832830fffffffffL;
+    H3Index edge = H3_EXPORT(getH3UnidirectionalEdge(h3, 0x832834fffffffffL));
+    H3Index h3res2 = 0x822837fffffffffL;
+
+    t_assert(H3_EXPORT(h3Distance)(edge, h3) == -1, "edges cannot be origins");
+    t_assert(H3_EXPORT(h3Distance)(h3, edge) == -1,
+             "edges cannot be destinations");
+    t_assert(H3_EXPORT(h3Distance)(h3, h3res2) == -1,
+             "cannot compare at different resolutions");
 }
 
 END_TESTS();

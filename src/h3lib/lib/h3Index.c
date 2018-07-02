@@ -782,7 +782,10 @@ int isResClassIII(int res) { return res % 2; }
  * @return 0 on success, or another value on failure.
  */
 int h3ToIjk(H3Index origin, H3Index h3, CoordIJK* out) {
-    if (H3_GET_MODE(origin) != H3_GET_MODE(h3)) {
+    if (H3_GET_MODE(origin) != H3_HEXAGON_MODE ||
+        H3_GET_MODE(h3) != H3_HEXAGON_MODE) {
+        // Only hexagon mode is relevant, since we can't
+        // encode directionality in CoordIJK.
         return 1;
     }
 
@@ -982,7 +985,8 @@ int h3ToIjk(H3Index origin, H3Index h3, CoordIJK* out) {
 int H3_EXPORT(h3Distance)(H3Index origin, H3Index h3) {
     CoordIJK originIjk, h3Ijk;
     if (h3ToIjk(origin, origin, &originIjk)) {
-        // This should never happen
+        // Only possible if origin is invalid, for example if it's a
+        // unidirectional edge.
         return -1;
     }
     if (h3ToIjk(origin, h3, &h3Ijk)) {
