@@ -770,19 +770,18 @@ int isResClassIII(int res) { return res % 2; }
 /**
  * Produces ijk+ coordinates for an index anchored by an origin.
  *
- * The coordinate space used by this function may have a deleted
- * region due to pentagonal distortion.
+ * The coordinate space used by this function may have deleted
+ * regions or warping due to pentagonal distortion.
  *
  * Coordinates are only comparable if they come from the same
- * origin index. Coordinates may not be comparable between versions
- * of the H3 library, including minor/patch versions.
+ * origin index.
  *
  * @param origin An anchoring index for the ijk+ coordinate system.
  * @param index Index to find the coordinates of
  * @param out ijk+ coordinates of the index will be placed here on success
  * @return 0 on success, or another value on failure.
  */
-int H3_EXPORT(h3ToIjk)(H3Index origin, H3Index h3, CoordIJK* out) {
+int h3ToIjk(H3Index origin, H3Index h3, CoordIJK* out) {
     if (H3_GET_MODE(origin) != H3_GET_MODE(h3)) {
         return 1;
     }
@@ -971,6 +970,10 @@ int H3_EXPORT(h3ToIjk)(H3Index origin, H3Index h3, CoordIJK* out) {
 /**
  * Produces the grid distance between the two indexes.
  *
+ * This function may fail to find the distance between two indexes, for
+ * example if they are very far apart. It may also fail when finding
+ * distances for indexes on opposite sides of a pentagon.
+ *
  * @param origin Index to find the distance from.
  * @param index Index to find the distance to.
  * @return The distance, or a negative number if the library could not
@@ -978,13 +981,13 @@ int H3_EXPORT(h3ToIjk)(H3Index origin, H3Index h3, CoordIJK* out) {
  */
 int H3_EXPORT(h3Distance)(H3Index origin, H3Index h3) {
     CoordIJK originIjk, h3Ijk;
-    if (H3_EXPORT(h3ToIjk)(origin, origin, &originIjk)) {
+    if (h3ToIjk(origin, origin, &originIjk)) {
         // This should never happen
         return -1;
     }
-    if (H3_EXPORT(h3ToIjk)(origin, h3, &h3Ijk)) {
+    if (h3ToIjk(origin, h3, &h3Ijk)) {
         return -1;
     }
 
-    return H3_EXPORT(ijkDistance)(&originIjk, &h3Ijk);
+    return ijkDistance(&originIjk, &h3Ijk);
 }

@@ -129,15 +129,6 @@ struct LinkedGeoPolygon {
     LinkedGeoPolygon *next;
 };
 
-/** @struct CoordIJK
- * @brief IJK hexagon coordinates
- */
-typedef struct {
-    int i;  ///< i component
-    int j;  ///< j component
-    int k;  ///< k component
-} CoordIJK;
-
 /** @defgroup geoToH3 geoToH3
  * Functions for geoToH3
  * @{
@@ -448,22 +439,6 @@ void H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(H3Index origin,
  */
 /** @brief Returns the GeoBoundary containing the coordinates of the edge */
 void H3_EXPORT(getH3UnidirectionalEdgeBoundary)(H3Index edge, GeoBoundary *gb);
-/** @} */
-
-/** @defgroup ijkDistance ijkDistance
- * Functions for ijkDistance
- * @{
- */
-/** @brief Returns the distance in cells between the two coordinates */
-int H3_EXPORT(ijkDistance)(const CoordIJK *a, const CoordIJK *b);
-/** @} */
-
-/** @defgroup h3ToIjk h3ToIjk
- * Functions for h3ToIjk
- * @{
- */
-/** @brief Returns planar coordinates for an index */
-int H3_EXPORT(h3ToIjk)(H3Index origin, H3Index h3, CoordIJK *out);
 /** @} */
 
 /** @defgroup h3Distance h3Distance

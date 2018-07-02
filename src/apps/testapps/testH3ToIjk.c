@@ -55,7 +55,7 @@ void h3Distance_identity_assertions(H3Index h3) {
 
 void h3Distance_neighbors_assertions(H3Index h3) {
     CoordIJK origin = {0};
-    t_assert(H3_EXPORT(h3ToIjk)(h3, h3, &origin) == 0, "got ijk for origin");
+    t_assert(h3ToIjk(h3, h3, &origin) == 0, "got ijk for origin");
 
     for (int d = 1; d < 7; d++) {
         if (d == 1 && h3IsPentagon(h3)) {
@@ -66,8 +66,7 @@ void h3Distance_neighbors_assertions(H3Index h3) {
         H3Index offset = h3NeighborRotations(h3, d, &rotations);
 
         CoordIJK ijk = {0};
-        t_assert(H3_EXPORT(h3ToIjk)(h3, offset, &ijk) == 0,
-                 "got ijk for destination");
+        t_assert(h3ToIjk(h3, offset, &ijk) == 0, "got ijk for destination");
         CoordIJK invertedIjk = {0};
         _neighbor(&invertedIjk, d);
         for (int i = 0; i < 3; i++) {
@@ -168,18 +167,18 @@ TEST(ijkDistance) {
     CoordIJK ij = {1, 1, 0};
     CoordIJK j2 = {0, 2, 0};
 
-    t_assert(H3_EXPORT(ijkDistance)(&z, &z) == 0, "identity distance 0,0,0");
-    t_assert(H3_EXPORT(ijkDistance)(&i, &i) == 0, "identity distance 1,0,0");
-    t_assert(H3_EXPORT(ijkDistance)(&ik, &ik) == 0, "identity distance 1,0,1");
-    t_assert(H3_EXPORT(ijkDistance)(&ij, &ij) == 0, "identity distance 1,1,0");
-    t_assert(H3_EXPORT(ijkDistance)(&j2, &j2) == 0, "identity distance 0,2,0");
+    t_assert(ijkDistance(&z, &z) == 0, "identity distance 0,0,0");
+    t_assert(ijkDistance(&i, &i) == 0, "identity distance 1,0,0");
+    t_assert(ijkDistance(&ik, &ik) == 0, "identity distance 1,0,1");
+    t_assert(ijkDistance(&ij, &ij) == 0, "identity distance 1,1,0");
+    t_assert(ijkDistance(&j2, &j2) == 0, "identity distance 0,2,0");
 
-    t_assert(H3_EXPORT(ijkDistance)(&z, &i) == 1, "0,0,0 to 1,0,0");
-    t_assert(H3_EXPORT(ijkDistance)(&z, &j2) == 2, "0,0,0 to 0,2,0");
-    t_assert(H3_EXPORT(ijkDistance)(&z, &ik) == 1, "0,0,0 to 1,0,1");
-    t_assert(H3_EXPORT(ijkDistance)(&i, &ik) == 1, "1,0,0 to 1,0,1");
-    t_assert(H3_EXPORT(ijkDistance)(&ik, &j2) == 3, "1,0,1 to 0,2,0");
-    t_assert(H3_EXPORT(ijkDistance)(&ij, &ik) == 2, "1,0,1 to 1,1,0");
+    t_assert(ijkDistance(&z, &i) == 1, "0,0,0 to 1,0,0");
+    t_assert(ijkDistance(&z, &j2) == 2, "0,0,0 to 0,2,0");
+    t_assert(ijkDistance(&z, &ik) == 1, "0,0,0 to 1,0,1");
+    t_assert(ijkDistance(&i, &ik) == 1, "1,0,0 to 1,0,1");
+    t_assert(ijkDistance(&ik, &j2) == 3, "1,0,1 to 0,2,0");
+    t_assert(ijkDistance(&ij, &ik) == 2, "1,0,1 to 1,1,0");
 }
 
 TEST(h3Distance_identity) {
@@ -198,10 +197,11 @@ TEST(h3Distance_kRing) {
     iterateAllIndexesAtRes(0, h3Distance_kRing_assertions);
     iterateAllIndexesAtRes(1, h3Distance_kRing_assertions);
     iterateAllIndexesAtRes(2, h3Distance_kRing_assertions);
-    iterateAllIndexesAtRes(3, h3Distance_kRing_assertions);
-    // Only do these resolutions partially due to how long it would take.
-    iterateAllIndexesAtResPartial(4, h3Distance_kRing_assertions, 20);
-    iterateAllIndexesAtResPartial(5, h3Distance_kRing_assertions, 20);
+    // Don't iterate all of res 3, to save time
+    iterateAllIndexesAtResPartial(3, h3Distance_kRing_assertions, 27);
+    // These would take too long, even at partial execution
+    //    iterateAllIndexesAtResPartial(4, h3Distance_kRing_assertions, 20);
+    //    iterateAllIndexesAtResPartial(5, h3Distance_kRing_assertions, 20);
 }
 
 TEST(h3DistanceBaseCells) {

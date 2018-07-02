@@ -15,28 +15,30 @@
  */
 /** @file
  * @brief stdin/stdout filter that converts from H3 indexes to relative IJK
- * coordinates.
+ * coordinates. This is experimental.
  *
  *  usage: `h3ToIjk [origin]`
  *
  *  The program reads H3 indexes from stdin and outputs the corresponding
  *  IJK coordinates to stdout, until EOF is encountered. The H3 indexes
  *  should be in integer form. `-1 -1 -1` is printed if the IJK coordinates
- * could not be obtained.
+ *  could not be obtained.
  *
  *  `origin` indicates the origin (or anchoring) index for the IJK coordinate
- * space.
+ *  space.
  */
 
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "coordijk.h"
+#include "h3Index.h"
 #include "h3api.h"
 #include "utility.h"
 
 void doCell(H3Index h, H3Index origin) {
     CoordIJK ijk;
-    if (H3_EXPORT(h3ToIjk)(origin, h, &ijk)) {
+    if (h3ToIjk(origin, h, &ijk)) {
         printf("-1 -1 -1\n");
     } else {
         printf("%d %d %d\n", ijk.i, ijk.j, ijk.k);

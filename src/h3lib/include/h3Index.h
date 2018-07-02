@@ -157,5 +157,6 @@ Direction _h3LeadingNonZeroDigit(H3Index h);
 H3Index _h3RotatePent60ccw(H3Index h);
 H3Index _h3Rotate60ccw(H3Index h);
 H3Index _h3Rotate60cw(H3Index h);
+int h3ToIjk(H3Index origin, H3Index h3, CoordIJK* out);
 
 #endif
