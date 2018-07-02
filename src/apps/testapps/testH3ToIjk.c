@@ -27,6 +27,7 @@
 #include "constants.h"
 #include "h3Index.h"
 #include "h3api.h"
+#include "stackAlloc.h"
 #include "test.h"
 #include "utility.h"
 
@@ -99,8 +100,8 @@ void h3Distance_kRing_assertions(H3Index h3) {
     }
 
     int sz = H3_EXPORT(maxKringSize)(maxK);
-    H3Index *neighbors = calloc(sz, sizeof(H3Index));
-    int *distances = calloc(sz, sizeof(int));
+    STACK_ARRAY_CALLOC(H3Index, neighbors, sz);
+    STACK_ARRAY_CALLOC(int, distances, sz);
 
     H3_EXPORT(kRingDistances)(h3, maxK, neighbors, distances);
 
@@ -116,9 +117,6 @@ void h3Distance_kRing_assertions(H3Index h3) {
         t_assert(calculatedDistance == distances[i] || calculatedDistance == -1,
                  "kRingDistances matches h3Distance");
     }
-
-    free(neighbors);
-    free(distances);
 }
 
 BEGIN_TESTS(h3ToIjk);
