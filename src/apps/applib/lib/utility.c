@@ -20,6 +20,7 @@
 #include "utility.h"
 #include <assert.h>
 #include <inttypes.h>
+#include <stackAlloc.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "geoCoord.h"
@@ -184,7 +185,7 @@ void iterateAllIndexesAtResPartial(int res, void (*callback)(H3Index),
         H3Index bc;
         setH3Index(&bc, 0, i, 0);
         int childrenSz = H3_EXPORT(maxUncompactSize)(&bc, 1, res);
-        H3Index* children = calloc(childrenSz, sizeof(H3Index));
+        STACK_ARRAY_CALLOC(H3Index, children, childrenSz);
         H3_EXPORT(uncompact)(&bc, 1, children, childrenSz, res);
 
         for (int j = 0; j < childrenSz; j++) {
@@ -194,6 +195,5 @@ void iterateAllIndexesAtResPartial(int res, void (*callback)(H3Index),
 
             (*callback)(children[j]);
         }
-        free(children);
     }
 }
