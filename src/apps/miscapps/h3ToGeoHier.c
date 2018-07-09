@@ -51,6 +51,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <inttypes.h>
 #include "baseCells.h"
 #include "coordijk.h"
 #include "geoCoord.h"
@@ -125,16 +126,12 @@ int main(int argc, char* argv[]) {
                 error("outputMode must be 0 or 1");
 
             if (isKmlOut) {
-                char index[BUFF_SIZE];
                 char name[BUFF_SIZE];
-                char desc[BUFF_SIZE];
 
-                H3_EXPORT(h3ToString)(rootCell, index, BUFF_SIZE);
-                sprintf(name, "Cell %s Res %d", index,
+                sprintf(name, "Cell " PRIx64 " Res %d", rootCell,
                         ((res <= rootRes) ? rootRes : res));
-                sprintf(desc, "cell boundary");
 
-                kmlBoundaryHeader(name, desc);
+                kmlBoundaryHeader(name, "cell center");
             }
         }
     }
