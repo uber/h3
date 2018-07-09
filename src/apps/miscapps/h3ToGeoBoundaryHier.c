@@ -47,10 +47,10 @@
  *          San Francisco
  */
 
+#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <inttypes.h>
 #include "baseCells.h"
 #include "coordijk.h"
 #include "geoCoord.h"
@@ -127,7 +127,7 @@ int main(int argc, char* argv[]) {
             if (isKmlOut) {
                 char name[BUFF_SIZE];
 
-                sprintf(name, "Cell " PRIx64 " Res %d", rootCell,
+                sprintf(name, "Cell %" PRIx64 " Res %d", rootCell,
                         ((res <= rootRes) ? rootRes : res));
 
                 kmlBoundaryHeader(name, "cell boundary");
