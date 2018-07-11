@@ -31,6 +31,8 @@
 #include "test.h"
 #include "utility.h"
 
+static const int MAX_DISTANCES[] = {1, 2, 5, 12, 19, 26};
+
 void h3Distance_identity_assertions(H3Index h3) {
     int r = H3_GET_RESOLUTION(h3);
 
@@ -81,23 +83,11 @@ void h3Distance_neighbors_assertions(H3Index h3) {
 }
 
 void h3Distance_kRing_assertions(H3Index h3) {
-    int maxK = 5;
     int r = H3_GET_RESOLUTION(h3);
-    if (r == 0) {
-        maxK = 1;
-    } else if (r == 1) {
-        maxK = 2;
-    } else if (r == 2) {
-        maxK = 5;
-    } else if (r == 3) {
-        maxK = 12;
-    } else if (r == 4) {
-        maxK = 19;
-    } else if (r == 5) {
-        maxK = 26;
-    } else {
+    if (r > 5) {
         t_assert(false, "wrong res");
     }
+    int maxK = MAX_DISTANCES[r];
 
     int sz = H3_EXPORT(maxKringSize)(maxK);
     STACK_ARRAY_CALLOC(H3Index, neighbors, sz);

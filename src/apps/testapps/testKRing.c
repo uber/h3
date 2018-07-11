@@ -19,6 +19,7 @@
  *  usage: `testKRing`
  */
 
+#include <stackAlloc.h>
 #include <stdlib.h>
 #include "algos.h"
 #include "baseCells.h"
@@ -30,13 +31,13 @@ void kRing_equals_kRingInternal_assertions(H3Index h3) {
     for (int k = 0; k < 3; k++) {
         int kSz = H3_EXPORT(maxKringSize)(k);
 
-        H3Index *neighbors = calloc(kSz, sizeof(H3Index));
-        int *distances = calloc(kSz, sizeof(int));
+        STACK_ARRAY_CALLOC(H3Index, neighbors, kSz);
+        STACK_ARRAY_CALLOC(int, distances, kSz);
         H3_EXPORT(kRingDistances)
         (h3, k, neighbors, distances);
 
-        H3Index *internalNeighbors = calloc(kSz, sizeof(H3Index));
-        int *internalDistances = calloc(kSz, sizeof(int));
+        STACK_ARRAY_CALLOC(H3Index, internalNeighbors, kSz);
+        STACK_ARRAY_CALLOC(int, internalDistances, kSz);
         _kRingInternal(h3, k, internalNeighbors, internalDistances, kSz, 0);
 
         int found = 0;
@@ -63,11 +64,6 @@ void kRing_equals_kRingInternal_assertions(H3Index h3) {
                          "produce same output");
             }
         }
-
-        free(neighbors);
-        free(distances);
-        free(internalNeighbors);
-        free(internalDistances);
     }
 }
 

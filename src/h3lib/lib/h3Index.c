@@ -799,33 +799,23 @@ int h3ToIjk(H3Index origin, H3Index h3, CoordIJK* out) {
     int baseCell = H3_GET_BASE_CELL(h3);
 
     // Direction from origin base cell to index base cell
-    int dir = 0;
-    int revDir = 0;
+    Direction dir = 0;
+    Direction revDir = 0;
     if (originBaseCell != baseCell) {
-        for (dir = 1; dir < 7; dir++) {
-            int testBaseCell = _getBaseCellNeighbor(originBaseCell, dir);
-            if (testBaseCell == baseCell) {
-                break;
-            }
-        }
-        if (dir == 7) {
+        dir = _getBaseCellDirection(originBaseCell, baseCell);
+        if (dir == INVALID_DIGIT) {
             // Base cells are not neighbors, can't unfold.
             return 2;
         }
-        for (revDir = 1; revDir < 7; revDir++) {
-            int testBaseCell = _getBaseCellNeighbor(baseCell, revDir);
-            if (testBaseCell == originBaseCell) {
-                break;
-            }
-        }
-        assert(revDir != 7);
+        revDir = _getBaseCellDirection(baseCell, originBaseCell);
+        assert(revDir != INVALID_DIGIT);
     }
 
     int originOnPent = _isBaseCellPentagon(originBaseCell);
     int indexOnPent = _isBaseCellPentagon(baseCell);
 
     FaceIJK indexFijk = {0};
-    if (dir != 0) {
+    if (dir != CENTER_DIGIT) {
         // Rotate index into the orientation of the origin base cell.
         // cw because we are undoing the rotation into that base cell.
         int baseCellRotations = baseCellNeighbor60CCWRots[originBaseCell][dir];
@@ -834,7 +824,7 @@ int h3ToIjk(H3Index origin, H3Index h3, CoordIJK* out) {
                 h3 = _h3RotatePent60cw(h3);
 
                 revDir = _rotate60cw(revDir);
-                if (revDir == 1) revDir = _rotate60cw(revDir);
+                if (revDir == K_AXES_DIGIT) revDir = _rotate60cw(revDir);
             }
         } else {
             for (int i = 0; i < baseCellRotations; i++) {
@@ -879,7 +869,7 @@ int h3ToIjk(H3Index origin, H3Index h3, CoordIJK* out) {
         {false, false, false, true, false, false, false},   // 6
     };
 
-    if (dir != 0) {
+    if (dir != CENTER_DIGIT) {
         assert(baseCell != originBaseCell);
         assert(!(originOnPent && indexOnPent));
 
