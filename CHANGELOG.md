@@ -10,6 +10,9 @@ The public API of this library consists of the functions declared in file
 - Added Direction enum, replacing int and defined constants (#77)
 ### Fixed
 - Ensured unused memory is cleared for pentagon children. (#84)
+- Fixed compiler warnings in `h3ToGeoHier` and `h3ToGeoBoundaryHier`. (#90)
+### Changed
+- Warnings are not errors by default. (#90)
 
 ## [3.0.7] - 2018-06-08
 ### Added

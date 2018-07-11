@@ -65,7 +65,7 @@ if(NOT WIN32)
         list(APPEND H3_LINK_FLAGS $<$<CONFIG:DEBUG>:--coverage>)
     endif()
 
-    option(WARNINGS_AS_ERRORS "Warnings are treated as errors" ON)
+    option(WARNINGS_AS_ERRORS "Warnings are treated as errors" OFF)
     if(WARNINGS_AS_ERRORS)
         list(APPEND H3_COMPILE_FLAGS -Werror)
     endif()

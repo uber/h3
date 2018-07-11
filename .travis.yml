@@ -50,7 +50,7 @@ matrix:
       install:
         - pip install --user cpp-coveralls
       before_script:
-        - cmake -DCMAKE_BUILD_TYPE=Debug .
+        - cmake -DCMAKE_BUILD_TYPE=Debug -DWARNINGS_AS_ERRORS=ON .
       script:
         - make && make coverage
       after_success:
@@ -62,7 +62,7 @@ matrix:
 before_script:
   - mkdir build
   - cd build
-  - cmake ..
+  - cmake -DWARNINGS_AS_ERRORS=ON ..
 
 # Build and test the library, then build and test the examples.
 script:
