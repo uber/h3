@@ -224,7 +224,7 @@ void _geoAzDistanceRads(const GeoCoord* p1, double az, double distance,
             p2->lat = -M_PI_2;
             p2->lon = 0.0L;
         } else
-            p2->lon = _posAngleRads(p1->lon);
+            p2->lon = constrainLng(p1->lon);
     } else  // not due north or south
     {
         sinlat = sin(p1->lat) * cos(distance) +
@@ -248,7 +248,7 @@ void _geoAzDistanceRads(const GeoCoord* p1, double az, double distance,
             if (sinlon < -1.0L) sinlon = -1.0L;
             if (coslon > 1.0L) sinlon = 1.0L;
             if (coslon < -1.0L) sinlon = -1.0L;
-            p2->lon = _posAngleRads(p1->lon + atan2(sinlon, coslon));
+            p2->lon = constrainLng(p1->lon + atan2(sinlon, coslon));
         }
     }
 }
