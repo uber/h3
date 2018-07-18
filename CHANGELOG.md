@@ -11,6 +11,7 @@ The public API of this library consists of the functions declared in file
 ### Fixed
 - Ensured unused memory is cleared for pentagon children. (#84)
 - Fixed compiler warnings in `h3ToGeoHier` and `h3ToGeoBoundaryHier`. (#90)
+- Fixed a segfault in `h3SetToLinkedGeo` (#94)
 ### Changed
 - Warnings are not errors by default. (#90)
 
