@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Uber Technologies, Inc.
+ * Copyright 2017-2018 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,12 @@
 #ifndef MATHEXTENSIONS_H
 #define MATHEXTENSIONS_H
 
+/**
+ * MAX returns the maximum of two values.
+ */
+#define MAX(a, b) (((a) > (b)) ? (a) : (b))
+
 // Internal functions
 int _ipow(int base, int exp);
-int _imax(int a, int b);
 
 #endif

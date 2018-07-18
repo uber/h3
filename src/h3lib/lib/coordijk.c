@@ -503,5 +503,5 @@ int ijkDistance(const CoordIJK* c1, const CoordIJK* c2) {
     _ijkSub(c1, c2, &diff);
     _ijkNormalize(&diff);
     CoordIJK absDiff = {abs(diff.i), abs(diff.j), abs(diff.k)};
-    return _imax(absDiff.i, _imax(absDiff.j, absDiff.k));
+    return MAX(absDiff.i, MAX(absDiff.j, absDiff.k));
 }
