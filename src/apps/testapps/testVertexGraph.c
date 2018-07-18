@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Uber Technologies, Inc.
+ * Copyright 2017-2018 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,8 @@ GeoCoord vertex1;
 GeoCoord vertex2;
 GeoCoord vertex3;
 GeoCoord vertex4;
+GeoCoord vertex5;
+GeoCoord vertex6;
 
 BEGIN_TESTS(vertexGraph);
 
@@ -35,6 +37,8 @@ setGeoDegs(&vertex1, 87.372002166, 166.160981117);
 setGeoDegs(&vertex2, 87.370101364, 166.160184306);
 setGeoDegs(&vertex3, 87.369088356, 166.196239997);
 setGeoDegs(&vertex4, 87.369975080, 166.233115768);
+setGeoDegs(&vertex5, 0, 0);
+setGeoDegs(&vertex6, -10, -10);
 
 TEST(makeVertexGraph) {
     VertexGraph graph;
@@ -61,6 +65,14 @@ TEST(vertexHash) {
             t_assert(hash1 != hash2, "Hashes must not be equal");
         }
     }
+}
+
+TEST(vertexHashNegative) {
+    int numBuckets = 10;
+    t_assert(_hashVertex(&vertex5, 5, numBuckets) < numBuckets,
+             "zero vertex hashes correctly");
+    t_assert(_hashVertex(&vertex6, 5, numBuckets) < numBuckets,
+             "negative coordinates vertex hashes correctly");
 }
 
 TEST(addVertexNode) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Uber Technologies, Inc.
+ * Copyright 2017-2018 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,130 +29,123 @@ H3Index* makeSet(char** hexes, int numHexes) {
 BEGIN_TESTS(h3SetToLinkedGeo);
 
 TEST(empty) {
-    LinkedGeoPolygon* polygon = calloc(1, sizeof(LinkedGeoPolygon));
+    LinkedGeoPolygon polygon;
     int numHexes = 0;
     H3Index* set = makeSet(NULL, numHexes);
 
-    H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, polygon);
+    H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon);
 
-    t_assert(countLinkedLoops(polygon) == 0, "No loops added to polygon");
+    t_assert(countLinkedLoops(&polygon) == 0, "No loops added to polygon");
 
-    H3_EXPORT(destroyLinkedPolygon)(polygon);
+    H3_EXPORT(destroyLinkedPolygon)(&polygon);
     free(set);
-    free(polygon);
 }
 
 TEST(singleHex) {
-    LinkedGeoPolygon* polygon = calloc(1, sizeof(LinkedGeoPolygon));
+    LinkedGeoPolygon polygon;
     char* hexes[] = {"890dab6220bffff"};
     int numHexes = sizeof(hexes) / sizeof(hexes[0]);
     H3Index* set = makeSet(hexes, numHexes);
 
-    H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, polygon);
+    H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon);
 
-    t_assert(countLinkedLoops(polygon) == 1, "1 loop added to polygon");
-    t_assert(countLinkedCoords(polygon->first) == 6, "6 coords added to loop");
+    t_assert(countLinkedLoops(&polygon) == 1, "1 loop added to polygon");
+    t_assert(countLinkedCoords(polygon.first) == 6, "6 coords added to loop");
 
-    H3_EXPORT(destroyLinkedPolygon)(polygon);
+    H3_EXPORT(destroyLinkedPolygon)(&polygon);
     free(set);
-    free(polygon);
 }
 
 TEST(contiguous2) {
-    LinkedGeoPolygon* polygon = calloc(1, sizeof(LinkedGeoPolygon));
+    LinkedGeoPolygon polygon;
     char* hexes[] = {"8928308291bffff", "89283082957ffff"};
     int numHexes = sizeof(hexes) / sizeof(hexes[0]);
     H3Index* set = makeSet(hexes, numHexes);
 
-    H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, polygon);
+    H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon);
 
-    t_assert(countLinkedLoops(polygon) == 1, "1 loop added to polygon");
-    t_assert(countLinkedCoords(polygon->first) == 10,
+    t_assert(countLinkedLoops(&polygon) == 1, "1 loop added to polygon");
+    t_assert(countLinkedCoords(polygon.first) == 10,
              "All coords added to loop except 2 shared");
 
-    H3_EXPORT(destroyLinkedPolygon)(polygon);
+    H3_EXPORT(destroyLinkedPolygon)(&polygon);
     free(set);
-    free(polygon);
 }
 
 // TODO: This test asserts incorrect behavior - we should be creating multiple
 // polygons, each with their own single loop. Update when the algorithm is
 // corrected.
 TEST(nonContiguous2) {
-    LinkedGeoPolygon* polygon = calloc(1, sizeof(LinkedGeoPolygon));
+    LinkedGeoPolygon polygon;
     char* hexes[] = {"8928308291bffff", "89283082943ffff"};
     int numHexes = sizeof(hexes) / sizeof(hexes[0]);
     H3Index* set = makeSet(hexes, numHexes);
 
-    H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, polygon);
+    H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon);
 
-    t_assert(countLinkedLoops(polygon) == 2, "2 loops added to polygon");
-    t_assert(countLinkedCoords(polygon->first) == 6,
+    t_assert(countLinkedLoops(&polygon) == 2, "2 loops added to polygon");
+    t_assert(countLinkedCoords(polygon.first) == 6,
              "All coords for one hex added to first loop");
-    t_assert(countLinkedCoords(polygon->first->next) == 6,
+    t_assert(countLinkedCoords(polygon.first->next) == 6,
              "All coords for one hex added to second loop");
 
-    H3_EXPORT(destroyLinkedPolygon)(polygon);
+    H3_EXPORT(destroyLinkedPolygon)(&polygon);
     free(set);
-    free(polygon);
 }
 
 TEST(contiguous3) {
-    LinkedGeoPolygon* polygon = calloc(1, sizeof(LinkedGeoPolygon));
+    LinkedGeoPolygon polygon;
     char* hexes[] = {"8928308288bffff", "892830828d7ffff", "8928308289bffff"};
     int numHexes = sizeof(hexes) / sizeof(hexes[0]);
     H3Index* set = makeSet(hexes, numHexes);
 
-    H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, polygon);
+    H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon);
 
-    t_assert(countLinkedLoops(polygon) == 1, "1 loop added to polygon");
-    t_assert(countLinkedCoords(polygon->first) == 12,
+    t_assert(countLinkedLoops(&polygon) == 1, "1 loop added to polygon");
+    t_assert(countLinkedCoords(polygon.first) == 12,
              "All coords added to loop except 6 shared");
 
-    H3_EXPORT(destroyLinkedPolygon)(polygon);
+    H3_EXPORT(destroyLinkedPolygon)(&polygon);
     free(set);
-    free(polygon);
 }
 
 TEST(hole) {
-    LinkedGeoPolygon* polygon = calloc(1, sizeof(LinkedGeoPolygon));
+    LinkedGeoPolygon polygon;
     char* hexes[] = {"892830828c7ffff", "892830828d7ffff", "8928308289bffff",
                      "89283082813ffff", "8928308288fffff", "89283082883ffff"};
     int numHexes = sizeof(hexes) / sizeof(hexes[0]);
     H3Index* set = makeSet(hexes, numHexes);
 
-    H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, polygon);
+    H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon);
 
-    t_assert(countLinkedLoops(polygon) == 2, "2 loops added to polygon");
-    t_assert(countLinkedCoords(polygon->first) == 6 * 3,
+    t_assert(countLinkedLoops(&polygon) == 2, "2 loops added to polygon");
+    t_assert(countLinkedCoords(polygon.first) == 6 * 3,
              "All outer coords added to first loop");
-    t_assert(countLinkedCoords(polygon->first->next) == 6,
+    t_assert(countLinkedCoords(polygon.first->next) == 6,
              "All inner coords added to second loop");
 
-    H3_EXPORT(destroyLinkedPolygon)(polygon);
+    H3_EXPORT(destroyLinkedPolygon)(&polygon);
     free(set);
-    free(polygon);
 }
 
 TEST(pentagon) {
-    LinkedGeoPolygon* polygon = calloc(1, sizeof(LinkedGeoPolygon));
+    LinkedGeoPolygon polygon;
     char* hexes[] = {"851c0003fffffff"};
     int numHexes = sizeof(hexes) / sizeof(hexes[0]);
     H3Index* set = makeSet(hexes, numHexes);
 
-    H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, polygon);
+    H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon);
 
-    t_assert(countLinkedLoops(polygon) == 1, "1 loop added to polygon");
-    t_assert(countLinkedCoords(polygon->first) == 10,
+    t_assert(countLinkedLoops(&polygon) == 1, "1 loop added to polygon");
+    t_assert(countLinkedCoords(polygon.first) == 10,
              "10 coords (distorted pentagon) added to loop");
 
-    H3_EXPORT(destroyLinkedPolygon)(polygon);
+    H3_EXPORT(destroyLinkedPolygon)(&polygon);
     free(set);
-    free(polygon);
 }
 
 TEST(2Ring) {
-    LinkedGeoPolygon* polygon = calloc(1, sizeof(LinkedGeoPolygon));
+    LinkedGeoPolygon polygon;
     // 2-ring, in order returned by k-ring algo
     char* hexes[] = {"8930062838bffff", "8930062838fffff", "89300628383ffff",
                      "8930062839bffff", "893006283d7ffff", "893006283c7ffff",
@@ -164,19 +157,18 @@ TEST(2Ring) {
     int numHexes = sizeof(hexes) / sizeof(hexes[0]);
     H3Index* set = makeSet(hexes, numHexes);
 
-    H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, polygon);
+    H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon);
 
-    t_assert(countLinkedLoops(polygon) == 1, "1 loop added to polygon");
-    t_assert(countLinkedCoords(polygon->first) == (6 * (2 * 2 + 1)),
+    t_assert(countLinkedLoops(&polygon) == 1, "1 loop added to polygon");
+    t_assert(countLinkedCoords(polygon.first) == (6 * (2 * 2 + 1)),
              "Expected number of coords added to loop");
 
-    H3_EXPORT(destroyLinkedPolygon)(polygon);
+    H3_EXPORT(destroyLinkedPolygon)(&polygon);
     free(set);
-    free(polygon);
 }
 
 TEST(2RingUnordered) {
-    LinkedGeoPolygon* polygon = calloc(1, sizeof(LinkedGeoPolygon));
+    LinkedGeoPolygon polygon;
     // 2-ring in random order
     char* hexes[] = {"89300628393ffff", "89300628383ffff", "89300628397ffff",
                      "89300628067ffff", "89300628387ffff", "893006283bbffff",
@@ -188,32 +180,38 @@ TEST(2RingUnordered) {
     int numHexes = sizeof(hexes) / sizeof(hexes[0]);
     H3Index* set = makeSet(hexes, numHexes);
 
-    H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, polygon);
+    H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon);
 
-    t_assert(countLinkedLoops(polygon) == 1, "1 loop added to polygon");
-    t_assert(countLinkedCoords(polygon->first) == (6 * (2 * 2 + 1)),
+    t_assert(countLinkedLoops(&polygon) == 1, "1 loop added to polygon");
+    t_assert(countLinkedCoords(polygon.first) == (6 * (2 * 2 + 1)),
              "Expected number of coords added to loop");
 
-    H3_EXPORT(destroyLinkedPolygon)(polygon);
+    H3_EXPORT(destroyLinkedPolygon)(&polygon);
     free(set);
-    free(polygon);
 }
 
 TEST(contiguous2distorted) {
-    LinkedGeoPolygon* polygon = calloc(1, sizeof(LinkedGeoPolygon));
+    LinkedGeoPolygon polygon;
     char* hexes[] = {"894cc5365afffff", "894cc536537ffff"};
     int numHexes = sizeof(hexes) / sizeof(hexes[0]);
     H3Index* set = makeSet(hexes, numHexes);
 
-    H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, polygon);
+    H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon);
 
-    t_assert(countLinkedLoops(polygon) == 1, "1 loop added to polygon");
-    t_assert(countLinkedCoords(polygon->first) == 12,
+    t_assert(countLinkedLoops(&polygon) == 1, "1 loop added to polygon");
+    t_assert(countLinkedCoords(polygon.first) == 12,
              "All coords added to loop except 2 shared");
 
-    H3_EXPORT(destroyLinkedPolygon)(polygon);
+    H3_EXPORT(destroyLinkedPolygon)(&polygon);
     free(set);
-    free(polygon);
+}
+
+TEST(negativeHashedCoordinates) {
+    LinkedGeoPolygon polygon;
+    H3Index set[] = {0x88ad36c547fffffl, 0x88ad36c467fffffl};
+    H3_EXPORT(h3SetToLinkedGeo)(set, 2, &polygon);
+    t_assert(countLinkedLoops(&polygon) == 2, "2 loops added to polygon");
+    H3_EXPORT(destroyLinkedPolygon)(&polygon);
 }
 
 END_TESTS();
