@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 Uber Technologies, Inc.
+ * Copyright 2016-2018 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,13 @@
  */
 
 #include "utility.h"
+#include <assert.h>
 #include <inttypes.h>
+#include <stackAlloc.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "geoCoord.h"
+#include "h3Index.h"
 #include "h3api.h"
 
 void error(const char* msg) {
@@ -162,4 +165,35 @@ int readBoundary(FILE* f, GeoBoundary* b) {
     }
 
     return 0;
+}
+
+/**
+ * Call the callback for every index at the given resolution.
+ */
+void iterateAllIndexesAtRes(int res, void (*callback)(H3Index)) {
+    iterateAllIndexesAtResPartial(res, callback, NUM_BASE_CELLS);
+}
+
+/**
+ * Call the callback for every index at the given resolution in base
+ * cell 0 up to the given base cell number.
+ */
+void iterateAllIndexesAtResPartial(int res, void (*callback)(H3Index),
+                                   int baseCells) {
+    assert(baseCells <= NUM_BASE_CELLS);
+    for (int i = 0; i < baseCells; i++) {
+        H3Index bc;
+        setH3Index(&bc, 0, i, 0);
+        int childrenSz = H3_EXPORT(maxUncompactSize)(&bc, 1, res);
+        STACK_ARRAY_CALLOC(H3Index, children, childrenSz);
+        H3_EXPORT(uncompact)(&bc, 1, children, childrenSz, res);
+
+        for (int j = 0; j < childrenSz; j++) {
+            if (children[j] == 0) {
+                continue;
+            }
+
+            (*callback)(children[j]);
+        }
+    }
 }

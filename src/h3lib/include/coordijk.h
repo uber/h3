@@ -101,5 +101,6 @@ void _ijkRotate60ccw(CoordIJK* ijk);
 void _ijkRotate60cw(CoordIJK* ijk);
 Direction _rotate60ccw(Direction digit);
 Direction _rotate60cw(Direction digit);
+int ijkDistance(const CoordIJK* a, const CoordIJK* b);
 
 #endif

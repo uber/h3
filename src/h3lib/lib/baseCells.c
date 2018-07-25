@@ -867,3 +867,16 @@ bool _baseCellIsCwOffset(int baseCell, int testFace) {
 int _getBaseCellNeighbor(int baseCell, Direction dir) {
     return baseCellNeighbors[baseCell][dir];
 }
+
+/** @brief Return the direction from the origin base cell to the neighbor.
+ * Returns INVALID_DIGIT if the base cells are not neighbors.
+ */
+Direction _getBaseCellDirection(int originBaseCell, int neighboringBaseCell) {
+    for (Direction dir = CENTER_DIGIT; dir < NUM_DIGITS; dir++) {
+        int testBaseCell = _getBaseCellNeighbor(originBaseCell, dir);
+        if (testBaseCell == neighboringBaseCell) {
+            return dir;
+        }
+    }
+    return INVALID_DIGIT;
+}

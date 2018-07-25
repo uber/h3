@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 Uber Technologies, Inc.
+ * Copyright 2016-2018 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -439,6 +439,14 @@ void H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(H3Index origin,
  */
 /** @brief Returns the GeoBoundary containing the coordinates of the edge */
 void H3_EXPORT(getH3UnidirectionalEdgeBoundary)(H3Index edge, GeoBoundary *gb);
+/** @} */
+
+/** @defgroup h3Distance h3Distance
+ * Functions for h3Distance
+ * @{
+ */
+/** @brief Returns grid distance between two indexes */
+int H3_EXPORT(h3Distance)(H3Index origin, H3Index h3);
 /** @} */
 
 #ifdef __cplusplus

@@ -52,5 +52,6 @@ int _faceIjkToBaseCellCCWrot60(const FaceIJK* h);
 void _baseCellToFaceIjk(int baseCell, FaceIJK* h);
 bool _baseCellIsCwOffset(int baseCell, int testFace);
 int _getBaseCellNeighbor(int baseCell, Direction dir);
+Direction _getBaseCellDirection(int originBaseCell, int destinationBaseCell);
 
 #endif
