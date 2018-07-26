@@ -158,7 +158,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/mkRandGeo.c
     src/apps/testapps/testH3Api.c
     src/apps/testapps/testH3SetToLinkedGeo.c
-        src/apps/testapps/testH3ToIj.c
+    src/apps/testapps/testH3ToIj.c
     src/apps/miscapps/h3ToGeoBoundaryHier.c
     src/apps/miscapps/h3ToGeoHier.c
     src/apps/miscapps/generateBaseCellNeighbors.c
