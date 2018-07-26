@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 /**
- * Example program that calculates the distance in kilometers between two
- * hexagon indices.
+ * Example program that calculates the distance in hexagons and in kilometers
+ * between two hexagon indices.
  */
 
 // mean Earth radius
@@ -59,12 +59,14 @@ int main(int argc, char *argv[]) {
     printf(
         "origin: (%lf, %lf)\n"
         "destination: (%lf, %lf)\n"
-        "distance: %lfkm\n",
+        "grid distance: %d\n"
+        "distance in km: %lfkm\n",
         radsToDegs(geoHQ1.lat), radsToDegs(geoHQ1.lon), radsToDegs(geoHQ2.lat),
-        radsToDegs(geoHQ2.lon),
+        radsToDegs(geoHQ2.lon), h3Distance(h3HQ1, h3HQ2),
         haversineDistance(geoHQ1.lat, geoHQ1.lon, geoHQ2.lat, geoHQ2.lon));
     // Output:
     // origin: (37.775236, 237.580245)
     // destination: (37.789991, 237.597879)
-    // distance: 2.256850km
+    // grid distance: 2340
+    // distance in km: 2.256850km
 }
