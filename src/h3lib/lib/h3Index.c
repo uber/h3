@@ -961,6 +961,32 @@ int h3ToIjk(H3Index origin, H3Index h3, CoordIJK* out) {
 }
 
 /**
+ * Produces ij coordinates for an index anchored by an origin.
+ *
+ * The coordinate space used by this function may have deleted
+ * regions or warping due to pentagonal distortion.
+ *
+ * Coordinates are only comparable if they come from the same
+ * origin index.
+ *
+ * @param origin An anchoring index for the ij coordinate system.
+ * @param index Index to find the coordinates of
+ * @param out ij coordinates of the index will be placed here on success
+ * @return 0 on success, or another value on failure.
+ */
+int H3_EXPORT(h3ToIj)(H3Index origin, H3Index h3, CoordIJ* out) {
+    CoordIJK ijk;
+    int failed = h3ToIjk(origin, h3, &ijk);
+    if (failed) {
+        return failed;
+    }
+
+    ijkToIj(&ijk, out);
+
+    return 0;
+}
+
+/**
  * Produces the grid distance between the two indexes.
  *
  * This function may fail to find the distance between two indexes, for

@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 /** @file
- * @brief tests H3 index to IJK+ grid functions.
+ * @brief tests H3 index to IJ or IJK+ grid functions, and H3 distance
+ * function.
  *
- *  usage: `testH3ToIjk`
+ *  usage: `testH3ToIj`
  */
 
 #include <stdio.h>
@@ -38,8 +39,11 @@ void h3Distance_identity_assertions(H3Index h3) {
 
     t_assert(H3_EXPORT(h3Distance)(h3, h3) == 0, "distance to self is 0");
 
+    // Test that coordinates are as expected
+    CoordIJ ij;
+    t_assert(H3_EXPORT(h3ToIj)(h3, h3, &ij) == 0, "failed to get ij");
     CoordIJK ijk;
-    t_assert(h3ToIjk(h3, h3, &ijk) == 0, "failed to get ijk");
+    ijToIjk(&ij, &ijk);
     if (r == 0) {
         t_assert(_ijkMatches(&ijk, &UNIT_VECS[0]) == 1, "not at 0,0,0 (res 0)");
     } else if (r == 1) {
@@ -57,8 +61,10 @@ void h3Distance_identity_assertions(H3Index h3) {
 }
 
 void h3Distance_neighbors_assertions(H3Index h3) {
-    CoordIJK origin = {0};
-    t_assert(h3ToIjk(h3, h3, &origin) == 0, "got ijk for origin");
+    CoordIJ origin = {0};
+    t_assert(H3_EXPORT(h3ToIj)(h3, h3, &origin) == 0, "got ijk for origin");
+    CoordIJK originIjk;
+    ijToIjk(&origin, &originIjk);
 
     for (int d = 1; d < 7; d++) {
         if (d == 1 && h3IsPentagon(h3)) {
@@ -68,8 +74,11 @@ void h3Distance_neighbors_assertions(H3Index h3) {
         int rotations = 0;
         H3Index offset = h3NeighborRotations(h3, d, &rotations);
 
-        CoordIJK ijk = {0};
-        t_assert(h3ToIjk(h3, offset, &ijk) == 0, "got ijk for destination");
+        CoordIJ ij = {0};
+        t_assert(H3_EXPORT(h3ToIj)(h3, offset, &ij) == 0,
+                 "got ijk for destination");
+        CoordIJK ijk;
+        ijToIjk(&ij, &ijk);
         CoordIJK invertedIjk = {0};
         _neighbor(&invertedIjk, d);
         for (int i = 0; i < 3; i++) {
@@ -78,7 +87,7 @@ void h3Distance_neighbors_assertions(H3Index h3) {
         _ijkAdd(&invertedIjk, &ijk, &ijk);
         _ijkNormalize(&ijk);
 
-        t_assert(_ijkMatches(&ijk, &origin), "back to origin");
+        t_assert(_ijkMatches(&ijk, &originIjk), "back to origin");
     }
 }
 
@@ -110,6 +119,48 @@ void h3Distance_kRing_assertions(H3Index h3) {
 }
 
 BEGIN_TESTS(h3ToIjk);
+
+H3Index bc1 = H3_INIT;
+setH3Index(&bc1, 0, 15, 0);
+
+H3Index bc2 = H3_INIT;
+setH3Index(&bc2, 0, 8, 0);
+
+H3Index bc3 = H3_INIT;
+setH3Index(&bc3, 0, 31, 0);
+
+H3Index pent1 = H3_INIT;
+setH3Index(&pent1, 0, 4, 0);
+
+TEST(ijkToIj_zero) {
+    CoordIJK ijk = {0};
+    CoordIJ ij = {0};
+
+    ijkToIj(&ijk, &ij);
+    t_assert(ij.i == 0, "ij.i zero");
+    t_assert(ij.j == 0, "ij.j zero");
+
+    ijToIjk(&ij, &ijk);
+    t_assert(ijk.i == 0, "ijk.i zero");
+    t_assert(ijk.j == 0, "ijk.j zero");
+    t_assert(ijk.k == 0, "ijk.k zero");
+}
+
+TEST(ijkToIj_roundtrip) {
+    for (Direction dir = CENTER_DIGIT; dir < NUM_DIGITS; dir++) {
+        CoordIJK ijk = {0};
+        _neighbor(&ijk, dir);
+
+        CoordIJ ij = {0};
+        ijkToIj(&ijk, &ij);
+
+        CoordIJK recovered = {0};
+        ijToIjk(&ij, &recovered);
+
+        t_assert(_ijkMatches(&ijk, &recovered),
+                 "got same ijk coordinates back");
+    }
+}
 
 TEST(testIndexDistance) {
     H3Index bc = 0;
@@ -193,18 +244,6 @@ TEST(h3Distance_kRing) {
 }
 
 TEST(h3DistanceBaseCells) {
-    H3Index bc1 = H3_INIT;
-    setH3Index(&bc1, 0, 15, 0);
-
-    H3Index bc2 = H3_INIT;
-    setH3Index(&bc2, 0, 8, 0);
-
-    H3Index bc3 = H3_INIT;
-    setH3Index(&bc3, 0, 31, 0);
-
-    H3Index pent1 = H3_INIT;
-    setH3Index(&pent1, 0, 4, 0);
-
     t_assert(H3_EXPORT(h3Distance)(bc1, pent1) == 1,
              "distance to neighbor is 1 (15, 4)");
     t_assert(H3_EXPORT(h3Distance)(bc1, bc2) == 1,
@@ -229,6 +268,20 @@ TEST(h3DistanceFailed) {
              "edges cannot be destinations");
     t_assert(H3_EXPORT(h3Distance)(h3, h3res2) == -1,
              "cannot compare at different resolutions");
+}
+
+TEST(h3ToIjFailed) {
+    CoordIJ ij;
+
+    t_assert(H3_EXPORT(h3ToIj)(bc1, bc1, &ij) == 0, "failed to find IJ (1)");
+    t_assert(ij.i == 0 && ij.j == 0, "ij correct (1)");
+    t_assert(H3_EXPORT(h3ToIj)(bc1, pent1, &ij) == 0, "failed to find IJ (2)");
+    t_assert(ij.i == 1 && ij.j == 0, "ij correct (2)");
+    t_assert(H3_EXPORT(h3ToIj)(bc1, bc2, &ij) == 0, "failed to find IJ (3)");
+    t_assert(ij.i == 0 && ij.j == -1, "ij correct (3)");
+    t_assert(H3_EXPORT(h3ToIj)(bc1, bc3, &ij) == 0, "failed to find IJ (4)");
+    t_assert(ij.i == -1 && ij.j == 0, "ij correct (4)");
+    t_assert(H3_EXPORT(h3ToIj)(pent1, bc3, &ij) != 0, "failed to find IJ (5)");
 }
 
 END_TESTS();
