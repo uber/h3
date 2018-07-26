@@ -172,7 +172,15 @@ set(ALL_SOURCE_FILES
     ${LIB_SOURCE_FILES} ${APP_SOURCE_FILES} ${OTHER_SOURCE_FILES})
 
 # Build the H3 library
-add_library(h3 ${LIB_SOURCE_FILES})
+if (BUILD_FRAMEWORK)
+    add_library(h3 SHARED ${LIB_SOURCE_FILES} src/h3lib/h3.modulemap)
+    set_target_properties(h3 PROPERTIES
+        FRAMEWORK TRUE
+        FRAMEWORK_VERSION A
+        PUBLIC_HEADER src/h3lib/include/h3api.h)
+else()
+    add_library(h3 ${LIB_SOURCE_FILES})
+endif()
 
 target_compile_options(h3 PRIVATE ${H3_COMPILE_FLAGS})
 target_link_libraries(h3 PRIVATE ${H3_LINK_FLAGS})
@@ -522,15 +530,28 @@ configure_package_config_file(
 #   * header location after install: <prefix>/include/h3/h3api.h
 #   * headers can be included by C++ code `#include <h3/h3api.h>`
 # Installing the library and filters system-wide.
-install(
-    TARGETS h3 geoToH3 h3ToComponents h3ToGeo h3ToGeoBoundary hexRange
-            kRing h3ToGeoBoundaryHier h3ToGeoHier h3ToHier
-    EXPORT "${TARGETS_EXPORT_NAME}"
-    LIBRARY DESTINATION "lib"
-    ARCHIVE DESTINATION "lib"
-    RUNTIME DESTINATION "bin"
-    INCLUDES DESTINATION "${include_install_dir}"
-)
+if(CMAKE_GENERATOR MATCHES "Xcode")
+    install(
+        TARGETS geoToH3 h3ToComponents h3ToGeo h3ToGeoBoundary hexRange
+                kRing h3ToGeoBoundaryHier h3ToGeoHier h3ToHier
+        EXPORT "${TARGETS_EXPORT_NAME}"
+        LIBRARY DESTINATION "lib"
+        ARCHIVE DESTINATION "lib"
+        RUNTIME DESTINATION "bin"
+        INCLUDES DESTINATION "${include_install_dir}"
+    )
+else ()
+    install(
+        TARGETS h3 geoToH3 h3ToComponents h3ToGeo h3ToGeoBoundary hexRange
+                kRing h3ToGeoBoundaryHier h3ToGeoHier h3ToHier
+        EXPORT "${TARGETS_EXPORT_NAME}"
+        LIBRARY DESTINATION "lib"
+        ARCHIVE DESTINATION "lib"
+        RUNTIME DESTINATION "bin"
+        FRAMEWORK DESTINATION "lib"
+        INCLUDES DESTINATION "${include_install_dir}"
+    )
+endif()
 
 # Headers:
 #   * src/h3lib/include/h3api.h -> <prefix>/include/h3/h3api.h
