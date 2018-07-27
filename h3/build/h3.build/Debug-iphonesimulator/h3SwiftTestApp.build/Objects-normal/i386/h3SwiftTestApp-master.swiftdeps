@@ -1,0 +1,6 @@
+version: "Apple Swift version 4.1.2 (swiftlang-902.0.54 clang-902.0.39.2)"
+options: "9c184df68926657eb12017734f007151"
+build_time: [1532667031, 699305000]
+inputs:
+  "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3SwiftTestApp/ViewController.swift": [1532614684, 0]
+  "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3SwiftTestApp/AppDelegate.swift": [1532613784, 0]

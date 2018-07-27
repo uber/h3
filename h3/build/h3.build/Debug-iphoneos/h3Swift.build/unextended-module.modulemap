@@ -1,0 +1,10 @@
+framework module h3Swift {
+  umbrella header "h3Swift.h"
+
+  export *
+  module * { export * }
+}
+
+module h3Swift.__Swift {
+    exclude header "h3Swift-Swift.h"
+}
