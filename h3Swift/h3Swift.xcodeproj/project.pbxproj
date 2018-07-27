@@ -22,13 +22,23 @@
 
 /* Begin PBXBuildFile section */
 		691633E9210AE1EC004AB0ED /* h3Swift.h in Headers */ = {isa = PBXBuildFile; fileRef = 691633E7210AE1EC004AB0ED /* h3Swift.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		69163401210AE76C004AB0ED /* h3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69163400210AE76C004AB0ED /* h3.swift */; };
+		69163401210AE76C004AB0ED /* GeoCoord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69163400210AE76C004AB0ED /* GeoCoord.swift */; };
 		69163409210AE78C004AB0ED /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69163408210AE78C004AB0ED /* AppDelegate.swift */; };
 		6916340B210AE78C004AB0ED /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6916340A210AE78C004AB0ED /* ViewController.swift */; };
 		6916340E210AE78C004AB0ED /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6916340C210AE78C004AB0ED /* Main.storyboard */; };
 		69163410210AE78D004AB0ED /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6916340F210AE78D004AB0ED /* Assets.xcassets */; };
 		69163413210AE78D004AB0ED /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 69163411210AE78D004AB0ED /* LaunchScreen.storyboard */; };
 		6916341C210AE7A7004AB0ED /* h3Swift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6916341B210AE7A7004AB0ED /* h3Swift.framework */; };
+		6916341E210AF827004AB0ED /* H3Index.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6916341D210AF827004AB0ED /* H3Index.swift */; };
+		69163420210AF890004AB0ED /* Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6916341F210AF890004AB0ED /* Util.swift */; };
+		69163422210AFC58004AB0ED /* kRing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69163421210AFC58004AB0ED /* kRing.swift */; };
+		69163424210B0175004AB0ED /* hexRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69163423210B0175004AB0ED /* hexRange.swift */; };
+		69163426210B06F5004AB0ED /* hexRing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69163425210B06F5004AB0ED /* hexRing.swift */; };
+		69163428210B0B11004AB0ED /* h3Set.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69163427210B0B11004AB0ED /* h3Set.swift */; };
+		6916342A210B0D6F004AB0ED /* GeoPolygon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69163429210B0D6F004AB0ED /* GeoPolygon.swift */; };
+		6916342C210B129F004AB0ED /* Aliase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6916342B210B129F004AB0ED /* Aliase.swift */; };
+		6916342E210B14CF004AB0ED /* LinkedGeoPolygon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6916342D210B14CF004AB0ED /* LinkedGeoPolygon.swift */; };
+		69163430210B314D004AB0ED /* H3UnidirectionalEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6916342F210B314D004AB0ED /* H3UnidirectionalEdge.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,7 +55,7 @@
 		691633E4210AE1EC004AB0ED /* h3Swift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = h3Swift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		691633E7210AE1EC004AB0ED /* h3Swift.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = h3Swift.h; sourceTree = "<group>"; };
 		691633E8210AE1EC004AB0ED /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		69163400210AE76C004AB0ED /* h3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = h3.swift; sourceTree = "<group>"; };
+		69163400210AE76C004AB0ED /* GeoCoord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoCoord.swift; sourceTree = "<group>"; };
 		69163406210AE78C004AB0ED /* h3SwiftApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = h3SwiftApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		69163408210AE78C004AB0ED /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6916340A210AE78C004AB0ED /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -54,6 +64,16 @@
 		69163412210AE78D004AB0ED /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		69163414210AE78D004AB0ED /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6916341B210AE7A7004AB0ED /* h3Swift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = h3Swift.framework; path = "Output/h3Swift-Debug-iphoneuniversal/h3Swift.framework"; sourceTree = "<group>"; };
+		6916341D210AF827004AB0ED /* H3Index.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = H3Index.swift; sourceTree = "<group>"; };
+		6916341F210AF890004AB0ED /* Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Util.swift; sourceTree = "<group>"; };
+		69163421210AFC58004AB0ED /* kRing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = kRing.swift; sourceTree = "<group>"; };
+		69163423210B0175004AB0ED /* hexRange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = hexRange.swift; sourceTree = "<group>"; };
+		69163425210B06F5004AB0ED /* hexRing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = hexRing.swift; sourceTree = "<group>"; };
+		69163427210B0B11004AB0ED /* h3Set.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = h3Set.swift; sourceTree = "<group>"; };
+		69163429210B0D6F004AB0ED /* GeoPolygon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoPolygon.swift; sourceTree = "<group>"; };
+		6916342B210B129F004AB0ED /* Aliase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Aliase.swift; sourceTree = "<group>"; };
+		6916342D210B14CF004AB0ED /* LinkedGeoPolygon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkedGeoPolygon.swift; sourceTree = "<group>"; };
+		6916342F210B314D004AB0ED /* H3UnidirectionalEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = H3UnidirectionalEdge.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,7 +119,17 @@
 			children = (
 				691633E7210AE1EC004AB0ED /* h3Swift.h */,
 				691633E8210AE1EC004AB0ED /* Info.plist */,
-				69163400210AE76C004AB0ED /* h3.swift */,
+				69163400210AE76C004AB0ED /* GeoCoord.swift */,
+				6916341D210AF827004AB0ED /* H3Index.swift */,
+				6916341F210AF890004AB0ED /* Util.swift */,
+				69163421210AFC58004AB0ED /* kRing.swift */,
+				69163423210B0175004AB0ED /* hexRange.swift */,
+				69163425210B06F5004AB0ED /* hexRing.swift */,
+				69163427210B0B11004AB0ED /* h3Set.swift */,
+				69163429210B0D6F004AB0ED /* GeoPolygon.swift */,
+				6916342B210B129F004AB0ED /* Aliase.swift */,
+				6916342D210B14CF004AB0ED /* LinkedGeoPolygon.swift */,
+				6916342F210B314D004AB0ED /* H3UnidirectionalEdge.swift */,
 			);
 			path = h3Swift;
 			sourceTree = "<group>";
@@ -258,7 +288,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				69163401210AE76C004AB0ED /* h3.swift in Sources */,
+				69163428210B0B11004AB0ED /* h3Set.swift in Sources */,
+				6916342C210B129F004AB0ED /* Aliase.swift in Sources */,
+				69163401210AE76C004AB0ED /* GeoCoord.swift in Sources */,
+				69163422210AFC58004AB0ED /* kRing.swift in Sources */,
+				69163424210B0175004AB0ED /* hexRange.swift in Sources */,
+				69163420210AF890004AB0ED /* Util.swift in Sources */,
+				6916341E210AF827004AB0ED /* H3Index.swift in Sources */,
+				6916342A210B0D6F004AB0ED /* GeoPolygon.swift in Sources */,
+				69163430210B314D004AB0ED /* H3UnidirectionalEdge.swift in Sources */,
+				69163426210B06F5004AB0ED /* hexRing.swift in Sources */,
+				6916342E210B14CF004AB0ED /* LinkedGeoPolygon.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
