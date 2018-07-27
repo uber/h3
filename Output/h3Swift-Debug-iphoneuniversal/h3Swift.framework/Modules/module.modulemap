@@ -1,0 +1,11 @@
+framework module h3Swift {
+  umbrella header "h3Swift.h"
+
+  export *
+  module * { export * }
+}
+
+module h3Swift.Swift {
+    header "h3Swift-Swift.h"
+    requires objc
+}
