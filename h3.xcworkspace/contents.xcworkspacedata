@@ -2,7 +2,7 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:h3.xcodeproj">
+      location = "group:h3/h3.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:h3Swift/h3Swift.xcodeproj">

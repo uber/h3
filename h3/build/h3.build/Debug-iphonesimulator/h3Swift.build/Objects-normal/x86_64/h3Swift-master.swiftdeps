@@ -1,5 +1,0 @@
-version: "Apple Swift version 4.1.2 (swiftlang-902.0.54 clang-902.0.39.2)"
-options: "ecf277b0a16b49b7811f2e0206417854"
-build_time: [1532668113, 54630000]
-inputs:
-  "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3.swift": [1532614362, 0]
