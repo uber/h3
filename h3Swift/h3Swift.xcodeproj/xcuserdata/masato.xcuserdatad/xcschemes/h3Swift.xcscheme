@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "A73B5AB57F9249DE9682DEA6"
-               BuildableName = "h3.framework"
-               BlueprintName = "h3"
-               ReferencedContainer = "container:h3.xcodeproj">
+               BlueprintIdentifier = "691633E3210AE1EC004AB0ED"
+               BuildableName = "h3Swift.framework"
+               BlueprintName = "h3Swift"
+               ReferencedContainer = "container:h3Swift.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -45,10 +45,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "A73B5AB57F9249DE9682DEA6"
-            BuildableName = "h3.framework"
-            BlueprintName = "h3"
-            ReferencedContainer = "container:h3.xcodeproj">
+            BlueprintIdentifier = "691633E3210AE1EC004AB0ED"
+            BuildableName = "h3Swift.framework"
+            BlueprintName = "h3Swift"
+            ReferencedContainer = "container:h3Swift.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -63,10 +63,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "A73B5AB57F9249DE9682DEA6"
-            BuildableName = "h3.framework"
-            BlueprintName = "h3"
-            ReferencedContainer = "container:h3.xcodeproj">
+            BlueprintIdentifier = "691633E3210AE1EC004AB0ED"
+            BuildableName = "h3Swift.framework"
+            BlueprintName = "h3Swift"
+            ReferencedContainer = "container:h3Swift.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </ProfileAction>

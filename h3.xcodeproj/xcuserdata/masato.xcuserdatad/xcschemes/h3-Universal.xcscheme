@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "A73B5AB57F9249DE9682DEA6"
-               BuildableName = "h3.framework"
-               BlueprintName = "h3"
+               BlueprintIdentifier = "691633C8210ADD73004AB0ED"
+               BuildableName = "h3-Universal"
+               BlueprintName = "h3-Universal"
                ReferencedContainer = "container:h3.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -45,9 +45,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "A73B5AB57F9249DE9682DEA6"
-            BuildableName = "h3.framework"
-            BlueprintName = "h3"
+            BlueprintIdentifier = "691633C8210ADD73004AB0ED"
+            BuildableName = "h3-Universal"
+            BlueprintName = "h3-Universal"
             ReferencedContainer = "container:h3.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -63,9 +63,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "A73B5AB57F9249DE9682DEA6"
-            BuildableName = "h3.framework"
-            BlueprintName = "h3"
+            BlueprintIdentifier = "691633C8210ADD73004AB0ED"
+            BuildableName = "h3-Universal"
+            BlueprintName = "h3-Universal"
             ReferencedContainer = "container:h3.xcodeproj">
          </BuildableReference>
       </MacroExpansion>

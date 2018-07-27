@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "691633972109CE82004AB0ED"
-               BuildableName = "h3Swift.framework"
-               BlueprintName = "h3Swift"
-               ReferencedContainer = "container:h3.xcodeproj">
+               BlueprintIdentifier = "69163405210AE78C004AB0ED"
+               BuildableName = "h3SwiftApp.app"
+               BlueprintName = "h3SwiftApp"
+               ReferencedContainer = "container:h3Swift.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -29,6 +29,15 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
       </Testables>
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "69163405210AE78C004AB0ED"
+            BuildableName = "h3SwiftApp.app"
+            BlueprintName = "h3SwiftApp"
+            ReferencedContainer = "container:h3Swift.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </TestAction>
@@ -42,15 +51,16 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <MacroExpansion>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "691633972109CE82004AB0ED"
-            BuildableName = "h3Swift.framework"
-            BlueprintName = "h3Swift"
-            ReferencedContainer = "container:h3.xcodeproj">
+            BlueprintIdentifier = "69163405210AE78C004AB0ED"
+            BuildableName = "h3SwiftApp.app"
+            BlueprintName = "h3SwiftApp"
+            ReferencedContainer = "container:h3Swift.xcodeproj">
          </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -60,15 +70,16 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <MacroExpansion>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "691633972109CE82004AB0ED"
-            BuildableName = "h3Swift.framework"
-            BlueprintName = "h3Swift"
-            ReferencedContainer = "container:h3.xcodeproj">
+            BlueprintIdentifier = "69163405210AE78C004AB0ED"
+            BuildableName = "h3SwiftApp.app"
+            BlueprintName = "h3SwiftApp"
+            ReferencedContainer = "container:h3Swift.xcodeproj">
          </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">
