@@ -37,7 +37,7 @@
 
 void doCell(H3Index h, int k) {
     int maxSize = H3_EXPORT(maxKringSize)(k);
-    STACK_ARRAY_CALLOC(H3Index, rings, maxSize);
+    H3Index* rings = calloc(maxSize, sizeof(H3Index));
 
     if (!H3_EXPORT(hexRange)(h, k, rings)) {
         for (int i = 0; i < maxSize; i++) {
@@ -46,6 +46,8 @@ void doCell(H3Index h, int k) {
     } else {
         printf("0\n");
     }
+
+    free(rings);
 }
 
 int main(int argc, char* argv[]) {
