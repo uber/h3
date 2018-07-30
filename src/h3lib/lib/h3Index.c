@@ -776,6 +776,9 @@ int isResClassIII(int res) { return res % 2; }
  * Coordinates are only comparable if they come from the same
  * origin index.
  *
+ * Failure may occur if the index is too far away from the origin
+ * or if the index is on the other side of a pentagon.
+ *
  * @param origin An anchoring index for the ijk+ coordinate system.
  * @param index Index to find the coordinates of
  * @param out ijk+ coordinates of the index will be placed here on success
@@ -968,6 +971,9 @@ int h3ToIjk(H3Index origin, H3Index h3, CoordIJK* out) {
  *
  * Coordinates are only comparable if they come from the same
  * origin index.
+ *
+ * Failure may occur if the index is too far away from the origin
+ * or if the index is on the other side of a pentagon.
  *
  * @param origin An anchoring index for the ij coordinate system.
  * @param index Index to find the coordinates of

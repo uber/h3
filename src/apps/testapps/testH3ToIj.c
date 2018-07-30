@@ -118,8 +118,10 @@ void h3Distance_kRing_assertions(H3Index h3) {
     }
 }
 
-BEGIN_TESTS(h3ToIjk);
+BEGIN_TESTS(h3ToIj);
 
+// Some indexes that represent base cells. Base cells
+// are hexagons except for `pent1`.
 H3Index bc1 = H3_INIT;
 setH3Index(&bc1, 0, 15, 0);
 
