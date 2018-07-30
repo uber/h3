@@ -12,7 +12,7 @@ The public API of this library consists of the functions declared in file
 - Internal `ijkDistance` function for determining the grid distance between IJK+ coordinates (#83)
 - `h3ToIjk` filter application for experimenting with `h3ToIjk` (#83)
 ### Fixed
-- Don't require a C++ compiler (#106)
+- Don't require a C++ compiler (#107)
 
 ## [3.0.8] - 2018-07-18
 ### Added
