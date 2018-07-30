@@ -9,15 +9,16 @@
 import Foundation
 import h3
 
-public typealias GeoPolygon = h3.GeoPolygon
+
 
 public extension GeoPolygon {
-    public mutating func polyfill(res: Int32, out: inout Array<H3Index>) {
-        withUnsafePointer(to: &self) { (inPtr) -> Void in
-            out.withUnsafeMutableBufferPointer({ (outPtr) -> Void in
-                h3.polyfill(inPtr, res, outPtr.baseAddress)
-            })
+    public mutating func polyfill(res: Int32) -> Array<H3Index> {
+        let sz = Int(maxPolyfillSize(res: res))
+        var buf: Array<h3.H3Index> = Array(repeating: 0, count: sz)
+        buf.withUnsafeMutableBufferPointer { (bufPtr) -> Void in
+            h3.polyfill(&self, res, bufPtr.baseAddress)
         }
+        return buf.filter({$0 != 0}).map({H3Index($0)})
     }
     
     public mutating func maxPolyfillSize(res: Int32) -> Int32 {

@@ -2012,10 +2012,8 @@
 		67800FCB79F74545B610226F /* test.c in Sources */ = {isa = PBXBuildFile; fileRef = 84259CFF3B00436DAB4F693A /* test.c */; };
 		68815F6F4623414DBFB70F52 /* utility.c in Sources */ = {isa = PBXBuildFile; fileRef = C40C16DDAEB0496DB1D8DC78 /* utility.c */; };
 		6916343A210B4DE1004AB0ED /* h3Swift.h in Headers */ = {isa = PBXBuildFile; fileRef = 69163438210B4DE1004AB0ED /* h3Swift.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		6916344F210B4E39004AB0ED /* hexRing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69163442210B4E35004AB0ED /* hexRing.swift */; };
 		69163450210B4E39004AB0ED /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 69163443210B4E35004AB0ED /* Info.plist */; };
 		69163451210B4E39004AB0ED /* kRing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69163444210B4E36004AB0ED /* kRing.swift */; };
-		69163452210B4E39004AB0ED /* H3UnidirectionalEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69163445210B4E36004AB0ED /* H3UnidirectionalEdge.swift */; };
 		69163453210B4E39004AB0ED /* h3Swift.h in Headers */ = {isa = PBXBuildFile; fileRef = 69163446210B4E37004AB0ED /* h3Swift.h */; };
 		69163454210B4E39004AB0ED /* Aliase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69163447210B4E37004AB0ED /* Aliase.swift */; };
 		69163455210B4E39004AB0ED /* h3Set.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69163448210B4E37004AB0ED /* h3Set.swift */; };
@@ -2023,17 +2021,19 @@
 		69163457210B4E39004AB0ED /* GeoCoord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6916344A210B4E38004AB0ED /* GeoCoord.swift */; };
 		69163458210B4E39004AB0ED /* GeoPolygon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6916344B210B4E38004AB0ED /* GeoPolygon.swift */; };
 		69163459210B4E39004AB0ED /* LinkedGeoPolygon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6916344C210B4E38004AB0ED /* LinkedGeoPolygon.swift */; };
-		6916345A210B4E39004AB0ED /* hexRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6916344D210B4E38004AB0ED /* hexRange.swift */; };
 		6916345B210B4E39004AB0ED /* Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6916344E210B4E39004AB0ED /* Util.swift */; };
 		69163479210B5339004AB0ED /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69163478210B5339004AB0ED /* AppDelegate.swift */; };
-		6916347B210B5339004AB0ED /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6916347A210B5339004AB0ED /* ViewController.swift */; };
 		6916347E210B5339004AB0ED /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6916347C210B5339004AB0ED /* Main.storyboard */; };
 		69163480210B5339004AB0ED /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6916347F210B5339004AB0ED /* Assets.xcassets */; };
 		69163483210B5339004AB0ED /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 69163481210B5339004AB0ED /* LaunchScreen.storyboard */; };
-		6916348C210B5508004AB0ED /* h3Swift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69163436210B4DE0004AB0ED /* h3Swift.framework */; };
 		6916348E210B5AA1004AB0ED /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6916348D210B5AA1004AB0ED /* MapKit.framework */; };
 		69163490210B5AAD004AB0ED /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6916348F210B5AAC004AB0ED /* CoreLocation.framework */; };
 		69547723350A473FB817A033 /* test.c in Sources */ = {isa = PBXBuildFile; fileRef = D72339533413433AB7048C79 /* test.c */; };
+		69DE4501210C34F600E06199 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69DE4500210C34F600E06199 /* MapViewController.swift */; };
+		69DE4509210C35BD00E06199 /* MainTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69DE4508210C35BD00E06199 /* MainTableViewController.swift */; };
+		69DE450B210C4D0C00E06199 /* DecodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69DE450A210C4D0C00E06199 /* DecodeViewController.swift */; };
+		69DE450C210C5E1F00E06199 /* h3.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 926FC3C809E840B6A01498C5 /* h3.framework */; };
+		69DE450E210EB68300E06199 /* Exception.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69DE450D210EB68300E06199 /* Exception.swift */; };
 		69E1D9A4E50949B48DFCFEFD /* testPolyfill.c in Sources */ = {isa = PBXBuildFile; fileRef = 6D7D5533D80440D386D12025 /* testPolyfill.c */; };
 		6A153D894AA547A284136ACA /* test.c in Sources */ = {isa = PBXBuildFile; fileRef = E5BD899C2CAF4937982D757D /* test.c */; };
 		6A76423AF90F4F6CB26E5427 /* utility.c in Sources */ = {isa = PBXBuildFile; fileRef = C5AC150A47CC47968369666E /* utility.c */; };
@@ -6563,10 +6563,8 @@
 		69163436210B4DE0004AB0ED /* h3Swift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = h3Swift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		69163438210B4DE1004AB0ED /* h3Swift.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = h3Swift.h; sourceTree = "<group>"; };
 		69163439210B4DE1004AB0ED /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		69163442210B4E35004AB0ED /* hexRing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = hexRing.swift; path = h3Swift/hexRing.swift; sourceTree = "<group>"; };
 		69163443210B4E35004AB0ED /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = h3Swift/Info.plist; sourceTree = "<group>"; };
 		69163444210B4E36004AB0ED /* kRing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = kRing.swift; path = h3Swift/kRing.swift; sourceTree = "<group>"; };
-		69163445210B4E36004AB0ED /* H3UnidirectionalEdge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = H3UnidirectionalEdge.swift; path = h3Swift/H3UnidirectionalEdge.swift; sourceTree = "<group>"; };
 		69163446210B4E37004AB0ED /* h3Swift.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = h3Swift.h; path = h3Swift/h3Swift.h; sourceTree = "<group>"; };
 		69163447210B4E37004AB0ED /* Aliase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Aliase.swift; path = h3Swift/Aliase.swift; sourceTree = "<group>"; };
 		69163448210B4E37004AB0ED /* h3Set.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = h3Set.swift; path = h3Swift/h3Set.swift; sourceTree = "<group>"; };
@@ -6574,19 +6572,21 @@
 		6916344A210B4E38004AB0ED /* GeoCoord.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GeoCoord.swift; path = h3Swift/GeoCoord.swift; sourceTree = "<group>"; };
 		6916344B210B4E38004AB0ED /* GeoPolygon.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GeoPolygon.swift; path = h3Swift/GeoPolygon.swift; sourceTree = "<group>"; };
 		6916344C210B4E38004AB0ED /* LinkedGeoPolygon.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LinkedGeoPolygon.swift; path = h3Swift/LinkedGeoPolygon.swift; sourceTree = "<group>"; };
-		6916344D210B4E38004AB0ED /* hexRange.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = hexRange.swift; path = h3Swift/hexRange.swift; sourceTree = "<group>"; };
 		6916344E210B4E39004AB0ED /* Util.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Util.swift; path = h3Swift/Util.swift; sourceTree = "<group>"; };
 		69163463210B4EF7004AB0ED /* h3Swift_Universal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = h3Swift_Universal.h; sourceTree = "<group>"; };
 		69163464210B4EF7004AB0ED /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		69163476210B5338004AB0ED /* h3SwiftTestApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = h3SwiftTestApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		69163478210B5339004AB0ED /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		6916347A210B5339004AB0ED /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		6916347D210B5339004AB0ED /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		6916347F210B5339004AB0ED /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		69163482210B5339004AB0ED /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		69163484210B5339004AB0ED /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6916348D210B5AA1004AB0ED /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		6916348F210B5AAC004AB0ED /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		69DE4500210C34F600E06199 /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
+		69DE4508210C35BD00E06199 /* MainTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTableViewController.swift; sourceTree = "<group>"; };
+		69DE450A210C4D0C00E06199 /* DecodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecodeViewController.swift; sourceTree = "<group>"; };
+		69DE450D210EB68300E06199 /* Exception.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exception.swift; sourceTree = "<group>"; };
 		69F9D18084134D83AB843898 /* benchmark.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = benchmark.h; path = src/apps/applib/include/benchmark.h; sourceTree = SOURCE_ROOT; };
 		6AAB6A737117488F96CC35C1 /* kml.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = kml.h; path = src/apps/applib/include/kml.h; sourceTree = SOURCE_ROOT; };
 		6B0C49A9B0D04C2186201090 /* utility.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = utility.c; path = src/apps/applib/lib/utility.c; sourceTree = SOURCE_ROOT; };
@@ -6922,9 +6922,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				69DE450C210C5E1F00E06199 /* h3.framework in Frameworks */,
 				69163490210B5AAD004AB0ED /* CoreLocation.framework in Frameworks */,
 				6916348E210B5AA1004AB0ED /* MapKit.framework in Frameworks */,
-				6916348C210B5508004AB0ED /* h3Swift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -8450,15 +8450,13 @@
 				69163449210B4E37004AB0ED /* H3Index.swift */,
 				69163448210B4E37004AB0ED /* h3Set.swift */,
 				69163446210B4E37004AB0ED /* h3Swift.h */,
-				69163445210B4E36004AB0ED /* H3UnidirectionalEdge.swift */,
-				6916344D210B4E38004AB0ED /* hexRange.swift */,
-				69163442210B4E35004AB0ED /* hexRing.swift */,
 				69163443210B4E35004AB0ED /* Info.plist */,
 				69163444210B4E36004AB0ED /* kRing.swift */,
 				6916344C210B4E38004AB0ED /* LinkedGeoPolygon.swift */,
 				6916344E210B4E39004AB0ED /* Util.swift */,
 				69163438210B4DE1004AB0ED /* h3Swift.h */,
 				69163439210B4DE1004AB0ED /* Info.plist */,
+				69DE450D210EB68300E06199 /* Exception.swift */,
 			);
 			path = h3Swift;
 			sourceTree = "<group>";
@@ -8476,7 +8474,9 @@
 			isa = PBXGroup;
 			children = (
 				69163478210B5339004AB0ED /* AppDelegate.swift */,
-				6916347A210B5339004AB0ED /* ViewController.swift */,
+				69DE4508210C35BD00E06199 /* MainTableViewController.swift */,
+				69DE4500210C34F600E06199 /* MapViewController.swift */,
+				69DE450A210C4D0C00E06199 /* DecodeViewController.swift */,
 				6916347C210B5339004AB0ED /* Main.storyboard */,
 				6916347F210B5339004AB0ED /* Assets.xcassets */,
 				69163481210B5339004AB0ED /* LaunchScreen.storyboard */,
@@ -13210,12 +13210,10 @@
 				6916345B210B4E39004AB0ED /* Util.swift in Sources */,
 				69163457210B4E39004AB0ED /* GeoCoord.swift in Sources */,
 				69163459210B4E39004AB0ED /* LinkedGeoPolygon.swift in Sources */,
-				6916344F210B4E39004AB0ED /* hexRing.swift in Sources */,
+				69DE450E210EB68300E06199 /* Exception.swift in Sources */,
 				69163456210B4E39004AB0ED /* H3Index.swift in Sources */,
-				69163452210B4E39004AB0ED /* H3UnidirectionalEdge.swift in Sources */,
 				69163455210B4E39004AB0ED /* h3Set.swift in Sources */,
 				69163454210B4E39004AB0ED /* Aliase.swift in Sources */,
-				6916345A210B4E39004AB0ED /* hexRange.swift in Sources */,
 				69163458210B4E39004AB0ED /* GeoPolygon.swift in Sources */,
 				69163451210B4E39004AB0ED /* kRing.swift in Sources */,
 			);
@@ -13225,7 +13223,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6916347B210B5339004AB0ED /* ViewController.swift in Sources */,
+				69DE450B210C4D0C00E06199 /* DecodeViewController.swift in Sources */,
+				69DE4501210C34F600E06199 /* MapViewController.swift in Sources */,
+				69DE4509210C35BD00E06199 /* MainTableViewController.swift in Sources */,
 				69163479210B5339004AB0ED /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

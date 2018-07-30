@@ -9,58 +9,205 @@
 import Foundation
 import h3
 
-public extension H3Index {
+public class H3Index {
+    let index: h3.H3Index
+    
+    //MARK: Constructor
+    public required init(_ idx: UInt64) {
+        self.index = idx
+    }
+    
+    public convenience init(string: String) {
+        self.init(h3.stringToH3((string as NSString).utf8String))
+    }
+    
+    
     public var resolution: Int32 {
-        return h3GetResolution(self)
+        return h3GetResolution(index)
     }
     
     public var baseCell: Int32 {
-        return h3GetBaseCell(self)
+        return h3GetBaseCell(index)
     }
     
-    public static func from(string: inout String) -> H3Index {
-        return stringToH3((string as NSString).utf8String)
+    public func toString() -> String {
+        return String(index, radix: 16)
     }
     
     public var isValid: Bool {
-        return h3IsValid(self) != 0
+        return h3IsValid(index) != 0
     }
     
     public var isResClassIII: Bool {
-        return h3IsResClassIII(self) != 0
+        return h3IsResClassIII(index) != 0
     }
     
     public var isPentagon: Bool {
-        return h3IsPentagon(self) != 0
-    }
-    
-    public func kRing(k: Int32, out: inout H3Index) -> H3Index {
-        withUnsafeMutablePointer(to: &out) { (ptr) -> Void in
-            h3.kRing(self, k, ptr)
-        }
-        return out
+        return h3IsPentagon(index) != 0
     }
     
     public func toParent(parentRes: Int32) -> H3Index {
-        return h3ToParent(self, parentRes)
+        return H3Index(h3ToParent(index, parentRes))
     }
     
-    public func children(childRes: Int32, buf: inout Array<H3Index>) -> Array<H3Index> {
+    public func children(childRes: Int32) -> Array<H3Index> {
+        let sz: Int = Int(maxChildrenSize(childRes: childRes))
+        var buf: Array<h3.H3Index> = Array.init(repeating: 0, count: sz)
         buf.withUnsafeMutableBufferPointer { (bufPtr) -> Void in
-            h3.h3ToChildren(self, childRes, bufPtr.baseAddress)
+            h3.h3ToChildren(index, childRes, bufPtr.baseAddress)
         }
-        return buf
+        return rawArrayToClassArray(filterNonZero(buf))
     }
     
     public func maxChildrenSize(childRes: Int32) -> Int32 {
-        return h3.maxH3ToChildrenSize(self, childRes)
+        return h3.maxH3ToChildrenSize(index, childRes)
     }
     
     public func isNeighbors(_ destination: H3Index) -> Bool {
-        return h3.h3IndexesAreNeighbors(self, destination) == 1
+        return h3.h3IndexesAreNeighbors(index, destination.index) == 1
     }
     
     public func unidirectionalEdge(_ destination: H3Index) -> H3Index {
-        return h3.getH3UnidirectionalEdge(self, destination)
+        return H3Index(h3.getH3UnidirectionalEdge(index, destination.index))
+    }
+    
+    public func geoBoundary(gb: inout GeoBoundary) {
+        withUnsafeMutablePointer(to: &gb) { (ptr) -> Void in
+            h3.h3ToGeoBoundary(index, ptr)
+        }
+    }
+    
+    
+    //MARK: UnidirectionalEdge
+    var isValidUnidirectionalEdge: Bool {
+        return h3.h3UnidirectionalEdgeIsValid(index) == 1
+    }
+    
+    var unidirectionalEdgeOrigin: H3Index {
+        return H3Index(h3.getOriginH3IndexFromUnidirectionalEdge(index))
+    }
+    
+    var unidirectionalEdgeDestination: H3Index {
+        return H3Index(h3.getDestinationH3IndexFromUnidirectionalEdge(index))
+    }
+    
+    public func unidirectionalEdgeH3Indexes() -> Array<H3Index> {
+        var buf: Array<h3.H3Index> = Array.init(repeating: 0, count: 2)
+        buf.withUnsafeMutableBufferPointer { (ptr) -> Void in
+            h3.getH3IndexesFromUnidirectionalEdge(index, ptr.baseAddress)
+        }
+        return rawArrayToClassArray(filterNonZero(buf))
+    }
+    
+    public func hexagonUnidirectionalEdges() -> Array<H3Index> {
+        var buf: Array<h3.H3Index> = Array.init(repeating: 0, count: 6)
+        buf.withUnsafeMutableBufferPointer { (ptr) -> Void in
+            h3.getH3UnidirectionalEdgesFromHexagon(index, ptr.baseAddress)
+        }
+        return rawArrayToClassArray(filterNonZero(buf))
+    }
+    
+    public func unidirectionalEdgeBoundary(_ gb: inout GeoBoundary) {
+        withUnsafeMutablePointer(to: &gb) { (gbPtr) -> Void in
+            h3.getH3UnidirectionalEdgeBoundary(index, gbPtr)
+        }
+    }
+    
+    //MARK: hexRange
+    public func hexRange(k: Int32) throws -> Array<Array<H3Index>> {
+        let sz:Int = Int(maxKringSize(k))
+        var buf: Array<h3.H3Index> = Array.init(repeating: 0, count: sz)
+        let res: Int32 = buf.withUnsafeMutableBufferPointer({ (outPtr) -> Int32 in
+            return h3.hexRange(index, k, outPtr.baseAddress)
+        })
+        guard res != 0 else {
+            throw PentagonEncounteredException()
+        }
+        
+        var ret: Array<Array<H3Index>> = Array()
+        var ring: Array<H3Index> = Array()
+        var currentK: Int = 0
+        var nextRing: Int = 0
+        for i in 0..<sz {
+            if i == nextRing {
+                ring = Array()
+                ret.append(ring)
+                if currentK == 0 {
+                    nextRing = 1
+                } else {
+                    nextRing += (6 * currentK)
+                }
+                currentK += 1
+            }
+            let h = buf[i]
+            ring.append(H3Index(h))
+        }
+        
+        return ret
+    }
+    
+    //MARK: hexRing
+    public func hexRing(k: Int32) throws -> Array<H3Index> {
+        let sz: Int
+        if k == 0 {
+            sz = 1
+        } else {
+            sz = 6 * Int(k)
+        }
+        var buf: Array<h3.H3Index> = Array(repeating: 0, count: sz)
+        let res = buf.withUnsafeMutableBufferPointer({ (outPtr) -> Int32 in
+            return h3.hexRing(index, k, outPtr.baseAddress)
+        })
+        guard res != 0 else {
+            throw PentagonEncounteredException()
+        }
+        return rawArrayToClassArray(filterNonZero(buf))
+    }
+    
+    //MARK: kRing
+    public func kRing(k: Int32) -> Array<H3Index> {
+        let sz: Int = Int(maxKringSize(k))
+        var buf: Array<h3.H3Index> = Array(repeating: 0, count: sz)
+        buf.withUnsafeMutableBufferPointer { (ptr) -> Void in
+            h3.kRing(index, k, ptr.baseAddress)
+        }
+        return rawArrayToClassArray(filterNonZero(buf))
+    }
+    
+    public func kRingDistances(k: Int32) -> Array<Array<H3Index>> {
+        let sz: Int = Int(maxKringSize(k))
+        var out: Array<h3.H3Index> = Array(repeating: 0, count: sz)
+        var distances: Array<Int32> = Array(repeating: 0, count: sz)
+        out.withUnsafeMutableBufferPointer { (outPtr) -> Void in
+            distances.withUnsafeMutableBufferPointer({ (distPtr) -> Void in
+                h3.kRingDistances(index, k, outPtr.baseAddress, distPtr.baseAddress)
+            })
+        }
+        
+        var res: Array<Array<H3Index>> = Array()
+        for _ in 0...k {
+            res.append(Array())
+        }
+        for i in 0..<sz {
+            let nextH3 = out[i]
+            if nextH3 != 0 {
+                res[Int(distances[i])].append(H3Index(nextH3))
+            }
+        }
+        
+        return res
+    }
+    
+    //MARK: private
+    private func rawArrayToClassArray(_ list: Array<h3.H3Index>) -> Array<H3Index> {
+        return list.map { (raw) -> H3Index in
+            H3Index(raw)
+        }
+    }
+    
+    private func filterNonZero(_ list: Array<h3.H3Index>) -> Array<h3.H3Index> {
+        return list.filter { (raw) -> Bool in
+            return raw != 0
+        }
     }
 }

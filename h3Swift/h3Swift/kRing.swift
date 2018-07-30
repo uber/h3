@@ -12,13 +12,3 @@ import h3
 public func maxKringSize(k: Int32) -> Int32 {
     return h3.maxKringSize(k)
 }
-
-public extension H3Index {
-    public func kRingDistances(k: Int32, out: inout H3Index, distance: inout Int32) {
-        withUnsafeMutablePointer(to: &out) { (outPtr) -> Void in
-            withUnsafeMutablePointer(to: &distance, { (distancePtr) -> Void in
-                h3.kRingDistances(self, k, outPtr, distancePtr)
-            })
-        }
-    }
-}
