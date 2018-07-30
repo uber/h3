@@ -36,6 +36,7 @@ import api_regions from '../../docs/api/regions.md';
 import api_uniedge from '../../docs/api/uniedge.md';
 
 import community_bindings from '../../docs/community/bindings.md';
+import community_libraries from '../../docs/community/libraries.md';
 
 export default [{
     name: 'Documentation',
@@ -112,7 +113,7 @@ export default [{
                 markdown: api_hierarchy
             },
             {
-                name: 'regions',
+                name: 'Regions',
                 markdown: api_regions
             },
             {
@@ -130,6 +131,10 @@ export default [{
             {
                 name: 'Bindings',
                 markdown: community_bindings
+            },
+            {
+                name: 'Libraries Using H3',
+                markdown: community_libraries
             }
         ]
     }]
