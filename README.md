@@ -26,8 +26,8 @@ Still here? To build the H3 C library, you'll need a C compiler (tested with `gc
 
 * Alpine 
 ```
-# Installing the bare build buid requirements
-apk add cmake make gcc libtool musl-dev g++
+# Installing the bare build requirements
+apk add cmake make gcc libtool musl-dev
 ```
 
 * Debian/Ubuntu
