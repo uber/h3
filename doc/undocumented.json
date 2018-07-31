@@ -1,0 +1,446 @@
+{
+  "warnings": [
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/Exception.swift",
+      "line": 10,
+      "symbol": "PentagonEncounteredException",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/Exception.swift",
+      "line": 11,
+      "symbol": "BadInputToCompact",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/Exception.swift",
+      "line": 12,
+      "symbol": "BadInputToUncompact",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/Exception.swift",
+      "line": 13,
+      "symbol": "ResolutionOutOfRange",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/Aliase.swift",
+      "line": null,
+      "symbol": "GeoBoundary",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/Aliase.swift",
+      "line": null,
+      "symbol": "GeoCoord",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/Aliase.swift",
+      "line": null,
+      "symbol": "GeoCoord",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/Aliase.swift",
+      "line": null,
+      "symbol": "GeoPolygon",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/Aliase.swift",
+      "line": null,
+      "symbol": "GeoPolygon",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/Aliase.swift",
+      "line": null,
+      "symbol": "Geofence",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/Aliase.swift",
+      "line": 12,
+      "symbol": "MAX_CELL_BNDRY_VERTS",
+      "symbol_kind": "source.lang.swift.decl.var.global",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/Aliase.swift",
+      "line": 13,
+      "symbol": "GeoCoord",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/Aliase.swift",
+      "line": 14,
+      "symbol": "GeoBoundary",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/Aliase.swift",
+      "line": 15,
+      "symbol": "Geofence",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/Aliase.swift",
+      "line": 16,
+      "symbol": "GeoPolygon",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/Aliase.swift",
+      "line": 17,
+      "symbol": "GeoMultiPolygon",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/Aliase.swift",
+      "line": 18,
+      "symbol": "LinkedGeoCoord",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/Aliase.swift",
+      "line": 19,
+      "symbol": "LinkedGeoPolygon",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/Aliase.swift",
+      "line": 22,
+      "symbol": "GeoCoord.zero",
+      "symbol_kind": "source.lang.swift.decl.var.static",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/Aliase.swift",
+      "line": 28,
+      "symbol": "GeoBoundary.zero",
+      "symbol_kind": "source.lang.swift.decl.var.static",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/Aliase.swift",
+      "line": 45,
+      "symbol": "Geofence.init(coords:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/Aliase.swift",
+      "line": 51,
+      "symbol": "GeoPolygon.init(coords:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/Aliase.swift",
+      "line": 57,
+      "symbol": "GeoPolygon.init(coords:holes:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/GeoCoord.swift",
+      "line": 13,
+      "symbol": "GeoCoord.from(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.static",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/GeoCoord.swift",
+      "line": 21,
+      "symbol": "GeoCoord.toH3(res:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/GeoPolygon.swift",
+      "line": 13,
+      "symbol": "GeoPolygon.polyfill(res:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/GeoPolygon.swift",
+      "line": 22,
+      "symbol": "GeoPolygon.maxPolyfillSize(res:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/H3Index.swift",
+      "line": 12,
+      "symbol": "H3Index",
+      "symbol_kind": "source.lang.swift.decl.class",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/H3Index.swift",
+      "line": 16,
+      "symbol": "H3Index.init(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/H3Index.swift",
+      "line": 20,
+      "symbol": "H3Index.init(string:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/H3Index.swift",
+      "line": 25,
+      "symbol": "H3Index.resolution",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/H3Index.swift",
+      "line": 29,
+      "symbol": "H3Index.baseCell",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/H3Index.swift",
+      "line": 33,
+      "symbol": "H3Index.toString()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/H3Index.swift",
+      "line": 37,
+      "symbol": "H3Index.isValid",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/H3Index.swift",
+      "line": 41,
+      "symbol": "H3Index.isResClassIII",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/H3Index.swift",
+      "line": 45,
+      "symbol": "H3Index.isPentagon",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/H3Index.swift",
+      "line": 49,
+      "symbol": "H3Index.toParent(parentRes:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/H3Index.swift",
+      "line": 53,
+      "symbol": "H3Index.children(childRes:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/H3Index.swift",
+      "line": 62,
+      "symbol": "H3Index.maxChildrenSize(childRes:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/H3Index.swift",
+      "line": 66,
+      "symbol": "H3Index.isNeighbors(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/H3Index.swift",
+      "line": 70,
+      "symbol": "H3Index.unidirectionalEdge(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/H3Index.swift",
+      "line": 74,
+      "symbol": "H3Index.geoBoundary()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/H3Index.swift",
+      "line": 98,
+      "symbol": "H3Index.unidirectionalEdgeH3Indexes()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/H3Index.swift",
+      "line": 106,
+      "symbol": "H3Index.hexagonUnidirectionalEdges()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/H3Index.swift",
+      "line": 114,
+      "symbol": "H3Index.unidirectionalEdgeBoundary(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/H3Index.swift",
+      "line": 121,
+      "symbol": "H3Index.hexRange(k:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/H3Index.swift",
+      "line": 154,
+      "symbol": "H3Index.hexRing(k:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/H3Index.swift",
+      "line": 172,
+      "symbol": "H3Index.kRing(k:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/H3Index.swift",
+      "line": 181,
+      "symbol": "H3Index.kRingDistances(k:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/LinkedGeoPolygon.swift",
+      "line": 12,
+      "symbol": "destroyLinkedGeoPolygon(polygon:)",
+      "symbol_kind": "source.lang.swift.decl.function.free",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/Util.swift",
+      "line": 12,
+      "symbol": "degsToRads(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.free",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/Util.swift",
+      "line": 16,
+      "symbol": "radsToDegs(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.free",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/Util.swift",
+      "line": 20,
+      "symbol": "DistanceUnit",
+      "symbol_kind": "source.lang.swift.decl.enum",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/Util.swift",
+      "line": 21,
+      "symbol": "DistanceUnit.km",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/Util.swift",
+      "line": 22,
+      "symbol": "DistanceUnit.m",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/Util.swift",
+      "line": 25,
+      "symbol": "hexArea(res:unit:)",
+      "symbol_kind": "source.lang.swift.decl.function.free",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/Util.swift",
+      "line": 34,
+      "symbol": "edgeLength(res:unit:)",
+      "symbol_kind": "source.lang.swift.decl.function.free",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/Util.swift",
+      "line": 43,
+      "symbol": "numHexagons(res:)",
+      "symbol_kind": "source.lang.swift.decl.function.free",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/h3Set.swift",
+      "line": 13,
+      "symbol": "Array.compact()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/h3Set.swift",
+      "line": 28,
+      "symbol": "Array.uncompact(res:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/h3Set.swift",
+      "line": 43,
+      "symbol": "Array.maxUncompactSize(res:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/h3Set.swift",
+      "line": 50,
+      "symbol": "Array.toMultiplePolygon()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/masato/dev/src/github.com/pocket7878/h3-framework/h3Swift/h3Swift/kRing.swift",
+      "line": 12,
+      "symbol": "maxKringSize(k:)",
+      "symbol_kind": "source.lang.swift.decl.function.free",
+      "warning": "undocumented"
+    }
+  ],
+  "source_directory": "/Users/masato/dev/src/github.com/pocket7878/h3-framework"
+}

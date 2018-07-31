@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>H3Index Class Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Class/H3Index" class="dashAnchor"></a>
+    <a title="H3Index Class Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html"> Docs</a> (4% documented)</p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html"> Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        H3Index Class Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/H3Index.html">H3Index</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Global Variables.html">Global Variables</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Global Variables.html#/s:7h3Swift20MAX_CELL_BNDRY_VERTSSivp">MAX_CELL_BNDRY_VERTS</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Enums.html">Enumerations</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Enums/DistanceUnit.html">DistanceUnit</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Extensions.html">Extensions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Extensions/Array.html">Array</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/GeoBoundary.html">GeoBoundary</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/GeoCoord.html">GeoCoord</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/GeoPolygon.html">GeoPolygon</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/Geofence.html">Geofence</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Functions.html">Functions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:7h3Swift10degsToRadsS2dF">degsToRads(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:7h3Swift23destroyLinkedGeoPolygonySC0deF0Vz7polygon_tF">destroyLinkedGeoPolygon(polygon:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:7h3Swift10edgeLengthSds5Int32V3res_AA12DistanceUnitO4unittF">edgeLength(res:unit:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:7h3Swift7hexAreaSds5Int32V3res_AA12DistanceUnitO4unittF">hexArea(res:unit:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:7h3Swift12maxKringSizes5Int32VAD1k_tF">maxKringSize(k:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:7h3Swift11numHexagonss5Int64Vs5Int32V3res_tF">numHexagons(res:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:7h3Swift10radsToDegsS2dF">radsToDegs(_:)</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Structs.html">Structures</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Structs.html#/s:7h3Swift17BadInputToCompactV">BadInputToCompact</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs.html#/s:7h3Swift19BadInputToUncompactV">BadInputToUncompact</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs.html#/s:7h3Swift28PentagonEncounteredExceptionV">PentagonEncounteredException</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs.html#/s:7h3Swift20ResolutionOutOfRangeV">ResolutionOutOfRange</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Typealiases.html">Type Aliases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:7h3Swift11GeoBoundarya">GeoBoundary</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:7h3Swift8GeoCoorda">GeoCoord</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:7h3Swift15GeoMultiPolygona">GeoMultiPolygon</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:7h3Swift10GeoPolygona">GeoPolygon</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:7h3Swift8Geofencea">Geofence</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:7h3Swift14LinkedGeoCoorda">LinkedGeoCoord</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:7h3Swift16LinkedGeoPolygona">LinkedGeoPolygon</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>H3Index</h1>
+              <div class="declaration">
+                <div class="language">
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">H3Index</span> <span class="p">:</span> <span class="kt">Equatable</span><span class="p">,</span> <span class="kt">Hashable</span></code></pre>
+
+                </div>
+              </div>
+            <p>Undocumented</p>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Constructor"></a>
+                <a name="//apple_ref/swift/Section/Constructor" class="dashAnchor"></a>
+                <a href="#/Constructor">
+                  <h3 class="section-name">Constructor</h3>
+                </a>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7h3Swift7H3IndexCACs6UInt64Vcfc"></a>
+                    <a name="//apple_ref/swift/Method/init(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7h3Swift7H3IndexCACs6UInt64Vcfc">init(_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">required</span> <span class="nf">init</span><span class="p">(</span><span class="n">_</span> <span class="nv">idx</span><span class="p">:</span> <span class="kt">UInt64</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7h3Swift7H3IndexCACSS6string_tcfc"></a>
+                    <a name="//apple_ref/swift/Method/init(string:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7h3Swift7H3IndexCACSS6string_tcfc">init(string:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="n">convenience</span> <span class="nf">init</span><span class="p">(</span><span class="nv">string</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7h3Swift7H3IndexC10resolutions5Int32Vvp"></a>
+                    <a name="//apple_ref/swift/Property/resolution" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7h3Swift7H3IndexC10resolutions5Int32Vvp">resolution</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">resolution</span><span class="p">:</span> <span class="kt">Int32</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7h3Swift7H3IndexC8baseCells5Int32Vvp"></a>
+                    <a name="//apple_ref/swift/Property/baseCell" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7h3Swift7H3IndexC8baseCells5Int32Vvp">baseCell</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">baseCell</span><span class="p">:</span> <span class="kt">Int32</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7h3Swift7H3IndexC8toStringSSyF"></a>
+                    <a name="//apple_ref/swift/Method/toString()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7h3Swift7H3IndexC8toStringSSyF">toString()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">toString</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">String</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7h3Swift7H3IndexC7isValidSbvp"></a>
+                    <a name="//apple_ref/swift/Property/isValid" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7h3Swift7H3IndexC7isValidSbvp">isValid</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">isValid</span><span class="p">:</span> <span class="kt">Bool</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7h3Swift7H3IndexC13isResClassIIISbvp"></a>
+                    <a name="//apple_ref/swift/Property/isResClassIII" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7h3Swift7H3IndexC13isResClassIIISbvp">isResClassIII</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">isResClassIII</span><span class="p">:</span> <span class="kt">Bool</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7h3Swift7H3IndexC10isPentagonSbvp"></a>
+                    <a name="//apple_ref/swift/Property/isPentagon" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7h3Swift7H3IndexC10isPentagonSbvp">isPentagon</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">isPentagon</span><span class="p">:</span> <span class="kt">Bool</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7h3Swift7H3IndexC8toParentACs5Int32V9parentRes_tF"></a>
+                    <a name="//apple_ref/swift/Method/toParent(parentRes:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7h3Swift7H3IndexC8toParentACs5Int32V9parentRes_tF">toParent(parentRes:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">toParent</span><span class="p">(</span><span class="nv">parentRes</span><span class="p">:</span> <span class="kt">Int32</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">H3Index</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7h3Swift7H3IndexC8childrenSayACGs5Int32V8childRes_tF"></a>
+                    <a name="//apple_ref/swift/Method/children(childRes:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7h3Swift7H3IndexC8childrenSayACGs5Int32V8childRes_tF">children(childRes:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">children</span><span class="p">(</span><span class="nv">childRes</span><span class="p">:</span> <span class="kt">Int32</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Array</span><span class="o">&lt;</span><span class="kt">H3Index</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7h3Swift7H3IndexC15maxChildrenSizes5Int32VAF8childRes_tF"></a>
+                    <a name="//apple_ref/swift/Method/maxChildrenSize(childRes:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7h3Swift7H3IndexC15maxChildrenSizes5Int32VAF8childRes_tF">maxChildrenSize(childRes:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">maxChildrenSize</span><span class="p">(</span><span class="nv">childRes</span><span class="p">:</span> <span class="kt">Int32</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Int32</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7h3Swift7H3IndexC11isNeighborsSbACF"></a>
+                    <a name="//apple_ref/swift/Method/isNeighbors(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7h3Swift7H3IndexC11isNeighborsSbACF">isNeighbors(_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">isNeighbors</span><span class="p">(</span><span class="n">_</span> <span class="nv">destination</span><span class="p">:</span> <span class="kt">H3Index</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7h3Swift7H3IndexC18unidirectionalEdgeA2CF"></a>
+                    <a name="//apple_ref/swift/Method/unidirectionalEdge(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7h3Swift7H3IndexC18unidirectionalEdgeA2CF">unidirectionalEdge(_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">unidirectionalEdge</span><span class="p">(</span><span class="n">_</span> <span class="nv">destination</span><span class="p">:</span> <span class="kt">H3Index</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">H3Index</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7h3Swift7H3IndexC11geoBoundarySaySC8GeoCoordVGyF"></a>
+                    <a name="//apple_ref/swift/Method/geoBoundary()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7h3Swift7H3IndexC11geoBoundarySaySC8GeoCoordVGyF">geoBoundary()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">geoBoundary</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">Array</span><span class="o">&lt;</span><span class="kt"><a href="../Typealiases.html#/s:7h3Swift8GeoCoorda">GeoCoord</a></span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/UnidirectionalEdge"></a>
+                <a name="//apple_ref/swift/Section/UnidirectionalEdge" class="dashAnchor"></a>
+                <a href="#/UnidirectionalEdge">
+                  <h3 class="section-name">UnidirectionalEdge</h3>
+                </a>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7h3Swift7H3IndexC018unidirectionalEdgeC7IndexesSayACGyF"></a>
+                    <a name="//apple_ref/swift/Method/unidirectionalEdgeH3Indexes()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7h3Swift7H3IndexC018unidirectionalEdgeC7IndexesSayACGyF">unidirectionalEdgeH3Indexes()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">unidirectionalEdgeH3Indexes</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">Array</span><span class="o">&lt;</span><span class="kt">H3Index</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7h3Swift7H3IndexC26hexagonUnidirectionalEdgesSayACGyF"></a>
+                    <a name="//apple_ref/swift/Method/hexagonUnidirectionalEdges()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7h3Swift7H3IndexC26hexagonUnidirectionalEdgesSayACGyF">hexagonUnidirectionalEdges()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">hexagonUnidirectionalEdges</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">Array</span><span class="o">&lt;</span><span class="kt">H3Index</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7h3Swift7H3IndexC26unidirectionalEdgeBoundaryySC03GeoG0VzF"></a>
+                    <a name="//apple_ref/swift/Method/unidirectionalEdgeBoundary(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7h3Swift7H3IndexC26unidirectionalEdgeBoundaryySC03GeoG0VzF">unidirectionalEdgeBoundary(_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">unidirectionalEdgeBoundary</span><span class="p">(</span><span class="n">_</span> <span class="nv">gb</span><span class="p">:</span> <span class="k">inout</span> <span class="kt"><a href="../Typealiases.html#/s:7h3Swift11GeoBoundarya">GeoBoundary</a></span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/hexRange"></a>
+                <a name="//apple_ref/swift/Section/hexRange" class="dashAnchor"></a>
+                <a href="#/hexRange">
+                  <h3 class="section-name">hexRange</h3>
+                </a>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7h3Swift7H3IndexC8hexRangeSaySayACGGs5Int32V1k_tKF"></a>
+                    <a name="//apple_ref/swift/Method/hexRange(k:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7h3Swift7H3IndexC8hexRangeSaySayACGGs5Int32V1k_tKF">hexRange(k:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">hexRange</span><span class="p">(</span><span class="nv">k</span><span class="p">:</span> <span class="kt">Int32</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">Array</span><span class="o">&lt;</span><span class="kt">Array</span><span class="o">&lt;</span><span class="kt">H3Index</span><span class="o">&gt;&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/hexRing"></a>
+                <a name="//apple_ref/swift/Section/hexRing" class="dashAnchor"></a>
+                <a href="#/hexRing">
+                  <h3 class="section-name">hexRing</h3>
+                </a>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7h3Swift7H3IndexC7hexRingSayACGs5Int32V1k_tKF"></a>
+                    <a name="//apple_ref/swift/Method/hexRing(k:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7h3Swift7H3IndexC7hexRingSayACGs5Int32V1k_tKF">hexRing(k:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">hexRing</span><span class="p">(</span><span class="nv">k</span><span class="p">:</span> <span class="kt">Int32</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">Array</span><span class="o">&lt;</span><span class="kt">H3Index</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/kRing"></a>
+                <a name="//apple_ref/swift/Section/kRing" class="dashAnchor"></a>
+                <a href="#/kRing">
+                  <h3 class="section-name">kRing</h3>
+                </a>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7h3Swift7H3IndexC5kRingSayACGs5Int32V1k_tF"></a>
+                    <a name="//apple_ref/swift/Method/kRing(k:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7h3Swift7H3IndexC5kRingSayACGs5Int32V1k_tF">kRing(k:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">kRing</span><span class="p">(</span><span class="nv">k</span><span class="p">:</span> <span class="kt">Int32</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Array</span><span class="o">&lt;</span><span class="kt">H3Index</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7h3Swift7H3IndexC14kRingDistancesSaySayACGGs5Int32V1k_tF"></a>
+                    <a name="//apple_ref/swift/Method/kRingDistances(k:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7h3Swift7H3IndexC14kRingDistancesSaySayACGGs5Int32V1k_tF">kRingDistances(k:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">kRingDistances</span><span class="p">(</span><span class="nv">k</span><span class="p">:</span> <span class="kt">Int32</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Array</span><span class="o">&lt;</span><span class="kt">Array</span><span class="o">&lt;</span><span class="kt">H3Index</span><span class="o">&gt;&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Equatable"></a>
+                <a name="//apple_ref/swift/Section/Equatable" class="dashAnchor"></a>
+                <a href="#/Equatable">
+                  <h3 class="section-name">Equatable</h3>
+                </a>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:s9EquatableP2eeoiSbx_xtFZ"></a>
+                    <a name="//apple_ref/swift/Method/==(_:_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:s9EquatableP2eeoiSbx_xtFZ">==(_:_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="o">==</span> <span class="p">(</span><span class="nv">lhs</span><span class="p">:</span> <span class="kt">H3Index</span><span class="p">,</span> <span class="nv">rhs</span><span class="p">:</span> <span class="kt">H3Index</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Hashable"></a>
+                <a name="//apple_ref/swift/Section/Hashable" class="dashAnchor"></a>
+                <a href="#/Hashable">
+                  <h3 class="section-name">Hashable</h3>
+                </a>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:s8HashableP9hashValueSivp"></a>
+                    <a name="//apple_ref/swift/Property/hashValue" class="dashAnchor"></a>
+                    <a class="token" href="#/s:s8HashableP9hashValueSivp">hashValue</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">hashValue</span><span class="p">:</span> <span class="kt">Int</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2018 <a class="link" href="https://github.com/pocket7878" target="_blank" rel="external">Pocket7878</a>. All rights reserved. (Last updated: 2018-07-31)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>
