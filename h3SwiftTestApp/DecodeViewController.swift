@@ -76,25 +76,9 @@ extension DecodeViewController: UITableViewDataSource {
                 cell.detailTextLabel?.text = "\(radsToDegs(coord.lon))"
             }
         case 1:
-            var buf: GeoBoundary = GeoBoundary.zero
-            idx.geoBoundary(gb: &buf)
+            let buf = idx.geoBoundary()
             cell.textLabel?.text = "\(indexPath.row)"
-            switch(indexPath.row) {
-            case 0:
-                cell.detailTextLabel?.text = "\(geoCoordToString(buf.verts.0))"
-            case 1:
-                cell.detailTextLabel?.text = "\(geoCoordToString(buf.verts.1))"
-            case 2:
-                cell.detailTextLabel?.text = "\(geoCoordToString(buf.verts.2))"
-            case 3:
-                cell.detailTextLabel?.text = "\(geoCoordToString(buf.verts.3))"
-            case 4:
-                cell.detailTextLabel?.text = "\(geoCoordToString(buf.verts.4))"
-            case 5:
-                cell.detailTextLabel?.text = "\(geoCoordToString(buf.verts.5))"
-            default:
-                break
-            }
+            cell.detailTextLabel?.text = "\(geoCoordToString(buf[indexPath.row]))"
         default:
             break
         }

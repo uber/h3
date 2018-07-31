@@ -17,20 +17,27 @@ public func radsToDegs(_ double: Double) -> Double {
     return h3.radsToDegs(double)
 }
 
-public func hexAreaKm2(res: Int32) -> Double {
-    return h3.hexAreaKm2(res)
+public enum DistanceUnit {
+    case km
+    case m
 }
 
-public func hexAreaM2(res: Int32) -> Double {
-    return h3.hexAreaM2(res)
+public func hexArea(res: Int32, unit: DistanceUnit) -> Double {
+    switch(unit) {
+    case .km:
+        return h3.hexAreaKm2(res)
+    case .m:
+        return h3.hexAreaM2(res)
+    }
 }
 
-public func edgeLengthKm(res: Int32) -> Double {
-    return h3.edgeLengthKm(res)
-}
-
-public func edgeLengthM(res: Int32) -> Double {
-    return h3.edgeLengthM(res)
+public func edgeLength(res: Int32, unit: DistanceUnit) -> Double {
+    switch(unit) {
+    case .km:
+        return h3.edgeLengthKm(res)
+    case .m:
+        return h3.edgeLengthM(res)
+    }
 }
 
 public func numHexagons(res: Int32) -> Int64 {

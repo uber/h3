@@ -2029,11 +2029,16 @@
 		6916348E210B5AA1004AB0ED /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6916348D210B5AA1004AB0ED /* MapKit.framework */; };
 		69163490210B5AAD004AB0ED /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6916348F210B5AAC004AB0ED /* CoreLocation.framework */; };
 		69547723350A473FB817A033 /* test.c in Sources */ = {isa = PBXBuildFile; fileRef = D72339533413433AB7048C79 /* test.c */; };
+		69915B302110075600F28009 /* PolyfillViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69915B2F2110075600F28009 /* PolyfillViewController.swift */; };
 		69DE4501210C34F600E06199 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69DE4500210C34F600E06199 /* MapViewController.swift */; };
 		69DE4509210C35BD00E06199 /* MainTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69DE4508210C35BD00E06199 /* MainTableViewController.swift */; };
 		69DE450B210C4D0C00E06199 /* DecodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69DE450A210C4D0C00E06199 /* DecodeViewController.swift */; };
 		69DE450C210C5E1F00E06199 /* h3.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 926FC3C809E840B6A01498C5 /* h3.framework */; };
 		69DE450E210EB68300E06199 /* Exception.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69DE450D210EB68300E06199 /* Exception.swift */; };
+		69DE4510210ED94900E06199 /* DrawHexagonViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69DE450F210ED94900E06199 /* DrawHexagonViewController.swift */; };
+		69DE4517210EE5F200E06199 /* h3.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 926FC3C809E840B6A01498C5 /* h3.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		69DE451A210EE5F200E06199 /* h3Swift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69163436210B4DE0004AB0ED /* h3Swift.framework */; };
+		69DE451B210EE5F200E06199 /* h3Swift.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 69163436210B4DE0004AB0ED /* h3Swift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		69E1D9A4E50949B48DFCFEFD /* testPolyfill.c in Sources */ = {isa = PBXBuildFile; fileRef = 6D7D5533D80440D386D12025 /* testPolyfill.c */; };
 		6A153D894AA547A284136ACA /* test.c in Sources */ = {isa = PBXBuildFile; fileRef = E5BD899C2CAF4937982D757D /* test.c */; };
 		6A76423AF90F4F6CB26E5427 /* utility.c in Sources */ = {isa = PBXBuildFile; fileRef = C5AC150A47CC47968369666E /* utility.c */; };
@@ -3938,6 +3943,20 @@
 			proxyType = 1;
 			remoteGlobalIDString = 6916346B210B4F07004AB0ED;
 			remoteInfo = "h3Swift-Universal";
+		};
+		69DE4518210EE5F200E06199 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DAE7D82B486246948735DC5A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A73B5AB57F9249DE9682DEA6;
+			remoteInfo = h3;
+		};
+		69DE451C210EE5F200E06199 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DAE7D82B486246948735DC5A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 69163435210B4DE0004AB0ED;
+			remoteInfo = h3Swift;
 		};
 		6A00AA936F6F403DBCEE0BE3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -6314,6 +6333,21 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		69DE4514210EE43000E06199 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				69DE4517210EE5F200E06199 /* h3.framework in Embed Frameworks */,
+				69DE451B210EE5F200E06199 /* h3Swift.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		006F776C8F884E8484342EF4 /* kml.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = kml.c; path = src/apps/applib/lib/kml.c; sourceTree = SOURCE_ROOT; };
 		00F2EBB9617545C8A3171140 /* kml.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = kml.c; path = src/apps/applib/lib/kml.c; sourceTree = SOURCE_ROOT; };
@@ -6583,10 +6617,12 @@
 		69163484210B5339004AB0ED /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6916348D210B5AA1004AB0ED /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		6916348F210B5AAC004AB0ED /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		69915B2F2110075600F28009 /* PolyfillViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolyfillViewController.swift; sourceTree = "<group>"; };
 		69DE4500210C34F600E06199 /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		69DE4508210C35BD00E06199 /* MainTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTableViewController.swift; sourceTree = "<group>"; };
 		69DE450A210C4D0C00E06199 /* DecodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecodeViewController.swift; sourceTree = "<group>"; };
 		69DE450D210EB68300E06199 /* Exception.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exception.swift; sourceTree = "<group>"; };
+		69DE450F210ED94900E06199 /* DrawHexagonViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawHexagonViewController.swift; sourceTree = "<group>"; };
 		69F9D18084134D83AB843898 /* benchmark.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = benchmark.h; path = src/apps/applib/include/benchmark.h; sourceTree = SOURCE_ROOT; };
 		6AAB6A737117488F96CC35C1 /* kml.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = kml.h; path = src/apps/applib/include/kml.h; sourceTree = SOURCE_ROOT; };
 		6B0C49A9B0D04C2186201090 /* utility.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = utility.c; path = src/apps/applib/lib/utility.c; sourceTree = SOURCE_ROOT; };
@@ -6922,6 +6958,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				69DE451A210EE5F200E06199 /* h3Swift.framework in Frameworks */,
 				69DE450C210C5E1F00E06199 /* h3.framework in Frameworks */,
 				69163490210B5AAD004AB0ED /* CoreLocation.framework in Frameworks */,
 				6916348E210B5AA1004AB0ED /* MapKit.framework in Frameworks */,
@@ -8476,7 +8513,9 @@
 				69163478210B5339004AB0ED /* AppDelegate.swift */,
 				69DE4508210C35BD00E06199 /* MainTableViewController.swift */,
 				69DE4500210C34F600E06199 /* MapViewController.swift */,
+				69DE450F210ED94900E06199 /* DrawHexagonViewController.swift */,
 				69DE450A210C4D0C00E06199 /* DecodeViewController.swift */,
+				69915B2F2110075600F28009 /* PolyfillViewController.swift */,
 				6916347C210B5339004AB0ED /* Main.storyboard */,
 				6916347F210B5339004AB0ED /* Assets.xcassets */,
 				69163481210B5339004AB0ED /* LaunchScreen.storyboard */,
@@ -10865,11 +10904,14 @@
 				69163472210B5338004AB0ED /* Sources */,
 				69163473210B5338004AB0ED /* Frameworks */,
 				69163474210B5338004AB0ED /* Resources */,
+				69DE4514210EE43000E06199 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				6916348B210B549A004AB0ED /* PBXTargetDependency */,
+				69DE4519210EE5F200E06199 /* PBXTargetDependency */,
+				69DE451D210EE5F200E06199 /* PBXTargetDependency */,
 			);
 			name = h3SwiftTestApp;
 			productName = h3SwiftTestApp;
@@ -11363,8 +11405,11 @@
 					};
 					69163475210B5338004AB0ED = {
 						CreatedOnToolsVersion = 9.4.1;
-						DevelopmentTeam = 52RZX7B7NR;
+						DevelopmentTeam = NNBQN2265J;
 						ProvisioningStyle = Automatic;
+					};
+					A73B5AB57F9249DE9682DEA6 = {
+						DevelopmentTeam = 52RZX7B7NR;
 					};
 				};
 			};
@@ -13224,7 +13269,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				69DE450B210C4D0C00E06199 /* DecodeViewController.swift in Sources */,
+				69915B302110075600F28009 /* PolyfillViewController.swift in Sources */,
 				69DE4501210C34F600E06199 /* MapViewController.swift in Sources */,
+				69DE4510210ED94900E06199 /* DrawHexagonViewController.swift in Sources */,
 				69DE4509210C35BD00E06199 /* MainTableViewController.swift in Sources */,
 				69163479210B5339004AB0ED /* AppDelegate.swift in Sources */,
 			);
@@ -14718,6 +14765,16 @@
 			isa = PBXTargetDependency;
 			target = CAFCBF68B187478DB5EB7848 /* kRing */;
 			targetProxy = E47A357FBA724307A0C0F19B /* PBXContainerItemProxy */;
+		};
+		69DE4519210EE5F200E06199 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A73B5AB57F9249DE9682DEA6 /* h3 */;
+			targetProxy = 69DE4518210EE5F200E06199 /* PBXContainerItemProxy */;
+		};
+		69DE451D210EE5F200E06199 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 69163435210B4DE0004AB0ED /* h3Swift */;
+			targetProxy = 69DE451C210EE5F200E06199 /* PBXContainerItemProxy */;
 		};
 		6A60453783434DE59CC520C6 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -18247,9 +18304,11 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 52RZX7B7NR;
 				DYLIB_COMPATIBILITY_VERSION = "";
 				DYLIB_CURRENT_VERSION = "";
 				EXECUTABLE_PREFIX = "";
@@ -18290,6 +18349,7 @@
 					/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.4.sdk/usr/lib/libm.tbd,
 				);
 				OTHER_REZFLAGS = "";
+				PRODUCT_BUNDLE_IDENTIFIER = jp.pocket7878.h3;
 				PRODUCT_NAME = h3;
 				SECTORDER_FLAGS = "";
 				SYMROOT = "/Users/masato/dev/src/github.com/pocket7878/h3-framework/build";
@@ -19639,9 +19699,11 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 52RZX7B7NR;
 				DYLIB_COMPATIBILITY_VERSION = "";
 				DYLIB_CURRENT_VERSION = "";
 				EXECUTABLE_PREFIX = "";
@@ -19682,6 +19744,7 @@
 					/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.4.sdk/usr/lib/libm.tbd,
 				);
 				OTHER_REZFLAGS = "";
+				PRODUCT_BUNDLE_IDENTIFIER = jp.pocket7878.h3;
 				PRODUCT_NAME = h3;
 				SECTORDER_FLAGS = "";
 				SYMROOT = "/Users/masato/dev/src/github.com/pocket7878/h3-framework/build";
@@ -25216,9 +25279,11 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 52RZX7B7NR;
 				DYLIB_COMPATIBILITY_VERSION = "";
 				DYLIB_CURRENT_VERSION = "";
 				EXECUTABLE_PREFIX = "";
@@ -25259,6 +25324,7 @@
 					/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.4.sdk/usr/lib/libm.tbd,
 				);
 				OTHER_REZFLAGS = "";
+				PRODUCT_BUNDLE_IDENTIFIER = jp.pocket7878.h3;
 				PRODUCT_NAME = h3;
 				SECTORDER_FLAGS = "";
 				SYMROOT = "/Users/masato/dev/src/github.com/pocket7878/h3-framework/build";
@@ -26202,6 +26268,7 @@
 		69163486210B5339004AB0ED /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -26236,9 +26303,13 @@
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = 52RZX7B7NR;
+				DEVELOPMENT_TEAM = NNBQN2265J;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/h3Swift/Output/h3Swift-Debug-iphoneuniversal",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -26271,6 +26342,7 @@
 		69163487210B5339004AB0ED /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -26305,9 +26377,13 @@
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = 52RZX7B7NR;
+				DEVELOPMENT_TEAM = NNBQN2265J;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/h3Swift/Output/h3Swift-Debug-iphoneuniversal",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -26333,6 +26409,7 @@
 		69163488210B5339004AB0ED /* MinSizeRel */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -26367,9 +26444,13 @@
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = 52RZX7B7NR;
+				DEVELOPMENT_TEAM = NNBQN2265J;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/h3Swift/Output/h3Swift-Debug-iphoneuniversal",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -26395,6 +26476,7 @@
 		69163489210B5339004AB0ED /* RelWithDebInfo */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -26429,9 +26511,13 @@
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = 52RZX7B7NR;
+				DEVELOPMENT_TEAM = NNBQN2265J;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/h3Swift/Output/h3Swift-Debug-iphoneuniversal",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -31529,9 +31615,11 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 52RZX7B7NR;
 				DYLIB_COMPATIBILITY_VERSION = "";
 				DYLIB_CURRENT_VERSION = "";
 				EXECUTABLE_PREFIX = "";
@@ -31575,6 +31663,7 @@
 					/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.4.sdk/usr/lib/libm.tbd,
 				);
 				OTHER_REZFLAGS = "";
+				PRODUCT_BUNDLE_IDENTIFIER = jp.pocket7878.h3;
 				PRODUCT_NAME = h3;
 				SECTORDER_FLAGS = "";
 				SYMROOT = "/Users/masato/dev/src/github.com/pocket7878/h3-framework/build";

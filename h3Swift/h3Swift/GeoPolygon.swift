@@ -9,8 +9,6 @@
 import Foundation
 import h3
 
-
-
 public extension GeoPolygon {
     public mutating func polyfill(res: Int32) -> Array<H3Index> {
         let sz = Int(maxPolyfillSize(res: res))

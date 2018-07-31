@@ -33,7 +33,7 @@ class MainTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return 2
+        return 4
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -45,6 +45,10 @@ class MainTableViewController: UITableViewController {
                 cell.textLabel?.text = "Map"
             case 1:
                 cell.textLabel?.text = "Decode"
+            case 2:
+                cell.textLabel?.text = "Draw Hexagon"
+            case 3:
+                cell.textLabel?.text = "Polyfill"
             default:
                 break
             }
@@ -62,6 +66,10 @@ class MainTableViewController: UITableViewController {
                 performSegue(withIdentifier: "showMapView", sender: self)
             case 1:
                 performSegue(withIdentifier: "showDecodeView", sender: self)
+            case 2:
+                performSegue(withIdentifier: "showDrawHexagonView", sender: self)
+            case 3:
+                performSegue(withIdentifier: "showPolyfillView", sender: self)
             default:
                 break
             }

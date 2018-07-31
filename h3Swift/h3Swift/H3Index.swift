@@ -9,7 +9,7 @@
 import Foundation
 import h3
 
-public class H3Index {
+public class H3Index: Equatable, Hashable {
     let index: h3.H3Index
     
     //MARK: Constructor
@@ -71,10 +71,14 @@ public class H3Index {
         return H3Index(h3.getH3UnidirectionalEdge(index, destination.index))
     }
     
-    public func geoBoundary(gb: inout GeoBoundary) {
+    public func geoBoundary() -> Array<GeoCoord> {
+        var gb: GeoBoundary = GeoBoundary.zero
+        var res: Array<GeoCoord> = Array()
         withUnsafeMutablePointer(to: &gb) { (ptr) -> Void in
             h3.h3ToGeoBoundary(index, ptr)
         }
+        let coords: [GeoCoord] = Mirror(reflecting: gb.verts).children.map { $0.value as! GeoCoord }
+        return coords[0..<Int(gb.numVerts)].map{$0}
     }
     
     
@@ -209,5 +213,15 @@ public class H3Index {
         return list.filter { (raw) -> Bool in
             return raw != 0
         }
+    }
+    
+    //MARK: Equatable
+    public static func ==(lhs: H3Index, rhs: H3Index) -> Bool {
+        return lhs.index == rhs.index
+    }
+    
+    //MARK: Hashable
+    public var hashValue: Int {
+        return self.index.hashValue
     }
 }

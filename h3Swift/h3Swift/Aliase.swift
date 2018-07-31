@@ -9,6 +9,7 @@
 import Foundation
 import h3
 
+public let MAX_CELL_BNDRY_VERTS = 10
 public typealias GeoCoord = h3.GeoCoord
 public typealias GeoBoundary = h3.GeoBoundary
 public typealias Geofence = h3.Geofence
@@ -37,5 +38,24 @@ public extension GeoBoundary {
             GeoCoord.zero,
             GeoCoord.zero
         ))
+    }
+}
+
+public extension Geofence {
+    init(coords: inout [GeoCoord]) {
+        self.init(numVerts: Int32(coords.count), verts: &coords)
+    }
+}
+
+public extension GeoPolygon {
+    init(coords: inout [GeoCoord]) {
+        let fence = Geofence(coords: &coords)
+        var emptyArray: [Geofence] = []
+        self.init(geofence: fence, numHoles: 0, holes: &emptyArray)
+    }
+    
+    init(coords: inout [GeoCoord], holes: inout [Geofence]) {
+        let edge = Geofence(coords: &coords)
+        self.init(geofence: edge, numHoles: Int32(holes.count), holes: &holes)
     }
 }
