@@ -15,7 +15,12 @@ As a C library, bindings can be made to call H3 functions from different program
 - [uber/h3-js](https://github.com/uber/h3-js)
 
 ## OCaml
+
 - [travisbrady/ocaml-h3](https://github.com/travisbrady/ocaml-h3)
+
+## Python
+
+- [uber/h3-py](https://github.com/uber/h3-py)
 
 ## R
 

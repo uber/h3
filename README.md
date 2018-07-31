@@ -14,7 +14,7 @@ Documentation is available at [https://uber.github.io/h3/](https://uber.github.i
 
 ## Installing
 
-We recommend using prebuilt bindings if they are available for your programming language. Bindings for [Java](https://github.com/uber/h3-java), [JavaScript](https://github.com/uber/h3-js), and [others](https://uber.github.io/h3/#/documentation/community/bindings) are available.
+We recommend using prebuilt bindings if they are available for your programming language. Bindings for [Java](https://github.com/uber/h3-java), [JavaScript](https://github.com/uber/h3-js), [Python](https://github.com/uber/h3-py), and [others](https://uber.github.io/h3/#/documentation/community/bindings) are available.
 
 If no bindings are available, you can only install H3 by building from source.
 
