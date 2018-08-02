@@ -25,7 +25,25 @@
  */
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 
-// Internal functions
+/**
+ * MIN returns the minimum of two values.
+ */
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
+
+/**
+ * CLAMP returns the value closest to x within the range bounded by
+ * [a, b].
+ */
+#define CLAMP(x, a, b) (((x) > (b)) ? b : MAX(x, a))
+
+/**
+ * @internal
+ */
 int _ipow(int base, int exp);
+
+/**
+ * @internal
+ */
+void _sincos(double degree, double* sin, double* cos);
 
 #endif

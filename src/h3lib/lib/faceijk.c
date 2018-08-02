@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 Uber Technologies, Inc.
+ * Copyright 2016-2018 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@
 #include "coordijk.h"
 #include "geoCoord.h"
 #include "h3Index.h"
+#include "mathExtensions.h"
 #include "vec3d.h"
 
 /** square root of 7 */
@@ -425,8 +426,11 @@ void _geoToHex2d(const GeoCoord* g, int res, int* face, Vec2d* v) {
     // we now have (r, theta) in hex2d with theta ccw from x-axes
 
     // convert to local x,y
-    v->x = r * cos(theta);
-    v->y = r * sin(theta);
+    double sinTheta;
+    double cosTheta;
+    _sincos(theta, &sinTheta, &cosTheta);
+    v->x = r * cosTheta;
+    v->y = r * sinTheta;
 }
 
 /**

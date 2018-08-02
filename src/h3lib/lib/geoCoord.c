@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 Uber Technologies, Inc.
+ * Copyright 2016-2018 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@
 #include <stdbool.h>
 #include "constants.h"
 #include "h3api.h"
+#include "mathExtensions.h"
 
 /**
  * Normalizes radians to a value between 0.0 and two PI.
@@ -151,13 +152,19 @@ double _geoDistRads(const GeoCoord* p1, const GeoCoord* p2) {
         bigC = fabs(lon2 - lon1);
     }
 
-    double b = M_PI_2 - p1->lat;
-    double a = M_PI_2 - p2->lat;
-
     // use law of cosines to find c
-    double cosc = cos(a) * cos(b) + sin(a) * sin(b) * cos(bigC);
-    if (cosc > 1.0L) cosc = 1.0L;
-    if (cosc < -1.0L) cosc = -1.0L;
+    const double b = M_PI_2 - p1->lat;
+    const double a = M_PI_2 - p2->lat;
+    double sina;
+    double cosa;
+    _sincos(a, &sina, &cosa);
+    double sinb;
+    double cosb;
+    _sincos(b, &sinb, &cosb);
+    double sinBigC;
+    double cosBigC;
+    _sincos(bigC, &sinBigC, &cosBigC);
+    double cosc = CLAMP(cosa * cosb + sina * sinb * cosBigC, -1, 1);
 
     return acos(cosc);
 }
