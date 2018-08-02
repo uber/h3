@@ -61,7 +61,7 @@ void h3Distance_neighbors_assertions(H3Index h3) {
     t_assert(h3ToIjk(h3, h3, &origin) == 0, "got ijk for origin");
 
     for (int d = 1; d < 7; d++) {
-        if (d == 1 && H3_EXPORT(h3IsPentagon)(h3)) {
+        if (d == 1 && h3IsPentagon(h3)) {
             continue;
         }
 
