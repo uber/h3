@@ -131,9 +131,6 @@ double constrainLng(double lng) {
     return lng;
 }
 
-#define CLAMP(x, lower, upper) \
-    ((x < lower) ? lower : ((x > upper) ? upper : lower))
-
 /**
  * Find the great circle distance in radians between two spherical coordinates.
  *
