@@ -25,7 +25,14 @@
  */
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 
-// Internal functions
+/**
+ * @internal
+ */
 int _ipow(int base, int exp);
+
+/**
+ * @internal
+ */
+void _sincos(double degree, double* sin, double* cos);
 
 #endif

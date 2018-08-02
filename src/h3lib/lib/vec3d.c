@@ -18,7 +18,10 @@
  */
 
 #include "vec3d.h"
+
 #include <math.h>
+
+#include "mathExtensions.h"
 
 /**
  * Square of a number
@@ -47,9 +50,13 @@ double _pointSquareDist(const Vec3d* v1, const Vec3d* v2) {
  * @param v The 3D coordinate of the point.
  */
 void _geoToVec3d(const GeoCoord* geo, Vec3d* v) {
-    double r = cos(geo->lat);
+    double r;
+    double x;
+    double y;
 
-    v->z = sin(geo->lat);
-    v->x = cos(geo->lon) * r;
-    v->y = sin(geo->lon) * r;
+    _sincos(geo->lat, &v->z, &r);
+    _sincos(geo->lon, &y, &x);
+
+    v->x = x * r;
+    v->y = y * r;
 }
