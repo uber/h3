@@ -7,7 +7,7 @@ The public API of this library consists of the functions declared in file
 
 ## [Unreleased]
 
-## [3.1.0] - 2018-08-02
+## [3.1.0] - 2018-08-03
 ### Added
 - `h3Distance` function for determining the grid distance between H3 indexes (#83)
 - Internal `h3ToIjk` function for getting IJK+ coordinates from an index (#83)
