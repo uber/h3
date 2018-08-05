@@ -24,9 +24,6 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cmake/toolchain.cmake"
-    CACHE FILEPATH
-    "Toolchain to use for building this project")
 
 option(ENABLE_COVERAGE "Enable compiling tests with coverage." ON)
 
