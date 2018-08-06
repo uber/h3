@@ -69,13 +69,13 @@ TEST(h3ToGeoBoundary_classIIIEdgeVertex_exact) {
     H3Index h3 = H3_EXPORT(stringToH3)("894cc536537ffff");
     GeoBoundary boundary;
     boundary.numVerts = 7;
-    setGeoDegs(&boundary.verts[0], 18.043333154, 293.721634765);
-    setGeoDegs(&boundary.verts[1], 18.042238363, 293.720709372);
-    setGeoDegs(&boundary.verts[2], 18.040818259, 293.721458061);
-    setGeoDegs(&boundary.verts[3], 18.040492975, 293.723132133);
-    setGeoDegs(&boundary.verts[4], 18.041040385, 293.723594817);
-    setGeoDegs(&boundary.verts[5], 18.041757122, 293.724032885);
-    setGeoDegs(&boundary.verts[6], 18.043007860, 293.723308818);
+    setGeoDegs(&boundary.verts[0], 18.043333154, -66.27836523500002);
+    setGeoDegs(&boundary.verts[1], 18.042238363, -66.27929062800001);
+    setGeoDegs(&boundary.verts[2], 18.040818259, -66.27854193899998);
+    setGeoDegs(&boundary.verts[3], 18.040492975, -66.27686786700002);
+    setGeoDegs(&boundary.verts[4], 18.041040385, -66.27640518300001);
+    setGeoDegs(&boundary.verts[5], 18.041757122, -66.27596711500001);
+    setGeoDegs(&boundary.verts[6], 18.043007860, -66.27669118199998);
     t_assertBoundary(h3, &boundary);
 }
 
