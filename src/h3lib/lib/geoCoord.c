@@ -127,6 +127,9 @@ double constrainLng(double lng) {
     while (lng > M_PI) {
         lng = lng - (2 * M_PI);
     }
+    while (lng < -M_PI) {
+        lng = lng + (2 * M_PI);
+    }
     return lng;
 }
 
