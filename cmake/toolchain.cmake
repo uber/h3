@@ -12,4 +12,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_STANDARD 99)
