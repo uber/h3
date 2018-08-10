@@ -6,6 +6,8 @@ The public API of this library consists of the functions declared in file
 [h3api.h](./src/h3lib/include/h3api.h).
 
 ## [Unreleased]
+### Changed
+- Longitude outputs are now ine range [-Pi, Pi]. (#93)
 
 ## [3.1.0] - 2018-08-03
 ### Added

@@ -106,14 +106,13 @@ This will produce the vertices of the hexagon at this location:
 ```
 8a2a1072b59ffff
 {
-   40.690058601 285.955848238
-   40.689907695 285.954938208
-   40.689270936 285.954658582
-   40.688785091 285.955288969
-   40.688935993 285.956198979
-   40.689572744 285.956478623
-}
-```
+   40.690058601 -74.044151762
+   40.689907695 -74.045061792
+   40.689270936 -74.045341418
+   40.688785091 -74.044711031
+   40.688935993 -74.043801021
+   40.689572744 -74.043521377
+}```
 
 You can get the center coordinate of the hexagon like so:
 
@@ -125,7 +124,7 @@ You can get the center coordinate of the hexagon like so:
 This will produce some coordinate:
 
 ```
-40.6894218437 285.9555686001
+40.6894218437 -74.0444313999
 ```
 
 ### From C
@@ -141,13 +140,13 @@ You should get output like:
 
 ```
 The index is: 8a2a1072b59ffff
-Boundary vertex #0: 40.690059, 285.955848
-Boundary vertex #1: 40.689908, 285.954938
-Boundary vertex #2: 40.689271, 285.954659
-Boundary vertex #3: 40.688785, 285.955289
-Boundary vertex #4: 40.688936, 285.956199
-Boundary vertex #5: 40.689573, 285.956479
-Center coordinates: 40.689422, 285.955569
+Boundary vertex #0: 40.690059, -74.044152
+Boundary vertex #1: 40.689908, -74.045062
+Boundary vertex #2: 40.689271, -74.045341
+Boundary vertex #3: 40.688785, -74.044711
+Boundary vertex #4: 40.688936, -74.043801
+Boundary vertex #5: 40.689573, -74.043521
+Center coordinates: 40.689422, -74.044431
 ```
 
 ## Contributing
