@@ -7,7 +7,7 @@ The public API of this library consists of the functions declared in file
 
 ## [Unreleased]
 ### Changed
-- Longitude outputs are now ine range [-Pi, Pi]. (#93)
+- Longitude outputs are now guaranteed to be in the range [-Pi, Pi]. (#93)
 
 ## [3.1.0] - 2018-08-03
 ### Added
