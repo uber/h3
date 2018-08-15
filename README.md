@@ -112,7 +112,8 @@ This will produce the vertices of the hexagon at this location:
    40.688785091 -74.044711031
    40.688935993 -74.043801021
    40.689572744 -74.043521377
-}```
+}
+```
 
 You can get the center coordinate of the hexagon like so:
 
