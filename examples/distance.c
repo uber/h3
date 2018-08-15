@@ -65,8 +65,8 @@ int main(int argc, char *argv[]) {
         radsToDegs(geoHQ2.lon), h3Distance(h3HQ1, h3HQ2),
         haversineDistance(geoHQ1.lat, geoHQ1.lon, geoHQ2.lat, geoHQ2.lon));
     // Output:
-    // origin: (37.775236, 237.580245)
-    // destination: (37.789991, 237.597879)
+    // origin: (37.775236, -122.419755)
+    // destination: (37.789991, -122.402121)
     // grid distance: 2340
-    // distance in km: 2.256850km
+    // distance in km: 2.256853km
 }

@@ -36,4 +36,8 @@ int main(int argc, char *argv[]) {
                radsToDegs(boundary.verts[v].lat),
                radsToDegs(boundary.verts[v].lon));
     }
+    // Output:
+    // The edge is 16a2a1072b59ffff
+    // Edge vertex #0: 40.690059, -74.044152
+    // Edge vertex #1: 40.689908, -74.045062
 }
