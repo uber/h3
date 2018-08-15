@@ -25,3 +25,7 @@ As a C library, bindings can be made to call H3 functions from different program
 ## R
 
 - [scottmmjackson/h3r](https://github.com/scottmmjackson/h3r)
+
+## PHP
+
+- [neatlife/php-h3](https://github.com/neatlife/php-h3)
