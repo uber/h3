@@ -83,6 +83,7 @@ check_vla(have_vla)
 
 set(LIB_SOURCE_FILES
     src/h3lib/include/bbox.h
+    src/h3lib/include/polygon.h
     src/h3lib/include/h3Index.h
     src/h3lib/include/h3UniEdge.h
     src/h3lib/include/geoCoord.h
@@ -101,6 +102,7 @@ set(LIB_SOURCE_FILES
     src/h3lib/lib/algos.c
     src/h3lib/lib/coordijk.c
     src/h3lib/lib/bbox.c
+    src/h3lib/lib/polygon.c
     src/h3lib/lib/h3Index.c
     src/h3lib/lib/vec2d.c
     src/h3lib/lib/vec3d.c
@@ -151,6 +153,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testHexRing.c
     src/apps/testapps/testH3SetToVertexGraph.c
     src/apps/testapps/testBBox.c
+    src/apps/testapps/testPolygon.c
     src/apps/testapps/testVec2d.c
     src/apps/testapps/testVec3d.c
     src/apps/testapps/testH3UniEdge.c
@@ -455,6 +458,7 @@ if(BUILD_TESTING)
     add_h3_test(testH3UniEdge src/apps/testapps/testH3UniEdge.c)
     add_h3_test(testGeoCoord src/apps/testapps/testGeoCoord.c)
     add_h3_test(testBBox src/apps/testapps/testBBox.c)
+    add_h3_test(testPolygon src/apps/testapps/testPolygon.c)
     add_h3_test(testVec2d src/apps/testapps/testVec2d.c)
     add_h3_test(testVec3d src/apps/testapps/testVec3d.c)
     add_h3_test(testH3ToIjk src/apps/testapps/testH3ToIjk.c)

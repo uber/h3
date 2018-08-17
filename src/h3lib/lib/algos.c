@@ -29,6 +29,7 @@
 #include "h3Index.h"
 #include "h3api.h"
 #include "linkedGeo.h"
+#include "polygon.h"
 #include "stackAlloc.h"
 #include "vertexGraph.h"
 
@@ -647,120 +648,6 @@ int H3_EXPORT(maxPolyfillSize)(const GeoPolygon* geoPolygon, int res) {
 }
 
 /**
- * Normalize a longitude value, converting it into a comparable value in
- * transmeridian cases.
- * @param  lng Longitude to normalize
- * @param  isTransmeridian Whether this longitude is part of a transmeridian
- *                         polygon
- * @return Normalized longitude
- */
-double _normalizeLng(double lng, bool isTransmeridian) {
-    return isTransmeridian && lng < 0 ? lng + M_2PI : lng;
-}
-
-/**
- * _pointInPolyContainsLoop is the core loop of the pointInPolyContains
- * algorithm, working on a Geofence struct
- *
- * @param geofence The geofence to check
- * @param bbox The bbox for the loop being tested
- * @param coord The coordinate to check if contained by the geofence
- * @return true or false
- */
-bool _pointInPolyContainsLoop(const Geofence* geofence, const BBox* bbox,
-                              const GeoCoord* coord) {
-    // fail fast if we're outside the bounding box
-    if (!bboxContains(bbox, coord)) {
-        return false;
-    }
-    bool isTransmeridian = bboxIsTransmeridian(bbox);
-    bool contains = false;
-
-    double lat = coord->lat;
-    double lng = _normalizeLng(coord->lon, isTransmeridian);
-
-    for (int i = 0; i < geofence->numVerts; i++) {
-        GeoCoord a = geofence->verts[i];
-        GeoCoord b;
-        if (i + 1 == geofence->numVerts) {
-            b = geofence->verts[0];
-        } else {
-            b = geofence->verts[i + 1];
-        }
-
-        // Ray casting algo requires the second point to always be higher
-        // than the first, so swap if needed
-        if (a.lat > b.lat) {
-            a = b;
-            b = geofence->verts[i];
-        }
-
-        // If we're totally above or below the latitude ranges, the test
-        // ray cannot intersect the line segment, so let's move on
-        if (lat < a.lat || lat > b.lat) {
-            continue;
-        }
-
-        double aLng = _normalizeLng(a.lon, isTransmeridian);
-        double bLng = _normalizeLng(b.lon, isTransmeridian);
-
-        // Rays are cast in the longitudinal direction, in case a point
-        // exactly matches, to decide tiebreakers, bias westerly
-        if (aLng == lng || bLng == lng) {
-            lng -= DBL_EPSILON;
-        }
-
-        // For the latitude of the point, compute the longitude of the
-        // point that lies on the line segment defined by a and b
-        // This is done by computing the percent above a the lat is,
-        // and traversing the same percent in the longitudinal direction
-        // of a to b
-        double ratio = (lat - a.lat) / (b.lat - a.lat);
-        double testLng =
-            _normalizeLng(aLng + (bLng - aLng) * ratio, isTransmeridian);
-
-        // Intersection of the ray
-        if (testLng > lng) {
-            contains = !contains;
-        };
-    }
-
-    return contains;
-}
-
-/**
- * pointInPolyContains takes a given GeoJSON-like data structure
- * and a point, and checks if said point is contained in the GeoJSON-like
- * struct.
- *
- * @param geoPolygon The geofence and holes defining the relevant area
- * @param bboxes The bboxes for the main geofence and each of its holes
- * @param coord The coordinate to check if contained by the geoJson-like
- * struct
- * @return true or false
- */
-bool _pointInPolyContains(const GeoPolygon* geoPolygon, const BBox* bboxes,
-                          const GeoCoord* coord) {
-    // Start with contains state of primary geofence
-    bool contains =
-        _pointInPolyContainsLoop(&(geoPolygon->geofence), &bboxes[0], coord);
-
-    // If the point is contained in the primary geofence, but there are holes in
-    // the geofence iterate through all holes and return false if the point is
-    // contained in any hole
-    if (contains && geoPolygon->numHoles > 0) {
-        for (int i = 0; i < geoPolygon->numHoles; i++) {
-            if (_pointInPolyContainsLoop(&(geoPolygon->holes[i]),
-                                         &bboxes[i + 1], coord)) {
-                return false;
-            }
-        }
-    }
-
-    return contains;
-}
-
-/**
  * polyfill takes a given GeoJSON-like data structure and preallocated,
  * zeroed memory, and fills it with the hexagons that are contained by
  * the GeoJSON-like data structure.
@@ -819,7 +706,7 @@ void H3_EXPORT(polyfill)(const GeoPolygon* geoPolygon, int res, H3Index* out) {
         hexCenter.lat = constrainLat(hexCenter.lat);
         hexCenter.lon = constrainLng(hexCenter.lon);
         // And remove from list if not
-        if (!_pointInPolyContains(geoPolygon, bboxes, &hexCenter)) {
+        if (!polygonContainsPoint(geoPolygon, bboxes, &hexCenter)) {
             out[i] = H3_INVALID_INDEX;
         }
     }
