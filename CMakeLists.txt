@@ -169,6 +169,7 @@ set(OTHER_SOURCE_FILES
     src/apps/miscapps/generateFaceCenterPoint.c
     src/apps/miscapps/h3ToHier.c
     src/apps/benchmarks/benchmarkPolyfill.c
+    src/apps/benchmarks/benchmarkPolygon.c
     src/apps/benchmarks/benchmarkH3Api.c)
 
 set(ALL_SOURCE_FILES
@@ -482,6 +483,7 @@ if(BUILD_TESTING)
 
     add_h3_benchmark(benchmarkH3Api src/apps/benchmarks/benchmarkH3Api.c)
     add_h3_benchmark(benchmarkPolyfill src/apps/benchmarks/benchmarkPolyfill.c)
+    add_h3_benchmark(benchmarkPolygon src/apps/benchmarks/benchmarkPolygon.c)
 endif()
 
 # Installation (https://github.com/forexample/package-example)
