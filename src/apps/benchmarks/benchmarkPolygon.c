@@ -135,11 +135,11 @@ largeGeofence.numVerts = 90;
 largeGeofence.verts = largeVerts;
 bboxFromGeofence(&largeGeofence, &largeBBox);
 
-BENCHMARK(loopContainsPointSmall, 100000,
-          { loopContainsPoint(&smallGeofence, &smallBBox, &coord); });
+BENCHMARK(geofenceContainsPointSmall, 100000,
+          { geofenceContainsPoint(&smallGeofence, &smallBBox, &coord); });
 
-BENCHMARK(loopContainsPointLarge, 100000,
-          { loopContainsPoint(&largeGeofence, &largeBBox, &coord); });
+BENCHMARK(geofenceContainsPointLarge, 100000,
+          { geofenceContainsPoint(&largeGeofence, &largeBBox, &coord); });
 
 BENCHMARK(bboxFromGeofenceSmall, 100000,
           { bboxFromGeofence(&smallGeofence, &smallBBox); });

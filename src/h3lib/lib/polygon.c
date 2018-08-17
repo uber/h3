@@ -26,6 +26,9 @@
 #include "geoCoord.h"
 #include "h3api.h"
 
+typedef bool (*geoIterator)(const void* loop, void* iter, GeoCoord* coord,
+                            GeoCoord* next);
+
 /**
  * Normalize a longitude value, converting it into a comparable value in
  * transmeridian cases.
@@ -47,8 +50,8 @@ double _normalizeLng(double lng, bool isTransmeridian) {
  * @param coord The coordinate to check if contained by the geofence
  * @return true or false
  */
-bool loopContainsPoint(const Geofence* geofence, const BBox* bbox,
-                       const GeoCoord* coord) {
+bool _loopContainsPoint(const void* loop, void* iter, geoIterator iterator,
+                        const BBox* bbox, const GeoCoord* coord) {
     // fail fast if we're outside the bounding box
     if (!bboxContains(bbox, coord)) {
         return false;
@@ -59,20 +62,19 @@ bool loopContainsPoint(const Geofence* geofence, const BBox* bbox,
     double lat = coord->lat;
     double lng = _normalizeLng(coord->lon, isTransmeridian);
 
-    for (int i = 0; i < geofence->numVerts; i++) {
-        GeoCoord a = geofence->verts[i];
-        GeoCoord b;
-        if (i + 1 == geofence->numVerts) {
-            b = geofence->verts[0];
-        } else {
-            b = geofence->verts[i + 1];
-        }
+    GeoCoord a;
+    GeoCoord b;
 
+    bool hasNext = true;
+
+    while (hasNext) {
+        hasNext = (*iterator)(loop, &iter, &a, &b);
         // Ray casting algo requires the second point to always be higher
         // than the first, so swap if needed
         if (a.lat > b.lat) {
+            GeoCoord tmp = a;
             a = b;
-            b = geofence->verts[i];
+            b = tmp;
         }
 
         // If we're totally above or below the latitude ranges, the test
@@ -109,6 +111,33 @@ bool loopContainsPoint(const Geofence* geofence, const BBox* bbox,
 }
 
 /**
+ * Iterator function for geofence structs. Given a Geofence and a current
+ * iteration value, sets the current and next geocoords and returns the new
+ * iteration value or null if iteration is complete
+ * @param  geofence Geofence to iterate over
+ * @param  index    Iteration value (index of current coord)
+ * @param  coord    Current geo coordinate (to set)
+ * @param  next     Next geo coordinate (to set)
+ * @return          True if there are more values to iterate
+ */
+bool _nextGeofenceCoord(const Geofence* geofence, int* index, GeoCoord* coord,
+                        GeoCoord* next) {
+    coord->lat = geofence->verts[*index].lat;
+    coord->lon = geofence->verts[*index].lon;
+
+    *index = (*index + 1) % geofence->numVerts;
+    next->lat = geofence->verts[*index].lat;
+    next->lon = geofence->verts[*index].lon;
+
+    return *index != 0;
+}
+
+bool geofenceContainsPoint(const Geofence* geofence, const BBox* bbox,
+                           const GeoCoord* coord) {
+    return _loopContainsPoint(geofence, 0, _nextGeofenceCoord, bbox, coord);
+}
+
+/**
  * polygonContainsPoint takes a given GeoPolygon data structure and
  * checks if it contains a given geo coordinate.
  *
@@ -122,15 +151,15 @@ bool polygonContainsPoint(const GeoPolygon* geoPolygon, const BBox* bboxes,
                           const GeoCoord* coord) {
     // Start with contains state of primary geofence
     bool contains =
-        loopContainsPoint(&(geoPolygon->geofence), &bboxes[0], coord);
+        geofenceContainsPoint(&(geoPolygon->geofence), &bboxes[0], coord);
 
     // If the point is contained in the primary geofence, but there are holes in
     // the geofence iterate through all holes and return false if the point is
     // contained in any hole
     if (contains && geoPolygon->numHoles > 0) {
         for (int i = 0; i < geoPolygon->numHoles; i++) {
-            if (loopContainsPoint(&(geoPolygon->holes[i]), &bboxes[i + 1],
-                                  coord)) {
+            if (geofenceContainsPoint(&(geoPolygon->holes[i]), &bboxes[i + 1],
+                                      coord)) {
                 return false;
             }
         }

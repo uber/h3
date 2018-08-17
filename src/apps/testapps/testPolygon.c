@@ -59,21 +59,21 @@ transMeridianGeofence.verts = transMeridianVerts;
 transMeridianHoleGeofence.numVerts = 4;
 transMeridianHoleGeofence.verts = transMeridianHoleVerts;
 
-TEST(loopContainsPoint) {
+TEST(geofenceContainsPoint) {
     GeoCoord somewhere = {1, 2};
 
     BBox bbox;
     bboxFromGeofence(&sfGeofence, &bbox);
 
-    t_assert(loopContainsPoint(&sfGeofence, &bbox, &sfVerts[0]) == false,
+    t_assert(geofenceContainsPoint(&sfGeofence, &bbox, &sfVerts[0]) == false,
              "contains exact");
-    t_assert(loopContainsPoint(&sfGeofence, &bbox, &sfVerts[4]) == true,
+    t_assert(geofenceContainsPoint(&sfGeofence, &bbox, &sfVerts[4]) == true,
              "contains exact4");
-    t_assert(loopContainsPoint(&sfGeofence, &bbox, &somewhere) == false,
+    t_assert(geofenceContainsPoint(&sfGeofence, &bbox, &somewhere) == false,
              "contains somewhere else");
 }
 
-TEST(loopContainsPointTransmeridian) {
+TEST(geofenceContainsPointTransmeridian) {
     GeoCoord eastPoint = {0.001, -M_PI + 0.001};
     GeoCoord eastPointOutside = {0.001, -M_PI + 0.1};
     GeoCoord westPoint = {0.001, M_PI - 0.001};
@@ -82,17 +82,17 @@ TEST(loopContainsPointTransmeridian) {
     BBox bbox;
     bboxFromGeofence(&transMeridianGeofence, &bbox);
 
-    t_assert(
-        loopContainsPoint(&transMeridianGeofence, &bbox, &westPoint) == true,
-        "contains point to the west of the antimeridian");
-    t_assert(
-        loopContainsPoint(&transMeridianGeofence, &bbox, &eastPoint) == true,
-        "contains point to the east of the antimeridian");
-    t_assert(loopContainsPoint(&transMeridianGeofence, &bbox,
-                               &westPointOutside) == false,
+    t_assert(geofenceContainsPoint(&transMeridianGeofence, &bbox, &westPoint) ==
+                 true,
+             "contains point to the west of the antimeridian");
+    t_assert(geofenceContainsPoint(&transMeridianGeofence, &bbox, &eastPoint) ==
+                 true,
+             "contains point to the east of the antimeridian");
+    t_assert(geofenceContainsPoint(&transMeridianGeofence, &bbox,
+                                   &westPointOutside) == false,
              "does not contain outside point to the west of the antimeridian");
-    t_assert(loopContainsPoint(&transMeridianGeofence, &bbox,
-                               &eastPointOutside) == false,
+    t_assert(geofenceContainsPoint(&transMeridianGeofence, &bbox,
+                                   &eastPointOutside) == false,
              "does not contain outside point to the east of the antimeridian");
 }
 
