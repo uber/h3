@@ -141,4 +141,10 @@ BENCHMARK(loopContainsPointSmall, 100000,
 BENCHMARK(loopContainsPointLarge, 100000,
           { loopContainsPoint(&largeGeofence, &largeBBox, &coord); });
 
+BENCHMARK(bboxFromGeofenceSmall, 100000,
+          { bboxFromGeofence(&smallGeofence, &smallBBox); });
+
+BENCHMARK(bboxFromGeofenceLarge, 100000,
+          { bboxFromGeofence(&largeGeofence, &largeBBox); });
+
 END_BENCHMARKS();
