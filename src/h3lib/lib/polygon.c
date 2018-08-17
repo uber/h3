@@ -100,7 +100,7 @@ bool loopContainsPoint(const Geofence* geofence, const BBox* bbox,
         // Intersection of the ray
         if (testLng > lng) {
             contains = !contains;
-        };
+        }
     }
 
     return contains;
