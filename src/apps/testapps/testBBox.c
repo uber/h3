@@ -19,6 +19,7 @@
 #include "bbox.h"
 #include "constants.h"
 #include "geoCoord.h"
+#include "polygon.h"
 #include "test.h"
 
 void assertBBox(const GeoCoord* verts, const BBox* expected,
