@@ -26,9 +26,6 @@
 #include "geoCoord.h"
 #include "h3api.h"
 
-typedef bool (*geoIterator)(const void* loop, void* iter, GeoCoord* coord,
-                            GeoCoord* next);
-
 /**
  * Normalize a longitude value, converting it into a comparable value in
  * transmeridian cases.
@@ -42,6 +39,40 @@ double _normalizeLng(double lng, bool isTransmeridian) {
 }
 
 /**
+ * Iterator function for IterableGeoLoop structs. Given a loop and a current
+ * iteration value, sets the current and next geocoords and returns true,
+ * or returns false if iteration is complete
+ * @param  loop     IterableGeoLoop to iterate over
+ * @param  coord    Current geo coordinate (to set)
+ * @param  next     Next geo coordinate (to set)
+ * @return          True if more values, false if iteration is done
+ */
+bool _iterateLoop(IterableGeoLoop* loop, GeoCoord* coord, GeoCoord* next) {
+    switch (loop->type) {
+        case TYPE_GEOFENCE: {
+            const Geofence* geofence = loop->geofence;
+            // Incement index - this requires index to be initialized to -1
+            loop->index++;
+            // Check whether iteration is possible
+            if (loop->index >= loop->geofence->numVerts) {
+                return false;
+            }
+            int nextIndex = (loop->index + 1) % geofence->numVerts;
+            // Update coordinates to next pair
+            coord->lat = geofence->verts[loop->index].lat;
+            coord->lon = geofence->verts[loop->index].lon;
+            next->lat = geofence->verts[nextIndex].lat;
+            next->lon = geofence->verts[nextIndex].lon;
+            return true;
+        }
+        default: {
+            // Should not be reachable, but if it is we cannot iterate
+            return false;
+        }
+    }
+}
+
+/**
  * loopContainsPoint is the core loop of the point-in-poly
  * algorithm, working on a Geofence struct
  *
@@ -50,8 +81,8 @@ double _normalizeLng(double lng, bool isTransmeridian) {
  * @param coord The coordinate to check if contained by the geofence
  * @return true or false
  */
-bool _loopContainsPoint(const void* loop, void* iter, geoIterator iterator,
-                        const BBox* bbox, const GeoCoord* coord) {
+bool _loopContainsPoint(IterableGeoLoop* loop, const BBox* bbox,
+                        const GeoCoord* coord) {
     // fail fast if we're outside the bounding box
     if (!bboxContains(bbox, coord)) {
         return false;
@@ -65,10 +96,7 @@ bool _loopContainsPoint(const void* loop, void* iter, geoIterator iterator,
     GeoCoord a;
     GeoCoord b;
 
-    bool hasNext = true;
-
-    while (hasNext) {
-        hasNext = (*iterator)(loop, &iter, &a, &b);
+    while (_iterateLoop(loop, &a, &b)) {
         // Ray casting algo requires the second point to always be higher
         // than the first, so swap if needed
         if (a.lat > b.lat) {
@@ -110,31 +138,13 @@ bool _loopContainsPoint(const void* loop, void* iter, geoIterator iterator,
     return contains;
 }
 
-/**
- * Iterator function for geofence structs. Given a Geofence and a current
- * iteration value, sets the current and next geocoords and returns the new
- * iteration value or null if iteration is complete
- * @param  geofence Geofence to iterate over
- * @param  index    Iteration value (index of current coord)
- * @param  coord    Current geo coordinate (to set)
- * @param  next     Next geo coordinate (to set)
- * @return          True if there are more values to iterate
- */
-bool _nextGeofenceCoord(const Geofence* geofence, int* index, GeoCoord* coord,
-                        GeoCoord* next) {
-    coord->lat = geofence->verts[*index].lat;
-    coord->lon = geofence->verts[*index].lon;
-
-    *index = (*index + 1) % geofence->numVerts;
-    next->lat = geofence->verts[*index].lat;
-    next->lon = geofence->verts[*index].lon;
-
-    return *index != 0;
-}
-
 bool geofenceContainsPoint(const Geofence* geofence, const BBox* bbox,
                            const GeoCoord* coord) {
-    return _loopContainsPoint(geofence, 0, _nextGeofenceCoord, bbox, coord);
+    IterableGeoLoop loop;
+    loop.type = TYPE_GEOFENCE;
+    loop.geofence = geofence;
+    loop.index = -1;
+    return _loopContainsPoint(&loop, bbox, coord);
 }
 
 /**

@@ -24,6 +24,27 @@
 #include "bbox.h"
 #include "geoCoord.h"
 #include "h3api.h"
+#include "linkedGeo.h"
+
+/** @struct IterableGeoLoop
+ *  @brief  Struct supporting polymorphic loop iteration
+ */
+typedef struct {
+    union {
+        const Geofence* geofence;            ///< optional Geofence
+        const LinkedGeoLoop* linkedGeoLoop;  ///< optional LinkedGeoLoop
+    };
+    union {
+        int index;                     ///< iteration var for Geofence
+        LinkedGeoCoord* currentCoord;  ///< iteration var for LinkedGeoLoop
+    };
+    int type;  ///< flag for type held by struct
+} IterableGeoLoop;
+
+/** Flag for Geofence type in IterableGeoLoop */
+#define TYPE_GEOFENCE 1
+/** Flag for LinkedGeoLoop type in IterableGeoLoop */
+#define TYPE_LINKED_GEO_LOOP 2
 
 void bboxFromVertices(const GeoCoord* verts, int numVerts, BBox* bbox);
 void bboxFromGeofence(const Geofence* geofence, BBox* bbox);
