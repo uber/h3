@@ -21,17 +21,6 @@
 #include "geoCoord.h"
 #include "test.h"
 
-/**
- * Whether two bounding boxes are strictly equal
- * @param  b1 Bounding box 1
- * @param  b2 Bounding box 2
- * @return    Whether the boxes are equal
- */
-bool bboxEquals(const BBox* b1, const BBox* b2) {
-    return b1->north == b2->north && b1->south == b2->south &&
-           b1->east == b2->east && b1->west == b2->west;
-}
-
 void assertBBox(const GeoCoord* verts, const BBox* expected,
                 const GeoCoord* inside, const GeoCoord* outside) {
     BBox result;
@@ -156,79 +145,6 @@ TEST(containsEdgesTransmeridian) {
         t_assert(bboxContains(&bbox, &points[i]),
                  "Contains transmeridian edge point");
     }
-}
-
-TEST(noVertices) {
-    const BBox expected = {0.0, 0.0, 0.0, 0.0};
-
-    BBox result;
-    bboxFromVertices(NULL, 0, &result);
-
-    t_assert(bboxEquals(&result, &expected), "Got expected bbox");
-}
-
-TEST(bboxFromGeofence) {
-    GeoCoord verts[] = {{0.8, 0.3}, {0.7, 0.6}, {1.1, 0.7}, {1.0, 0.2}};
-
-    Geofence geofence;
-    geofence.verts = verts;
-    geofence.numVerts = 4;
-
-    const BBox expected = {1.1, 0.7, 0.7, 0.2};
-
-    BBox result;
-    bboxFromGeofence(&geofence, &result);
-    t_assert(bboxEquals(&result, &expected), "Got expected bbox");
-}
-
-TEST(bboxesFromGeoPolygon) {
-    GeoCoord verts[] = {{0.8, 0.3}, {0.7, 0.6}, {1.1, 0.7}, {1.0, 0.2}};
-
-    Geofence geofence;
-    geofence.verts = verts;
-    geofence.numVerts = 4;
-
-    GeoPolygon polygon;
-    polygon.geofence = geofence;
-    polygon.numHoles = 0;
-
-    const BBox expected = {1.1, 0.7, 0.7, 0.2};
-
-    BBox* result = calloc(sizeof(BBox), 1);
-    bboxesFromGeoPolygon(&polygon, result);
-    t_assert(bboxEquals(&result[0], &expected), "Got expected bbox");
-
-    free(result);
-}
-
-TEST(bboxesFromGeoPolygonHole) {
-    GeoCoord verts[] = {{0.8, 0.3}, {0.7, 0.6}, {1.1, 0.7}, {1.0, 0.2}};
-
-    Geofence geofence;
-    geofence.verts = verts;
-    geofence.numVerts = 4;
-
-    // not a real hole, but doesn't matter for the test
-    GeoCoord holeVerts[] = {{0.9, 0.3}, {0.9, 0.5}, {1.0, 0.7}, {0.9, 0.3}};
-
-    Geofence holeGeofence;
-    holeGeofence.verts = holeVerts;
-    holeGeofence.numVerts = 4;
-
-    GeoPolygon polygon;
-    polygon.geofence = geofence;
-    polygon.numHoles = 1;
-    polygon.holes = &holeGeofence;
-
-    const BBox expected = {1.1, 0.7, 0.7, 0.2};
-    const BBox expectedHole = {1.0, 0.9, 0.7, 0.3};
-
-    BBox* result = calloc(sizeof(BBox), 2);
-    bboxesFromGeoPolygon(&polygon, result);
-    t_assert(bboxEquals(&result[0], &expected), "Got expected bbox");
-    t_assert(bboxEquals(&result[1], &expectedHole), "Got expected hole bbox");
-
-    free(result);
 }
 
 TEST(bboxCenterBasicQuandrants) {

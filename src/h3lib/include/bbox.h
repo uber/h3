@@ -33,12 +33,10 @@ typedef struct {
     double west;   ///< west longitude
 } BBox;
 
-void bboxFromVertices(const GeoCoord* verts, int numVerts, BBox* bbox);
-void bboxFromGeofence(const Geofence* geofence, BBox* bbox);
-void bboxesFromGeoPolygon(const GeoPolygon* polygon, BBox* bboxes);
 bool bboxIsTransmeridian(const BBox* bbox);
 void bboxCenter(const BBox* bbox, GeoCoord* center);
 bool bboxContains(const BBox* bbox, const GeoCoord* point);
+bool bboxEquals(const BBox* b1, const BBox* b2);
 int bboxHexRadius(const BBox* bbox, int res);
 
 #endif

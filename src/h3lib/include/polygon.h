@@ -25,6 +25,9 @@
 #include "geoCoord.h"
 #include "h3api.h"
 
+void bboxFromVertices(const GeoCoord* verts, int numVerts, BBox* bbox);
+void bboxFromGeofence(const Geofence* geofence, BBox* bbox);
+void bboxesFromGeoPolygon(const GeoPolygon* polygon, BBox* bboxes);
 bool loopContainsPoint(const Geofence* geofence, const BBox* bbox,
                        const GeoCoord* coord);
 bool polygonContainsPoint(const GeoPolygon* geoPolygon, const BBox* bboxes,
