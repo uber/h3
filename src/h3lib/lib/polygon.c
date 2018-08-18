@@ -39,40 +39,6 @@ double _normalizeLng(double lng, bool isTransmeridian) {
 }
 
 /**
- * Iterator function for IterableGeoLoop structs. Given a loop and a current
- * iteration value, sets the current and next geocoords and returns true,
- * or returns false if iteration is complete
- * @param  loop     IterableGeoLoop to iterate over
- * @param  coord    Current geo coordinate (to set)
- * @param  next     Next geo coordinate (to set)
- * @return          True if more values, false if iteration is done
- */
-bool _iterateLoop(IterableGeoLoop* loop, GeoCoord* coord, GeoCoord* next) {
-    switch (loop->type) {
-        case TYPE_GEOFENCE: {
-            const Geofence* geofence = loop->geofence;
-            // Incement index - this requires index to be initialized to -1
-            loop->index++;
-            // Check whether iteration is possible
-            if (loop->index >= loop->geofence->numVerts) {
-                return false;
-            }
-            int nextIndex = (loop->index + 1) % geofence->numVerts;
-            // Update coordinates to next pair
-            coord->lat = geofence->verts[loop->index].lat;
-            coord->lon = geofence->verts[loop->index].lon;
-            next->lat = geofence->verts[nextIndex].lat;
-            next->lon = geofence->verts[nextIndex].lon;
-            return true;
-        }
-        default: {
-            // Should not be reachable, but if it is we cannot iterate
-            return false;
-        }
-    }
-}
-
-/**
  * loopContainsPoint is the core loop of the point-in-poly
  * algorithm, working on a Geofence struct
  *
@@ -81,7 +47,7 @@ bool _iterateLoop(IterableGeoLoop* loop, GeoCoord* coord, GeoCoord* next) {
  * @param coord The coordinate to check if contained by the geofence
  * @return true or false
  */
-bool _loopContainsPoint(IterableGeoLoop* loop, const BBox* bbox,
+bool _loopContainsPoint(const IterableGeoLoop* loop, const BBox* bbox,
                         const GeoCoord* coord) {
     // fail fast if we're outside the bounding box
     if (!bboxContains(bbox, coord)) {
@@ -96,7 +62,11 @@ bool _loopContainsPoint(IterableGeoLoop* loop, const BBox* bbox,
     GeoCoord a;
     GeoCoord b;
 
-    while (_iterateLoop(loop, &a, &b)) {
+    INIT_ITERATION;
+
+    while (true) {
+        ITERATE(loop, a, b);
+
         // Ray casting algo requires the second point to always be higher
         // than the first, so swap if needed
         if (a.lat > b.lat) {
@@ -143,7 +113,6 @@ bool geofenceContainsPoint(const Geofence* geofence, const BBox* bbox,
     IterableGeoLoop loop;
     loop.type = TYPE_GEOFENCE;
     loop.geofence = geofence;
-    loop.index = -1;
     return _loopContainsPoint(&loop, bbox, coord);
 }
 

@@ -34,10 +34,6 @@ typedef struct {
         const Geofence* geofence;            ///< optional Geofence
         const LinkedGeoLoop* linkedGeoLoop;  ///< optional LinkedGeoLoop
     };
-    union {
-        int index;                     ///< iteration var for Geofence
-        LinkedGeoCoord* currentCoord;  ///< iteration var for LinkedGeoLoop
-    };
     int type;  ///< flag for type held by struct
 } IterableGeoLoop;
 
@@ -45,6 +41,16 @@ typedef struct {
 #define TYPE_GEOFENCE 1
 /** Flag for LinkedGeoLoop type in IterableGeoLoop */
 #define TYPE_LINKED_GEO_LOOP 2
+
+#define INIT_ITERATION int loopIndex = -1
+
+#define ITERATE(loop, coord, next)                                             \
+    if (loop->type == TYPE_GEOFENCE) {                                         \
+        if (++loopIndex >= loop->geofence->numVerts) break;                    \
+        coord = loop->geofence->verts[loopIndex];                              \
+        next =                                                                 \
+            loop->geofence->verts[(loopIndex + 1) % loop->geofence->numVerts]; \
+    }
 
 void bboxFromVertices(const GeoCoord* verts, int numVerts, BBox* bbox);
 void bboxFromGeofence(const Geofence* geofence, BBox* bbox);
