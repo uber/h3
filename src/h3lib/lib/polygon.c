@@ -39,10 +39,25 @@ double _normalizeLng(double lng, bool isTransmeridian) {
 }
 
 /**
+ * Determine whether a geo loop is empty
+ * @param  loop Loop to check
+ * @return      isEmpty
+ */
+bool _loopIsEmpty(const IterableGeoLoop* loop) {
+    switch (loop->type) {
+        case TYPE_GEOFENCE:
+            return loop->geofence->numVerts == 0;
+            // TODO: TYPE_LINKED_GEO_LOOP
+    }
+    // Should be unreachable, assume no iteration possible
+    return true;
+}
+
+/**
  * loopContainsPoint is the core loop of the point-in-poly
- * algorithm, working on a Geofence struct
+ * algorithm, working on either a Geofence or a LinkedGeoLoop.
  *
- * @param geofence The geofence to check
+ * @param loop The loop to check
  * @param bbox The bbox for the loop being tested
  * @param coord The coordinate to check if contained by the geofence
  * @return true or false
@@ -157,9 +172,9 @@ bool polygonContainsPoint(const GeoPolygon* geoPolygon, const BBox* bboxes,
  * @param numVerts Number of vertices
  * @param bbox     Output bbox
  */
-void bboxFromVertices(const GeoCoord* verts, int numVerts, BBox* bbox) {
+void _bboxFromLoop(const IterableGeoLoop* loop, BBox* bbox) {
     // Early exit if there are no vertices
-    if (numVerts == 0) {
+    if (_loopIsEmpty(loop)) {
         bbox->north = 0;
         bbox->south = 0;
         bbox->east = 0;
@@ -175,15 +190,22 @@ void bboxFromVertices(const GeoCoord* verts, int numVerts, BBox* bbox) {
     bbox->east = -1.0 * DBL_MAX;
     bool isTransmeridian = false;
 
-    for (int i = 0; i < numVerts; i++) {
-        lat = verts[i].lat;
-        lon = verts[i].lon;
+    GeoCoord coord;
+    GeoCoord next;
+
+    INIT_ITERATION;
+
+    while (true) {
+        ITERATE(loop, coord, next);
+
+        lat = coord.lat;
+        lon = coord.lon;
         if (lat < bbox->south) bbox->south = lat;
         if (lon < bbox->west) bbox->west = lon;
         if (lat > bbox->north) bbox->north = lat;
         if (lon > bbox->east) bbox->east = lon;
         // check for arcs > 180 degrees longitude, flagging as transmeridian
-        if (fabs(lon - verts[(i + 1) % numVerts].lon) > M_PI) {
+        if (fabs(lon - next.lon) > M_PI) {
             isTransmeridian = true;
         }
     }
@@ -201,7 +223,10 @@ void bboxFromVertices(const GeoCoord* verts, int numVerts, BBox* bbox) {
  * @param bbox     Output bbox
  */
 void bboxFromGeofence(const Geofence* geofence, BBox* bbox) {
-    bboxFromVertices(geofence->verts, geofence->numVerts, bbox);
+    IterableGeoLoop loop;
+    loop.type = TYPE_GEOFENCE;
+    loop.geofence = geofence;
+    _bboxFromLoop(&loop, bbox);
 }
 
 /**

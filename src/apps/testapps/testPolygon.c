@@ -96,15 +96,6 @@ TEST(geofenceContainsPointTransmeridian) {
              "does not contain outside point to the east of the antimeridian");
 }
 
-TEST(noVertices) {
-    const BBox expected = {0.0, 0.0, 0.0, 0.0};
-
-    BBox result;
-    bboxFromVertices(NULL, 0, &result);
-
-    t_assert(bboxEquals(&result, &expected), "Got expected bbox");
-}
-
 TEST(bboxFromGeofence) {
     GeoCoord verts[] = {{0.8, 0.3}, {0.7, 0.6}, {1.1, 0.7}, {1.0, 0.2}};
 
@@ -116,6 +107,21 @@ TEST(bboxFromGeofence) {
 
     BBox result;
     bboxFromGeofence(&geofence, &result);
+    t_assert(bboxEquals(&result, &expected), "Got expected bbox");
+}
+
+TEST(bboxFromGeofenceNoVertices) {
+    GeoCoord verts[] = {};
+
+    Geofence geofence;
+    geofence.verts = verts;
+    geofence.numVerts = 0;
+
+    const BBox expected = {0.0, 0.0, 0.0, 0.0};
+
+    BBox result;
+    bboxFromGeofence(&geofence, &result);
+
     t_assert(bboxEquals(&result, &expected), "Got expected bbox");
 }
 

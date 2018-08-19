@@ -22,10 +22,14 @@
 #include "polygon.h"
 #include "test.h"
 
-void assertBBox(const GeoCoord* verts, const BBox* expected,
-                const GeoCoord* inside, const GeoCoord* outside) {
+void assertBBox(GeoCoord* verts, const BBox* expected, const GeoCoord* inside,
+                const GeoCoord* outside) {
     BBox result;
-    bboxFromVertices(verts, 4, &result);
+    Geofence geofence;
+    geofence.verts = verts;
+    geofence.numVerts = 4;
+
+    bboxFromGeofence(&geofence, &result);
 
     t_assert(bboxEquals(&result, expected), "Got expected bbox");
     t_assert(bboxContains(&result, inside), "Contains expected inside point");
@@ -90,7 +94,11 @@ TEST(transmeridian) {
     assertBBox(verts, &expected, &inside, &outside);
 
     BBox result;
-    bboxFromVertices(verts, 4, &result);
+    Geofence geofence;
+    geofence.verts = verts;
+    geofence.numVerts = 4;
+
+    bboxFromGeofence(&geofence, &result);
 
     const GeoCoord westOutside = {0.1, M_PI - 0.5};
     t_assert(!bboxContains(&result, &westOutside),

@@ -50,9 +50,8 @@ typedef struct {
         coord = loop->geofence->verts[loopIndex];                              \
         next =                                                                 \
             loop->geofence->verts[(loopIndex + 1) % loop->geofence->numVerts]; \
-    }
+    }  // TODO: TYPE_LINKED_GEO_LOOP
 
-void bboxFromVertices(const GeoCoord* verts, int numVerts, BBox* bbox);
 void bboxFromGeofence(const Geofence* geofence, BBox* bbox);
 void bboxesFromGeoPolygon(const GeoPolygon* polygon, BBox* bboxes);
 bool geofenceContainsPoint(const Geofence* geofence, const BBox* bbox,
