@@ -14,7 +14,7 @@ Documentation is available at [https://uber.github.io/h3/](https://uber.github.i
 
 ## Installing
 
-We recommend using prebuilt bindings if they are available for your programming language. Bindings for [Java](https://github.com/uber/h3-java), [JavaScript](https://github.com/uber/h3-js), and [others](https://uber.github.io/h3/#/documentation/community/bindings) are available.
+We recommend using prebuilt bindings if they are available for your programming language. Bindings for [Java](https://github.com/uber/h3-java), [JavaScript](https://github.com/uber/h3-js), [Python](https://github.com/uber/h3-py), and [others](https://uber.github.io/h3/#/documentation/community/bindings) are available.
 
 If no bindings are available, you can only install H3 by building from source.
 
@@ -23,6 +23,12 @@ If no bindings are available, you can only install H3 by building from source.
 Still here? To build the H3 C library, you'll need a C compiler (tested with `gcc` and `clang`), [CMake](https://cmake.org/), and [Make](https://www.gnu.org/software/make/). If you intend to contribute to H3, you must have [clang-format](https://clang.llvm.org/docs/ClangFormat.html) installed and we recommend installing [ccmake](https://cmake.org/cmake/help/v3.0/manual/ccmake.1.html) and [LCOV](http://ltp.sourceforge.net/coverage/lcov.php) to configure the `cmake` arguments to build and run the tests and generate the code coverage report. We also recommend using `gcc` for the code coverage as some versions of `clang` generate annotations that aren't compatible with `lcov`. [Doxygen](http://www.stack.nl/~dimitri/doxygen/) is needed to build the API documentation.
 
 #### Install build-time dependencies
+
+* Alpine 
+```
+# Installing the bare build requirements
+apk add cmake make gcc libtool musl-dev
+```
 
 * Debian/Ubuntu
 

@@ -40,7 +40,7 @@ matrix:
           packages:
             - clang-format-5.0
       script: make format && git diff --exit-code
-      # Submit coverage report to Coveralls.io
+      # Submit coverage report to Coveralls.io, also test that prefixing works.
     - env: NAME="Coverage report"
       compiler: gcc
       addons:
@@ -50,7 +50,7 @@ matrix:
       install:
         - pip install --user cpp-coveralls
       before_script:
-        - cmake -DCMAKE_BUILD_TYPE=Debug -DWARNINGS_AS_ERRORS=ON .
+        - cmake -DCMAKE_BUILD_TYPE=Debug -DWARNINGS_AS_ERRORS=ON -DH3_PREFIX=testprefix_ .
       script:
         - make && make coverage
       after_success:

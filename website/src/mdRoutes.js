@@ -32,10 +32,12 @@ import api_indexing from '../../docs/api/indexing.md';
 import api_inspection from '../../docs/api/inspection.md';
 import api_misc from '../../docs/api/misc.md';
 import api_neighbor from '../../docs/api/neighbor.md';
+import api_distance from '../../docs/api/distance.md';
 import api_regions from '../../docs/api/regions.md';
 import api_uniedge from '../../docs/api/uniedge.md';
 
 import community_bindings from '../../docs/community/bindings.md';
+import community_libraries from '../../docs/community/libraries.md';
 
 export default [{
     name: 'Documentation',
@@ -108,11 +110,15 @@ export default [{
                 markdown: api_neighbor
             },
             {
+                name: 'Distance',
+                markdown: api_distance
+            },
+            {
                 name: 'Hierarchy',
                 markdown: api_hierarchy
             },
             {
-                name: 'regions',
+                name: 'Regions',
                 markdown: api_regions
             },
             {
@@ -130,6 +136,10 @@ export default [{
             {
                 name: 'Bindings',
                 markdown: community_bindings
+            },
+            {
+                name: 'Libraries Using H3',
+                markdown: community_libraries
             }
         ]
     }]

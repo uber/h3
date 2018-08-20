@@ -6,11 +6,17 @@ The public API of this library consists of the functions declared in file
 [h3api.h](./src/h3lib/include/h3api.h).
 
 ## [Unreleased]
+
+## [3.1.0] - 2018-08-03
 ### Added
 - `h3Distance` function for determining the grid distance between H3 indexes (#83)
 - Internal `h3ToIjk` function for getting IJK+ coordinates from an index (#83)
 - Internal `ijkDistance` function for determining the grid distance between IJK+ coordinates (#83)
 - `h3ToIjk` filter application for experimenting with `h3ToIjk` (#83)
+### Fixed
+- Don't require a C++ compiler (#107)
+### Changed
+- Most dynamic internal memory allocations happen on the heap instead of the stack (#100)
 
 ## [3.0.8] - 2018-07-18
 ### Added
