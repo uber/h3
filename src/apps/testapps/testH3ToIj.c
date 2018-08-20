@@ -39,7 +39,9 @@ void h3Distance_identity_assertions(H3Index h3) {
 
     t_assert(H3_EXPORT(h3Distance)(h3, h3) == 0, "distance to self is 0");
 
-    // Test that coordinates are as expected
+    // Test that coordinates for an index match some simple rules about index
+    // digits, when using the index as its own origin. That is, that the IJ
+    // coordinates are in the coordinate space of the origin's base cell.
     CoordIJ ij;
     t_assert(H3_EXPORT(h3ToIj)(h3, h3, &ij) == 0, "failed to get ij");
     CoordIJK ijk;
@@ -62,7 +64,7 @@ void h3Distance_identity_assertions(H3Index h3) {
 
 void h3Distance_neighbors_assertions(H3Index h3) {
     CoordIJ origin = {0};
-    t_assert(H3_EXPORT(h3ToIj)(h3, h3, &origin) == 0, "got ijk for origin");
+    t_assert(H3_EXPORT(h3ToIj)(h3, h3, &origin) == 0, "got ij for origin");
     CoordIJK originIjk;
     ijToIjk(&origin, &originIjk);
 
@@ -76,7 +78,7 @@ void h3Distance_neighbors_assertions(H3Index h3) {
 
         CoordIJ ij = {0};
         t_assert(H3_EXPORT(h3ToIj)(h3, offset, &ij) == 0,
-                 "got ijk for destination");
+                 "got ij for destination");
         CoordIJK ijk;
         ijToIjk(&ij, &ijk);
         CoordIJK invertedIjk = {0};
