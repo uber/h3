@@ -46,7 +46,7 @@ typedef struct {
 #define INIT_ITERATION                   \
     int loopIndex = -1;                  \
     LinkedGeoCoord* currentCoord = NULL; \
-    LinkedGeoCoord* nextCoord = NULL;
+    LinkedGeoCoord* nextCoord = NULL
 
 /** Macro: Increment polymorphic loop iteration, or break if done.
  *  Uses if/else rather than switch to support break

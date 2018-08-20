@@ -142,10 +142,8 @@ TEST(bboxFromGeofence) {
 }
 
 TEST(bboxFromGeofenceNoVertices) {
-    GeoCoord verts[] = {};
-
     Geofence geofence;
-    geofence.verts = verts;
+    geofence.verts = NULL;
     geofence.numVerts = 0;
 
     const BBox expected = {0.0, 0.0, 0.0, 0.0};
@@ -258,10 +256,8 @@ TEST(loopIsEmptyLinkedLoop) {
 }
 
 TEST(loopIsEmptyLinkedLoopGeofence) {
-    GeoCoord noVerts[] = {};
-
     Geofence geofence;
-    geofence.verts = noVerts;
+    geofence.verts = NULL;
     geofence.numVerts = 0;
 
     IterableGeoLoop loop;
