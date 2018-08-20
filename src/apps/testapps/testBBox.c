@@ -22,14 +22,11 @@
 #include "polygon.h"
 #include "test.h"
 
-void assertBBox(GeoCoord* verts, const BBox* expected, const GeoCoord* inside,
-                const GeoCoord* outside) {
+void assertBBox(const Geofence* geofence, const BBox* expected,
+                const GeoCoord* inside, const GeoCoord* outside) {
     BBox result;
-    Geofence geofence;
-    geofence.verts = verts;
-    geofence.numVerts = 4;
 
-    bboxFromGeofence(&geofence, &result);
+    bboxFromGeofence(geofence, &result);
 
     t_assert(bboxEquals(&result, expected), "Got expected bbox");
     t_assert(bboxContains(&result, inside), "Contains expected inside point");
@@ -40,92 +37,89 @@ void assertBBox(GeoCoord* verts, const BBox* expected, const GeoCoord* inside,
 BEGIN_TESTS(BBox);
 
 TEST(posLatPosLon) {
-    const GeoCoord verts[] = {{0.8, 0.3}, {0.7, 0.6}, {1.1, 0.7}, {1.0, 0.2}};
+    GeoCoord verts[] = {{0.8, 0.3}, {0.7, 0.6}, {1.1, 0.7}, {1.0, 0.2}};
+    const Geofence geofence = {.numVerts = 4, .verts = verts};
     const BBox expected = {1.1, 0.7, 0.7, 0.2};
     const GeoCoord inside = {0.9, 0.4};
     const GeoCoord outside = {0.0, 0.0};
-    assertBBox(verts, &expected, &inside, &outside);
+    assertBBox(&geofence, &expected, &inside, &outside);
 }
 
 TEST(negLatPosLon) {
-    const GeoCoord verts[] = {
-        {-0.3, 0.6}, {-0.4, 0.9}, {-0.2, 0.8}, {-0.1, 0.6}};
+    GeoCoord verts[] = {{-0.3, 0.6}, {-0.4, 0.9}, {-0.2, 0.8}, {-0.1, 0.6}};
+    const Geofence geofence = {.numVerts = 4, .verts = verts};
     const BBox expected = {-0.1, -0.4, 0.9, 0.6};
     const GeoCoord inside = {-0.3, 0.8};
     const GeoCoord outside = {0.0, 0.0};
-    assertBBox(verts, &expected, &inside, &outside);
+    assertBBox(&geofence, &expected, &inside, &outside);
 }
 
 TEST(posLatNegLon) {
-    const GeoCoord verts[] = {
-        {0.7, -1.4}, {0.8, -0.9}, {1.0, -0.8}, {1.1, -1.3}};
+    GeoCoord verts[] = {{0.7, -1.4}, {0.8, -0.9}, {1.0, -0.8}, {1.1, -1.3}};
+    const Geofence geofence = {.numVerts = 4, .verts = verts};
     const BBox expected = {1.1, 0.7, -0.8, -1.4};
     const GeoCoord inside = {0.9, -1.0};
     const GeoCoord outside = {0.0, 0.0};
-    assertBBox(verts, &expected, &inside, &outside);
+    assertBBox(&geofence, &expected, &inside, &outside);
 }
 
 TEST(negLatNegLon) {
-    const GeoCoord verts[] = {
-        {-0.4, -1.4}, {-0.3, -1.1}, {-0.1, -1.2}, {-0.2, -1.4}};
+    GeoCoord verts[] = {{-0.4, -1.4}, {-0.3, -1.1}, {-0.1, -1.2}, {-0.2, -1.4}};
+    const Geofence geofence = {.numVerts = 4, .verts = verts};
     const BBox expected = {-0.1, -0.4, -1.1, -1.4};
     const GeoCoord inside = {-0.3, -1.2};
     const GeoCoord outside = {0.0, 0.0};
-    assertBBox(verts, &expected, &inside, &outside);
+    assertBBox(&geofence, &expected, &inside, &outside);
 }
 
 TEST(aroundZeroZero) {
-    const GeoCoord verts[] = {
-        {0.4, -0.4}, {0.4, 0.4}, {-0.4, 0.4}, {-0.4, -0.4}};
+    GeoCoord verts[] = {{0.4, -0.4}, {0.4, 0.4}, {-0.4, 0.4}, {-0.4, -0.4}};
+    const Geofence geofence = {.numVerts = 4, .verts = verts};
     const BBox expected = {0.4, -0.4, 0.4, -0.4};
     const GeoCoord inside = {-0.1, -0.1};
     const GeoCoord outside = {1.0, -1.0};
-    assertBBox(verts, &expected, &inside, &outside);
+    assertBBox(&geofence, &expected, &inside, &outside);
 }
 
 TEST(transmeridian) {
-    const GeoCoord verts[] = {{0.4, M_PI - 0.1},
-                              {0.4, -M_PI + 0.1},
-                              {-0.4, -M_PI + 0.1},
-                              {-0.4, M_PI - 0.1}};
+    GeoCoord verts[] = {{0.4, M_PI - 0.1},
+                        {0.4, -M_PI + 0.1},
+                        {-0.4, -M_PI + 0.1},
+                        {-0.4, M_PI - 0.1}};
+    const Geofence geofence = {.numVerts = 4, .verts = verts};
     const BBox expected = {0.4, -0.4, -M_PI + 0.1, M_PI - 0.1};
     const GeoCoord inside = {-0.1, M_PI};
     const GeoCoord outside = {1.0, M_PI - 0.5};
-    assertBBox(verts, &expected, &inside, &outside);
-
-    BBox result;
-    Geofence geofence;
-    geofence.verts = verts;
-    geofence.numVerts = 4;
-
-    bboxFromGeofence(&geofence, &result);
+    assertBBox(&geofence, &expected, &inside, &outside);
 
     const GeoCoord westOutside = {0.1, M_PI - 0.5};
-    t_assert(!bboxContains(&result, &westOutside),
+    t_assert(!bboxContains(&expected, &westOutside),
              "Does not contain expected west outside point");
     const GeoCoord eastOutside = {0.1, -M_PI + 0.5};
-    t_assert(!bboxContains(&result, &eastOutside),
+    t_assert(!bboxContains(&expected, &eastOutside),
              "Does not contain expected east outside point");
 }
 
 TEST(edgeOnNorthPole) {
-    const GeoCoord verts[] = {
+    GeoCoord verts[] = {
         {M_PI_2 - 0.1, 0.1}, {M_PI_2 - 0.1, 0.8}, {M_PI_2, 0.8}, {M_PI_2, 0.1}};
+    const Geofence geofence = {.numVerts = 4, .verts = verts};
     const BBox expected = {M_PI_2, M_PI_2 - 0.1, 0.8, 0.1};
     const GeoCoord inside = {M_PI_2 - 0.01, 0.4};
     const GeoCoord outside = {M_PI_2, 0.9};
-    assertBBox(verts, &expected, &inside, &outside);
+    assertBBox(&geofence, &expected, &inside, &outside);
 }
 
 TEST(edgeOnSouthPole) {
-    const GeoCoord verts[] = {{-M_PI_2 + 0.1, 0.1},
-                              {-M_PI_2 + 0.1, 0.8},
-                              {-M_PI_2, 0.8},
-                              {-M_PI_2, 0.1}};
+    GeoCoord verts[] = {{-M_PI_2 + 0.1, 0.1},
+                        {-M_PI_2 + 0.1, 0.8},
+                        {-M_PI_2, 0.8},
+                        {-M_PI_2, 0.1}};
+    const Geofence geofence = {.numVerts = 4, .verts = verts};
     const BBox expected = {-M_PI_2 + 0.1, -M_PI_2, 0.8, 0.1};
     const GeoCoord inside = {-M_PI_2 + 0.01, 0.4};
     const GeoCoord outside = {-M_PI_2, 0.9};
-    assertBBox(verts, &expected, &inside, &outside);
+    assertBBox(&geofence, &expected, &inside, &outside);
 }
 
 TEST(containsEdges) {
