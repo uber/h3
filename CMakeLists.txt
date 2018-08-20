@@ -28,7 +28,13 @@ set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cmake/toolchain.cmake"
     CACHE FILEPATH
     "Toolchain to use for building this project")
 
-option(ENABLE_COVERAGE "Enable compiling tests with coverage." ON)
+if(CMAKE_BUILD_TYPE MATCHES "^(Debug|RelWithDebInfo)$")
+    set(is_debug_build ON)
+endif()
+include(CMakeDependentOption)
+cmake_dependent_option(
+    ENABLE_COVERAGE "Enable compiling tests with coverage." ON
+    "is_debug_build" OFF)
 
 if(WIN32)
     set(SHELL PowerShell -Command)
@@ -56,13 +62,15 @@ if(NOT WIN32)
     # are not correct for MSVC.
     list(APPEND H3_COMPILE_FLAGS -Wall)
 
-    list(APPEND H3_COMPILE_FLAGS $<$<CONFIG:Debug>:-gdwarf-2 -g3 -O0 -fno-inline -fno-eliminate-unused-debug-types>)
+    if(is_debug_build)
+        list(APPEND H3_COMPILE_FLAGS -gdwarf-2 -g3 -O0 -fno-inline -fno-eliminate-unused-debug-types)
+    endif()
 
     if(ENABLE_COVERAGE)
-        list(APPEND H3_COMPILE_FLAGS $<$<CONFIG:DEBUG>:--coverage>)
+        list(APPEND H3_COMPILE_FLAGS --coverage)
         # --coverage is not passed to the linker, so this option is needed
         # to fully enable coverage.
-        list(APPEND H3_LINK_FLAGS $<$<CONFIG:DEBUG>:--coverage>)
+        list(APPEND H3_LINK_FLAGS --coverage)
     endif()
 
     option(WARNINGS_AS_ERRORS "Warnings are treated as errors" OFF)
@@ -71,7 +79,6 @@ if(NOT WIN32)
     endif()
 endif()
 
-include(CMakeDependentOption)
 include(CheckIncludeFile)
 include(CTest)
 
