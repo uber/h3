@@ -42,21 +42,43 @@ typedef struct {
 /** Flag for LinkedGeoLoop type in IterableGeoLoop */
 #define TYPE_LINKED_GEO_LOOP 2
 
-#define INIT_ITERATION int loopIndex = -1
+/** Macro: Init iteration vars for either loop version */
+#define INIT_ITERATION                   \
+    int loopIndex = -1;                  \
+    LinkedGeoCoord* currentCoord = NULL; \
+    LinkedGeoCoord* nextCoord = NULL;
 
-#define ITERATE(loop, coord, next)                                             \
+/** Macro: Increment polymorphic loop iteration, or break if done.
+ *  Uses if/else rather than switch to support break
+ */
+#define ITERATE(loop, vertexA, vertexB)                                        \
     if (loop->type == TYPE_GEOFENCE) {                                         \
         if (++loopIndex >= loop->geofence->numVerts) break;                    \
-        coord = loop->geofence->verts[loopIndex];                              \
-        next =                                                                 \
+        vertexA = loop->geofence->verts[loopIndex];                            \
+        vertexB =                                                              \
             loop->geofence->verts[(loopIndex + 1) % loop->geofence->numVerts]; \
-    }  // TODO: TYPE_LINKED_GEO_LOOP
+    } else if (loop->type == TYPE_LINKED_GEO_LOOP) {                           \
+        currentCoord = currentCoord == NULL ? loop->linkedGeoLoop->first       \
+                                            : currentCoord->next;              \
+        if (currentCoord == NULL) break;                                       \
+        vertexA = currentCoord->vertex;                                        \
+        nextCoord = currentCoord->next == NULL ? loop->linkedGeoLoop->first    \
+                                               : currentCoord->next;           \
+        vertexB = nextCoord->vertex;                                           \
+    }
 
 void bboxFromGeofence(const Geofence* geofence, BBox* bbox);
 void bboxesFromGeoPolygon(const GeoPolygon* polygon, BBox* bboxes);
+void bboxFromLinkedGeoLoop(const LinkedGeoLoop* linkedGeoLoop, BBox* bbox);
+
 bool geofenceContainsPoint(const Geofence* geofence, const BBox* bbox,
                            const GeoCoord* coord);
 bool polygonContainsPoint(const GeoPolygon* geoPolygon, const BBox* bboxes,
                           const GeoCoord* coord);
+bool linkedGeoLoopContainsPoint(const LinkedGeoLoop* linkedGeoLoop,
+                                const BBox* bbox, const GeoCoord* coord);
+
+// Made available for testing
+bool loopIsEmpty(const IterableGeoLoop* loop);
 
 #endif

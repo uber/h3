@@ -39,28 +39,13 @@ double _normalizeLng(double lng, bool isTransmeridian) {
 }
 
 /**
- * Determine whether a geo loop is empty
- * @param  loop Loop to check
- * @return      isEmpty
- */
-bool _loopIsEmpty(const IterableGeoLoop* loop) {
-    switch (loop->type) {
-        case TYPE_GEOFENCE:
-            return loop->geofence->numVerts == 0;
-            // TODO: TYPE_LINKED_GEO_LOOP
-    }
-    // Should be unreachable, assume no iteration possible
-    return true;
-}
-
-/**
  * loopContainsPoint is the core loop of the point-in-poly
  * algorithm, working on either a Geofence or a LinkedGeoLoop.
  *
- * @param loop The loop to check
- * @param bbox The bbox for the loop being tested
- * @param coord The coordinate to check if contained by the geofence
- * @return true or false
+ * @param loop  The loop to check
+ * @param bbox  The bbox for the loop being tested
+ * @param coord The coordinate to check
+ * @return      Whether the point is contained
  */
 bool _loopContainsPoint(const IterableGeoLoop* loop, const BBox* bbox,
                         const GeoCoord* coord) {
@@ -123,6 +108,15 @@ bool _loopContainsPoint(const IterableGeoLoop* loop, const BBox* bbox,
     return contains;
 }
 
+/**
+ * geofenceContainsPoint takes a given Geofence data structure and
+ * checks if it contains a given geo coordinate.
+ *
+ * @param geofence  The geofence
+ * @param bbox      The bbox for the geofence
+ * @param coord     The coordinate to check
+ * @return          Whether the point is contained
+ */
 bool geofenceContainsPoint(const Geofence* geofence, const BBox* bbox,
                            const GeoCoord* coord) {
     IterableGeoLoop loop;
@@ -136,10 +130,9 @@ bool geofenceContainsPoint(const Geofence* geofence, const BBox* bbox,
  * checks if it contains a given geo coordinate.
  *
  * @param geoPolygon The geofence and holes defining the relevant area
- * @param bboxes The bboxes for the main geofence and each of its holes
- * @param coord The coordinate to check if contained by the geoJson-like
- * struct
- * @return true or false
+ * @param bboxes     The bboxes for the main geofence and each of its holes
+ * @param coord      The coordinate to check
+ * @return           Whether the point is contained
  */
 bool polygonContainsPoint(const GeoPolygon* geoPolygon, const BBox* bboxes,
                           const GeoCoord* coord) {
@@ -163,6 +156,39 @@ bool polygonContainsPoint(const GeoPolygon* geoPolygon, const BBox* bboxes,
 }
 
 /**
+ * linkedGeoLoopContainsPoint takes a given LinkedGeoLoop data structure and
+ * checks if it contains a given geo coordinate.
+ *
+ * @param linkedGeoLoop The linked loop
+ * @param bbox          The bbox for the loop
+ * @param coord         The coordinate to check
+ * @return              Whether the point is contained
+ */
+bool linkedGeoLoopContainsPoint(const LinkedGeoLoop* linkedGeoLoop,
+                                const BBox* bbox, const GeoCoord* coord) {
+    IterableGeoLoop loop;
+    loop.type = TYPE_LINKED_GEO_LOOP;
+    loop.linkedGeoLoop = linkedGeoLoop;
+    return _loopContainsPoint(&loop, bbox, coord);
+}
+
+/**
+ * Determine whether a geo loop is empty
+ * @param  loop Loop to check
+ * @return      isEmpty
+ */
+bool loopIsEmpty(const IterableGeoLoop* loop) {
+    switch (loop->type) {
+        case TYPE_GEOFENCE:
+            return loop->geofence->numVerts == 0;
+        case TYPE_LINKED_GEO_LOOP:
+            return loop->linkedGeoLoop->first == NULL;
+    }
+    // Should be unreachable, assume no iteration possible
+    return true;
+}
+
+/**
  * Create a bounding box from a simple polygon defined as an array of vertices.
  * Known limitations:
  * - Does not support polygons with two adjacent points > 180 degrees of
@@ -174,7 +200,7 @@ bool polygonContainsPoint(const GeoPolygon* geoPolygon, const BBox* bboxes,
  */
 void _bboxFromLoop(const IterableGeoLoop* loop, BBox* bbox) {
     // Early exit if there are no vertices
-    if (_loopIsEmpty(loop)) {
+    if (loopIsEmpty(loop)) {
         bbox->north = 0;
         bbox->south = 0;
         bbox->east = 0;
@@ -239,4 +265,16 @@ void bboxesFromGeoPolygon(const GeoPolygon* polygon, BBox* bboxes) {
     for (int i = 0; i < polygon->numHoles; i++) {
         bboxFromGeofence(&polygon->holes[i], &bboxes[i + 1]);
     }
+}
+
+/**
+ * Create a bounding box from a LinkedGeoLoop
+ * @param geofence Input Geofence
+ * @param bbox     Output bbox
+ */
+void bboxFromLinkedGeoLoop(const LinkedGeoLoop* linkedGeoLoop, BBox* bbox) {
+    IterableGeoLoop loop;
+    loop.type = TYPE_LINKED_GEO_LOOP;
+    loop.linkedGeoLoop = linkedGeoLoop;
+    _bboxFromLoop(&loop, bbox);
 }

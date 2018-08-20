@@ -25,6 +25,7 @@
 #include "h3api.h"
 
 void initLinkedPolygon(LinkedGeoPolygon* polygon);
+void initLinkedLoop(LinkedGeoLoop* loop);
 LinkedGeoPolygon* addLinkedPolygon(LinkedGeoPolygon* polygon);
 LinkedGeoLoop* addLinkedLoop(LinkedGeoPolygon* polygon);
 LinkedGeoCoord* addLinkedCoord(LinkedGeoLoop* loop, const GeoCoord* vertex);

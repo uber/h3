@@ -19,6 +19,7 @@
 #include "constants.h"
 #include "geoCoord.h"
 #include "h3Index.h"
+#include "linkedGeo.h"
 #include "polygon.h"
 #include "test.h"
 
@@ -44,6 +45,14 @@ GeoCoord transMeridianHoleVerts[] = {{0.005, -M_PI + 0.005},
                                      {-0.005, M_PI - 0.005},
                                      {-0.005, -M_PI + 0.005}};
 Geofence transMeridianHoleGeofence;
+
+void destroyLinkedGeoLoop(LinkedGeoLoop* loop) {
+    for (LinkedGeoCoord *currentCoord = loop->first, *nextCoord;
+         currentCoord != NULL; currentCoord = nextCoord) {
+        nextCoord = currentCoord->next;
+        free(currentCoord);
+    }
+}
 
 BEGIN_TESTS(polygon);
 
@@ -173,6 +182,84 @@ TEST(bboxesFromGeoPolygonHole) {
     t_assert(bboxEquals(&result[1], &expectedHole), "Got expected hole bbox");
 
     free(result);
+}
+
+TEST(bboxFromLinkedGeoLoop) {
+    const GeoCoord verts[] = {{0.8, 0.3}, {0.7, 0.6}, {1.1, 0.7}, {1.0, 0.2}};
+
+    LinkedGeoLoop loop;
+    initLinkedLoop(&loop);
+
+    for (int i = 0; i < 4; i++) {
+        addLinkedCoord(&loop, &verts[i]);
+    }
+
+    const BBox expected = {1.1, 0.7, 0.7, 0.2};
+
+    BBox result;
+    bboxFromLinkedGeoLoop(&loop, &result);
+    t_assert(bboxEquals(&result, &expected), "Got expected bbox");
+
+    destroyLinkedGeoLoop(&loop);
+}
+
+TEST(bboxFromLinkedGeoLoopNoVertices) {
+    LinkedGeoLoop loop;
+    initLinkedLoop(&loop);
+
+    const BBox expected = {0.0, 0.0, 0.0, 0.0};
+
+    BBox result;
+    bboxFromLinkedGeoLoop(&loop, &result);
+
+    t_assert(bboxEquals(&result, &expected), "Got expected bbox");
+}
+
+TEST(loopIsEmptyLinkedLoop) {
+    LinkedGeoLoop linkedGeoLoop;
+    initLinkedLoop(&linkedGeoLoop);
+
+    IterableGeoLoop loop;
+    loop.linkedGeoLoop = &linkedGeoLoop;
+    loop.type = TYPE_LINKED_GEO_LOOP;
+
+    t_assert(loopIsEmpty(&loop) == true, "LinkedGeoLoop is empty");
+
+    const GeoCoord verts[] = {{0.8, 0.3}, {0.7, 0.6}, {1.1, 0.7}, {1.0, 0.2}};
+    for (int i = 0; i < 4; i++) {
+        addLinkedCoord(&linkedGeoLoop, &verts[i]);
+    }
+
+    t_assert(loopIsEmpty(&loop) == false, "LinkedGeoLoop is not empty");
+
+    destroyLinkedGeoLoop(&linkedGeoLoop);
+}
+
+TEST(loopIsEmptyLinkedLoopGeofence) {
+    GeoCoord noVerts[] = {};
+
+    Geofence geofence;
+    geofence.verts = noVerts;
+    geofence.numVerts = 0;
+
+    IterableGeoLoop loop;
+    loop.geofence = &geofence;
+    loop.type = TYPE_GEOFENCE;
+
+    t_assert(loopIsEmpty(&loop) == true, "Geofence is empty");
+
+    GeoCoord verts[] = {{0.8, 0.3}, {0.7, 0.6}, {1.1, 0.7}, {1.0, 0.2}};
+    geofence.verts = verts;
+    geofence.numVerts = 4;
+
+    t_assert(loopIsEmpty(&loop) == false, "Geofence is not empty");
+}
+
+TEST(loopIsEmptyUnknown) {
+    IterableGeoLoop loop;
+    loop.type = 42;
+
+    t_assert(loopIsEmpty(&loop) == true, "Unknown loop type is empty");
 }
 
 END_TESTS();
