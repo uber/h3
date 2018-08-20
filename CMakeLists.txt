@@ -330,14 +330,14 @@ if(BUILD_TESTING)
     set(test_number 0)
 
     if(ENABLE_COVERAGE)
-        file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/RunCoverage.cmake"
+        file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/RunCoverage.cmake"
                       INPUT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/RunCoverage.cmake.in")
         set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "coverage.info")
         set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "coverage.cleaned.info")
         set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "coverage")
         add_custom_target(coverage
             COMMAND ${CMAKE_COMMAND} -P
-                   "${CMAKE_CURRENT_BINARY_DIR}/RunCoverage.cmake")
+                    "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/RunCoverage.cmake")
         add_custom_target(clean-coverage
             # Before running coverage, clear all counters
             COMMAND lcov --directory '${CMAKE_CURRENT_BINARY_DIR}' --zerocounters
