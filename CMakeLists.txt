@@ -337,7 +337,9 @@ if(BUILD_TESTING)
         set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "coverage")
         add_custom_target(coverage
             COMMAND ${CMAKE_COMMAND} -P
-                    "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/RunCoverage.cmake")
+                    "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/RunCoverage.cmake"
+                    "${CMAKE_CURRENT_SOURCE_DIR}"
+                    "${CMAKE_CURRENT_BINARY_DIR}")
         add_custom_target(clean-coverage
             # Before running coverage, clear all counters
             COMMAND lcov --directory '${CMAKE_CURRENT_BINARY_DIR}' --zerocounters
