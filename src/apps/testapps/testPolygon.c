@@ -105,6 +105,28 @@ TEST(geofenceContainsPointTransmeridian) {
              "does not contain outside point to the east of the antimeridian");
 }
 
+TEST(linkedGeoLoopContainsPoint) {
+    GeoCoord somewhere = {1, 2};
+    GeoCoord inside = {0.659, -2.136};
+
+    LinkedGeoLoop loop;
+    initLinkedLoop(&loop);
+
+    for (int i = 0; i < 6; i++) {
+        addLinkedCoord(&loop, &sfVerts[i]);
+    }
+
+    BBox bbox;
+    bboxFromLinkedGeoLoop(&loop, &bbox);
+
+    t_assert(linkedGeoLoopContainsPoint(&loop, &bbox, &inside) == true,
+             "contains exact4");
+    t_assert(linkedGeoLoopContainsPoint(&loop, &bbox, &somewhere) == false,
+             "contains somewhere else");
+
+    destroyLinkedGeoLoop(&loop);
+}
+
 TEST(bboxFromGeofence) {
     GeoCoord verts[] = {{0.8, 0.3}, {0.7, 0.6}, {1.1, 0.7}, {1.0, 0.2}};
 
