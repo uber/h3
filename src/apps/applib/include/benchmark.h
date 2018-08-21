@@ -22,7 +22,7 @@
 
 #ifdef _WIN32
 
-#include <Winbase.h>
+#include <Windows.h>
 
 #define START_TIMER                   \
     LARGE_INTEGER start;              \
