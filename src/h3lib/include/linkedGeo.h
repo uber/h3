@@ -33,5 +33,6 @@ LinkedGeoCoord* addLinkedCoord(LinkedGeoLoop* loop, const GeoCoord* vertex);
 int countLinkedPolygons(LinkedGeoPolygon* polygon);
 int countLinkedLoops(LinkedGeoPolygon* polygon);
 int countLinkedCoords(LinkedGeoLoop* loop);
+void destroyLinkedGeoLoop(LinkedGeoLoop* loop);
 
 #endif

@@ -26,6 +26,7 @@
 #include "constants.h"
 #include "geoCoord.h"
 #include "h3api.h"
+#include "linkedGeo.h"
 
 // Define macros used in polygon algos for Geofence
 #define TYPE Geofence
@@ -116,7 +117,8 @@ int _countContainers(LinkedGeoLoop* loop, LinkedGeoPolygon** polygons,
 }
 
 /**
- * Find the polygon to which a given hole should be allocated
+ * Find the polygon to which a given hole should be allocated. Note that this
+ * function will return null if no parent is found.
  * @param  loop         Inner loop describing a hole
  * @param  polygon      Head of a linked list of polygons to check
  * @param  polygonCount Number of polygons to check
@@ -171,6 +173,10 @@ LinkedGeoPolygon* _findPolygonForHole(LinkedGeoLoop* loop,
  * must be first in the list, followed by any holes. Holes in this algorithm
  * are identified by winding order (holes are clockwise), which is guaranteed
  * by the h3SetToVertexGraph algorithm.
+ *
+ * Input to this function is assumed to be a single polygon including all
+ * loops to normalize. It's assumed that a valid arrangement is possible.
+ *
  * @param root Root polygon including all loops
  */
 void normalizeMultiPolygon(LinkedGeoPolygon* root) {
@@ -218,11 +224,21 @@ void normalizeMultiPolygon(LinkedGeoPolygon* root) {
         loop->next = NULL;
         loop = next;
     }
-    // Find polygon for each inner loop and assign the hole to it
-    for (int i = 0; i < innerCount; i++) {
-        polygon = _findPolygonForHole(innerLoops[i], root, bboxes, outerCount);
-        addLinkedLoop(polygon, innerLoops[i]);
+    // If no outer loops were found, the polygon is invalid. We've already
+    // unlinked the root, so returning here will leave root in an empty
+    // state - this is assumed better than an invalid state.
+    if (outerCount > 0) {
+        // Find polygon for each inner loop and assign the hole to it
+        for (int i = 0; i < innerCount; i++) {
+            polygon =
+                _findPolygonForHole(innerLoops[i], root, bboxes, outerCount);
+            if (polygon) {
+                addLinkedLoop(polygon, innerLoops[i]);
+            }
+            // TODO: Evasive action/assertion if no parents are found?
+        }
     }
+    // TODO: Free any unallocated inner loops? Only possible with invalid input
     // Free allocated memory
     free(innerLoops);
     free(bboxes);

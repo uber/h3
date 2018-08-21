@@ -110,6 +110,19 @@ LinkedGeoCoord* addLinkedCoord(LinkedGeoLoop* loop, const GeoCoord* vertex) {
 }
 
 /**
+ * Free all allocated memory for a linked geo loop. The caller is
+ * responsible for freeing memory allocated to input loop struct.
+ * @param loop Loop to free
+ */
+void destroyLinkedGeoLoop(LinkedGeoLoop* loop) {
+    for (LinkedGeoCoord *currentCoord = loop->first, *nextCoord;
+         currentCoord != NULL; currentCoord = nextCoord) {
+        nextCoord = currentCoord->next;
+        free(currentCoord);
+    }
+}
+
+/**
  * Free all allocated memory for a linked geo structure. The caller is
  * responsible for freeing memory allocated to input polygon struct.
  * @param polygon Pointer to the first polygon in the structure
@@ -121,11 +134,7 @@ void H3_EXPORT(destroyLinkedPolygon)(LinkedGeoPolygon* polygon) {
          currentPolygon != NULL; currentPolygon = nextPolygon) {
         for (LinkedGeoLoop *currentLoop = currentPolygon->first, *nextLoop;
              currentLoop != NULL; currentLoop = nextLoop) {
-            for (LinkedGeoCoord *currentCoord = currentLoop->first, *nextCoord;
-                 currentCoord != NULL; currentCoord = nextCoord) {
-                nextCoord = currentCoord->next;
-                free(currentCoord);
-            }
+            destroyLinkedGeoLoop(currentLoop);
             nextLoop = currentLoop->next;
             free(currentLoop);
         }

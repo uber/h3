@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <assert.h>
 #include <stdlib.h>
 #include "bbox.h"
 #include "constants.h"
@@ -46,15 +47,7 @@ GeoCoord transMeridianHoleVerts[] = {{0.005, -M_PI + 0.005},
                                      {-0.005, -M_PI + 0.005}};
 Geofence transMeridianHoleGeofence;
 
-static void destroyLinkedGeoLoop(LinkedGeoLoop* loop) {
-    for (LinkedGeoCoord *currentCoord = loop->first, *nextCoord;
-         currentCoord != NULL; currentCoord = nextCoord) {
-        nextCoord = currentCoord->next;
-        free(currentCoord);
-    }
-}
-
-void createLinkedLoop(LinkedGeoLoop* loop, GeoCoord* verts, int numVerts) {
+static void createLinkedLoop(LinkedGeoLoop* loop, GeoCoord* verts, int numVerts) {
     initLinkedLoop(loop);
     for (int i = 0; i < numVerts; i++) {
         addLinkedCoord(loop, verts++);
@@ -294,6 +287,149 @@ TEST(isNotClockwiseLinkedGeoLoopTransmeridian) {
              "Got false for counter-clockwise transmeridian loop");
 
     destroyLinkedGeoLoop(&loop);
+}
+
+TEST(normalizeMultiPolygonSingle) {
+    GeoCoord verts[] = {{0, 0}, {0, 1}, {1, 1}};
+
+    LinkedGeoLoop* outer = calloc(1, sizeof(*outer));
+    assert(outer != NULL);
+    createLinkedLoop(outer, &verts[0], 3);
+
+    LinkedGeoPolygon polygon;
+    initLinkedPolygon(&polygon);
+    addLinkedLoop(&polygon, outer);
+
+    normalizeMultiPolygon(&polygon);
+
+    t_assert(countLinkedPolygons(&polygon) == 1, "Polygon count correct");
+    t_assert(countLinkedLoops(&polygon) == 1, "Loop count correct");
+    t_assert(polygon.first == outer, "Got expected loop");
+
+    H3_EXPORT(destroyLinkedPolygon)(&polygon);
+}
+
+TEST(normalizeMultiPolygonTwoOuterLoops) {
+    GeoCoord verts1[] = {{0, 0}, {0, 1}, {1, 1}};
+
+    LinkedGeoLoop* outer1 = calloc(1, sizeof(*outer1));
+    assert(outer1 != NULL);
+    createLinkedLoop(outer1, &verts1[0], 3);
+
+    GeoCoord verts2[] = {{2, 2}, {2, 3}, {3, 3}};
+
+    LinkedGeoLoop* outer2 = calloc(1, sizeof(*outer2));
+    assert(outer2 != NULL);
+    createLinkedLoop(outer2, &verts2[0], 3);
+
+    LinkedGeoPolygon polygon;
+    initLinkedPolygon(&polygon);
+    addLinkedLoop(&polygon, outer1);
+    addLinkedLoop(&polygon, outer2);
+
+    normalizeMultiPolygon(&polygon);
+
+    t_assert(countLinkedPolygons(&polygon) == 2, "Polygon count correct");
+    t_assert(countLinkedLoops(&polygon) == 1,
+             "Loop count on first polygon correct");
+    t_assert(countLinkedLoops(polygon.next) == 1,
+             "Loop count on second polygon correct");
+
+    H3_EXPORT(destroyLinkedPolygon)(&polygon);
+}
+
+TEST(normalizeMultiPolygonOneHole) {
+    GeoCoord verts[] = {{0, 0}, {0, 3}, {3, 3}, {3, 0}};
+
+    LinkedGeoLoop* outer = calloc(1, sizeof(*outer));
+    assert(outer != NULL);
+    createLinkedLoop(outer, &verts[0], 4);
+
+    GeoCoord verts2[] = {{1, 1}, {2, 2}, {1, 2}};
+
+    LinkedGeoLoop* inner = calloc(1, sizeof(*inner));
+    assert(inner != NULL);
+    createLinkedLoop(inner, &verts2[0], 3);
+
+    LinkedGeoPolygon polygon;
+    initLinkedPolygon(&polygon);
+    addLinkedLoop(&polygon, inner);
+    addLinkedLoop(&polygon, outer);
+
+    normalizeMultiPolygon(&polygon);
+
+    t_assert(countLinkedPolygons(&polygon) == 1, "Polygon count correct");
+    t_assert(countLinkedLoops(&polygon) == 2,
+             "Loop count on first polygon correct");
+    t_assert(polygon.first == outer, "Got expected outer loop");
+    t_assert(polygon.first->next == inner, "Got expected inner loop");
+
+    H3_EXPORT(destroyLinkedPolygon)(&polygon);
+}
+
+TEST(normalizeMultiPolygonTwoHoles) {
+    GeoCoord verts[] = {{0, 0}, {0, 0.4}, {0.4, 0.4}, {0.4, 0}};
+
+    LinkedGeoLoop* outer = calloc(1, sizeof(*outer));
+    assert(outer != NULL);
+    createLinkedLoop(outer, &verts[0], 4);
+
+    GeoCoord verts2[] = {{0.1, 0.1}, {0.2, 0.2}, {0.1, 0.2}};
+
+    LinkedGeoLoop* inner1 = calloc(1, sizeof(*inner1));
+    assert(inner1 != NULL);
+    createLinkedLoop(inner1, &verts2[0], 3);
+
+    GeoCoord verts3[] = {{0.2, 0.2}, {0.3, 0.3}, {0.2, 0.3}};
+
+    LinkedGeoLoop* inner2 = calloc(1, sizeof(*inner2));
+    assert(inner2 != NULL);
+    createLinkedLoop(inner2, &verts3[0], 3);
+
+    LinkedGeoPolygon polygon;
+    initLinkedPolygon(&polygon);
+    addLinkedLoop(&polygon, inner2);
+    addLinkedLoop(&polygon, outer);
+    addLinkedLoop(&polygon, inner1);
+
+    normalizeMultiPolygon(&polygon);
+
+    t_assert(countLinkedPolygons(&polygon) == 1,
+             "Polygon count correct for 2 holes");
+    t_assert(polygon.first == outer, "Got expected outer loop");
+    t_assert(countLinkedLoops(&polygon) == 3,
+             "Loop count on first polygon correct");
+
+    H3_EXPORT(destroyLinkedPolygon)(&polygon);
+}
+
+TEST(normalizeMultiPolygonNoOuterLoops) {
+    GeoCoord verts1[] = {{0, 0}, {1, 1}, {0, 1}};
+
+    LinkedGeoLoop* outer1 = calloc(1, sizeof(*outer1));
+    assert(outer1 != NULL);
+    createLinkedLoop(outer1, &verts1[0], 3);
+
+    GeoCoord verts2[] = {{2, 2}, {3, 3}, {2, 3}};
+
+    LinkedGeoLoop* outer2 = calloc(1, sizeof(*outer2));
+    assert(outer2 != NULL);
+    createLinkedLoop(outer2, &verts2[0], 3);
+
+    LinkedGeoPolygon polygon;
+    initLinkedPolygon(&polygon);
+    addLinkedLoop(&polygon, outer1);
+    addLinkedLoop(&polygon, outer2);
+
+    normalizeMultiPolygon(&polygon);
+
+    t_assert(countLinkedPolygons(&polygon) == 1, "Polygon count correct");
+    t_assert(countLinkedLoops(&polygon) == 0,
+             "Loop count as expected with invalid input");
+
+    // Note: These got de-linked so we need to free them separately
+    destroyLinkedGeoLoop(outer1);
+    destroyLinkedGeoLoop(outer2);
 }
 
 END_TESTS();
