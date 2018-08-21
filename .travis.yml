@@ -54,7 +54,7 @@ matrix:
       script:
         - make && make coverage
       after_success:
-        - coveralls --lcov-file coverage.cleaned.info --verbose
+        - coveralls --lcov-file Debug/coverage.cleaned.info --verbose
     - env: NAME="Mac OSX (Xcode 8)"
       os: osx
 

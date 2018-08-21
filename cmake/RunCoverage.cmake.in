@@ -12,14 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This script is used to run the `coverage` target. In order to guarantee that
-# `coverage` is only a valid target in debug builds, we must know the build
-# mode. However, CMake tries to delay the selection of the build mode until
-# the build itself. This allows tools like Xcode to choose to build in debug
-# mode or release mode without rerunning CMake. In order to control the coverage
-# target based on the build mode, this script is regenerated whenever a new
-# build mode is selected, regardless of whether or not the `cmake` command is
-# invoked again.
+# To invoke this script, use `cmake -P <script> <source-dir> <binary-dir>`,
+# where `source-dir` corresponds to CMake source directory and `binary-dir`
+# corresponds to the CMake build directory. This script is used to run the
+# `coverage` target. In order to guarantee that `coverage` is only a valid
+# target in debug builds, we must know the build mode. However, CMake tries to
+# delay the selection of the build mode until the build itself. This allows
+# tools like Xcode to choose to build in debug mode or release mode without
+# rerunning CMake. In order to control the `coverage` target based on the build
+# mode, this script is regenerated whenever a new build mode is selected,
+# regardless of whether or not the `cmake` command is invoked again.
 #
 # Example:
 #
