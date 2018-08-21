@@ -20,9 +20,9 @@
 #ifndef BENCHMARK_H
 #define BENCHMARK_H
 
-#include <time.h>
-
 #ifdef _WIN32
+
+#include <Winbase.h>
 
 #define START_TIMER                   \
     LARGE_INTEGER start;              \
@@ -37,6 +37,8 @@
         ((long double)(end.QuadPart - start.QuadPart)) / freq.QuadPart * 1E9
 
 #else  // !defined(_WIN32)
+
+#include <time.h>
 
 #define START_TIMER        \
     struct timespec start; \
