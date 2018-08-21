@@ -173,3 +173,23 @@ void GENERIC_LOOP_ALGO(bboxFrom)(const TYPE* loop, BBox* bbox) {
         bbox->west = tmp;
     }
 }
+
+/**
+ * Whether the winding order of a given loop is clockwise. In GeoJSON,
+ * clockwise loops are always inner loops (holes).
+ * @param loop  The loop to check
+ * @return      Whether the loop is clockwise
+ */
+bool GENERIC_LOOP_ALGO(isClockwise)(const TYPE* loop) {
+    int sum = 0;
+    GeoCoord a;
+    GeoCoord b;
+
+    INIT_ITERATION;
+    while (true) {
+        ITERATE(loop, a, b);
+        sum += ((b.lon - a.lon) * (b.lat + a.lat));
+    }
+
+    return sum > 0;
+}
