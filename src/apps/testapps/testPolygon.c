@@ -68,21 +68,21 @@ transMeridianGeofence.verts = transMeridianVerts;
 transMeridianHoleGeofence.numVerts = 4;
 transMeridianHoleGeofence.verts = transMeridianHoleVerts;
 
-TEST(geofenceContainsPoint) {
+TEST(pointInsideGeofence) {
     GeoCoord somewhere = {1, 2};
 
     BBox bbox;
     bboxFromGeofence(&sfGeofence, &bbox);
 
-    t_assert(geofenceContainsPoint(&sfGeofence, &bbox, &sfVerts[0]) == false,
+    t_assert(pointInsideGeofence(&sfGeofence, &bbox, &sfVerts[0]) == false,
              "contains exact");
-    t_assert(geofenceContainsPoint(&sfGeofence, &bbox, &sfVerts[4]) == true,
+    t_assert(pointInsideGeofence(&sfGeofence, &bbox, &sfVerts[4]) == true,
              "contains exact4");
-    t_assert(geofenceContainsPoint(&sfGeofence, &bbox, &somewhere) == false,
+    t_assert(pointInsideGeofence(&sfGeofence, &bbox, &somewhere) == false,
              "contains somewhere else");
 }
 
-TEST(geofenceContainsPointTransmeridian) {
+TEST(pointInsideGeofenceTransmeridian) {
     GeoCoord eastPoint = {0.001, -M_PI + 0.001};
     GeoCoord eastPointOutside = {0.001, -M_PI + 0.1};
     GeoCoord westPoint = {0.001, M_PI - 0.001};
@@ -91,21 +91,21 @@ TEST(geofenceContainsPointTransmeridian) {
     BBox bbox;
     bboxFromGeofence(&transMeridianGeofence, &bbox);
 
-    t_assert(geofenceContainsPoint(&transMeridianGeofence, &bbox, &westPoint) ==
-                 true,
-             "contains point to the west of the antimeridian");
-    t_assert(geofenceContainsPoint(&transMeridianGeofence, &bbox, &eastPoint) ==
-                 true,
-             "contains point to the east of the antimeridian");
-    t_assert(geofenceContainsPoint(&transMeridianGeofence, &bbox,
-                                   &westPointOutside) == false,
+    t_assert(
+        pointInsideGeofence(&transMeridianGeofence, &bbox, &westPoint) == true,
+        "contains point to the west of the antimeridian");
+    t_assert(
+        pointInsideGeofence(&transMeridianGeofence, &bbox, &eastPoint) == true,
+        "contains point to the east of the antimeridian");
+    t_assert(pointInsideGeofence(&transMeridianGeofence, &bbox,
+                                 &westPointOutside) == false,
              "does not contain outside point to the west of the antimeridian");
-    t_assert(geofenceContainsPoint(&transMeridianGeofence, &bbox,
-                                   &eastPointOutside) == false,
+    t_assert(pointInsideGeofence(&transMeridianGeofence, &bbox,
+                                 &eastPointOutside) == false,
              "does not contain outside point to the east of the antimeridian");
 }
 
-TEST(linkedGeoLoopContainsPoint) {
+TEST(pointInsideLinkedGeoLoop) {
     GeoCoord somewhere = {1, 2};
     GeoCoord inside = {0.659, -2.136};
 
@@ -119,9 +119,9 @@ TEST(linkedGeoLoopContainsPoint) {
     BBox bbox;
     bboxFromLinkedGeoLoop(&loop, &bbox);
 
-    t_assert(linkedGeoLoopContainsPoint(&loop, &bbox, &inside) == true,
+    t_assert(pointInsideLinkedGeoLoop(&loop, &bbox, &inside) == true,
              "contains exact4");
-    t_assert(linkedGeoLoopContainsPoint(&loop, &bbox, &somewhere) == false,
+    t_assert(pointInsideLinkedGeoLoop(&loop, &bbox, &somewhere) == false,
              "contains somewhere else");
 
     destroyLinkedGeoLoop(&loop);
@@ -233,51 +233,6 @@ TEST(bboxFromLinkedGeoLoopNoVertices) {
     bboxFromLinkedGeoLoop(&loop, &result);
 
     t_assert(bboxEquals(&result, &expected), "Got expected bbox");
-}
-
-TEST(loopIsEmptyLinkedLoop) {
-    LinkedGeoLoop linkedGeoLoop;
-    initLinkedLoop(&linkedGeoLoop);
-
-    IterableGeoLoop loop;
-    loop.linkedGeoLoop = &linkedGeoLoop;
-    loop.type = TYPE_LINKED_GEO_LOOP;
-
-    t_assert(loopIsEmpty(&loop) == true, "LinkedGeoLoop is empty");
-
-    const GeoCoord verts[] = {{0.8, 0.3}, {0.7, 0.6}, {1.1, 0.7}, {1.0, 0.2}};
-    for (int i = 0; i < 4; i++) {
-        addLinkedCoord(&linkedGeoLoop, &verts[i]);
-    }
-
-    t_assert(loopIsEmpty(&loop) == false, "LinkedGeoLoop is not empty");
-
-    destroyLinkedGeoLoop(&linkedGeoLoop);
-}
-
-TEST(loopIsEmptyLinkedLoopGeofence) {
-    Geofence geofence;
-    geofence.verts = NULL;
-    geofence.numVerts = 0;
-
-    IterableGeoLoop loop;
-    loop.geofence = &geofence;
-    loop.type = TYPE_GEOFENCE;
-
-    t_assert(loopIsEmpty(&loop) == true, "Geofence is empty");
-
-    GeoCoord verts[] = {{0.8, 0.3}, {0.7, 0.6}, {1.1, 0.7}, {1.0, 0.2}};
-    geofence.verts = verts;
-    geofence.numVerts = 4;
-
-    t_assert(loopIsEmpty(&loop) == false, "Geofence is not empty");
-}
-
-TEST(loopIsEmptyUnknown) {
-    IterableGeoLoop loop;
-    loop.type = 42;
-
-    t_assert(loopIsEmpty(&loop) == true, "Unknown loop type is empty");
 }
 
 END_TESTS();

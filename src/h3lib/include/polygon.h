@@ -26,59 +26,50 @@
 #include "h3api.h"
 #include "linkedGeo.h"
 
-/** @struct IterableGeoLoop
- *  @brief  Struct supporting polymorphic loop iteration
- */
-typedef struct {
-    union {
-        const Geofence* geofence;            ///< optional Geofence
-        const LinkedGeoLoop* linkedGeoLoop;  ///< optional LinkedGeoLoop
-    };
-    int type;  ///< flag for type held by struct
-} IterableGeoLoop;
+/** Macro: Init iteration vars for Geofence */
+#define INIT_ITERATION_GEOFENCE int loopIndex = -1
 
-/** Flag for Geofence type in IterableGeoLoop */
-#define TYPE_GEOFENCE 1
-/** Flag for LinkedGeoLoop type in IterableGeoLoop */
-#define TYPE_LINKED_GEO_LOOP 2
+/** Macro: Increment Geofence loop iteration, or break if done. */
+#define ITERATE_GEOFENCE(geofence, vertexA, vertexB) \
+    if (++loopIndex >= geofence->numVerts) break;    \
+    vertexA = geofence->verts[loopIndex];            \
+    vertexB = geofence->verts[(loopIndex + 1) % geofence->numVerts]
 
-/** Macro: Init iteration vars for either loop version */
-#define INIT_ITERATION                   \
-    int loopIndex = -1;                  \
+/** Macro: Whether a Geofence is empty */
+#define IS_EMPTY_GEOFENCE(geofence) geofence->numVerts == 0
+
+/** Macro: Init iteration vars for LinkedGeoLoop */
+#define INIT_ITERATION_LINKED_LOOP       \
     LinkedGeoCoord* currentCoord = NULL; \
     LinkedGeoCoord* nextCoord = NULL
 
-/** Macro: Increment polymorphic loop iteration, or break if done.
- *  Uses if/else rather than switch to support break
- */
-#define ITERATE(loop, vertexA, vertexB)                                        \
-    if (loop->type == TYPE_GEOFENCE) {                                         \
-        if (++loopIndex >= loop->geofence->numVerts) break;                    \
-        vertexA = loop->geofence->verts[loopIndex];                            \
-        vertexB =                                                              \
-            loop->geofence->verts[(loopIndex + 1) % loop->geofence->numVerts]; \
-    } else if (loop->type == TYPE_LINKED_GEO_LOOP) {                           \
-        currentCoord = currentCoord == NULL ? loop->linkedGeoLoop->first       \
-                                            : currentCoord->next;              \
-        if (currentCoord == NULL) break;                                       \
-        vertexA = currentCoord->vertex;                                        \
-        nextCoord = currentCoord->next == NULL ? loop->linkedGeoLoop->first    \
-                                               : currentCoord->next;           \
-        vertexB = nextCoord->vertex;                                           \
-    }
+/** Macro: Get the next coord in a linked loop, wrapping if needed */
+#define GET_NEXT_COORD(loop, coordToCheck) \
+    coordToCheck == NULL ? loop->first : currentCoord->next
 
-void bboxFromGeofence(const Geofence* geofence, BBox* bbox);
+/** Macro: Increment LinkedGeoLoop iteration, or break if done. */
+#define ITERATE_LINKED_LOOP(loop, vertexA, vertexB)       \
+    currentCoord = GET_NEXT_COORD(loop, currentCoord);    \
+    if (currentCoord == NULL) break;                      \
+    vertexA = currentCoord->vertex;                       \
+    nextCoord = GET_NEXT_COORD(loop, currentCoord->next); \
+    vertexB = nextCoord->vertex
+
+/** Macro: Whether a LinkedGeoLoop is empty */
+#define IS_EMPTY_LINKED_LOOP(loop) loop->first == NULL
+
+/** Macro: Normalize longitude */
+#define NORMALIZE_LNG(lng, isTransmeridian) \
+    isTransmeridian&& lng < 0 ? lng + M_2PI : lng
+
+void bboxFromGeofence(const Geofence* loop, BBox* bbox);
 void bboxesFromGeoPolygon(const GeoPolygon* polygon, BBox* bboxes);
-void bboxFromLinkedGeoLoop(const LinkedGeoLoop* linkedGeoLoop, BBox* bbox);
-
-bool geofenceContainsPoint(const Geofence* geofence, const BBox* bbox,
-                           const GeoCoord* coord);
-bool polygonContainsPoint(const GeoPolygon* geoPolygon, const BBox* bboxes,
-                          const GeoCoord* coord);
-bool linkedGeoLoopContainsPoint(const LinkedGeoLoop* linkedGeoLoop,
-                                const BBox* bbox, const GeoCoord* coord);
-
-// Made available for testing
-bool loopIsEmpty(const IterableGeoLoop* loop);
+bool pointInsideGeofence(const Geofence* loop, const BBox* bbox,
+                         const GeoCoord* coord);
+bool pointInsidePolygon(const GeoPolygon* geoPolygon, const BBox* bboxes,
+                        const GeoCoord* coord);
+void bboxFromLinkedGeoLoop(const LinkedGeoLoop* loop, BBox* bbox);
+bool pointInsideLinkedGeoLoop(const LinkedGeoLoop* loop, const BBox* bbox,
+                              const GeoCoord* coord);
 
 #endif

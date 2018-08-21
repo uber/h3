@@ -26,234 +26,33 @@
 #include "geoCoord.h"
 #include "h3api.h"
 
-/**
- * Normalize a longitude value, converting it into a comparable value in
- * transmeridian cases.
- * @param  lng Longitude to normalize
- * @param  isTransmeridian Whether this longitude is part of a transmeridian
- *                         polygon
- * @return Normalized longitude
- */
-double _normalizeLng(double lng, bool isTransmeridian) {
-    return isTransmeridian && lng < 0 ? lng + M_2PI : lng;
-}
+// Define macros used in polygon algos for Geofence
+#define TYPE Geofence
+#define INIT_ITERATION INIT_ITERATION_GEOFENCE
+#define ITERATE ITERATE_GEOFENCE
+#define IS_EMPTY IS_EMPTY_GEOFENCE
+
+// Functions created in include file:
 
 /**
- * loopContainsPoint is the core loop of the point-in-poly
- * algorithm, working on either a Geofence or a LinkedGeoLoop.
+ * Take a given Geofence data structure and check if it
+ * contains a given geo coordinate.
+ * @name pointInsideGeofence
  *
- * @param loop  The loop to check
- * @param bbox  The bbox for the loop being tested
- * @param coord The coordinate to check
- * @return      Whether the point is contained
- */
-bool _loopContainsPoint(const IterableGeoLoop* loop, const BBox* bbox,
-                        const GeoCoord* coord) {
-    // fail fast if we're outside the bounding box
-    if (!bboxContains(bbox, coord)) {
-        return false;
-    }
-    bool isTransmeridian = bboxIsTransmeridian(bbox);
-    bool contains = false;
-
-    double lat = coord->lat;
-    double lng = _normalizeLng(coord->lon, isTransmeridian);
-
-    GeoCoord a;
-    GeoCoord b;
-
-    INIT_ITERATION;
-
-    while (true) {
-        ITERATE(loop, a, b);
-
-        // Ray casting algo requires the second point to always be higher
-        // than the first, so swap if needed
-        if (a.lat > b.lat) {
-            GeoCoord tmp = a;
-            a = b;
-            b = tmp;
-        }
-
-        // If we're totally above or below the latitude ranges, the test
-        // ray cannot intersect the line segment, so let's move on
-        if (lat < a.lat || lat > b.lat) {
-            continue;
-        }
-
-        double aLng = _normalizeLng(a.lon, isTransmeridian);
-        double bLng = _normalizeLng(b.lon, isTransmeridian);
-
-        // Rays are cast in the longitudinal direction, in case a point
-        // exactly matches, to decide tiebreakers, bias westerly
-        if (aLng == lng || bLng == lng) {
-            lng -= DBL_EPSILON;
-        }
-
-        // For the latitude of the point, compute the longitude of the
-        // point that lies on the line segment defined by a and b
-        // This is done by computing the percent above a the lat is,
-        // and traversing the same percent in the longitudinal direction
-        // of a to b
-        double ratio = (lat - a.lat) / (b.lat - a.lat);
-        double testLng =
-            _normalizeLng(aLng + (bLng - aLng) * ratio, isTransmeridian);
-
-        // Intersection of the ray
-        if (testLng > lng) {
-            contains = !contains;
-        }
-    }
-
-    return contains;
-}
-
-/**
- * geofenceContainsPoint takes a given Geofence data structure and
- * checks if it contains a given geo coordinate.
- *
- * @param geofence  The geofence
- * @param bbox      The bbox for the geofence
- * @param coord     The coordinate to check
- * @return          Whether the point is contained
- */
-bool geofenceContainsPoint(const Geofence* geofence, const BBox* bbox,
-                           const GeoCoord* coord) {
-    IterableGeoLoop loop;
-    loop.type = TYPE_GEOFENCE;
-    loop.geofence = geofence;
-    return _loopContainsPoint(&loop, bbox, coord);
-}
-
-/**
- * polygonContainsPoint takes a given GeoPolygon data structure and
- * checks if it contains a given geo coordinate.
- *
- * @param geoPolygon The geofence and holes defining the relevant area
- * @param bboxes     The bboxes for the main geofence and each of its holes
- * @param coord      The coordinate to check
- * @return           Whether the point is contained
- */
-bool polygonContainsPoint(const GeoPolygon* geoPolygon, const BBox* bboxes,
-                          const GeoCoord* coord) {
-    // Start with contains state of primary geofence
-    bool contains =
-        geofenceContainsPoint(&(geoPolygon->geofence), &bboxes[0], coord);
-
-    // If the point is contained in the primary geofence, but there are holes in
-    // the geofence iterate through all holes and return false if the point is
-    // contained in any hole
-    if (contains && geoPolygon->numHoles > 0) {
-        for (int i = 0; i < geoPolygon->numHoles; i++) {
-            if (geofenceContainsPoint(&(geoPolygon->holes[i]), &bboxes[i + 1],
-                                      coord)) {
-                return false;
-            }
-        }
-    }
-
-    return contains;
-}
-
-/**
- * linkedGeoLoopContainsPoint takes a given LinkedGeoLoop data structure and
- * checks if it contains a given geo coordinate.
- *
- * @param linkedGeoLoop The linked loop
+ * @param loop          The geofence
  * @param bbox          The bbox for the loop
  * @param coord         The coordinate to check
  * @return              Whether the point is contained
  */
-bool linkedGeoLoopContainsPoint(const LinkedGeoLoop* linkedGeoLoop,
-                                const BBox* bbox, const GeoCoord* coord) {
-    IterableGeoLoop loop;
-    loop.type = TYPE_LINKED_GEO_LOOP;
-    loop.linkedGeoLoop = linkedGeoLoop;
-    return _loopContainsPoint(&loop, bbox, coord);
-}
-
-/**
- * Determine whether a geo loop is empty
- * @param  loop Loop to check
- * @return      isEmpty
- */
-bool loopIsEmpty(const IterableGeoLoop* loop) {
-    switch (loop->type) {
-        case TYPE_GEOFENCE:
-            return loop->geofence->numVerts == 0;
-        case TYPE_LINKED_GEO_LOOP:
-            return loop->linkedGeoLoop->first == NULL;
-    }
-    // Should be unreachable, assume no iteration possible
-    return true;
-}
-
-/**
- * Create a bounding box from a simple polygon defined as an array of vertices.
- * Known limitations:
- * - Does not support polygons with two adjacent points > 180 degrees of
- *   longitude apart. These will be interpreted as crossing the antimeridian.
- * - Does not currently support polygons containing a pole.
- * @param verts    Array of vertices
- * @param numVerts Number of vertices
- * @param bbox     Output bbox
- */
-void _bboxFromLoop(const IterableGeoLoop* loop, BBox* bbox) {
-    // Early exit if there are no vertices
-    if (loopIsEmpty(loop)) {
-        bbox->north = 0;
-        bbox->south = 0;
-        bbox->east = 0;
-        bbox->west = 0;
-        return;
-    }
-    double lat;
-    double lon;
-
-    bbox->south = DBL_MAX;
-    bbox->west = DBL_MAX;
-    bbox->north = -1.0 * DBL_MAX;
-    bbox->east = -1.0 * DBL_MAX;
-    bool isTransmeridian = false;
-
-    GeoCoord coord;
-    GeoCoord next;
-
-    INIT_ITERATION;
-
-    while (true) {
-        ITERATE(loop, coord, next);
-
-        lat = coord.lat;
-        lon = coord.lon;
-        if (lat < bbox->south) bbox->south = lat;
-        if (lon < bbox->west) bbox->west = lon;
-        if (lat > bbox->north) bbox->north = lat;
-        if (lon > bbox->east) bbox->east = lon;
-        // check for arcs > 180 degrees longitude, flagging as transmeridian
-        if (fabs(lon - next.lon) > M_PI) {
-            isTransmeridian = true;
-        }
-    }
-    // Swap east and west if transmeridian
-    if (isTransmeridian) {
-        double tmp = bbox->east;
-        bbox->east = bbox->west;
-        bbox->west = tmp;
-    }
-}
 
 /**
  * Create a bounding box from a Geofence
+ * @name bboxFromGeofence
  * @param geofence Input Geofence
  * @param bbox     Output bbox
  */
-void bboxFromGeofence(const Geofence* geofence, BBox* bbox) {
-    IterableGeoLoop loop;
-    loop.type = TYPE_GEOFENCE;
-    loop.geofence = geofence;
-    _bboxFromLoop(&loop, bbox);
-}
+
+#include "polygonAlgos.h"
 
 /**
  * Create a bounding box from a GeoPolygon
@@ -268,13 +67,69 @@ void bboxesFromGeoPolygon(const GeoPolygon* polygon, BBox* bboxes) {
 }
 
 /**
+ * pointInsidePolygon takes a given GeoPolygon data structure and
+ * checks if it contains a given geo coordinate.
+ *
+ * @param geoPolygon The geofence and holes defining the relevant area
+ * @param bboxes     The bboxes for the main geofence and each of its holes
+ * @param coord      The coordinate to check
+ * @return           Whether the point is contained
+ */
+bool pointInsidePolygon(const GeoPolygon* geoPolygon, const BBox* bboxes,
+                        const GeoCoord* coord) {
+    // Start with contains state of primary geofence
+    bool contains =
+        pointInsideGeofence(&(geoPolygon->geofence), &bboxes[0], coord);
+
+    // If the point is contained in the primary geofence, but there are holes in
+    // the geofence iterate through all holes and return false if the point is
+    // contained in any hole
+    if (contains && geoPolygon->numHoles > 0) {
+        for (int i = 0; i < geoPolygon->numHoles; i++) {
+            if (pointInsideGeofence(&(geoPolygon->holes[i]), &bboxes[i + 1],
+                                    coord)) {
+                return false;
+            }
+        }
+    }
+
+    return contains;
+}
+
+#undef TYPE
+#undef IS_EMPTY
+#undef INIT_ITERATION
+#undef ITERATE
+
+// Define macros used in polygon algos for LinkedGeoLoop
+#define TYPE LinkedGeoLoop
+#define INIT_ITERATION INIT_ITERATION_LINKED_LOOP
+#define ITERATE ITERATE_LINKED_LOOP
+#define IS_EMPTY IS_EMPTY_LINKED_LOOP
+
+// Functions created in include file:
+
+/**
+ * Take a given LinkedGeoLoop data structure and check if it
+ * contains a given geo coordinate.
+ * @name pointInsideLinkedGeoLoop
+ *
+ * @param loop          The linked loop
+ * @param bbox          The bbox for the loop
+ * @param coord         The coordinate to check
+ * @return              Whether the point is contained
+ */
+
+/**
  * Create a bounding box from a LinkedGeoLoop
+ * @name bboxFromLinkedGeoLoop
  * @param geofence Input Geofence
  * @param bbox     Output bbox
  */
-void bboxFromLinkedGeoLoop(const LinkedGeoLoop* linkedGeoLoop, BBox* bbox) {
-    IterableGeoLoop loop;
-    loop.type = TYPE_LINKED_GEO_LOOP;
-    loop.linkedGeoLoop = linkedGeoLoop;
-    _bboxFromLoop(&loop, bbox);
-}
+
+#include "polygonAlgos.h"
+
+#undef TYPE
+#undef IS_EMPTY
+#undef INIT_ITERATION
+#undef ITERATE
