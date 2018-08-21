@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Copyright 2018 Uber Technologies, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# To invoke this script, use `cmake -P <script> <source-dir> <binary-dir>`,
+# To invoke this script, use `bash coverage.sh <source-dir> <binary-dir>`,
 # where `source-dir` corresponds to CMake source directory and `binary-dir`
 # corresponds to the CMake build directory. This script is used to run the
 # `coverage` target. In order to guarantee that `coverage` is only a valid
@@ -27,27 +29,22 @@
 #
 # ```
 # $ cmake -DCMAKE_BUILD_TYPE=Debug ..
-# $ xcodebuild -configuration Release  # RunCoverage.cmake generated
-# $ xcodebuild -configuration Release  # RunCoverage.cmake not regenerated
-# $ xcodebuild -configuration Debug    # RunCoverage.cmake regenerated
+# $ xcodebuild -configuration Release  # coverage.sh generated
+# $ xcodebuild -configuration Release  # coverage.sh not regenerated
+# $ xcodebuild -configuration Debug    # coverage.sh regenerated
 # ```
 
-if($<BOOL:$<CONFIG:Debug>>)
-    set(source_dir "${CMAKE_ARGV0}")
-    set(binary_dir "${CMAKE_ARGV1}")
-    # Compile generated coverage counts into a single coverage.info
-    execute_process(
-        COMMAND lcov --directory "${binary_dir}" --capture --output-file coverage.info
-        WORKING_DIRECTORY "${binary_dir}")
-    # Take only coverage of the core library, not apps
-    execute_process(
-        COMMAND lcov --extract coverage.info "${source_dir}/src/h3lib/*" --output-file coverage.cleaned.info
-        WORKING_DIRECTORY "${binary_dir}")
-    # Generate output html at coverage/
-    execute_process(
-        COMMAND genhtml -o coverage coverage.cleaned.info --title "h3 coverage"
-        WORKING_DIRECTORY "${binary_dir}")
-    message(STATUS "Coverage done")
-else()
-    message(FATAL_ERROR "Cannot run coverage on non-debug build")
-endif()
+set -ex
+
+if [[ ! $<BOOL:$<CONFIG:Debug>> ]]; then
+    echo "Cannot run coverage for non-debug build" 1>&2
+    exit 1
+fi
+
+src_dir=${1:-"Missing source directory"}
+binary_dir=${2:-"Missing binary directory"}
+
+cd "${binary_dir}"
+lcov --directory . --capture --output-file coverage.info
+lcov --extract coverage.info "${src_dir}/src/h3lib/*" --output-file coverage.cleaned.info
+genhtml -o coverage coverage.cleaned.info --title 'h3 coverage'
