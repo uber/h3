@@ -34,7 +34,7 @@
 # $ xcodebuild -configuration Debug    # coverage.sh regenerated
 # ```
 
-set -ex
+set -e
 
 if [ ! $<BOOL:$<CONFIG:Debug>> ]; then
     echo "Cannot run coverage for non-debug build" 1>&2
