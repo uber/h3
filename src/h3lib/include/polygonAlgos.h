@@ -181,7 +181,7 @@ void GENERIC_LOOP_ALGO(bboxFrom)(const TYPE* loop, BBox* bbox) {
  * @return      Whether the loop is clockwise
  */
 bool GENERIC_LOOP_ALGO(isClockwise)(const TYPE* loop) {
-    int sum = 0;
+    double sum = 0;
     GeoCoord a;
     GeoCoord b;
 

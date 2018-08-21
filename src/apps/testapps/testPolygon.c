@@ -253,6 +253,22 @@ TEST(isClockwiseLinkedGeoLoop) {
     destroyLinkedGeoLoop(&loop);
 }
 
+TEST(isClockwiseLinkedGeoLoopFloats) {
+    const GeoCoord verts[] = {{0.1, 0.1}, {0.2, 0.2}, {0.1, 0.2}};
+
+    LinkedGeoLoop loop;
+    initLinkedLoop(&loop);
+
+    for (int i = 0; i < 3; i++) {
+        addLinkedCoord(&loop, &verts[i]);
+    }
+
+    t_assert(isClockwiseLinkedGeoLoop(&loop) == true,
+             "Got true for clockwise loop");
+
+    destroyLinkedGeoLoop(&loop);
+}
+
 TEST(isNotClockwiseLinkedGeoLoop) {
     const GeoCoord verts[] = {{0, 0}, {0, 1}, {1, 1}};
 
@@ -260,6 +276,22 @@ TEST(isNotClockwiseLinkedGeoLoop) {
     initLinkedLoop(&loop);
 
     for (int i = 0; i < 3; i++) {
+        addLinkedCoord(&loop, &verts[i]);
+    }
+
+    t_assert(isClockwiseLinkedGeoLoop(&loop) == false,
+             "Got false for counter-clockwise loop");
+
+    destroyLinkedGeoLoop(&loop);
+}
+
+TEST(isNotClockwiseLinkedGeoLoopFloats) {
+    const GeoCoord verts[] = {{0, 0}, {0, 0.4}, {0.4, 0.4}, {0.4, 0}};
+
+    LinkedGeoLoop loop;
+    initLinkedLoop(&loop);
+
+    for (int i = 0; i < 4; i++) {
         addLinkedCoord(&loop, &verts[i]);
     }
 
