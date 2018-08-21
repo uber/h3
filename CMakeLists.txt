@@ -330,23 +330,13 @@ if(BUILD_TESTING)
     set(test_number 0)
 
     if(ENABLE_COVERAGE)
-        if(WIN32)
-            set(run_script_cmd PowerShell -file)
-            set(script_suffix "bat")
-        else()
-            set(run_script_cmd /usr/bin/env bash)
-            set(script_suffix "sh")
-        endif()
-        file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/coverage.${script_suffix}"
-                      INPUT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/coverage.${script_suffix}.in")
+        file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/coverage.sh"
+                      INPUT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/coverage.sh.in")
         set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "coverage.info")
         set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "coverage.cleaned.info")
         set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "coverage")
         add_custom_target(coverage
-            COMMAND ${run_script_cmd}
-                    "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/coverage.${script_suffix}"
-                    "${CMAKE_CURRENT_SOURCE_DIR}"
-                    "${CMAKE_CURRENT_BINARY_DIR}")
+            COMMAND bash "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/coverage.sh" "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}")
         add_custom_target(clean-coverage
             # Before running coverage, clear all counters
             COMMAND lcov --directory '${CMAKE_CURRENT_BINARY_DIR}' --zerocounters
