@@ -40,7 +40,7 @@ TEST(createLinkedGeo) {
     LinkedGeoCoord* coord;
     initLinkedPolygon(polygon);
 
-    loop = addLinkedLoop(polygon);
+    loop = addNewLinkedLoop(polygon);
     t_assert(loop != NULL, "Loop created");
     coord = addLinkedCoord(loop, &vertex1);
     t_assert(coord != NULL, "Coord created");
@@ -49,7 +49,7 @@ TEST(createLinkedGeo) {
     coord = addLinkedCoord(loop, &vertex3);
     t_assert(coord != NULL, "Coord created");
 
-    loop = addLinkedLoop(polygon);
+    loop = addNewLinkedLoop(polygon);
     t_assert(loop != NULL, "Loop createed");
     coord = addLinkedCoord(loop, &vertex2);
     t_assert(coord != NULL, "Coord created");
@@ -61,7 +61,7 @@ TEST(createLinkedGeo) {
     t_assert(countLinkedCoords(polygon->first) == 3, "Coord count 1 correct");
     t_assert(countLinkedCoords(polygon->last) == 2, "Coord count 2 correct");
 
-    LinkedGeoPolygon* nextPolygon = addLinkedPolygon(polygon);
+    LinkedGeoPolygon* nextPolygon = addNewLinkedPolygon(polygon);
     t_assert(nextPolygon != NULL, "polygon created");
 
     t_assert(countLinkedPolygons(polygon) == 2, "Polygon count correct");

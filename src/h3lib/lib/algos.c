@@ -775,7 +775,7 @@ void _vertexGraphToLinkedGeo(VertexGraph* graph, LinkedGeoPolygon* out) {
     GeoCoord nextVtx;
     // Find the next unused entry point
     while ((edge = firstVertexNode(graph)) != NULL) {
-        loop = addLinkedLoop(out);
+        loop = addNewLinkedLoop(out);
         // Walk the graph to get the outline
         do {
             addLinkedCoord(loop, &edge->from);

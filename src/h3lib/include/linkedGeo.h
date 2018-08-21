@@ -26,8 +26,8 @@
 
 void initLinkedPolygon(LinkedGeoPolygon* polygon);
 void initLinkedLoop(LinkedGeoLoop* loop);
-LinkedGeoPolygon* addLinkedPolygon(LinkedGeoPolygon* polygon);
-LinkedGeoLoop* addLinkedLoop(LinkedGeoPolygon* polygon);
+LinkedGeoPolygon* addNewLinkedPolygon(LinkedGeoPolygon* polygon);
+LinkedGeoLoop* addNewLinkedLoop(LinkedGeoPolygon* polygon);
 LinkedGeoCoord* addLinkedCoord(LinkedGeoLoop* loop, const GeoCoord* vertex);
 int countLinkedPolygons(LinkedGeoPolygon* polygon);
 int countLinkedLoops(LinkedGeoPolygon* polygon);

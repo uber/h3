@@ -48,7 +48,7 @@ void initLinkedLoop(LinkedGeoLoop* loop) {
  * @param  polygon Polygon to add link to
  * @return         Pointer to new polygon
  */
-LinkedGeoPolygon* addLinkedPolygon(LinkedGeoPolygon* polygon) {
+LinkedGeoPolygon* addNewLinkedPolygon(LinkedGeoPolygon* polygon) {
     assert(polygon->next == NULL);
     LinkedGeoPolygon* next = calloc(1, sizeof(*next));
     assert(next != NULL);
@@ -61,7 +61,7 @@ LinkedGeoPolygon* addLinkedPolygon(LinkedGeoPolygon* polygon) {
  * @param  polygon Polygon to add loop to
  * @return         Pointer to loop
  */
-LinkedGeoLoop* addLinkedLoop(LinkedGeoPolygon* polygon) {
+LinkedGeoLoop* addNewLinkedLoop(LinkedGeoPolygon* polygon) {
     LinkedGeoLoop* loop = calloc(1, sizeof(*loop));
     assert(loop != NULL);
     initLinkedLoop(loop);
