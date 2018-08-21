@@ -26,13 +26,7 @@
 #include "geoCoord.h"
 #include "h3api.h"
 
-// Define macros used in polygon algos for Geofence
-#define TYPE Geofence
-#define INIT_ITERATION INIT_ITERATION_GEOFENCE
-#define ITERATE ITERATE_GEOFENCE
-#define IS_EMPTY IS_EMPTY_GEOFENCE
-
-// Functions created in include file:
+// Functions created via the include file:
 
 /**
  * Take a given Geofence data structure and check if it
@@ -51,6 +45,30 @@
  * @param geofence Input Geofence
  * @param bbox     Output bbox
  */
+
+/**
+ * Take a given LinkedGeoLoop data structure and check if it
+ * contains a given geo coordinate.
+ * @name pointInsideLinkedGeoLoop
+ *
+ * @param loop          The linked loop
+ * @param bbox          The bbox for the loop
+ * @param coord         The coordinate to check
+ * @return              Whether the point is contained
+ */
+
+/**
+ * Create a bounding box from a LinkedGeoLoop
+ * @name bboxFromLinkedGeoLoop
+ * @param geofence Input Geofence
+ * @param bbox     Output bbox
+ */
+
+// Define macros used in polygon algos for Geofence
+#define TYPE Geofence
+#define INIT_ITERATION INIT_ITERATION_GEOFENCE
+#define ITERATE ITERATE_GEOFENCE
+#define IS_EMPTY IS_EMPTY_GEOFENCE
 
 #include "polygonAlgos.h"
 
@@ -106,26 +124,6 @@ bool pointInsidePolygon(const GeoPolygon* geoPolygon, const BBox* bboxes,
 #define INIT_ITERATION INIT_ITERATION_LINKED_LOOP
 #define ITERATE ITERATE_LINKED_LOOP
 #define IS_EMPTY IS_EMPTY_LINKED_LOOP
-
-// Functions created in include file:
-
-/**
- * Take a given LinkedGeoLoop data structure and check if it
- * contains a given geo coordinate.
- * @name pointInsideLinkedGeoLoop
- *
- * @param loop          The linked loop
- * @param bbox          The bbox for the loop
- * @param coord         The coordinate to check
- * @return              Whether the point is contained
- */
-
-/**
- * Create a bounding box from a LinkedGeoLoop
- * @name bboxFromLinkedGeoLoop
- * @param geofence Input Geofence
- * @param bbox     Output bbox
- */
 
 #include "polygonAlgos.h"
 
