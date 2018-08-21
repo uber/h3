@@ -65,6 +65,15 @@ LinkedGeoLoop* addNewLinkedLoop(LinkedGeoPolygon* polygon) {
     LinkedGeoLoop* loop = calloc(1, sizeof(*loop));
     assert(loop != NULL);
     initLinkedLoop(loop);
+    return addLinkedLoop(polygon, loop);
+}
+
+/**
+ * Add an existing linked loop to the current polygon
+ * @param  polygon Polygon to add loop to
+ * @return         Pointer to loop
+ */
+LinkedGeoLoop* addLinkedLoop(LinkedGeoPolygon* polygon, LinkedGeoLoop* loop) {
     LinkedGeoLoop* last = polygon->last;
     if (last == NULL) {
         assert(polygon->first == NULL);

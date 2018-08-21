@@ -108,6 +108,7 @@ bool pointInsideLinkedGeoLoop(const LinkedGeoLoop* loop, const BBox* bbox,
  * @return      Whether the loop is clockwise
  */
 bool isClockwiseGeofence(const Geofence* geofence);
+void normalizeMultiPolygon(LinkedGeoPolygon* root);
 
 /**
  * Whether the winding order of a given LinkedGeoLoop is clockwise

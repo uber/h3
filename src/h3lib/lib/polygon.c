@@ -18,6 +18,7 @@
  */
 
 #include "polygon.h"
+#include <assert.h>
 #include <float.h>
 #include <math.h>
 #include <stdbool.h>
@@ -93,3 +94,136 @@ bool pointInsidePolygon(const GeoPolygon* geoPolygon, const BBox* bboxes,
 #undef IS_EMPTY
 #undef INIT_ITERATION
 #undef ITERATE
+
+/**
+ * Count the number of polygons containing a given loop.
+ * TODO: It would be really nice to memoize this.
+ * @param  loop         Loop to count containers for
+ * @param  polygons     Polygons to test
+ * @param  polygonCount Number of polygons in the test array
+ * @return              Number of polygons containing the loop
+ */
+int _countContainers(LinkedGeoLoop* loop, LinkedGeoPolygon** polygons,
+                     BBox** bboxes, int polygonCount) {
+    int containerCount = 0;
+    for (int i = 0; i < polygonCount; i++) {
+        if (pointInsideLinkedGeoLoop(polygons[i]->first, bboxes[i],
+                                     &loop->first->vertex)) {
+            containerCount++;
+        }
+    }
+    return containerCount;
+}
+
+/**
+ * Find the polygon to which a given hole should be allocated
+ * @param  loop         Inner loop describing a hole
+ * @param  polygon      Head of a linked list of polygons to check
+ * @param  polygonCount Number of polygons to check
+ * @return              Pointer to parent polygon
+ */
+LinkedGeoPolygon* _findPolygonForHole(LinkedGeoLoop* loop,
+                                      LinkedGeoPolygon* polygon, BBox* bboxes,
+                                      int polygonCount) {
+    // Initialize arrays for candidate loops and their bounding boxes
+    LinkedGeoPolygon** candidates =
+        calloc(polygonCount, sizeof(LinkedGeoPolygon*));
+    assert(candidates != NULL);
+    BBox** candidateBBoxes = calloc(polygonCount, sizeof(BBox*));
+    assert(candidateBBoxes != NULL);
+    // Find all polygons that contain the loop
+    int containerCount = 0;
+    int index = 0;
+    while (polygon) {
+        // We are guaranteed not to overlap, so just test the first point
+        if (pointInsideLinkedGeoLoop(polygon->first, &bboxes[index],
+                                     &loop->first->vertex)) {
+            candidates[containerCount] = polygon;
+            containerCount++;
+        }
+        polygon = polygon->next;
+        index++;
+    }
+    // Set the initial return value to the first candidate
+    LinkedGeoPolygon* parent = candidates[0];
+    // If we have multiple candidates, they must be nested inside each other.
+    // Find the innermost polygon by taking the candidate with the most
+    // containers in the candidate list.
+    if (containerCount > 1) {
+        int max = -1;
+        for (int i = 0; i < containerCount; i++) {
+            int count = _countContainers(candidates[i]->first, candidates,
+                                         candidateBBoxes, containerCount);
+            if (count > max) {
+                parent = candidates[i];
+                max = count;
+            }
+        }
+    }
+    free(candidates);
+    free(candidateBBoxes);
+    return parent;
+}
+
+/**
+ * Normalize a LinkedGeoPolygon in-place into a structure following GeoJSON
+ * MultiPolygon rules: Each polygon must have exactly one outer loop, which
+ * must be first in the list, followed by any holes. Holes in this algorithm
+ * are identified by winding order (holes are clockwise), which is guaranteed
+ * by the h3SetToVertexGraph algorithm.
+ * @param root Root polygon including all loops
+ */
+void normalizeMultiPolygon(LinkedGeoPolygon* root) {
+    // We assume that the input is a single polygon with loops;
+    // if not, don't touch it
+    if (root->next) {
+        return;
+    }
+    // Count loops
+    int loopCount = countLinkedLoops(root);
+    // Early exit if there's only one loop
+    if (loopCount <= 1) {
+        return;
+    }
+    // Create an array to hold all of the inner loops. Note that
+    // this array will never be full, as there will always be fewer
+    // inner loops than outer loops.
+    LinkedGeoLoop** innerLoops = calloc(loopCount, sizeof(LinkedGeoLoop*));
+    assert(innerLoops != NULL);
+    // Create an array to hold the bounding boxes for the outer loops
+    BBox* bboxes = calloc(loopCount, sizeof(BBox));
+    assert(bboxes != NULL);
+    // Get the first loop and unlink it from root
+    LinkedGeoLoop* loop = root->first;
+    initLinkedPolygon(root);
+    // Set up iteration variables
+    LinkedGeoPolygon* polygon = NULL;
+    LinkedGeoLoop* next;
+    int innerCount = 0;
+    int outerCount = 0;
+    // Iterate over all loops, moving inner loops into an array and
+    // assigning outer loops to new polygons
+    while (loop) {
+        if (isClockwiseLinkedGeoLoop(loop)) {
+            innerLoops[innerCount] = loop;
+            innerCount++;
+        } else {
+            polygon = polygon == NULL ? root : addNewLinkedPolygon(polygon);
+            addLinkedLoop(polygon, loop);
+            bboxFromLinkedGeoLoop(loop, &bboxes[outerCount]);
+            outerCount++;
+        }
+        // get the next loop and unlink it from this one
+        next = loop->next;
+        loop->next = NULL;
+        loop = next;
+    }
+    // Find polygon for each inner loop and assign the hole to it
+    for (int i = 0; i < innerCount; i++) {
+        polygon = _findPolygonForHole(innerLoops[i], root, bboxes, outerCount);
+        addLinkedLoop(polygon, innerLoops[i]);
+    }
+    // Free allocated memory
+    free(innerLoops);
+    free(bboxes);
+}
