@@ -30,14 +30,11 @@
     QueryPerformanceFrequency(&freq); \
     QueryPerformanceCounter(&start)
 
-#define END_TIMER(var)                                  \
-    LARGE_INTEGER end;                                  \
-    QueryPerformanceCounter(&end);                      \
-    LARGE_INTEGER elapsedNS;                            \
-    elapsedNS.QuadPart = end.QuadPart - start.QuadPart; \
-    elapsedNS.QuadPart *= 1E9;                          \
-    elapsedNS.QuadPart /= freq.QuadPart;                \
-    const long double var = elapsedNS.QuadPart
+#define END_TIMER(var)             \
+    LARGE_INTEGER end;             \
+    QueryPerformanceCounter(&end); \
+    const long double var =        \
+        ((long double)(end.QuadPart - start.QuadPart)) / freq.QuadPart * 1E9
 
 #else  // !defined(_WIN32)
 
