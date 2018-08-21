@@ -238,12 +238,12 @@ TEST(bboxFromLinkedGeoLoopNoVertices) {
 }
 
 TEST(isClockwiseLinkedGeoLoop) {
-    const GeoCoord verts[] = {{0, 0}, {1, 1}, {1, 0}, {0, 0}};
+    const GeoCoord verts[] = {{0, 0}, {1, 1}, {0, 1}};
 
     LinkedGeoLoop loop;
     initLinkedLoop(&loop);
 
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 3; i++) {
         addLinkedCoord(&loop, &verts[i]);
     }
 
@@ -254,12 +254,12 @@ TEST(isClockwiseLinkedGeoLoop) {
 }
 
 TEST(isNotClockwiseLinkedGeoLoop) {
-    const GeoCoord verts[] = {{0, 0}, {1, 0}, {1, 1}, {0, 0}};
+    const GeoCoord verts[] = {{0, 0}, {0, 1}, {1, 1}};
 
     LinkedGeoLoop loop;
     initLinkedLoop(&loop);
 
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 3; i++) {
         addLinkedCoord(&loop, &verts[i]);
     }
 
