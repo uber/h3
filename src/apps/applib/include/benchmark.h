@@ -22,22 +22,49 @@
 
 #include <time.h>
 
+#ifdef _WIN32
+
+#define START_TIMER                   \
+    LARGE_INTEGER start;              \
+    LARGE_INTEGER freq;               \
+    QueryPerformanceFrequency(&freq); \
+    QueryPerformanceCounter(&start)
+
+#define END_TIMER(var)                                  \
+    LARGE_INTEGER end;                                  \
+    QueryPerformanceCounter(&end);                      \
+    LARGE_INTEGER elapsedNS;                            \
+    elapsedNS.QuadPart = end.QuadPart - start.QuadPart; \
+    elapsedNS.QuadPart *= 1E9;                          \
+    elapsedNS.QuadPart /= freq.QuadPart;                \
+    const long double var = elapsedNS.QuadPart
+
+#else  // !defined(_WIN32)
+
+#define START_TIMER        \
+    struct timespec start; \
+    clock_gettime(CLOCK_MONOTONIC, &start)
+
+#define END_TIMER(var)                                         \
+    struct timespec end;                                       \
+    clock_gettime(CLOCK_MONOTONIC, &end);                      \
+    const long double var = (end.tv_sec * 1E9 + end.tv_nsec) - \
+                            (start.tv_sec * 1E9 + start.tv_nsec)
+
+#endif
+
 #define BEGIN_BENCHMARKS() int main(int argc, char* argv[]) {
-#define BENCHMARK(NAME, ITERATIONS, BODY)                                  \
-    do {                                                                   \
-        struct timespec start;                                             \
-        clock_gettime(CLOCK_MONOTONIC, &start);                            \
-        const int iterations = ITERATIONS;                                 \
-        const char* name = #NAME;                                          \
-        for (int i = 0; i < iterations; i++) {                             \
-            BODY;                                                          \
-        }                                                                  \
-        struct timespec end;                                               \
-        clock_gettime(CLOCK_MONOTONIC, &end);                              \
-        const long double duration = (end.tv_sec * 1E9 + end.tv_nsec) -    \
-                                     (start.tv_sec * 1E9 + start.tv_nsec); \
-        printf("\t-- %s: %Le ns per iteration (%d iterations)\n", name,    \
-               duration / iterations, iterations);                         \
+#define BENCHMARK(NAME, ITERATIONS, BODY)                               \
+    do {                                                                \
+        const int iterations = ITERATIONS;                              \
+        const char* name = #NAME;                                       \
+        START_TIMER;                                                    \
+        for (int i = 0; i < iterations; i++) {                          \
+            BODY;                                                       \
+        }                                                               \
+        END_TIMER(duration);                                            \
+        printf("\t-- %s: %Le ns per iteration (%d iterations)\n", name, \
+               duration / iterations, iterations);                      \
     } while (0)
 #define END_BENCHMARKS() }
 
