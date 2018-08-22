@@ -46,7 +46,7 @@ GeoCoord transMeridianHoleVerts[] = {{0.005, -M_PI + 0.005},
                                      {-0.005, -M_PI + 0.005}};
 Geofence transMeridianHoleGeofence;
 
-void destroyLinkedGeoLoop(LinkedGeoLoop* loop) {
+static void destroyLinkedGeoLoop(LinkedGeoLoop* loop) {
     for (LinkedGeoCoord *currentCoord = loop->first, *nextCoord;
          currentCoord != NULL; currentCoord = nextCoord) {
         nextCoord = currentCoord->next;
