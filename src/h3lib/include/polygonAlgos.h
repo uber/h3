@@ -13,8 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** @file polygon.c
- * @brief Polygon algorithms
+/** @file
+ * @brief Include file for poylgon algorithms. This includes the core
+ *        logic for algorithms acting over loops of coordinates,
+ *        allowing them to be reused for both Geofence and
+ *        LinkegGeoLoop structures. This file is intended to be
+ *        included inline in a file that defines the type-specific
+ *        macros required for iteration.
  */
 
 #include "polygon.h"
