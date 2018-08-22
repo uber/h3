@@ -56,7 +56,7 @@
         elapsed.tv_sec--;                          \
         elapsed.tv_nsec = 1E9 + elapsed.tv_nsec;   \
     }                                              \
-    const long double var = elapsed.tv_sec * 1E9 + elapsed.tv_nsec
+    const long double var = (elapsed.tv_sec * 1E9 + elapsed.tv_nsec) / 1E3
 
 #endif
 
