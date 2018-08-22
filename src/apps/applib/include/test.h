@@ -24,21 +24,39 @@
 #include "geoCoord.h"
 #include "h3api.h"
 
-void t_assert(int value, const char* msg);
-void t_assertBoundary(H3Index h3, const GeoBoundary* b1);
+extern int globalTestCount;
 
-int testCount();
+#define t_assert(condition, msg)                                            \
+    do {                                                                    \
+        if (!(condition)) {                                                 \
+            fprintf(stderr, "t_assert failed at %s:%d, %s, %s\n", __FILE__, \
+                    __LINE__, #condition, msg);                             \
+            exit(1);                                                        \
+        }                                                                   \
+        globalTestCount++;                                                  \
+        printf(".\n");                                                      \
+    } while (0)
 
-#define BEGIN_TESTS(NAME)              \
-    int main(int argc, char* argv[]) { \
-        printf("TEST ");               \
-        printf(#NAME);                 \
-        printf("\n");
-#define TEST(NAME)
-#define SKIP(NAME) if (1 == 0)
-#define END_TESTS()                                 \
-    ;                                               \
-    printf("\nDONE: %d assertions\n", testCount()); \
+static inline void t_assertBoundary(H3Index h3, const GeoBoundary* b1) {
+    // Generate cell boundary for the h3 index
+    GeoBoundary b2;
+    H3_EXPORT(h3ToGeoBoundary)(h3, &b2);
+    t_assert(b1->numVerts == b2.numVerts, "expected cell boundary count");
+    for (int v = 0; v < b1->numVerts; v++) {
+        t_assert(geoAlmostEqual(&b1->verts[v], &b2.verts[v]),
+                 "got expected vertex");
     }
+}
+
+#define SUITE(NAME)                                         \
+    static void runTests(void);                             \
+    int main(void) {                                        \
+        printf("TEST %s\n", #NAME);                         \
+        runTests();                                         \
+        printf("\nDONE: %d assertions\n", globalTestCount); \
+        return 0;                                           \
+    }                                                       \
+    void runTests(void)
+#define TEST(NAME)
 
 #endif
