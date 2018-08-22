@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Uber Technologies, Inc.
+ * Copyright 2017-2018 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,8 @@
 // Assert
 
 int globalTestCount = 0;
+const char* currentSuiteName = "";
+const char* currentTestName = "";
 
 void t_assertBoundary(H3Index h3, const GeoBoundary* b1) {
     // Generate cell boundary for the h3 index
