@@ -104,8 +104,8 @@ bool pointInsidePolygon(const GeoPolygon* geoPolygon, const BBox* bboxes,
  * @param  polygonCount Number of polygons in the test array
  * @return              Number of polygons containing the loop
  */
-int _countContainers(LinkedGeoLoop* loop, LinkedGeoPolygon** polygons,
-                     BBox** bboxes, int polygonCount) {
+static int countContainers(LinkedGeoLoop* loop, LinkedGeoPolygon** polygons,
+                           BBox** bboxes, int polygonCount) {
     int containerCount = 0;
     for (int i = 0; i < polygonCount; i++) {
         if (pointInsideLinkedGeoLoop(polygons[i]->first, bboxes[i],
@@ -124,9 +124,9 @@ int _countContainers(LinkedGeoLoop* loop, LinkedGeoPolygon** polygons,
  * @param  polygonCount Number of polygons to check
  * @return              Pointer to parent polygon
  */
-LinkedGeoPolygon* _findPolygonForHole(LinkedGeoLoop* loop,
-                                      LinkedGeoPolygon* polygon, BBox* bboxes,
-                                      int polygonCount) {
+static LinkedGeoPolygon* findPolygonForHole(LinkedGeoLoop* loop,
+                                            LinkedGeoPolygon* polygon,
+                                            BBox* bboxes, int polygonCount) {
     // Initialize arrays for candidate loops and their bounding boxes
     LinkedGeoPolygon** candidates =
         calloc(polygonCount, sizeof(LinkedGeoPolygon*));
@@ -141,6 +141,7 @@ LinkedGeoPolygon* _findPolygonForHole(LinkedGeoLoop* loop,
         if (pointInsideLinkedGeoLoop(polygon->first, &bboxes[index],
                                      &loop->first->vertex)) {
             candidates[containerCount] = polygon;
+            candidateBBoxes[containerCount] = &bboxes[index];
             containerCount++;
         }
         polygon = polygon->next;
@@ -154,8 +155,8 @@ LinkedGeoPolygon* _findPolygonForHole(LinkedGeoLoop* loop,
     if (containerCount > 1) {
         int max = -1;
         for (int i = 0; i < containerCount; i++) {
-            int count = _countContainers(candidates[i]->first, candidates,
-                                         candidateBBoxes, containerCount);
+            int count = countContainers(candidates[i]->first, candidates,
+                                        candidateBBoxes, containerCount);
             if (count > max) {
                 parent = candidates[i];
                 max = count;
@@ -231,7 +232,7 @@ void normalizeMultiPolygon(LinkedGeoPolygon* root) {
         // Find polygon for each inner loop and assign the hole to it
         for (int i = 0; i < innerCount; i++) {
             polygon =
-                _findPolygonForHole(innerLoops[i], root, bboxes, outerCount);
+                findPolygonForHole(innerLoops[i], root, bboxes, outerCount);
             if (polygon) {
                 addLinkedLoop(polygon, innerLoops[i]);
             }

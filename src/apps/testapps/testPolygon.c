@@ -47,7 +47,8 @@ GeoCoord transMeridianHoleVerts[] = {{0.005, -M_PI + 0.005},
                                      {-0.005, -M_PI + 0.005}};
 Geofence transMeridianHoleGeofence;
 
-static void createLinkedLoop(LinkedGeoLoop* loop, GeoCoord* verts, int numVerts) {
+static void createLinkedLoop(LinkedGeoLoop* loop, GeoCoord* verts,
+                             int numVerts) {
     initLinkedLoop(loop);
     for (int i = 0; i < numVerts; i++) {
         addLinkedCoord(loop, verts++);
@@ -445,6 +446,49 @@ TEST(normalizeMultiPolygonTwoDonuts) {
              "Got expected outer loop");
     t_assert(countLinkedCoords(polygon.next->first->next) == 3,
              "Got expected inner loop");
+
+    H3_EXPORT(destroyLinkedPolygon)(&polygon);
+}
+
+TEST(normalizeMultiPolygonNestedDonuts) {
+    GeoCoord verts[] = {{0.2, 0.2}, {0.2, -0.2}, {-0.2, -0.2}, {-0.2, 0.2}};
+    LinkedGeoLoop* outer = calloc(1, sizeof(*outer));
+    assert(outer != NULL);
+    createLinkedLoop(outer, &verts[0], 4);
+
+    GeoCoord verts2[] = {{0.1, 0.1}, {-0.1, 0.1}, {-0.1, -0.1}, {0.1, -0.1}};
+    LinkedGeoLoop* inner = calloc(1, sizeof(*inner));
+    assert(inner != NULL);
+    createLinkedLoop(inner, &verts2[0], 4);
+
+    GeoCoord verts3[] = {{0.6, 0.6}, {0.6, -0.6}, {-0.6, -0.6}, {-0.6, 0.6}};
+    LinkedGeoLoop* outerBig = calloc(1, sizeof(*outerBig));
+    assert(outerBig != NULL);
+    createLinkedLoop(outerBig, &verts3[0], 4);
+
+    GeoCoord verts4[] = {{0.5, 0.5}, {-0.5, 0.5}, {-0.5, -0.5}, {0.5, -0.5}};
+    LinkedGeoLoop* innerBig = calloc(1, sizeof(*innerBig));
+    assert(innerBig != NULL);
+    createLinkedLoop(innerBig, &verts4[0], 4);
+
+    LinkedGeoPolygon polygon;
+    initLinkedPolygon(&polygon);
+    addLinkedLoop(&polygon, inner);
+    addLinkedLoop(&polygon, outerBig);
+    addLinkedLoop(&polygon, innerBig);
+    addLinkedLoop(&polygon, outer);
+
+    normalizeMultiPolygon(&polygon);
+
+    t_assert(countLinkedPolygons(&polygon) == 2, "Polygon count correct");
+    t_assert(countLinkedLoops(&polygon) == 2,
+             "Loop count on first polygon correct");
+    t_assert(polygon.first == outerBig, "Got expected outer loop");
+    t_assert(polygon.first->next == innerBig, "Got expected inner loop");
+    t_assert(countLinkedLoops(polygon.next) == 2,
+             "Loop count on second polygon correct");
+    t_assert(polygon.next->first == outer, "Got expected outer loop");
+    t_assert(polygon.next->first->next == inner, "Got expected inner loop");
 
     H3_EXPORT(destroyLinkedPolygon)(&polygon);
 }
