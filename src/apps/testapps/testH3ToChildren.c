@@ -20,8 +20,8 @@
 
 #define PADDED_COUNT 10
 
-static inline void verifyCountAndUniqueness(H3Index* children, int paddedCount,
-                                            int expectedCount) {
+static void verifyCountAndUniqueness(H3Index* children, int paddedCount,
+                                     int expectedCount) {
     int numFound = 0;
     for (int i = 0; i < paddedCount; i++) {
         H3Index currIndex = children[i];

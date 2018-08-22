@@ -33,7 +33,7 @@
 
 static const int MAX_DISTANCES[] = {1, 2, 5, 12, 19, 26};
 
-static inline void h3Distance_identity_assertions(H3Index h3) {
+static void h3Distance_identity_assertions(H3Index h3) {
     int r = H3_GET_RESOLUTION(h3);
 
     t_assert(H3_EXPORT(h3Distance)(h3, h3) == 0, "distance to self is 0");
@@ -56,7 +56,7 @@ static inline void h3Distance_identity_assertions(H3Index h3) {
     }
 }
 
-static inline void h3Distance_neighbors_assertions(H3Index h3) {
+static void h3Distance_neighbors_assertions(H3Index h3) {
     CoordIJK origin = {0};
     t_assert(h3ToIjk(h3, h3, &origin) == 0, "got ijk for origin");
 
@@ -82,7 +82,7 @@ static inline void h3Distance_neighbors_assertions(H3Index h3) {
     }
 }
 
-static inline void h3Distance_kRing_assertions(H3Index h3) {
+static void h3Distance_kRing_assertions(H3Index h3) {
     int r = H3_GET_RESOLUTION(h3);
     if (r > 5) {
         t_assert(false, "wrong res");

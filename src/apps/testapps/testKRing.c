@@ -27,7 +27,7 @@
 #include "test.h"
 #include "utility.h"
 
-static inline void kRing_equals_kRingInternal_assertions(H3Index h3) {
+static void kRing_equals_kRingInternal_assertions(H3Index h3) {
     for (int k = 0; k < 3; k++) {
         int kSz = H3_EXPORT(maxKringSize)(k);
 

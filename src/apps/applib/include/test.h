@@ -34,19 +34,10 @@ extern int globalTestCount;
             exit(1);                                                        \
         }                                                                   \
         globalTestCount++;                                                  \
-        printf(".\n");                                                      \
+        printf(".");                                                        \
     } while (0)
 
-static inline void t_assertBoundary(H3Index h3, const GeoBoundary* b1) {
-    // Generate cell boundary for the h3 index
-    GeoBoundary b2;
-    H3_EXPORT(h3ToGeoBoundary)(h3, &b2);
-    t_assert(b1->numVerts == b2.numVerts, "expected cell boundary count");
-    for (int v = 0; v < b1->numVerts; v++) {
-        t_assert(geoAlmostEqual(&b1->verts[v], &b2.verts[v]),
-                 "got expected vertex");
-    }
-}
+void t_assertBoundary(H3Index h3, const GeoBoundary* b1);
 
 #define SUITE(NAME)                                         \
     static void runTests(void);                             \
