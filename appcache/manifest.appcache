@@ -1,31 +1,31 @@
 CACHE MANIFEST
-#ver:8/7/2018, 9:30:19 AM
+#ver:8/21/2018, 9:54:03 PM
 #plugin:4.9.1
 
 CACHE:
-../bundle-1b851452d1ad3bc2e776.js
-../styles-1b851452d1ad3bc2e776.css
+../bundle-d25ac3091965942c4d03.js
+../styles-d25ac3091965942c4d03.css
 ../
 ../images/footer-pattern.gif
 ../favicon.ico
-../images/icon-chart.svg
 ../images/icon-custom.svg
+../images/icon-chart.svg
 ../images/icon-high-precision.svg
 ../images/icon-layers.svg
-../images/hero.jpg
 ../images/icon-react.svg
+../images/hero.jpg
 ../images/ca_compact_6_901.png
-../images/ca_uncompact_6_10633.png
-../images/classII.III.png
 ../images/cpidigits.png
-../images/ijkp.png
+../images/ca_uncompact_6_10633.png
 ../images/neighbors-hexagon.png
 ../images/neighbors-square.png
+../images/ijkp.png
 ../images/neighbors-triangle.png
-../images/neighbors.png
 ../images/substrate3.png
-../images/triEdge.png
+../images/classII.III.png
 ../images/uber-logo.png
+../images/triEdge.png
+../images/neighbors.png
 ../images/parent-child.png
 
 NETWORK:
