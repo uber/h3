@@ -18,6 +18,10 @@ As a C library, bindings can be made to call H3 functions from different program
 
 - [travisbrady/ocaml-h3](https://github.com/travisbrady/ocaml-h3)
 
+## PHP
+
+- [neatlife/php-h3](https://github.com/neatlife/php-h3)
+
 ## Python
 
 - [uber/h3-py](https://github.com/uber/h3-py)
