@@ -522,4 +522,37 @@ TEST(normalizeMultiPolygonNoOuterLoops) {
     destroyLinkedGeoLoop(outer2);
 }
 
+TEST(normalizeMultiPolygonAlreadyNormalized) {
+    GeoCoord verts1[] = {{0, 0}, {0, 1}, {1, 1}};
+
+    LinkedGeoLoop* outer1 = calloc(1, sizeof(*outer1));
+    assert(outer1 != NULL);
+    createLinkedLoop(outer1, &verts1[0], 3);
+
+    GeoCoord verts2[] = {{2, 2}, {2, 3}, {3, 3}};
+
+    LinkedGeoLoop* outer2 = calloc(1, sizeof(*outer2));
+    assert(outer2 != NULL);
+    createLinkedLoop(outer2, &verts2[0], 3);
+
+    LinkedGeoPolygon polygon;
+    initLinkedPolygon(&polygon);
+    addLinkedLoop(&polygon, outer1);
+    LinkedGeoPolygon* next = addNewLinkedPolygon(&polygon);
+    addLinkedLoop(next, outer2);
+
+    // Should be a no-op
+    normalizeMultiPolygon(&polygon);
+
+    t_assert(countLinkedPolygons(&polygon) == 2, "Polygon count correct");
+    t_assert(countLinkedLoops(&polygon) == 1,
+             "Loop count on first polygon correct");
+    t_assert(polygon.first == outer1, "Got expected outer loop");
+    t_assert(countLinkedLoops(polygon.next) == 1,
+             "Loop count on second polygon correct");
+    t_assert(polygon.next->first == outer2, "Got expected outer loop");
+
+    H3_EXPORT(destroyLinkedPolygon)(&polygon);
+}
+
 END_TESTS();
