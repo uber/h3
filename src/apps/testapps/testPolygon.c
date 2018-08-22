@@ -403,6 +403,52 @@ TEST(normalizeMultiPolygonTwoHoles) {
     H3_EXPORT(destroyLinkedPolygon)(&polygon);
 }
 
+TEST(normalizeMultiPolygonTwoDonuts) {
+    GeoCoord verts[] = {{0, 0}, {0, 3}, {3, 3}, {3, 0}};
+    LinkedGeoLoop* outer = calloc(1, sizeof(*outer));
+    assert(outer != NULL);
+    createLinkedLoop(outer, &verts[0], 4);
+
+    GeoCoord verts2[] = {{1, 1}, {2, 2}, {1, 2}};
+    LinkedGeoLoop* inner = calloc(1, sizeof(*inner));
+    assert(inner != NULL);
+    createLinkedLoop(inner, &verts2[0], 3);
+
+    GeoCoord verts3[] = {{0, 0}, {0, -3}, {-3, -3}, {-3, 0}};
+    LinkedGeoLoop* outer2 = calloc(1, sizeof(*outer));
+    assert(outer2 != NULL);
+    createLinkedLoop(outer2, &verts3[0], 4);
+
+    GeoCoord verts4[] = {{-1, -1}, {-2, -2}, {-1, -2}};
+    LinkedGeoLoop* inner2 = calloc(1, sizeof(*inner));
+    assert(inner2 != NULL);
+    createLinkedLoop(inner2, &verts4[0], 3);
+
+    LinkedGeoPolygon polygon;
+    initLinkedPolygon(&polygon);
+    addLinkedLoop(&polygon, inner2);
+    addLinkedLoop(&polygon, inner);
+    addLinkedLoop(&polygon, outer);
+    addLinkedLoop(&polygon, outer2);
+
+    normalizeMultiPolygon(&polygon);
+
+    t_assert(countLinkedPolygons(&polygon) == 2, "Polygon count correct");
+    t_assert(countLinkedLoops(&polygon) == 2,
+             "Loop count on first polygon correct");
+    t_assert(countLinkedCoords(polygon.first) == 4, "Got expected outer loop");
+    t_assert(countLinkedCoords(polygon.first->next) == 3,
+             "Got expected inner loop");
+    t_assert(countLinkedLoops(polygon.next) == 2,
+             "Loop count on second polygon correct");
+    t_assert(countLinkedCoords(polygon.next->first) == 4,
+             "Got expected outer loop");
+    t_assert(countLinkedCoords(polygon.next->first->next) == 3,
+             "Got expected inner loop");
+
+    H3_EXPORT(destroyLinkedPolygon)(&polygon);
+}
+
 TEST(normalizeMultiPolygonNoOuterLoops) {
     GeoCoord verts1[] = {{0, 0}, {1, 1}, {0, 1}};
 
