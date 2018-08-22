@@ -73,5 +73,6 @@ void bboxFromLinkedGeoLoop(const LinkedGeoLoop* loop, BBox* bbox);
 bool pointInsideLinkedGeoLoop(const LinkedGeoLoop* loop, const BBox* bbox,
                               const GeoCoord* coord);
 bool isClockwiseLinkedGeoLoop(const LinkedGeoLoop* loop);
+bool isClockwiseGeofence(const Geofence* geofence);
 
 #endif

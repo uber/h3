@@ -237,6 +237,17 @@ TEST(bboxFromLinkedGeoLoopNoVertices) {
     destroyLinkedGeoLoop(&loop);
 }
 
+TEST(isClockwiseGeofence) {
+    GeoCoord verts[] = {{0, 0}, {1, 1}, {0, 1}};
+
+    Geofence geofence;
+    geofence.verts = verts;
+    geofence.numVerts = 3;
+
+    t_assert(isClockwiseGeofence(&geofence) == true,
+             "Got true for clockwise geofence");
+}
+
 TEST(isClockwiseLinkedGeoLoop) {
     const GeoCoord verts[] = {{0, 0}, {1, 1}, {0, 1}};
 
