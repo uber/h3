@@ -233,6 +233,8 @@ TEST(bboxFromLinkedGeoLoopNoVertices) {
     bboxFromLinkedGeoLoop(&loop, &result);
 
     t_assert(bboxEquals(&result, &expected), "Got expected bbox");
+
+    destroyLinkedGeoLoop(&loop);
 }
 
 END_TESTS();
