@@ -238,7 +238,7 @@ TEST(bboxFromLinkedGeoLoopNoVertices) {
 }
 
 TEST(isClockwiseGeofence) {
-    GeoCoord verts[] = {{0, 0}, {1, 1}, {0, 1}};
+    GeoCoord verts[] = {{0, 0}, {0.1, 0.1}, {0, 0.1}};
 
     Geofence geofence;
     geofence.verts = verts;
@@ -246,22 +246,6 @@ TEST(isClockwiseGeofence) {
 
     t_assert(isClockwiseGeofence(&geofence) == true,
              "Got true for clockwise geofence");
-}
-
-TEST(isClockwiseLinkedGeoLoop) {
-    const GeoCoord verts[] = {{0, 0}, {1, 1}, {0, 1}};
-
-    LinkedGeoLoop loop;
-    initLinkedLoop(&loop);
-
-    for (int i = 0; i < 3; i++) {
-        addLinkedCoord(&loop, &verts[i]);
-    }
-
-    t_assert(isClockwiseLinkedGeoLoop(&loop) == true,
-             "Got true for clockwise loop");
-
-    destroyLinkedGeoLoop(&loop);
 }
 
 TEST(isClockwiseLinkedGeoLoopFloats) {
@@ -281,22 +265,6 @@ TEST(isClockwiseLinkedGeoLoopFloats) {
 }
 
 TEST(isNotClockwiseLinkedGeoLoop) {
-    const GeoCoord verts[] = {{0, 0}, {0, 1}, {1, 1}};
-
-    LinkedGeoLoop loop;
-    initLinkedLoop(&loop);
-
-    for (int i = 0; i < 3; i++) {
-        addLinkedCoord(&loop, &verts[i]);
-    }
-
-    t_assert(isClockwiseLinkedGeoLoop(&loop) == false,
-             "Got false for counter-clockwise loop");
-
-    destroyLinkedGeoLoop(&loop);
-}
-
-TEST(isNotClockwiseLinkedGeoLoopFloats) {
     const GeoCoord verts[] = {{0, 0}, {0, 0.4}, {0.4, 0.4}, {0.4, 0}};
 
     LinkedGeoLoop loop;
@@ -308,6 +276,44 @@ TEST(isNotClockwiseLinkedGeoLoopFloats) {
 
     t_assert(isClockwiseLinkedGeoLoop(&loop) == false,
              "Got false for counter-clockwise loop");
+
+    destroyLinkedGeoLoop(&loop);
+}
+
+TEST(isClockwiseLinkedGeoLoopTransmeridian) {
+    const GeoCoord verts[] = {{0.4, M_PI - 0.1},
+                              {0.4, -M_PI + 0.1},
+                              {-0.4, -M_PI + 0.1},
+                              {-0.4, M_PI - 0.1}};
+
+    LinkedGeoLoop loop;
+    initLinkedLoop(&loop);
+
+    for (int i = 0; i < 4; i++) {
+        addLinkedCoord(&loop, &verts[i]);
+    }
+
+    t_assert(isClockwiseLinkedGeoLoop(&loop) == true,
+             "Got true for clockwise transmeridian loop");
+
+    destroyLinkedGeoLoop(&loop);
+}
+
+TEST(isNotClockwiseLinkedGeoLoopTransmeridian) {
+    const GeoCoord verts[] = {{0.4, M_PI - 0.1},
+                              {-0.4, M_PI - 0.1},
+                              {-0.4, -M_PI + 0.1},
+                              {0.4, -M_PI + 0.1}};
+
+    LinkedGeoLoop loop;
+    initLinkedLoop(&loop);
+
+    for (int i = 0; i < 4; i++) {
+        addLinkedCoord(&loop, &verts[i]);
+    }
+
+    t_assert(isClockwiseLinkedGeoLoop(&loop) == false,
+             "Got false for counter-clockwise transmeridian loop");
 
     destroyLinkedGeoLoop(&loop);
 }

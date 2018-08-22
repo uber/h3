@@ -58,10 +58,6 @@
 /** Macro: Whether a LinkedGeoLoop is empty */
 #define IS_EMPTY_LINKED_LOOP(loop) loop->first == NULL
 
-/** Macro: Normalize longitude */
-#define NORMALIZE_LNG(lng, isTransmeridian) \
-    isTransmeridian&& lng < 0 ? lng + M_2PI : lng
-
 void bboxFromGeofence(const Geofence* loop, BBox* bbox);
 void bboxesFromGeoPolygon(const GeoPolygon* polygon, BBox* bboxes);
 bool pointInsideGeofence(const Geofence* loop, const BBox* bbox,
