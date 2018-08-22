@@ -191,6 +191,10 @@ if(BUILD_SHARED_LIBS)
     set_target_properties(h3 PROPERTIES SOVERSION ${H3_SOVERSION})
 endif()
 
+if(MSVC)
+    target_compile_definitions(h3 PUBLIC inline=__inline)
+endif()
+
 target_compile_definitions(h3 PUBLIC H3_PREFIX=${H3_PREFIX})
 if(have_alloca)
     target_compile_definitions(h3 PUBLIC H3_HAVE_ALLOCA)
