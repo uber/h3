@@ -20,6 +20,8 @@
 #ifndef BENCHMARK_H
 #define BENCHMARK_H
 
+#include <math.h>
+
 #ifdef _WIN32
 
 #include <Windows.h>
@@ -34,7 +36,7 @@
     LARGE_INTEGER end;             \
     QueryPerformanceCounter(&end); \
     const long double var =        \
-        ((long double)(end.QuadPart - start.QuadPart)) / freq.QuadPart * 1E9
+        ((long double)(end.QuadPart - start.QuadPart)) / freq.QuadPart * 1E6
 
 #else  // !defined(_WIN32)
 
@@ -44,26 +46,32 @@
     struct timespec start; \
     clock_gettime(CLOCK_MONOTONIC, &start)
 
-#define END_TIMER(var)                                         \
-    struct timespec end;                                       \
-    clock_gettime(CLOCK_MONOTONIC, &end);                      \
-    const long double var = (end.tv_sec * 1E9 + end.tv_nsec) - \
-                            (start.tv_sec * 1E9 + start.tv_nsec)
+#define END_TIMER(var)                             \
+    struct timespec end;                           \
+    clock_gettime(CLOCK_MONOTONIC, &end);          \
+    struct timespec elapsed;                       \
+    elapsed.tv_nsec = end.tv_nsec - start.tv_nsec; \
+    elapsed.tv_sec = end.tv_sec - start.tv_sec;    \
+    if (elapsed.tv_nsec < 0) {                     \
+        elapsed.tv_sec--;                          \
+        elapsed.tv_nsec = 1E9 + elapsed.tv_nsec;   \
+    }                                              \
+    const long double var = elapsed.tv_sec * 1E9 + elapsed.tv_nsec
 
 #endif
 
 #define BEGIN_BENCHMARKS() int main(int argc, char* argv[]) {
-#define BENCHMARK(NAME, ITERATIONS, BODY)                               \
-    do {                                                                \
-        const int iterations = ITERATIONS;                              \
-        const char* name = #NAME;                                       \
-        START_TIMER;                                                    \
-        for (int i = 0; i < iterations; i++) {                          \
-            BODY;                                                       \
-        }                                                               \
-        END_TIMER(duration);                                            \
-        printf("\t-- %s: %Le ns per iteration (%d iterations)\n", name, \
-               duration / iterations, iterations);                      \
+#define BENCHMARK(NAME, ITERATIONS, BODY)                                   \
+    do {                                                                    \
+        const int iterations = ITERATIONS;                                  \
+        const char* name = #NAME;                                           \
+        START_TIMER;                                                        \
+        for (int i = 0; i < iterations; i++) {                              \
+            BODY;                                                           \
+        }                                                                   \
+        END_TIMER(duration);                                                \
+        printf("\t-- %s: %Lf microseconds per iteration (%d iterations)\n", \
+               name, (duration / iterations), iterations);                  \
     } while (0)
 #define END_BENCHMARKS() }
 
