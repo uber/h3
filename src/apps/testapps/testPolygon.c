@@ -233,10 +233,7 @@ TEST(bboxFromLinkedGeoLoopNoVertices) {
 
 TEST(isClockwiseGeofence) {
     GeoCoord verts[] = {{0, 0}, {0.1, 0.1}, {0, 0.1}};
-
-    Geofence geofence;
-    geofence.verts = verts;
-    geofence.numVerts = 3;
+    Geofence geofence = {.numVerts = 3, .verts = verts};
 
     t_assert(isClockwiseGeofence(&geofence), "Got true for clockwise geofence");
 }
