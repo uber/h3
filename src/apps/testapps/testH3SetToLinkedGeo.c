@@ -221,14 +221,6 @@ TEST(nestedDonutTransmeridian) {
 
     printf("%d\n", countLinkedLoops(polygon.next));
 
-    // printf("%d: %d, %d | %d: %d, %d\n",
-    //     countLinkedLoops(&polygon),
-    //     countLinkedCoords(polygon.first),
-    //     countLinkedCoords(polygon.first->next),
-    //     countLinkedLoops(polygon.next),
-    //     countLinkedCoords(polygon.next->first->next),
-    //     countLinkedCoords(polygon.next->first));
-
     // Note that the polygon order here is arbitrary, making this test
     // somewhat brittle, but it's difficult to assert correctness otherwise
     t_assert(countLinkedPolygons(&polygon) == 2, "Polygon count correct");

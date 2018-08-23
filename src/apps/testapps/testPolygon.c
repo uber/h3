@@ -29,23 +29,6 @@ GeoCoord sfVerts[] = {
     {0.659966917655, -2.1364398519396},  {0.6595011102219, -2.1359434279405},
     {0.6583348114025, -2.1354884206045}, {0.6581220034068, -2.1382437718946},
     {0.6594479998527, -2.1384597563896}, {0.6599990002976, -2.1376771158464}};
-Geofence sfGeofence;
-
-GeoCoord primeMeridianVerts[] = {
-    {0.01, 0.01}, {0.01, -0.01}, {-0.01, -0.01}, {-0.01, 0.01}};
-Geofence primeMeridianGeofence;
-
-GeoCoord transMeridianVerts[] = {{0.01, -M_PI + 0.01},
-                                 {0.01, M_PI - 0.01},
-                                 {-0.01, M_PI - 0.01},
-                                 {-0.01, -M_PI + 0.01}};
-Geofence transMeridianGeofence;
-
-GeoCoord transMeridianHoleVerts[] = {{0.005, -M_PI + 0.005},
-                                     {0.005, M_PI - 0.005},
-                                     {-0.005, M_PI - 0.005},
-                                     {-0.005, -M_PI + 0.005}};
-Geofence transMeridianHoleGeofence;
 
 static void createLinkedLoop(LinkedGeoLoop* loop, GeoCoord* verts,
                              int numVerts) {
@@ -57,33 +40,32 @@ static void createLinkedLoop(LinkedGeoLoop* loop, GeoCoord* verts,
 
 BEGIN_TESTS(polygon);
 
-sfGeofence.numVerts = 6;
-sfGeofence.verts = sfVerts;
-
-primeMeridianGeofence.numVerts = 4;
-primeMeridianGeofence.verts = primeMeridianVerts;
-
-transMeridianGeofence.numVerts = 4;
-transMeridianGeofence.verts = transMeridianVerts;
-
-transMeridianHoleGeofence.numVerts = 4;
-transMeridianHoleGeofence.verts = transMeridianHoleVerts;
-
 TEST(pointInsideGeofence) {
+    Geofence geofence = {.numVerts = 6, .verts = sfVerts};
+
+    GeoCoord inside = {0.659, -2.136};
     GeoCoord somewhere = {1, 2};
 
     BBox bbox;
-    bboxFromGeofence(&sfGeofence, &bbox);
+    bboxFromGeofence(&geofence, &bbox);
 
-    t_assert(!pointInsideGeofence(&sfGeofence, &bbox, &sfVerts[0]),
+    t_assert(!pointInsideGeofence(&geofence, &bbox, &sfVerts[0]),
              "contains exact");
-    t_assert(pointInsideGeofence(&sfGeofence, &bbox, &sfVerts[4]),
-             "contains exact4");
-    t_assert(!pointInsideGeofence(&sfGeofence, &bbox, &somewhere),
+    t_assert(pointInsideGeofence(&geofence, &bbox, &sfVerts[4]),
+             "contains exact 4");
+    t_assert(pointInsideGeofence(&geofence, &bbox, &inside),
+             "contains point inside");
+    t_assert(!pointInsideGeofence(&geofence, &bbox, &somewhere),
              "contains somewhere else");
 }
 
 TEST(pointInsideGeofenceTransmeridian) {
+    GeoCoord verts[] = {{0.01, -M_PI + 0.01},
+                        {0.01, M_PI - 0.01},
+                        {-0.01, M_PI - 0.01},
+                        {-0.01, -M_PI + 0.01}};
+    Geofence transMeridianGeofence = {.numVerts = 4, .verts = verts};
+
     GeoCoord eastPoint = {0.001, -M_PI + 0.001};
     GeoCoord eastPointOutside = {0.001, -M_PI + 0.1};
     GeoCoord westPoint = {0.001, M_PI - 0.001};
@@ -257,7 +239,7 @@ TEST(isClockwiseGeofenceTransmeridian) {
                         {0.4, -M_PI + 0.1},
                         {-0.4, -M_PI + 0.1},
                         {-0.4, M_PI - 0.1}};
-     Geofence geofence = {.numVerts = 4, .verts = verts};
+    Geofence geofence = {.numVerts = 4, .verts = verts};
 
     t_assert(isClockwiseGeofence(&geofence), "Got true for clockwise geofence");
 }
