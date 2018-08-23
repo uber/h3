@@ -26,38 +26,20 @@ GeoCoord sfVerts[] = {
     {0.659966917655, -2.1364398519396},  {0.6595011102219, -2.1359434279405},
     {0.6583348114025, -2.1354884206045}, {0.6581220034068, -2.1382437718946},
     {0.6594479998527, -2.1384597563896}, {0.6599990002976, -2.1376771158464}};
-Geofence sfGeofence;
+Geofence sfGeofence = {.numVerts = 6, .verts = sfVerts};
 GeoPolygon sfGeoPolygon;
+
 GeoCoord holeVerts[] = {{0.6595072188743, -2.1371053983433},
                         {0.6591482046471, -2.1373141048153},
                         {0.6592295020837, -2.1365222838402}};
-Geofence holeGeofence;
+Geofence holeGeofence = {.numVerts = 3, .verts = holeVerts};
 GeoPolygon holeGeoPolygon;
+
 GeoCoord emptyVerts[] = {{0.659966917655, -2.1364398519394},
                          {0.659966917655, -2.1364398519395},
                          {0.659966917655, -2.1364398519396}};
-Geofence emptyGeofence;
+Geofence emptyGeofence = {.numVerts = 3, .verts = emptyVerts};
 GeoPolygon emptyGeoPolygon;
-
-GeoCoord primeMeridianVerts[] = {
-    {0.01, 0.01}, {0.01, -0.01}, {-0.01, -0.01}, {-0.01, 0.01}};
-Geofence primeMeridianGeofence;
-GeoPolygon primeMeridianGeoPolygon;
-
-GeoCoord transMeridianVerts[] = {{0.01, -M_PI + 0.01},
-                                 {0.01, M_PI - 0.01},
-                                 {-0.01, M_PI - 0.01},
-                                 {-0.01, -M_PI + 0.01}};
-Geofence transMeridianGeofence;
-GeoPolygon transMeridianGeoPolygon;
-
-GeoCoord transMeridianHoleVerts[] = {{0.005, -M_PI + 0.005},
-                                     {0.005, M_PI - 0.005},
-                                     {-0.005, M_PI - 0.005},
-                                     {-0.005, -M_PI + 0.005}};
-Geofence transMeridianHoleGeofence;
-GeoPolygon transMeridianHoleGeoPolygon;
-GeoPolygon transMeridianFilledHoleGeoPolygon;
 
 static int countActualHexagons(H3Index* hexagons, int numHexagons) {
     int actualNumHexagons = 0;
@@ -71,40 +53,15 @@ static int countActualHexagons(H3Index* hexagons, int numHexagons) {
 
 BEGIN_TESTS(polyfill);
 
-sfGeofence.numVerts = 6;
-sfGeofence.verts = sfVerts;
 sfGeoPolygon.geofence = sfGeofence;
 sfGeoPolygon.numHoles = 0;
 
-holeGeofence.numVerts = 3;
-holeGeofence.verts = holeVerts;
 holeGeoPolygon.geofence = sfGeofence;
 holeGeoPolygon.numHoles = 1;
 holeGeoPolygon.holes = &holeGeofence;
 
-emptyGeofence.numVerts = 3;
-emptyGeofence.verts = emptyVerts;
 emptyGeoPolygon.geofence = emptyGeofence;
 emptyGeoPolygon.numHoles = 0;
-
-primeMeridianGeofence.numVerts = 4;
-primeMeridianGeofence.verts = primeMeridianVerts;
-primeMeridianGeoPolygon.geofence = primeMeridianGeofence;
-primeMeridianGeoPolygon.numHoles = 0;
-
-transMeridianGeofence.numVerts = 4;
-transMeridianGeofence.verts = transMeridianVerts;
-transMeridianGeoPolygon.geofence = transMeridianGeofence;
-transMeridianGeoPolygon.numHoles = 0;
-
-transMeridianHoleGeofence.numVerts = 4;
-transMeridianHoleGeofence.verts = transMeridianHoleVerts;
-transMeridianHoleGeoPolygon.geofence = transMeridianGeofence;
-transMeridianHoleGeoPolygon.numHoles = 1;
-transMeridianHoleGeoPolygon.holes = &transMeridianHoleGeofence;
-
-transMeridianFilledHoleGeoPolygon.geofence = transMeridianHoleGeofence;
-transMeridianFilledHoleGeoPolygon.numHoles = 0;
 
 TEST(maxPolyfillSize) {
     int numHexagons = H3_EXPORT(maxPolyfillSize)(&sfGeoPolygon, 9);
@@ -181,6 +138,35 @@ TEST(polyfillExact) {
 }
 
 TEST(polyfillTransmeridian) {
+    GeoCoord primeMeridianVerts[] = {
+        {0.01, 0.01}, {0.01, -0.01}, {-0.01, -0.01}, {-0.01, 0.01}};
+    Geofence primeMeridianGeofence = {.numVerts = 4,
+                                      .verts = primeMeridianVerts};
+    GeoPolygon primeMeridianGeoPolygon = {.geofence = primeMeridianGeofence,
+                                          .numHoles = 0};
+
+    GeoCoord transMeridianVerts[] = {{0.01, -M_PI + 0.01},
+                                     {0.01, M_PI - 0.01},
+                                     {-0.01, M_PI - 0.01},
+                                     {-0.01, -M_PI + 0.01}};
+    Geofence transMeridianGeofence = {.numVerts = 4,
+                                      .verts = transMeridianVerts};
+    GeoPolygon transMeridianGeoPolygon = {.geofence = transMeridianGeofence,
+                                          .numHoles = 0};
+
+    GeoCoord transMeridianHoleVerts[] = {{0.005, -M_PI + 0.005},
+                                         {0.005, M_PI - 0.005},
+                                         {-0.005, M_PI - 0.005},
+                                         {-0.005, -M_PI + 0.005}};
+    Geofence transMeridianHoleGeofence = {.numVerts = 4,
+                                          .verts = transMeridianHoleVerts};
+    GeoPolygon transMeridianHoleGeoPolygon = {
+        .geofence = transMeridianGeofence,
+        .numHoles = 1,
+        .holes = &transMeridianHoleGeofence};
+    GeoPolygon transMeridianFilledHoleGeoPolygon = {
+        .geofence = transMeridianHoleGeofence, .numHoles = 0};
+
     int expectedSize;
 
     // Prime meridian case
@@ -238,14 +224,8 @@ TEST(polyfillTransmeridianComplex) {
     GeoCoord verts[] = {{0.1, -M_PI + 0.00001},  {0.1, M_PI - 0.00001},
                         {0.05, M_PI - 0.2},      {-0.1, M_PI - 0.00001},
                         {-0.1, -M_PI + 0.00001}, {-0.05, -M_PI + 0.2}};
-
-    Geofence geofence;
-    geofence.verts = verts;
-    geofence.numVerts = 6;
-
-    GeoPolygon polygon;
-    polygon.geofence = geofence;
-    polygon.numHoles = 0;
+    Geofence geofence = {.numVerts = 6, .verts = verts};
+    GeoPolygon polygon = {.geofence = geofence, .numHoles = 0};
 
     int numHexagons = H3_EXPORT(maxPolyfillSize)(&polygon, 4);
 

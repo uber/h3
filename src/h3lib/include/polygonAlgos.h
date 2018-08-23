@@ -145,10 +145,10 @@ void GENERIC_LOOP_ALGO(bboxFrom)(const TYPE* loop, BBox* bbox) {
 
     bbox->south = DBL_MAX;
     bbox->west = DBL_MAX;
-    bbox->north = -1.0 * DBL_MAX;
-    bbox->east = -1.0 * DBL_MAX;
+    bbox->north = -DBL_MAX;
+    bbox->east = -DBL_MAX;
     double minPosLon = DBL_MAX;
-    double maxNegLon = -1.0 * DBL_MAX;
+    double maxNegLon = -DBL_MAX;
     bool isTransmeridian = false;
 
     double lat;
