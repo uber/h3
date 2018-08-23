@@ -137,6 +137,7 @@ static LinkedGeoPolygon* findPolygonForHole(LinkedGeoLoop* loop,
     assert(candidates != NULL);
     BBox** candidateBBoxes = calloc(polygonCount, sizeof(BBox*));
     assert(candidateBBoxes != NULL);
+
     // Find all polygons that contain the loop
     int containerCount = 0;
     int index = 0;
@@ -151,8 +152,10 @@ static LinkedGeoPolygon* findPolygonForHole(LinkedGeoLoop* loop,
         polygon = polygon->next;
         index++;
     }
+
     // Set the initial return value to the first candidate
     LinkedGeoPolygon* parent = candidates[0];
+
     // If we have multiple candidates, they must be nested inside each other.
     // Find the innermost polygon by taking the candidate with the most
     // containers in the candidate list.
@@ -167,8 +170,11 @@ static LinkedGeoPolygon* findPolygonForHole(LinkedGeoLoop* loop,
             }
         }
     }
+
+    // Free allocated memory
     free(candidates);
     free(candidateBBoxes);
+
     return parent;
 }
 
