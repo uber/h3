@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # Copyright 2018 Uber Technologies, Inc.
 #
@@ -36,7 +36,7 @@
 
 set -e
 
-if [ ! $<BOOL:$<CONFIG:Debug>> ]; then
+if [[ $<BOOL:$<CONFIG:Debug>> != 1 ]]; then
     echo "Cannot run coverage for non-debug build" 1>&2
     exit 1
 fi
