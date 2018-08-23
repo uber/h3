@@ -139,6 +139,22 @@ TEST(bboxFromGeofence) {
     t_assert(bboxEquals(&result, &expected), "Got expected bbox");
 }
 
+TEST(bboxFromGeofenceTransmeridian) {
+    GeoCoord verts[] = {{0.1, -M_PI + 0.1},  {0.1, M_PI - 0.1},
+                        {0.05, M_PI - 0.2},  {-0.1, M_PI - 0.1},
+                        {-0.1, -M_PI + 0.1}, {-0.05, -M_PI + 0.2}};
+
+    Geofence geofence;
+    geofence.verts = verts;
+    geofence.numVerts = 6;
+
+    const BBox expected = {0.1, -0.1, -M_PI + 0.2, M_PI - 0.2};
+
+    BBox result;
+    bboxFromGeofence(&geofence, &result);
+    t_assert(bboxEquals(&result, &expected), "Got expected transmeridian bbox");
+}
+
 TEST(bboxFromGeofenceNoVertices) {
     Geofence geofence;
     geofence.verts = NULL;

@@ -88,9 +88,16 @@ TEST(transmeridian) {
                         {-0.4, M_PI - 0.1}};
     const Geofence geofence = {.numVerts = 4, .verts = verts};
     const BBox expected = {0.4, -0.4, -M_PI + 0.1, M_PI - 0.1};
-    const GeoCoord inside = {-0.1, M_PI};
+    const GeoCoord insideOnMeridian = {-0.1, M_PI};
     const GeoCoord outside = {1.0, M_PI - 0.5};
-    assertBBox(&geofence, &expected, &inside, &outside);
+    assertBBox(&geofence, &expected, &insideOnMeridian, &outside);
+
+    const GeoCoord westInside = {0.1, M_PI - 0.05};
+    t_assert(bboxContains(&expected, &westInside),
+             "Contains expected west inside point");
+    const GeoCoord eastInside = {0.1, -M_PI + 0.05};
+    t_assert(bboxContains(&expected, &eastInside),
+             "Contains expected east outside point");
 
     const GeoCoord westOutside = {0.1, M_PI - 0.5};
     t_assert(!bboxContains(&expected, &westOutside),
