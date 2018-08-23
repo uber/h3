@@ -122,11 +122,15 @@ static int countContainers(LinkedGeoLoop* loop, LinkedGeoPolygon** polygons,
  * @param  loop         Inner loop describing a hole
  * @param  polygon      Head of a linked list of polygons to check
  * @param  polygonCount Number of polygons to check
- * @return              Pointer to parent polygon
+ * @return              Pointer to parent polygon, or null if not found
  */
 static LinkedGeoPolygon* findPolygonForHole(LinkedGeoLoop* loop,
                                             LinkedGeoPolygon* polygon,
                                             BBox* bboxes, int polygonCount) {
+    // Early exit with no polygons
+    if (polygonCount == 0) {
+        return NULL;
+    }
     // Initialize arrays for candidate loops and their bounding boxes
     LinkedGeoPolygon** candidates =
         calloc(polygonCount, sizeof(LinkedGeoPolygon*));
@@ -179,35 +183,41 @@ static LinkedGeoPolygon* findPolygonForHole(LinkedGeoLoop* loop,
  * loops to normalize. It's assumed that a valid arrangement is possible.
  *
  * @param root Root polygon including all loops
+ * @return     0 on success, or an error code > 0 for invalid input
  */
-void normalizeMultiPolygon(LinkedGeoPolygon* root) {
+int normalizeMultiPolygon(LinkedGeoPolygon* root) {
     // We assume that the input is a single polygon with loops;
-    // if not, don't touch it
+    // if it has multiple polygons, don't touch it
     if (root->next) {
-        return;
+        return NORMALIZATION_ERR_MULTIPLE_POLYGONS;
     }
-    // Count loops
     int loopCount = countLinkedLoops(root);
     // Early exit if there's only one loop
     if (loopCount <= 1) {
-        return;
+        return NORMALIZATION_SUCCESS;
     }
+    int resultCode = NORMALIZATION_SUCCESS;
+
     // Create an array to hold all of the inner loops. Note that
     // this array will never be full, as there will always be fewer
     // inner loops than outer loops.
     LinkedGeoLoop** innerLoops = calloc(loopCount, sizeof(LinkedGeoLoop*));
     assert(innerLoops != NULL);
+
     // Create an array to hold the bounding boxes for the outer loops
     BBox* bboxes = calloc(loopCount, sizeof(BBox));
     assert(bboxes != NULL);
+
     // Get the first loop and unlink it from root
     LinkedGeoLoop* loop = root->first;
     initLinkedPolygon(root);
+
     // Set up iteration variables
     LinkedGeoPolygon* polygon = NULL;
     LinkedGeoLoop* next;
     int innerCount = 0;
     int outerCount = 0;
+
     // Iterate over all loops, moving inner loops into an array and
     // assigning outer loops to new polygons
     while (loop) {
@@ -225,22 +235,26 @@ void normalizeMultiPolygon(LinkedGeoPolygon* root) {
         loop->next = NULL;
         loop = next;
     }
-    // If no outer loops were found, the polygon is invalid. We've already
-    // unlinked the root, so returning here will leave root in an empty
-    // state - this is assumed better than an invalid state.
-    if (outerCount > 0) {
-        // Find polygon for each inner loop and assign the hole to it
-        for (int i = 0; i < innerCount; i++) {
-            polygon =
-                findPolygonForHole(innerLoops[i], root, bboxes, outerCount);
-            if (polygon) {
-                addLinkedLoop(polygon, innerLoops[i]);
-            }
-            // TODO: Evasive action/assertion if no parents are found?
+
+    // Find polygon for each inner loop and assign the hole to it
+    for (int i = 0; i < innerCount; i++) {
+        polygon = findPolygonForHole(innerLoops[i], root, bboxes, outerCount);
+        if (polygon) {
+            addLinkedLoop(polygon, innerLoops[i]);
+        } else {
+            // If we can't find a polygon (possible with invalid input), then
+            // we need to release the memory for the hole, because the loop has
+            // been unlinked from the root and the caller will no longer have
+            // a way to destroy it with destroyLinkedPolygon.
+            destroyLinkedGeoLoop(innerLoops[i]);
+            free(innerLoops[i]);
+            resultCode = NORMALIZATION_ERR_UNASSIGNED_HOLES;
         }
     }
-    // TODO: Free any unallocated inner loops? Only possible with invalid input
+
     // Free allocated memory
     free(innerLoops);
     free(bboxes);
+
+    return resultCode;
 }

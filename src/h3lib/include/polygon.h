@@ -26,6 +26,11 @@
 #include "h3api.h"
 #include "linkedGeo.h"
 
+// Error codes for normalizeMultiPolygon
+#define NORMALIZATION_SUCCESS 0
+#define NORMALIZATION_ERR_MULTIPLE_POLYGONS 1
+#define NORMALIZATION_ERR_UNASSIGNED_HOLES 2
+
 /** Macro: Init iteration vars for Geofence */
 #define INIT_ITERATION_GEOFENCE int loopIndex = -1
 
@@ -62,6 +67,7 @@
 void bboxesFromGeoPolygon(const GeoPolygon* polygon, BBox* bboxes);
 bool pointInsidePolygon(const GeoPolygon* geoPolygon, const BBox* bboxes,
                         const GeoCoord* coord);
+int normalizeMultiPolygon(LinkedGeoPolygon* root);
 
 // The following functions are created via macro in polygonAlgos.h,
 // so their signatures are documented here:
@@ -108,7 +114,6 @@ bool pointInsideLinkedGeoLoop(const LinkedGeoLoop* loop, const BBox* bbox,
  * @return      Whether the loop is clockwise
  */
 bool isClockwiseGeofence(const Geofence* geofence);
-void normalizeMultiPolygon(LinkedGeoPolygon* root);
 
 /**
  * Whether the winding order of a given LinkedGeoLoop is clockwise
