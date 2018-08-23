@@ -22,6 +22,10 @@
 
 #include <math.h>
 
+#define MICROSECONDS_PER_SECOND 1E6
+#define NANOSECONDS_PER_SECOND 1E9
+#define NANOSECONDS_PER_MICROSECOND 1E3
+
 #ifdef _WIN32
 
 #include <Windows.h>
@@ -32,11 +36,11 @@
     QueryPerformanceFrequency(&freq); \
     QueryPerformanceCounter(&start)
 
-#define END_TIMER(var)             \
-    LARGE_INTEGER end;             \
-    QueryPerformanceCounter(&end); \
-    const long double var =        \
-        ((long double)(end.QuadPart - start.QuadPart)) / freq.QuadPart * 1E6
+#define END_TIMER(var)                                                       \
+    LARGE_INTEGER end;                                                       \
+    QueryPerformanceCounter(&end);                                           \
+    const long double var = ((long double)(end.QuadPart - start.QuadPart)) / \
+                            freq.QuadPart * MICROSECONDS_PER_SECOND
 
 #else  // !defined(_WIN32)
 
@@ -46,17 +50,19 @@
     struct timespec start; \
     clock_gettime(CLOCK_MONOTONIC, &start)
 
-#define END_TIMER(var)                             \
-    struct timespec end;                           \
-    clock_gettime(CLOCK_MONOTONIC, &end);          \
-    struct timespec elapsed;                       \
-    elapsed.tv_nsec = end.tv_nsec - start.tv_nsec; \
-    elapsed.tv_sec = end.tv_sec - start.tv_sec;    \
-    if (elapsed.tv_nsec < 0) {                     \
-        elapsed.tv_sec--;                          \
-        elapsed.tv_nsec = 1E9 + elapsed.tv_nsec;   \
-    }                                              \
-    const long double var = (elapsed.tv_sec * 1E9 + elapsed.tv_nsec) / 1E3
+#define END_TIMER(var)                                                \
+    struct timespec end;                                              \
+    clock_gettime(CLOCK_MONOTONIC, &end);                             \
+    struct timespec elapsed;                                          \
+    elapsed.tv_nsec = end.tv_nsec - start.tv_nsec;                    \
+    elapsed.tv_sec = end.tv_sec - start.tv_sec;                       \
+    if (elapsed.tv_nsec < 0) {                                        \
+        elapsed.tv_sec--;                                             \
+        elapsed.tv_nsec = NANOSECONDS_PER_SECOND + elapsed.tv_nsec;   \
+    }                                                                 \
+    const long double var =                                           \
+        (elapsed.tv_sec * NANOSECONDS_PER_SECOND + elapsed.tv_nsec) / \
+        NANOSECONDS_PER_MICROSECOND
 
 #endif
 
