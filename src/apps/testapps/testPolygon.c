@@ -248,7 +248,7 @@ TEST(isClockwiseGeofence) {
              "Got true for clockwise geofence");
 }
 
-TEST(isClockwiseLinkedGeoLoopFloats) {
+TEST(isClockwiseLinkedGeoLoop) {
     const GeoCoord verts[] = {{0.1, 0.1}, {0.2, 0.2}, {0.1, 0.2}};
 
     LinkedGeoLoop loop;
