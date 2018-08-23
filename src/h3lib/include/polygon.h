@@ -58,16 +58,62 @@
 /** Macro: Whether a LinkedGeoLoop is empty */
 #define IS_EMPTY_LINKED_LOOP(loop) loop->first == NULL
 
-void bboxFromGeofence(const Geofence* loop, BBox* bbox);
+// Defined directly in polygon.c:
 void bboxesFromGeoPolygon(const GeoPolygon* polygon, BBox* bboxes);
-bool pointInsideGeofence(const Geofence* loop, const BBox* bbox,
-                         const GeoCoord* coord);
 bool pointInsidePolygon(const GeoPolygon* geoPolygon, const BBox* bboxes,
                         const GeoCoord* coord);
+
+// The following functions are created via macro in polygonAlgos.h,
+// so their signatures are documented here:
+
+/**
+ * Create a bounding box from a Geofence
+ * @param geofence Input Geofence
+ * @param bbox     Output bbox
+ */
+void bboxFromGeofence(const Geofence* loop, BBox* bbox);
+
+/**
+ * Take a given Geofence data structure and check if it
+ * contains a given geo coordinate.
+ * @param loop          The geofence
+ * @param bbox          The bbox for the loop
+ * @param coord         The coordinate to check
+ * @return              Whether the point is contained
+ */
+bool pointInsideGeofence(const Geofence* loop, const BBox* bbox,
+                         const GeoCoord* coord);
+
+/**
+ * Create a bounding box from a LinkedGeoLoop
+ * @param geofence Input Geofence
+ * @param bbox     Output bbox
+ */
 void bboxFromLinkedGeoLoop(const LinkedGeoLoop* loop, BBox* bbox);
+
+/**
+ * Take a given LinkedGeoLoop data structure and check if it
+ * contains a given geo coordinate.
+ * @param loop          The linked loop
+ * @param bbox          The bbox for the loop
+ * @param coord         The coordinate to check
+ * @return              Whether the point is contained
+ */
 bool pointInsideLinkedGeoLoop(const LinkedGeoLoop* loop, const BBox* bbox,
                               const GeoCoord* coord);
-bool isClockwiseLinkedGeoLoop(const LinkedGeoLoop* loop);
+
+/**
+ * Whether the winding order of a given Geofence is clockwise
+ * @param loop  The loop to check
+ * @return      Whether the loop is clockwise
+ */
 bool isClockwiseGeofence(const Geofence* geofence);
+
+/**
+ * Whether the winding order of a given LinkedGeoLoop is clockwise
+ * @param loop  The loop to check
+ * @return      Whether the loop is clockwise
+ */
+bool isClockwiseLinkedGeoLoop(const LinkedGeoLoop* loop);
 
 #endif

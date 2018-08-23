@@ -26,58 +26,6 @@
 #include "geoCoord.h"
 #include "h3api.h"
 
-// Functions created via the include file:
-
-/**
- * Take a given Geofence data structure and check if it
- * contains a given geo coordinate.
- * @name pointInsideGeofence
- *
- * @param loop          The geofence
- * @param bbox          The bbox for the loop
- * @param coord         The coordinate to check
- * @return              Whether the point is contained
- */
-
-/**
- * Take a given LinkedGeoLoop data structure and check if it
- * contains a given geo coordinate.
- * @name pointInsideLinkedGeoLoop
- *
- * @param loop          The linked loop
- * @param bbox          The bbox for the loop
- * @param coord         The coordinate to check
- * @return              Whether the point is contained
- */
-
-/**
- * Create a bounding box from a Geofence
- * @name bboxFromGeofence
- * @param geofence Input Geofence
- * @param bbox     Output bbox
- */
-
-/**
- * Create a bounding box from a LinkedGeoLoop
- * @name bboxFromLinkedGeoLoop
- * @param geofence Input Geofence
- * @param bbox     Output bbox
- */
-
-/**
- * Whether the winding order of a given Geofence is clockwise
- * @name isClockwiseGeofence
- * @param loop  The loop to check
- * @return      Whether the loop is clockwise
- */
-
-/**
- * Whether the winding order of a given LinkedGeoLoop is clockwise
- * @name isClockwiseLinkedGeoLoop
- * @param loop  The loop to check
- * @return      Whether the loop is clockwise
- */
-
 // Define macros used in polygon algos for Geofence
 #define TYPE Geofence
 #define INIT_ITERATION INIT_ITERATION_GEOFENCE
