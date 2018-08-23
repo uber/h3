@@ -814,5 +814,6 @@ void H3_EXPORT(h3SetToLinkedGeo)(const H3Index* h3Set, const int numHexes,
     VertexGraph graph;
     h3SetToVertexGraph(h3Set, numHexes, &graph);
     _vertexGraphToLinkedGeo(&graph, out);
+    normalizeMultiPolygon(out);
     destroyVertexGraph(&graph);
 }

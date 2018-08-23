@@ -83,11 +83,14 @@ TEST(nonContiguous2) {
 
     H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon);
 
-    t_assert(countLinkedLoops(&polygon) == 2, "2 loops added to polygon");
+    t_assert(countLinkedPolygons(&polygon) == 2, "2 polygons added");
+    t_assert(countLinkedLoops(&polygon) == 1, "1 loop on the first polygon");
     t_assert(countLinkedCoords(polygon.first) == 6,
              "All coords for one hex added to first loop");
-    t_assert(countLinkedCoords(polygon.first->next) == 6,
-             "All coords for one hex added to second loop");
+    t_assert(countLinkedLoops(polygon.next) == 1,
+             "Loop count on second polygon correct");
+    t_assert(countLinkedCoords(polygon.next->first) == 6,
+             "All coords for one hex added to second polygon");
 
     H3_EXPORT(destroyLinkedPolygon)(&polygon);
     free(set);
@@ -119,12 +122,10 @@ TEST(hole) {
     H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon);
 
     t_assert(countLinkedLoops(&polygon) == 2, "2 loops added to polygon");
-    // Note: This isn't strictly correct, and should be reversed when
-    // https://github.com/uber/h3/issues/53 is resolved
-    t_assert(countLinkedCoords(polygon.first) == 6,
-             "All inner coords added to first loop");
-    t_assert(countLinkedCoords(polygon.first->next) == 6 * 3,
-             "All outer coords added to second loop");
+    t_assert(countLinkedCoords(polygon.first) == 6 * 3,
+             "All outer coords added to first loop");
+    t_assert(countLinkedCoords(polygon.first->next) == 6,
+             "All inner coords added to second loop");
 
     H3_EXPORT(destroyLinkedPolygon)(&polygon);
     free(set);
@@ -212,7 +213,16 @@ TEST(negativeHashedCoordinates) {
     LinkedGeoPolygon polygon;
     H3Index set[] = {0x88ad36c547fffffl, 0x88ad36c467fffffl};
     H3_EXPORT(h3SetToLinkedGeo)(set, 2, &polygon);
-    t_assert(countLinkedLoops(&polygon) == 2, "2 loops added to polygon");
+
+    t_assert(countLinkedPolygons(&polygon) == 2, "2 polygons added");
+    t_assert(countLinkedLoops(&polygon) == 1, "1 loop on the first polygon");
+    t_assert(countLinkedCoords(polygon.first) == 6,
+             "All coords for one hex added to first loop");
+    t_assert(countLinkedLoops(polygon.next) == 1,
+             "Loop count on second polygon correct");
+    t_assert(countLinkedCoords(polygon.next->first) == 6,
+             "All coords for one hex added to second polygon");
+
     H3_EXPORT(destroyLinkedPolygon)(&polygon);
 }
 
