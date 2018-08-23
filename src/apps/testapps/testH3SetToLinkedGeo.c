@@ -168,6 +168,85 @@ TEST(2RingUnordered) {
     H3_EXPORT(destroyLinkedPolygon)(&polygon);
 }
 
+TEST(nestedDonut) {
+    LinkedGeoPolygon polygon;
+    // hollow 1-ring + hollow 3-ring around the same hex
+    H3Index set[] = {
+        0x89283082813ffffl, 0x8928308281bffffl, 0x8928308280bffffl,
+        0x8928308280fffffl, 0x89283082807ffffl, 0x89283082817ffffl,
+        0x8928308289bffffl, 0x892830828d7ffffl, 0x892830828c3ffffl,
+        0x892830828cbffffl, 0x89283082853ffffl, 0x89283082843ffffl,
+        0x8928308284fffffl, 0x8928308287bffffl, 0x89283082863ffffl,
+        0x89283082867ffffl, 0x8928308282bffffl, 0x89283082823ffffl,
+        0x89283082837ffffl, 0x892830828afffffl, 0x892830828a3ffffl,
+        0x892830828b3ffffl, 0x89283082887ffffl, 0x89283082883ffffl};
+    int numHexes = sizeof(set) / sizeof(set[0]);
+
+    H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon);
+
+    // Note that the polygon order here is arbitrary, making this test
+    // somewhat brittle, but it's difficult to assert correctness otherwise
+    t_assert(countLinkedPolygons(&polygon) == 2, "Polygon count correct");
+    t_assert(countLinkedLoops(&polygon) == 2,
+             "Loop count on first polygon correct");
+    t_assert(countLinkedCoords(polygon.first) == 42,
+             "Got expected big outer loop");
+    t_assert(countLinkedCoords(polygon.first->next) == 30,
+             "Got expected big inner loop");
+    t_assert(countLinkedLoops(polygon.next) == 2,
+             "Loop count on second polygon correct");
+    t_assert(countLinkedCoords(polygon.next->first) == 18,
+             "Got expected outer loop");
+    t_assert(countLinkedCoords(polygon.next->first->next) == 6,
+             "Got expected inner loop");
+
+    H3_EXPORT(destroyLinkedPolygon)(&polygon);
+}
+
+TEST(nestedDonutTransmeridian) {
+    LinkedGeoPolygon polygon;
+    // hollow 1-ring + hollow 3-ring around the hex at (0, -180)
+    H3Index set[] = {
+        0x897eb5722c7ffffl, 0x897eb5722cfffffl, 0x897eb572257ffffl,
+        0x897eb57220bffffl, 0x897eb572203ffffl, 0x897eb572213ffffl,
+        0x897eb57266fffffl, 0x897eb5722d3ffffl, 0x897eb5722dbffffl,
+        0x897eb573537ffffl, 0x897eb573527ffffl, 0x897eb57225bffffl,
+        0x897eb57224bffffl, 0x897eb57224fffffl, 0x897eb57227bffffl,
+        0x897eb572263ffffl, 0x897eb572277ffffl, 0x897eb57223bffffl,
+        0x897eb572233ffffl, 0x897eb5722abffffl, 0x897eb5722bbffffl,
+        0x897eb572287ffffl, 0x897eb572283ffffl, 0x897eb57229bffffl};
+    int numHexes = sizeof(set) / sizeof(set[0]);
+
+    H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon);
+
+    printf("%d\n", countLinkedLoops(polygon.next));
+
+    // printf("%d: %d, %d | %d: %d, %d\n",
+    //     countLinkedLoops(&polygon),
+    //     countLinkedCoords(polygon.first),
+    //     countLinkedCoords(polygon.first->next),
+    //     countLinkedLoops(polygon.next),
+    //     countLinkedCoords(polygon.next->first->next),
+    //     countLinkedCoords(polygon.next->first));
+
+    // Note that the polygon order here is arbitrary, making this test
+    // somewhat brittle, but it's difficult to assert correctness otherwise
+    t_assert(countLinkedPolygons(&polygon) == 2, "Polygon count correct");
+    t_assert(countLinkedLoops(&polygon) == 2,
+             "Loop count on first polygon correct");
+    t_assert(countLinkedCoords(polygon.first) == 18, "Got expected outer loop");
+    t_assert(countLinkedCoords(polygon.first->next) == 6,
+             "Got expected inner loop");
+    t_assert(countLinkedLoops(polygon.next) == 2,
+             "Loop count on second polygon correct");
+    t_assert(countLinkedCoords(polygon.next->first) == 42,
+             "Got expected big outer loop");
+    t_assert(countLinkedCoords(polygon.next->first->next) == 30,
+             "Got expected big inner loop");
+
+    H3_EXPORT(destroyLinkedPolygon)(&polygon);
+}
+
 TEST(contiguous2distorted) {
     LinkedGeoPolygon polygon;
     H3Index set[] = {0x894cc5365afffffl, 0x894cc536537ffffl};
