@@ -64,7 +64,6 @@ bool pointInsideGeofence(const Geofence* loop, const BBox* bbox,
                          const GeoCoord* coord);
 bool pointInsidePolygon(const GeoPolygon* geoPolygon, const BBox* bboxes,
                         const GeoCoord* coord);
-void isClockwiseLinkedGeofence(const Geofence* loop);
 void bboxFromLinkedGeoLoop(const LinkedGeoLoop* loop, BBox* bbox);
 bool pointInsideLinkedGeoLoop(const LinkedGeoLoop* loop, const BBox* bbox,
                               const GeoCoord* coord);
