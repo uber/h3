@@ -26,75 +26,42 @@ GeoCoord sfVerts[] = {
     {0.659966917655, -2.1364398519396},  {0.6595011102219, -2.1359434279405},
     {0.6583348114025, -2.1354884206045}, {0.6581220034068, -2.1382437718946},
     {0.6594479998527, -2.1384597563896}, {0.6599990002976, -2.1376771158464}};
-Geofence sfGeofence;
+Geofence sfGeofence = {.numVerts = 6, .verts = sfVerts};
 GeoPolygon sfGeoPolygon;
+
 GeoCoord holeVerts[] = {{0.6595072188743, -2.1371053983433},
                         {0.6591482046471, -2.1373141048153},
                         {0.6592295020837, -2.1365222838402}};
-Geofence holeGeofence;
+Geofence holeGeofence = {.numVerts = 3, .verts = holeVerts};
 GeoPolygon holeGeoPolygon;
+
 GeoCoord emptyVerts[] = {{0.659966917655, -2.1364398519394},
                          {0.659966917655, -2.1364398519395},
                          {0.659966917655, -2.1364398519396}};
-Geofence emptyGeofence;
+Geofence emptyGeofence = {.numVerts = 3, .verts = emptyVerts};
 GeoPolygon emptyGeoPolygon;
 
-GeoCoord primeMeridianVerts[] = {
-    {0.01, 0.01}, {0.01, -0.01}, {-0.01, -0.01}, {-0.01, 0.01}};
-Geofence primeMeridianGeofence;
-GeoPolygon primeMeridianGeoPolygon;
-
-GeoCoord transMeridianVerts[] = {{0.01, -M_PI + 0.01},
-                                 {0.01, M_PI - 0.01},
-                                 {-0.01, M_PI - 0.01},
-                                 {-0.01, -M_PI + 0.01}};
-Geofence transMeridianGeofence;
-GeoPolygon transMeridianGeoPolygon;
-
-GeoCoord transMeridianHoleVerts[] = {{0.005, -M_PI + 0.005},
-                                     {0.005, M_PI - 0.005},
-                                     {-0.005, M_PI - 0.005},
-                                     {-0.005, -M_PI + 0.005}};
-Geofence transMeridianHoleGeofence;
-GeoPolygon transMeridianHoleGeoPolygon;
-GeoPolygon transMeridianFilledHoleGeoPolygon;
+static int countActualHexagons(H3Index* hexagons, int numHexagons) {
+    int actualNumHexagons = 0;
+    for (int i = 0; i < numHexagons; i++) {
+        if (hexagons[i] != 0) {
+            actualNumHexagons++;
+        }
+    }
+    return actualNumHexagons;
+}
 
 BEGIN_TESTS(polyfill);
 
-sfGeofence.numVerts = 6;
-sfGeofence.verts = sfVerts;
 sfGeoPolygon.geofence = sfGeofence;
 sfGeoPolygon.numHoles = 0;
 
-holeGeofence.numVerts = 3;
-holeGeofence.verts = holeVerts;
 holeGeoPolygon.geofence = sfGeofence;
 holeGeoPolygon.numHoles = 1;
 holeGeoPolygon.holes = &holeGeofence;
 
-emptyGeofence.numVerts = 3;
-emptyGeofence.verts = emptyVerts;
 emptyGeoPolygon.geofence = emptyGeofence;
 emptyGeoPolygon.numHoles = 0;
-
-primeMeridianGeofence.numVerts = 4;
-primeMeridianGeofence.verts = primeMeridianVerts;
-primeMeridianGeoPolygon.geofence = primeMeridianGeofence;
-primeMeridianGeoPolygon.numHoles = 0;
-
-transMeridianGeofence.numVerts = 4;
-transMeridianGeofence.verts = transMeridianVerts;
-transMeridianGeoPolygon.geofence = transMeridianGeofence;
-transMeridianGeoPolygon.numHoles = 0;
-
-transMeridianHoleGeofence.numVerts = 4;
-transMeridianHoleGeofence.verts = transMeridianHoleVerts;
-transMeridianHoleGeoPolygon.geofence = transMeridianGeofence;
-transMeridianHoleGeoPolygon.numHoles = 1;
-transMeridianHoleGeoPolygon.holes = &transMeridianHoleGeofence;
-
-transMeridianFilledHoleGeoPolygon.geofence = transMeridianHoleGeofence;
-transMeridianFilledHoleGeoPolygon.numHoles = 0;
 
 TEST(maxPolyfillSize) {
     int numHexagons = H3_EXPORT(maxPolyfillSize)(&sfGeoPolygon, 9);
@@ -112,12 +79,7 @@ TEST(polyfill) {
     H3Index* hexagons = calloc(numHexagons, sizeof(H3Index));
 
     H3_EXPORT(polyfill)(&sfGeoPolygon, 9, hexagons);
-    int actualNumHexagons = 0;
-    for (int i = 0; i < numHexagons; i++) {
-        if (hexagons[i] != 0) {
-            actualNumHexagons++;
-        }
-    }
+    int actualNumHexagons = countActualHexagons(hexagons, numHexagons);
 
     t_assert(actualNumHexagons == 1253, "got expected polyfill size");
     free(hexagons);
@@ -128,12 +90,7 @@ TEST(polyfillHole) {
     H3Index* hexagons = calloc(numHexagons, sizeof(H3Index));
 
     H3_EXPORT(polyfill)(&holeGeoPolygon, 9, hexagons);
-    int actualNumHexagons = 0;
-    for (int i = 0; i < numHexagons; i++) {
-        if (hexagons[i] != 0) {
-            actualNumHexagons++;
-        }
-    }
+    int actualNumHexagons = countActualHexagons(hexagons, numHexagons);
 
     t_assert(actualNumHexagons == 1214, "got expected polyfill size (hole)");
     free(hexagons);
@@ -144,12 +101,7 @@ TEST(polyfillEmpty) {
     H3Index* hexagons = calloc(numHexagons, sizeof(H3Index));
 
     H3_EXPORT(polyfill)(&emptyGeoPolygon, 9, hexagons);
-    int actualNumHexagons = 0;
-    for (int i = 0; i < numHexagons; i++) {
-        if (hexagons[i] != 0) {
-            actualNumHexagons++;
-        }
-    }
+    int actualNumHexagons = countActualHexagons(hexagons, numHexagons);
 
     t_assert(actualNumHexagons == 0, "got expected polyfill size (empty)");
     free(hexagons);
@@ -178,13 +130,7 @@ TEST(polyfillExact) {
     H3Index* hexagons = calloc(numHexagons, sizeof(H3Index));
 
     H3_EXPORT(polyfill)(&someHexagon, 9, hexagons);
-    int actualNumHexagons = 0;
-    for (int i = 0; i < numHexagons; i++) {
-        if (hexagons[i] != 0) {
-            t_assert(hexagons[i] == origin, "Got origin back");
-            actualNumHexagons++;
-        }
-    }
+    int actualNumHexagons = countActualHexagons(hexagons, numHexagons);
 
     t_assert(actualNumHexagons == 1, "got expected polyfill size (1)");
     free(hexagons);
@@ -192,6 +138,35 @@ TEST(polyfillExact) {
 }
 
 TEST(polyfillTransmeridian) {
+    GeoCoord primeMeridianVerts[] = {
+        {0.01, 0.01}, {0.01, -0.01}, {-0.01, -0.01}, {-0.01, 0.01}};
+    Geofence primeMeridianGeofence = {.numVerts = 4,
+                                      .verts = primeMeridianVerts};
+    GeoPolygon primeMeridianGeoPolygon = {.geofence = primeMeridianGeofence,
+                                          .numHoles = 0};
+
+    GeoCoord transMeridianVerts[] = {{0.01, -M_PI + 0.01},
+                                     {0.01, M_PI - 0.01},
+                                     {-0.01, M_PI - 0.01},
+                                     {-0.01, -M_PI + 0.01}};
+    Geofence transMeridianGeofence = {.numVerts = 4,
+                                      .verts = transMeridianVerts};
+    GeoPolygon transMeridianGeoPolygon = {.geofence = transMeridianGeofence,
+                                          .numHoles = 0};
+
+    GeoCoord transMeridianHoleVerts[] = {{0.005, -M_PI + 0.005},
+                                         {0.005, M_PI - 0.005},
+                                         {-0.005, M_PI - 0.005},
+                                         {-0.005, -M_PI + 0.005}};
+    Geofence transMeridianHoleGeofence = {.numVerts = 4,
+                                          .verts = transMeridianHoleVerts};
+    GeoPolygon transMeridianHoleGeoPolygon = {
+        .geofence = transMeridianGeofence,
+        .numHoles = 1,
+        .holes = &transMeridianHoleGeofence};
+    GeoPolygon transMeridianFilledHoleGeoPolygon = {
+        .geofence = transMeridianHoleGeofence, .numHoles = 0};
+
     int expectedSize;
 
     // Prime meridian case
@@ -200,12 +175,7 @@ TEST(polyfillTransmeridian) {
     H3Index* hexagons = calloc(numHexagons, sizeof(H3Index));
 
     H3_EXPORT(polyfill)(&primeMeridianGeoPolygon, 7, hexagons);
-    int actualNumHexagons = 0;
-    for (int i = 0; i < numHexagons; i++) {
-        if (hexagons[i] != 0) {
-            actualNumHexagons++;
-        }
-    }
+    int actualNumHexagons = countActualHexagons(hexagons, numHexagons);
 
     t_assert(actualNumHexagons == expectedSize,
              "got expected polyfill size (prime meridian)");
@@ -218,12 +188,7 @@ TEST(polyfillTransmeridian) {
     H3Index* hexagonsTM = calloc(numHexagons, sizeof(H3Index));
 
     H3_EXPORT(polyfill)(&transMeridianGeoPolygon, 7, hexagonsTM);
-    actualNumHexagons = 0;
-    for (int i = 0; i < numHexagons; i++) {
-        if (hexagonsTM[i] != 0) {
-            actualNumHexagons++;
-        }
-    }
+    actualNumHexagons = countActualHexagons(hexagonsTM, numHexagons);
 
     t_assert(actualNumHexagons == expectedSize,
              "got expected polyfill size (transmeridian)");
@@ -234,24 +199,14 @@ TEST(polyfillTransmeridian) {
     H3Index* hexagonsTMFH = calloc(numHexagons, sizeof(H3Index));
 
     H3_EXPORT(polyfill)(&transMeridianFilledHoleGeoPolygon, 7, hexagonsTMFH);
-    int actualNumHoleHexagons = 0;
-    for (int i = 0; i < numHexagons; i++) {
-        if (hexagonsTMFH[i] != 0) {
-            actualNumHoleHexagons++;
-        }
-    }
+    int actualNumHoleHexagons = countActualHexagons(hexagonsTMFH, numHexagons);
 
     // Transmeridian hole case
     numHexagons = H3_EXPORT(maxPolyfillSize)(&transMeridianHoleGeoPolygon, 7);
     H3Index* hexagonsTMH = calloc(numHexagons, sizeof(H3Index));
 
     H3_EXPORT(polyfill)(&transMeridianHoleGeoPolygon, 7, hexagonsTMH);
-    actualNumHexagons = 0;
-    for (int i = 0; i < numHexagons; i++) {
-        if (hexagonsTMH[i] != 0) {
-            actualNumHexagons++;
-        }
-    }
+    actualNumHexagons = countActualHexagons(hexagonsTMH, numHexagons);
 
     t_assert(actualNumHexagons == expectedSize - actualNumHoleHexagons,
              "got expected polyfill size (transmeridian hole)");
@@ -260,6 +215,29 @@ TEST(polyfillTransmeridian) {
     free(hexagonsTM);
     free(hexagonsTMFH);
     free(hexagonsTMH);
+}
+
+TEST(polyfillTransmeridianComplex) {
+    // This polygon is "complex" in that it has > 4 vertices - this
+    // tests for a bug that was taking the max and min longitude as
+    // the bounds for transmeridian polygons
+    GeoCoord verts[] = {{0.1, -M_PI + 0.00001},  {0.1, M_PI - 0.00001},
+                        {0.05, M_PI - 0.2},      {-0.1, M_PI - 0.00001},
+                        {-0.1, -M_PI + 0.00001}, {-0.05, -M_PI + 0.2}};
+    Geofence geofence = {.numVerts = 6, .verts = verts};
+    GeoPolygon polygon = {.geofence = geofence, .numHoles = 0};
+
+    int numHexagons = H3_EXPORT(maxPolyfillSize)(&polygon, 4);
+
+    H3Index* hexagons = calloc(numHexagons, sizeof(H3Index));
+    H3_EXPORT(polyfill)(&polygon, 4, hexagons);
+
+    int actualNumHexagons = countActualHexagons(hexagons, numHexagons);
+
+    t_assert(actualNumHexagons == 1204,
+             "got expected polyfill size (complex transmeridian)");
+
+    free(hexagons);
 }
 
 TEST(polyfillPentagon) {

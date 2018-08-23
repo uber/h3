@@ -127,16 +127,26 @@ TEST(pointInsideLinkedGeoLoop) {
 
 TEST(bboxFromGeofence) {
     GeoCoord verts[] = {{0.8, 0.3}, {0.7, 0.6}, {1.1, 0.7}, {1.0, 0.2}};
-
-    Geofence geofence;
-    geofence.verts = verts;
-    geofence.numVerts = 4;
+    Geofence geofence = {.numVerts = 4, .verts = verts};
 
     const BBox expected = {1.1, 0.7, 0.7, 0.2};
 
     BBox result;
     bboxFromGeofence(&geofence, &result);
     t_assert(bboxEquals(&result, &expected), "Got expected bbox");
+}
+
+TEST(bboxFromGeofenceTransmeridian) {
+    GeoCoord verts[] = {{0.1, -M_PI + 0.1},  {0.1, M_PI - 0.1},
+                        {0.05, M_PI - 0.2},  {-0.1, M_PI - 0.1},
+                        {-0.1, -M_PI + 0.1}, {-0.05, -M_PI + 0.2}};
+    Geofence geofence = {.numVerts = 6, .verts = verts};
+
+    const BBox expected = {0.1, -0.1, -M_PI + 0.2, M_PI - 0.2};
+
+    BBox result;
+    bboxFromGeofence(&geofence, &result);
+    t_assert(bboxEquals(&result, &expected), "Got expected transmeridian bbox");
 }
 
 TEST(bboxFromGeofenceNoVertices) {
@@ -154,14 +164,8 @@ TEST(bboxFromGeofenceNoVertices) {
 
 TEST(bboxesFromGeoPolygon) {
     GeoCoord verts[] = {{0.8, 0.3}, {0.7, 0.6}, {1.1, 0.7}, {1.0, 0.2}};
-
-    Geofence geofence;
-    geofence.verts = verts;
-    geofence.numVerts = 4;
-
-    GeoPolygon polygon;
-    polygon.geofence = geofence;
-    polygon.numHoles = 0;
+    Geofence geofence = {.numVerts = 4, .verts = verts};
+    GeoPolygon polygon = {.geofence = geofence, .numHoles = 0};
 
     const BBox expected = {1.1, 0.7, 0.7, 0.2};
 
@@ -174,22 +178,14 @@ TEST(bboxesFromGeoPolygon) {
 
 TEST(bboxesFromGeoPolygonHole) {
     GeoCoord verts[] = {{0.8, 0.3}, {0.7, 0.6}, {1.1, 0.7}, {1.0, 0.2}};
-
-    Geofence geofence;
-    geofence.verts = verts;
-    geofence.numVerts = 4;
+    Geofence geofence = {.numVerts = 4, .verts = verts};
 
     // not a real hole, but doesn't matter for the test
     GeoCoord holeVerts[] = {{0.9, 0.3}, {0.9, 0.5}, {1.0, 0.7}, {0.9, 0.3}};
+    Geofence holeGeofence = {.numVerts = 4, .verts = holeVerts};
 
-    Geofence holeGeofence;
-    holeGeofence.verts = holeVerts;
-    holeGeofence.numVerts = 4;
-
-    GeoPolygon polygon;
-    polygon.geofence = geofence;
-    polygon.numHoles = 1;
-    polygon.holes = &holeGeofence;
+    GeoPolygon polygon = {
+        .geofence = geofence, .numHoles = 1, .holes = &holeGeofence};
 
     const BBox expected = {1.1, 0.7, 0.7, 0.2};
     const BBox expectedHole = {1.0, 0.9, 0.7, 0.3};
@@ -237,10 +233,7 @@ TEST(bboxFromLinkedGeoLoopNoVertices) {
 
 TEST(isClockwiseGeofence) {
     GeoCoord verts[] = {{0, 0}, {0.1, 0.1}, {0, 0.1}};
-
-    Geofence geofence;
-    geofence.verts = verts;
-    geofence.numVerts = 3;
+    Geofence geofence = {.numVerts = 3, .verts = verts};
 
     t_assert(isClockwiseGeofence(&geofence), "Got true for clockwise geofence");
 }
