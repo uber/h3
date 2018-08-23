@@ -51,6 +51,10 @@
 #define LOOP_ALGO_TJOIN(a, b) LOOP_ALGO_XTJOIN(a, b)
 #define GENERIC_LOOP_ALGO(func) LOOP_ALGO_TJOIN(func, TYPE)
 
+/** Macro: Normalize longitude, dealing with transmeridian arcs */
+#define NORMALIZE_LON(lon, isTransmeridian) \
+    (isTransmeridian && lon < 0 ? lon + (double) M_2PI : lon)
+
 /**
  * pointInside is the core loop of the point-in-poly algorithm
  * @param loop  The loop to check
@@ -68,7 +72,7 @@ bool GENERIC_LOOP_ALGO(pointInside)(const TYPE* loop, const BBox* bbox,
     bool contains = false;
 
     double lat = coord->lat;
-    double lng = NORMALIZE_LNG(coord->lon, isTransmeridian);
+    double lng = NORMALIZE_LON(coord->lon, isTransmeridian);
 
     GeoCoord a;
     GeoCoord b;
@@ -92,8 +96,8 @@ bool GENERIC_LOOP_ALGO(pointInside)(const TYPE* loop, const BBox* bbox,
             continue;
         }
 
-        double aLng = NORMALIZE_LNG(a.lon, isTransmeridian);
-        double bLng = NORMALIZE_LNG(b.lon, isTransmeridian);
+        double aLng = NORMALIZE_LON(a.lon, isTransmeridian);
+        double bLng = NORMALIZE_LON(b.lon, isTransmeridian);
 
         // Rays are cast in the longitudinal direction, in case a point
         // exactly matches, to decide tiebreakers, bias westerly
@@ -108,7 +112,7 @@ bool GENERIC_LOOP_ALGO(pointInside)(const TYPE* loop, const BBox* bbox,
         // of a to b
         double ratio = (lat - a.lat) / (b.lat - a.lat);
         double testLng =
-            NORMALIZE_LNG(aLng + (bLng - aLng) * ratio, isTransmeridian);
+            NORMALIZE_LON(aLng + (bLng - aLng) * ratio, isTransmeridian);
 
         // Intersection of the ray
         if (testLng > lng) {
@@ -172,4 +176,40 @@ void GENERIC_LOOP_ALGO(bboxFrom)(const TYPE* loop, BBox* bbox) {
         bbox->east = bbox->west;
         bbox->west = tmp;
     }
+}
+
+/**
+ * Whether the winding order of a given loop is clockwise, with normalization
+ * for loops crossing the antimeridian.
+ * @param loop              The loop to check
+ * @param isTransmeridian   Whether the loop crosses the antimeridian
+ * @return                  Whether the loop is clockwise
+ */
+static bool GENERIC_LOOP_ALGO(isClockwiseNormalized)(const TYPE* loop, bool isTransmeridian) {
+    double sum = 0;
+    GeoCoord a;
+    GeoCoord b;
+
+    INIT_ITERATION;
+    while (true) {
+        ITERATE(loop, a, b);
+        // If we identify a transmeridian arc (> 180 degrees longitude),
+        // start over with the transmeridian flag set
+        if (!isTransmeridian && fabs(a.lon - b.lon) > M_PI) {
+            return GENERIC_LOOP_ALGO(isClockwiseNormalized)(loop, true);
+        }
+        sum += ((NORMALIZE_LON(b.lon, isTransmeridian) - NORMALIZE_LON(a.lon, isTransmeridian)) * (b.lat + a.lat));
+    }
+
+    return sum > 0;
+}
+
+/**
+ * Whether the winding order of a given loop is clockwise. In GeoJSON,
+ * clockwise loops are always inner loops (holes).
+ * @param loop  The loop to check
+ * @return      Whether the loop is clockwise
+ */
+bool GENERIC_LOOP_ALGO(isClockwise)(const TYPE* loop) {
+    return GENERIC_LOOP_ALGO(isClockwiseNormalized)(loop, false);
 }

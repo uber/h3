@@ -74,11 +74,11 @@ TEST(pointInsideGeofence) {
     BBox bbox;
     bboxFromGeofence(&sfGeofence, &bbox);
 
-    t_assert(pointInsideGeofence(&sfGeofence, &bbox, &sfVerts[0]) == false,
+    t_assert(!pointInsideGeofence(&sfGeofence, &bbox, &sfVerts[0]),
              "contains exact");
-    t_assert(pointInsideGeofence(&sfGeofence, &bbox, &sfVerts[4]) == true,
+    t_assert(pointInsideGeofence(&sfGeofence, &bbox, &sfVerts[4]),
              "contains exact4");
-    t_assert(pointInsideGeofence(&sfGeofence, &bbox, &somewhere) == false,
+    t_assert(!pointInsideGeofence(&sfGeofence, &bbox, &somewhere),
              "contains somewhere else");
 }
 
@@ -91,18 +91,16 @@ TEST(pointInsideGeofenceTransmeridian) {
     BBox bbox;
     bboxFromGeofence(&transMeridianGeofence, &bbox);
 
+    t_assert(pointInsideGeofence(&transMeridianGeofence, &bbox, &westPoint),
+             "contains point to the west of the antimeridian");
+    t_assert(pointInsideGeofence(&transMeridianGeofence, &bbox, &eastPoint),
+             "contains point to the east of the antimeridian");
     t_assert(
-        pointInsideGeofence(&transMeridianGeofence, &bbox, &westPoint) == true,
-        "contains point to the west of the antimeridian");
+        !pointInsideGeofence(&transMeridianGeofence, &bbox, &westPointOutside),
+        "does not contain outside point to the west of the antimeridian");
     t_assert(
-        pointInsideGeofence(&transMeridianGeofence, &bbox, &eastPoint) == true,
-        "contains point to the east of the antimeridian");
-    t_assert(pointInsideGeofence(&transMeridianGeofence, &bbox,
-                                 &westPointOutside) == false,
-             "does not contain outside point to the west of the antimeridian");
-    t_assert(pointInsideGeofence(&transMeridianGeofence, &bbox,
-                                 &eastPointOutside) == false,
-             "does not contain outside point to the east of the antimeridian");
+        !pointInsideGeofence(&transMeridianGeofence, &bbox, &eastPointOutside),
+        "does not contain outside point to the east of the antimeridian");
 }
 
 TEST(pointInsideLinkedGeoLoop) {
@@ -119,9 +117,9 @@ TEST(pointInsideLinkedGeoLoop) {
     BBox bbox;
     bboxFromLinkedGeoLoop(&loop, &bbox);
 
-    t_assert(pointInsideLinkedGeoLoop(&loop, &bbox, &inside) == true,
+    t_assert(pointInsideLinkedGeoLoop(&loop, &bbox, &inside),
              "contains exact4");
-    t_assert(pointInsideLinkedGeoLoop(&loop, &bbox, &somewhere) == false,
+    t_assert(!pointInsideLinkedGeoLoop(&loop, &bbox, &somewhere),
              "contains somewhere else");
 
     destroyLinkedGeoLoop(&loop);
@@ -233,6 +231,85 @@ TEST(bboxFromLinkedGeoLoopNoVertices) {
     bboxFromLinkedGeoLoop(&loop, &result);
 
     t_assert(bboxEquals(&result, &expected), "Got expected bbox");
+
+    destroyLinkedGeoLoop(&loop);
+}
+
+TEST(isClockwiseGeofence) {
+    GeoCoord verts[] = {{0, 0}, {0.1, 0.1}, {0, 0.1}};
+
+    Geofence geofence;
+    geofence.verts = verts;
+    geofence.numVerts = 3;
+
+    t_assert(isClockwiseGeofence(&geofence), "Got true for clockwise geofence");
+}
+
+TEST(isClockwiseLinkedGeoLoop) {
+    const GeoCoord verts[] = {{0.1, 0.1}, {0.2, 0.2}, {0.1, 0.2}};
+
+    LinkedGeoLoop loop;
+    initLinkedLoop(&loop);
+
+    for (int i = 0; i < 3; i++) {
+        addLinkedCoord(&loop, &verts[i]);
+    }
+
+    t_assert(isClockwiseLinkedGeoLoop(&loop), "Got true for clockwise loop");
+
+    destroyLinkedGeoLoop(&loop);
+}
+
+TEST(isNotClockwiseLinkedGeoLoop) {
+    const GeoCoord verts[] = {{0, 0}, {0, 0.4}, {0.4, 0.4}, {0.4, 0}};
+
+    LinkedGeoLoop loop;
+    initLinkedLoop(&loop);
+
+    for (int i = 0; i < 4; i++) {
+        addLinkedCoord(&loop, &verts[i]);
+    }
+
+    t_assert(!isClockwiseLinkedGeoLoop(&loop),
+             "Got false for counter-clockwise loop");
+
+    destroyLinkedGeoLoop(&loop);
+}
+
+TEST(isClockwiseLinkedGeoLoopTransmeridian) {
+    const GeoCoord verts[] = {{0.4, M_PI - 0.1},
+                              {0.4, -M_PI + 0.1},
+                              {-0.4, -M_PI + 0.1},
+                              {-0.4, M_PI - 0.1}};
+
+    LinkedGeoLoop loop;
+    initLinkedLoop(&loop);
+
+    for (int i = 0; i < 4; i++) {
+        addLinkedCoord(&loop, &verts[i]);
+    }
+
+    t_assert(isClockwiseLinkedGeoLoop(&loop),
+             "Got true for clockwise transmeridian loop");
+
+    destroyLinkedGeoLoop(&loop);
+}
+
+TEST(isNotClockwiseLinkedGeoLoopTransmeridian) {
+    const GeoCoord verts[] = {{0.4, M_PI - 0.1},
+                              {-0.4, M_PI - 0.1},
+                              {-0.4, -M_PI + 0.1},
+                              {0.4, -M_PI + 0.1}};
+
+    LinkedGeoLoop loop;
+    initLinkedLoop(&loop);
+
+    for (int i = 0; i < 4; i++) {
+        addLinkedCoord(&loop, &verts[i]);
+    }
+
+    t_assert(!isClockwiseLinkedGeoLoop(&loop),
+             "Got false for counter-clockwise transmeridian loop");
 
     destroyLinkedGeoLoop(&loop);
 }
