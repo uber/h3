@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include "algos.h"
 #include "test.h"
+#include "utility.h"
 
 BEGIN_TESTS(h3SetToLinkedGeo);
 
@@ -33,7 +34,7 @@ TEST(empty) {
 TEST(singleHex) {
     LinkedGeoPolygon polygon;
     H3Index set[] = {0x890dab6220bffff};
-    int numHexes = sizeof(set) / sizeof(set[0]);
+    int numHexes = ARRAY_SIZE(set);
 
     H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon);
 
@@ -46,7 +47,7 @@ TEST(singleHex) {
 TEST(contiguous2) {
     LinkedGeoPolygon polygon;
     H3Index set[] = {0x8928308291bffff, 0x89283082957ffff};
-    int numHexes = sizeof(set) / sizeof(set[0]);
+    int numHexes = ARRAY_SIZE(set);
 
     H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon);
 
@@ -63,7 +64,7 @@ TEST(contiguous2) {
 TEST(nonContiguous2) {
     LinkedGeoPolygon polygon;
     H3Index set[] = {0x8928308291bffff, 0x89283082943ffff};
-    int numHexes = sizeof(set) / sizeof(set[0]);
+    int numHexes = ARRAY_SIZE(set);
 
     H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon);
 
@@ -82,7 +83,7 @@ TEST(nonContiguous2) {
 TEST(contiguous3) {
     LinkedGeoPolygon polygon;
     H3Index set[] = {0x8928308288bffff, 0x892830828d7ffff, 0x8928308289bffff};
-    int numHexes = sizeof(set) / sizeof(set[0]);
+    int numHexes = ARRAY_SIZE(set);
 
     H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon);
 
@@ -97,7 +98,7 @@ TEST(hole) {
     LinkedGeoPolygon polygon;
     H3Index set[] = {0x892830828c7ffff, 0x892830828d7ffff, 0x8928308289bffff,
                      0x89283082813ffff, 0x8928308288fffff, 0x89283082883ffff};
-    int numHexes = sizeof(set) / sizeof(set[0]);
+    int numHexes = ARRAY_SIZE(set);
 
     H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon);
 
@@ -113,7 +114,7 @@ TEST(hole) {
 TEST(pentagon) {
     LinkedGeoPolygon polygon;
     H3Index set[] = {0x851c0003fffffff};
-    int numHexes = sizeof(set) / sizeof(set[0]);
+    int numHexes = ARRAY_SIZE(set);
 
     H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon);
 
@@ -134,7 +135,7 @@ TEST(2Ring) {
                      0x89300628067ffff, 0x8930062806fffff, 0x893006283d3ffff,
                      0x893006283c3ffff, 0x893006283cfffff, 0x8930062831bffff,
                      0x89300628303ffff};
-    int numHexes = sizeof(set) / sizeof(set[0]);
+    int numHexes = ARRAY_SIZE(set);
 
     H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon);
 
@@ -155,7 +156,7 @@ TEST(2RingUnordered) {
                      0x8930062806fffff, 0x8930062838fffff, 0x893006283d3ffff,
                      0x893006283c3ffff, 0x8930062831bffff, 0x893006283d7ffff,
                      0x893006283c7ffff};
-    int numHexes = sizeof(set) / sizeof(set[0]);
+    int numHexes = ARRAY_SIZE(set);
 
     H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon);
 
@@ -177,7 +178,7 @@ TEST(nestedDonut) {
                      0x89283082867ffff, 0x8928308282bffff, 0x89283082823ffff,
                      0x89283082837ffff, 0x892830828afffff, 0x892830828a3ffff,
                      0x892830828b3ffff, 0x89283082887ffff, 0x89283082883ffff};
-    int numHexes = sizeof(set) / sizeof(set[0]);
+    int numHexes = ARRAY_SIZE(set);
 
     H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon);
 
@@ -211,7 +212,7 @@ TEST(nestedDonutTransmeridian) {
                      0x897eb572263ffff, 0x897eb572277ffff, 0x897eb57223bffff,
                      0x897eb572233ffff, 0x897eb5722abffff, 0x897eb5722bbffff,
                      0x897eb572287ffff, 0x897eb572283ffff, 0x897eb57229bffff};
-    int numHexes = sizeof(set) / sizeof(set[0]);
+    int numHexes = ARRAY_SIZE(set);
 
     H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon);
 
@@ -236,7 +237,7 @@ TEST(nestedDonutTransmeridian) {
 TEST(contiguous2distorted) {
     LinkedGeoPolygon polygon;
     H3Index set[] = {0x894cc5365afffff, 0x894cc536537ffff};
-    int numHexes = sizeof(set) / sizeof(set[0]);
+    int numHexes = ARRAY_SIZE(set);
 
     H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon);
 
@@ -250,7 +251,7 @@ TEST(contiguous2distorted) {
 TEST(negativeHashedCoordinates) {
     LinkedGeoPolygon polygon;
     H3Index set[] = {0x88ad36c547fffff, 0x88ad36c467fffff};
-    int numHexes = sizeof(set) / sizeof(set[0]);
+    int numHexes = ARRAY_SIZE(set);
     H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon);
 
     t_assert(countLinkedPolygons(&polygon) == 2, "2 polygons added");

@@ -252,7 +252,7 @@ TEST(isClockwiseLinkedGeoLoopTransmeridian) {
     LinkedGeoLoop loop;
     createLinkedLoop(&loop, &verts[0], 4);
 
-    t_assert(isClockwiseLinkedGeoLoop(&loop) == true,
+    t_assert(isClockwiseLinkedGeoLoop(&loop),
              "Got true for clockwise transmeridian loop");
 
     destroyLinkedGeoLoop(&loop);
@@ -266,7 +266,7 @@ TEST(isNotClockwiseLinkedGeoLoopTransmeridian) {
     LinkedGeoLoop loop;
     createLinkedLoop(&loop, &verts[0], 4);
 
-    t_assert(isClockwiseLinkedGeoLoop(&loop) == false,
+    t_assert(!isClockwiseLinkedGeoLoop(&loop),
              "Got false for counter-clockwise transmeridian loop");
 
     destroyLinkedGeoLoop(&loop);
