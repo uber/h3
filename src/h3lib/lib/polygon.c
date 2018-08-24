@@ -98,7 +98,6 @@ bool pointInsidePolygon(const GeoPolygon* geoPolygon, const BBox* bboxes,
 
 /**
  * Count the number of polygons containing a given loop.
- * TODO: It would be really nice to memoize this.
  * @param  loop         Loop to count containers for
  * @param  polygons     Polygons to test
  * @param  bboxes       Bounding boxes for polygons, used in point-in-poly check
