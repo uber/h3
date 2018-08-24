@@ -101,6 +101,7 @@ bool pointInsidePolygon(const GeoPolygon* geoPolygon, const BBox* bboxes,
  * TODO: It would be really nice to memoize this.
  * @param  loop         Loop to count containers for
  * @param  polygons     Polygons to test
+ * @param  bboxes       Bounding boxes for polygons, used in point-in-poly check
  * @param  polygonCount Number of polygons in the test array
  * @return              Number of polygons containing the loop
  */
@@ -154,6 +155,7 @@ static LinkedGeoPolygon* findDeepestContainer(LinkedGeoPolygon** polygons,
  * function will return null if no parent is found.
  * @param  loop         Inner loop describing a hole
  * @param  polygon      Head of a linked list of polygons to check
+ * @param  bboxes       Bounding boxes for polygons, used in point-in-poly check
  * @param  polygonCount Number of polygons to check
  * @return              Pointer to parent polygon, or null if not found
  */
