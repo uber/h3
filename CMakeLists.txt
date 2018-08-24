@@ -59,10 +59,10 @@ if(NOT WIN32)
     list(APPEND H3_COMPILE_FLAGS $<$<CONFIG:Debug>:-gdwarf-2 -g3 -O0 -fno-inline -fno-eliminate-unused-debug-types>)
 
     if(ENABLE_COVERAGE)
-        list(APPEND H3_COMPILE_FLAGS $<$<CONFIG:DEBUG>:--coverage>)
+        list(APPEND H3_COMPILE_FLAGS $<$<CONFIG:Debug>:--coverage>)
         # --coverage is not passed to the linker, so this option is needed
         # to fully enable coverage.
-        list(APPEND H3_LINK_FLAGS $<$<CONFIG:DEBUG>:--coverage>)
+        list(APPEND H3_LINK_FLAGS $<$<CONFIG:Debug>:--coverage>)
     endif()
 
     option(WARNINGS_AS_ERRORS "Warnings are treated as errors" OFF)
@@ -239,15 +239,15 @@ endif()
 find_package(Doxygen)
 option(ENABLE_DOCS "Enable building documentation." ON)
 if(DOXYGEN_FOUND AND ENABLE_DOCS)
-    set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${PROJECT_BINARY_DIR}/dev-docs/_build")
+    set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${CMAKE_CURRENT_BINARY_DIR}/dev-docs/_build")
     configure_file(dev-docs/Doxyfile.in
         dev-docs/Doxyfile
         ESCAPE_QUOTES
         )
     add_custom_target(docs
         ALL
-        ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/dev-docs/Doxyfile
-        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/dev-docs
+        ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/dev-docs/Doxyfile
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/dev-docs
         COMMENT "Generating API documentation with Doxygen" VERBATIM
         )
 else()
@@ -259,13 +259,13 @@ endif()
 # Metadata for bindings
 if (WIN32)
     add_custom_target(binding-functions
-        COMMAND PowerShell -ExecutionPolicy Bypass -File ${PROJECT_SOURCE_DIR}/scripts/binding_functions.ps1
-        WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+        COMMAND PowerShell -ExecutionPolicy Bypass -File ${CMAKE_CURRENT_SOURCE_DIR}/scripts/binding_functions.ps1
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         )
 else()
     add_custom_target(binding-functions
-        COMMAND ${PROJECT_SOURCE_DIR}/scripts/binding_functions.sh
-        WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/binding_functions.sh
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         )
 endif()
 
@@ -330,21 +330,16 @@ if(BUILD_TESTING)
     set(test_number 0)
 
     if(ENABLE_COVERAGE)
+        file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/coverage.sh"
+                      INPUT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/coverage.sh.in")
         set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "coverage.info")
         set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "coverage.cleaned.info")
         set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "coverage")
         add_custom_target(coverage
-            # Compile generated coverage counts into a single coverage.info
-            COMMAND lcov --directory '${PROJECT_BINARY_DIR}' --capture --output-file coverage.info
-            # Take only coverage of the core library, not apps
-            COMMAND lcov --extract coverage.info '${PROJECT_SOURCE_DIR}/src/h3lib/*' --output-file coverage.cleaned.info
-            # Generate output html at coverage/
-            COMMAND genhtml -o coverage coverage.cleaned.info --title 'h3 coverage'
-            COMMENT "Coverage done"
-            )
+            COMMAND bash "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/coverage.sh" "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}")
         add_custom_target(clean-coverage
             # Before running coverage, clear all counters
-            COMMAND lcov --directory '${PROJECT_BINARY_DIR}' --zerocounters
+            COMMAND lcov --directory '${CMAKE_CURRENT_BINARY_DIR}' --zerocounters
             COMMENT "Zeroing counters"
             )
     endif()

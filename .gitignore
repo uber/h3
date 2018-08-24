@@ -71,6 +71,7 @@ CMakeDoxyfile.in
 CMakeDoxygenDefaults.cmake
 DartConfiguration.tcl
 compile_commands.json
+RunCoverage.cmake
 
 # CTest / coverage
 CTestTestfile.cmake
