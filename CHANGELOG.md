@@ -8,6 +8,8 @@ The public API of this library consists of the functions declared in file
 ## [Unreleased]
 ### Added
 - `experimentalH3ToLocalIj` function for getting local coordinates for an index. (#102)
+### Fixed
+- Fixed bounding box bug for polygons crossing the antimeridian (#130)
 ### Changed
 - Longitude outputs are now guaranteed to be in the range [-Pi, Pi]. (#93)
 - Internal `h3ToIjk` function renamed to `h3ToLocalIjk`. (#102)

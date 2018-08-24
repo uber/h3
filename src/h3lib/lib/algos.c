@@ -706,7 +706,7 @@ void H3_EXPORT(polyfill)(const GeoPolygon* geoPolygon, int res, H3Index* out) {
         hexCenter.lat = constrainLat(hexCenter.lat);
         hexCenter.lon = constrainLng(hexCenter.lon);
         // And remove from list if not
-        if (!polygonContainsPoint(geoPolygon, bboxes, &hexCenter)) {
+        if (!pointInsidePolygon(geoPolygon, bboxes, &hexCenter)) {
             out[i] = H3_INVALID_INDEX;
         }
     }

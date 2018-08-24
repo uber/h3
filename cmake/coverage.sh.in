@@ -1,0 +1,50 @@
+#!/bin/bash
+
+# Copyright 2018 Uber Technologies, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# To invoke this script, use `bash coverage.sh <source-dir> <binary-dir>`,
+# where `source-dir` corresponds to CMake source directory and `binary-dir`
+# corresponds to the CMake build directory. This script is used to run the
+# `coverage` target. In order to guarantee that `coverage` is only a valid
+# target in debug builds, we must know the build mode. However, CMake tries to
+# delay the selection of the build mode until the build itself. This allows
+# tools like Xcode to choose to build in debug mode or release mode without
+# rerunning CMake. In order to control the `coverage` target based on the build
+# mode, this script is regenerated whenever a new build mode is selected,
+# regardless of whether or not the `cmake` command is invoked again.
+#
+# Example:
+#
+# ```
+# $ cmake -DCMAKE_BUILD_TYPE=Debug ..
+# $ xcodebuild -configuration Release  # coverage.sh generated
+# $ xcodebuild -configuration Release  # coverage.sh not regenerated
+# $ xcodebuild -configuration Debug    # coverage.sh regenerated
+# ```
+
+set -e
+
+if [[ $<BOOL:$<CONFIG:Debug>> != 1 ]]; then
+    echo "Cannot run coverage for non-debug build" 1>&2
+    exit 1
+fi
+
+src_dir=${1:-"Missing source directory"}
+binary_dir=${2:-"Missing binary directory"}
+
+cd "${binary_dir}"
+lcov --directory . --capture --output-file coverage.info
+lcov --extract coverage.info "${src_dir}/src/h3lib/*" --output-file coverage.cleaned.info
+genhtml -o coverage coverage.cleaned.info --title 'h3 coverage'

@@ -20,30 +20,65 @@
 #ifndef BENCHMARK_H
 #define BENCHMARK_H
 
+#include <math.h>
+
+#define MICROSECONDS_PER_SECOND 1E6
+#define NANOSECONDS_PER_SECOND 1E9
+#define NANOSECONDS_PER_MICROSECOND 1E3
+
+#ifdef _WIN32
+
+#include <Windows.h>
+
+#define START_TIMER                   \
+    LARGE_INTEGER start;              \
+    LARGE_INTEGER freq;               \
+    QueryPerformanceFrequency(&freq); \
+    QueryPerformanceCounter(&start)
+
+#define END_TIMER(var)                                                       \
+    LARGE_INTEGER end;                                                       \
+    QueryPerformanceCounter(&end);                                           \
+    const long double var = ((long double)(end.QuadPart - start.QuadPart)) / \
+                            freq.QuadPart * MICROSECONDS_PER_SECOND
+
+#else  // !defined(_WIN32)
+
 #include <time.h>
 
-#define BEGIN_BENCHMARKS()             \
-    int main(int argc, char* argv[]) { \
-        clock_t start;                 \
-        clock_t diff;                  \
-        double duration;               \
-        int iterations;                \
-        char* name;
+#define START_TIMER        \
+    struct timespec start; \
+    clock_gettime(CLOCK_MONOTONIC, &start)
 
-#define BENCHMARK(NAME, ITERATIONS, BODY)                                    \
-    start = clock();                                                         \
-    iterations = ITERATIONS;                                                 \
-    name = #NAME;                                                            \
-    for (int i = 0; i < iterations; i++) {                                   \
-        BODY;                                                                \
-    }                                                                        \
-    diff = clock() - start;                                                  \
-    duration = diff * 1000 / CLOCKS_PER_SEC;                                 \
-    printf("\t-- %s: %f milliseconds per iteration (%d iterations)\n", name, \
-           duration / iterations, iterations);
+#define END_TIMER(var)                                                \
+    struct timespec end;                                              \
+    clock_gettime(CLOCK_MONOTONIC, &end);                             \
+    struct timespec elapsed;                                          \
+    elapsed.tv_nsec = end.tv_nsec - start.tv_nsec;                    \
+    elapsed.tv_sec = end.tv_sec - start.tv_sec;                       \
+    if (elapsed.tv_nsec < 0) {                                        \
+        elapsed.tv_sec--;                                             \
+        elapsed.tv_nsec = NANOSECONDS_PER_SECOND + elapsed.tv_nsec;   \
+    }                                                                 \
+    const long double var =                                           \
+        (elapsed.tv_sec * NANOSECONDS_PER_SECOND + elapsed.tv_nsec) / \
+        NANOSECONDS_PER_MICROSECOND
 
-#define END_BENCHMARKS() \
-    ;                    \
-    }
+#endif
+
+#define BEGIN_BENCHMARKS() int main(int argc, char* argv[]) {
+#define BENCHMARK(NAME, ITERATIONS, BODY)                                   \
+    do {                                                                    \
+        const int iterations = ITERATIONS;                                  \
+        const char* name = #NAME;                                           \
+        START_TIMER;                                                        \
+        for (int i = 0; i < iterations; i++) {                              \
+            BODY;                                                           \
+        }                                                                   \
+        END_TIMER(duration);                                                \
+        printf("\t-- %s: %Lf microseconds per iteration (%d iterations)\n", \
+               name, (duration / iterations), iterations);                  \
+    } while (0)
+#define END_BENCHMARKS() }
 
 #endif
