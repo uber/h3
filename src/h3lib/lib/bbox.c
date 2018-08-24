@@ -26,75 +26,6 @@
 #include "h3Index.h"
 
 /**
- * Create a bounding box from a simple polygon defined as an array of vertices.
- * Known limitations:
- * - Does not support polygons with two adjacent points > 180 degrees of
- *   longitude apart. These will be interpreted as crossing the antimeridian.
- * - Does not currently support polygons containing a pole.
- * @param verts    Array of vertices
- * @param numVerts Number of vertices
- * @param bbox     Output bbox
- */
-void bboxFromVertices(const GeoCoord* verts, int numVerts, BBox* bbox) {
-    // Early exit if there are no vertices
-    if (numVerts == 0) {
-        bbox->north = 0;
-        bbox->south = 0;
-        bbox->east = 0;
-        bbox->west = 0;
-        return;
-    }
-    double lat;
-    double lon;
-
-    bbox->south = DBL_MAX;
-    bbox->west = DBL_MAX;
-    bbox->north = -1.0 * DBL_MAX;
-    bbox->east = -1.0 * DBL_MAX;
-    bool isTransmeridian = false;
-
-    for (int i = 0; i < numVerts; i++) {
-        lat = verts[i].lat;
-        lon = verts[i].lon;
-        if (lat < bbox->south) bbox->south = lat;
-        if (lon < bbox->west) bbox->west = lon;
-        if (lat > bbox->north) bbox->north = lat;
-        if (lon > bbox->east) bbox->east = lon;
-        // check for arcs > 180 degrees longitude, flagging as transmeridian
-        if (fabs(lon - verts[(i + 1) % numVerts].lon) > M_PI) {
-            isTransmeridian = true;
-        }
-    }
-    // Swap east and west if transmeridian
-    if (isTransmeridian) {
-        double tmp = bbox->east;
-        bbox->east = bbox->west;
-        bbox->west = tmp;
-    }
-}
-
-/**
- * Create a bounding box from a Geofence
- * @param geofence Input Geofence
- * @param bbox     Output bbox
- */
-void bboxFromGeofence(const Geofence* geofence, BBox* bbox) {
-    bboxFromVertices(geofence->verts, geofence->numVerts, bbox);
-}
-
-/**
- * Create a bounding box from a GeoPolygon
- * @param polygon Input GeoPolygon
- * @param bboxes  Output bboxes, one for the outer loop and one for each hole
- */
-void bboxesFromGeoPolygon(const GeoPolygon* polygon, BBox* bboxes) {
-    bboxFromGeofence(&polygon->geofence, &bboxes[0]);
-    for (int i = 0; i < polygon->numHoles; i++) {
-        bboxFromGeofence(&polygon->holes[i], &bboxes[i + 1]);
-    }
-}
-
-/**
  * Whether the given bounding box crosses the antimeridian
  * @param  bbox Bounding box to inspect
  * @return      is transmeridian
@@ -127,6 +58,17 @@ bool bboxContains(const BBox* bbox, const GeoCoord* point) {
                                       :
                                       // standard case
                 (point->lon >= bbox->west && point->lon <= bbox->east));
+}
+
+/**
+ * Whether two bounding boxes are strictly equal
+ * @param  b1 Bounding box 1
+ * @param  b2 Bounding box 2
+ * @return    Whether the boxes are equal
+ */
+bool bboxEquals(const BBox* b1, const BBox* b2) {
+    return b1->north == b2->north && b1->south == b2->south &&
+           b1->east == b2->east && b1->west == b2->west;
 }
 
 /**

@@ -40,8 +40,4 @@ void h3SetToVertexGraph(const H3Index* h3Set, const int numHexes,
 // Create a LinkedGeoPolygon from a vertex graph
 void _vertexGraphToLinkedGeo(VertexGraph* graph, LinkedGeoPolygon* out);
 
-// Point in poly internal implementation
-bool _pointInPolyContainsLoop(const Geofence* geofence, const BBox* bbox,
-                              const GeoCoord* coord);
-
 #endif
