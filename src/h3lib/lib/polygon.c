@@ -104,16 +104,49 @@ bool pointInsidePolygon(const GeoPolygon* geoPolygon, const BBox* bboxes,
  * @param  polygonCount Number of polygons in the test array
  * @return              Number of polygons containing the loop
  */
-static int countContainers(LinkedGeoLoop* loop, LinkedGeoPolygon** polygons,
-                           BBox** bboxes, int polygonCount) {
+static int countContainers(const LinkedGeoLoop* loop,
+                           LinkedGeoPolygon** polygons, const BBox** bboxes,
+                           const int polygonCount) {
     int containerCount = 0;
     for (int i = 0; i < polygonCount; i++) {
-        if (pointInsideLinkedGeoLoop(polygons[i]->first, bboxes[i],
+        if (loop != polygons[i]->first &&
+            pointInsideLinkedGeoLoop(polygons[i]->first, bboxes[i],
                                      &loop->first->vertex)) {
             containerCount++;
         }
     }
     return containerCount;
+}
+
+/**
+ * Given a list of nested containers, find the one most deeply nested.
+ * @param  polygons     Polygon containers to check
+ * @param  bboxes       Bounding boxes for polygons, used in point-in-poly check
+ * @param  polygonCount Number of polygons in the list
+ * @return              Deepest container, or null if list is empty
+ */
+static LinkedGeoPolygon* findDeepestContainer(LinkedGeoPolygon** polygons,
+                                              const BBox** bboxes,
+                                              const int polygonCount) {
+    // Set the initial return value to the first candidate
+    LinkedGeoPolygon* parent = polygonCount > 0 ? polygons[0] : NULL;
+
+    // If we have multiple polygons, they must be nested inside each other.
+    // Find the innermost polygon by taking the one with the most containers
+    // in the list.
+    if (polygonCount > 1) {
+        int max = -1;
+        for (int i = 0; i < polygonCount; i++) {
+            int count = countContainers(polygons[i]->first, polygons, bboxes,
+                                        polygonCount);
+            if (count > max) {
+                parent = polygons[i];
+                max = count;
+            }
+        }
+    }
+
+    return parent;
 }
 
 /**
@@ -124,52 +157,39 @@ static int countContainers(LinkedGeoLoop* loop, LinkedGeoPolygon** polygons,
  * @param  polygonCount Number of polygons to check
  * @return              Pointer to parent polygon, or null if not found
  */
-static LinkedGeoPolygon* findPolygonForHole(LinkedGeoLoop* loop,
+static LinkedGeoPolygon* findPolygonForHole(const LinkedGeoLoop* loop,
                                             LinkedGeoPolygon* polygon,
-                                            BBox* bboxes, int polygonCount) {
+                                            const BBox* bboxes,
+                                            const int polygonCount) {
     // Early exit with no polygons
     if (polygonCount == 0) {
         return NULL;
     }
     // Initialize arrays for candidate loops and their bounding boxes
     LinkedGeoPolygon** candidates =
-        calloc(polygonCount, sizeof(LinkedGeoPolygon*));
+        malloc(polygonCount * sizeof(LinkedGeoPolygon*));
     assert(candidates != NULL);
-    BBox** candidateBBoxes = calloc(polygonCount, sizeof(BBox*));
+    const BBox** candidateBBoxes = malloc(polygonCount * sizeof(BBox*));
     assert(candidateBBoxes != NULL);
 
     // Find all polygons that contain the loop
-    int containerCount = 0;
+    int candidateCount = 0;
     int index = 0;
     while (polygon) {
         // We are guaranteed not to overlap, so just test the first point
         if (pointInsideLinkedGeoLoop(polygon->first, &bboxes[index],
                                      &loop->first->vertex)) {
-            candidates[containerCount] = polygon;
-            candidateBBoxes[containerCount] = &bboxes[index];
-            containerCount++;
+            candidates[candidateCount] = polygon;
+            candidateBBoxes[candidateCount] = &bboxes[index];
+            candidateCount++;
         }
         polygon = polygon->next;
         index++;
     }
 
-    // Set the initial return value to the first candidate
-    LinkedGeoPolygon* parent = candidates[0];
-
-    // If we have multiple candidates, they must be nested inside each other.
-    // Find the innermost polygon by taking the candidate with the most
-    // containers in the candidate list.
-    if (containerCount > 1) {
-        int max = -1;
-        for (int i = 0; i < containerCount; i++) {
-            int count = countContainers(candidates[i]->first, candidates,
-                                        candidateBBoxes, containerCount);
-            if (count > max) {
-                parent = candidates[i];
-                max = count;
-            }
-        }
-    }
+    // The most deeply nested container is the immediate parent
+    LinkedGeoPolygon* parent =
+        findDeepestContainer(candidates, candidateBBoxes, candidateCount);
 
     // Free allocated memory
     free(candidates);
@@ -197,32 +217,32 @@ int normalizeMultiPolygon(LinkedGeoPolygon* root) {
     if (root->next) {
         return NORMALIZATION_ERR_MULTIPLE_POLYGONS;
     }
+
+    // Count loops, exiting early if there's only one
     int loopCount = countLinkedLoops(root);
-    // Early exit if there's only one loop
     if (loopCount <= 1) {
         return NORMALIZATION_SUCCESS;
     }
+
     int resultCode = NORMALIZATION_SUCCESS;
+    LinkedGeoPolygon* polygon = NULL;
+    LinkedGeoLoop* next;
+    int innerCount = 0;
+    int outerCount = 0;
 
     // Create an array to hold all of the inner loops. Note that
     // this array will never be full, as there will always be fewer
     // inner loops than outer loops.
-    LinkedGeoLoop** innerLoops = calloc(loopCount, sizeof(LinkedGeoLoop*));
+    LinkedGeoLoop** innerLoops = malloc(loopCount * sizeof(LinkedGeoLoop*));
     assert(innerLoops != NULL);
 
     // Create an array to hold the bounding boxes for the outer loops
-    BBox* bboxes = calloc(loopCount, sizeof(BBox));
+    BBox* bboxes = malloc(loopCount * sizeof(BBox));
     assert(bboxes != NULL);
 
     // Get the first loop and unlink it from root
     LinkedGeoLoop* loop = root->first;
     initLinkedPolygon(root);
-
-    // Set up iteration variables
-    LinkedGeoPolygon* polygon = NULL;
-    LinkedGeoLoop* next;
-    int innerCount = 0;
-    int outerCount = 0;
 
     // Iterate over all loops, moving inner loops into an array and
     // assigning outer loops to new polygons
