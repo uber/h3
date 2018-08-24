@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 /** @file
- * @brief stdin/stdout filter that converts from H3 indexes to relative IJ
+ * @brief stdin/stdout filter that converts from H3 indexes to local IJ
  * coordinates.
  *
- *  usage: `h3ToIj [origin]`
+ *  usage: `h3ToLocalIj [origin]`
  *
  *  The program reads H3 indexes from stdin and outputs the corresponding
  *  IJ coordinates to stdout, until EOF is encountered. The H3 indexes
@@ -26,6 +26,8 @@
  *
  *  `origin` indicates the origin (or anchoring) index for the IJ coordinate
  *  space.
+ *
+ *  This program has the same limitations as the `h3ToLocalIj` function.
  */
 
 #include <inttypes.h>
@@ -38,7 +40,7 @@
 
 void doCell(H3Index h, H3Index origin) {
     CoordIJ ij;
-    if (H3_EXPORT(h3ToIj)(origin, h, &ij)) {
+    if (H3_EXPORT(experimentalH3ToLocalIj)(origin, h, &ij)) {
         printf("NA\n");
     } else {
         printf("%d %d\n", ij.i, ij.j);

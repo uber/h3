@@ -459,12 +459,13 @@ void H3_EXPORT(getH3UnidirectionalEdgeBoundary)(H3Index edge, GeoBoundary *gb);
 int H3_EXPORT(h3Distance)(H3Index origin, H3Index h3);
 /** @} */
 
-/** @defgroup h3ToIj h3ToIj
- * Functions for h3ToIj
+/** @defgroup experimentalH3ToLocalIj experimentalH3ToLocalIj
+ * Functions for experimentalH3ToLocalIj
  * @{
  */
 /** @brief Returns two dimensional coordinates for the given index */
-int H3_EXPORT(h3ToIj)(H3Index origin, H3Index h3, CoordIJ *out);
+int H3_EXPORT(experimentalH3ToLocalIj)(H3Index origin, H3Index h3,
+                                       CoordIJ *out);
 /** @} */
 
 #ifdef __cplusplus

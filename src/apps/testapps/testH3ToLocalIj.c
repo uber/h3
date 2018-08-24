@@ -17,7 +17,7 @@
  * @brief tests H3 index to IJ or IJK+ grid functions, and H3 distance
  * function.
  *
- *  usage: `testH3ToIj`
+ *  usage: `testH3ToLocalIj`
  */
 
 #include <stdio.h>
@@ -43,7 +43,8 @@ void h3Distance_identity_assertions(H3Index h3) {
     // digits, when using the index as its own origin. That is, that the IJ
     // coordinates are in the coordinate space of the origin's base cell.
     CoordIJ ij;
-    t_assert(H3_EXPORT(h3ToIj)(h3, h3, &ij) == 0, "failed to get ij");
+    t_assert(H3_EXPORT(experimentalH3ToLocalIj)(h3, h3, &ij) == 0,
+             "failed to get ij");
     CoordIJK ijk;
     ijToIjk(&ij, &ijk);
     if (r == 0) {
@@ -64,7 +65,8 @@ void h3Distance_identity_assertions(H3Index h3) {
 
 void h3Distance_neighbors_assertions(H3Index h3) {
     CoordIJ origin = {0};
-    t_assert(H3_EXPORT(h3ToIj)(h3, h3, &origin) == 0, "got ij for origin");
+    t_assert(H3_EXPORT(experimentalH3ToLocalIj)(h3, h3, &origin) == 0,
+             "got ij for origin");
     CoordIJK originIjk;
     ijToIjk(&origin, &originIjk);
 
@@ -77,7 +79,7 @@ void h3Distance_neighbors_assertions(H3Index h3) {
         H3Index offset = h3NeighborRotations(h3, d, &rotations);
 
         CoordIJ ij = {0};
-        t_assert(H3_EXPORT(h3ToIj)(h3, offset, &ij) == 0,
+        t_assert(H3_EXPORT(experimentalH3ToLocalIj)(h3, offset, &ij) == 0,
                  "got ij for destination");
         CoordIJK ijk;
         ijToIjk(&ij, &ijk);
@@ -120,7 +122,7 @@ void h3Distance_kRing_assertions(H3Index h3) {
     }
 }
 
-BEGIN_TESTS(h3ToIj);
+BEGIN_TESTS(experimentalH3ToLocalIj);
 
 // Some indexes that represent base cells. Base cells
 // are hexagons except for `pent1`.
@@ -258,7 +260,7 @@ TEST(h3DistanceBaseCells) {
              "distance to neighbor is invalid");
 
     CoordIJK ijk;
-    t_assert(h3ToIjk(pent1, bc1, &ijk) == 0, "failed to get ijk (4, 15)");
+    t_assert(h3ToLocalIjk(pent1, bc1, &ijk) == 0, "failed to get ijk (4, 15)");
     t_assert(_ijkMatches(&ijk, &UNIT_VECS[2]) == 1, "not at 0,1,0");
 }
 
@@ -274,18 +276,23 @@ TEST(h3DistanceFailed) {
              "cannot compare at different resolutions");
 }
 
-TEST(h3ToIjFailed) {
+TEST(experimentalH3ToLocalIjFailed) {
     CoordIJ ij;
 
-    t_assert(H3_EXPORT(h3ToIj)(bc1, bc1, &ij) == 0, "failed to find IJ (1)");
+    t_assert(H3_EXPORT(experimentalH3ToLocalIj)(bc1, bc1, &ij) == 0,
+             "failed to find IJ (1)");
     t_assert(ij.i == 0 && ij.j == 0, "ij correct (1)");
-    t_assert(H3_EXPORT(h3ToIj)(bc1, pent1, &ij) == 0, "failed to find IJ (2)");
+    t_assert(H3_EXPORT(experimentalH3ToLocalIj)(bc1, pent1, &ij) == 0,
+             "failed to find IJ (2)");
     t_assert(ij.i == 1 && ij.j == 0, "ij correct (2)");
-    t_assert(H3_EXPORT(h3ToIj)(bc1, bc2, &ij) == 0, "failed to find IJ (3)");
+    t_assert(H3_EXPORT(experimentalH3ToLocalIj)(bc1, bc2, &ij) == 0,
+             "failed to find IJ (3)");
     t_assert(ij.i == 0 && ij.j == -1, "ij correct (3)");
-    t_assert(H3_EXPORT(h3ToIj)(bc1, bc3, &ij) == 0, "failed to find IJ (4)");
+    t_assert(H3_EXPORT(experimentalH3ToLocalIj)(bc1, bc3, &ij) == 0,
+             "failed to find IJ (4)");
     t_assert(ij.i == -1 && ij.j == 0, "ij correct (4)");
-    t_assert(H3_EXPORT(h3ToIj)(pent1, bc3, &ij) != 0, "failed to find IJ (5)");
+    t_assert(H3_EXPORT(experimentalH3ToLocalIj)(pent1, bc3, &ij) != 0,
+             "failed to find IJ (5)");
 }
 
 END_TESTS();
