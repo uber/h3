@@ -44,19 +44,16 @@ BEGIN_BENCHMARKS();
 LinkedGeoPolygon polygon;
 
 BENCHMARK(h3SetToLinkedGeoRing2, 10000, {
-    initLinkedPolygon(&polygon);
     H3_EXPORT(h3SetToLinkedGeo)(ring2, ring2Count, &polygon);
     H3_EXPORT(destroyLinkedPolygon)(&polygon);
 });
 
 BENCHMARK(h3SetToLinkedGeoDonut, 10000, {
-    initLinkedPolygon(&polygon);
     H3_EXPORT(h3SetToLinkedGeo)(donut, donutCount, &polygon);
     H3_EXPORT(destroyLinkedPolygon)(&polygon);
 });
 
 BENCHMARK(h3SetToLinkedGeoNestedDonuts, 10000, {
-    initLinkedPolygon(&polygon);
     H3_EXPORT(h3SetToLinkedGeo)(nestedDonuts, nestedDonutsCount, &polygon);
     H3_EXPORT(destroyLinkedPolygon)(&polygon);
 });

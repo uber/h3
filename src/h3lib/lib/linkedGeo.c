@@ -115,8 +115,9 @@ LinkedGeoCoord* addLinkedCoord(LinkedGeoLoop* loop, const GeoCoord* vertex) {
  * @param loop Loop to free
  */
 void destroyLinkedGeoLoop(LinkedGeoLoop* loop) {
-    for (LinkedGeoCoord *currentCoord = loop->first, *nextCoord;
-         currentCoord != NULL; currentCoord = nextCoord) {
+    LinkedGeoCoord* nextCoord;
+    for (LinkedGeoCoord* currentCoord = loop->first; currentCoord != NULL;
+         currentCoord = nextCoord) {
         nextCoord = currentCoord->next;
         free(currentCoord);
     }
@@ -130,9 +131,11 @@ void destroyLinkedGeoLoop(LinkedGeoLoop* loop) {
 void H3_EXPORT(destroyLinkedPolygon)(LinkedGeoPolygon* polygon) {
     // flag to skip the input polygon
     bool skip = true;
-    for (LinkedGeoPolygon *currentPolygon = polygon, *nextPolygon;
-         currentPolygon != NULL; currentPolygon = nextPolygon) {
-        for (LinkedGeoLoop *currentLoop = currentPolygon->first, *nextLoop;
+    LinkedGeoPolygon* nextPolygon;
+    LinkedGeoLoop* nextLoop;
+    for (LinkedGeoPolygon* currentPolygon = polygon; currentPolygon != NULL;
+         currentPolygon = nextPolygon) {
+        for (LinkedGeoLoop* currentLoop = currentPolygon->first;
              currentLoop != NULL; currentLoop = nextLoop) {
             destroyLinkedGeoLoop(currentLoop);
             nextLoop = currentLoop->next;
