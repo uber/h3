@@ -24,26 +24,6 @@
 #include "h3api.h"
 
 /**
- * Initialize a linked polygon
- * @param  polygon Polygon to init
- */
-void initLinkedPolygon(LinkedGeoPolygon* polygon) {
-    polygon->first = NULL;
-    polygon->last = NULL;
-    polygon->next = NULL;
-}
-
-/**
- * Initialize a linked loop
- * @param  loop Loop to init
- */
-void initLinkedLoop(LinkedGeoLoop* loop) {
-    loop->first = NULL;
-    loop->last = NULL;
-    loop->next = NULL;
-}
-
-/**
  * Add a linked polygon to the current polygon
  * @param  polygon Polygon to add link to
  * @return         Pointer to new polygon
@@ -62,18 +42,17 @@ LinkedGeoPolygon* addLinkedPolygon(LinkedGeoPolygon* polygon) {
  * @return         Pointer to loop
  */
 LinkedGeoLoop* addLinkedLoop(LinkedGeoPolygon* polygon) {
-    LinkedGeoLoop* loop = calloc(1, sizeof(*loop));
+    LinkedGeoLoop* loop = malloc(sizeof(*loop));
     assert(loop != NULL);
     initLinkedLoop(loop);
     LinkedGeoLoop* last = polygon->last;
     if (last == NULL) {
         assert(polygon->first == NULL);
         polygon->first = loop;
-        polygon->last = loop;
     } else {
         last->next = loop;
-        polygon->last = loop;
     }
+    polygon->last = loop;
     return loop;
 }
 
@@ -84,19 +63,17 @@ LinkedGeoLoop* addLinkedLoop(LinkedGeoPolygon* polygon) {
  * @return        Pointer to the coordinate
  */
 LinkedGeoCoord* addLinkedCoord(LinkedGeoLoop* loop, const GeoCoord* vertex) {
-    LinkedGeoCoord* coord = calloc(1, sizeof(*coord));
+    LinkedGeoCoord* coord = malloc(sizeof(*coord));
     assert(coord != NULL);
-    coord->vertex = *vertex;
-    coord->next = NULL;
+    *coord = (LinkedGeoCoord){.vertex = *vertex, .next = NULL};
     LinkedGeoCoord* last = loop->last;
     if (last == NULL) {
         assert(loop->first == NULL);
         loop->first = coord;
-        loop->last = coord;
     } else {
         last->next = coord;
-        loop->last = coord;
     }
+    loop->last = coord;
     return coord;
 }
 

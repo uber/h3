@@ -177,7 +177,7 @@ int H3_EXPORT(maxKringSize)(int k) {
  */
 void H3_EXPORT(kRing)(H3Index origin, int k, H3Index* out) {
     int maxIdx = H3_EXPORT(maxKringSize)(k);
-    int* distances = calloc(maxIdx, sizeof(int));
+    int* distances = malloc(maxIdx * sizeof(int));
     H3_EXPORT(kRingDistances)(origin, k, out, distances);
     free(distances);
 }
@@ -198,16 +198,14 @@ void H3_EXPORT(kRing)(H3Index origin, int k, H3Index* out) {
  */
 void H3_EXPORT(kRingDistances)(H3Index origin, int k, H3Index* out,
                                int* distances) {
-    int maxIdx = H3_EXPORT(maxKringSize)(k);
+    const int maxIdx = H3_EXPORT(maxKringSize)(k);
     // Optimistically try the faster hexRange algorithm first
-    int failed = H3_EXPORT(hexRangeDistances)(origin, k, out, distances);
+    const bool failed = H3_EXPORT(hexRangeDistances)(origin, k, out, distances);
     if (failed) {
         // Fast algo failed, fall back to slower, correct algo
         // and also wipe out array because contents untrustworthy
-        for (int i = 0; i < maxIdx; i++) {
-            out[i] = H3_INVALID_INDEX;
-            distances[i] = 0;
-        }
+        memset(out, 0, maxIdx * sizeof(out[0]));
+        memset(distances, 0, maxIdx * sizeof(distances[0]));
         _kRingInternal(origin, k, out, distances, maxIdx, 0);
     }
 }
@@ -233,10 +231,7 @@ void _kRingInternal(H3Index origin, int k, H3Index* out, int* distances,
     // Put origin in the output array. out is used as a hash set.
     int off = origin % maxIdx;
     while (out[off] != 0 && out[off] != origin) {
-        off++;
-        if (off >= maxIdx) {
-            off = 0;
-        }
+        off = (off + 1) % maxIdx;
     }
 
     // We either got a free slot in the hash set or hit a duplicate
@@ -679,7 +674,8 @@ void H3_EXPORT(polyfill)(const GeoPolygon* geoPolygon, int res, H3Index* out) {
     // This first part is identical to the maxPolyfillSize above.
 
     // Get the bounding boxes for the polygon and any holes
-    BBox* bboxes = calloc(geoPolygon->numHoles + 1, sizeof(BBox));
+    BBox* bboxes = malloc((geoPolygon->numHoles + 1) * sizeof(BBox));
+    assert(bboxes != NULL);
     bboxesFromGeoPolygon(geoPolygon, bboxes);
     int minK = bboxHexRadius(&bboxes[0], res);
     int numHexagons = H3_EXPORT(maxKringSize)(minK);

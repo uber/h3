@@ -227,7 +227,7 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
         }
         return 0;
     }
-    H3Index* remainingHexes = calloc(numHexes, sizeof(H3Index));
+    H3Index* remainingHexes = malloc(numHexes * sizeof(H3Index));
     memcpy(remainingHexes, h3Set, numHexes * sizeof(H3Index));
     H3Index* hashSetArray = calloc(numHexes, sizeof(H3Index));
     H3Index* compactedSetOffset = compactedSet;
@@ -287,7 +287,7 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
             break;
         }
         H3Index* compactableHexes =
-            calloc(maxCompactableCount, sizeof(H3Index));
+            malloc(maxCompactableCount * sizeof(H3Index));
         for (int i = 0; i < numRemainingHexes; i++) {
             if (hashSetArray[i] == 0) continue;
             int count = H3_GET_RESERVED_BITS(hashSetArray[i]) + 1;
@@ -320,7 +320,7 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
                 // the compactableHexes array
                 int loc = (int)(parent % numRemainingHexes);
                 int loopCount = 0;
-                int isUncompactable = 1;
+                bool isUncompactable = true;
                 do {
                     if (loopCount > numRemainingHexes) {
                         // LCOV_EXCL_START
@@ -337,7 +337,7 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
                     if (tempIndex == parent) {
                         int count = H3_GET_RESERVED_BITS(hashSetArray[loc]) + 1;
                         if (count == 7) {
-                            isUncompactable = 0;
+                            isUncompactable = false;
                         }
                         break;
                     } else {
@@ -355,7 +355,7 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
         memset(hashSetArray, 0, numHexes * sizeof(H3Index));
         compactedSetOffset += uncompactableCount;
         memcpy(remainingHexes, compactableHexes,
-               maxCompactableCount * sizeof(H3Index));
+               compactableCount * sizeof(H3Index));
         numRemainingHexes = compactableCount;
         free(compactableHexes);
     }
