@@ -107,8 +107,7 @@ TEST(pointInsideLinkedGeoLoop) {
     GeoCoord somewhere = {1, 2};
     GeoCoord inside = {0.659, -2.136};
 
-    LinkedGeoLoop loop;
-    initLinkedLoop(&loop);
+    LinkedGeoLoop loop = {0};
 
     for (int i = 0; i < 6; i++) {
         addLinkedCoord(&loop, &sfVerts[i]);
@@ -201,8 +200,7 @@ TEST(bboxesFromGeoPolygonHole) {
 TEST(bboxFromLinkedGeoLoop) {
     const GeoCoord verts[] = {{0.8, 0.3}, {0.7, 0.6}, {1.1, 0.7}, {1.0, 0.2}};
 
-    LinkedGeoLoop loop;
-    initLinkedLoop(&loop);
+    LinkedGeoLoop loop = {0};
 
     for (int i = 0; i < 4; i++) {
         addLinkedCoord(&loop, &verts[i]);
@@ -218,8 +216,7 @@ TEST(bboxFromLinkedGeoLoop) {
 }
 
 TEST(bboxFromLinkedGeoLoopNoVertices) {
-    LinkedGeoLoop loop;
-    initLinkedLoop(&loop);
+    LinkedGeoLoop loop = {0};
 
     const BBox expected = {0.0, 0.0, 0.0, 0.0};
 
@@ -241,8 +238,7 @@ TEST(isClockwiseGeofence) {
 TEST(isClockwiseLinkedGeoLoop) {
     const GeoCoord verts[] = {{0.1, 0.1}, {0.2, 0.2}, {0.1, 0.2}};
 
-    LinkedGeoLoop loop;
-    initLinkedLoop(&loop);
+    LinkedGeoLoop loop = {0};
 
     for (int i = 0; i < 3; i++) {
         addLinkedCoord(&loop, &verts[i]);
@@ -256,8 +252,7 @@ TEST(isClockwiseLinkedGeoLoop) {
 TEST(isNotClockwiseLinkedGeoLoop) {
     const GeoCoord verts[] = {{0, 0}, {0, 0.4}, {0.4, 0.4}, {0.4, 0}};
 
-    LinkedGeoLoop loop;
-    initLinkedLoop(&loop);
+    LinkedGeoLoop loop = {0};
 
     for (int i = 0; i < 4; i++) {
         addLinkedCoord(&loop, &verts[i]);
@@ -275,8 +270,7 @@ TEST(isClockwiseLinkedGeoLoopTransmeridian) {
                               {-0.4, -M_PI + 0.1},
                               {-0.4, M_PI - 0.1}};
 
-    LinkedGeoLoop loop;
-    initLinkedLoop(&loop);
+    LinkedGeoLoop loop = {0};
 
     for (int i = 0; i < 4; i++) {
         addLinkedCoord(&loop, &verts[i]);
@@ -294,8 +288,7 @@ TEST(isNotClockwiseLinkedGeoLoopTransmeridian) {
                               {-0.4, -M_PI + 0.1},
                               {0.4, -M_PI + 0.1}};
 
-    LinkedGeoLoop loop;
-    initLinkedLoop(&loop);
+    LinkedGeoLoop loop = {0};
 
     for (int i = 0; i < 4; i++) {
         addLinkedCoord(&loop, &verts[i]);

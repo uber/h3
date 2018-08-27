@@ -24,24 +24,6 @@
 #include "geoCoord.h"
 #include "h3api.h"
 
-/**
- * Initialize a linked polygon
- * @param  polygon Polygon to init
- */
-#define initLinkedPolygon(polygon)          \
-    do {                                    \
-        *(polygon) = (LinkedGeoPolygon){0}; \
-    } while (0)
-
-/**
- * Initialize a linked loop
- * @param  loop Loop to init
- */
-#define initLinkedLoop(loop)          \
-    do {                              \
-        *(loop) = (LinkedGeoLoop){0}; \
-    } while (0)
-
 LinkedGeoPolygon* addLinkedPolygon(LinkedGeoPolygon* polygon);
 LinkedGeoLoop* addLinkedLoop(LinkedGeoPolygon* polygon);
 LinkedGeoCoord* addLinkedCoord(LinkedGeoLoop* loop, const GeoCoord* vertex);

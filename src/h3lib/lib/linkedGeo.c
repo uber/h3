@@ -44,7 +44,7 @@ LinkedGeoPolygon* addLinkedPolygon(LinkedGeoPolygon* polygon) {
 LinkedGeoLoop* addLinkedLoop(LinkedGeoPolygon* polygon) {
     LinkedGeoLoop* loop = malloc(sizeof(*loop));
     assert(loop != NULL);
-    initLinkedLoop(loop);
+    *loop = (LinkedGeoLoop){0};
     LinkedGeoLoop* last = polygon->last;
     if (last == NULL) {
         assert(polygon->first == NULL);

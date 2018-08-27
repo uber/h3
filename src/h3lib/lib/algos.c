@@ -765,7 +765,7 @@ void h3SetToVertexGraph(const H3Index* h3Set, const int numHexes,
  * @param out   Output polygon
  */
 void _vertexGraphToLinkedGeo(VertexGraph* graph, LinkedGeoPolygon* out) {
-    initLinkedPolygon(out);
+    *out = (LinkedGeoPolygon){0};
     LinkedGeoLoop* loop;
     VertexNode* edge;
     GeoCoord nextVtx;

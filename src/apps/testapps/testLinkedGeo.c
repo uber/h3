@@ -38,7 +38,6 @@ TEST(createLinkedGeo) {
     LinkedGeoPolygon* polygon = calloc(1, sizeof(LinkedGeoPolygon));
     LinkedGeoLoop* loop;
     LinkedGeoCoord* coord;
-    initLinkedPolygon(polygon);
 
     loop = addLinkedLoop(polygon);
     t_assert(loop != NULL, "Loop created");
