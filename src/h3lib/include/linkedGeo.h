@@ -25,6 +25,11 @@
 #include "geoCoord.h"
 #include "h3api.h"
 
+// Error codes for normalizeMultiPolygon
+#define NORMALIZATION_SUCCESS 0
+#define NORMALIZATION_ERR_MULTIPLE_POLYGONS 1
+#define NORMALIZATION_ERR_UNASSIGNED_HOLES 2
+
 /** Macro: Init iteration vars for LinkedGeoLoop */
 #define INIT_ITERATION_LINKED_LOOP       \
     LinkedGeoCoord* currentCoord = NULL; \
@@ -44,6 +49,18 @@
 
 /** Macro: Whether a LinkedGeoLoop is empty */
 #define IS_EMPTY_LINKED_LOOP(loop) loop->first == NULL
+
+int normalizeMultiPolygon(LinkedGeoPolygon* root);
+void initLinkedPolygon(LinkedGeoPolygon* polygon);
+void initLinkedLoop(LinkedGeoLoop* loop);
+LinkedGeoPolygon* addNewLinkedPolygon(LinkedGeoPolygon* polygon);
+LinkedGeoLoop* addNewLinkedLoop(LinkedGeoPolygon* polygon);
+LinkedGeoLoop* addLinkedLoop(LinkedGeoPolygon* polygon, LinkedGeoLoop* loop);
+LinkedGeoCoord* addLinkedCoord(LinkedGeoLoop* loop, const GeoCoord* vertex);
+int countLinkedPolygons(LinkedGeoPolygon* polygon);
+int countLinkedLoops(LinkedGeoPolygon* polygon);
+int countLinkedCoords(LinkedGeoLoop* loop);
+void destroyLinkedGeoLoop(LinkedGeoLoop* loop);
 
 // The following functions are created via macro in polygonAlgos.h,
 // so their signatures are documented here:
@@ -72,15 +89,5 @@ bool pointInsideLinkedGeoLoop(const LinkedGeoLoop* loop, const BBox* bbox,
  * @return      Whether the loop is clockwise
  */
 bool isClockwiseLinkedGeoLoop(const LinkedGeoLoop* loop);
-void initLinkedPolygon(LinkedGeoPolygon* polygon);
-void initLinkedLoop(LinkedGeoLoop* loop);
-LinkedGeoPolygon* addNewLinkedPolygon(LinkedGeoPolygon* polygon);
-LinkedGeoLoop* addNewLinkedLoop(LinkedGeoPolygon* polygon);
-LinkedGeoLoop* addLinkedLoop(LinkedGeoPolygon* polygon, LinkedGeoLoop* loop);
-LinkedGeoCoord* addLinkedCoord(LinkedGeoLoop* loop, const GeoCoord* vertex);
-int countLinkedPolygons(LinkedGeoPolygon* polygon);
-int countLinkedLoops(LinkedGeoPolygon* polygon);
-int countLinkedCoords(LinkedGeoLoop* loop);
-void destroyLinkedGeoLoop(LinkedGeoLoop* loop);
 
 #endif
