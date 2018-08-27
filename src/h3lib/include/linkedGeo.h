@@ -21,9 +21,57 @@
 #define LINKED_GEO_H
 
 #include <stdlib.h>
+#include "bbox.h"
 #include "geoCoord.h"
 #include "h3api.h"
 
+/** Macro: Init iteration vars for LinkedGeoLoop */
+#define INIT_ITERATION_LINKED_LOOP       \
+    LinkedGeoCoord* currentCoord = NULL; \
+    LinkedGeoCoord* nextCoord = NULL
+
+/** Macro: Get the next coord in a linked loop, wrapping if needed */
+#define GET_NEXT_COORD(loop, coordToCheck) \
+    coordToCheck == NULL ? loop->first : currentCoord->next
+
+/** Macro: Increment LinkedGeoLoop iteration, or break if done. */
+#define ITERATE_LINKED_LOOP(loop, vertexA, vertexB)       \
+    currentCoord = GET_NEXT_COORD(loop, currentCoord);    \
+    if (currentCoord == NULL) break;                      \
+    vertexA = currentCoord->vertex;                       \
+    nextCoord = GET_NEXT_COORD(loop, currentCoord->next); \
+    vertexB = nextCoord->vertex
+
+/** Macro: Whether a LinkedGeoLoop is empty */
+#define IS_EMPTY_LINKED_LOOP(loop) loop->first == NULL
+
+// The following functions are created via macro in polygonAlgos.h,
+// so their signatures are documented here:
+
+/**
+ * Create a bounding box from a LinkedGeoLoop
+ * @param geofence Input Geofence
+ * @param bbox     Output bbox
+ */
+void bboxFromLinkedGeoLoop(const LinkedGeoLoop* loop, BBox* bbox);
+
+/**
+ * Take a given LinkedGeoLoop data structure and check if it
+ * contains a given geo coordinate.
+ * @param loop          The linked loop
+ * @param bbox          The bbox for the loop
+ * @param coord         The coordinate to check
+ * @return              Whether the point is contained
+ */
+bool pointInsideLinkedGeoLoop(const LinkedGeoLoop* loop, const BBox* bbox,
+                              const GeoCoord* coord);
+
+/**
+ * Whether the winding order of a given LinkedGeoLoop is clockwise
+ * @param loop  The loop to check
+ * @return      Whether the loop is clockwise
+ */
+bool isClockwiseLinkedGeoLoop(const LinkedGeoLoop* loop);
 void initLinkedPolygon(LinkedGeoPolygon* polygon);
 void initLinkedLoop(LinkedGeoLoop* loop);
 LinkedGeoPolygon* addNewLinkedPolygon(LinkedGeoPolygon* polygon);
