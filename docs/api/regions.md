@@ -30,19 +30,17 @@ void h3SetToLinkedGeo(const H3Index* h3Set, const int numHexes, LinkedGeoPolygon
 ```
 
 Create a LinkedGeoPolygon describing the outline(s) of a set of  hexagons.
+Polygon outlines will follow GeoJSON MultiPolygon order: Each polygon will
+have one outer loop, which is first in the list, followed by any holes.
+
 It is the responsibility of the caller to call destroyLinkedPolygon on the
 populated linked geo structure, or the memory for that structure will
 not be freed.
 
-It is expected that all hexagons in the set will have the same resolution.
-Using different resolution hexagons is not recommended.
-
-At present, if the set of hexagons is not contiguous, this function
-will return a single polygon with multiple outer loops. The correct GeoJSON
-output should only have one outer loop per polygon. It appears that most
-GeoJSON consumers are fine with the first input format, but it's less correct
-than the second format. The function may be updated to produce
-multiple polygons in the future.
+It is expected that all hexagons in the set have the same resolution and
+that the set contains no duplicates. Behavior is undefined if duplicates
+or multiple resolutions are present, and the algorithm may produce
+unexpected or invalid output.
 
 ### destroyLinkedPolygon
 
@@ -51,4 +49,4 @@ void destroyLinkedPolygon(LinkedGeoPolygon* polygon);
 ```
 
 Free all allocated memory for a linked geo structure. The caller is
-responsible for freeing memory allocated to input polygon struct.
+responsible for freeing memory allocated to the input polygon struct.

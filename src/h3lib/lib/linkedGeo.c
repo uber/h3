@@ -48,7 +48,7 @@ void initLinkedLoop(LinkedGeoLoop* loop) {
  * @param  polygon Polygon to add link to
  * @return         Pointer to new polygon
  */
-LinkedGeoPolygon* addLinkedPolygon(LinkedGeoPolygon* polygon) {
+LinkedGeoPolygon* addNewLinkedPolygon(LinkedGeoPolygon* polygon) {
     assert(polygon->next == NULL);
     LinkedGeoPolygon* next = calloc(1, sizeof(*next));
     assert(next != NULL);
@@ -61,10 +61,19 @@ LinkedGeoPolygon* addLinkedPolygon(LinkedGeoPolygon* polygon) {
  * @param  polygon Polygon to add loop to
  * @return         Pointer to loop
  */
-LinkedGeoLoop* addLinkedLoop(LinkedGeoPolygon* polygon) {
+LinkedGeoLoop* addNewLinkedLoop(LinkedGeoPolygon* polygon) {
     LinkedGeoLoop* loop = calloc(1, sizeof(*loop));
     assert(loop != NULL);
     initLinkedLoop(loop);
+    return addLinkedLoop(polygon, loop);
+}
+
+/**
+ * Add an existing linked loop to the current polygon
+ * @param  polygon Polygon to add loop to
+ * @return         Pointer to loop
+ */
+LinkedGeoLoop* addLinkedLoop(LinkedGeoPolygon* polygon, LinkedGeoLoop* loop) {
     LinkedGeoLoop* last = polygon->last;
     if (last == NULL) {
         assert(polygon->first == NULL);
@@ -101,6 +110,20 @@ LinkedGeoCoord* addLinkedCoord(LinkedGeoLoop* loop, const GeoCoord* vertex) {
 }
 
 /**
+ * Free all allocated memory for a linked geo loop. The caller is
+ * responsible for freeing memory allocated to input loop struct.
+ * @param loop Loop to free
+ */
+void destroyLinkedGeoLoop(LinkedGeoLoop* loop) {
+    LinkedGeoCoord* nextCoord;
+    for (LinkedGeoCoord* currentCoord = loop->first; currentCoord != NULL;
+         currentCoord = nextCoord) {
+        nextCoord = currentCoord->next;
+        free(currentCoord);
+    }
+}
+
+/**
  * Free all allocated memory for a linked geo structure. The caller is
  * responsible for freeing memory allocated to input polygon struct.
  * @param polygon Pointer to the first polygon in the structure
@@ -108,15 +131,13 @@ LinkedGeoCoord* addLinkedCoord(LinkedGeoLoop* loop, const GeoCoord* vertex) {
 void H3_EXPORT(destroyLinkedPolygon)(LinkedGeoPolygon* polygon) {
     // flag to skip the input polygon
     bool skip = true;
-    for (LinkedGeoPolygon *currentPolygon = polygon, *nextPolygon;
-         currentPolygon != NULL; currentPolygon = nextPolygon) {
-        for (LinkedGeoLoop *currentLoop = currentPolygon->first, *nextLoop;
+    LinkedGeoPolygon* nextPolygon;
+    LinkedGeoLoop* nextLoop;
+    for (LinkedGeoPolygon* currentPolygon = polygon; currentPolygon != NULL;
+         currentPolygon = nextPolygon) {
+        for (LinkedGeoLoop* currentLoop = currentPolygon->first;
              currentLoop != NULL; currentLoop = nextLoop) {
-            for (LinkedGeoCoord *currentCoord = currentLoop->first, *nextCoord;
-                 currentCoord != NULL; currentCoord = nextCoord) {
-                nextCoord = currentCoord->next;
-                free(currentCoord);
-            }
+            destroyLinkedGeoLoop(currentLoop);
             nextLoop = currentLoop->next;
             free(currentLoop);
         }

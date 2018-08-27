@@ -8,6 +8,7 @@ The public API of this library consists of the functions declared in file
 ## [Unreleased]
 ### Fixed
 - Fixed bounding box bug for polygons crossing the antimeridian (#130)
+- Normalize output of h3SetToMultiPolygon to align with the GeoJSON spec, ensuring that each polygon has only one outer loop, followed by holes (#131)
 ### Changed
 - Longitude outputs are now guaranteed to be in the range [-Pi, Pi]. (#93)
 

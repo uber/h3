@@ -19,10 +19,10 @@
 #include "h3Index.h"
 #include "test.h"
 
-H3Index sunnyvale = 0x89283470c27ffffl;
+H3Index sunnyvale = 0x89283470c27ffff;
 
-H3Index uncompactable[] = {0x89283470803ffffl, 0x8928347081bffffl,
-                           0x8928347080bffffl};
+H3Index uncompactable[] = {0x89283470803ffff, 0x8928347081bffff,
+                           0x8928347080bffff};
 
 BEGIN_TESTS(compact);
 

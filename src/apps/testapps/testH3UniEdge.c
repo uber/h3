@@ -103,7 +103,7 @@ TEST(getH3UnidirectionalEdgeAndFriends) {
 }
 
 TEST(getOriginH3IndexFromUnidirectionalEdgeBadInput) {
-    H3Index hexagon = 0x891ea6d6533ffffl;
+    H3Index hexagon = 0x891ea6d6533ffff;
 
     t_assert(H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(hexagon) == 0,
              "getting the origin from a hexagon index returns 0");
@@ -112,7 +112,7 @@ TEST(getOriginH3IndexFromUnidirectionalEdgeBadInput) {
 }
 
 TEST(getDestinationH3IndexFromUnidirectionalEdge) {
-    H3Index hexagon = 0x891ea6d6533ffffl;
+    H3Index hexagon = 0x891ea6d6533ffff;
 
     t_assert(
         H3_EXPORT(getDestinationH3IndexFromUnidirectionalEdge)(hexagon) == 0,
