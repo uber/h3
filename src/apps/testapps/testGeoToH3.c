@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 Uber Technologies, Inc.
+ * Copyright 2016-2018 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@
 #include "test.h"
 #include "utility.h"
 
-void assertExpected(H3Index h1, const GeoCoord* g1) {
+static void assertExpected(H3Index h1, const GeoCoord* g1) {
     // convert lat/lon to H3 and verify
     int res = H3_EXPORT(h3GetResolution)(h1);
     H3Index h2 = H3_EXPORT(geoToH3)(g1, res);
