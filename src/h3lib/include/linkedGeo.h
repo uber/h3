@@ -30,6 +30,7 @@
 #define NORMALIZATION_ERR_MULTIPLE_POLYGONS 1
 #define NORMALIZATION_ERR_UNASSIGNED_HOLES 2
 
+// Macros for use with polygonAlgos.h
 /** Macro: Init iteration vars for LinkedGeoLoop */
 #define INIT_ITERATION_LINKED_LOOP       \
     LinkedGeoCoord* currentCoord = NULL; \

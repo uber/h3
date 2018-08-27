@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** @file polygonGeofence.c
+/** @file polygon.c
  * @brief Polygon (Geofence) algorithms
  */
 
@@ -35,6 +35,11 @@
 #define IS_EMPTY IS_EMPTY_GEOFENCE
 
 #include "polygonAlgos.h"
+
+#undef TYPE
+#undef INIT_ITERATION
+#undef ITERATE
+#undef IS_EMPTY
 
 /**
  * Create a bounding box from a GeoPolygon

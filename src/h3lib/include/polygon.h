@@ -17,8 +17,8 @@
  * @brief Polygon algorithms
  */
 
-#ifndef POLYGON_GEOFENCE_H
-#define POLYGON_GEOFENCE_H
+#ifndef POLYGON_H
+#define POLYGON_H
 
 #include <stdbool.h>
 #include "bbox.h"
@@ -26,6 +26,7 @@
 #include "h3api.h"
 #include "linkedGeo.h"
 
+// Macros for use with polygonAlgos.h
 /** Macro: Init iteration vars for Geofence */
 #define INIT_ITERATION_GEOFENCE int loopIndex = -1
 

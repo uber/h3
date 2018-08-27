@@ -22,9 +22,6 @@
  *        macros required for iteration.
  */
 
-#ifndef POLYGON_ALGOS_H
-#define POLYGON_ALGOS_H
-
 #include <float.h>
 #include <math.h>
 #include <stdbool.h>
@@ -224,5 +221,3 @@ static bool GENERIC_LOOP_ALGO(isClockwiseNormalized)(const TYPE* loop,
 bool GENERIC_LOOP_ALGO(isClockwise)(const TYPE* loop) {
     return GENERIC_LOOP_ALGO(isClockwiseNormalized)(loop, false);
 }
-
-#endif
