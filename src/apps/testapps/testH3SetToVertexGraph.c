@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Uber Technologies, Inc.
+ * Copyright 2017-2018 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,109 +17,88 @@
 #include <stdio.h>
 #include "algos.h"
 #include "test.h"
+#include "utility.h"
 
-H3Index* makeSet(char** hexes, int numHexes) {
-    H3Index* set = calloc(numHexes, sizeof(H3Index));
-    for (int i = 0; i < numHexes; i++) {
-        set[i] = H3_EXPORT(stringToH3)(hexes[i]);
+SUITE(h3SetToVertexGraph) {
+    TEST(empty) {
+        VertexGraph graph;
+
+        h3SetToVertexGraph(NULL, 0, &graph);
+
+        t_assert(graph.size == 0, "No edges added to graph");
+
+        destroyVertexGraph(&graph);
     }
-    return set;
+
+    TEST(singleHex) {
+        VertexGraph graph;
+        H3Index set[] = {0x890dab6220bffff};
+        int numHexes = ARRAY_SIZE(set);
+
+        h3SetToVertexGraph(set, numHexes, &graph);
+        t_assert(graph.size == 6, "All edges of one hex added to graph");
+
+        destroyVertexGraph(&graph);
+    }
+
+    TEST(nonContiguous2) {
+        VertexGraph graph;
+        H3Index set[] = {0x8928308291bffff, 0x89283082943ffff};
+        int numHexes = ARRAY_SIZE(set);
+
+        h3SetToVertexGraph(set, numHexes, &graph);
+        t_assert(graph.size == 12,
+                 "All edges of two non-contiguous hexes added to graph");
+
+        destroyVertexGraph(&graph);
+    }
+
+    TEST(contiguous2) {
+        VertexGraph graph;
+        H3Index set[] = {0x8928308291bffff, 0x89283082957ffff};
+        int numHexes = ARRAY_SIZE(set);
+
+        h3SetToVertexGraph(set, numHexes, &graph);
+        t_assert(graph.size == 10, "All edges except 2 shared added to graph");
+
+        destroyVertexGraph(&graph);
+    }
+
+    TEST(contiguous2distorted) {
+        VertexGraph graph;
+        H3Index set[] = {0x894cc5365afffff, 0x894cc536537ffff};
+        int numHexes = ARRAY_SIZE(set);
+
+        h3SetToVertexGraph(set, numHexes, &graph);
+        t_assert(graph.size == 12, "All edges except 2 shared added to graph");
+
+        destroyVertexGraph(&graph);
+    }
+
+    TEST(contiguous3) {
+        VertexGraph graph;
+        H3Index set[] = {0x8928308288bffff, 0x892830828d7ffff,
+                         0x8928308289bffff};
+        int numHexes = ARRAY_SIZE(set);
+
+        h3SetToVertexGraph(set, numHexes, &graph);
+        t_assert(graph.size == 3 * 4,
+                 "All edges except 6 shared added to graph");
+
+        destroyVertexGraph(&graph);
+    }
+
+    TEST(hole) {
+        VertexGraph graph;
+        H3Index set[] = {0x892830828c7ffff, 0x892830828d7ffff,
+                         0x8928308289bffff, 0x89283082813ffff,
+                         0x8928308288fffff, 0x89283082883ffff};
+        int numHexes = ARRAY_SIZE(set);
+
+        h3SetToVertexGraph(set, numHexes, &graph);
+        t_assert(graph.size == (6 * 3) + 6,
+                 "All outer edges and inner hole edges added to graph");
+
+        destroyVertexGraph(&graph);
+    }
 }
-
-BEGIN_TESTS(h3SetToVertexGraph);
-
-TEST(empty) {
-    VertexGraph graph;
-    int numHexes = 0;
-    H3Index* set = makeSet(NULL, numHexes);
-
-    h3SetToVertexGraph(set, numHexes, &graph);
-
-    t_assert(graph.size == 0, "No edges added to graph");
-
-    destroyVertexGraph(&graph);
-    free(set);
-}
-
-TEST(singleHex) {
-    VertexGraph graph;
-    char* hexes[] = {"890dab6220bffff"};
-    int numHexes = sizeof(hexes) / sizeof(hexes[0]);
-    H3Index* set = makeSet(hexes, numHexes);
-
-    h3SetToVertexGraph(set, numHexes, &graph);
-    t_assert(graph.size == 6, "All edges of one hex added to graph");
-
-    destroyVertexGraph(&graph);
-    free(set);
-}
-
-TEST(nonContiguous2) {
-    VertexGraph graph;
-    char* hexes[] = {"8928308291bffff", "89283082943ffff"};
-    int numHexes = sizeof(hexes) / sizeof(hexes[0]);
-    H3Index* set = makeSet(hexes, numHexes);
-
-    h3SetToVertexGraph(set, numHexes, &graph);
-    t_assert(graph.size == 12,
-             "All edges of two non-contiguous hexes added to graph");
-
-    destroyVertexGraph(&graph);
-    free(set);
-}
-
-TEST(contiguous2) {
-    VertexGraph graph;
-    char* hexes[] = {"8928308291bffff", "89283082957ffff"};
-    int numHexes = sizeof(hexes) / sizeof(hexes[0]);
-    H3Index* set = makeSet(hexes, numHexes);
-
-    h3SetToVertexGraph(set, numHexes, &graph);
-    t_assert(graph.size == 10, "All edges except 2 shared added to graph");
-
-    destroyVertexGraph(&graph);
-    free(set);
-}
-
-TEST(contiguous2distorted) {
-    VertexGraph graph;
-    char* hexes[] = {"894cc5365afffff", "894cc536537ffff"};
-    int numHexes = sizeof(hexes) / sizeof(hexes[0]);
-    H3Index* set = makeSet(hexes, numHexes);
-
-    h3SetToVertexGraph(set, numHexes, &graph);
-    t_assert(graph.size == 12, "All edges except 2 shared added to graph");
-
-    destroyVertexGraph(&graph);
-    free(set);
-}
-
-TEST(contiguous3) {
-    VertexGraph graph;
-    char* hexes[] = {"8928308288bffff", "892830828d7ffff", "8928308289bffff"};
-    int numHexes = sizeof(hexes) / sizeof(hexes[0]);
-    H3Index* set = makeSet(hexes, numHexes);
-
-    h3SetToVertexGraph(set, numHexes, &graph);
-    t_assert(graph.size == 3 * 4, "All edges except 6 shared added to graph");
-
-    destroyVertexGraph(&graph);
-    free(set);
-}
-
-TEST(hole) {
-    VertexGraph graph;
-    char* hexes[] = {"892830828c7ffff", "892830828d7ffff", "8928308289bffff",
-                     "89283082813ffff", "8928308288fffff", "89283082883ffff"};
-    int numHexes = sizeof(hexes) / sizeof(hexes[0]);
-    H3Index* set = makeSet(hexes, numHexes);
-
-    h3SetToVertexGraph(set, numHexes, &graph);
-    t_assert(graph.size == (6 * 3) + 6,
-             "All outer edges and inner hole edges added to graph");
-
-    destroyVertexGraph(&graph);
-    free(set);
-}
-
-END_TESTS();

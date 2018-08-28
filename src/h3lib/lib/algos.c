@@ -771,7 +771,7 @@ void _vertexGraphToLinkedGeo(VertexGraph* graph, LinkedGeoPolygon* out) {
     GeoCoord nextVtx;
     // Find the next unused entry point
     while ((edge = firstVertexNode(graph)) != NULL) {
-        loop = addLinkedLoop(out);
+        loop = addNewLinkedLoop(out);
         // Walk the graph to get the outline
         do {
             addLinkedCoord(loop, &edge->from);
@@ -785,21 +785,17 @@ void _vertexGraphToLinkedGeo(VertexGraph* graph, LinkedGeoPolygon* out) {
 
 /**
  * Create a LinkedGeoPolygon describing the outline(s) of a set of  hexagons.
+ * Polygon outlines will follow GeoJSON MultiPolygon order: Each polygon will
+ * have one outer loop, which is first in the list, followed by any holes.
+ *
  * It is the responsibility of the caller to call destroyLinkedPolygon on the
  * populated linked geo structure, or the memory for that structure will
  * not be freed.
  *
- * It is expected that all hexagons in the set will have the same resolution.
- * If you pass in hexagons at different resolutions, the algorithm should work
- * fine, but we won't be able to merge the outlines of different-resolution
- * hexagons, so you might get overlap. I'd suggest not doing this.
- *
- * TODO: At present, if the set of hexagons is not contiguous, this function
- * will return a single polygon with multiple outer loops. The correct GeoJSON
- * output should only have one outer loop per polygon. It appears that most
- * GeoJSON consumers are fine with the first input format, but it's less correct
- * than the second format, and we should update the function to produce
- * multiple polygons in that case.
+ * It is expected that all hexagons in the set have the same resolution and
+ * that the set contains no duplicates. Behavior is undefined if duplicates
+ * or multiple resolutions are present, and the algorithm may produce
+ * unexpected or invalid output.
  *
  * @param h3Set    Set of hexagons
  * @param numHexes Number of hexagons in set
@@ -810,5 +806,8 @@ void H3_EXPORT(h3SetToLinkedGeo)(const H3Index* h3Set, const int numHexes,
     VertexGraph graph;
     h3SetToVertexGraph(h3Set, numHexes, &graph);
     _vertexGraphToLinkedGeo(&graph, out);
+    // TODO: The return value, possibly indicating an error, is discarded here -
+    // we should use this when we update the API to return a value
+    normalizeMultiPolygon(out);
     destroyVertexGraph(&graph);
 }
