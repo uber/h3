@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Uber Technologies, Inc.
+ * Copyright 2017-2018 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,8 +52,6 @@
 #define IS_EMPTY_LINKED_LOOP(loop) loop->first == NULL
 
 int normalizeMultiPolygon(LinkedGeoPolygon* root);
-void initLinkedPolygon(LinkedGeoPolygon* polygon);
-void initLinkedLoop(LinkedGeoLoop* loop);
 LinkedGeoPolygon* addNewLinkedPolygon(LinkedGeoPolygon* polygon);
 LinkedGeoLoop* addNewLinkedLoop(LinkedGeoPolygon* polygon);
 LinkedGeoLoop* addLinkedLoop(LinkedGeoPolygon* polygon, LinkedGeoLoop* loop);

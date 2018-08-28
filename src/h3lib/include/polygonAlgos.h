@@ -136,10 +136,7 @@ bool GENERIC_LOOP_ALGO(pointInside)(const TYPE* loop, const BBox* bbox,
 void GENERIC_LOOP_ALGO(bboxFrom)(const TYPE* loop, BBox* bbox) {
     // Early exit if there are no vertices
     if (IS_EMPTY(loop)) {
-        bbox->north = 0;
-        bbox->south = 0;
-        bbox->east = 0;
-        bbox->west = 0;
+        *bbox = (BBox){0};
         return;
     }
 
