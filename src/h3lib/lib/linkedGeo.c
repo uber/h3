@@ -128,6 +128,50 @@ void H3_EXPORT(destroyLinkedPolygon)(LinkedGeoPolygon* polygon) {
 }
 
 /**
+ * Count the number of polygons in a linked list
+ * @param  polygon Starting polygon
+ * @return         Count
+ */
+int countLinkedPolygons(LinkedGeoPolygon* polygon) {
+    int count = 0;
+    while (polygon != NULL) {
+        count++;
+        polygon = polygon->next;
+    }
+    return count;
+}
+
+/**
+ * Count the number of linked loops in a polygon
+ * @param  polygon Polygon to count loops for
+ * @return         Count
+ */
+int countLinkedLoops(LinkedGeoPolygon* polygon) {
+    LinkedGeoLoop* loop = polygon->first;
+    int count = 0;
+    while (loop != NULL) {
+        count++;
+        loop = loop->next;
+    }
+    return count;
+}
+
+/**
+ * Count the number of coordinates in a loop
+ * @param  loop Loop to count coordinates for
+ * @return      Count
+ */
+int countLinkedCoords(LinkedGeoLoop* loop) {
+    LinkedGeoCoord* coord = loop->first;
+    int count = 0;
+    while (coord != NULL) {
+        count++;
+        coord = coord->next;
+    }
+    return count;
+}
+
+/**
  * Count the number of polygons containing a given loop.
  * @param  loop         Loop to count containers for
  * @param  polygons     Polygons to test
@@ -157,8 +201,8 @@ static int countContainers(const LinkedGeoLoop* loop,
  * @return              Deepest container, or null if list is empty
  */
 static const LinkedGeoPolygon* findDeepestContainer(
-        const LinkedGeoPolygon** polygons, const BBox** bboxes,
-        const int polygonCount) {
+    const LinkedGeoPolygon** polygons, const BBox** bboxes,
+    const int polygonCount) {
     // Set the initial return value to the first candidate
     const LinkedGeoPolygon* parent = polygonCount > 0 ? polygons[0] : NULL;
 
@@ -190,15 +234,15 @@ static const LinkedGeoPolygon* findDeepestContainer(
  * @return              Pointer to parent polygon, or null if not found
  */
 static const LinkedGeoPolygon* findPolygonForHole(
-        const LinkedGeoLoop* loop, const LinkedGeoPolygon* polygon,
-        const BBox* bboxes, const int polygonCount) {
+    const LinkedGeoLoop* loop, const LinkedGeoPolygon* polygon,
+    const BBox* bboxes, const int polygonCount) {
     // Early exit with no polygons
     if (polygonCount == 0) {
         return NULL;
     }
     // Initialize arrays for candidate loops and their bounding boxes
     const LinkedGeoPolygon** candidates =
-            malloc(polygonCount * sizeof(LinkedGeoPolygon*));
+        malloc(polygonCount * sizeof(LinkedGeoPolygon*));
     assert(candidates != NULL);
     const BBox** candidateBBoxes = malloc(polygonCount * sizeof(BBox*));
     assert(candidateBBoxes != NULL);
@@ -220,7 +264,7 @@ static const LinkedGeoPolygon* findPolygonForHole(
 
     // The most deeply nested container is the immediate parent
     const LinkedGeoPolygon* parent =
-            findDeepestContainer(candidates, candidateBBoxes, candidateCount);
+        findDeepestContainer(candidates, candidateBBoxes, candidateCount);
 
     // Free allocated memory
     free(candidates);
