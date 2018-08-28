@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Uber Technologies, Inc.
+ * Copyright 2017-2018 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,6 @@
 #include "geoCoord.h"
 #include "h3api.h"
 
-void initLinkedPolygon(LinkedGeoPolygon* polygon);
-void initLinkedLoop(LinkedGeoLoop* loop);
 LinkedGeoPolygon* addNewLinkedPolygon(LinkedGeoPolygon* polygon);
 LinkedGeoLoop* addNewLinkedLoop(LinkedGeoPolygon* polygon);
 LinkedGeoLoop* addLinkedLoop(LinkedGeoPolygon* polygon, LinkedGeoLoop* loop);

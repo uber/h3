@@ -22,7 +22,6 @@
  *        macros required for iteration.
  */
 
-#include "polygon.h"
 #include <float.h>
 #include <math.h>
 #include <stdbool.h>
@@ -30,6 +29,7 @@
 #include "constants.h"
 #include "geoCoord.h"
 #include "h3api.h"
+#include "polygon.h"
 
 #ifndef TYPE
 #error "TYPE must be defined before including this header"
@@ -53,7 +53,7 @@
 
 /** Macro: Normalize longitude, dealing with transmeridian arcs */
 #define NORMALIZE_LON(lon, isTransmeridian) \
-    (isTransmeridian && lon < 0 ? lon + (double) M_2PI : lon)
+    (isTransmeridian && lon < 0 ? lon + (double)M_2PI : lon)
 
 /**
  * pointInside is the core loop of the point-in-poly algorithm
@@ -63,7 +63,7 @@
  * @return      Whether the point is contained
  */
 bool GENERIC_LOOP_ALGO(pointInside)(const TYPE* loop, const BBox* bbox,
-                        const GeoCoord* coord) {
+                                    const GeoCoord* coord) {
     // fail fast if we're outside the bounding box
     if (!bboxContains(bbox, coord)) {
         return false;
@@ -123,7 +123,6 @@ bool GENERIC_LOOP_ALGO(pointInside)(const TYPE* loop, const BBox* bbox,
     return contains;
 }
 
-
 /**
  * Create a bounding box from a simple polygon loop.
  * Known limitations:
@@ -136,10 +135,7 @@ bool GENERIC_LOOP_ALGO(pointInside)(const TYPE* loop, const BBox* bbox,
 void GENERIC_LOOP_ALGO(bboxFrom)(const TYPE* loop, BBox* bbox) {
     // Early exit if there are no vertices
     if (IS_EMPTY(loop)) {
-        bbox->north = 0;
-        bbox->south = 0;
-        bbox->east = 0;
-        bbox->west = 0;
+        *bbox = (BBox){0};
         return;
     }
 
@@ -190,7 +186,8 @@ void GENERIC_LOOP_ALGO(bboxFrom)(const TYPE* loop, BBox* bbox) {
  * @param isTransmeridian   Whether the loop crosses the antimeridian
  * @return                  Whether the loop is clockwise
  */
-static bool GENERIC_LOOP_ALGO(isClockwiseNormalized)(const TYPE* loop, bool isTransmeridian) {
+static bool GENERIC_LOOP_ALGO(isClockwiseNormalized)(const TYPE* loop,
+                                                     bool isTransmeridian) {
     double sum = 0;
     GeoCoord a;
     GeoCoord b;
@@ -203,7 +200,9 @@ static bool GENERIC_LOOP_ALGO(isClockwiseNormalized)(const TYPE* loop, bool isTr
         if (!isTransmeridian && fabs(a.lon - b.lon) > M_PI) {
             return GENERIC_LOOP_ALGO(isClockwiseNormalized)(loop, true);
         }
-        sum += ((NORMALIZE_LON(b.lon, isTransmeridian) - NORMALIZE_LON(a.lon, isTransmeridian)) * (b.lat + a.lat));
+        sum += ((NORMALIZE_LON(b.lon, isTransmeridian) -
+                 NORMALIZE_LON(a.lon, isTransmeridian)) *
+                (b.lat + a.lat));
     }
 
     return sum > 0;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Uber Technologies, Inc.
+ * Copyright 2017-2018 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,26 +24,6 @@
 #include "h3api.h"
 
 /**
- * Initialize a linked polygon
- * @param  polygon Polygon to init
- */
-void initLinkedPolygon(LinkedGeoPolygon* polygon) {
-    polygon->first = NULL;
-    polygon->last = NULL;
-    polygon->next = NULL;
-}
-
-/**
- * Initialize a linked loop
- * @param  loop Loop to init
- */
-void initLinkedLoop(LinkedGeoLoop* loop) {
-    loop->first = NULL;
-    loop->last = NULL;
-    loop->next = NULL;
-}
-
-/**
  * Add a linked polygon to the current polygon
  * @param  polygon Polygon to add link to
  * @return         Pointer to new polygon
@@ -64,7 +44,6 @@ LinkedGeoPolygon* addNewLinkedPolygon(LinkedGeoPolygon* polygon) {
 LinkedGeoLoop* addNewLinkedLoop(LinkedGeoPolygon* polygon) {
     LinkedGeoLoop* loop = calloc(1, sizeof(*loop));
     assert(loop != NULL);
-    initLinkedLoop(loop);
     return addLinkedLoop(polygon, loop);
 }
 
@@ -78,11 +57,10 @@ LinkedGeoLoop* addLinkedLoop(LinkedGeoPolygon* polygon, LinkedGeoLoop* loop) {
     if (last == NULL) {
         assert(polygon->first == NULL);
         polygon->first = loop;
-        polygon->last = loop;
     } else {
         last->next = loop;
-        polygon->last = loop;
     }
+    polygon->last = loop;
     return loop;
 }
 
@@ -93,19 +71,17 @@ LinkedGeoLoop* addLinkedLoop(LinkedGeoPolygon* polygon, LinkedGeoLoop* loop) {
  * @return        Pointer to the coordinate
  */
 LinkedGeoCoord* addLinkedCoord(LinkedGeoLoop* loop, const GeoCoord* vertex) {
-    LinkedGeoCoord* coord = calloc(1, sizeof(*coord));
+    LinkedGeoCoord* coord = malloc(sizeof(*coord));
     assert(coord != NULL);
-    coord->vertex = *vertex;
-    coord->next = NULL;
+    *coord = (LinkedGeoCoord){.vertex = *vertex, .next = NULL};
     LinkedGeoCoord* last = loop->last;
     if (last == NULL) {
         assert(loop->first == NULL);
         loop->first = coord;
-        loop->last = coord;
     } else {
         last->next = coord;
-        loop->last = coord;
     }
+    loop->last = coord;
     return coord;
 }
 

@@ -32,7 +32,7 @@ static GeoCoord sfVerts[] = {
 
 static void createLinkedLoop(LinkedGeoLoop* loop, GeoCoord* verts,
                              int numVerts) {
-    initLinkedLoop(loop);
+    *loop = (LinkedGeoLoop){0};
     for (int i = 0; i < numVerts; i++) {
         addLinkedCoord(loop, verts++);
     }
@@ -196,8 +196,7 @@ SUITE(polygon) {
     }
 
     TEST(bboxFromLinkedGeoLoopNoVertices) {
-        LinkedGeoLoop loop;
-        initLinkedLoop(&loop);
+        LinkedGeoLoop loop = {0};
 
         const BBox expected = {0.0, 0.0, 0.0, 0.0};
 
@@ -281,12 +280,11 @@ SUITE(polygon) {
     TEST(normalizeMultiPolygonSingle) {
         GeoCoord verts[] = {{0, 0}, {0, 1}, {1, 1}};
 
-        LinkedGeoLoop* outer = calloc(1, sizeof(*outer));
+        LinkedGeoLoop* outer = malloc(sizeof(*outer));
         assert(outer != NULL);
         createLinkedLoop(outer, &verts[0], 3);
 
-        LinkedGeoPolygon polygon;
-        initLinkedPolygon(&polygon);
+        LinkedGeoPolygon polygon = {0};
         addLinkedLoop(&polygon, outer);
 
         int result = normalizeMultiPolygon(&polygon);
@@ -303,18 +301,17 @@ SUITE(polygon) {
     TEST(normalizeMultiPolygonTwoOuterLoops) {
         GeoCoord verts1[] = {{0, 0}, {0, 1}, {1, 1}};
 
-        LinkedGeoLoop* outer1 = calloc(1, sizeof(*outer1));
+        LinkedGeoLoop* outer1 = malloc(sizeof(*outer1));
         assert(outer1 != NULL);
         createLinkedLoop(outer1, &verts1[0], 3);
 
         GeoCoord verts2[] = {{2, 2}, {2, 3}, {3, 3}};
 
-        LinkedGeoLoop* outer2 = calloc(1, sizeof(*outer2));
+        LinkedGeoLoop* outer2 = malloc(sizeof(*outer2));
         assert(outer2 != NULL);
         createLinkedLoop(outer2, &verts2[0], 3);
 
-        LinkedGeoPolygon polygon;
-        initLinkedPolygon(&polygon);
+        LinkedGeoPolygon polygon = {0};
         addLinkedLoop(&polygon, outer1);
         addLinkedLoop(&polygon, outer2);
 
@@ -334,18 +331,17 @@ SUITE(polygon) {
     TEST(normalizeMultiPolygonOneHole) {
         GeoCoord verts[] = {{0, 0}, {0, 3}, {3, 3}, {3, 0}};
 
-        LinkedGeoLoop* outer = calloc(1, sizeof(*outer));
+        LinkedGeoLoop* outer = malloc(sizeof(*outer));
         assert(outer != NULL);
         createLinkedLoop(outer, &verts[0], 4);
 
         GeoCoord verts2[] = {{1, 1}, {2, 2}, {1, 2}};
 
-        LinkedGeoLoop* inner = calloc(1, sizeof(*inner));
+        LinkedGeoLoop* inner = malloc(sizeof(*inner));
         assert(inner != NULL);
         createLinkedLoop(inner, &verts2[0], 3);
 
-        LinkedGeoPolygon polygon;
-        initLinkedPolygon(&polygon);
+        LinkedGeoPolygon polygon = {0};
         addLinkedLoop(&polygon, inner);
         addLinkedLoop(&polygon, outer);
 
@@ -365,24 +361,23 @@ SUITE(polygon) {
     TEST(normalizeMultiPolygonTwoHoles) {
         GeoCoord verts[] = {{0, 0}, {0, 0.4}, {0.4, 0.4}, {0.4, 0}};
 
-        LinkedGeoLoop* outer = calloc(1, sizeof(*outer));
+        LinkedGeoLoop* outer = malloc(sizeof(*outer));
         assert(outer != NULL);
         createLinkedLoop(outer, &verts[0], 4);
 
         GeoCoord verts2[] = {{0.1, 0.1}, {0.2, 0.2}, {0.1, 0.2}};
 
-        LinkedGeoLoop* inner1 = calloc(1, sizeof(*inner1));
+        LinkedGeoLoop* inner1 = malloc(sizeof(*inner1));
         assert(inner1 != NULL);
         createLinkedLoop(inner1, &verts2[0], 3);
 
         GeoCoord verts3[] = {{0.2, 0.2}, {0.3, 0.3}, {0.2, 0.3}};
 
-        LinkedGeoLoop* inner2 = calloc(1, sizeof(*inner2));
+        LinkedGeoLoop* inner2 = malloc(sizeof(*inner2));
         assert(inner2 != NULL);
         createLinkedLoop(inner2, &verts3[0], 3);
 
-        LinkedGeoPolygon polygon;
-        initLinkedPolygon(&polygon);
+        LinkedGeoPolygon polygon = {0};
         addLinkedLoop(&polygon, inner2);
         addLinkedLoop(&polygon, outer);
         addLinkedLoop(&polygon, inner1);
@@ -402,27 +397,26 @@ SUITE(polygon) {
 
     TEST(normalizeMultiPolygonTwoDonuts) {
         GeoCoord verts[] = {{0, 0}, {0, 3}, {3, 3}, {3, 0}};
-        LinkedGeoLoop* outer = calloc(1, sizeof(*outer));
+        LinkedGeoLoop* outer = malloc(sizeof(*outer));
         assert(outer != NULL);
         createLinkedLoop(outer, &verts[0], 4);
 
         GeoCoord verts2[] = {{1, 1}, {2, 2}, {1, 2}};
-        LinkedGeoLoop* inner = calloc(1, sizeof(*inner));
+        LinkedGeoLoop* inner = malloc(sizeof(*inner));
         assert(inner != NULL);
         createLinkedLoop(inner, &verts2[0], 3);
 
         GeoCoord verts3[] = {{0, 0}, {0, -3}, {-3, -3}, {-3, 0}};
-        LinkedGeoLoop* outer2 = calloc(1, sizeof(*outer));
+        LinkedGeoLoop* outer2 = malloc(sizeof(*outer));
         assert(outer2 != NULL);
         createLinkedLoop(outer2, &verts3[0], 4);
 
         GeoCoord verts4[] = {{-1, -1}, {-2, -2}, {-1, -2}};
-        LinkedGeoLoop* inner2 = calloc(1, sizeof(*inner));
+        LinkedGeoLoop* inner2 = malloc(sizeof(*inner));
         assert(inner2 != NULL);
         createLinkedLoop(inner2, &verts4[0], 3);
 
-        LinkedGeoPolygon polygon;
-        initLinkedPolygon(&polygon);
+        LinkedGeoPolygon polygon = {0};
         addLinkedLoop(&polygon, inner2);
         addLinkedLoop(&polygon, inner);
         addLinkedLoop(&polygon, outer);
@@ -451,30 +445,29 @@ SUITE(polygon) {
 
     TEST(normalizeMultiPolygonNestedDonuts) {
         GeoCoord verts[] = {{0.2, 0.2}, {0.2, -0.2}, {-0.2, -0.2}, {-0.2, 0.2}};
-        LinkedGeoLoop* outer = calloc(1, sizeof(*outer));
+        LinkedGeoLoop* outer = malloc(sizeof(*outer));
         assert(outer != NULL);
         createLinkedLoop(outer, &verts[0], 4);
 
         GeoCoord verts2[] = {
             {0.1, 0.1}, {-0.1, 0.1}, {-0.1, -0.1}, {0.1, -0.1}};
-        LinkedGeoLoop* inner = calloc(1, sizeof(*inner));
+        LinkedGeoLoop* inner = malloc(sizeof(*inner));
         assert(inner != NULL);
         createLinkedLoop(inner, &verts2[0], 4);
 
         GeoCoord verts3[] = {
             {0.6, 0.6}, {0.6, -0.6}, {-0.6, -0.6}, {-0.6, 0.6}};
-        LinkedGeoLoop* outerBig = calloc(1, sizeof(*outerBig));
+        LinkedGeoLoop* outerBig = malloc(sizeof(*outerBig));
         assert(outerBig != NULL);
         createLinkedLoop(outerBig, &verts3[0], 4);
 
         GeoCoord verts4[] = {
             {0.5, 0.5}, {-0.5, 0.5}, {-0.5, -0.5}, {0.5, -0.5}};
-        LinkedGeoLoop* innerBig = calloc(1, sizeof(*innerBig));
+        LinkedGeoLoop* innerBig = malloc(sizeof(*innerBig));
         assert(innerBig != NULL);
         createLinkedLoop(innerBig, &verts4[0], 4);
 
-        LinkedGeoPolygon polygon;
-        initLinkedPolygon(&polygon);
+        LinkedGeoPolygon polygon = {0};
         addLinkedLoop(&polygon, inner);
         addLinkedLoop(&polygon, outerBig);
         addLinkedLoop(&polygon, innerBig);
@@ -500,18 +493,17 @@ SUITE(polygon) {
     TEST(normalizeMultiPolygonNoOuterLoops) {
         GeoCoord verts1[] = {{0, 0}, {1, 1}, {0, 1}};
 
-        LinkedGeoLoop* outer1 = calloc(1, sizeof(*outer1));
+        LinkedGeoLoop* outer1 = malloc(sizeof(*outer1));
         assert(outer1 != NULL);
         createLinkedLoop(outer1, &verts1[0], 3);
 
         GeoCoord verts2[] = {{2, 2}, {3, 3}, {2, 3}};
 
-        LinkedGeoLoop* outer2 = calloc(1, sizeof(*outer2));
+        LinkedGeoLoop* outer2 = malloc(sizeof(*outer2));
         assert(outer2 != NULL);
         createLinkedLoop(outer2, &verts2[0], 3);
 
-        LinkedGeoPolygon polygon;
-        initLinkedPolygon(&polygon);
+        LinkedGeoPolygon polygon = {0};
         addLinkedLoop(&polygon, outer1);
         addLinkedLoop(&polygon, outer2);
 
@@ -530,18 +522,17 @@ SUITE(polygon) {
     TEST(normalizeMultiPolygonAlreadyNormalized) {
         GeoCoord verts1[] = {{0, 0}, {0, 1}, {1, 1}};
 
-        LinkedGeoLoop* outer1 = calloc(1, sizeof(*outer1));
+        LinkedGeoLoop* outer1 = malloc(sizeof(*outer1));
         assert(outer1 != NULL);
         createLinkedLoop(outer1, &verts1[0], 3);
 
         GeoCoord verts2[] = {{2, 2}, {2, 3}, {3, 3}};
 
-        LinkedGeoLoop* outer2 = calloc(1, sizeof(*outer2));
+        LinkedGeoLoop* outer2 = malloc(sizeof(*outer2));
         assert(outer2 != NULL);
         createLinkedLoop(outer2, &verts2[0], 3);
 
-        LinkedGeoPolygon polygon;
-        initLinkedPolygon(&polygon);
+        LinkedGeoPolygon polygon = {0};
         addLinkedLoop(&polygon, outer1);
         LinkedGeoPolygon* next = addNewLinkedPolygon(&polygon);
         addLinkedLoop(next, outer2);

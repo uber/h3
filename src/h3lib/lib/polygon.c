@@ -242,7 +242,7 @@ int normalizeMultiPolygon(LinkedGeoPolygon* root) {
 
     // Get the first loop and unlink it from root
     LinkedGeoLoop* loop = root->first;
-    initLinkedPolygon(root);
+    *root = (LinkedGeoPolygon){0};
 
     // Iterate over all loops, moving inner loops into an array and
     // assigning outer loops to new polygons
