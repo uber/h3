@@ -29,6 +29,7 @@
 #include "constants.h"
 #include "geoCoord.h"
 #include "h3api.h"
+#include "linkedGeo.h"
 #include "polygon.h"
 
 #ifndef TYPE
