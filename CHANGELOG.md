@@ -6,12 +6,15 @@ The public API of this library consists of the functions declared in file
 [h3api.h](./src/h3lib/include/h3api.h).
 
 ## [Unreleased]
+
+## [3.1.1]
 ### Fixed
 - Fixed bounding box bug for polygons crossing the antimeridian (#130)
 - Normalize output of h3SetToMultiPolygon to align with the GeoJSON spec, ensuring that each polygon has only one outer loop, followed by holes (#131)
 ### Changed
 - Longitude outputs are now guaranteed to be in the range [-Pi, Pi]. (#93)
-- Implemented closed form formula for maxKringSize. Source: https://oeis.org/A003215
+- Implemented closed form formula for maxKringSize. Source: https://oeis.org/A003215 (#138)
+- Improved test and benchmark harnesses (#126, #128)
 
 ## [3.1.0] - 2018-08-03
 ### Added
