@@ -11,6 +11,7 @@ The public API of this library consists of the functions declared in file
 - Normalize output of h3SetToMultiPolygon to align with the GeoJSON spec, ensuring that each polygon has only one outer loop, followed by holes (#131)
 ### Changed
 - Longitude outputs are now guaranteed to be in the range [-Pi, Pi]. (#93)
+- Implemented closed form formula for maxKringSize. Source: https://oeis.org/A003215
 
 ## [3.1.0] - 2018-08-03
 ### Added
