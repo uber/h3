@@ -150,16 +150,12 @@ static const Direction NEW_ADJUSTMENT_III[7][7] = {
 
 /**
  * Maximum number of indices that result from the kRing algorithm with the given
- * k.
+ * k. Formula source and proof: https://oeis.org/A003215
  *
  * @param k k value, k >= 0.
  */
 int H3_EXPORT(maxKringSize)(int k) {
-    int result = 1;
-    for (int i = 0; i < k; i++) {
-        result = result + 6 * (i + 1);
-    }
-    return result;
+    return 3 * k * (k + 1) + 1;
 }
 
 /**
