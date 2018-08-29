@@ -154,9 +154,7 @@ static const Direction NEW_ADJUSTMENT_III[7][7] = {
  *
  * @param k k value, k >= 0.
  */
-int H3_EXPORT(maxKringSize)(int k) {
-    return 3 * k * (k + 1) + 1;
-}
+int H3_EXPORT(maxKringSize)(int k) { return 3 * k * (k + 1) + 1; }
 
 /**
  * k-rings produces indices within k distance of the origin index.
