@@ -21,6 +21,7 @@
 #define BENCHMARK_H
 
 #include <math.h>
+#include <stdio.h>
 
 #define MICROSECONDS_PER_SECOND 1E6
 #define NANOSECONDS_PER_SECOND 1E9
