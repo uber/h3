@@ -6,6 +6,8 @@ The public API of this library consists of the functions declared in file
 [h3api.h](./src/h3lib/include/h3api.h).
 
 ## [Unreleased]
+### Changed
+- Improved direction rotation speed by replacing switch case statements with jump tables.
 
 ## [3.1.1] - 2018-08-29
 ### Fixed

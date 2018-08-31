@@ -400,52 +400,60 @@ void _ijkRotate60cw(CoordIJK* ijk) {
 }
 
 /**
+ * Mapping of single Counter-Clockwise rotation.
+ */
+static const Direction ROTATE_60_CCW[8] = {
+    /** CENTER_DIGIT -> CENTER_DIGIT */
+    CENTER_DIGIT,
+    /** K_AXES_DIGIT -> IK_AXES_DIGIT */
+    IK_AXES_DIGIT,
+    /** J_AXES_DIGIT -> JK_AXES_DIGIT */
+    JK_AXES_DIGIT,
+    /** JK_AXES_DIGIT -> K_AXES_DIGIT */
+    K_AXES_DIGIT,
+    /** I_AXES_DIGIT -> IJ_AXES_DIGIT */
+    IJ_AXES_DIGIT,
+    /** IK_AXES_DIGIT -> I_AXES_DIGIT */
+    I_AXES_DIGIT,
+    /** IJ_AXES_DIGIT -> J_AXES_DIGIT */
+    J_AXES_DIGIT,
+    /** INVALID_DIGIT -> INVALID_DIGIT */
+    INVALID_DIGIT};
+
+/**
  * Rotates indexing digit 60 degrees counter-clockwise. Returns result.
  *
  * @param digit Indexing digit (between 1 and 6 inclusive)
  */
-Direction _rotate60ccw(Direction digit) {
-    switch (digit) {
-        case K_AXES_DIGIT:
-            return IK_AXES_DIGIT;
-        case IK_AXES_DIGIT:
-            return I_AXES_DIGIT;
-        case I_AXES_DIGIT:
-            return IJ_AXES_DIGIT;
-        case IJ_AXES_DIGIT:
-            return J_AXES_DIGIT;
-        case J_AXES_DIGIT:
-            return JK_AXES_DIGIT;
-        case JK_AXES_DIGIT:
-            return K_AXES_DIGIT;
-        default:
-            return digit;
-    }
-}
+Direction _rotate60ccw(Direction digit) { return ROTATE_60_CCW[digit]; }
+
+/**
+ * Mapping of single Clockwise rotation.
+ */
+static const Direction ROTATE_60_CW[8] = {
+    /** CENTER_DIGIT -> CENTER_DIGIT */
+    CENTER_DIGIT,
+    /** K_AXES_DIGIT -> JK_AXES_DIGIT */
+    JK_AXES_DIGIT,
+    /** J_AXES_DIGIT -> IJ_AXES_DIGIT */
+    IJ_AXES_DIGIT,
+    /** JK_AXES_DIGIT -> J_AXES_DIGIT */
+    J_AXES_DIGIT,
+    /** I_AXES_DIGIT -> IK_AXES_DIGIT */
+    IK_AXES_DIGIT,
+    /** IK_AXES_DIGIT -> K_AXES_DIGIT */
+    K_AXES_DIGIT,
+    /** IJ_AXES_DIGIT -> I_AXES_DIGIT */
+    I_AXES_DIGIT,
+    /** INVALID_DIGIT -> INVALID_DIGIT */
+    INVALID_DIGIT};
 
 /**
  * Rotates indexing digit 60 degrees clockwise. Returns result.
  *
  * @param digit Indexing digit (between 1 and 6 inclusive)
  */
-Direction _rotate60cw(Direction digit) {
-    switch (digit) {
-        case K_AXES_DIGIT:
-            return JK_AXES_DIGIT;
-        case JK_AXES_DIGIT:
-            return J_AXES_DIGIT;
-        case J_AXES_DIGIT:
-            return IJ_AXES_DIGIT;
-        case IJ_AXES_DIGIT:
-            return I_AXES_DIGIT;
-        case I_AXES_DIGIT:
-            return IK_AXES_DIGIT;
-        case IK_AXES_DIGIT:
-            return K_AXES_DIGIT;
-        default:
-            return digit;
-    }
-}
+Direction _rotate60cw(Direction digit) { return ROTATE_60_CW[digit]; }
 
 /**
  * Find the normalized ijk coordinates of the hex centered on the indicated
