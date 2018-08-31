@@ -34,11 +34,4 @@ BENCHMARK(h3ToGeoBoundary, 10000, {
     H3_EXPORT(h3ToGeoBoundary)(hex, &outBoundary);
 });
 
-H3Index* out = malloc(H3_EXPORT(maxKringSize)(40) * sizeof(H3Index));
-
-BENCHMARK(kRing10, 10000, { H3_EXPORT(kRing)(hex, 10, out); });
-BENCHMARK(kRing20, 10000, { H3_EXPORT(kRing)(hex, 20, out); });
-BENCHMARK(kRing30, 10000, { H3_EXPORT(kRing)(hex, 30, out); });
-BENCHMARK(kRing40, 10000, { H3_EXPORT(kRing)(hex, 40, out); });
-
 END_BENCHMARKS();
