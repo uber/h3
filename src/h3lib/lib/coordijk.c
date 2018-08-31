@@ -425,9 +425,7 @@ static const Direction ROTATE_60_CCW[8] = {
  *
  * @param digit Indexing digit (between 1 and 6 inclusive)
  */
-Direction _rotate60ccw(Direction digit) {
-    return ROTATE_60_CCW[digit];
-}
+Direction _rotate60ccw(Direction digit) { return ROTATE_60_CCW[digit]; }
 
 /**
  * Mapping of single Clockwise rotation.
@@ -455,9 +453,7 @@ static const Direction ROTATE_60_CW[8] = {
  *
  * @param digit Indexing digit (between 1 and 6 inclusive)
  */
-Direction _rotate60cw(Direction digit) {
-    return ROTATE_60_CW[digit];
-}
+Direction _rotate60cw(Direction digit) { return ROTATE_60_CW[digit]; }
 
 /**
  * Find the normalized ijk coordinates of the hex centered on the indicated
