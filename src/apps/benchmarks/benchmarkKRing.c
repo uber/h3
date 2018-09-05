@@ -19,12 +19,10 @@
 
 // Fixtures
 H3Index hex = 0x89283080ddbffff;
-
-H3Index pentagon;
+H3Index pentagon = 0x89080000003ffff;
 
 BEGIN_BENCHMARKS();
 
-setH3Index(&pentagon, 9, 4, CENTER_DIGIT);
 H3Index* out = malloc(H3_EXPORT(maxKringSize)(40) * sizeof(H3Index));
 
 BENCHMARK(kRing10, 10000, { H3_EXPORT(kRing)(hex, 10, out); });
