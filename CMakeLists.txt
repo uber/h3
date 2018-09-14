@@ -91,7 +91,7 @@ set(LIB_SOURCE_FILES
     src/h3lib/include/vec2d.h
     src/h3lib/include/vec3d.h
     src/h3lib/include/linkedGeo.h
-    src/h3lib/include/localIj.h
+    src/h3lib/include/localij.h
     src/h3lib/include/baseCells.h
     src/h3lib/include/faceijk.h
     src/h3lib/include/vertexGraph.h
