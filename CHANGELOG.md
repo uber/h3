@@ -8,12 +8,22 @@ The public API of this library consists of the functions declared in file
 ## [Unreleased]
 ### Added
 - `experimentalH3ToLocalIj` function for getting local coordinates for an index. (#102)
-### Fixed
-- Fixed bounding box bug for polygons crossing the antimeridian (#130)
+- `experimentalLocalIjToH3` function for getting an index from local coordinates. (#102)
+- Benchmarks for the kRing method for k's of size 10, 20, 30, and 40.
 ### Changed
-- Longitude outputs are now guaranteed to be in the range [-Pi, Pi]. (#93)
 - Internal `h3ToIjk` function renamed to `h3ToLocalIjk`. (#102)
 - `h3ToIjk` filter application replaced with `h3ToLocalIj`. (#102)
+### Fixed
+- Added `#include <stdio.h>` to `benchmark.h` (#142)
+
+## [3.1.1] - 2018-08-29
+### Fixed
+- Fixed bounding box bug for polygons crossing the antimeridian (#130)
+- Normalize output of h3SetToMultiPolygon to align with the GeoJSON spec, ensuring that each polygon has only one outer loop, followed by holes (#131)
+### Changed
+- Longitude outputs are now guaranteed to be in the range [-Pi, Pi]. (#93)
+- Implemented closed form formula for maxKringSize. Source: https://oeis.org/A003215 (#138)
+- Improved test and benchmark harnesses (#126, #128)
 
 ## [3.1.0] - 2018-08-03
 ### Added

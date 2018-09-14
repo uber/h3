@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 /** @file polygon.c
- * @brief Polygon algorithms
+ * @brief Polygon (Geofence) algorithms
  */
 
 #include "polygon.h"
+#include <assert.h>
 #include <float.h>
 #include <math.h>
 #include <stdbool.h>
@@ -25,6 +26,7 @@
 #include "constants.h"
 #include "geoCoord.h"
 #include "h3api.h"
+#include "linkedGeo.h"
 
 // Define macros used in polygon algos for Geofence
 #define TYPE Geofence
@@ -33,6 +35,11 @@
 #define IS_EMPTY IS_EMPTY_GEOFENCE
 
 #include "polygonAlgos.h"
+
+#undef TYPE
+#undef INIT_ITERATION
+#undef ITERATE
+#undef IS_EMPTY
 
 /**
  * Create a bounding box from a GeoPolygon
@@ -75,21 +82,3 @@ bool pointInsidePolygon(const GeoPolygon* geoPolygon, const BBox* bboxes,
 
     return contains;
 }
-
-#undef TYPE
-#undef IS_EMPTY
-#undef INIT_ITERATION
-#undef ITERATE
-
-// Define macros used in polygon algos for LinkedGeoLoop
-#define TYPE LinkedGeoLoop
-#define INIT_ITERATION INIT_ITERATION_LINKED_LOOP
-#define ITERATE ITERATE_LINKED_LOOP
-#define IS_EMPTY IS_EMPTY_LINKED_LOOP
-
-#include "polygonAlgos.h"
-
-#undef TYPE
-#undef IS_EMPTY
-#undef INIT_ITERATION
-#undef ITERATE

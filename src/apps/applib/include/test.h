@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Uber Technologies, Inc.
+ * Copyright 2017-2018 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,21 +24,33 @@
 #include "geoCoord.h"
 #include "h3api.h"
 
-void t_assert(int value, const char* msg);
+extern int globalTestCount;
+extern const char* currentSuiteName;
+extern const char* currentTestName;
+
+#define t_assert(condition, msg)                                           \
+    do {                                                                   \
+        if (!(condition)) {                                                \
+            fprintf(stderr, "%s.%s: t_assert failed at %s:%d, %s, %s\n",   \
+                    currentSuiteName, currentTestName, __FILE__, __LINE__, \
+                    #condition, msg);                                      \
+            exit(1);                                                       \
+        }                                                                  \
+        globalTestCount++;                                                 \
+        printf(".");                                                       \
+    } while (0)
+
 void t_assertBoundary(H3Index h3, const GeoBoundary* b1);
 
-int testCount();
-
-#define BEGIN_TESTS(NAME)              \
-    int main(int argc, char* argv[]) { \
-        printf("TEST ");               \
-        printf(#NAME);                 \
-        printf("\n");
-#define TEST(NAME)
-#define SKIP(NAME) if (1 == 0)
-#define END_TESTS()                                 \
-    ;                                               \
-    printf("\nDONE: %d assertions\n", testCount()); \
-    }
-
+#define SUITE(NAME)                                         \
+    static void runTests(void);                             \
+    int main(void) {                                        \
+        currentSuiteName = #NAME;                           \
+        printf("TEST %s\n", #NAME);                         \
+        runTests();                                         \
+        printf("\nDONE: %d assertions\n", globalTestCount); \
+        return 0;                                           \
+    }                                                       \
+    void runTests(void)
+#define TEST(NAME) currentTestName = #NAME;
 #endif

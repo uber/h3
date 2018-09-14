@@ -137,74 +137,74 @@ void localIjToH3_kRing_assertions(H3Index h3) {
     }
 }
 
-BEGIN_TESTS(h3ToLocalIj);
+SUITE(h3ToLocalIj) {
+    // Some indexes that represent base cells. Base cells
+    // are hexagons except for `pent1`.
+    H3Index bc1 = H3_INIT;
+    setH3Index(&bc1, 0, 15, 0);
 
-// Some indexes that represent base cells. Base cells
-// are hexagons except for `pent1`.
-H3Index bc1 = H3_INIT;
-setH3Index(&bc1, 0, 15, 0);
+    H3Index bc2 = H3_INIT;
+    setH3Index(&bc2, 0, 8, 0);
 
-H3Index bc2 = H3_INIT;
-setH3Index(&bc2, 0, 8, 0);
+    H3Index bc3 = H3_INIT;
+    setH3Index(&bc3, 0, 31, 0);
 
-H3Index bc3 = H3_INIT;
-setH3Index(&bc3, 0, 31, 0);
+    H3Index pent1 = H3_INIT;
+    setH3Index(&pent1, 0, 4, 0);
 
-H3Index pent1 = H3_INIT;
-setH3Index(&pent1, 0, 4, 0);
+    TEST(localIjToH3_identity) {
+        iterateAllIndexesAtRes(0, localIjToH3_identity_assertions);
+        iterateAllIndexesAtRes(1, localIjToH3_identity_assertions);
+        iterateAllIndexesAtRes(2, localIjToH3_identity_assertions);
+    }
 
-TEST(localIjToH3_identity) {
-    iterateAllIndexesAtRes(0, localIjToH3_identity_assertions);
-    iterateAllIndexesAtRes(1, localIjToH3_identity_assertions);
-    iterateAllIndexesAtRes(2, localIjToH3_identity_assertions);
+    TEST(h3ToLocalIj_coordinates) {
+        iterateAllIndexesAtRes(0, h3ToLocalIj_coordinates_assertions);
+        iterateAllIndexesAtRes(1, h3ToLocalIj_coordinates_assertions);
+        iterateAllIndexesAtRes(2, h3ToLocalIj_coordinates_assertions);
+    }
+
+    TEST(h3ToLocalIj_neighbors) {
+        iterateAllIndexesAtRes(0, h3ToLocalIj_neighbors_assertions);
+        iterateAllIndexesAtRes(1, h3ToLocalIj_neighbors_assertions);
+        iterateAllIndexesAtRes(2, h3ToLocalIj_neighbors_assertions);
+    }
+
+    TEST(localIjToH3_kRing) {
+        iterateAllIndexesAtRes(0, localIjToH3_kRing_assertions);
+        iterateAllIndexesAtRes(1, localIjToH3_kRing_assertions);
+        iterateAllIndexesAtRes(2, localIjToH3_kRing_assertions);
+        // Don't iterate all of res 3, to save time
+        iterateAllIndexesAtResPartial(3, localIjToH3_kRing_assertions, 27);
+        // These would take too long, even at partial execution
+        //    iterateAllIndexesAtResPartial(4, localIjToH3_kRing_assertions,
+        //    20); iterateAllIndexesAtResPartial(5,
+        //    localIjToH3_kRing_assertions, 20);
+    }
+
+    TEST(ijkBaseCells) {
+        CoordIJK ijk;
+        t_assert(h3ToLocalIjk(pent1, bc1, &ijk) == 0,
+                 "failed to get ijk (4, 15)");
+        t_assert(_ijkMatches(&ijk, &UNIT_VECS[2]) == 1, "not at 0,1,0");
+    }
+
+    TEST(experimentalH3ToLocalIjFailed) {
+        CoordIJ ij;
+
+        t_assert(H3_EXPORT(experimentalH3ToLocalIj)(bc1, bc1, &ij) == 0,
+                 "failed to find IJ (1)");
+        t_assert(ij.i == 0 && ij.j == 0, "ij correct (1)");
+        t_assert(H3_EXPORT(experimentalH3ToLocalIj)(bc1, pent1, &ij) == 0,
+                 "failed to find IJ (2)");
+        t_assert(ij.i == 1 && ij.j == 0, "ij correct (2)");
+        t_assert(H3_EXPORT(experimentalH3ToLocalIj)(bc1, bc2, &ij) == 0,
+                 "failed to find IJ (3)");
+        t_assert(ij.i == 0 && ij.j == -1, "ij correct (3)");
+        t_assert(H3_EXPORT(experimentalH3ToLocalIj)(bc1, bc3, &ij) == 0,
+                 "failed to find IJ (4)");
+        t_assert(ij.i == -1 && ij.j == 0, "ij correct (4)");
+        t_assert(H3_EXPORT(experimentalH3ToLocalIj)(pent1, bc3, &ij) != 0,
+                 "failed to find IJ (5)");
+    }
 }
-
-TEST(h3ToLocalIj_coordinates) {
-    iterateAllIndexesAtRes(0, h3ToLocalIj_coordinates_assertions);
-    iterateAllIndexesAtRes(1, h3ToLocalIj_coordinates_assertions);
-    iterateAllIndexesAtRes(2, h3ToLocalIj_coordinates_assertions);
-}
-
-TEST(h3ToLocalIj_neighbors) {
-    iterateAllIndexesAtRes(0, h3ToLocalIj_neighbors_assertions);
-    iterateAllIndexesAtRes(1, h3ToLocalIj_neighbors_assertions);
-    iterateAllIndexesAtRes(2, h3ToLocalIj_neighbors_assertions);
-}
-
-TEST(localIjToH3_kRing) {
-    iterateAllIndexesAtRes(0, localIjToH3_kRing_assertions);
-    iterateAllIndexesAtRes(1, localIjToH3_kRing_assertions);
-    iterateAllIndexesAtRes(2, localIjToH3_kRing_assertions);
-    // Don't iterate all of res 3, to save time
-    iterateAllIndexesAtResPartial(3, localIjToH3_kRing_assertions, 27);
-    // These would take too long, even at partial execution
-    //    iterateAllIndexesAtResPartial(4, localIjToH3_kRing_assertions, 20);
-    //    iterateAllIndexesAtResPartial(5, localIjToH3_kRing_assertions, 20);
-}
-
-TEST(ijkBaseCells) {
-    CoordIJK ijk;
-    t_assert(h3ToLocalIjk(pent1, bc1, &ijk) == 0, "failed to get ijk (4, 15)");
-    t_assert(_ijkMatches(&ijk, &UNIT_VECS[2]) == 1, "not at 0,1,0");
-}
-
-TEST(experimentalH3ToLocalIjFailed) {
-    CoordIJ ij;
-
-    t_assert(H3_EXPORT(experimentalH3ToLocalIj)(bc1, bc1, &ij) == 0,
-             "failed to find IJ (1)");
-    t_assert(ij.i == 0 && ij.j == 0, "ij correct (1)");
-    t_assert(H3_EXPORT(experimentalH3ToLocalIj)(bc1, pent1, &ij) == 0,
-             "failed to find IJ (2)");
-    t_assert(ij.i == 1 && ij.j == 0, "ij correct (2)");
-    t_assert(H3_EXPORT(experimentalH3ToLocalIj)(bc1, bc2, &ij) == 0,
-             "failed to find IJ (3)");
-    t_assert(ij.i == 0 && ij.j == -1, "ij correct (3)");
-    t_assert(H3_EXPORT(experimentalH3ToLocalIj)(bc1, bc3, &ij) == 0,
-             "failed to find IJ (4)");
-    t_assert(ij.i == -1 && ij.j == 0, "ij correct (4)");
-    t_assert(H3_EXPORT(experimentalH3ToLocalIj)(pent1, bc3, &ij) != 0,
-             "failed to find IJ (5)");
-}
-
-END_TESTS();

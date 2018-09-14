@@ -150,17 +150,11 @@ static const Direction NEW_ADJUSTMENT_III[7][7] = {
 
 /**
  * Maximum number of indices that result from the kRing algorithm with the given
- * k.
+ * k. Formula source and proof: https://oeis.org/A003215
  *
  * @param k k value, k >= 0.
  */
-int H3_EXPORT(maxKringSize)(int k) {
-    int result = 1;
-    for (int i = 0; i < k; i++) {
-        result = result + 6 * (i + 1);
-    }
-    return result;
-}
+int H3_EXPORT(maxKringSize)(int k) { return 3 * k * (k + 1) + 1; }
 
 /**
  * k-rings produces indices within k distance of the origin index.
@@ -177,7 +171,7 @@ int H3_EXPORT(maxKringSize)(int k) {
  */
 void H3_EXPORT(kRing)(H3Index origin, int k, H3Index* out) {
     int maxIdx = H3_EXPORT(maxKringSize)(k);
-    int* distances = calloc(maxIdx, sizeof(int));
+    int* distances = malloc(maxIdx * sizeof(int));
     H3_EXPORT(kRingDistances)(origin, k, out, distances);
     free(distances);
 }
@@ -198,16 +192,14 @@ void H3_EXPORT(kRing)(H3Index origin, int k, H3Index* out) {
  */
 void H3_EXPORT(kRingDistances)(H3Index origin, int k, H3Index* out,
                                int* distances) {
-    int maxIdx = H3_EXPORT(maxKringSize)(k);
+    const int maxIdx = H3_EXPORT(maxKringSize)(k);
     // Optimistically try the faster hexRange algorithm first
-    int failed = H3_EXPORT(hexRangeDistances)(origin, k, out, distances);
+    const bool failed = H3_EXPORT(hexRangeDistances)(origin, k, out, distances);
     if (failed) {
         // Fast algo failed, fall back to slower, correct algo
         // and also wipe out array because contents untrustworthy
-        for (int i = 0; i < maxIdx; i++) {
-            out[i] = H3_INVALID_INDEX;
-            distances[i] = 0;
-        }
+        memset(out, 0, maxIdx * sizeof(out[0]));
+        memset(distances, 0, maxIdx * sizeof(distances[0]));
         _kRingInternal(origin, k, out, distances, maxIdx, 0);
     }
 }
@@ -233,10 +225,7 @@ void _kRingInternal(H3Index origin, int k, H3Index* out, int* distances,
     // Put origin in the output array. out is used as a hash set.
     int off = origin % maxIdx;
     while (out[off] != 0 && out[off] != origin) {
-        off++;
-        if (off >= maxIdx) {
-            off = 0;
-        }
+        off = (off + 1) % maxIdx;
     }
 
     // We either got a free slot in the hash set or hit a duplicate
@@ -679,7 +668,8 @@ void H3_EXPORT(polyfill)(const GeoPolygon* geoPolygon, int res, H3Index* out) {
     // This first part is identical to the maxPolyfillSize above.
 
     // Get the bounding boxes for the polygon and any holes
-    BBox* bboxes = calloc(geoPolygon->numHoles + 1, sizeof(BBox));
+    BBox* bboxes = malloc((geoPolygon->numHoles + 1) * sizeof(BBox));
+    assert(bboxes != NULL);
     bboxesFromGeoPolygon(geoPolygon, bboxes);
     int minK = bboxHexRadius(&bboxes[0], res);
     int numHexagons = H3_EXPORT(maxKringSize)(minK);
@@ -769,13 +759,13 @@ void h3SetToVertexGraph(const H3Index* h3Set, const int numHexes,
  * @param out   Output polygon
  */
 void _vertexGraphToLinkedGeo(VertexGraph* graph, LinkedGeoPolygon* out) {
-    initLinkedPolygon(out);
+    *out = (LinkedGeoPolygon){0};
     LinkedGeoLoop* loop;
     VertexNode* edge;
     GeoCoord nextVtx;
     // Find the next unused entry point
     while ((edge = firstVertexNode(graph)) != NULL) {
-        loop = addLinkedLoop(out);
+        loop = addNewLinkedLoop(out);
         // Walk the graph to get the outline
         do {
             addLinkedCoord(loop, &edge->from);
@@ -789,21 +779,17 @@ void _vertexGraphToLinkedGeo(VertexGraph* graph, LinkedGeoPolygon* out) {
 
 /**
  * Create a LinkedGeoPolygon describing the outline(s) of a set of  hexagons.
+ * Polygon outlines will follow GeoJSON MultiPolygon order: Each polygon will
+ * have one outer loop, which is first in the list, followed by any holes.
+ *
  * It is the responsibility of the caller to call destroyLinkedPolygon on the
  * populated linked geo structure, or the memory for that structure will
  * not be freed.
  *
- * It is expected that all hexagons in the set will have the same resolution.
- * If you pass in hexagons at different resolutions, the algorithm should work
- * fine, but we won't be able to merge the outlines of different-resolution
- * hexagons, so you might get overlap. I'd suggest not doing this.
- *
- * TODO: At present, if the set of hexagons is not contiguous, this function
- * will return a single polygon with multiple outer loops. The correct GeoJSON
- * output should only have one outer loop per polygon. It appears that most
- * GeoJSON consumers are fine with the first input format, but it's less correct
- * than the second format, and we should update the function to produce
- * multiple polygons in that case.
+ * It is expected that all hexagons in the set have the same resolution and
+ * that the set contains no duplicates. Behavior is undefined if duplicates
+ * or multiple resolutions are present, and the algorithm may produce
+ * unexpected or invalid output.
  *
  * @param h3Set    Set of hexagons
  * @param numHexes Number of hexagons in set
@@ -814,5 +800,8 @@ void H3_EXPORT(h3SetToLinkedGeo)(const H3Index* h3Set, const int numHexes,
     VertexGraph graph;
     h3SetToVertexGraph(h3Set, numHexes, &graph);
     _vertexGraphToLinkedGeo(&graph, out);
+    // TODO: The return value, possibly indicating an error, is discarded here -
+    // we should use this when we update the API to return a value
+    normalizeMultiPolygon(out);
     destroyVertexGraph(&graph);
 }

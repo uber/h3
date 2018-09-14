@@ -32,36 +32,34 @@
 #include "test.h"
 #include "utility.h"
 
-BEGIN_TESTS(coordIj);
-
-TEST(ijkToIj_zero) {
-    CoordIJK ijk = {0};
-    CoordIJ ij = {0};
-
-    ijkToIj(&ijk, &ij);
-    t_assert(ij.i == 0, "ij.i zero");
-    t_assert(ij.j == 0, "ij.j zero");
-
-    ijToIjk(&ij, &ijk);
-    t_assert(ijk.i == 0, "ijk.i zero");
-    t_assert(ijk.j == 0, "ijk.j zero");
-    t_assert(ijk.k == 0, "ijk.k zero");
-}
-
-TEST(ijkToIj_roundtrip) {
-    for (Direction dir = CENTER_DIGIT; dir < NUM_DIGITS; dir++) {
+SUITE(coordIj) {
+    TEST(ijkToIj_zero) {
         CoordIJK ijk = {0};
-        _neighbor(&ijk, dir);
-
         CoordIJ ij = {0};
+
         ijkToIj(&ijk, &ij);
+        t_assert(ij.i == 0, "ij.i zero");
+        t_assert(ij.j == 0, "ij.j zero");
 
-        CoordIJK recovered = {0};
-        ijToIjk(&ij, &recovered);
+        ijToIjk(&ij, &ijk);
+        t_assert(ijk.i == 0, "ijk.i zero");
+        t_assert(ijk.j == 0, "ijk.j zero");
+        t_assert(ijk.k == 0, "ijk.k zero");
+    }
 
-        t_assert(_ijkMatches(&ijk, &recovered),
-                 "got same ijk coordinates back");
+    TEST(ijkToIj_roundtrip) {
+        for (Direction dir = CENTER_DIGIT; dir < NUM_DIGITS; dir++) {
+            CoordIJK ijk = {0};
+            _neighbor(&ijk, dir);
+
+            CoordIJ ij = {0};
+            ijkToIj(&ijk, &ij);
+
+            CoordIJK recovered = {0};
+            ijToIjk(&ij, &recovered);
+
+            t_assert(_ijkMatches(&ijk, &recovered),
+                     "got same ijk coordinates back");
+        }
     }
 }
-
-END_TESTS();

@@ -84,6 +84,7 @@ check_vla(have_vla)
 set(LIB_SOURCE_FILES
     src/h3lib/include/bbox.h
     src/h3lib/include/polygon.h
+    src/h3lib/include/polygonAlgos.h
     src/h3lib/include/h3Index.h
     src/h3lib/include/h3UniEdge.h
     src/h3lib/include/geoCoord.h
@@ -174,6 +175,8 @@ set(OTHER_SOURCE_FILES
     src/apps/miscapps/h3ToHier.c
     src/apps/benchmarks/benchmarkPolyfill.c
     src/apps/benchmarks/benchmarkPolygon.c
+    src/apps/benchmarks/benchmarkH3SetToLinkedGeo.c
+    src/apps/benchmarks/benchmarkKRing.c
     src/apps/benchmarks/benchmarkH3Api.c)
 
 set(ALL_SOURCE_FILES
@@ -334,13 +337,13 @@ if(BUILD_TESTING)
     set(test_number 0)
 
     if(ENABLE_COVERAGE)
-        file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/coverage.sh"
-                      INPUT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/coverage.sh.in")
+        file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/scripts/coverage.sh"
+                      INPUT "${CMAKE_CURRENT_SOURCE_DIR}/scripts/coverage.sh.in")
         set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "coverage.info")
         set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "coverage.cleaned.info")
         set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "coverage")
         add_custom_target(coverage
-            COMMAND bash "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/coverage.sh" "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}")
+            COMMAND bash "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/scripts/coverage.sh" "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}")
         add_custom_target(clean-coverage
             # Before running coverage, clear all counters
             COMMAND lcov --directory '${CMAKE_CURRENT_BINARY_DIR}' --zerocounters
@@ -483,6 +486,8 @@ if(BUILD_TESTING)
     endmacro()
 
     add_h3_benchmark(benchmarkH3Api src/apps/benchmarks/benchmarkH3Api.c)
+    add_h3_benchmark(benchmarkKRing src/apps/benchmarks/benchmarkKRing.c)
+    add_h3_benchmark(benchmarkH3SetToLinkedGeo src/apps/benchmarks/benchmarkH3SetToLinkedGeo.c)
     add_h3_benchmark(benchmarkPolyfill src/apps/benchmarks/benchmarkPolyfill.c)
     add_h3_benchmark(benchmarkPolygon src/apps/benchmarks/benchmarkPolygon.c)
 endif()

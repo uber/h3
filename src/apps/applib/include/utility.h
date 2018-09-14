@@ -25,6 +25,9 @@
 
 #define BUFF_SIZE 256
 
+/** Macro: Get the size of a fixed-size array */
+#define ARRAY_SIZE(x) sizeof(x) / sizeof(x[0])
+
 // prototypes
 void error(const char* msg);
 void h3Print(H3Index h);    // prints as integer
