@@ -22,6 +22,10 @@ As a C library, bindings can be made to call H3 functions from different program
 
 - [neatlife/php-h3](https://github.com/neatlife/php-h3)
 
+## PostgreSQL
+
+- [dlr-eoc/pgh3](https://github.com/dlr-eoc/pgh3)
+
 ## Python
 
 - [uber/h3-py](https://github.com/uber/h3-py)
