@@ -468,6 +468,15 @@ int H3_EXPORT(experimentalH3ToLocalIj)(H3Index origin, H3Index h3,
                                        CoordIJ *out);
 /** @} */
 
+/** @defgroup experimentalLocalIjToH3 experimentalLocalIjToH3
+ * Functions for experimentalLocalIjToH3
+ * @{
+ */
+/** @brief Returns index for the given two dimensional coordinates */
+int H3_EXPORT(experimentalLocalIjToH3)(H3Index origin, const CoordIJ *ij,
+                                       H3Index *out);
+/** @} */
+
 #ifdef __cplusplus
 }  // extern "C"
 #endif

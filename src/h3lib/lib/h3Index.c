@@ -579,7 +579,8 @@ H3Index _faceIjkToH3(const FaceIJK* fijk, int res) {
     FaceIJK fijkBC = *fijk;
 
     // build the H3Index from finest res up
-    // adjust r for the fact that the res 0 base cell offsets the index array
+    // adjust r for the fact that the res 0 base cell offsets the indexing
+    // digits
     CoordIJK* ijk = &fijkBC.coord;
     for (int r = res - 1; r >= 0; r--) {
         CoordIJK lastIJK = *ijk;

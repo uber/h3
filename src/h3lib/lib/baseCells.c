@@ -823,6 +823,12 @@ int _isBaseCellPentagon(int baseCell) {
     return baseCellData[baseCell].isPentagon;
 }
 
+/** @brief Return whether the indicated base cell is a pentagon where all
+ * neighbors are oriented towards it. */
+bool _isBaseCellPolarPentagon(int baseCell) {
+    return baseCell == 4 || baseCell == 117;
+}
+
 /** @brief Find base cell given FaceIJK.
  *
  * Given the face number and a resolution 0 ijk+ coordinate in that face's

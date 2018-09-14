@@ -31,6 +31,83 @@
 #include "stackAlloc.h"
 
 /**
+ * Origin leading digit -> index leading digit -> rotations 60 cw
+ * Either being 1 (K axis) is invalid.
+ * No good default at 0.
+ */
+const int PENTAGON_ROTATIONS[7][7] = {
+    {0, -1, 0, 0, 0, 0, 0},        // 0
+    {-1, -1, -1, -1, -1, -1, -1},  // 1
+    {0, -1, 0, 0, 0, 1, 0},        // 2
+    {0, -1, 0, 0, 1, 1, 0},        // 3
+    {0, -1, 0, 5, 0, 0, 0},        // 4
+    {0, -1, 5, 5, 0, 0, 0},        // 5
+    {0, -1, 0, 0, 0, 0, 0},        // 6
+};
+/**
+ * Reverse base cell direction -> leading index digit -> roations 60 ccw.
+ * For reversing the rotation introduced in PENTAGON_ROTATIONS when
+ * the origin is on a pentagon.
+ */
+const int PENTAGON_ROTATIONS_REVERSE[7][7] = {
+    {0, 0, 0, 0, 0, 0, 0},         // 0
+    {-1, -1, -1, -1, -1, -1, -1},  // 1
+    {0, 1, 0, 0, 0, 0, 0},         // 2
+    {0, 1, 0, 0, 0, 1, 0},         // 3
+    {0, 5, 0, 0, 0, 0, 0},         // 4
+    {0, 5, 0, 5, 0, 0, 0},         // 5
+    {0, 0, 0, 0, 0, 0, 0},         // 6
+};
+/**
+ * Reverse base cell direction -> leading index digit -> roations 60 ccw.
+ * For reversing the rotation introduced in PENTAGON_ROTATIONS when the index is
+ * on a pentagon.
+ */
+const int PENTAGON_ROTATIONS_REVERSE_NONPOLAR[7][7] = {
+    {0, 0, 0, 0, 0, 0, 0},         // 0
+    {-1, -1, -1, -1, -1, -1, -1},  // 1
+    {0, 1, 0, 0, 0, 0, 0},         // 2
+    {0, 1, 0, 0, 0, 1, 0},         // 3
+    {0, 5, 0, 0, 0, 0, 0},         // 4
+    {0, 1, 0, 5, 1, 1, 0},         // 5
+    {0, 0, 0, 0, 0, 0, 0},         // 6
+};
+/**
+ * Reverse base cell direction -> leading index digit -> roations 60 ccw.
+ * For reversing the rotation introduced in PENTAGON_ROTATIONS when the index is
+ * on a polar pentagon.
+ */
+const int PENTAGON_ROTATIONS_REVERSE_POLAR[7][7] = {
+    {0, 0, 0, 0, 0, 0, 0},         // 0
+    {-1, -1, -1, -1, -1, -1, -1},  // 1
+    {0, 1, 1, 1, 1, 1, 1},         // 2
+    {0, 1, 0, 0, 0, 1, 0},         // 3
+    {0, 1, 0, 0, 1, 1, 1},         // 4
+    {0, 1, 0, 5, 1, 1, 0},         // 5
+    {0, 1, 1, 0, 1, 1, 1},         // 6
+};
+
+// Simply prohibit many pentagon distortion cases rather than handling them.
+const bool FAILED_DIRECTIONS_II[7][7] = {
+    {false, false, false, false, false, false, false},  // 0
+    {false, false, false, false, false, false, false},  // 1
+    {false, false, false, false, true, false, false},   // 2
+    {false, false, false, false, false, false, true},   // 3
+    {false, false, false, true, false, false, false},   // 4
+    {false, false, true, false, false, false, false},   // 5
+    {false, false, false, false, false, true, false},   // 6
+};
+const bool FAILED_DIRECTIONS_III[7][7] = {
+    {false, false, false, false, false, false, false},  // 0
+    {false, false, false, false, false, false, false},  // 1
+    {false, false, false, false, false, true, false},   // 2
+    {false, false, false, false, true, false, false},   // 3
+    {false, false, true, false, false, false, false},   // 4
+    {false, false, false, false, false, false, true},   // 5
+    {false, false, false, true, false, false, false},   // 6
+};
+
+/**
  * Produces ijk+ coordinates for an index anchored by an origin.
  *
  * The coordinate space used by this function may have deleted
@@ -47,7 +124,7 @@
  * @param out ijk+ coordinates of the index will be placed here on success
  * @return 0 on success, or another value on failure.
  */
-int h3ToLocalIjk(H3Index origin, H3Index h3, CoordIJK *out) {
+int h3ToLocalIjk(H3Index origin, H3Index h3, CoordIJK* out) {
     if (H3_GET_MODE(origin) != H3_HEXAGON_MODE ||
         H3_GET_MODE(h3) != H3_HEXAGON_MODE) {
         // Only hexagon mode is relevant, since we can't
@@ -102,38 +179,6 @@ int h3ToLocalIjk(H3Index origin, H3Index h3, CoordIJK *out) {
     }
     // Face is unused. This produces coordinates in base cell coordinate space.
     _h3ToFaceIjkWithInitializedFijk(h3, &indexFijk);
-
-    // Origin leading digit -> index leading digit -> rotations 60 cw
-    // Either being 1 (K axis) is invalid.
-    // No good default at 0.
-    const int PENTAGON_ROTATIONS[7][7] = {
-        {0, -1, 0, 0, 0, 0, 0},        // 0
-        {-1, -1, -1, -1, -1, -1, -1},  // 1
-        {0, -1, 0, 0, 0, 1, 0},        // 2
-        {0, -1, 0, 0, 1, 1, 0},        // 3
-        {0, -1, 0, 5, 0, 0, 0},        // 4
-        {0, -1, 5, 5, 0, 0, 0},        // 5
-        {0, -1, 0, 0, 0, 0, 0},        // 6
-    };
-    // Simply prohibit many pentagon distortion cases rather than handling them.
-    const bool FAILED_DIRECTIONS_II[7][7] = {
-        {false, false, false, false, false, false, false},  // 0
-        {false, false, false, false, false, false, false},  // 1
-        {false, false, false, false, true, false, false},   // 2
-        {false, false, false, false, false, false, true},   // 3
-        {false, false, false, true, false, false, false},   // 4
-        {false, false, true, false, false, false, false},   // 5
-        {false, false, false, false, false, true, false},   // 6
-    };
-    const bool FAILED_DIRECTIONS_III[7][7] = {
-        {false, false, false, false, false, false, false},  // 0
-        {false, false, false, false, false, false, false},  // 1
-        {false, false, false, false, false, true, false},   // 2
-        {false, false, false, false, true, false, false},   // 3
-        {false, false, true, false, false, false, false},   // 4
-        {false, false, false, false, false, false, true},   // 5
-        {false, false, false, true, false, false, false},   // 6
-    };
 
     if (dir != CENTER_DIGIT) {
         assert(baseCell != originBaseCell);
@@ -227,6 +272,174 @@ int h3ToLocalIjk(H3Index origin, H3Index h3, CoordIJK *out) {
 }
 
 /**
+ * Produces an index for ijk+ coordinates anchored by an origin.
+ *
+ * The coordinate space used by this function may have deleted
+ * regions or warping due to pentagonal distortion.
+ *
+ * Failure may occur if the coordinates are too far away from the origin
+ * or if the index is on the other side of a pentagon.
+ *
+ * @param origin An anchoring index for the ijk+ coordinate system.
+ * @param ijk IJK+ Coordinates to find the index of
+ * @param out The index will be placed here on success
+ * @return 0 on success, or another value on failure.
+ */
+int localIjkToH3(H3Index origin, const CoordIJK* ijk, H3Index* out) {
+    int res = H3_GET_RESOLUTION(origin);
+    int originBaseCell = H3_GET_BASE_CELL(origin);
+    int originOnPent = _isBaseCellPentagon(originBaseCell);
+
+    // This logic is very similar to faceIjkToH3
+    // initialize the index
+    *out = H3_INIT;
+    H3_SET_MODE(*out, H3_HEXAGON_MODE);
+    H3_SET_RESOLUTION(*out, res);
+
+    // check for res 0/base cell
+    if (res == 0) {
+        if (ijk->i > 1 || ijk->i > 1 || ijk->i > 1) {
+            // out of range input
+            return 1;
+        }
+
+        Direction dir = _unitIjkToDigit(ijk);
+        H3_SET_BASE_CELL(*out, _getBaseCellNeighbor(originBaseCell, dir));
+        return 0;
+    }
+
+    // we need to find the correct base cell offset (if any) for this H3 index;
+    // start with the passed in base cell and resolution res ijk coordinates
+    // in that base cell's coordinate system
+    CoordIJK ijkCopy = *ijk;
+
+    // build the H3Index from finest res up
+    // adjust r for the fact that the res 0 base cell offsets the indexing
+    // digits
+    for (int r = res - 1; r >= 0; r--) {
+        CoordIJK lastIJK = ijkCopy;
+        CoordIJK lastCenter;
+        if (isResClassIII(r + 1)) {
+            // rotate ccw
+            _upAp7(&ijkCopy);
+            lastCenter = ijkCopy;
+            _downAp7(&lastCenter);
+        } else {
+            // rotate cw
+            _upAp7r(&ijkCopy);
+            lastCenter = ijkCopy;
+            _downAp7r(&lastCenter);
+        }
+
+        CoordIJK diff;
+        _ijkSub(&lastIJK, &lastCenter, &diff);
+        _ijkNormalize(&diff);
+
+        H3_SET_INDEX_DIGIT(*out, r + 1, _unitIjkToDigit(&diff));
+    }
+
+    // ijkCopy should now hold the IJK of the base cell in the
+    // coordinate system of the current base cell
+
+    if (ijkCopy.i > 1 || ijkCopy.j > 1 || ijkCopy.k > 1) {
+        // out of range input
+        return 2;
+    }
+
+    // lookup the correct base cell
+    Direction dir = _unitIjkToDigit(&ijkCopy);
+    int baseCell = _getBaseCellNeighbor(originBaseCell, dir);
+    int indexOnPent = _isBaseCellPentagon(baseCell);
+
+    if (dir != CENTER_DIGIT) {
+        // If the index is in a warped direction, we need to unwarp the base
+        // cell. There may be further need to rotate the index digits.
+        int pentagonRotations = 0;
+        if (originOnPent) {
+            Direction originLeadingDigit = _h3LeadingNonZeroDigit(origin);
+            pentagonRotations =
+                PENTAGON_ROTATIONS_REVERSE[originLeadingDigit][dir];
+            for (int i = 0; i < pentagonRotations; i++) {
+                dir = _rotate60ccw(dir);
+            }
+            if (dir == K_AXES_DIGIT) {
+                dir = _rotate60ccw(dir);
+            }
+            baseCell = _getBaseCellNeighbor(originBaseCell, dir);
+
+            // indexOnPent does not need to be checked again since no pentagon
+            // base cells border each other.
+            assert(baseCell != INVALID_BASE_CELL);
+            assert(!_isBaseCellPentagon(baseCell));
+        }
+
+        // Now we can determine the relation between the origin and target base
+        // cell.
+        int baseCellRotations = baseCellNeighbor60CCWRots[originBaseCell][dir];
+        Direction revDir = _getBaseCellDirection(baseCell, originBaseCell);
+
+        assert(baseCellRotations >= 0);
+        assert(revDir != INVALID_DIGIT);
+
+        // Adjust for pentagon warping. The base cell should be in the right
+        // location, so now we need to rotate the index back. We might not need
+        // to check for errors since we would just be double mapping.
+        if (indexOnPent) {
+            // Adjust for the different coordinate space in the two base cells.
+            // This is done first because we need to do the pentagon rotations
+            // based on the leading digit in the pentagon's coordinate system.
+            for (int i = 0; i < baseCellRotations; i++) {
+                *out = _h3Rotate60ccw(*out);
+            }
+
+            const Direction indexLeadingDigit = _h3LeadingNonZeroDigit(*out);
+            if (_isBaseCellPolarPentagon(baseCell)) {
+                pentagonRotations =
+                    PENTAGON_ROTATIONS_REVERSE_POLAR[revDir][indexLeadingDigit];
+            } else {
+                pentagonRotations =
+                    PENTAGON_ROTATIONS_REVERSE_NONPOLAR[revDir]
+                                                       [indexLeadingDigit];
+            }
+
+            assert(pentagonRotations >= 0);
+            for (int i = 0; i < pentagonRotations; i++) {
+                *out = _h3RotatePent60ccw(*out);
+            }
+        } else {
+            assert(pentagonRotations >= 0);
+            for (int i = 0; i < pentagonRotations; i++) {
+                *out = _h3Rotate60ccw(*out);
+            }
+
+            // Adjust for the different coordinate space in the two base cells.
+            for (int i = 0; i < baseCellRotations; i++) {
+                *out = _h3Rotate60ccw(*out);
+            }
+        }
+    } else if (originOnPent && indexOnPent) {
+        int originLeadingDigit = _h3LeadingNonZeroDigit(origin);
+        int indexLeadingDigit = _h3LeadingNonZeroDigit(*out);
+
+        if (FAILED_DIRECTIONS_III[originLeadingDigit][indexLeadingDigit] ||
+            FAILED_DIRECTIONS_II[originLeadingDigit][indexLeadingDigit]) {
+            // TODO Not clear if this case needs to be failed here or not.
+            return 5;
+        }
+
+        int withinPentagonRotations =
+            PENTAGON_ROTATIONS_REVERSE[originLeadingDigit][indexLeadingDigit];
+
+        for (int i = 0; i < withinPentagonRotations; i++) {
+            *out = _h3Rotate60ccw(*out);
+        }
+    }
+
+    H3_SET_BASE_CELL(*out, baseCell);
+    return 0;
+}
+
+/**
  * Produces ij coordinates for an index anchored by an origin.
  *
  * The coordinate space used by this function may have deleted
@@ -247,7 +460,7 @@ int h3ToLocalIjk(H3Index origin, H3Index h3, CoordIJK *out) {
  * @return 0 on success, or another value on failure.
  */
 int H3_EXPORT(experimentalH3ToLocalIj)(H3Index origin, H3Index h3,
-                                       CoordIJ *out) {
+                                       CoordIJ* out) {
     // This function is currently experimental. Once ready to be part of the
     // non-experimental API, this function (with the experimental prefix) will
     // be marked as deprecated and to be removed in the next major version. It
@@ -261,6 +474,35 @@ int H3_EXPORT(experimentalH3ToLocalIj)(H3Index origin, H3Index h3,
     ijkToIj(&ijk, out);
 
     return 0;
+}
+
+/**
+ * Produces an index for ij coordinates anchored by an origin.
+ *
+ * The coordinate space used by this function may have deleted
+ * regions or warping due to pentagonal distortion.
+ *
+ * Failure may occur if the index is too far away from the origin
+ * or if the index is on the other side of a pentagon.
+ *
+ * This function is experimental, and its output is not guaranteed
+ * to be compatible across different versions of H3.
+ *
+ * @param origin An anchoring index for the ij coordinate system.
+ * @param out ij coordinates to index.
+ * @param index Index will be placed here on success.
+ * @return 0 on success, or another value on failure.
+ */
+int H3_EXPORT(experimentalLocalIjToH3)(H3Index origin, const CoordIJ* ij,
+                                       H3Index* out) {
+    // This function is currently experimental. Once ready to be part of the
+    // non-experimental API, this function (with the experimental prefix) will
+    // be marked as deprecated and to be removed in the next major version. It
+    // will be replaced with a non-prefixed function name.
+    CoordIJK ijk;
+    ijToIjk(ij, &ijk);
+
+    return localIjkToH3(origin, &ijk, out);
 }
 
 /**

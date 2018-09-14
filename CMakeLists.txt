@@ -90,6 +90,7 @@ set(LIB_SOURCE_FILES
     src/h3lib/include/vec2d.h
     src/h3lib/include/vec3d.h
     src/h3lib/include/linkedGeo.h
+    src/h3lib/include/localIj.h
     src/h3lib/include/baseCells.h
     src/h3lib/include/faceijk.h
     src/h3lib/include/vertexGraph.h
@@ -163,6 +164,8 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testH3Api.c
     src/apps/testapps/testH3SetToLinkedGeo.c
     src/apps/testapps/testH3ToLocalIj.c
+    src/apps/testapps/testH3Distance.c
+    src/apps/testapps/testCoordIj.c
     src/apps/miscapps/h3ToGeoBoundaryHier.c
     src/apps/miscapps/h3ToGeoHier.c
     src/apps/miscapps/generateBaseCellNeighbors.c
@@ -458,7 +461,9 @@ if(BUILD_TESTING)
     add_h3_test(testPolygon src/apps/testapps/testPolygon.c)
     add_h3_test(testVec2d src/apps/testapps/testVec2d.c)
     add_h3_test(testVec3d src/apps/testapps/testVec3d.c)
-    add_h3_test(testH3ToIj src/apps/testapps/testH3ToLocalIj.c)
+    add_h3_test(testH3ToLocalIj src/apps/testapps/testH3ToLocalIj.c)
+    add_h3_test(testH3Distance src/apps/testapps/testH3Distance.c)
+    add_h3_test(testCoordIj src/apps/testapps/testCoordIj.c)
 
     add_h3_test_with_arg(testH3NeighborRotations src/apps/testapps/testH3NeighborRotations.c 0)
     add_h3_test_with_arg(testH3NeighborRotations src/apps/testapps/testH3NeighborRotations.c 1)

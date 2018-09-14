@@ -152,9 +152,11 @@ int isResClassIII(int res);
 
 // Internal functions
 
+int _h3ToFaceIjkWithInitializedFijk(H3Index h, FaceIJK* fijk);
 H3Index _faceIjkToH3(const FaceIJK* fijk, int res);
 Direction _h3LeadingNonZeroDigit(H3Index h);
 H3Index _h3RotatePent60ccw(H3Index h);
+H3Index _h3RotatePent60cw(H3Index h);
 H3Index _h3Rotate60ccw(H3Index h);
 H3Index _h3Rotate60cw(H3Index h);
 
