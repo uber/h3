@@ -349,14 +349,18 @@ int localIjkToH3(H3Index origin, const CoordIJK* ijk, H3Index* out) {
     // lookup the correct base cell
     Direction dir = _unitIjkToDigit(&ijkCopy);
     int baseCell = _getBaseCellNeighbor(originBaseCell, dir);
-    int indexOnPent = _isBaseCellPentagon(baseCell);
+    // If baseCell is invalid, it must be because the origin base cell is a
+    // pentagon, and because pentagon base cells do not border each other,
+    // baseCell must not be a pentagon.
+    int indexOnPent =
+        (baseCell == INVALID_BASE_CELL ? 0 : _isBaseCellPentagon(baseCell));
 
     if (dir != CENTER_DIGIT) {
         // If the index is in a warped direction, we need to unwarp the base
-        // cell. There may be further need to rotate the index digits.
+        // cell direction. There may be further need to rotate the index digits.
         int pentagonRotations = 0;
         if (originOnPent) {
-            Direction originLeadingDigit = _h3LeadingNonZeroDigit(origin);
+            const Direction originLeadingDigit = _h3LeadingNonZeroDigit(origin);
             pentagonRotations =
                 PENTAGON_ROTATIONS_REVERSE[originLeadingDigit][dir];
             for (int i = 0; i < pentagonRotations; i++) {
@@ -375,16 +379,19 @@ int localIjkToH3(H3Index origin, const CoordIJK* ijk, H3Index* out) {
 
         // Now we can determine the relation between the origin and target base
         // cell.
-        int baseCellRotations = baseCellNeighbor60CCWRots[originBaseCell][dir];
-        Direction revDir = _getBaseCellDirection(baseCell, originBaseCell);
-
+        const int baseCellRotations =
+            baseCellNeighbor60CCWRots[originBaseCell][dir];
         assert(baseCellRotations >= 0);
-        assert(revDir != INVALID_DIGIT);
 
-        // Adjust for pentagon warping. The base cell should be in the right
-        // location, so now we need to rotate the index back. We might not need
-        // to check for errors since we would just be double mapping.
+        // Adjust for pentagon warping within the base cell. The base cell
+        // should be in the right location, so now we need to rotate the index
+        // back. We might not need to check for errors since we would just be
+        // double mapping.
         if (indexOnPent) {
+            const Direction revDir =
+                _getBaseCellDirection(baseCell, originBaseCell);
+            assert(revDir != INVALID_DIGIT);
+
             // Adjust for the different coordinate space in the two base cells.
             // This is done first because we need to do the pentagon rotations
             // based on the leading digit in the pentagon's coordinate system.
@@ -418,8 +425,8 @@ int localIjkToH3(H3Index origin, const CoordIJK* ijk, H3Index* out) {
             }
         }
     } else if (originOnPent && indexOnPent) {
-        int originLeadingDigit = _h3LeadingNonZeroDigit(origin);
-        int indexLeadingDigit = _h3LeadingNonZeroDigit(*out);
+        const int originLeadingDigit = _h3LeadingNonZeroDigit(origin);
+        const int indexLeadingDigit = _h3LeadingNonZeroDigit(*out);
 
         if (FAILED_DIRECTIONS_III[originLeadingDigit][indexLeadingDigit] ||
             FAILED_DIRECTIONS_II[originLeadingDigit][indexLeadingDigit]) {
@@ -427,8 +434,9 @@ int localIjkToH3(H3Index origin, const CoordIJK* ijk, H3Index* out) {
             return 5;
         }
 
-        int withinPentagonRotations =
+        const int withinPentagonRotations =
             PENTAGON_ROTATIONS_REVERSE[originLeadingDigit][indexLeadingDigit];
+        assert(withinPentagonRotations >= 0);
 
         for (int i = 0; i < withinPentagonRotations; i++) {
             *out = _h3Rotate60ccw(*out);
