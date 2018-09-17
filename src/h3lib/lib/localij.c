@@ -366,9 +366,9 @@ int localIjkToH3(H3Index origin, const CoordIJK* ijk, H3Index* out) {
             for (int i = 0; i < pentagonRotations; i++) {
                 dir = _rotate60ccw(dir);
             }
-            if (dir == K_AXES_DIGIT) {
-                dir = _rotate60ccw(dir);
-            }
+            // The pentagon rotations are being chosen so that dir is not the
+            // deleted direction.
+            assert(dir != K_AXES_DIGIT);
             baseCell = _getBaseCellNeighbor(originBaseCell, dir);
 
             // indexOnPent does not need to be checked again since no pentagon

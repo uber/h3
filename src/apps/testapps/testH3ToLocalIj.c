@@ -189,6 +189,46 @@ SUITE(h3ToLocalIj) {
         t_assert(_ijkMatches(&ijk, &UNIT_VECS[2]) == 1, "not at 0,1,0");
     }
 
+    TEST(ijBaseCells) {
+        CoordIJ ij = {.i = 0, .j = 0};
+        H3Index origin = 0x8029fffffffffff;
+        H3Index retrieved;
+        t_assert(
+            H3_EXPORT(experimentalLocalIjToH3)(origin, &ij, &retrieved) == 0,
+            "got origin back");
+        t_assert(retrieved == 0x8029fffffffffff, "origin matches self");
+        ij.i = 1;
+        t_assert(
+            H3_EXPORT(experimentalLocalIjToH3)(origin, &ij, &retrieved) == 0,
+            "got offset index");
+        t_assert(retrieved == 0x8051fffffffffff,
+                 "modified index matches expected");
+        ij.i = 2;
+        t_assert(
+            H3_EXPORT(experimentalLocalIjToH3)(origin, &ij, &retrieved) != 0,
+            "out of range base cell");
+    }
+
+    TEST(ijOutOfRange) {
+        const int numCoords = 5;
+        const CoordIJ coords[] = {{0, 0}, {1, 0}, {2, 0}, {3, 0}, {4, 0}};
+        const H3Index expected[] = {0x81283ffffffffff, 0x81293ffffffffff,
+                                    0x8150bffffffffff, 0x8151bffffffffff,
+                                    H3_INVALID_INDEX};
+
+        for (int i = 0; i < numCoords; i++) {
+            H3Index result;
+            const int err = H3_EXPORT(experimentalLocalIjToH3)(
+                expected[0], &coords[i], &result);
+            if (expected[i] == H3_INVALID_INDEX) {
+                t_assert(err != 0, "coordinates out of range");
+            } else {
+                t_assert(err == 0, "coordinates in range");
+                t_assert(result == expected[i], "result matches expectation");
+            }
+        }
+    }
+
     TEST(experimentalH3ToLocalIjFailed) {
         CoordIJ ij;
 
