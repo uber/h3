@@ -6,6 +6,10 @@ As a C library, bindings can be made to call H3 functions from different program
 
 - [helium/erlang-h3](https://github.com/helium/erlang-h3)
 
+## Go
+
+- [uber/h3-go](https://github.com/uber/h3-go)
+
 ## Java
 
 - [uber/h3-java](https://github.com/uber/h3-java)
