@@ -10,6 +10,9 @@
 /lib/
 # Travis CI build directory
 /build/
+# Local build directories
+/Debug/
+/Release/
 
 # random temp files
 .DS_Store
@@ -71,6 +74,9 @@ CMakeDoxyfile.in
 CMakeDoxygenDefaults.cmake
 DartConfiguration.tcl
 compile_commands.json
+RunCoverage.cmake
+# Generated coverage runner
+scripts/coverage.sh
 
 # CTest / coverage
 CTestTestfile.cmake
