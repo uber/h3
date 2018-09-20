@@ -19,6 +19,7 @@
  *  usage: `testH3ToLocalIj`
  */
 
+#include <h3api.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -34,6 +35,16 @@
 
 static const int MAX_DISTANCES[] = {1, 2, 5, 12, 19, 26};
 
+// The same traversal constants from algos.c (for hexRange) here reused as local
+// IJ vectors.
+static const CoordIJ DIRECTIONS[6] = {{0, 1},  {-1, 0}, {-1, -1},
+                                      {0, -1}, {1, 0},  {1, 1}};
+
+static const CoordIJ NEXT_RING_DIRECTION = {1, 0};
+
+/**
+ * Test that the local coordinates for an index map to itself.
+ */
 void localIjToH3_identity_assertions(H3Index h3) {
     CoordIJ ij;
     t_assert(H3_EXPORT(experimentalH3ToLocalIj)(h3, h3, &ij) == 0,
@@ -74,6 +85,10 @@ void h3ToLocalIj_coordinates_assertions(H3Index h3) {
     }
 }
 
+/**
+ * Test the the immediate neighbors of an index are at the expected locations in
+ * the local IJ coordinate space.
+ */
 void h3ToLocalIj_neighbors_assertions(H3Index h3) {
     CoordIJ origin = {0};
     t_assert(H3_EXPORT(experimentalH3ToLocalIj)(h3, h3, &origin) == 0,
@@ -81,8 +96,8 @@ void h3ToLocalIj_neighbors_assertions(H3Index h3) {
     CoordIJK originIjk;
     ijToIjk(&origin, &originIjk);
 
-    for (int d = 1; d < 7; d++) {
-        if (d == 1 && H3_EXPORT(h3IsPentagon)(h3)) {
+    for (Direction d = K_AXES_DIGIT; d < INVALID_DIGIT; d++) {
+        if (d == K_AXES_DIGIT && H3_EXPORT(h3IsPentagon)(h3)) {
             continue;
         }
 
@@ -106,6 +121,10 @@ void h3ToLocalIj_neighbors_assertions(H3Index h3) {
     }
 }
 
+/**
+ * Test that the neighbors (k-ring), if they can be found in the local IJ
+ * coordinate space, can be converetd back to indexes.
+ */
 void localIjToH3_kRing_assertions(H3Index h3) {
     int r = H3_GET_RESOLUTION(h3);
     if (r > 5) {
@@ -133,6 +152,83 @@ void localIjToH3_kRing_assertions(H3Index h3) {
                 "retrieved index for unfolded coordinates");
             t_assert(retrieved == neighbors[i],
                      "round trip neighboring index matches expected");
+        }
+    }
+}
+
+void localIjToH3_traverse_assertions(H3Index h3) {
+    int r = H3_GET_RESOLUTION(h3);
+    if (r > 5) {
+        t_assert(false, "wrong res");
+    }
+    int k = MAX_DISTANCES[r];
+
+    CoordIJ ij;
+    t_assert(H3_EXPORT(experimentalH3ToLocalIj)(h3, h3, &ij) == 0,
+             "Got origin coordinates");
+
+    // This logic is from hexRangeDistances.
+    // 0 < ring <= k, current ring
+    int ring = 1;
+    // 0 <= direction < 6, current side of the ring
+    int direction = 0;
+    // 0 <= i < ring, current position on the side of the ring
+    int i = 0;
+
+    while (ring <= k) {
+        if (direction == 0 && i == 0) {
+            ij.i += NEXT_RING_DIRECTION.i;
+            ij.j += NEXT_RING_DIRECTION.j;
+        }
+
+        ij.i += DIRECTIONS[direction].i;
+        ij.j += DIRECTIONS[direction].j;
+
+        H3Index testH3;
+
+        int failed = H3_EXPORT(experimentalLocalIjToH3)(h3, &ij, &testH3);
+        if (!failed) {
+            t_assert(H3_EXPORT(h3IsValid)(testH3),
+                     "test coordinates result in valid index");
+            if (_isBaseCellPentagon(H3_EXPORT(h3GetBaseCell)(testH3))) {
+                // h3IsValid doesn't test for indexes representing part of the
+                // deleted subsequence.
+                t_assert(
+                    _h3LeadingNonZeroDigit(testH3) != K_AXES_DIGIT,
+                    "index is in invalid position on a pentagon base cell.");
+            }
+
+            CoordIJ expectedIj;
+            int reverseFailed =
+                H3_EXPORT(experimentalH3ToLocalIj)(h3, testH3, &expectedIj);
+            // If it doesn't give a coordinate for this origin,index pair that's
+            // OK.
+            if (!reverseFailed) {
+                if (expectedIj.i != ij.i || expectedIj.j != ij.j) {
+                    // Multiple coordinates for the same index can happen due to
+                    // pentagon distortion. In that case, the other coordinates
+                    // should also belong to the same index.
+                    H3Index testTestH3;
+                    t_assert(H3_EXPORT(experimentalLocalIjToH3)(
+                                 h3, &expectedIj, &testTestH3) == 0,
+                             "failed to convert coordinates again");
+                    t_assert(testH3 == testTestH3,
+                             "index doesn't have normalizable coordinates in "
+                             "local IJ");
+                }
+            }
+        }
+
+        i++;
+        // Check if end of this side of the k-ring
+        if (i == ring) {
+            i = 0;
+            direction++;
+            // Check if end of this ring.
+            if (direction == 6) {
+                direction = 0;
+                ring++;
+            }
         }
     }
 }
@@ -177,9 +273,17 @@ SUITE(h3ToLocalIj) {
         // Don't iterate all of res 3, to save time
         iterateAllIndexesAtResPartial(3, localIjToH3_kRing_assertions, 27);
         // These would take too long, even at partial execution
-        //    iterateAllIndexesAtResPartial(4, localIjToH3_kRing_assertions,
-        //    20); iterateAllIndexesAtResPartial(5,
-        //    localIjToH3_kRing_assertions, 20);
+        // iterateAllIndexesAtResPartial(4, localIjToH3_kRing_assertions, 20);
+        // iterateAllIndexesAtResPartial(5, localIjToH3_kRing_assertions, 20);
+    }
+
+    TEST(localIjToH3_traverse) {
+        iterateAllIndexesAtRes(0, localIjToH3_traverse_assertions);
+        iterateAllIndexesAtRes(1, localIjToH3_traverse_assertions);
+        iterateAllIndexesAtRes(2, localIjToH3_traverse_assertions);
+        // Don't iterate all of res 3, to save time
+        iterateAllIndexesAtResPartial(3, localIjToH3_traverse_assertions, 27);
+        // Further resolutions aren't tested to save time.
     }
 
     TEST(ijkBaseCells) {

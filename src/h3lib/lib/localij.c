@@ -303,8 +303,13 @@ int localIjkToH3(H3Index origin, const CoordIJK* ijk, H3Index* out) {
             return 1;
         }
 
-        Direction dir = _unitIjkToDigit(ijk);
-        H3_SET_BASE_CELL(*out, _getBaseCellNeighbor(originBaseCell, dir));
+        const Direction dir = _unitIjkToDigit(ijk);
+        const int newBaseCell = _getBaseCellNeighbor(originBaseCell, dir);
+        if (newBaseCell == INVALID_BASE_CELL) {
+            // Moving in an invalid direction off a pentagon.
+            return 1;
+        }
+        H3_SET_BASE_CELL(*out, newBaseCell);
         return 0;
     }
 
@@ -367,8 +372,11 @@ int localIjkToH3(H3Index origin, const CoordIJK* ijk, H3Index* out) {
                 dir = _rotate60ccw(dir);
             }
             // The pentagon rotations are being chosen so that dir is not the
-            // deleted direction.
-            assert(dir != K_AXES_DIGIT);
+            // deleted direction. If it still happens, it means we're moving
+            // into a deleted subsequence, so there is no index here.
+            if (dir == K_AXES_DIGIT) {
+                return 3;
+            }
             baseCell = _getBaseCellNeighbor(originBaseCell, dir);
 
             // indexOnPent does not need to be checked again since no pentagon
@@ -428,18 +436,21 @@ int localIjkToH3(H3Index origin, const CoordIJK* ijk, H3Index* out) {
         const int originLeadingDigit = _h3LeadingNonZeroDigit(origin);
         const int indexLeadingDigit = _h3LeadingNonZeroDigit(*out);
 
-        if (FAILED_DIRECTIONS_III[originLeadingDigit][indexLeadingDigit] ||
-            FAILED_DIRECTIONS_II[originLeadingDigit][indexLeadingDigit]) {
-            // TODO Not clear if this case needs to be failed here or not.
-            return 5;
-        }
-
         const int withinPentagonRotations =
             PENTAGON_ROTATIONS_REVERSE[originLeadingDigit][indexLeadingDigit];
         assert(withinPentagonRotations >= 0);
 
         for (int i = 0; i < withinPentagonRotations; i++) {
             *out = _h3Rotate60ccw(*out);
+        }
+    }
+
+    if (indexOnPent) {
+        // TODO: There are cases in h3ToLocalIjk which are failed but not
+        // accounted for here - instead just fail if the recovered index is
+        // invalid.
+        if (_h3LeadingNonZeroDigit(*out) == K_AXES_DIGIT) {
+            return 4;
         }
     }
 
