@@ -66,22 +66,22 @@ void h3ToLocalIj_coordinates_assertions(H3Index h3) {
 
     CoordIJ ij;
     t_assert(H3_EXPORT(experimentalH3ToLocalIj)(h3, h3, &ij) == 0,
-             "failed to get ij");
+             "get ij for origin");
     CoordIJK ijk;
     ijToIjk(&ij, &ijk);
     if (r == 0) {
-        t_assert(_ijkMatches(&ijk, &UNIT_VECS[0]) == 1, "not at 0,0,0 (res 0)");
+        t_assert(_ijkMatches(&ijk, &UNIT_VECS[0]) == 1, "res 0 cell at 0,0,0");
     } else if (r == 1) {
         t_assert(_ijkMatches(&ijk, &UNIT_VECS[H3_GET_INDEX_DIGIT(h3, 1)]) == 1,
-                 "not at expected coordinates (res 1)");
+                 "res 1 cell at expected coordinates");
     } else if (r == 2) {
         CoordIJK expected = UNIT_VECS[H3_GET_INDEX_DIGIT(h3, 1)];
         _downAp7r(&expected);
         _neighbor(&expected, H3_GET_INDEX_DIGIT(h3, 2));
         t_assert(_ijkMatches(&ijk, &expected) == 1,
-                 "not at expected coordinates (res 2)");
+                 "res 2 cell at expected coordinates");
     } else {
-        t_assert(0, "wrong resolution");
+        t_assert(0, "resolution supported by test function (coordinates)");
     }
 }
 
@@ -127,9 +127,7 @@ void h3ToLocalIj_neighbors_assertions(H3Index h3) {
  */
 void localIjToH3_kRing_assertions(H3Index h3) {
     int r = H3_GET_RESOLUTION(h3);
-    if (r > 5) {
-        t_assert(false, "wrong res");
-    }
+    t_assert(r <= 5, "resolution supported by test function (kRing)");
     int maxK = MAX_DISTANCES[r];
 
     int sz = H3_EXPORT(maxKringSize)(maxK);
@@ -158,9 +156,7 @@ void localIjToH3_kRing_assertions(H3Index h3) {
 
 void localIjToH3_traverse_assertions(H3Index h3) {
     int r = H3_GET_RESOLUTION(h3);
-    if (r > 5) {
-        t_assert(false, "wrong res");
-    }
+    t_assert(r <= 5, "resolution supported by test function (traverse)");
     int k = MAX_DISTANCES[r];
 
     CoordIJ ij;
@@ -195,7 +191,7 @@ void localIjToH3_traverse_assertions(H3Index h3) {
                 // deleted subsequence.
                 t_assert(
                     _h3LeadingNonZeroDigit(testH3) != K_AXES_DIGIT,
-                    "index is in invalid position on a pentagon base cell.");
+                    "index is in a valid subsequence on a pentagon base cell.");
             }
 
             CoordIJ expectedIj;
@@ -211,9 +207,9 @@ void localIjToH3_traverse_assertions(H3Index h3) {
                     H3Index testTestH3;
                     t_assert(H3_EXPORT(experimentalLocalIjToH3)(
                                  h3, &expectedIj, &testTestH3) == 0,
-                             "failed to convert coordinates again");
+                             "converted coordinates again");
                     t_assert(testH3 == testTestH3,
-                             "index doesn't have normalizable coordinates in "
+                             "index has normalizable coordinates in "
                              "local IJ");
                 }
             }
@@ -272,9 +268,7 @@ SUITE(h3ToLocalIj) {
         iterateAllIndexesAtRes(2, localIjToH3_kRing_assertions);
         // Don't iterate all of res 3, to save time
         iterateAllIndexesAtResPartial(3, localIjToH3_kRing_assertions, 27);
-        // These would take too long, even at partial execution
-        // iterateAllIndexesAtResPartial(4, localIjToH3_kRing_assertions, 20);
-        // iterateAllIndexesAtResPartial(5, localIjToH3_kRing_assertions, 20);
+        // Further resolutions aren't tested to save time.
     }
 
     TEST(localIjToH3_traverse) {
@@ -289,8 +283,9 @@ SUITE(h3ToLocalIj) {
     TEST(ijkBaseCells) {
         CoordIJK ijk;
         t_assert(h3ToLocalIjk(pent1, bc1, &ijk) == 0,
-                 "failed to get ijk (4, 15)");
-        t_assert(_ijkMatches(&ijk, &UNIT_VECS[2]) == 1, "not at 0,1,0");
+                 "got ijk for base cells 4 and 15");
+        t_assert(_ijkMatches(&ijk, &UNIT_VECS[2]) == 1,
+                 "neighboring base cell at 0,1,0");
     }
 
     TEST(ijBaseCells) {
@@ -337,18 +332,18 @@ SUITE(h3ToLocalIj) {
         CoordIJ ij;
 
         t_assert(H3_EXPORT(experimentalH3ToLocalIj)(bc1, bc1, &ij) == 0,
-                 "failed to find IJ (1)");
+                 "found IJ (1)");
         t_assert(ij.i == 0 && ij.j == 0, "ij correct (1)");
         t_assert(H3_EXPORT(experimentalH3ToLocalIj)(bc1, pent1, &ij) == 0,
-                 "failed to find IJ (2)");
+                 "found IJ (2)");
         t_assert(ij.i == 1 && ij.j == 0, "ij correct (2)");
         t_assert(H3_EXPORT(experimentalH3ToLocalIj)(bc1, bc2, &ij) == 0,
-                 "failed to find IJ (3)");
+                 "found IJ (3)");
         t_assert(ij.i == 0 && ij.j == -1, "ij correct (3)");
         t_assert(H3_EXPORT(experimentalH3ToLocalIj)(bc1, bc3, &ij) == 0,
-                 "failed to find IJ (4)");
+                 "found IJ (4)");
         t_assert(ij.i == -1 && ij.j == 0, "ij correct (4)");
         t_assert(H3_EXPORT(experimentalH3ToLocalIj)(pent1, bc3, &ij) != 0,
-                 "failed to find IJ (5)");
+                 "found IJ (5)");
     }
 }

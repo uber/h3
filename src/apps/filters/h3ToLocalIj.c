@@ -15,7 +15,7 @@
  */
 /** @file
  * @brief stdin/stdout filter that converts from H3 indexes to local IJ
- * coordinates.
+ * coordinates. This is experimental.
  *
  *  usage: `h3ToLocalIj [origin]`
  *
@@ -27,7 +27,8 @@
  *  `origin` indicates the origin (or anchoring) index for the IJ coordinate
  *  space.
  *
- *  This program has the same limitations as the `h3ToLocalIj` function.
+ *  This program has the same limitations as the `experimentalH3ToLocalIj`
+ * function.
  */
 
 #include <inttypes.h>

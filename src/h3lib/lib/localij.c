@@ -45,9 +45,9 @@ const int PENTAGON_ROTATIONS[7][7] = {
     {0, -1, 0, 0, 0, 0, 0},        // 6
 };
 /**
- * Reverse base cell direction -> leading index digit -> roations 60 ccw.
+ * Reverse base cell direction -> leading index digit -> rotations 60 ccw.
  * For reversing the rotation introduced in PENTAGON_ROTATIONS when
- * the origin is on a pentagon.
+ * the origin is on a pentagon (regardless of the base cell of the index.)
  */
 const int PENTAGON_ROTATIONS_REVERSE[7][7] = {
     {0, 0, 0, 0, 0, 0, 0},         // 0
@@ -59,9 +59,9 @@ const int PENTAGON_ROTATIONS_REVERSE[7][7] = {
     {0, 0, 0, 0, 0, 0, 0},         // 6
 };
 /**
- * Reverse base cell direction -> leading index digit -> roations 60 ccw.
+ * Reverse base cell direction -> leading index digit -> rotations 60 ccw.
  * For reversing the rotation introduced in PENTAGON_ROTATIONS when the index is
- * on a pentagon.
+ * on a pentagon and the origin is not.
  */
 const int PENTAGON_ROTATIONS_REVERSE_NONPOLAR[7][7] = {
     {0, 0, 0, 0, 0, 0, 0},         // 0
@@ -73,9 +73,9 @@ const int PENTAGON_ROTATIONS_REVERSE_NONPOLAR[7][7] = {
     {0, 0, 0, 0, 0, 0, 0},         // 6
 };
 /**
- * Reverse base cell direction -> leading index digit -> roations 60 ccw.
+ * Reverse base cell direction -> leading index digit -> rotations 60 ccw.
  * For reversing the rotation introduced in PENTAGON_ROTATIONS when the index is
- * on a polar pentagon.
+ * on a polar pentagon and the origin is not.
  */
 const int PENTAGON_ROTATIONS_REVERSE_POLAR[7][7] = {
     {0, 0, 0, 0, 0, 0, 0},         // 0
