@@ -125,13 +125,6 @@ const bool FAILED_DIRECTIONS_III[7][7] = {
  * @return 0 on success, or another value on failure.
  */
 int h3ToLocalIjk(H3Index origin, H3Index h3, CoordIJK* out) {
-    if (H3_GET_MODE(origin) != H3_HEXAGON_MODE ||
-        H3_GET_MODE(h3) != H3_HEXAGON_MODE) {
-        // Only hexagon mode is relevant, since we can't
-        // encode directionality in CoordIJK.
-        return 1;
-    }
-
     int res = H3_GET_RESOLUTION(origin);
 
     if (res != H3_GET_RESOLUTION(h3)) {
@@ -539,9 +532,9 @@ int H3_EXPORT(experimentalLocalIjToH3)(H3Index origin, const CoordIJ* ij,
 int H3_EXPORT(h3Distance)(H3Index origin, H3Index h3) {
     CoordIJK originIjk, h3Ijk;
     if (h3ToLocalIjk(origin, origin, &originIjk)) {
-        // Only possible if origin is invalid, for example if it's a
-        // unidirectional edge.
-        return -1;
+        // Currently there are no tests that would cause getting the coordinates
+        // for an index the same as the origin to fail.
+        return -1;  // LCOV_EXCL_LINE
     }
     if (h3ToLocalIjk(origin, h3, &h3Ijk)) {
         return -1;

@@ -163,17 +163,26 @@ SUITE(h3Distance) {
         t_assert(ijkDistance(&ij, &ik) == 2, "1,0,1 to 1,1,0");
     }
 
-    TEST(h3DistanceFailed) {
-        H3Index h3 = 0x832830fffffffffL;
-        H3Index edge =
-            H3_EXPORT(getH3UnidirectionalEdge(h3, 0x832834fffffffffL));
-        H3Index h3res2 = 0x822837fffffffffL;
+    TEST(h3DistanceResolutionMismatch) {
+        t_assert(
+            H3_EXPORT(h3Distance)(0x832830fffffffffL, 0x822837fffffffffL) == -1,
+            "cannot compare at different resolutions");
+    }
 
-        t_assert(H3_EXPORT(h3Distance)(edge, h3) == -1,
-                 "edges cannot be origins");
-        t_assert(H3_EXPORT(h3Distance)(h3, edge) == -1,
-                 "edges cannot be destinations");
-        t_assert(H3_EXPORT(h3Distance)(h3, h3res2) == -1,
-                 "cannot compare at different resolutions");
+    TEST(h3DistanceEdge) {
+        H3Index origin = 0x832830fffffffffL;
+        H3Index dest = 0x832834fffffffffL;
+        H3Index edge = H3_EXPORT(getH3UnidirectionalEdge(origin, dest));
+
+        t_assert(0 != edge, "test edge is valid");
+        t_assert(H3_EXPORT(h3Distance)(edge, origin) == 0,
+                 "edge has zero distance to origin");
+        t_assert(H3_EXPORT(h3Distance)(origin, edge) == 0,
+                 "origin has zero distance to edge");
+
+        t_assert(H3_EXPORT(h3Distance)(edge, dest) == 1,
+                 "edge has distance to destination");
+        t_assert(H3_EXPORT(h3Distance)(edge, dest) == 1,
+                 "destination has distance to edge");
     }
 }
