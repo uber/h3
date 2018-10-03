@@ -47,6 +47,7 @@ extern const BaseCellData baseCellData[NUM_BASE_CELLS];
 
 // Internal functions
 int _isBaseCellPentagon(int baseCell);
+bool _isBaseCellPolarPentagon(int baseCell);
 int _faceIjkToBaseCell(const FaceIJK* h);
 int _faceIjkToBaseCellCCWrot60(const FaceIJK* h);
 void _baseCellToFaceIjk(int baseCell, FaceIJK* h);

@@ -369,7 +369,7 @@ H3Index h3NeighborRotations(H3Index origin, Direction dir, int* rotations) {
         // Account for differing orientation of the base cells (this edge
         // might not follow properties of some other edges.)
         if (oldBaseCell != newBaseCell) {
-            if (newBaseCell == 4 || newBaseCell == 117) {
+            if (_isBaseCellPolarPentagon(newBaseCell)) {
                 // 'polar' base cells behave differently because they have all
                 // i neighbors.
                 if (oldBaseCell != 118 && oldBaseCell != 8 &&

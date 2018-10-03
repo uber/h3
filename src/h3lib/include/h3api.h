@@ -129,6 +129,16 @@ struct LinkedGeoPolygon {
     LinkedGeoPolygon *next;
 };
 
+/** @struct CoordIJ
+ * @brief IJ hexagon coordinates
+ *
+ * Each axis is spaced 120 degrees apart.
+ */
+typedef struct {
+    int i;  ///< i component
+    int j;  ///< j component
+} CoordIJ;
+
 /** @defgroup geoToH3 geoToH3
  * Functions for geoToH3
  * @{
@@ -447,6 +457,24 @@ void H3_EXPORT(getH3UnidirectionalEdgeBoundary)(H3Index edge, GeoBoundary *gb);
  */
 /** @brief Returns grid distance between two indexes */
 int H3_EXPORT(h3Distance)(H3Index origin, H3Index h3);
+/** @} */
+
+/** @defgroup experimentalH3ToLocalIj experimentalH3ToLocalIj
+ * Functions for experimentalH3ToLocalIj
+ * @{
+ */
+/** @brief Returns two dimensional coordinates for the given index */
+int H3_EXPORT(experimentalH3ToLocalIj)(H3Index origin, H3Index h3,
+                                       CoordIJ *out);
+/** @} */
+
+/** @defgroup experimentalLocalIjToH3 experimentalLocalIjToH3
+ * Functions for experimentalLocalIjToH3
+ * @{
+ */
+/** @brief Returns index for the given two dimensional coordinates */
+int H3_EXPORT(experimentalLocalIjToH3)(H3Index origin, const CoordIJ *ij,
+                                       H3Index *out);
 /** @} */
 
 #ifdef __cplusplus

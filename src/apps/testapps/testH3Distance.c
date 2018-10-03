@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 /** @file
- * @brief tests H3 index to IJK+ grid functions.
+ * @brief tests H3 distance function.
  *
- *  usage: `testH3ToIjk`
+ *  usage: `testH3Distance`
  */
 
 #include <stdio.h>
@@ -27,6 +27,7 @@
 #include "constants.h"
 #include "h3Index.h"
 #include "h3api.h"
+#include "localij.h"
 #include "stackAlloc.h"
 #include "test.h"
 #include "utility.h"
@@ -34,59 +35,12 @@
 static const int MAX_DISTANCES[] = {1, 2, 5, 12, 19, 26};
 
 static void h3Distance_identity_assertions(H3Index h3) {
-    int r = H3_GET_RESOLUTION(h3);
-
     t_assert(H3_EXPORT(h3Distance)(h3, h3) == 0, "distance to self is 0");
-
-    CoordIJK ijk;
-    t_assert(h3ToIjk(h3, h3, &ijk) == 0, "failed to get ijk");
-    if (r == 0) {
-        t_assert(_ijkMatches(&ijk, &UNIT_VECS[0]) == 1, "not at 0,0,0 (res 0)");
-    } else if (r == 1) {
-        t_assert(_ijkMatches(&ijk, &UNIT_VECS[H3_GET_INDEX_DIGIT(h3, 1)]) == 1,
-                 "not at expected coordinates (res 1)");
-    } else if (r == 2) {
-        CoordIJK expected = UNIT_VECS[H3_GET_INDEX_DIGIT(h3, 1)];
-        _downAp7r(&expected);
-        _neighbor(&expected, H3_GET_INDEX_DIGIT(h3, 2));
-        t_assert(_ijkMatches(&ijk, &expected) == 1,
-                 "not at expected coordinates (res 2)");
-    } else {
-        t_assert(0, "wrong resolution");
-    }
-}
-
-static void h3Distance_neighbors_assertions(H3Index h3) {
-    CoordIJK origin = {0};
-    t_assert(h3ToIjk(h3, h3, &origin) == 0, "got ijk for origin");
-
-    for (int d = 1; d < 7; d++) {
-        if (d == 1 && H3_EXPORT(h3IsPentagon)(h3)) {
-            continue;
-        }
-
-        int rotations = 0;
-        H3Index offset = h3NeighborRotations(h3, d, &rotations);
-
-        CoordIJK ijk = {0};
-        t_assert(h3ToIjk(h3, offset, &ijk) == 0, "got ijk for destination");
-        CoordIJK invertedIjk = {0};
-        _neighbor(&invertedIjk, d);
-        for (int i = 0; i < 3; i++) {
-            _ijkRotate60ccw(&invertedIjk);
-        }
-        _ijkAdd(&invertedIjk, &ijk, &ijk);
-        _ijkNormalize(&ijk);
-
-        t_assert(_ijkMatches(&ijk, &origin), "back to origin");
-    }
 }
 
 static void h3Distance_kRing_assertions(H3Index h3) {
     int r = H3_GET_RESOLUTION(h3);
-    if (r > 5) {
-        t_assert(false, "wrong res");
-    }
+    t_assert(r <= 5, "resolution supported by test function (kRing)");
     int maxK = MAX_DISTANCES[r];
 
     int sz = H3_EXPORT(maxKringSize)(maxK);
@@ -109,7 +63,21 @@ static void h3Distance_kRing_assertions(H3Index h3) {
     }
 }
 
-SUITE(h3ToIjk) {
+SUITE(h3Distance) {
+    // Some indexes that represent base cells. Base cells
+    // are hexagons except for `pent1`.
+    H3Index bc1 = H3_INIT;
+    setH3Index(&bc1, 0, 15, 0);
+
+    H3Index bc2 = H3_INIT;
+    setH3Index(&bc2, 0, 8, 0);
+
+    H3Index bc3 = H3_INIT;
+    setH3Index(&bc3, 0, 31, 0);
+
+    H3Index pent1 = H3_INIT;
+    setH3Index(&pent1, 0, 4, 0);
+
     TEST(testIndexDistance) {
         H3Index bc = 0;
         setH3Index(&bc, 1, 17, 0);
@@ -148,6 +116,32 @@ SUITE(h3ToIjk) {
                  "distance in res 2 across pentagon (reversed)");
     }
 
+    TEST(h3Distance_identity) {
+        iterateAllIndexesAtRes(0, h3Distance_identity_assertions);
+        iterateAllIndexesAtRes(1, h3Distance_identity_assertions);
+        iterateAllIndexesAtRes(2, h3Distance_identity_assertions);
+    }
+
+    TEST(h3Distance_kRing) {
+        iterateAllIndexesAtRes(0, h3Distance_kRing_assertions);
+        iterateAllIndexesAtRes(1, h3Distance_kRing_assertions);
+        iterateAllIndexesAtRes(2, h3Distance_kRing_assertions);
+        // Don't iterate all of res 3, to save time
+        iterateAllIndexesAtResPartial(3, h3Distance_kRing_assertions, 27);
+        // Further resolutions aren't tested to save time.
+    }
+
+    TEST(h3DistanceBaseCells) {
+        t_assert(H3_EXPORT(h3Distance)(bc1, pent1) == 1,
+                 "distance to neighbor is 1 (15, 4)");
+        t_assert(H3_EXPORT(h3Distance)(bc1, bc2) == 1,
+                 "distance to neighbor is 1 (15, 8)");
+        t_assert(H3_EXPORT(h3Distance)(bc1, bc3) == 1,
+                 "distance to neighbor is 1 (15, 31)");
+        t_assert(H3_EXPORT(h3Distance)(pent1, bc3) == -1,
+                 "distance to neighbor is invalid");
+    }
+
     TEST(ijkDistance) {
         CoordIJK z = {0, 0, 0};
         CoordIJK i = {1, 0, 0};
@@ -169,67 +163,26 @@ SUITE(h3ToIjk) {
         t_assert(ijkDistance(&ij, &ik) == 2, "1,0,1 to 1,1,0");
     }
 
-    TEST(h3Distance_identity) {
-        iterateAllIndexesAtRes(0, h3Distance_identity_assertions);
-        iterateAllIndexesAtRes(1, h3Distance_identity_assertions);
-        iterateAllIndexesAtRes(2, h3Distance_identity_assertions);
+    TEST(h3DistanceResolutionMismatch) {
+        t_assert(
+            H3_EXPORT(h3Distance)(0x832830fffffffffL, 0x822837fffffffffL) == -1,
+            "cannot compare at different resolutions");
     }
 
-    TEST(h3Distance_neighbors) {
-        iterateAllIndexesAtRes(0, h3Distance_neighbors_assertions);
-        iterateAllIndexesAtRes(1, h3Distance_neighbors_assertions);
-        iterateAllIndexesAtRes(2, h3Distance_neighbors_assertions);
-    }
+    TEST(h3DistanceEdge) {
+        H3Index origin = 0x832830fffffffffL;
+        H3Index dest = 0x832834fffffffffL;
+        H3Index edge = H3_EXPORT(getH3UnidirectionalEdge(origin, dest));
 
-    TEST(h3Distance_kRing) {
-        iterateAllIndexesAtRes(0, h3Distance_kRing_assertions);
-        iterateAllIndexesAtRes(1, h3Distance_kRing_assertions);
-        iterateAllIndexesAtRes(2, h3Distance_kRing_assertions);
-        // Don't iterate all of res 3, to save time
-        iterateAllIndexesAtResPartial(3, h3Distance_kRing_assertions, 27);
-        // These would take too long, even at partial execution
-        //    iterateAllIndexesAtResPartial(4, h3Distance_kRing_assertions, 20);
-        //    iterateAllIndexesAtResPartial(5, h3Distance_kRing_assertions, 20);
-    }
+        t_assert(0 != edge, "test edge is valid");
+        t_assert(H3_EXPORT(h3Distance)(edge, origin) == 0,
+                 "edge has zero distance to origin");
+        t_assert(H3_EXPORT(h3Distance)(origin, edge) == 0,
+                 "origin has zero distance to edge");
 
-    TEST(h3DistanceBaseCells) {
-        H3Index bc1 = H3_INIT;
-        setH3Index(&bc1, 0, 15, 0);
-
-        H3Index bc2 = H3_INIT;
-        setH3Index(&bc2, 0, 8, 0);
-
-        H3Index bc3 = H3_INIT;
-        setH3Index(&bc3, 0, 31, 0);
-
-        H3Index pent1 = H3_INIT;
-        setH3Index(&pent1, 0, 4, 0);
-
-        t_assert(H3_EXPORT(h3Distance)(bc1, pent1) == 1,
-                 "distance to neighbor is 1 (15, 4)");
-        t_assert(H3_EXPORT(h3Distance)(bc1, bc2) == 1,
-                 "distance to neighbor is 1 (15, 8)");
-        t_assert(H3_EXPORT(h3Distance)(bc1, bc3) == 1,
-                 "distance to neighbor is 1 (15, 31)");
-        t_assert(H3_EXPORT(h3Distance)(pent1, bc3) == -1,
-                 "distance to neighbor is invalid");
-
-        CoordIJK ijk;
-        t_assert(h3ToIjk(pent1, bc1, &ijk) == 0, "failed to get ijk (4, 15)");
-        t_assert(_ijkMatches(&ijk, &UNIT_VECS[2]) == 1, "not at 0,1,0");
-    }
-
-    TEST(h3DistanceFailed) {
-        H3Index h3 = 0x832830fffffffffL;
-        H3Index edge =
-            H3_EXPORT(getH3UnidirectionalEdge(h3, 0x832834fffffffffL));
-        H3Index h3res2 = 0x822837fffffffffL;
-
-        t_assert(H3_EXPORT(h3Distance)(edge, h3) == -1,
-                 "edges cannot be origins");
-        t_assert(H3_EXPORT(h3Distance)(h3, edge) == -1,
-                 "edges cannot be destinations");
-        t_assert(H3_EXPORT(h3Distance)(h3, h3res2) == -1,
-                 "cannot compare at different resolutions");
+        t_assert(H3_EXPORT(h3Distance)(edge, dest) == 1,
+                 "edge has distance to destination");
+        t_assert(H3_EXPORT(h3Distance)(edge, dest) == 1,
+                 "destination has distance to edge");
     }
 }

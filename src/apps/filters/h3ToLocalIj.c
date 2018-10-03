@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 /** @file
- * @brief stdin/stdout filter that converts from H3 indexes to relative IJK
+ * @brief stdin/stdout filter that converts from H3 indexes to local IJ
  * coordinates. This is experimental.
  *
- *  usage: `h3ToIjk [origin]`
+ *  usage: `h3ToLocalIj [origin]`
  *
  *  The program reads H3 indexes from stdin and outputs the corresponding
- *  IJK coordinates to stdout, until EOF is encountered. The H3 indexes
- *  should be in integer form. `-1 -1 -1` is printed if the IJK coordinates
+ *  IJ coordinates to stdout, until EOF is encountered. The H3 indexes
+ *  should be in integer form. `NA` is printed if the IJ coordinates
  *  could not be obtained.
  *
- *  `origin` indicates the origin (or anchoring) index for the IJK coordinate
+ *  `origin` indicates the origin (or anchoring) index for the IJ coordinate
  *  space.
+ *
+ *  This program has the same limitations as the `experimentalH3ToLocalIj`
+ * function.
  */
 
 #include <inttypes.h>
@@ -37,11 +40,11 @@
 #include "utility.h"
 
 void doCell(H3Index h, H3Index origin) {
-    CoordIJK ijk;
-    if (h3ToIjk(origin, h, &ijk)) {
-        printf("-1 -1 -1\n");
+    CoordIJ ij;
+    if (H3_EXPORT(experimentalH3ToLocalIj)(origin, h, &ij)) {
+        printf("NA\n");
     } else {
-        printf("%d %d %d\n", ijk.i, ijk.j, ijk.k);
+        printf("%d %d\n", ij.i, ij.j);
     }
 }
 

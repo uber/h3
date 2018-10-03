@@ -505,3 +505,30 @@ int ijkDistance(const CoordIJK* c1, const CoordIJK* c2) {
     CoordIJK absDiff = {abs(diff.i), abs(diff.j), abs(diff.k)};
     return MAX(absDiff.i, MAX(absDiff.j, absDiff.k));
 }
+
+/**
+ * Transforms coordinates from the IJK+ coordinate system to the IJ coordinate
+ * system.
+ *
+ * @param ijk The input IJK+ coordinates
+ * @param ij The output IJ coordinates
+ */
+void ijkToIj(const CoordIJK* ijk, CoordIJ* ij) {
+    ij->i = ijk->i - ijk->k;
+    ij->j = ijk->j - ijk->k;
+}
+
+/**
+ * Transforms coordinates from the IJ coordinate system to the IJK+ coordinate
+ * system.
+ *
+ * @param ij The input IJ coordinates
+ * @param ijk The output IJK+ coordinates
+ */
+void ijToIjk(const CoordIJ* ij, CoordIJK* ijk) {
+    ijk->i = ij->i;
+    ijk->j = ij->j;
+    ijk->k = 0;
+
+    _ijkNormalize(ijk);
+}
