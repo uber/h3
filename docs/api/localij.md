@@ -5,7 +5,7 @@ coordinates are anchored by an **origin index**. The I and J
 axes are 120&deg; apart. The origin index might not be at
 (0, 0) in the local coordinate system.
 
-LOcal IJ coordinates are only valid within a certain radius of the origin.
+Local IJ coordinates are only valid within a certain radius of the origin.
 The coordinate space used by these functions may have deleted regions or
 warping due to pentagonal distortion.
 
@@ -15,9 +15,9 @@ warping due to pentagonal distortion.
 int experimentalH3ToLocalIj(H3Index origin, H3Index h3, CoordIJ *out);
 ```
 
-Produces local IJ coordinates for an index anchored by an origin.
+Produces local IJ coordinates for an H3 index anchored by an origin.
 
-This function is experimental, and its output is not gauranteed
+This function is experimental, and its output is not guaranteed
 to be compatible across different versions of H3.
 
 ## experimentalLocalIjToH3
@@ -26,9 +26,9 @@ to be compatible across different versions of H3.
 int experimentalLocalIjToH3(H3Index origin, const CoordIJ *ij, H3Index *out);
 ```
 
-Produces an index for local IJ coordinates anchored by an origin.
+Produces an H3 index from local IJ coordinates anchored by an origin.
 
-This function is experimental, and its output is not gauranteed
+This function is experimental, and its output is not guaranteed
 to be compatible across different versions of H3.
 
 ## h3Distance
