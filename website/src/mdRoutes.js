@@ -30,9 +30,8 @@ import restable from '../../docs/core-library/restable.md';
 import api_hierarchy from '../../docs/api/hierarchy.md';
 import api_indexing from '../../docs/api/indexing.md';
 import api_inspection from '../../docs/api/inspection.md';
-import api_localij from '../../docs/api/localij.md';
 import api_misc from '../../docs/api/misc.md';
-import api_neighbor from '../../docs/api/neighbor.md';
+import api_traversal from '../../docs/api/traversal.md';
 import api_regions from '../../docs/api/regions.md';
 import api_uniedge from '../../docs/api/uniedge.md';
 
@@ -106,12 +105,8 @@ export default [{
                 markdown: api_inspection
             },
             {
-                name: 'Neighbors',
-                markdown: api_neighbor
-            },
-            {
-                name: 'Local Coordinates',
-                markdown: api_localij
+                name: 'Traversal',
+                markdown: api_traversal
             },
             {
                 name: 'Hierarchy',
