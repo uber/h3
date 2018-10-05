@@ -1,7 +1,7 @@
 # H3: A Hexagonal Hierarchical Geospatial Indexing System
 
 [![Build Status](https://travis-ci.org/uber/h3.svg?branch=master)](https://travis-ci.org/uber/h3)
-[![Build status](https://ci.appveyor.com/api/projects/status/61431y4sc5w0tsuk/branch/master?svg=true)](https://ci.appveyor.com/project/IsaacBrodsky/h3/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/61431y4sc5w0tsuk/branch/master?svg=true)](https://ci.appveyor.com/project/Uber/h3/branch/master)
 [![Coverage Status](https://coveralls.io/repos/github/uber/h3/badge.svg?branch=master)](https://coveralls.io/github/uber/h3?branch=master)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
