@@ -123,6 +123,13 @@ SUITE(h3Index) {
                  "h3IsValid failed on too large digit");
     }
 
+    TEST(h3BadDigitInvalid) {
+        H3Index h;
+        setH3Index(&h, 1, 4, K_AXES_DIGIT);
+        t_assert(!H3_EXPORT(h3IsValid)(h),
+                 "h3IsValid failed on deleted subsequence");
+    }
+
     TEST(h3ToString) {
         const size_t bufSz = 17;
         char buf[17] = {0};
