@@ -1,4 +1,4 @@
-# Neighbor traversal functions
+# Grid traversal functions
 
 ## kRing
 
@@ -95,3 +95,37 @@ int hexRing(H3Index origin, int k, H3Index* out);
 Produces the hollow hexagonal ring centered at origin with sides of length k.
  
 Returns 0 if no pentagonal distortion was encountered.
+
+## h3Distance
+
+```
+int h3Distance(H3Index origin, H3Index h3);
+```
+
+Returns the distance in grid cells between the two indexes.
+
+Returns a negative number if finding the distance failed. Finding the distance can fail because the two
+indexes are not comparable (different resolutions), too far apart, or are separated by pentagonal
+distortion. This is the same set of limitations as the local IJ coordinate space functions.
+
+## experimentalH3ToLocalIj
+
+```
+int experimentalH3ToLocalIj(H3Index origin, H3Index h3, CoordIJ *out);
+```
+
+Produces local IJ coordinates for an H3 index anchored by an origin.
+
+This function is experimental, and its output is not guaranteed
+to be compatible across different versions of H3.
+
+## experimentalLocalIjToH3
+
+```
+int experimentalLocalIjToH3(H3Index origin, const CoordIJ *ij, H3Index *out);
+```
+
+Produces an H3 index from local IJ coordinates anchored by an origin.
+
+This function is experimental, and its output is not guaranteed
+to be compatible across different versions of H3.
