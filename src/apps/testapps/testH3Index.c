@@ -124,7 +124,7 @@ SUITE(h3Index) {
                  "h3IsValid failed on too large digit");
     }
 
-    TEST(h3BadDigitInvalid) {
+    TEST(h3DeletedSubsequenceInvalid) {
         H3Index h;
         // Create an index located in a deleted subsequence of a pentagon.
         setH3Index(&h, 1, 4, K_AXES_DIGIT);
