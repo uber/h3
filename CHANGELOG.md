@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 The public API of this library consists of the functions declared in file
 [h3api.h](./src/h3lib/include/h3api.h).
 
+## [Unreleased]
+### Changed
+- Indexes in deleted pentagon subsequences are not considered valid.
+
 ## [3.2.0] - 2018-10-04
 ### Added
 - `experimentalH3ToLocalIj` function for getting local coordinates for an index. (#102)

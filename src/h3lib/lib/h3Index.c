@@ -84,8 +84,17 @@ int H3_EXPORT(h3IsValid)(H3Index h) {
     int res = H3_GET_RESOLUTION(h);
     if (res < 0 || res > MAX_H3_RES) return 0;
 
+    bool foundFirstNonZeroDigit = false;
     for (int r = 1; r <= res; r++) {
         Direction digit = H3_GET_INDEX_DIGIT(h, r);
+
+        if (!foundFirstNonZeroDigit && digit != CENTER_DIGIT) {
+            foundFirstNonZeroDigit = true;
+            if (_isBaseCellPentagon(baseCell) && digit == K_AXES_DIGIT) {
+                return 0;
+            }
+        }
+
         if (digit < CENTER_DIGIT || digit >= NUM_DIGITS) return 0;
     }
 

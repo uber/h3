@@ -186,13 +186,6 @@ void localIjToH3_traverse_assertions(H3Index h3) {
         if (!failed) {
             t_assert(H3_EXPORT(h3IsValid)(testH3),
                      "test coordinates result in valid index");
-            if (_isBaseCellPentagon(H3_EXPORT(h3GetBaseCell)(testH3))) {
-                // h3IsValid doesn't test for indexes representing part of the
-                // deleted subsequence.
-                t_assert(
-                    _h3LeadingNonZeroDigit(testH3) != K_AXES_DIGIT,
-                    "index is in a valid subsequence on a pentagon base cell.");
-            }
 
             CoordIJ expectedIj;
             int reverseFailed =

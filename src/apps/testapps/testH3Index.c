@@ -117,10 +117,19 @@ SUITE(h3Index) {
 
     TEST(h3BadDigitInvalid) {
         H3Index h = H3_INIT;
+        // By default the first index digit is out of range.
         H3_SET_MODE(h, H3_HEXAGON_MODE);
         H3_SET_RESOLUTION(h, 1);
         t_assert(!H3_EXPORT(h3IsValid)(h),
                  "h3IsValid failed on too large digit");
+    }
+
+    TEST(h3DeletedSubsequenceInvalid) {
+        H3Index h;
+        // Create an index located in a deleted subsequence of a pentagon.
+        setH3Index(&h, 1, 4, K_AXES_DIGIT);
+        t_assert(!H3_EXPORT(h3IsValid)(h),
+                 "h3IsValid failed on deleted subsequence");
     }
 
     TEST(h3ToString) {
