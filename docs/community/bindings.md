@@ -21,6 +21,7 @@ As a C library, bindings can be made to call H3 functions from different program
 ## JavaScript
 
 - [uber/h3-js](https://github.com/uber/h3-js)
+- [dfellis/h3-node](https://github.com/dfellis/h3-node)
 
 ## OCaml
 
