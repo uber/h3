@@ -38,6 +38,7 @@ import api_uniedge from '../../docs/api/uniedge.md';
 import community_bindings from '../../docs/community/bindings.md';
 import community_libraries from '../../docs/community/libraries.md';
 import community_applications from '../../docs/community/applications.md';
+import community_tutorials from '../../docs/community/tutorials.md';
 
 export default [{
     name: 'Documentation',
@@ -140,6 +141,10 @@ export default [{
             {
                 name: 'Applications Using H3',
                 markdown: community_applications
+            },
+            {
+                name: 'Tutorials',
+                markdown: community_tutorials
             }
         ]
     }]
