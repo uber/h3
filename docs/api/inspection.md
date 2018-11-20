@@ -40,7 +40,7 @@ Converts the `H3Index` representation of the index to the string representation.
 int h3IsValid(H3Index h);
 ```
 
-Returns non-zero if this is a valid H3 index.
+Returns non-zero if this is a valid **H3** index.
 
 ## h3IsResClassIII
 

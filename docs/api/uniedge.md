@@ -16,7 +16,7 @@ Returns 1 if the indexes are neighbors, 0 otherwise.
 H3Index getH3UnidirectionalEdge(H3Index origin, H3Index destination);
 ```
 
-Returns a unidirectional edge H3 index based on the provided origin and
+Returns a unidirectional edge **H3** index based on the provided origin and
 destination.
 
 Returns 0 on error.
