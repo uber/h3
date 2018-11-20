@@ -54,4 +54,4 @@ Average hexagon edge length in meters at the given resolution.
 int64_t numHexagons(int res);
 ```
 
-Number of unique H3 indexes at the given resolution.
+Number of unique **H3** indexes at the given resolution.

@@ -114,10 +114,10 @@ distortion. This is the same set of limitations as the local IJ coordinate space
 int experimentalH3ToLocalIj(H3Index origin, H3Index h3, CoordIJ *out);
 ```
 
-Produces local IJ coordinates for an H3 index anchored by an origin.
+Produces local IJ coordinates for an **H3** index anchored by an origin.
 
 This function is experimental, and its output is not guaranteed
-to be compatible across different versions of H3.
+to be compatible across different versions of **H3**.
 
 ## experimentalLocalIjToH3
 
@@ -125,7 +125,7 @@ to be compatible across different versions of H3.
 int experimentalLocalIjToH3(H3Index origin, const CoordIJ *ij, H3Index *out);
 ```
 
-Produces an H3 index from local IJ coordinates anchored by an origin.
+Produces an **H3** index from local IJ coordinates anchored by an origin.
 
 This function is experimental, and its output is not guaranteed
-to be compatible across different versions of H3.
+to be compatible across different versions of **H3**.

@@ -19,7 +19,7 @@ Using a regular grid can avoid these drawbacks by providing smooth gradients and
 | <img src="images/neighbors-triangle.png" style="width:400px"> | <img src="images/neighbors-square.png" style="width:400px"> | <img src="images/neighbors-hexagon.png" style="width:400px">
 | Triangles have 12 neighbors | Squares have 8 neighbors | Hexagons have 6 neighbors
 
-In addition to indexing locations to cells, H3 provides a number of algorithms operating on indexes.
+In addition to indexing locations to cells, **H3** provides a number of algorithms operating on indexes.
 
 Hexagons have the property of expanding rings of neighbors (`kRing`) approximating circles:
 
@@ -28,7 +28,7 @@ Hexagons have the property of expanding rings of neighbors (`kRing`) approximati
   <i>All six neighbors of a hexagon (ring 1)</i>
 </div>
 
-Squares cleanly subdivide into four finer squares. Hexagons do not cleanly subdivide into seven finer hexagons. However, by alternating the orientation of grids a subdivision into seven cells (referred to as *aperture 7*) can be approximated. This makes it possible to truncate the precision (within a fixed margin of error) of an H3 index using a few bitwise operations (`h3ToParent`). It is also possible to determine all the children of a parent H3 index (`h3ToChildren`). Approximate containment only applies when truncating the precision of an H3 index. The borders of hexagons indexed at a specific resolution are not approximate.
+Squares cleanly subdivide into four finer squares. Hexagons do not cleanly subdivide into seven finer hexagons. However, by alternating the orientation of grids a subdivision into seven cells (referred to as *aperture 7*) can be approximated. This makes it possible to truncate the precision (within a fixed margin of error) of an **H3** index using a few bitwise operations (`h3ToParent`). It is also possible to determine all the children of a parent **H3** index (`h3ToChildren`). Approximate containment only applies when truncating the precision of an **H3** index. The borders of hexagons indexed at a specific resolution are not approximate.
 
 <div align="center">
   <img src="images/parent-child.png" style="width:400px"><br>
