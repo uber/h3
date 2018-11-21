@@ -25,7 +25,7 @@ module.exports = {
 
   scripts: [
     // Adds Mathjax support
-    'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=MML_HTMLorMML'
+    'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML'
   ]
 
 };
