@@ -532,3 +532,23 @@ void ijToIjk(const CoordIJ* ij, CoordIJK* ijk) {
 
     _ijkNormalize(ijk);
 }
+
+/**
+ * Convert IJK coordinates to cube coordinates, in place
+ * @param ijk Coordinate to convert
+ */
+void ijkToCube(CoordIJK* ijk) {
+    ijk->i = -ijk->i + ijk->k;
+    ijk->j = ijk->j - ijk->k;
+    ijk->k = -ijk->i - ijk->j;
+}
+
+/**
+ * Convert cube coordinates to IJK coordinates, in place
+ * @param ijk Coordinate to convert
+ */
+void cubeToIjk(CoordIJK* ijk) {
+    ijk->i = -ijk->i;
+    ijk->k = 0;
+    _ijkNormalize(ijk);
+}

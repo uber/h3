@@ -62,4 +62,18 @@ SUITE(coordIj) {
                      "got same ijk coordinates back");
         }
     }
+
+    TEST(ijkToCube_roundtrip) {
+        for (Direction dir = CENTER_DIGIT; dir < NUM_DIGITS; dir++) {
+            CoordIJK ijk = {0};
+            _neighbor(&ijk, dir);
+            CoordIJK original = {ijk.i, ijk.j, ijk.k};
+
+            ijkToCube(&ijk);
+            cubeToIjk(&ijk);
+
+            t_assert(_ijkMatches(&ijk, &original),
+                     "got same ijk coordinates back");
+        }
+    }
 }

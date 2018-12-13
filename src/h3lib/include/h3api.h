@@ -459,6 +459,17 @@ void H3_EXPORT(getH3UnidirectionalEdgeBoundary)(H3Index edge, GeoBoundary *gb);
 int H3_EXPORT(h3Distance)(H3Index origin, H3Index h3);
 /** @} */
 
+/** @defgroup h3Line h3Line
+ * Functions for h3Line
+ * @{
+ */
+/** @brief Number of indexes in a line connecting two indexes */
+int H3_EXPORT(h3LineSize)(H3Index start, H3Index end);
+
+/** @brief Line of h3 indexes connecting two indexes */
+int H3_EXPORT(h3Line)(H3Index start, H3Index end, H3Index *out);
+/** @} */
+
 /** @defgroup experimentalH3ToLocalIj experimentalH3ToLocalIj
  * Functions for experimentalH3ToLocalIj
  * @{

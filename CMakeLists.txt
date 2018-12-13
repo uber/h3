@@ -166,6 +166,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testH3SetToLinkedGeo.c
     src/apps/testapps/testH3ToLocalIj.c
     src/apps/testapps/testH3Distance.c
+    src/apps/testapps/testH3Line.c
     src/apps/testapps/testCoordIj.c
     src/apps/miscapps/h3ToGeoBoundaryHier.c
     src/apps/miscapps/h3ToGeoHier.c
@@ -466,6 +467,7 @@ if(BUILD_TESTING)
     add_h3_test(testVec3d src/apps/testapps/testVec3d.c)
     add_h3_test(testH3ToLocalIj src/apps/testapps/testH3ToLocalIj.c)
     add_h3_test(testH3Distance src/apps/testapps/testH3Distance.c)
+    add_h3_test(testH3Line src/apps/testapps/testH3Line.c)
     add_h3_test(testCoordIj src/apps/testapps/testCoordIj.c)
 
     add_h3_test_with_arg(testH3NeighborRotations src/apps/testapps/testH3NeighborRotations.c 0)
