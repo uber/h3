@@ -98,8 +98,8 @@ static void h3Line_kRing_assertions(H3Index h3) {
     }
 }
 
-SUITE(h3Distance) {
-    TEST(h3Distance_kRing) {
+SUITE(h3Line) {
+    TEST(h3Line_kRing) {
         iterateAllIndexesAtRes(0, h3Line_kRing_assertions);
         iterateAllIndexesAtRes(1, h3Line_kRing_assertions);
         iterateAllIndexesAtRes(2, h3Line_kRing_assertions);

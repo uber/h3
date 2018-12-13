@@ -557,21 +557,21 @@ int H3_EXPORT(h3LineSize)(H3Index start, H3Index end) {
 }
 
 /**
- * Given cube coords as floats, round to valid integer coordinates. Algorithm
+ * Given cube coords as doubles, round to valid integer coordinates. Algorithm
  * from https://www.redblobgames.com/grids/hexagons/#rounding
  * @param i   Floating-point I coord
  * @param j   Floating-point J coord
  * @param k   Floating-point K coord
  * @param ijk IJK coord struct, modified in place
  */
-static void cubeRound(float i, float j, float k, CoordIJK* ijk) {
+static void cubeRound(double i, double j, double k, CoordIJK* ijk) {
     int ri = round(i);
     int rj = round(j);
     int rk = round(k);
 
-    float iDiff = fabs((float)ri - i);
-    float jDiff = fabs((float)rj - j);
-    float kDiff = fabs((float)rk - k);
+    double iDiff = fabs((double)ri - i);
+    double jDiff = fabs((double)rj - j);
+    double kDiff = fabs((double)rk - k);
 
     // Round, maintaining valid cube coords
     if (iDiff > jDiff && iDiff > kDiff) {
@@ -628,17 +628,18 @@ int H3_EXPORT(h3Line)(H3Index start, H3Index end, H3Index* out) {
     ijkToCube(&startIjk);
     ijkToCube(&endIjk);
 
-    float iStep =
-        distance ? (float)(endIjk.i - startIjk.i) / (float)distance : 0;
-    float jStep =
-        distance ? (float)(endIjk.j - startIjk.j) / (float)distance : 0;
-    float kStep =
-        distance ? (float)(endIjk.k - startIjk.k) / (float)distance : 0;
+    double iStep =
+        distance ? (double)(endIjk.i - startIjk.i) / (double)distance : 0;
+    double jStep =
+        distance ? (double)(endIjk.j - startIjk.j) / (double)distance : 0;
+    double kStep =
+        distance ? (double)(endIjk.k - startIjk.k) / (double)distance : 0;
 
     CoordIJK currentIjk = {startIjk.i, startIjk.j, startIjk.k};
     for (int n = 0; n <= distance; n++) {
-        cubeRound((float)startIjk.i + iStep * n, (float)startIjk.j + jStep * n,
-                  (float)startIjk.k + kStep * n, &currentIjk);
+        cubeRound((double)startIjk.i + iStep * n,
+                  (double)startIjk.j + jStep * n,
+                  (double)startIjk.k + kStep * n, &currentIjk);
         // Convert cube -> ijk -> h3 index
         cubeToIjk(&currentIjk);
         localIjkToH3(start, &currentIjk, &out[n]);
