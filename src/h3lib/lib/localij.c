@@ -594,6 +594,15 @@ static void cubeRound(float i, float j, float k, CoordIJK* ijk) {
  * example if they are very far apart. It may also fail when finding
  * distances for indexes on opposite sides of a pentagon.
  *
+ * Notes:
+ *
+ *  - The specific output of this function should not be considered stable
+ *    across library versions. The only guarantees the library provides are
+ *    that the line length will be `h3Distance(start, end) + 1` and that
+ *    every index in the line will be a neighbor of the preceding index.
+ *  - Lines are drawn in grid space, and may not correspond exactly to either
+ *    Cartesian lines or great arcs.
+ *
  * @param start Start index of the line
  * @param end End index of the line
  * @param out Output array, which must be of size h3LineSize(start, end)
