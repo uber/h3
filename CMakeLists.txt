@@ -178,6 +178,7 @@ set(OTHER_SOURCE_FILES
     src/apps/benchmarks/benchmarkPolygon.c
     src/apps/benchmarks/benchmarkH3SetToLinkedGeo.c
     src/apps/benchmarks/benchmarkKRing.c
+    src/apps/benchmarks/benchmarkH3Line.c
     src/apps/benchmarks/benchmarkH3Api.c)
 
 set(ALL_SOURCE_FILES
@@ -489,6 +490,7 @@ if(BUILD_TESTING)
 
     add_h3_benchmark(benchmarkH3Api src/apps/benchmarks/benchmarkH3Api.c)
     add_h3_benchmark(benchmarkKRing src/apps/benchmarks/benchmarkKRing.c)
+    add_h3_benchmark(benchmarkH3Line src/apps/benchmarks/benchmarkH3Line.c)
     add_h3_benchmark(benchmarkH3SetToLinkedGeo src/apps/benchmarks/benchmarkH3SetToLinkedGeo.c)
     add_h3_benchmark(benchmarkPolyfill src/apps/benchmarks/benchmarkPolyfill.c)
     add_h3_benchmark(benchmarkPolygon src/apps/benchmarks/benchmarkPolygon.c)
