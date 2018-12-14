@@ -26,12 +26,8 @@ BEGIN_BENCHMARKS();
 H3Index* out =
     calloc(H3_EXPORT(h3LineSize)(startIndex, endFar), sizeof(H3Index));
 
-BENCHMARK(h3LineNear, 10000, {
-    H3_EXPORT(h3Line)(startIndex, endNear, out);
-});
-BENCHMARK(h3LineFar, 1000, {
-    H3_EXPORT(h3Line)(startIndex, endFar, out);
-});
+BENCHMARK(h3LineNear, 10000, { H3_EXPORT(h3Line)(startIndex, endNear, out); });
+BENCHMARK(h3LineFar, 1000, { H3_EXPORT(h3Line)(startIndex, endFar, out); });
 
 free(out);
 
