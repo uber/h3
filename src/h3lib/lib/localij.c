@@ -183,6 +183,11 @@ int h3ToLocalIjk(H3Index origin, H3Index h3, CoordIJK* out) {
         if (originOnPent) {
             int originLeadingDigit = _h3LeadingNonZeroDigit(origin);
 
+            // TODO: This previously included the Class III-based checks
+            // as in the index-on-pentagon case below, but these were
+            // removed due to some failure cases. It is possible that we
+            // could restrict this error to a narrower set of cases.
+            // https://github.com/uber/h3/issues/163
             if (FAILED_DIRECTIONS_III[originLeadingDigit][dir] ||
                 FAILED_DIRECTIONS_II[originLeadingDigit][dir]) {
                 // TODO this part of the pentagon might not be unfolded
