@@ -96,6 +96,38 @@ Produces the hollow hexagonal ring centered at origin with sides of length k.
  
 Returns 0 if no pentagonal distortion was encountered.
 
+## h3Line
+
+```
+int h3Line(H3Index start, H3Index end, H3Index* out);
+```
+
+Given two H3 indexes, return the line of indexes between them (inclusive).
+
+This function may fail to find the line between two indexes, for
+example if they are very far apart. It may also fail when finding
+distances for indexes on opposite sides of a pentagon.
+
+*Notes:*
+
+ * The specific output of this function should not be considered stable
+   across library versions. The only guarantees the library provides are
+   that the line length will be `h3Distance(start, end) + 1` and that
+   every index in the line will be a neighbor of the preceding index.
+
+ * Lines are drawn in grid space, and may not correspond exactly to either
+   Cartesian lines or great arcs.
+
+## h3LineSize
+
+```
+int h3LineSize(H3Index start, H3Index end);
+```
+
+Number of indexes in a line from the start index to the end index,
+to be used for allocating memory. Returns a negative number if the
+line cannot be computed.
+
 ## h3Distance
 
 ```

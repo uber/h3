@@ -21,6 +21,7 @@
 #define UTILITY_H
 
 #include <stdio.h>
+#include "coordijk.h"
 #include "h3api.h"
 
 #define BUFF_SIZE 256
@@ -32,6 +33,8 @@
 void error(const char* msg);
 void h3Print(H3Index h);    // prints as integer
 void h3Println(H3Index h);  // prints as integer
+
+void coordIjkPrint(const CoordIJK* c);
 
 void geoToStringRads(const GeoCoord* p, char* str);
 void geoToStringDegs(const GeoCoord* p, char* str);

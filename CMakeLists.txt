@@ -166,6 +166,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testH3SetToLinkedGeo.c
     src/apps/testapps/testH3ToLocalIj.c
     src/apps/testapps/testH3Distance.c
+    src/apps/testapps/testH3Line.c
     src/apps/testapps/testCoordIj.c
     src/apps/miscapps/h3ToGeoBoundaryHier.c
     src/apps/miscapps/h3ToGeoHier.c
@@ -177,6 +178,7 @@ set(OTHER_SOURCE_FILES
     src/apps/benchmarks/benchmarkPolygon.c
     src/apps/benchmarks/benchmarkH3SetToLinkedGeo.c
     src/apps/benchmarks/benchmarkKRing.c
+    src/apps/benchmarks/benchmarkH3Line.c
     src/apps/benchmarks/benchmarkH3Api.c)
 
 set(ALL_SOURCE_FILES
@@ -466,6 +468,7 @@ if(BUILD_TESTING)
     add_h3_test(testVec3d src/apps/testapps/testVec3d.c)
     add_h3_test(testH3ToLocalIj src/apps/testapps/testH3ToLocalIj.c)
     add_h3_test(testH3Distance src/apps/testapps/testH3Distance.c)
+    add_h3_test(testH3Line src/apps/testapps/testH3Line.c)
     add_h3_test(testCoordIj src/apps/testapps/testCoordIj.c)
 
     add_h3_test_with_arg(testH3NeighborRotations src/apps/testapps/testH3NeighborRotations.c 0)
@@ -487,6 +490,7 @@ if(BUILD_TESTING)
 
     add_h3_benchmark(benchmarkH3Api src/apps/benchmarks/benchmarkH3Api.c)
     add_h3_benchmark(benchmarkKRing src/apps/benchmarks/benchmarkKRing.c)
+    add_h3_benchmark(benchmarkH3Line src/apps/benchmarks/benchmarkH3Line.c)
     add_h3_benchmark(benchmarkH3SetToLinkedGeo src/apps/benchmarks/benchmarkH3SetToLinkedGeo.c)
     add_h3_benchmark(benchmarkPolyfill src/apps/benchmarks/benchmarkPolyfill.c)
     add_h3_benchmark(benchmarkPolygon src/apps/benchmarks/benchmarkPolygon.c)

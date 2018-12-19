@@ -123,7 +123,7 @@ void h3ToLocalIj_neighbors_assertions(H3Index h3) {
 
 /**
  * Test that the neighbors (k-ring), if they can be found in the local IJ
- * coordinate space, can be converetd back to indexes.
+ * coordinate space, can be converted back to indexes.
  */
 void localIjToH3_kRing_assertions(H3Index h3) {
     int r = H3_GET_RESOLUTION(h3);

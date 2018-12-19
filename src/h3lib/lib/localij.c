@@ -183,10 +183,13 @@ int h3ToLocalIjk(H3Index origin, H3Index h3, CoordIJK* out) {
         if (originOnPent) {
             int originLeadingDigit = _h3LeadingNonZeroDigit(origin);
 
-            if ((isResClassIII(res) &&
-                 FAILED_DIRECTIONS_III[originLeadingDigit][dir]) ||
-                (!isResClassIII(res) &&
-                 FAILED_DIRECTIONS_II[originLeadingDigit][dir])) {
+            // TODO: This previously included the Class III-based checks
+            // as in the index-on-pentagon case below, but these were
+            // removed due to some failure cases. It is possible that we
+            // could restrict this error to a narrower set of cases.
+            // https://github.com/uber/h3/issues/163
+            if (FAILED_DIRECTIONS_III[originLeadingDigit][dir] ||
+                FAILED_DIRECTIONS_II[originLeadingDigit][dir]) {
                 // TODO this part of the pentagon might not be unfolded
                 // correctly.
                 return 3;
@@ -541,4 +544,111 @@ int H3_EXPORT(h3Distance)(H3Index origin, H3Index h3) {
     }
 
     return ijkDistance(&originIjk, &h3Ijk);
+}
+
+/**
+ * Number of indexes in a line from the start index to the end index,
+ * to be used for allocating memory. Returns a negative number if the
+ * line cannot be computed.
+ *
+ * @param start Start index of the line
+ * @param end End index of the line
+ * @return Size of the line, or a negative number if the line cannot
+ * be computed.
+ */
+int H3_EXPORT(h3LineSize)(H3Index start, H3Index end) {
+    int distance = H3_EXPORT(h3Distance)(start, end);
+    return distance >= 0 ? distance + 1 : distance;
+}
+
+/**
+ * Given cube coords as doubles, round to valid integer coordinates. Algorithm
+ * from https://www.redblobgames.com/grids/hexagons/#rounding
+ * @param i   Floating-point I coord
+ * @param j   Floating-point J coord
+ * @param k   Floating-point K coord
+ * @param ijk IJK coord struct, modified in place
+ */
+static void cubeRound(double i, double j, double k, CoordIJK* ijk) {
+    int ri = round(i);
+    int rj = round(j);
+    int rk = round(k);
+
+    double iDiff = fabs((double)ri - i);
+    double jDiff = fabs((double)rj - j);
+    double kDiff = fabs((double)rk - k);
+
+    // Round, maintaining valid cube coords
+    if (iDiff > jDiff && iDiff > kDiff) {
+        ri = -rj - rk;
+    } else if (jDiff > kDiff) {
+        rj = -ri - rk;
+    } else {
+        rk = -ri - rj;
+    }
+
+    ijk->i = ri;
+    ijk->j = rj;
+    ijk->k = rk;
+}
+
+/**
+ * Given two H3 indexes, return the line of indexes between them (inclusive).
+ *
+ * This function may fail to find the line between two indexes, for
+ * example if they are very far apart. It may also fail when finding
+ * distances for indexes on opposite sides of a pentagon.
+ *
+ * Notes:
+ *
+ *  - The specific output of this function should not be considered stable
+ *    across library versions. The only guarantees the library provides are
+ *    that the line length will be `h3Distance(start, end) + 1` and that
+ *    every index in the line will be a neighbor of the preceding index.
+ *  - Lines are drawn in grid space, and may not correspond exactly to either
+ *    Cartesian lines or great arcs.
+ *
+ * @param start Start index of the line
+ * @param end End index of the line
+ * @param out Output array, which must be of size h3LineSize(start, end)
+ * @return 0 on success, or another value on failure.
+ */
+int H3_EXPORT(h3Line)(H3Index start, H3Index end, H3Index* out) {
+    int distance = H3_EXPORT(h3Distance)(start, end);
+    // Early exit if we can't calculate the line
+    if (distance < 0) {
+        return distance;
+    }
+
+    // Get IJK coords for the start and end. We've already confirmed
+    // that these can be calculated with the distance check above.
+    CoordIJK startIjk = {0};
+    CoordIJK endIjk = {0};
+
+    // Convert H3 addresses to IJK coords
+    h3ToLocalIjk(start, start, &startIjk);
+    h3ToLocalIjk(start, end, &endIjk);
+
+    // Convert IJK to cube coordinates suitable for linear interpolation
+    ijkToCube(&startIjk);
+    ijkToCube(&endIjk);
+
+    double iStep =
+        distance ? (double)(endIjk.i - startIjk.i) / (double)distance : 0;
+    double jStep =
+        distance ? (double)(endIjk.j - startIjk.j) / (double)distance : 0;
+    double kStep =
+        distance ? (double)(endIjk.k - startIjk.k) / (double)distance : 0;
+
+    CoordIJK currentIjk = {startIjk.i, startIjk.j, startIjk.k};
+    for (int n = 0; n <= distance; n++) {
+        cubeRound((double)startIjk.i + iStep * n,
+                  (double)startIjk.j + jStep * n,
+                  (double)startIjk.k + kStep * n, &currentIjk);
+        // Convert cube -> ijk -> h3 index
+        cubeToIjk(&currentIjk);
+        localIjkToH3(start, &currentIjk, &out[n]);
+    }
+
+    return 0;
 }

@@ -23,6 +23,7 @@
 #include <stackAlloc.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "coordijk.h"
 #include "geoCoord.h"
 #include "h3Index.h"
 #include "h3api.h"
@@ -43,6 +44,13 @@ void h3Print(H3Index h) { printf("%" PRIx64, h); }
  * Prints the H3Index and a newline
  */
 void h3Println(H3Index h) { printf("%" PRIx64 "\n", h); }
+
+/**
+ * Prints the CoordIJK
+ */
+void coordIjkPrint(const CoordIJK* c) {
+    printf("[%d, %d, %d]", c->i, c->j, c->k);
+}
 
 /**
  * Assumes `str` is big enough to hold the result.
