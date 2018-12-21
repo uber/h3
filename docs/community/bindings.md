@@ -42,3 +42,7 @@ As a C library, bindings can be made to call H3 functions from different program
 ## R
 
 - [scottmmjackson/h3r](https://github.com/scottmmjackson/h3r)
+
+## Ruby
+
+- [StuartApp/h3_ruby](https://github.com/StuartApp/h3_ruby)
