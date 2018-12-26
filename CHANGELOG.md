@@ -6,6 +6,8 @@ The public API of this library consists of the functions declared in file
 [h3api.h](./src/h3lib/include/h3api.h).
 
 ## [Unreleased]
+
+## [3.3.0] - 2018-12-25
 ### Added
 - `h3Line` and `h3LineSize` functions for getting the line of indexes between some start and end (inclusive) (#165)
 ### Changed
