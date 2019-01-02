@@ -23,6 +23,8 @@
 #ifndef H3API_H
 #define H3API_H
 
+#include "version.h"
+
 /*
  * Preprocessor code to support renaming (prefixing) the public API.
  * All public functions should be wrapped in H3_EXPORT so they can be

@@ -45,6 +45,10 @@ endif()
 file(READ VERSION H3_VERSION LIMIT_COUNT 1)
 # Clean any newlines
 string(REPLACE "\n" "" H3_VERSION "${H3_VERSION}")
+string(REPLACE "." ";" H3_VERSION_LIST "${H3_VERSION}")
+list(GET H3_VERSION_LIST 0 H3_VERSION_MAJOR)
+list(GET H3_VERSION_LIST 1 H3_VERSION_MINOR)
+list(GET H3_VERSION_LIST 2 H3_VERSION_PATCH)
 set(H3_SOVERSION 1)
 
 project(h3 LANGUAGES C VERSION ${H3_VERSION})
@@ -90,6 +94,7 @@ set(LIB_SOURCE_FILES
     src/h3lib/include/geoCoord.h
     src/h3lib/include/vec2d.h
     src/h3lib/include/vec3d.h
+    src/h3lib/include/version.h
     src/h3lib/include/linkedGeo.h
     src/h3lib/include/localij.h
     src/h3lib/include/baseCells.h
@@ -184,6 +189,10 @@ set(OTHER_SOURCE_FILES
 set(ALL_SOURCE_FILES
     ${LIB_SOURCE_FILES} ${APP_SOURCE_FILES} ${OTHER_SOURCE_FILES})
 
+configure_file(
+    src/h3lib/include/version.h.in
+    src/h3lib/include/version.h) 
+
 # Build the H3 library
 add_library(h3 ${LIB_SOURCE_FILES})
 
@@ -207,7 +216,8 @@ if(have_vla)
     target_compile_definitions(h3 PUBLIC H3_HAVE_VLA)
 endif()
 target_include_directories(h3 PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/h3lib/include>)
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/h3lib/include>
+    $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/src/h3lib/include>)
 
 # Automatic code formatting
 find_program(CLANG_FORMAT_PATH clang-format)
