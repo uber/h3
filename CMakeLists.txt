@@ -188,12 +188,14 @@ set(OTHER_SOURCE_FILES
 set(ALL_SOURCE_FILES
     ${LIB_SOURCE_FILES} ${APP_SOURCE_FILES} ${OTHER_SOURCE_FILES})
 
+set(GENERATED_SOURCE_FILES
+    src/h3lib/include/version.h)
 configure_file(
     src/h3lib/include/version.h.in
     src/h3lib/include/version.h)
 
 # Build the H3 library
-add_library(h3 ${LIB_SOURCE_FILES})
+add_library(h3 ${LIB_SOURCE_FILES} ${GENERATED_SOURCE_FILES})
 
 target_compile_options(h3 PRIVATE ${H3_COMPILE_FLAGS})
 target_link_libraries(h3 PRIVATE ${H3_LINK_FLAGS})
