@@ -23,8 +23,6 @@
 #ifndef H3API_H
 #define H3API_H
 
-#include "version.h"
-
 /*
  * Preprocessor code to support renaming (prefixing) the public API.
  * All public functions should be wrapped in H3_EXPORT so they can be
@@ -55,6 +53,11 @@ extern "C" {
 
 /** @brief the H3Index fits within a 64-bit unsigned integer */
 typedef uint64_t H3Index;
+
+/* library version numbers generated from VERSION file */
+#define H3_VERSION_MAJOR @H3_VERSION_MAJOR@
+#define H3_VERSION_MINOR @H3_VERSION_MINOR@
+#define H3_VERSION_PATCH @H3_VERSION_PATCH@
 
 /** Maximum number of cell boundary vertices; worst case is pentagon:
  *  5 original verts + 5 edge crossings

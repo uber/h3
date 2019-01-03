@@ -103,7 +103,6 @@ set(LIB_SOURCE_FILES
     src/h3lib/include/constants.h
     src/h3lib/include/coordijk.h
     src/h3lib/include/algos.h
-    src/h3lib/include/h3api.h
     src/h3lib/include/stackAlloc.h
     src/h3lib/lib/algos.c
     src/h3lib/lib/coordijk.c
@@ -189,10 +188,10 @@ set(ALL_SOURCE_FILES
     ${LIB_SOURCE_FILES} ${APP_SOURCE_FILES} ${OTHER_SOURCE_FILES})
 
 set(GENERATED_SOURCE_FILES
-    src/h3lib/include/version.h)
+    src/h3lib/include/h3api.h)
 configure_file(
-    src/h3lib/include/version.h.in
-    src/h3lib/include/version.h)
+    src/h3lib/include/h3api.h.in
+    src/h3lib/include/h3api.h)
 
 # Build the H3 library
 add_library(h3 ${LIB_SOURCE_FILES} ${GENERATED_SOURCE_FILES})
@@ -218,7 +217,7 @@ if(have_vla)
 endif()
 target_include_directories(h3 PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/h3lib/include>
-    $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/src/h3lib/include>)
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/src/h3lib/include>)
 
 # Automatic code formatting
 find_program(CLANG_FORMAT_PATH clang-format)
@@ -563,7 +562,7 @@ install(
 #   * src/h3lib/include/h3api.h -> <prefix>/include/h3/h3api.h
 # Only the h3api.h header is needed by applications using H3.
 install(
-    FILES src/h3lib/include/h3api.h
+    FILES "${CMAKE_CURRENT_BINARY_DIR}/src/h3lib/include/h3api.h"
     DESTINATION "${include_install_dir}/h3"
 )
 
