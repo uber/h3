@@ -18,6 +18,7 @@
  */
 
 #include "baseCells.h"
+#include "h3Index.h"
 
 /** @struct BaseCellOrient
  *  @brief base cell at a given ijk and required rotations into its system
@@ -885,4 +886,19 @@ Direction _getBaseCellDirection(int originBaseCell, int neighboringBaseCell) {
         }
     }
     return INVALID_DIGIT;
+}
+
+/**
+ * getBaseCells generates all base cells storing them into the provided
+ * memory pointer.
+ *
+ * @param out H3Index* the memory to store the resulting base cells in
+ */
+void H3_EXPORT(getBaseCells)(H3Index* out) {
+    for (int bc = 0; bc < NUM_BASE_CELLS; bc++) {
+        H3Index baseCell = H3_INIT;
+        H3_SET_MODE(baseCell, H3_HEXAGON_MODE);
+        H3_SET_BASE_CELL(baseCell, bc);
+        out[bc] = baseCell;
+    }
 }

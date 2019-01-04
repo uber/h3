@@ -7,7 +7,8 @@ The public API of this library consists of the functions declared in file
 
 ## [Unreleased]
 ### Added
-- Include defined constants for current library version
+- `getBaseCells` function for getting all base cells (#174)
+- Include defined constants for current library version (#173)
 
 ## [3.3.0] - 2018-12-25
 ### Added
