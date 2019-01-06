@@ -187,14 +187,12 @@ set(OTHER_SOURCE_FILES
 set(ALL_SOURCE_FILES
     ${LIB_SOURCE_FILES} ${APP_SOURCE_FILES} ${OTHER_SOURCE_FILES})
 
-set(GENERATED_SOURCE_FILES
-    src/h3lib/include/h3api.h)
-configure_file(
-    src/h3lib/include/h3api.h.in
-    src/h3lib/include/h3api.h)
+set(UNCONFIGURED_API_HEADER src/h3lib/include/h3api.h)
+set(CONFIGURED_API_HEADER src/h3lib/include/h3api.h)
+configure_file(${UNCONFIGURED_API_HEADER} ${CONFIGURED_API_HEADER})
 
 # Build the H3 library
-add_library(h3 ${LIB_SOURCE_FILES} ${GENERATED_SOURCE_FILES})
+add_library(h3 ${LIB_SOURCE_FILES} ${CONFIGURED_API_HEADER})
 
 target_compile_options(h3 PRIVATE ${H3_COMPILE_FLAGS})
 target_link_libraries(h3 PRIVATE ${H3_LINK_FLAGS})
@@ -232,6 +230,7 @@ if(ENABLE_FORMAT)
         -i
         ${ALL_SOURCE_FILES}
         ${EXAMPLE_SOURCE_FILES}
+        ${UNCONFIGURED_API_HEADER}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMENT "Formatting sources"
         )
