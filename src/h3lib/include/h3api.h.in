@@ -66,6 +66,9 @@ typedef uint64_t H3Index;
  */
 #define MAX_CELL_BNDRY_VERTS 10
 
+/** The number of H3 base cells */
+#define NUM_BASE_CELLS 122
+
 /** @struct GeoCoord
     @brief latitude/longitude in radians
 */
@@ -287,7 +290,7 @@ int64_t H3_EXPORT(numHexagons)(int res);
  * @{
  */
 /** @brief provides all base cells */
-void H3_EXPORT(getBaseCells)(H3Index *out);
+void H3_EXPORT(getRes0Indexes)(H3Index *out);
 /** @} */
 
 /** @defgroup h3GetResolution h3GetResolution

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Uber Technologies, Inc.
+ * Copyright 2017-2019 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,10 @@
 
 SUITE(baseCells) {
     TEST(getBaseCells) {
-        H3Index* baseCells = calloc(NUM_BASE_CELLS, sizeof(H3Index));
-        H3_EXPORT(getBaseCells)(baseCells);
-        t_assert(baseCells[0] == 0x8001fffffffffff, "correct first basecell");
-        t_assert(baseCells[121] == 0x80f3fffffffffff, "correct last basecell");
+        H3Index* indexes = malloc(NUM_BASE_CELLS * sizeof(H3Index));
+        H3_EXPORT(getRes0Indexes)(indexes);
+        t_assert(indexes[0] == 0x8001fffffffffff, "correct first basecell");
+        t_assert(indexes[121] == 0x80f3fffffffffff, "correct last basecell");
+        free(indexes);
     }
 }

@@ -68,8 +68,6 @@
 
 /** The number of faces on an icosahedron */
 #define NUM_ICOSA_FACES 20
-/** The number of H3 base cells */
-#define NUM_BASE_CELLS 122
 /** The number of vertices in a hexagon */
 #define NUM_HEX_VERTS 6
 /** The number of vertices in a pentagon */
