@@ -56,9 +56,9 @@ typedef uint64_t H3Index;
 
 /* library version numbers generated from VERSION file */
 // clang-format off
-#define H3_VERSION_MAJOR @H3_VERSION_MAJOR @
-#define H3_VERSION_MINOR @H3_VERSION_MINOR @
-#define H3_VERSION_PATCH @H3_VERSION_PATCH @
+#define H3_VERSION_MAJOR @H3_VERSION_MAJOR@
+#define H3_VERSION_MINOR @H3_VERSION_MINOR@
+#define H3_VERSION_PATCH @H3_VERSION_PATCH@
 // clang-format on
 
 /** Maximum number of cell boundary vertices; worst case is pentagon:
