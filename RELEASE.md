@@ -7,3 +7,6 @@
 2. Create a release "Release X.Y.Z" on Github
     * Create Tag `vX.Y.Z`
     * Copy CHANGELOG.md into the release notes
+
+3. Publish the website to display the latest docs
+    * `make publish-website`
