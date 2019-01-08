@@ -17,21 +17,8 @@ npm start
 
 ## Updating the H3 Website
 
-From `./website`:
+Make sure your `gh-pages` branch has its remote set to the upstream repo, then
 
-Make sure your `gh-pages` branch is up to date with the upstream repo:
 ```
-git checkout gh-pages
-git pull upstream gh-pages
-```
-
-Switch back to `master` and run the build:
-```
-git checkout master
-./scripts/build-to-gh-pages.sh
-```
-
-You're now on branch `gh-pages` again. Push changes to the live site:
-```
-git push upstream gh-pages:gh-pages
+make publish-website
 ```
