@@ -21,7 +21,7 @@
 
 SUITE(baseCells) {
     TEST(getBaseCells) {
-        int count = res0IndexCount();
+        int count = H3_EXPORT(res0IndexCount)();
         H3Index* indexes = malloc(count * sizeof(H3Index));
         H3_EXPORT(getRes0Indexes)(indexes);
         t_assert(indexes[0] == 0x8001fffffffffff, "correct first basecell");
