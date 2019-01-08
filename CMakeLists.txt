@@ -45,6 +45,10 @@ endif()
 file(READ VERSION H3_VERSION LIMIT_COUNT 1)
 # Clean any newlines
 string(REPLACE "\n" "" H3_VERSION "${H3_VERSION}")
+string(REPLACE "." ";" H3_VERSION_LIST "${H3_VERSION}")
+list(GET H3_VERSION_LIST 0 H3_VERSION_MAJOR)
+list(GET H3_VERSION_LIST 1 H3_VERSION_MINOR)
+list(GET H3_VERSION_LIST 2 H3_VERSION_PATCH)
 set(H3_SOVERSION 1)
 
 project(h3 LANGUAGES C VERSION ${H3_VERSION})
@@ -99,7 +103,6 @@ set(LIB_SOURCE_FILES
     src/h3lib/include/constants.h
     src/h3lib/include/coordijk.h
     src/h3lib/include/algos.h
-    src/h3lib/include/h3api.h
     src/h3lib/include/stackAlloc.h
     src/h3lib/lib/algos.c
     src/h3lib/lib/coordijk.c
@@ -184,8 +187,12 @@ set(OTHER_SOURCE_FILES
 set(ALL_SOURCE_FILES
     ${LIB_SOURCE_FILES} ${APP_SOURCE_FILES} ${OTHER_SOURCE_FILES})
 
+set(UNCONFIGURED_API_HEADER src/h3lib/include/h3api.h.in)
+set(CONFIGURED_API_HEADER src/h3lib/include/h3api.h)
+configure_file(${UNCONFIGURED_API_HEADER} ${CONFIGURED_API_HEADER})
+
 # Build the H3 library
-add_library(h3 ${LIB_SOURCE_FILES})
+add_library(h3 ${LIB_SOURCE_FILES} ${CONFIGURED_API_HEADER})
 
 target_compile_options(h3 PRIVATE ${H3_COMPILE_FLAGS})
 target_link_libraries(h3 PRIVATE ${H3_LINK_FLAGS})
@@ -207,7 +214,8 @@ if(have_vla)
     target_compile_definitions(h3 PUBLIC H3_HAVE_VLA)
 endif()
 target_include_directories(h3 PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/h3lib/include>)
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/h3lib/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/src/h3lib/include>)
 
 # Automatic code formatting
 find_program(CLANG_FORMAT_PATH clang-format)
@@ -222,6 +230,7 @@ if(ENABLE_FORMAT)
         -i
         ${ALL_SOURCE_FILES}
         ${EXAMPLE_SOURCE_FILES}
+        ${UNCONFIGURED_API_HEADER}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMENT "Formatting sources"
         )
@@ -552,7 +561,7 @@ install(
 #   * src/h3lib/include/h3api.h -> <prefix>/include/h3/h3api.h
 # Only the h3api.h header is needed by applications using H3.
 install(
-    FILES src/h3lib/include/h3api.h
+    FILES "${CMAKE_CURRENT_BINARY_DIR}/src/h3lib/include/h3api.h"
     DESTINATION "${include_install_dir}/h3"
 )
 

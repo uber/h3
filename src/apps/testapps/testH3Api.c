@@ -78,4 +78,10 @@ SUITE(h3Api) {
         setGeoDegs(&boundary.verts[6], 18.043007860, -66.27669118199998);
         t_assertBoundary(h3, &boundary);
     }
+
+    TEST(version) {
+        t_assert(H3_VERSION_MAJOR >= 0, "major version is set");
+        t_assert(H3_VERSION_MINOR >= 0, "minor version is set");
+        t_assert(H3_VERSION_PATCH >= 0, "patch version is set");
+    }
 }
