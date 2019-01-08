@@ -27,7 +27,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "constants.h"
-#include "h3api.h"
 
 #define NUM_PENTAGONS 12
 
