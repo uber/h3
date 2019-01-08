@@ -15,7 +15,6 @@
  */
 
 #include <stdlib.h>
-#include "constants.h"
 #include "h3api.h"
 #include "test.h"
 
