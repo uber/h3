@@ -889,6 +889,13 @@ Direction _getBaseCellDirection(int originBaseCell, int neighboringBaseCell) {
 }
 
 /**
+ * res0IndexCount returns the number of resolution 0 indexes
+ *
+ * @return int count of resolution 0 indexes
+ */
+int H3_EXPORT(res0IndexCount)() { return NUM_BASE_CELLS; }
+
+/**
  * getRes0Indexes generates all base cells storing them into the provided
  * memory pointer. Buffer must be of size NUM_BASE_CELLS * sizeof(H3Index).
  *
