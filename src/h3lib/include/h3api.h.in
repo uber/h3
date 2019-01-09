@@ -282,6 +282,17 @@ double H3_EXPORT(edgeLengthM)(int res);
 int64_t H3_EXPORT(numHexagons)(int res);
 /** @} */
 
+/** @defgroup getRes0Indexes getRes0Indexes
+ * Functions for getRes0Indexes
+ * @{
+ */
+/** @brief returns the number of resolution 0 indexes */
+int H3_EXPORT(res0IndexCount)();
+
+/** @brief provides all base cells */
+void H3_EXPORT(getRes0Indexes)(H3Index *out);
+/** @} */
+
 /** @defgroup h3GetResolution h3GetResolution
  * Functions for h3GetResolution
  * @{
