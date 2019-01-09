@@ -19,7 +19,7 @@
 #include "test.h"
 
 SUITE(baseCells) {
-    TEST(getBaseCells) {
+    TEST(getRes0Indexes) {
         int count = H3_EXPORT(res0IndexCount)();
         H3Index* indexes = malloc(count * sizeof(H3Index));
         H3_EXPORT(getRes0Indexes)(indexes);

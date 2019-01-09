@@ -7,7 +7,7 @@ The public API of this library consists of the functions declared in file
 
 ## [Unreleased]
 ### Added
-- `getBaseCells` function for getting all base cells (#174)
+- `getRes0Indexes` function for getting all base cells, and helper function `res0IndexCount` (#174)
 - Include defined constants for current library version (#173)
 
 ## [3.3.0] - 2018-12-25
