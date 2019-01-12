@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 The public API of this library consists of the functions declared in file
-[h3api.h](./src/h3lib/include/h3api.h).
+[h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
 ### Added
