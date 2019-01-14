@@ -34,6 +34,7 @@ As a C library, bindings can be made to call H3 functions from different program
 ## PostgreSQL
 
 - [dlr-eoc/pgh3](https://github.com/dlr-eoc/pgh3)
+- [bytesandbrains/h3-pg](https://github.com/bytesandbrains/h3-pg)
 
 ## Python
 
