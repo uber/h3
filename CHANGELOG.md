@@ -6,6 +6,8 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+
+## [3.4.0] - 2019-01-23
 ### Added
 - `getRes0Indexes` function for getting all base cells, and helper function `res0IndexCount` (#174)
 - Include defined constants for current library version (#173)
