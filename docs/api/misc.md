@@ -55,3 +55,19 @@ int64_t numHexagons(int res);
 ```
 
 Number of unique **H3** indexes at the given resolution.
+
+## getRes0Indexes
+
+```
+void getRes0Indexes(H3Index *out);
+```
+
+All the resolution 0 **H3** indexes.
+
+## res0IndexCount
+
+```
+int res0IndexCount();
+```
+
+Number of resolution 0 **H3** indexes.
