@@ -62,7 +62,7 @@ matrix:
         # Intentionally failing the build to check the test
         #- make binding-functions
         # Check that the file exists and has contents
-        - [ -s binding-functions ]
+        - test -s binding-functions
 
 # Configure the build script, out of source.
 before_script:
