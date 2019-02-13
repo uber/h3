@@ -17,5 +17,6 @@
 # by bindings of the H3 library. It is invoked by the `binding-functions`
 # make target and produces a file `binding-functions`.
 
-SCRIPT_DIR="$(dirname "${BASH_SOURCE[0]}")"
-cat "$SCRIPT_DIR/../src/h3lib/include/h3api.h" | sed -n '/@defgroup/s/.*@defgroup \([A-Za-z0-9_]*\) .*/\1/gp' > binding-functions
+set -eo pipefail
+
+cat "src/h3lib/include/h3api.h" | sed -n '/@defgroup/s/.*@defgroup \([A-Za-z0-9_]*\) .*/\1/gp' > binding-functions
