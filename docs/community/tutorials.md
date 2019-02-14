@@ -4,7 +4,7 @@ This page lists further learning materials and code walkthroughs for the H3 libr
 
 ## Java
 
-- [H3 Measurements](https://github.com/isaacbrodsky/h3measurements)
+- [H3 Measurements](https://github.com/isaacbrodsky/h3measurements): Measurements of average cell area, average cell perimeter length, truncation error, and so on.
 
 ## JavaScript
 
