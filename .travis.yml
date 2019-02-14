@@ -59,8 +59,7 @@ matrix:
       os: osx
     - env: NAME="binding-functions target"
       script:
-        # Intentionally failing the build to check the test
-        #- make binding-functions
+        - make binding-functions
         # Check that the file exists and has contents
         - test -s binding-functions
 
