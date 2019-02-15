@@ -1,32 +1,32 @@
 CACHE MANIFEST
-#ver:1/25/2019, 8:31:27 AM
+#ver:2/15/2019, 11:18:37 AM
 #plugin:4.9.1
 
 CACHE:
-../bundle-684e6413c6da646914c1.js
-../styles-684e6413c6da646914c1.css
+../bundle-d85e7857a9223bbee771.js
+../styles-d85e7857a9223bbee771.css
 ../
-../images/footer-pattern.gif
 ../favicon.ico
-../images/icon-chart.svg
+../images/footer-pattern.gif
 ../images/icon-custom.svg
+../images/icon-chart.svg
 ../images/icon-high-precision.svg
-../images/ca_uncompact_6_10633.png
+../images/icon-react.svg
+../images/icon-layers.svg
 ../images/ca_compact_6_901.png
 ../images/cpidigits.png
-../images/classII.III.png
-../images/ijkp.png
-../images/neighbors-square.png
-../images/neighbors-triangle.png
+../images/ca_uncompact_6_10633.png
 ../images/neighbors-hexagon.png
-../images/neighbors.png
-../images/icon-react.svg
-../images/parent-child.png
-../images/uber-logo.png
-../images/icon-layers.svg
-../images/triEdge.png
+../images/neighbors-square.png
+../images/ijkp.png
+../images/neighbors-triangle.png
 ../images/substrate3.png
+../images/classII.III.png
 ../images/hero.jpg
+../images/uber-logo.png
+../images/triEdge.png
+../images/neighbors.png
+../images/parent-child.png
 
 NETWORK:
 *
