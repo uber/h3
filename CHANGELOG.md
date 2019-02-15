@@ -6,6 +6,8 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+### Fixed
+- `binding-functions` build target fixed when running the build out of source 
 
 ## [3.4.0] - 2019-01-23
 ### Added

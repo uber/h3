@@ -57,6 +57,11 @@ matrix:
         - coveralls --lcov-file coverage.cleaned.info --verbose
     - env: NAME="Mac OSX (Xcode 8)"
       os: osx
+    - env: NAME="binding-functions target"
+      script:
+        - make binding-functions
+        # Check that the file exists and has contents
+        - test -s binding-functions
 
 # Configure the build script, out of source.
 before_script:

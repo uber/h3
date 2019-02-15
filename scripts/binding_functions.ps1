@@ -16,5 +16,4 @@
 # by bindings of the H3 library. It is invoked by the `binding-functions`
 # make target and produces a file `binding-functions`.
 
-$scriptDir = Split-Path -parent $PSCommandPath
-Get-Content "$scriptDir/../src/h3lib/include/h3api.h" | Where-Object {$_ -match "@defgroup ([A-Za-z0-9_]*)"} | Foreach {$Matches[1]} > binding-functions
+Get-Content "src/h3lib/include/h3api.h" | Where-Object {$_ -match "@defgroup ([A-Za-z0-9_]*)"} | Foreach {$Matches[1]} > binding-functions
