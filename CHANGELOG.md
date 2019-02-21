@@ -6,8 +6,10 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+
+## [3.4.2] - 2019-02-21
 ### Changed
-- `binding-functions` build target generates an ASCII file on Windows
+- `binding-functions` build target generates an ASCII file on Windows (#193)
 
 ## [3.4.1] - 2019-02-15
 ### Fixed
