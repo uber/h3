@@ -6,6 +6,8 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+### Fixed
+- `benchmarkPolyfill` allocates its memory on the heap (#198)
 
 ## [3.4.2] - 2019-02-21
 ### Changed
