@@ -6,6 +6,10 @@ As a C library, bindings can be made to call H3 functions from different program
 
 - [entrepreneur-interet-general/h3.standard](https://github.com/entrepreneur-interet-general/H3.Standard)
 
+## ECL
+
+- [hpcc-systems/HPCC-Platform](https://github.com/hpcc-systems/HPCC-Platform/tree/master/plugins/h3)
+
 ## Erlang
 
 - [helium/erlang-h3](https://github.com/helium/erlang-h3)
@@ -48,7 +52,3 @@ As a C library, bindings can be made to call H3 functions from different program
 ## Ruby
 
 - [StuartApp/h3_ruby](https://github.com/StuartApp/h3_ruby)
-
-## ECL
-
-- [hpcc-systems/HPCC-Platform](https://github.com/hpcc-systems/HPCC-Platform/tree/master/plugins/h3)
