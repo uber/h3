@@ -44,8 +44,8 @@ sudo apt install clang-format cmake-curses-gui lcov doxygen
 First make sure you [have the developer tools installed](http://osxdaily.com/2014/02/12/install-command-line-tools-mac-os-x/) and then
 
 ```
-# Installing the bare build requirements
-brew install cmake
+# Installing the library
+brew install h3
 # Installing useful tools for development
 brew install clang-format lcov doxygen
 ```
