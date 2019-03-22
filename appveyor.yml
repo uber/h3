@@ -43,7 +43,7 @@ build_script:
 
 test_script:
   - ps: cd build
-  - ctest -VV -C "%CONFIG%"
+  - ctest -C "%CONFIG%"
   # Check that binding-functions was generated and has content
   - ps: |
       $ErrorActionPreference = "Stop"
