@@ -16,7 +16,7 @@ Documentation is available at [https://uber.github.io/h3/](https://uber.github.i
 
 We recommend using prebuilt bindings if they are available for your programming language. Bindings for [Go](https://github.com/uber/h3-go), [Java](https://github.com/uber/h3-java), [JavaScript](https://github.com/uber/h3-js), [Python](https://github.com/uber/h3-py), and [others](https://uber.github.io/h3/#/documentation/community/bindings) are available.
 
-If no bindings are available, you can only install H3 by building from source.
+If no bindings are available, you can only install H3 by building from source. On macOS, you can also install using Homebrew: `brew install h3`.
 
 ### Building from source
 
@@ -44,8 +44,8 @@ sudo apt install clang-format cmake-curses-gui lcov doxygen
 First make sure you [have the developer tools installed](http://osxdaily.com/2014/02/12/install-command-line-tools-mac-os-x/) and then
 
 ```
-# Installing the library
-brew install h3
+# Installing the bare build requirements
+brew install cmake
 # Installing useful tools for development
 brew install clang-format lcov doxygen
 ```
