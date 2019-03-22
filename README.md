@@ -16,7 +16,11 @@ Documentation is available at [https://uber.github.io/h3/](https://uber.github.i
 
 We recommend using prebuilt bindings if they are available for your programming language. Bindings for [Go](https://github.com/uber/h3-go), [Java](https://github.com/uber/h3-java), [JavaScript](https://github.com/uber/h3-js), [Python](https://github.com/uber/h3-py), and [others](https://uber.github.io/h3/#/documentation/community/bindings) are available.
 
-If no bindings are available, you can only install H3 by building from source. On macOS, you can also install using Homebrew: `brew install h3`.
+On macOS, you can install H3 using brew:
+```
+brew install h3
+```
+Otherwise, to build H3 from source, please see the following instructions.
 
 ### Building from source
 
