@@ -8,6 +8,7 @@ The public API of this library consists of the functions declared in file
 ## [Unreleased]
 ### Fixed
 - `benchmarkPolyfill` allocates its memory on the heap (#198)
+- Fixed constraints of vertex longitudes (#213)
 
 ## [3.4.2] - 2019-02-21
 ### Changed
