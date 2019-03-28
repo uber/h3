@@ -221,36 +221,36 @@ void _geoAzDistanceRads(const GeoCoord* p1, double az, double distance,
         if (fabs(p2->lat - M_PI_2) < EPSILON)  // north pole
         {
             p2->lat = M_PI_2;
-            p2->lon = 0.0L;
+            p2->lon = 0.0;
         } else if (fabs(p2->lat + M_PI_2) < EPSILON)  // south pole
         {
             p2->lat = -M_PI_2;
-            p2->lon = 0.0L;
+            p2->lon = 0.0;
         } else
             p2->lon = constrainLng(p1->lon);
     } else  // not due north or south
     {
         sinlat = sin(p1->lat) * cos(distance) +
                  cos(p1->lat) * sin(distance) * cos(az);
-        if (sinlat > 1.0L) sinlat = 1.0L;
-        if (sinlat < -1.0L) sinlat = -1.0L;
+        if (sinlat > 1.0) sinlat = 1.0;
+        if (sinlat < -1.0) sinlat = -1.0;
         p2->lat = asin(sinlat);
         if (fabs(p2->lat - M_PI_2) < EPSILON)  // north pole
         {
             p2->lat = M_PI_2;
-            p2->lon = 0.0L;
+            p2->lon = 0.0;
         } else if (fabs(p2->lat + M_PI_2) < EPSILON)  // south pole
         {
             p2->lat = -M_PI_2;
-            p2->lon = 0.0L;
+            p2->lon = 0.0;
         } else {
             sinlon = sin(az) * sin(distance) / cos(p2->lat);
             coslon = (cos(distance) - sin(p1->lat) * sin(p2->lat)) /
                      cos(p1->lat) / cos(p2->lat);
-            if (sinlon > 1.0L) sinlon = 1.0L;
-            if (sinlon < -1.0L) sinlon = -1.0L;
-            if (coslon > 1.0L) sinlon = 1.0L;
-            if (coslon < -1.0L) sinlon = -1.0L;
+            if (sinlon > 1.0) sinlon = 1.0;
+            if (sinlon < -1.0) sinlon = -1.0;
+            if (coslon > 1.0) coslon = 1.0;
+            if (coslon < -1.0) coslon = -1.0;
             p2->lon = constrainLng(p1->lon + atan2(sinlon, coslon));
         }
     }

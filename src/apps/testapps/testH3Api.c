@@ -79,6 +79,26 @@ SUITE(h3Api) {
         t_assertBoundary(h3, &boundary);
     }
 
+    TEST(h3ToGeoBoundary_coslonConstrain) {
+        // Bug test for https://github.com/uber/h3/issues/212
+        H3Index h3 = 0x87dc6d364ffffffL;
+        GeoBoundary boundary;
+        boundary.numVerts = 6;
+        setGeoDegs(&boundary.verts[0], -52.0130533678236091,
+                   -34.6232931343713091);
+        setGeoDegs(&boundary.verts[1], -52.0041156384652012,
+                   -34.6096733160584549);
+        setGeoDegs(&boundary.verts[2], -51.9929610229502472,
+                   -34.6165157145896387);
+        setGeoDegs(&boundary.verts[3], -51.9907410568096608,
+                   -34.6369680004259877);
+        setGeoDegs(&boundary.verts[4], -51.9996738734672377,
+                   -34.6505896528323660);
+        setGeoDegs(&boundary.verts[5], -52.0108315681413629,
+                   -34.6437571897165668);
+        t_assertBoundary(h3, &boundary);
+    }
+
     TEST(version) {
         t_assert(H3_VERSION_MAJOR >= 0, "major version is set");
         t_assert(H3_VERSION_MINOR >= 0, "minor version is set");
