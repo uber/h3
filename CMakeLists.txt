@@ -363,7 +363,7 @@ if(BUILD_TESTING)
             COMMAND bash "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/scripts/coverage.sh" "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}")
         add_custom_target(clean-coverage
             # Before running coverage, clear all counters
-            COMMAND lcov --directory '${CMAKE_CURRENT_BINARY_DIR}' --zerocounters
+            COMMAND lcov --rc lcov_branch_coverage=1 --directory '${CMAKE_CURRENT_BINARY_DIR}' --zerocounters
             COMMENT "Zeroing counters"
             )
     endif()
