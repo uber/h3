@@ -43,6 +43,7 @@ As a C library, bindings can be made to call H3 functions from different program
 ## Python
 
 - [uber/h3-py](https://github.com/uber/h3-py)
+- [kwmsmith/h3-cython](https://github.com/kwmsmith/h3-cython)
 
 ## R
 
