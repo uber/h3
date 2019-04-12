@@ -2,6 +2,8 @@
 
 Pull requests and Github issues are welcome!
 
+Planned improvements and changes are listed on the [H3 Roadmap](https://github.com/uber/h3/wiki/Roadmap). Roadmap items are currently discussed in Github issues. Feel free to open a discussion about an existing roadmap item or proposing a new one.
+
 ## Pull requests
 
 * Please include tests that show the bug is fixed or feature works as intended.
