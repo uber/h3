@@ -136,6 +136,7 @@ set(EXAMPLE_SOURCE_FILES
 set(OTHER_SOURCE_FILES
     src/apps/filters/h3ToGeo.c
     src/apps/filters/h3ToLocalIj.c
+    src/apps/filters/localIjToH3.c
     src/apps/filters/h3ToComponents.c
     src/apps/filters/geoToH3.c
     src/apps/filters/h3ToGeoBoundary.c
@@ -310,6 +311,7 @@ add_h3_executable(geoToH3 src/apps/filters/geoToH3.c ${APP_SOURCE_FILES})
 add_h3_executable(h3ToComponents src/apps/filters/h3ToComponents.c ${APP_SOURCE_FILES})
 add_h3_executable(h3ToGeo src/apps/filters/h3ToGeo.c ${APP_SOURCE_FILES})
 add_h3_executable(h3ToLocalIj src/apps/filters/h3ToLocalIj.c ${APP_SOURCE_FILES})
+add_h3_executable(localIjToH3 src/apps/filters/localIjToH3.c ${APP_SOURCE_FILES})
 add_h3_executable(h3ToGeoBoundary src/apps/filters/h3ToGeoBoundary.c ${APP_SOURCE_FILES})
 add_h3_executable(hexRange src/apps/filters/hexRange.c ${APP_SOURCE_FILES})
 add_h3_executable(kRing src/apps/filters/kRing.c ${APP_SOURCE_FILES})
