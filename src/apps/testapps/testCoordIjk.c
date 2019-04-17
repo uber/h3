@@ -34,7 +34,7 @@ SUITE(coordIjk) {
         t_assert(_unitIjkToDigit(&outOfRange) == INVALID_DIGIT,
                  "Unit IJK out of range");
         t_assert(_unitIjkToDigit(&unnormalizedZero) == CENTER_DIGIT,
-                 "Unit IJK to zero");
+                 "Unnormalized unit IJK to zero");
     }
 
     TEST(_neighbor) {

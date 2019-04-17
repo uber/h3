@@ -232,9 +232,9 @@ SUITE(BBox) {
         west.west += 0.1;
 
         t_assert(bboxEquals(&bbox, &bbox), "Equals self");
-        t_assert(!bboxEquals(&bbox, &north), "Equals different north");
-        t_assert(!bboxEquals(&bbox, &south), "Equals different south");
-        t_assert(!bboxEquals(&bbox, &east), "Equals different east");
-        t_assert(!bboxEquals(&bbox, &west), "Equals different west");
+        t_assert(!bboxEquals(&bbox, &north), "Not equals different north");
+        t_assert(!bboxEquals(&bbox, &south), "Not equals different south");
+        t_assert(!bboxEquals(&bbox, &east), "Not equals different east");
+        t_assert(!bboxEquals(&bbox, &west), "Not equals different west");
     }
 }
