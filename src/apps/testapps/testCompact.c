@@ -232,7 +232,7 @@ SUITE(compact) {
         int childrenSz =
             H3_EXPORT(maxUncompactSize)(uncompactableWithZero, 4, 10);
         H3Index* children = calloc(childrenSz, sizeof(H3Index));
-        int uncompactResult = H3_EXPORT(uncompact)(&uncompactableWithZero, 4,
+        int uncompactResult = H3_EXPORT(uncompact)(uncompactableWithZero, 4,
                                                    children, childrenSz, 10);
         t_assert(uncompactResult == 0, "uncompact with zero succeeds");
 
