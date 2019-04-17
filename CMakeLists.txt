@@ -171,6 +171,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testH3Distance.c
     src/apps/testapps/testH3Line.c
     src/apps/testapps/testCoordIj.c
+    src/apps/testapps/testCoordIjk.c
     src/apps/miscapps/h3ToGeoBoundaryHier.c
     src/apps/miscapps/h3ToGeoHier.c
     src/apps/miscapps/generateBaseCellNeighbors.c
@@ -485,6 +486,7 @@ if(BUILD_TESTING)
     add_h3_test(testH3Distance src/apps/testapps/testH3Distance.c)
     add_h3_test(testH3Line src/apps/testapps/testH3Line.c)
     add_h3_test(testCoordIj src/apps/testapps/testCoordIj.c)
+    add_h3_test(testCoordIjk src/apps/testapps/testCoordIjk.c)
     add_h3_test(testBaseCells src/apps/testapps/testBaseCells.c)
 
     add_h3_test_with_arg(testH3NeighborRotations src/apps/testapps/testH3NeighborRotations.c 0)

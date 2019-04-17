@@ -388,11 +388,11 @@ int H3_EXPORT(uncompact)(const H3Index* compactedSet, const int numHexes,
                          H3Index* h3Set, const int maxHexes, const int res) {
     int outOffset = 0;
     for (int i = 0; i < numHexes; i++) {
+        if (compactedSet[i] == 0) continue;
         if (outOffset >= maxHexes) {
             // We went too far, abort!
             return -1;
         }
-        if (compactedSet[i] == 0) continue;
         int currentRes = H3_GET_RESOLUTION(compactedSet[i]);
         if (currentRes > res) {
             // Nonsensical. Abort.
