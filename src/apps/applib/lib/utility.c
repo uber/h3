@@ -21,12 +21,157 @@
 #include <assert.h>
 #include <inttypes.h>
 #include <stackAlloc.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "coordijk.h"
 #include "geoCoord.h"
 #include "h3Index.h"
 #include "h3api.h"
+
+/**
+ * Parse command line arguments.
+ *
+ * Uses the provided arguments to populate argument values.
+ *
+ * Returns non-zero if all required arguments are not present, an argument fails
+ * to parse, is missing its associated value, or arguments are specified more than once.
+ *
+ * @param argc argc from main
+ * @param argv argv from main
+ * @param numArgs Number of elements in the args array
+ * @param args Each argument to parse.
+ * @param errorMessage Error message to display, if returning non-zero. Caller
+ * must free this.
+ * @param errorDetail Additional error details, if returning non-zero. May be
+ * null, caller must free this.
+ * @return 0 if argument parsing succeeded, otherwise non-0.
+ */
+int parseArgs(int argc, char* argv[], int numArgs, const Arg* args,
+              char** errorMessage, char** errorDetail) {
+    bool* foundArgs = calloc(numArgs, sizeof(bool));
+    // Whether help was found and required arguments do not need to be checked
+    bool foundHelp = false;
+
+    for (int i = 1; i < argc; i++) {
+        bool foundMatch = false;
+
+        for (int j = 0; j < numArgs; j++) {
+            const char* argName = NULL;
+            bool isMatch = false;
+            for (int k = 0; k < NUM_ARG_NAMES; k++) {
+                if (args[j].names[k] == NULL) continue;
+
+                if (strcmp(argv[i], args[j].names[k]) == 0) {
+                    argName = args[j].names[k];
+                    isMatch = true;
+                    break;
+                }
+            }
+            if (!isMatch) continue;
+
+            if (foundArgs[j]) {
+                free(foundArgs);
+                *errorMessage = strdup("Argument specified multiple times");
+                *errorDetail = strdup(argName);
+                return 1;
+            }
+
+            if (args[j].valuePresent != NULL) {
+                *args[j].valuePresent = true;
+            }
+            if (args[j].scanFormat != NULL) {
+                i++;
+                if (i >= argc) {
+                    free(foundArgs);
+                    *errorMessage = strdup("Argument value not present");
+                    *errorDetail = strdup(argName);
+                    return 2;
+                }
+
+                if (!sscanf(argv[i], args[j].scanFormat, args[j].value)) {
+                    free(foundArgs);
+                    *errorMessage = strdup("Failed to parse argument");
+                    *errorDetail = strdup(argName);
+                    return 3;
+                }
+            }
+
+            if (args[j].isHelp) {
+                foundHelp = true;
+            }
+
+            foundArgs[j] = true;
+            foundMatch = true;
+            break;
+        }
+
+        if (!foundMatch) {
+            free(foundArgs);
+            *errorMessage = strdup("Unknown argument");
+            // Don't set errorDetail, since the input could be unprintable.
+            return 4;
+        }
+    }
+
+    // Check for missing required arguments.
+    if (!foundHelp) {
+        for (int i = 0; i < numArgs; i++) {
+            if (args[i].required && !foundArgs[i]) {
+                free(foundArgs);
+                *errorMessage = strdup("Required argument missing");
+                *errorDetail = strdup(args[i].names[0]);
+                return 5;
+            }
+        }
+    }
+
+    free(foundArgs);
+    return 0;
+}
+
+/**
+ * Print a help message.
+ *
+ * @param out Stream to print to, e.g. stdout
+ * @param programName Program name, such as from argv[0]
+ * @param helpText Explanation of what the program does
+ * @param numArgs Number of arguments to print help for
+ * @param args Arguments to print help for
+ * @param errorMessage Error message, or null
+ * @param errorDetails Additional error detail message, or null
+ */
+void printHelp(FILE* out, const char* programName, const char* helpText,
+               int numArgs, const Arg* args, const char* errorMessage,
+               const char* errorDetails) {
+    if (errorMessage != NULL) {
+        fprintf(out, "%s: %s", programName, errorMessage);
+        if (errorDetails != NULL) {
+            fprintf(out, ": %s", errorDetails);
+        }
+        fprintf(out, "\n");
+    }
+    fprintf(out, "%s: %s\n", programName, helpText);
+    fprintf(out, "H3 %d.%d.%d\n\n", H3_VERSION_MAJOR, H3_VERSION_MINOR,
+            H3_VERSION_PATCH);
+
+    for (int i = 0; i < numArgs; i++) {
+        fprintf(out, "\t");
+        for (int j = 0; j < NUM_ARG_NAMES; j++) {
+            if (args[i].names[j] == NULL) continue;
+            if (j != 0) fprintf(out, ", ");
+            fprintf(out, "%s", args[i].names[j]);
+        }
+        if (args[i].scanFormat != NULL) {
+            fprintf(out, " <%s>", args[i].valueName);
+        }
+        fprintf(out, "\t");
+        if (args[i].required) {
+            fprintf(out, "Required. ");
+        }
+        fprintf(out, "%s\n", args[i].helpText);
+    }
+}
 
 void error(const char* msg) {
     fflush(stdout);

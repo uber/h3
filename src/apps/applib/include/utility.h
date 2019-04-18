@@ -29,7 +29,68 @@
 /** Macro: Get the size of a fixed-size array */
 #define ARRAY_SIZE(x) sizeof(x) / sizeof(x[0])
 
+/** Maximum number of names an argument may have. */
+#define NUM_ARG_NAMES 2
+
+/**
+ * An argument accepted by on the command line of an H3 application. Specifies how the argument is presented, parsed, and where parsed values are stored.
+ */
+typedef struct {
+    /**
+     * Both short and long names of the argument. A name may be null, but the
+     * first name must be non-null.
+     */
+    const char* names[NUM_ARG_NAMES];
+
+    /**
+     * If true, this argument must be specified. If the argument is not
+     * specified, argument parsing will fail.
+     */
+    bool required;
+
+    /**
+     * If true, this argument suppresses checking for required arguments.
+     */
+    bool isHelp;
+
+    /**
+     * Scan format for the argument, which will be passed to sscanf. May be null
+     * to indicate the argument does not take a value.
+     */
+    const char* scanFormat;
+
+    /**
+     * Name to present the value as when printing help.
+     */
+    const char* valueName;
+
+    /**
+     * Value will be placed here if the argument is present and scanFormat is
+     * not null.
+     */
+    void* value;
+
+    /**
+     * Will be set to true if the argument is present and the pointer is not
+     * null.
+     */
+    bool* valuePresent;
+
+    /**
+     * Help text for this argument.
+     */
+    const char* helpText;
+} Arg;
+
 // prototypes
+
+int parseArgs(int argc, char* argv[], int numArgs, const Arg* args,
+              char** errorMessage, char** errorDetail);
+
+void printHelp(FILE* out, const char* programName, const char* helpText,
+               int numArgs, const Arg* args, const char* errorMessage,
+               const char* errorDetails);
+
 void error(const char* msg);
 void h3Print(H3Index h);    // prints as integer
 void h3Println(H3Index h);  // prints as integer
