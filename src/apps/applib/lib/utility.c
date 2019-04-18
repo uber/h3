@@ -35,7 +35,8 @@
  * Uses the provided arguments to populate argument values.
  *
  * Returns non-zero if all required arguments are not present, an argument fails
- * to parse, is missing its associated value, or arguments are specified more than once.
+ * to parse, is missing its associated value, or arguments are specified more
+ * than once.
  *
  * @param argc argc from main
  * @param argv argv from main

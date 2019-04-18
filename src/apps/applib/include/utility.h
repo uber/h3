@@ -33,7 +33,8 @@
 #define NUM_ARG_NAMES 2
 
 /**
- * An argument accepted by on the command line of an H3 application. Specifies how the argument is presented, parsed, and where parsed values are stored.
+ * An argument accepted by on the command line of an H3 application. Specifies
+ * how the argument is presented, parsed, and where parsed values are stored.
  */
 typedef struct {
     /**
