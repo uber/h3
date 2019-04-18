@@ -23,6 +23,8 @@ H3Index sunnyvale = 0x89283470c27ffff;
 
 H3Index uncompactable[] = {0x89283470803ffff, 0x8928347081bffff,
                            0x8928347080bffff};
+H3Index uncompactableWithZero[] = {0x89283470803ffff, 0x8928347081bffff, 0,
+                                   0x8928347080bffff};
 
 SUITE(compact) {
     TEST(roundtrip) {
@@ -205,6 +207,45 @@ SUITE(compact) {
 
         free(children);
         free(result);
+    }
+
+    TEST(uncompact_onlyZero) {
+        // maxUncompactSize and uncompact both permit 0 indexes
+        // in the input array, and skip them. When only a zero is
+        // given, it's a no-op.
+
+        H3Index origin = 0;
+
+        int childrenSz = H3_EXPORT(maxUncompactSize)(&origin, 1, 2);
+        H3Index* children = calloc(childrenSz, sizeof(H3Index));
+        int uncompactResult =
+            H3_EXPORT(uncompact)(&origin, 1, children, childrenSz, 2);
+        t_assert(uncompactResult == 0, "uncompact only zero success");
+
+        free(children);
+    }
+
+    TEST(uncompactZero) {
+        // maxUncompactSize and uncompact both permit 0 indexes
+        // in the input array, and skip them.
+
+        int childrenSz =
+            H3_EXPORT(maxUncompactSize)(uncompactableWithZero, 4, 10);
+        H3Index* children = calloc(childrenSz, sizeof(H3Index));
+        int uncompactResult = H3_EXPORT(uncompact)(uncompactableWithZero, 4,
+                                                   children, childrenSz, 10);
+        t_assert(uncompactResult == 0, "uncompact with zero succeeds");
+
+        int found = 0;
+        for (int i = 0; i < childrenSz; i++) {
+            if (children[i] != 0) {
+                found++;
+            }
+        }
+        t_assert(found == childrenSz,
+                 "uncompacted with zero to expected number of hexagons");
+
+        free(children);
     }
 
     TEST(pentagon) {

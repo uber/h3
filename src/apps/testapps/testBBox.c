@@ -219,4 +219,22 @@ SUITE(BBox) {
         t_assert(bboxIsTransmeridian(&bboxTransmeridian),
                  "Transmeridian bbox is transmeridian");
     }
+
+    TEST(bboxEquals) {
+        BBox bbox = {1.0, 0.0, 1.0, 0.0};
+        BBox north = bbox;
+        north.north += 0.1;
+        BBox south = bbox;
+        south.south += 0.1;
+        BBox east = bbox;
+        east.east += 0.1;
+        BBox west = bbox;
+        west.west += 0.1;
+
+        t_assert(bboxEquals(&bbox, &bbox), "Equals self");
+        t_assert(!bboxEquals(&bbox, &north), "Not equals different north");
+        t_assert(!bboxEquals(&bbox, &south), "Not equals different south");
+        t_assert(!bboxEquals(&bbox, &east), "Not equals different east");
+        t_assert(!bboxEquals(&bbox, &west), "Not equals different west");
+    }
 }

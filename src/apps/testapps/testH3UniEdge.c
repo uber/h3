@@ -64,6 +64,8 @@ SUITE(h3UniEdge) {
         H3_SET_MODE(sfBroken, H3_UNIEDGE_MODE);
         t_assert(H3_EXPORT(h3IndexesAreNeighbors)(sf, sfBroken) == 0,
                  "broken H3Indexes can't be neighbors");
+        t_assert(H3_EXPORT(h3IndexesAreNeighbors)(sfBroken, sf) == 0,
+                 "broken H3Indexes can't be neighbors (reversed)");
 
         H3Index sfBigger = H3_EXPORT(geoToH3)(&sfGeo, 7);
         t_assert(H3_EXPORT(h3IndexesAreNeighbors)(sf, sfBigger) == 0,
@@ -147,6 +149,11 @@ SUITE(h3UniEdge) {
         H3_SET_MODE(fakeEdge, H3_UNIEDGE_MODE);
         t_assert(H3_EXPORT(h3UnidirectionalEdgeIsValid)(fakeEdge) == 0,
                  "edges without an edge specified don't work");
+        H3Index invalidEdge = sf;
+        H3_SET_MODE(invalidEdge, H3_UNIEDGE_MODE);
+        H3_SET_RESERVED_BITS(invalidEdge, INVALID_DIGIT);
+        t_assert(H3_EXPORT(h3UnidirectionalEdgeIsValid)(invalidEdge) == 0,
+                 "edges with an invalid edge specified don't work");
 
         H3Index pentagon = 0x821c07fffffffff;
         H3Index goodPentagonalEdge = pentagon;
