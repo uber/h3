@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 Uber Technologies, Inc.
+ * Copyright 2019 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,36 +14,34 @@
  * limitations under the License.
  */
 /** @file
- * @brief stdin/stdout filter that converts from H3 indexes to local IJ
- * coordinates. This is experimental.
+ * @brief stdin/stdout filter that converts from local IJ coordinates to
+ * H3 indexes. This is experimental.
  *
- *  usage: `h3ToLocalIj [origin]`
+ *  usage: `localIjToH3 [origin]`
  *
- *  The program reads H3 indexes from stdin and outputs the corresponding
- *  IJ coordinates to stdout, until EOF is encountered. `NA` is printed if the
- *  IJ coordinates could not be obtained.
+ *  The program reads IJ coordinates (in the format `i j` separated by newlines)
+ *  from stdin and outputs the corresponding H3 indexes to stdout, until EOF is
+ *  encountered. `NA` is printed if the H3 index could not be obtained.
  *
  *  `origin` indicates the origin (or anchoring) index for the IJ coordinate
  *  space.
  *
- *  This program has the same limitations as the `experimentalH3ToLocalIj`
+ *  This program has the same limitations as the `experimentalLocalIjToH3`
  *  function.
  */
 
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "coordijk.h"
-#include "h3Index.h"
 #include "h3api.h"
 #include "utility.h"
 
-void doCell(H3Index h, H3Index origin) {
-    CoordIJ ij;
-    if (H3_EXPORT(experimentalH3ToLocalIj)(origin, h, &ij)) {
+void doCell(const CoordIJ *ij, H3Index origin) {
+    H3Index h;
+    if (H3_EXPORT(experimentalLocalIjToH3)(origin, ij, &h)) {
         printf("NA\n");
     } else {
-        printf("%d %d\n", ij.i, ij.j);
+        h3Println(h);
     }
 }
 
@@ -54,25 +52,24 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
-    H3Index origin;
-
-    if (!sscanf(argv[1], "%" PRIx64, &origin))
-        error("origin could not be read");
-
+    H3Index origin = H3_EXPORT(stringToH3(argv[1]));
     if (!H3_EXPORT(h3IsValid)(origin)) error("origin is invalid");
 
-    // process the indexes on stdin
+    // process the coordinates on stdin
     char buff[BUFF_SIZE];
     while (1) {
-        // get an index from stdin
+        // get coordinates from stdin
         if (!fgets(buff, BUFF_SIZE, stdin)) {
             if (feof(stdin))
                 break;
             else
-                error("reading H3 index from stdin");
+                error("reading IJ coordinates from stdin");
         }
 
-        H3Index h3 = H3_EXPORT(stringToH3)(buff);
-        doCell(h3, origin);
+        CoordIJ ij;
+        if (!sscanf(buff, "%d %d", &ij.i, &ij.j))
+            error("Parsing IJ coordinates. Expected `i j`.");
+
+        doCell(&ij, origin);
     }
 }

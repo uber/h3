@@ -161,7 +161,7 @@ static void generate() {
                         if (dir == K_AXES_DIGIT) {
                             // 4 and 117 are 'polar' type pentagons, which have
                             // some different behavior.
-                            if (i == 4 || i == 117) {
+                            if (_isBaseCellPentagon(i)) {
                                 _ijkRotate60cw(&ijk);
                                 _ijkRotate60cw(&ijk);
                             } else {
@@ -172,7 +172,7 @@ static void generate() {
 
                         // Adjust for the deleted k-subsequence distortion
                         int rotAdj = 0;
-                        if (i == 4 || i == 117) {
+                        if (_isBaseCellPolarPentagon(i)) {
                             // 'polar' type pentagon with all faces pointing
                             // towards i
                             if (dir == IK_AXES_DIGIT) {
