@@ -19,7 +19,9 @@
  *
  *  usage: `localIjToH3 [origin]`
  *
- *  The program reads IJ coordinates (in the format `i j` separated by newlines) from stdin and outputs the corresponding H3 indexes to stdout, until EOF is encountered. `NA` is printed if the H3 index could not be obtained.
+ *  The program reads IJ coordinates (in the format `i j` separated by newlines)
+ *  from stdin and outputs the corresponding H3 indexes to stdout, until EOF is
+ *  encountered. `NA` is printed if the H3 index could not be obtained.
  *
  *  `origin` indicates the origin (or anchoring) index for the IJ coordinate
  *  space.
