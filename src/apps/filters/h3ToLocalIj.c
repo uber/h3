@@ -21,13 +21,13 @@
  *
  *  The program reads H3 indexes from stdin and outputs the corresponding
  *  IJ coordinates to stdout, until EOF is encountered. `NA` is printed if the
- * IJ coordinates could not be obtained.
+ *  IJ coordinates could not be obtained.
  *
  *  `origin` indicates the origin (or anchoring) index for the IJ coordinate
  *  space.
  *
  *  This program has the same limitations as the `experimentalH3ToLocalIj`
- * function.
+ *  function.
  */
 
 #include <inttypes.h>

@@ -19,15 +19,13 @@
  *
  *  usage: `localIjToH3 [origin]`
  *
- *  The program reads IJ coordinates from stdin and outputs the corresponding
- *  H3 indexes to stdout, until EOF is encountered. `NA` is printed if the H3
- * index could not be obtained.
+ *  The program reads IJ coordinates (in the format `i j` separated by newlines) from stdin and outputs the corresponding H3 indexes to stdout, until EOF is encountered. `NA` is printed if the H3 index could not be obtained.
  *
  *  `origin` indicates the origin (or anchoring) index for the IJ coordinate
  *  space.
  *
  *  This program has the same limitations as the `experimentalLocalIjToH3`
- * function.
+ *  function.
  */
 
 #include <inttypes.h>
@@ -52,11 +50,7 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
-    H3Index origin;
-
-    if (!sscanf(argv[1], "%" PRIx64, &origin))
-        error("origin could not be read");
-
+    H3Index origin = H3_EXPORT(stringToH3(argv[1]));
     if (!H3_EXPORT(h3IsValid)(origin)) error("origin is invalid");
 
     // process the coordinates on stdin
@@ -72,7 +66,7 @@ int main(int argc, char *argv[]) {
 
         CoordIJ ij;
         if (!sscanf(buff, "%d %d", &ij.i, &ij.j))
-            error("parsing IJ coordinates");
+            error("Parsing IJ coordinates. Expected `i j`.");
 
         doCell(&ij, origin);
     }
