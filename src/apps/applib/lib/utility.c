@@ -29,6 +29,17 @@
 #include "h3Index.h"
 #include "h3api.h"
 
+/*
+ * Return codes from parseArgs.
+ */
+
+#define PARSE_ARGS_SUCCESS 0
+#define PARSE_ARGS_REPEATED_ARGUMENT 1
+#define PARSE_ARGS_MISSING_VALUE 2
+#define PARSE_ARGS_FAILED_PARSE 3
+#define PARSE_ARGS_UNKNOWN_ARGUMENT 4
+#define PARSE_ARGS_MISSING_REQUIRED 5
+
 /**
  * Parse command line arguments.
  *
@@ -58,43 +69,49 @@ int parseArgs(int argc, char* argv[], int numArgs, const Arg* args,
         bool foundMatch = false;
 
         for (int j = 0; j < numArgs; j++) {
+            // Test this argument, which may have multiple names, for whether it
+            // matches. argName will be set to the name used for this argument
+            // if it matches.
             const char* argName = NULL;
-            bool isMatch = false;
             for (int k = 0; k < NUM_ARG_NAMES; k++) {
                 if (args[j].names[k] == NULL) continue;
 
                 if (strcmp(argv[i], args[j].names[k]) == 0) {
                     argName = args[j].names[k];
-                    isMatch = true;
                     break;
                 }
             }
-            if (!isMatch) continue;
+            // argName unchanged from NULL indicates this didn't match, try the
+            // next argument.
+            if (argName == NULL) continue;
 
             if (foundArgs[j]) {
                 free(foundArgs);
                 *errorMessage = strdup("Argument specified multiple times");
                 *errorDetail = strdup(argName);
-                return 1;
+                return PARSE_ARGS_REPEATED_ARGUMENT;
             }
 
             if (args[j].valuePresent != NULL) {
+                // Program is interested in whether this argument was present,
+                // regardless of any value it may have.
                 *args[j].valuePresent = true;
             }
             if (args[j].scanFormat != NULL) {
+                // Argument has a value, need to advance one and read the value.
                 i++;
                 if (i >= argc) {
                     free(foundArgs);
                     *errorMessage = strdup("Argument value not present");
                     *errorDetail = strdup(argName);
-                    return 2;
+                    return PARSE_ARGS_MISSING_VALUE;
                 }
 
                 if (!sscanf(argv[i], args[j].scanFormat, args[j].value)) {
                     free(foundArgs);
                     *errorMessage = strdup("Failed to parse argument");
                     *errorDetail = strdup(argName);
-                    return 3;
+                    return PARSE_ARGS_FAILED_PARSE;
                 }
             }
 
@@ -111,7 +128,7 @@ int parseArgs(int argc, char* argv[], int numArgs, const Arg* args,
             free(foundArgs);
             *errorMessage = strdup("Unknown argument");
             // Don't set errorDetail, since the input could be unprintable.
-            return 4;
+            return PARSE_ARGS_UNKNOWN_ARGUMENT;
         }
     }
 
@@ -122,13 +139,13 @@ int parseArgs(int argc, char* argv[], int numArgs, const Arg* args,
                 free(foundArgs);
                 *errorMessage = strdup("Required argument missing");
                 *errorDetail = strdup(args[i].names[0]);
-                return 5;
+                return PARSE_ARGS_MISSING_REQUIRED;
             }
         }
     }
 
     free(foundArgs);
-    return 0;
+    return PARSE_ARGS_SUCCESS;
 }
 
 /**

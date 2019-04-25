@@ -41,46 +41,46 @@ typedef struct {
      * Both short and long names of the argument. A name may be null, but the
      * first name must be non-null.
      */
-    const char* names[NUM_ARG_NAMES];
+    const char* const names[NUM_ARG_NAMES];
 
     /**
      * If true, this argument must be specified. If the argument is not
      * specified, argument parsing will fail.
      */
-    bool required;
+    const bool required;
 
     /**
      * If true, this argument suppresses checking for required arguments.
      */
-    bool isHelp;
+    const bool isHelp;
 
     /**
      * Scan format for the argument, which will be passed to sscanf. May be null
      * to indicate the argument does not take a value.
      */
-    const char* scanFormat;
+    const char* const scanFormat;
 
     /**
      * Name to present the value as when printing help.
      */
-    const char* valueName;
+    const char* const valueName;
 
     /**
      * Value will be placed here if the argument is present and scanFormat is
      * not null.
      */
-    void* value;
+    void* const value;
 
     /**
      * Will be set to true if the argument is present and the pointer is not
      * null.
      */
-    bool* valuePresent;
+    bool* const valuePresent;
 
     /**
      * Help text for this argument.
      */
-    const char* helpText;
+    const char* const helpText;
 } Arg;
 
 // prototypes

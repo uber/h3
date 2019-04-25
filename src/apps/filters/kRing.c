@@ -59,7 +59,7 @@ int main(int argc, char* argv[]) {
     int k = 0;
     bool printDistances = false;
     H3Index origin = 0;
-    bool originPresent;
+    bool originPresent = false;
     Arg args[] = {
         {.names = {"-h", "--help"},
          .isHelp = true,
