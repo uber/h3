@@ -42,6 +42,44 @@
 #define PARSE_ARGS_MISSING_REQUIRED 6
 
 /**
+ * Parse command line arguments and prints help, if needed.
+ *
+ * Uses the provided arguments to populate argument values and records in the
+ * argument if it is found.
+ *
+ * Returns non-zero if all required arguments are not present, an argument fails
+ * to parse, is missing its associated value, or arguments are specified more
+ * than once.
+ *
+ * Help is printed to stdout if a argument with isHelp = true is found, and help
+ * si printed to stderr if argument parsing fails.
+ *
+ * @param argc argc from main
+ * @param argv argv from main
+ * @param numArgs Number of elements in the args array
+ * @param args Pointer to each argument to parse
+ * @param helpArg Pointer to the argument for "--help"
+ * @param helpText Explanatory text for this program printed with help
+ * @return 0 if argument parsing succeeded, otherwise non-0. If help is printed,
+ * return value is non-0.
+ */
+int parseArgs(int argc, char* argv[], int numArgs, Arg* args[],
+              const Arg* helpArg, const char* helpText) {
+    const char* errorMessage = NULL;
+    const char* errorDetails = NULL;
+
+    int failed = _parseArgsList(argc, argv, 4, args, helpArg, &errorMessage,
+                                &errorDetails);
+
+    if (failed || helpArg->found) {
+        _printHelp(helpArg->found ? stdout : stderr, argv[0], helpText, numArgs,
+                   args, errorMessage, errorDetails);
+        return failed != PARSE_ARGS_SUCCESS ? failed : PARSE_ARGS_HELP;
+    }
+    return PARSE_ARGS_SUCCESS;
+}
+
+/**
  * Parse command line arguments.
  *
  * Uses the provided arguments to populate argument values.
@@ -180,44 +218,6 @@ void _printHelp(FILE* out, const char* programName, const char* helpText,
         }
         fprintf(out, "%s\n", args[i]->helpText);
     }
-}
-
-/**
- * Parse command line arguments and prints help, if needed.
- *
- * Uses the provided arguments to populate argument values and records in the
- * argument if it is found.
- *
- * Returns non-zero if all required arguments are not present, an argument fails
- * to parse, is missing its associated value, or arguments are specified more
- * than once.
- *
- * Help is printed to stdout if a argument with isHelp = true is found, and help
- * si printed to stderr if argument parsing fails.
- *
- * @param argc argc from main
- * @param argv argv from main
- * @param numArgs Number of elements in the args array
- * @param args Pointer to each argument to parse
- * @param helpArg Pointer to the argument for "--help"
- * @param helpText Explanatory text for this program printed with help
- * @return 0 if argument parsing succeeded, otherwise non-0. If help is printed,
- * return value is non-0.
- */
-int parseArgs(int argc, char* argv[], int numArgs, Arg* args[],
-              const Arg* helpArg, const char* helpText) {
-    const char* errorMessage = NULL;
-    const char* errorDetails = NULL;
-
-    int failed = _parseArgsList(argc, argv, 4, args, helpArg, &errorMessage,
-                                &errorDetails);
-
-    if (failed || helpArg->found) {
-        _printHelp(helpArg->found ? stdout : stderr, argv[0], helpText, numArgs,
-                   args, errorMessage, errorDetails);
-        return failed != PARSE_ARGS_SUCCESS ? failed : PARSE_ARGS_HELP;
-    }
-    return PARSE_ARGS_SUCCESS;
 }
 
 void error(const char* msg) {

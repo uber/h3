@@ -105,4 +105,11 @@ void iterateAllIndexesAtRes(int res, void (*callback)(H3Index));
 void iterateAllIndexesAtResPartial(int res, void (*callback)(H3Index),
                                    int maxBaseCell);
 
+int _parseArgsList(int argc, char* argv[], int numArgs, Arg* args[],
+                   const Arg* helpArg, const char** errorMessage,
+                   const char** errorDetail);
+void _printHelp(FILE* out, const char* programName, const char* helpText,
+                int numArgs, Arg* args[], const char* errorMessage,
+                const char* errorDetails);
+
 #endif
