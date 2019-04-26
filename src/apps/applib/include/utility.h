@@ -72,10 +72,10 @@ typedef struct {
     void* const value;
 
     /**
-     * Will be set to true if the argument is present and the pointer is not
-     * null.
+     * Will be set to true if the argument is present. Should be false when
+     * passed in to parseArgs.
      */
-    bool* const valuePresent;
+    bool found;
 
     /**
      * Help text for this argument.
@@ -85,11 +85,11 @@ typedef struct {
 
 // prototypes
 
-int parseArgs(int argc, char* argv[], int numArgs, const Arg* args,
+int parseArgs(int argc, char* argv[], int numArgs, Arg* args[],
               char** errorMessage, char** errorDetail);
 
 void printHelp(FILE* out, const char* programName, const char* helpText,
-               int numArgs, const Arg* args, const char* errorMessage,
+               int numArgs, const Arg* args[], const char* errorMessage,
                const char* errorDetails);
 
 void error(const char* msg);

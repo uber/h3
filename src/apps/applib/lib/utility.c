@@ -52,16 +52,15 @@
  * @param argc argc from main
  * @param argv argv from main
  * @param numArgs Number of elements in the args array
- * @param args Each argument to parse.
+ * @param args Pointer to each argument to parse.
  * @param errorMessage Error message to display, if returning non-zero. Caller
  * must free this.
  * @param errorDetail Additional error details, if returning non-zero. May be
  * null, caller must free this.
  * @return 0 if argument parsing succeeded, otherwise non-0.
  */
-int parseArgs(int argc, char* argv[], int numArgs, const Arg* args,
+int parseArgs(int argc, char* argv[], int numArgs, Arg* args[],
               char** errorMessage, char** errorDetail) {
-    bool* foundArgs = calloc(numArgs, sizeof(bool));
     // Whether help was found and required arguments do not need to be checked
     bool foundHelp = false;
 
@@ -74,10 +73,10 @@ int parseArgs(int argc, char* argv[], int numArgs, const Arg* args,
             // if it matches.
             const char* argName = NULL;
             for (int k = 0; k < NUM_ARG_NAMES; k++) {
-                if (args[j].names[k] == NULL) continue;
+                if (args[j]->names[k] == NULL) continue;
 
-                if (strcmp(argv[i], args[j].names[k]) == 0) {
-                    argName = args[j].names[k];
+                if (strcmp(argv[i], args[j]->names[k]) == 0) {
+                    argName = args[j]->names[k];
                     break;
                 }
             }
@@ -85,47 +84,38 @@ int parseArgs(int argc, char* argv[], int numArgs, const Arg* args,
             // next argument.
             if (argName == NULL) continue;
 
-            if (foundArgs[j]) {
-                free(foundArgs);
+            if (args[j]->found) {
                 *errorMessage = strdup("Argument specified multiple times");
                 *errorDetail = strdup(argName);
                 return PARSE_ARGS_REPEATED_ARGUMENT;
             }
 
-            if (args[j].valuePresent != NULL) {
-                // Program is interested in whether this argument was present,
-                // regardless of any value it may have.
-                *args[j].valuePresent = true;
-            }
-            if (args[j].scanFormat != NULL) {
+            if (args[j]->scanFormat != NULL) {
                 // Argument has a value, need to advance one and read the value.
                 i++;
                 if (i >= argc) {
-                    free(foundArgs);
                     *errorMessage = strdup("Argument value not present");
                     *errorDetail = strdup(argName);
                     return PARSE_ARGS_MISSING_VALUE;
                 }
 
-                if (!sscanf(argv[i], args[j].scanFormat, args[j].value)) {
-                    free(foundArgs);
+                if (!sscanf(argv[i], args[j]->scanFormat, args[j]->value)) {
                     *errorMessage = strdup("Failed to parse argument");
                     *errorDetail = strdup(argName);
                     return PARSE_ARGS_FAILED_PARSE;
                 }
             }
 
-            if (args[j].isHelp) {
+            if (args[j]->isHelp) {
                 foundHelp = true;
             }
 
-            foundArgs[j] = true;
+            args[j]->found = true;
             foundMatch = true;
             break;
         }
 
         if (!foundMatch) {
-            free(foundArgs);
             *errorMessage = strdup("Unknown argument");
             // Don't set errorDetail, since the input could be unprintable.
             return PARSE_ARGS_UNKNOWN_ARGUMENT;
@@ -135,16 +125,14 @@ int parseArgs(int argc, char* argv[], int numArgs, const Arg* args,
     // Check for missing required arguments.
     if (!foundHelp) {
         for (int i = 0; i < numArgs; i++) {
-            if (args[i].required && !foundArgs[i]) {
-                free(foundArgs);
+            if (args[i]->required && !args[i]->found) {
                 *errorMessage = strdup("Required argument missing");
-                *errorDetail = strdup(args[i].names[0]);
+                *errorDetail = strdup(args[i]->names[0]);
                 return PARSE_ARGS_MISSING_REQUIRED;
             }
         }
     }
 
-    free(foundArgs);
     return PARSE_ARGS_SUCCESS;
 }
 
@@ -155,12 +143,12 @@ int parseArgs(int argc, char* argv[], int numArgs, const Arg* args,
  * @param programName Program name, such as from argv[0]
  * @param helpText Explanation of what the program does
  * @param numArgs Number of arguments to print help for
- * @param args Arguments to print help for
+ * @param args Pointer to arguments to print help for
  * @param errorMessage Error message, or null
  * @param errorDetails Additional error detail message, or null
  */
 void printHelp(FILE* out, const char* programName, const char* helpText,
-               int numArgs, const Arg* args, const char* errorMessage,
+               int numArgs, const Arg* args[], const char* errorMessage,
                const char* errorDetails) {
     if (errorMessage != NULL) {
         fprintf(out, "%s: %s", programName, errorMessage);
@@ -176,18 +164,18 @@ void printHelp(FILE* out, const char* programName, const char* helpText,
     for (int i = 0; i < numArgs; i++) {
         fprintf(out, "\t");
         for (int j = 0; j < NUM_ARG_NAMES; j++) {
-            if (args[i].names[j] == NULL) continue;
+            if (args[i]->names[j] == NULL) continue;
             if (j != 0) fprintf(out, ", ");
-            fprintf(out, "%s", args[i].names[j]);
+            fprintf(out, "%s", args[i]->names[j]);
         }
-        if (args[i].scanFormat != NULL) {
-            fprintf(out, " <%s>", args[i].valueName);
+        if (args[i]->scanFormat != NULL) {
+            fprintf(out, " <%s>", args[i]->valueName);
         }
         fprintf(out, "\t");
-        if (args[i].required) {
+        if (args[i]->required) {
             fprintf(out, "Required. ");
         }
-        fprintf(out, "%s\n", args[i].helpText);
+        fprintf(out, "%s\n", args[i]->helpText);
     }
 }
 

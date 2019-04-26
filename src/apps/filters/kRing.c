@@ -55,47 +55,45 @@ void doCell(H3Index h, int k, int printDistances) {
 }
 
 int main(int argc, char* argv[]) {
-    bool helpArg = false;
     int k = 0;
-    bool printDistances = false;
     H3Index origin = 0;
-    bool originPresent = false;
-    Arg args[] = {
-        {.names = {"-h", "--help"},
-         .isHelp = true,
-         .valuePresent = &helpArg,
-         .helpText = "Show this help message"},
-        {.names = {"-k", NULL},
-         .required = true,
-         .scanFormat = "%d",
-         .valueName = "k",
-         .value = &k,
-         .helpText = "Radius of hexagons"},
-        {.names = {"-d", "--print-distances"},
-         .valuePresent = &printDistances,
-         .helpText = "Print distance from origin after index"},
-        {.names = {"-o", "--origin"},
-         .scanFormat = "%" PRIx64,
-         .valueName = "origin",
-         .value = &origin,
-         .valuePresent = &originPresent,
-         .helpText =
-             "Origin, or not specified to read origins from standard in"}};
+
+    Arg helpArg = {.names = {"-h", "--help"},
+                   .isHelp = true,
+                   .helpText = "Show this help message"};
+    Arg kArg = {.names = {"-k", NULL},
+                .required = true,
+                .scanFormat = "%d",
+                .valueName = "k",
+                .value = &k,
+                .helpText = "Radius of hexagons"};
+    Arg printDistancesArg = {
+        .names = {"-d", "--print-distances"},
+        .helpText = "Print distance from origin after index"};
+    Arg originArg = {
+        .names = {"-o", "--origin"},
+        .scanFormat = "%" PRIx64,
+        .valueName = "origin",
+        .value = &origin,
+        .helpText =
+            "Origin, or not specified to read origins from standard in"};
+
+    Arg* args[] = {&helpArg, &kArg, &printDistancesArg, &originArg};
 
     char* errorMessage = NULL;
     char* errorDetails = NULL;
     if (parseArgs(argc, argv, 4, args, &errorMessage, &errorDetails) ||
-        helpArg) {
-        printHelp(helpArg ? stdout : stderr, argv[0],
+        helpArg.found) {
+        printHelp(helpArg.found ? stdout : stderr, argv[0],
                   "Print indexes k distance away from the origin", 4, args,
                   errorMessage, errorDetails);
         free(errorMessage);
         free(errorDetails);
-        return helpArg ? 0 : 1;
+        return helpArg.found ? 0 : 1;
     }
 
-    if (originPresent) {
-        doCell(origin, k, printDistances);
+    if (originArg.found) {
+        doCell(origin, k, printDistancesArg.found);
     } else {
         // process the indexes on stdin
         char buff[BUFF_SIZE];
@@ -109,7 +107,7 @@ int main(int argc, char* argv[]) {
             }
 
             H3Index h3 = H3_EXPORT(stringToH3)(buff);
-            doCell(h3, k, printDistances);
+            doCell(h3, k, printDistancesArg.found);
         }
     }
 }
