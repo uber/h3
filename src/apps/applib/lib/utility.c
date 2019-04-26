@@ -34,11 +34,12 @@
  */
 
 #define PARSE_ARGS_SUCCESS 0
-#define PARSE_ARGS_REPEATED_ARGUMENT 1
-#define PARSE_ARGS_MISSING_VALUE 2
-#define PARSE_ARGS_FAILED_PARSE 3
-#define PARSE_ARGS_UNKNOWN_ARGUMENT 4
-#define PARSE_ARGS_MISSING_REQUIRED 5
+#define PARSE_ARGS_HELP 1
+#define PARSE_ARGS_REPEATED_ARGUMENT 2
+#define PARSE_ARGS_MISSING_VALUE 3
+#define PARSE_ARGS_FAILED_PARSE 4
+#define PARSE_ARGS_UNKNOWN_ARGUMENT 5
+#define PARSE_ARGS_MISSING_REQUIRED 6
 
 /**
  * Parse command line arguments.
@@ -53,14 +54,13 @@
  * @param argv argv from main
  * @param numArgs Number of elements in the args array
  * @param args Pointer to each argument to parse.
- * @param errorMessage Error message to display, if returning non-zero. Caller
- * must free this.
+ * @param errorMessage Error message to display, if returning non-zero.
  * @param errorDetail Additional error details, if returning non-zero. May be
- * null, caller must free this.
+ * null, and may be a pointer from `argv` or `args`.
  * @return 0 if argument parsing succeeded, otherwise non-0.
  */
-int parseArgs(int argc, char* argv[], int numArgs, Arg* args[],
-              char** errorMessage, char** errorDetail) {
+int _parseArgsList(int argc, char* argv[], int numArgs, Arg* args[],
+                   const char** errorMessage, const char** errorDetail) {
     // Whether help was found and required arguments do not need to be checked
     bool foundHelp = false;
 
@@ -85,8 +85,8 @@ int parseArgs(int argc, char* argv[], int numArgs, Arg* args[],
             if (argName == NULL) continue;
 
             if (args[j]->found) {
-                *errorMessage = strdup("Argument specified multiple times");
-                *errorDetail = strdup(argName);
+                *errorMessage = "Argument specified multiple times";
+                *errorDetail = argName;
                 return PARSE_ARGS_REPEATED_ARGUMENT;
             }
 
@@ -94,14 +94,14 @@ int parseArgs(int argc, char* argv[], int numArgs, Arg* args[],
                 // Argument has a value, need to advance one and read the value.
                 i++;
                 if (i >= argc) {
-                    *errorMessage = strdup("Argument value not present");
-                    *errorDetail = strdup(argName);
+                    *errorMessage = "Argument value not present";
+                    *errorDetail = argName;
                     return PARSE_ARGS_MISSING_VALUE;
                 }
 
                 if (!sscanf(argv[i], args[j]->scanFormat, args[j]->value)) {
-                    *errorMessage = strdup("Failed to parse argument");
-                    *errorDetail = strdup(argName);
+                    *errorMessage = "Failed to parse argument";
+                    *errorDetail = argName;
                     return PARSE_ARGS_FAILED_PARSE;
                 }
             }
@@ -116,7 +116,7 @@ int parseArgs(int argc, char* argv[], int numArgs, Arg* args[],
         }
 
         if (!foundMatch) {
-            *errorMessage = strdup("Unknown argument");
+            *errorMessage = "Unknown argument";
             // Don't set errorDetail, since the input could be unprintable.
             return PARSE_ARGS_UNKNOWN_ARGUMENT;
         }
@@ -126,8 +126,8 @@ int parseArgs(int argc, char* argv[], int numArgs, Arg* args[],
     if (!foundHelp) {
         for (int i = 0; i < numArgs; i++) {
             if (args[i]->required && !args[i]->found) {
-                *errorMessage = strdup("Required argument missing");
-                *errorDetail = strdup(args[i]->names[0]);
+                *errorMessage = "Required argument missing";
+                *errorDetail = args[i]->names[0];
                 return PARSE_ARGS_MISSING_REQUIRED;
             }
         }
@@ -147,9 +147,9 @@ int parseArgs(int argc, char* argv[], int numArgs, Arg* args[],
  * @param errorMessage Error message, or null
  * @param errorDetails Additional error detail message, or null
  */
-void printHelp(FILE* out, const char* programName, const char* helpText,
-               int numArgs, const Arg* args[], const char* errorMessage,
-               const char* errorDetails) {
+void _printHelp(FILE* out, const char* programName, const char* helpText,
+                int numArgs, Arg* args[], const char* errorMessage,
+                const char* errorDetails) {
     if (errorMessage != NULL) {
         fprintf(out, "%s: %s", programName, errorMessage);
         if (errorDetails != NULL) {
@@ -177,6 +177,44 @@ void printHelp(FILE* out, const char* programName, const char* helpText,
         }
         fprintf(out, "%s\n", args[i]->helpText);
     }
+}
+
+/**
+ * Parse command line arguments and prints help, if needed.
+ *
+ * Uses the provided arguments to populate argument values and records in the
+ * argument if it is found.
+ *
+ * Returns non-zero if all required arguments are not present, an argument fails
+ * to parse, is missing its associated value, or arguments are specified more
+ * than once.
+ *
+ * Help is printed to stdout if a argument with isHelp = true is found, and help
+ * si printed to stderr if argument parsing fails.
+ *
+ * @param argc argc from main
+ * @param argv argv from main
+ * @param numArgs Number of elements in the args array
+ * @param args Pointer to each argument to parse
+ * @param helpArg Pointer to the argument for "--help"
+ * @param helpText Explanatory text for this program printed with help
+ * @return 0 if argument parsing succeeded, otherwise non-0. If help is printed,
+ * return value is non-0.
+ */
+int parseArgs(int argc, char* argv[], int numArgs, Arg* args[],
+              const Arg* helpArg, const char* helpText) {
+    const char* errorMessage = NULL;
+    const char* errorDetails = NULL;
+
+    int failed =
+        _parseArgsList(argc, argv, 4, args, &errorMessage, &errorDetails);
+
+    if (failed || helpArg->found) {
+        _printHelp(helpArg->found ? stdout : stderr, argv[0], helpText, numArgs,
+                   args, errorMessage, errorDetails);
+        return failed != PARSE_ARGS_SUCCESS ? failed : PARSE_ARGS_HELP;
+    }
+    return PARSE_ARGS_SUCCESS;
 }
 
 void error(const char* msg) {

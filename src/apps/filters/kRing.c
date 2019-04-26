@@ -80,15 +80,8 @@ int main(int argc, char* argv[]) {
 
     Arg* args[] = {&helpArg, &kArg, &printDistancesArg, &originArg};
 
-    char* errorMessage = NULL;
-    char* errorDetails = NULL;
-    if (parseArgs(argc, argv, 4, args, &errorMessage, &errorDetails) ||
-        helpArg.found) {
-        printHelp(helpArg.found ? stdout : stderr, argv[0],
-                  "Print indexes k distance away from the origin", 4, args,
-                  errorMessage, errorDetails);
-        free(errorMessage);
-        free(errorDetails);
+    if (parseArgs(argc, argv, 4, args, &helpArg,
+                  "Print indexes k distance away from the origin")) {
         return helpArg.found ? 0 : 1;
     }
 
