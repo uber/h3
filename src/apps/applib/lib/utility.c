@@ -54,13 +54,16 @@
  * @param argv argv from main
  * @param numArgs Number of elements in the args array
  * @param args Pointer to each argument to parse.
+ * @param helpArg Pointer to the argument for "--help" that suppresses checking
+ * for required arguments.
  * @param errorMessage Error message to display, if returning non-zero.
  * @param errorDetail Additional error details, if returning non-zero. May be
  * null, and may be a pointer from `argv` or `args`.
  * @return 0 if argument parsing succeeded, otherwise non-0.
  */
 int _parseArgsList(int argc, char* argv[], int numArgs, Arg* args[],
-                   const char** errorMessage, const char** errorDetail) {
+                   const Arg* helpArg, const char** errorMessage,
+                   const char** errorDetail) {
     // Whether help was found and required arguments do not need to be checked
     bool foundHelp = false;
 
@@ -106,7 +109,7 @@ int _parseArgsList(int argc, char* argv[], int numArgs, Arg* args[],
                 }
             }
 
-            if (args[j]->isHelp) {
+            if (args[j] == helpArg) {
                 foundHelp = true;
             }
 
@@ -206,8 +209,8 @@ int parseArgs(int argc, char* argv[], int numArgs, Arg* args[],
     const char* errorMessage = NULL;
     const char* errorDetails = NULL;
 
-    int failed =
-        _parseArgsList(argc, argv, 4, args, &errorMessage, &errorDetails);
+    int failed = _parseArgsList(argc, argv, 4, args, helpArg, &errorMessage,
+                                &errorDetails);
 
     if (failed || helpArg->found) {
         _printHelp(helpArg->found ? stdout : stderr, argv[0], helpText, numArgs,

@@ -50,11 +50,6 @@ typedef struct {
     const bool required;
 
     /**
-     * If true, this argument suppresses checking for required arguments.
-     */
-    const bool isHelp;
-
-    /**
      * Scan format for the argument, which will be passed to sscanf. May be null
      * to indicate the argument does not take a value.
      */

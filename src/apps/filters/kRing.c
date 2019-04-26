@@ -59,7 +59,6 @@ int main(int argc, char* argv[]) {
     H3Index origin = 0;
 
     Arg helpArg = {.names = {"-h", "--help"},
-                   .isHelp = true,
                    .helpText = "Show this help message"};
     Arg kArg = {.names = {"-k", NULL},
                 .required = true,
