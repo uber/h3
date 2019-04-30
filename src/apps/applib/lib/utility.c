@@ -52,7 +52,7 @@
  * than once.
  *
  * Help is printed to stdout if a argument with isHelp = true is found, and help
- * si printed to stderr if argument parsing fails.
+ * is printed to stderr if argument parsing fails.
  *
  * @param argc argc from main
  * @param argv argv from main
