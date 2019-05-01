@@ -17,16 +17,16 @@
  * @brief stdin/stdout filter that converts from integer H3 indexes to
  * k-rings
  *
- *  usage: `kRing [k] [printDistances]`
+ *  usage: `kRing -k <k> [--print-distances] [--origin origin]`
  *
  *  The program reads H3 indexes from stdin until EOF and outputs
  *  the H3 indexes within k-ring `k` to stdout.
  *
- *  `printDistances` may be specified to also print the grid distance
- *  from the origin index. Valid values are 0 to not print distances
- *  (default) or 1 to print distances.
+ *  --print-distances may be specified to also print the grid distance
+ *  from the origin index.
  */
 
+#include <inttypes.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -55,33 +55,51 @@ void doCell(H3Index h, int k, int printDistances) {
 }
 
 int main(int argc, char* argv[]) {
-    // check command line args
-    if (argc != 2 && argc != 3) {
-        fprintf(stderr, "usage: %s [k] [printDistances]\n", argv[0]);
-        exit(1);
-    }
-
     int k = 0;
-    if (!sscanf(argv[1], "%d", &k)) error("k must be an integer");
+    H3Index origin = 0;
 
-    int printDistances = 0;
-    if (argc > 2) {
-        if (!sscanf(argv[2], "%d", &printDistances))
-            error("printDistances must be an integer");
+    Arg helpArg = {.names = {"-h", "--help"},
+                   .helpText = "Show this help message"};
+    Arg kArg = {.names = {"-k", NULL},
+                .required = true,
+                .scanFormat = "%d",
+                .valueName = "k",
+                .value = &k,
+                .helpText = "Radius of hexagons"};
+    Arg printDistancesArg = {
+        .names = {"-d", "--print-distances"},
+        .helpText = "Print distance from origin after index"};
+    Arg originArg = {
+        .names = {"-o", "--origin"},
+        .scanFormat = "%" PRIx64,
+        .valueName = "origin",
+        .value = &origin,
+        .helpText =
+            "Origin, or not specified to read origins from standard in"};
+
+    Arg* args[] = {&helpArg, &kArg, &printDistancesArg, &originArg};
+
+    if (parseArgs(argc, argv, 4, args, &helpArg,
+                  "Print indexes k distance away from the origin")) {
+        return helpArg.found ? 0 : 1;
     }
 
-    // process the indexes on stdin
-    char buff[BUFF_SIZE];
-    while (1) {
-        // get an index from stdin
-        if (!fgets(buff, BUFF_SIZE, stdin)) {
-            if (feof(stdin))
-                break;
-            else
-                error("reading H3 index from stdin");
-        }
+    if (originArg.found) {
+        doCell(origin, k, printDistancesArg.found);
+    } else {
+        // process the indexes on stdin
+        char buff[BUFF_SIZE];
+        while (1) {
+            // get an index from stdin
+            if (!fgets(buff, BUFF_SIZE, stdin)) {
+                if (feof(stdin))
+                    break;
+                else
+                    error("reading H3 index from stdin");
+            }
 
-        H3Index h3 = H3_EXPORT(stringToH3)(buff);
-        doCell(h3, k, printDistances);
+            H3Index h3 = H3_EXPORT(stringToH3)(buff);
+            doCell(h3, k, printDistancesArg.found);
+        }
     }
 }
