@@ -65,16 +65,18 @@ int main(int argc, char* argv[]) {
 
     Arg* args[] = {&helpArg, &resArg, &latArg, &lonArg};
 
-    if (parseArgs(
-            argc, argv, 4, args, &helpArg,
-            "Convert degrees latitude/longitude coordinates to H3 indexes.")) {
+    const char* helpText =
+        "Convert degrees latitude/longitude coordinates to H3 indexes.";
+
+    if (parseArgs(argc, argv, 4, args, &helpArg, helpText)) {
         return helpArg.found ? 0 : 1;
     }
 
     if (latArg.found != lonArg.found) {
-        // One is true but the other is not.
-        fprintf(stderr, "Latitude and longitude must both be specified.\n");
-        return 2;
+        // One is found but the other is not.
+        printHelp(stderr, argv[0], helpText, 4, args,
+                  "Latitude and longitude must both be specified.", NULL);
+        return 1;
     }
 
     if (latArg.found) {

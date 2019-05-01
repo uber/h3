@@ -82,6 +82,9 @@ typedef struct {
 
 int parseArgs(int argc, char* argv[], int numArgs, Arg* args[],
               const Arg* helpArg, const char* helpText);
+void printHelp(FILE* out, const char* programName, const char* helpText,
+               int numArgs, Arg* args[], const char* errorMessage,
+               const char* errorDetails);
 
 void error(const char* msg);
 void h3Print(H3Index h);    // prints as integer
@@ -108,8 +111,5 @@ void iterateAllIndexesAtResPartial(int res, void (*callback)(H3Index),
 int _parseArgsList(int argc, char* argv[], int numArgs, Arg* args[],
                    const Arg* helpArg, const char** errorMessage,
                    const char** errorDetail);
-void _printHelp(FILE* out, const char* programName, const char* helpText,
-                int numArgs, Arg* args[], const char* errorMessage,
-                const char* errorDetails);
 
 #endif

@@ -72,8 +72,8 @@ int parseArgs(int argc, char* argv[], int numArgs, Arg* args[],
                                 &errorDetails);
 
     if (failed || helpArg->found) {
-        _printHelp(helpArg->found ? stdout : stderr, argv[0], helpText, numArgs,
-                   args, errorMessage, errorDetails);
+        printHelp(helpArg->found ? stdout : stderr, argv[0], helpText, numArgs,
+                  args, errorMessage, errorDetails);
         return failed != PARSE_ARGS_SUCCESS ? failed : PARSE_ARGS_HELP;
     }
     return PARSE_ARGS_SUCCESS;
@@ -188,9 +188,9 @@ int _parseArgsList(int argc, char* argv[], int numArgs, Arg* args[],
  * @param errorMessage Error message, or null
  * @param errorDetails Additional error detail message, or null
  */
-void _printHelp(FILE* out, const char* programName, const char* helpText,
-                int numArgs, Arg* args[], const char* errorMessage,
-                const char* errorDetails) {
+void printHelp(FILE* out, const char* programName, const char* helpText,
+               int numArgs, Arg* args[], const char* errorMessage,
+               const char* errorDetails) {
     if (errorMessage != NULL) {
         fprintf(out, "%s: %s", programName, errorMessage);
         if (errorDetails != NULL) {
