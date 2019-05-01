@@ -9,6 +9,8 @@ The public API of this library consists of the functions declared in file
 ### Added
 - `localIjToH3` filter application (#222)
 - An option to print distances in the `kRing` filter application (#222)
+### Changed
+- Arguments parsing for filter applications is more flexible. (#224)
 ### Fixed
 - `benchmarkPolyfill` allocates its memory on the heap (#198)
 - Fixed constraints of vertex longitudes (#213)

@@ -59,23 +59,23 @@ int main(int argc, char* argv[]) {
     H3Index origin = 0;
 
     Arg helpArg = {.names = {"-h", "--help"},
-                   .helpText = "Show this help message"};
+                   .helpText = "Show this help message."};
     Arg kArg = {.names = {"-k", NULL},
                 .required = true,
                 .scanFormat = "%d",
                 .valueName = "k",
                 .value = &k,
-                .helpText = "Radius of hexagons"};
+                .helpText = "Radius of hexagons."};
     Arg printDistancesArg = {
         .names = {"-d", "--print-distances"},
-        .helpText = "Print distance from origin after index"};
+        .helpText = "Print distance from origin after index."};
     Arg originArg = {
         .names = {"-o", "--origin"},
         .scanFormat = "%" PRIx64,
         .valueName = "origin",
         .value = &origin,
         .helpText =
-            "Origin, or not specified to read origins from standard in"};
+            "Origin, or not specified to read origins from standard in."};
 
     Arg* args[] = {&helpArg, &kArg, &printDistancesArg, &originArg};
 
