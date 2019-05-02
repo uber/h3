@@ -49,7 +49,7 @@ void doCell(H3Index h, bool verboseMode) {
     int h3Res = H3_GET_RESOLUTION(h);
     int h3BaseCell = H3_GET_BASE_CELL(h);
     if (verboseMode) {
-        char* modes[] = {
+        const char* modes[] = {
             "RESERVED",             // 0
             "Hexagon",              // 1
             "Unidirectional Edge",  // 2
