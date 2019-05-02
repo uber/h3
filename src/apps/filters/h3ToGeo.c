@@ -81,12 +81,12 @@ int main(int argc, char *argv[]) {
             "Index, or not specified to read indexes from standard in."};
     Arg kmlArg = {.names = {"-k", "--kml"},
                   .helpText = "Print output in KML format."};
-    Arg kmlNameArg = {.names = {"-kn", "--kml-name"},
+    Arg kmlNameArg = {.names = {"--kn", "--kml-name"},
                       .scanFormat = "%255c",  // BUFF_SIZE - 1
                       .valueName = "name",
                       .value = &userKmlName,
                       .helpText = "Name of the KML file."};
-    Arg kmlDescArg = {.names = {"-kd", "--kml-description"},
+    Arg kmlDescArg = {.names = {"--kd", "--kml-description"},
                       .scanFormat = "%255c",  // BUFF_SIZE - 1
                       .valueName = "description",
                       .value = &userKmlDesc,

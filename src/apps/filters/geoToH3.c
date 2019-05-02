@@ -50,14 +50,14 @@ int main(int argc, char* argv[]) {
                   .valueName = "res",
                   .value = &res,
                   .helpText = "Resolution, 0-15 inclusive."};
-    Arg latArg = {.names = {"-lat", "--latitude"},
+    Arg latArg = {.names = {"--lat", "--latitude"},
                   .scanFormat = "%lf",
                   .valueName = "lat",
                   .value = &lat,
                   .helpText =
                       "Latitude in degrees. If not specified, \"latitude "
                       "longitude\" pairs will be read from stdin."};
-    Arg lonArg = {.names = {"-lon", "--longitude"},
+    Arg lonArg = {.names = {"--lon", "--longitude"},
                   .scanFormat = "%lf",
                   .valueName = "lon",
                   .value = &lon,
