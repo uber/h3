@@ -47,32 +47,54 @@ void doCell(H3Index h, H3Index origin) {
     }
 }
 
-int main(int argc, char *argv[]) {
-    // check command line args
-    if (argc != 2) {
-        fprintf(stderr, "usage: %s [origin]\n", argv[0]);
-        exit(1);
+int main(int argc, char* argv[]) {
+    H3Index origin = 0;
+    H3Index index = 0;
+
+    Arg helpArg = {.names = {"-h", "--help"},
+                   .helpText = "Show this help message."};
+    Arg originArg = {
+        .names = {"-o", "--origin"},
+        .scanFormat = "%" PRIx64,
+        .valueName = "origin",
+        .value = &origin,
+        .required = true,
+        .helpText =
+            "Origin (anchoring index) for the local coordinate system."};
+    Arg indexArg = {.names = {"-i", "--index"},
+                    .scanFormat = "%" PRIx64,
+                    .valueName = "index",
+                    .value = &index,
+                    .helpText = "Index to convert to IJ coordinates."};
+
+    Arg* args[] = {&helpArg, &originArg, &indexArg};
+
+    if (parseArgs(argc, argv, 3, args, &helpArg,
+                  "Converts H3 indexes to local IJ coordinates")) {
+        return helpArg.found ? 0 : 1;
     }
 
-    H3Index origin;
+    if (!H3_EXPORT(h3IsValid)(origin)) {
+        // TODO print help here
+        error("origin is invalid");
+    }
 
-    if (!sscanf(argv[1], "%" PRIx64, &origin))
-        error("origin could not be read");
+    if (indexArg.found) {
+        doCell(index, origin);
+    } else {
+        // process the indexes on stdin
+        char buff[BUFF_SIZE];
+        while (1) {
+            // get an index from stdin
+            if (!fgets(buff, BUFF_SIZE, stdin)) {
+                if (feof(stdin))
+                    break;
+                else
+                    error("reading H3 index from stdin");
+            }
 
-    if (!H3_EXPORT(h3IsValid)(origin)) error("origin is invalid");
-
-    // process the indexes on stdin
-    char buff[BUFF_SIZE];
-    while (1) {
-        // get an index from stdin
-        if (!fgets(buff, BUFF_SIZE, stdin)) {
-            if (feof(stdin))
-                break;
-            else
-                error("reading H3 index from stdin");
+            H3Index h3 = H3_EXPORT(stringToH3)(buff);
+            doCell(h3, origin);
         }
-
-        H3Index h3 = H3_EXPORT(stringToH3)(buff);
-        doCell(h3, origin);
     }
 }

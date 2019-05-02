@@ -46,30 +46,65 @@ void doCell(const CoordIJ *ij, H3Index origin) {
 }
 
 int main(int argc, char *argv[]) {
-    // check command line args
-    if (argc != 2) {
-        fprintf(stderr, "usage: %s [origin]\n", argv[0]);
-        exit(1);
+    H3Index origin = 0;
+    CoordIJ ij = {0};
+
+    Arg helpArg = {.names = {"-h", "--help"},
+                   .helpText = "Show this help message."};
+    Arg originArg = {
+        .names = {"-o", "--origin"},
+        .scanFormat = "%" PRIx64,
+        .valueName = "origin",
+        .value = &origin,
+        .required = true,
+        .helpText =
+            "Origin (anchoring index) for the local coordinate system."};
+    Arg iArg = {.names = {"-i", NULL},
+                .scanFormat = "%d",
+                .valueName = "i",
+                .value = &ij.i,
+                .helpText = "I coordinate."};
+    Arg jArg = {.names = {"-j", NULL},
+                .scanFormat = "%d",
+                .valueName = "j",
+                .value = &ij.j,
+                .helpText = "J coordinate."};
+
+    Arg *args[] = {&helpArg, &originArg, &iArg, &jArg};
+
+    if (parseArgs(argc, argv, 4, args, &helpArg,
+                  "Converts local IJ coordinates to H3 indexes.")) {
+        return helpArg.found ? 0 : 1;
     }
 
-    H3Index origin = H3_EXPORT(stringToH3(argv[1]));
-    if (!H3_EXPORT(h3IsValid)(origin)) error("origin is invalid");
+    if (!H3_EXPORT(h3IsValid)(origin)) {
+        // TODO print help here
+        error("origin is invalid");
+    }
 
-    // process the coordinates on stdin
-    char buff[BUFF_SIZE];
-    while (1) {
-        // get coordinates from stdin
-        if (!fgets(buff, BUFF_SIZE, stdin)) {
-            if (feof(stdin))
-                break;
-            else
-                error("reading IJ coordinates from stdin");
-        }
+    if (iArg.found != jArg.found) {
+        // TODO print help here
+        error("I and J must both be specified");
+    }
 
-        CoordIJ ij;
-        if (!sscanf(buff, "%d %d", &ij.i, &ij.j))
-            error("Parsing IJ coordinates. Expected `i j`.");
-
+    if (iArg.found) {
         doCell(&ij, origin);
+    } else {
+        // process the coordinates on stdin
+        char buff[BUFF_SIZE];
+        while (1) {
+            // get coordinates from stdin
+            if (!fgets(buff, BUFF_SIZE, stdin)) {
+                if (feof(stdin))
+                    break;
+                else
+                    error("reading IJ coordinates from stdin");
+            }
+
+            if (!sscanf(buff, "%d %d", &ij.i, &ij.j))
+                error("Parsing IJ coordinates. Expected `i j`.");
+
+            doCell(&ij, origin);
+        }
     }
 }

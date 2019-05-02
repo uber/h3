@@ -17,16 +17,16 @@
  * @brief stdin/stdout filter that converts from integer H3 indexes to
  * components.
  *
- *  usage: `h3ToComponents`
+ *  usage: `h3ToComponents [--verbose] [--index index]`
  *
  *  The program reads H3 indexes from stdin until EOF and outputs the
  *  corresponding component strings to stdout.
  */
 
+#include <inttypes.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include "baseCells.h"
 #include "h3Index.h"
 #include "utility.h"
 
@@ -44,28 +44,11 @@ char resDigitToChar(int d) {
     return '0' + d;
 }
 
-void doCell(H3Index h, int verboseMode) {
+void doCell(H3Index h, bool verboseMode) {
     int h3Mode = H3_GET_MODE(h);
     int h3Res = H3_GET_RESOLUTION(h);
     int h3BaseCell = H3_GET_BASE_CELL(h);
-    if (verboseMode == 0) {
-        if (h3Mode == H3_HEXAGON_MODE) {
-            printf("%d:%d:%d:", h3Mode, h3Res, h3BaseCell);
-            for (int i = 1; i <= h3Res; i++) {
-                printf("%c", resDigitToChar(H3_GET_INDEX_DIGIT(h, i)));
-            }
-            printf("\n");
-        } else if (h3Mode == H3_UNIEDGE_MODE) {
-            printf("%d:%d:%d:%d:", h3Mode, H3_GET_RESERVED_BITS(h), h3Res,
-                   h3BaseCell);
-            for (int i = 1; i <= h3Res; i++) {
-                printf("%c", resDigitToChar(H3_GET_INDEX_DIGIT(h, i)));
-            }
-            printf("\n");
-        } else {
-            printf("INVALID INDEX\n");
-        }
-    } else {
+    if (verboseMode) {
         char* modes[] = {
             "RESERVED",             // 0
             "Hexagon",              // 1
@@ -100,33 +83,64 @@ void doCell(H3Index h, int verboseMode) {
                    resDigitToChar(H3_GET_INDEX_DIGIT(h, i)));
         }
         printf("╚════════════╝\n\n");
+    } else {
+        if (h3Mode == H3_HEXAGON_MODE) {
+            printf("%d:%d:%d:", h3Mode, h3Res, h3BaseCell);
+            for (int i = 1; i <= h3Res; i++) {
+                printf("%c", resDigitToChar(H3_GET_INDEX_DIGIT(h, i)));
+            }
+            printf("\n");
+        } else if (h3Mode == H3_UNIEDGE_MODE) {
+            printf("%d:%d:%d:%d:", h3Mode, H3_GET_RESERVED_BITS(h), h3Res,
+                   h3BaseCell);
+            for (int i = 1; i <= h3Res; i++) {
+                printf("%c", resDigitToChar(H3_GET_INDEX_DIGIT(h, i)));
+            }
+            printf("\n");
+        } else {
+            printf("INVALID INDEX\n");
+        }
     }
 }
 
 int main(int argc, char* argv[]) {
-    // check command line args
-    int verboseMode = 0;
-    if (argc > 1) {
-        if (strncmp("--verbose", argv[1], 9) == 0) {
-            verboseMode = 1;
-        } else {
-            fprintf(stderr, "usage: %s [--verbose]\n", argv[0]);
-            exit(1);
-        }
+    H3Index index = 0;
+
+    Arg helpArg = {.names = {"-h", "--help"},
+                   .helpText = "Show this help message."};
+    Arg verboseArg = {.names = {"-v", "--verbose"},
+                      .helpText = "Verbose output mode."};
+    Arg indexArg = {
+        .names = {"-i", "--index"},
+        .scanFormat = "%" PRIx64,
+        .valueName = "index",
+        .value = &index,
+        .helpText =
+            "Index, or not specified to read indexes from standard in."};
+
+    Arg* args[] = {&helpArg, &verboseArg, &indexArg};
+
+    if (parseArgs(argc, argv, 3, args, &helpArg,
+                  "Converts H3 indexes to component parts.")) {
+        return helpArg.found ? 0 : 1;
     }
 
-    // process the indexes on stdin
-    char buff[BUFF_SIZE];
-    while (1) {
-        // get an index from stdin
-        if (!fgets(buff, BUFF_SIZE, stdin)) {
-            if (feof(stdin))
-                break;
-            else
-                error("reading H3 index from stdin");
-        }
+    if (indexArg.found) {
+        doCell(index, verboseArg.found);
+    } else {
+        // process the indexes on stdin
+        char buff[BUFF_SIZE];
+        while (1) {
+            // get an index from stdin
+            if (!fgets(buff, BUFF_SIZE, stdin)) {
+                if (feof(stdin))
+                    break;
+                else
+                    error("reading H3 index from stdin");
+            }
 
-        H3Index h3 = H3_EXPORT(stringToH3)(buff);
-        doCell(h3, verboseMode);
+            H3Index h3 = H3_EXPORT(stringToH3)(buff);
+            doCell(h3, verboseArg.found);
+        }
     }
 }
