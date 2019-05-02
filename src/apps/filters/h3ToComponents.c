@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 Uber Technologies, Inc.
+ * Copyright 2016-2017, 2019 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -121,7 +121,7 @@ int main(int argc, char* argv[]) {
     Arg* args[] = {&helpArg, &verboseArg, &indexArg};
 
     if (parseArgs(argc, argv, 3, args, &helpArg,
-                  "Converts H3 indexes to component parts.")) {
+                  "Converts H3 indexes to component parts")) {
         return helpArg.found ? 0 : 1;
     }
 

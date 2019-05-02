@@ -68,15 +68,17 @@ int main(int argc, char* argv[]) {
                     .helpText = "Index to convert to IJ coordinates."};
 
     Arg* args[] = {&helpArg, &originArg, &indexArg};
+    const int numArgs = 3;
+    const char* helpText = "Converts H3 indexes to local IJ coordinates";
 
-    if (parseArgs(argc, argv, 3, args, &helpArg,
-                  "Converts H3 indexes to local IJ coordinates")) {
+    if (parseArgs(argc, argv, numArgs, args, &helpArg, helpText)) {
         return helpArg.found ? 0 : 1;
     }
 
     if (!H3_EXPORT(h3IsValid)(origin)) {
-        // TODO print help here
-        error("origin is invalid");
+        printHelp(stderr, argv[0], helpText, numArgs, args,
+                  "Origin is invalid.", NULL);
+        return 1;
     }
 
     if (indexArg.found) {

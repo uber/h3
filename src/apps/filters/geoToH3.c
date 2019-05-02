@@ -80,17 +80,17 @@ int main(int argc, char* argv[]) {
                   .helpText = "Longitude in degrees."};
 
     Arg* args[] = {&helpArg, &resArg, &latArg, &lonArg};
-
+    const int numArgs = 4;
     const char* helpText =
         "Convert degrees latitude/longitude coordinates to H3 indexes.";
 
-    if (parseArgs(argc, argv, 4, args, &helpArg, helpText)) {
+    if (parseArgs(argc, argv, numArgs, args, &helpArg, helpText)) {
         return helpArg.found ? 0 : 1;
     }
 
     if (latArg.found != lonArg.found) {
         // One is found but the other is not.
-        printHelp(stderr, argv[0], helpText, 4, args,
+        printHelp(stderr, argv[0], helpText, numArgs, args,
                   "Latitude and longitude must both be specified.", NULL);
         return 1;
     }

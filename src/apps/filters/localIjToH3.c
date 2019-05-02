@@ -71,20 +71,24 @@ int main(int argc, char *argv[]) {
                 .helpText = "J coordinate."};
 
     Arg *args[] = {&helpArg, &originArg, &iArg, &jArg};
+    const int numArgs = 4;
+    const char *helpText = "Converts local IJ coordinates to H3 indexes";
 
-    if (parseArgs(argc, argv, 4, args, &helpArg,
-                  "Converts local IJ coordinates to H3 indexes.")) {
+    if (parseArgs(argc, argv, numArgs, args, &helpArg, helpText)) {
         return helpArg.found ? 0 : 1;
     }
 
     if (!H3_EXPORT(h3IsValid)(origin)) {
-        // TODO print help here
-        error("origin is invalid");
+        printHelp(stderr, argv[0], helpText, numArgs, args,
+                  "Origin is invalid.", NULL);
+        return 1;
     }
 
     if (iArg.found != jArg.found) {
-        // TODO print help here
-        error("I and J must both be specified");
+        // One is found but the other is not.
+        printHelp(stderr, argv[0], helpText, numArgs, args,
+                  "I and J must both be specified.", NULL);
+        return 1;
     }
 
     if (iArg.found) {
