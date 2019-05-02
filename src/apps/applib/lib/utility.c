@@ -68,8 +68,8 @@ int parseArgs(int argc, char* argv[], int numArgs, Arg* args[],
     const char* errorMessage = NULL;
     const char* errorDetails = NULL;
 
-    int failed = _parseArgsList(argc, argv, 4, args, helpArg, &errorMessage,
-                                &errorDetails);
+    int failed = _parseArgsList(argc, argv, numArgs, args, helpArg,
+                                &errorMessage, &errorDetails);
 
     if (failed || helpArg->found) {
         printHelp(helpArg->found ? stdout : stderr, argv[0], helpText, numArgs,
