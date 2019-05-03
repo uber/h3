@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2018 Uber Technologies, Inc.
+ * Copyright 2016-2019 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "coordijk.h"
 #include "geoCoord.h"
 #include "h3Index.h"
@@ -398,4 +399,21 @@ void iterateAllIndexesAtResPartial(int res, void (*callback)(H3Index),
 
         free(children);
     }
+}
+
+/**
+ * Generates a random lat/lon pair.
+ *
+ * @param g Lat/lon will be placed here.
+ */
+void randomGeo(GeoCoord* g) {
+    static int init = 0;
+    if (!init) {
+        srand((unsigned int)time(0));
+        init = 1;
+    }
+
+    g->lat = H3_EXPORT(degsToRads)(
+        (((float)rand() / (float)(RAND_MAX)) * 180.0) - 90.0);
+    g->lon = H3_EXPORT(degsToRads)((float)rand() / (float)(RAND_MAX)) * 360.0;
 }

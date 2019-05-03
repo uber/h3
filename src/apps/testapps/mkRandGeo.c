@@ -25,38 +25,43 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
-#include "baseCells.h"
-#include "h3Index.h"
 #include "utility.h"
 
-void randomGeo(GeoCoord* g) {
-    static int init = 0;
-    if (!init) {
-        srand((unsigned int)time(0));
-        init = 1;
-    }
-
-    g->lat = H3_EXPORT(degsToRads)(
-        (((float)rand() / (float)(RAND_MAX)) * 180.0) - 90.0);
-    g->lon = H3_EXPORT(degsToRads)((float)rand() / (float)(RAND_MAX)) * 360.0;
-}
-
 int main(int argc, char* argv[]) {
-    // check command line args
-    if (argc > 3) {
-        fprintf(stderr, "usage: %s numPoints resolution\n", argv[0]);
-        exit(1);
+    int res = 0;
+    int numPoints = 0;
+
+    Arg helpArg = {.names = {"-h", "--help"},
+                   .helpText = "Show this help message."};
+    Arg numPointsArg = {
+        .names = {"-n", "--num-points"},
+        .required = true,
+        .scanFormat = "%d",
+        .valueName = "num",
+        .value = &numPoints,
+        .helpText = "Number of random lat/lon pairs to generate."};
+    Arg resArg = {.names = {"-r", "--resolution"},
+                  .required = true,
+                  .scanFormat = "%d",
+                  .valueName = "res",
+                  .value = &res,
+                  .helpText = "Resolution, 0-15 inclusive."};
+
+    Arg* args[] = {&helpArg, &numPointsArg, &resArg};
+    const int numArgs = 3;
+    const char* helpText =
+        "Generates random lat/lon pairs and indexes them at the specified "
+        "resolution.";
+
+    if (parseArgs(argc, argv, numArgs, args, &helpArg, helpText)) {
+        return helpArg.found ? 0 : 1;
     }
 
-    int numPoints = 0;
-    if (!sscanf(argv[1], "%d", &numPoints))
-        error("numPoints must be an integer");
-
-    int res = 0;
-    if (!sscanf(argv[2], "%d", &res)) error("resolution must be an integer");
-
-    if (res > MAX_H3_RES) error("specified resolution exceeds max resolution");
+    if (res > MAX_H3_RES) {
+        printHelp(stderr, argv[0], helpText, numArgs, args,
+                  "Resolution exceeds maximum resolution.", NULL);
+        return 1;
+    }
 
     for (int i = 0; i < numPoints; i++) {
         GeoCoord g;

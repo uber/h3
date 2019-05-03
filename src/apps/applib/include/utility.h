@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2018 Uber Technologies, Inc.
+ * Copyright 2016-2019 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -103,6 +103,8 @@ void geoPrintlnNoFmt(const GeoCoord* p);
 void geoBoundaryPrint(const GeoBoundary* b);
 void geoBoundaryPrintln(const GeoBoundary* b);
 int readBoundary(FILE* f, GeoBoundary* b);
+
+void randomGeo(GeoCoord* p);
 
 void iterateAllIndexesAtRes(int res, void (*callback)(H3Index));
 void iterateAllIndexesAtResPartial(int res, void (*callback)(H3Index),
