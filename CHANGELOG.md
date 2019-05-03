@@ -6,6 +6,8 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+### Changed
+- Local coordinate spaces cannot cross more than one icosahedron face.
 
 ## [3.4.3] - 2019-05-02
 ### Added
