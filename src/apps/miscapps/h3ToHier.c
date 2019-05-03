@@ -17,7 +17,7 @@
  * @brief takes an optional H3 index and generates all descendant cells at the
  * specified resolution.
  *
- *  usage: `h3ToHier [resolution H3Index]`
+ *  usage: `h3ToHier --resolution res [--prefix prefix]`
  *
  *  The program generates all cells at the specified resolution, optionally
  *  only the children of the given index.
@@ -25,7 +25,7 @@
  *  `resolution` should be a positive integer. The default is 0 (i.e., only the
  *       base cells).
  *
- *  `H3Index` should be an H3Index. By default, all indices at the specified
+ *  `prefix` should be an H3Index. By default, all indices at the specified
  *       resolution are generated.
  */
 

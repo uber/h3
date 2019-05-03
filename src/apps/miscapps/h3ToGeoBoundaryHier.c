@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 Uber Technologies, Inc.
+ * Copyright 2016-2017, 2019 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,8 @@
  * @brief takes an H3 index and generates cell boundaries for all descendants
  * at a specified resolution.
  *
- *  usage: `h3ToGeoBoundaryHier H3Index [resolution outputMode]`
+ *  usage: `h3ToGeoBoundaryHier --prefix prefix [--resolution res] [--kml
+ * [--kml-name name] [--kml-description desc]]`
  *
  *  The program generates the cell boundaries in lat/lon coordinates for all
  *  hierarchical children of H3Index at the specified resolution. If the
@@ -27,21 +28,23 @@
  *  `resolution` should be a positive integer. The default is 0 (i.e., only the
  *       specified cell H3Index would be processed).
  *
- *  `outputMode` indicates the type of output; currently the choices are 0 for
- *       plain text output (the default) and 1 for KML output.
+ *  `--kml` indicates KML output format; if not specified plain text output is
+ *       the default.
  *
  *  Examples:
  *  ---------
  *
- *     `h3ToGeoBoundaryHier 836e9bfffffffff`
+ *     `h3ToGeoBoundaryHier --prefix 836e9bfffffffff`
  *        - outputs the cell boundary in lat/lon for cell `836e9bfffffffff` as
  *          plain text
  *
- *     `h3ToGeoBoundaryHier 820ceffffffffff 4 1 > cells.kml`
+ *     `h3ToGeoBoundaryHier --prefix 820ceffffffffff --resolution 4 --kml >
+ *          cells.kml`
  *        - outputs the cell boundaries of all of the resolution 4 descendants
  *          of cell `820ceffffffffff` as a KML file (redirected to `cells.kml`).
  *
- *     `h3ToGeoBoundaryHier 86283082fffffff 9 1 > uber9cells.kml`
+ *     `h3ToGeoBoundaryHier --prefix 86283082fffffff --resolution 9 --kml >
+ *          uber9cells.kml`
  *        - creates a KML file containing the cell boundaries of all of the
  *          resolution 9 hexagons covering Uber HQ and the surrounding region of
  *          San Francisco
@@ -94,55 +97,90 @@ void recursiveH3IndexToGeo(H3Index h, int res, int isKmlOut) {
     }
 }
 
-int main(int argc, char* argv[]) {
-    // check command line args
-    if (argc < 2 || argc > 5) {
-        fprintf(stderr, "usage: %s H3Index [resolution outputMode]\n", argv[0]);
-        exit(1);
+int main(int argc, char *argv[]) {
+    int res;
+    H3Index prefixIndex = 0;
+    char userKmlName[BUFF_SIZE] = {0};
+    char userKmlDesc[BUFF_SIZE] = {0};
+
+    Arg helpArg = {.names = {"-h", "--help"},
+                   .helpText = "Show this help message."};
+    Arg resArg = {.names = {"-r", "--resolution"},
+                  .scanFormat = "%d",
+                  .valueName = "res",
+                  .value = &res,
+                  .helpText =
+                      "Resolution, if less than the resolution of the prefix "
+                      "only the prefix is printed. Default 0."};
+    Arg prefixArg = {
+        .names = {"-p", "--prefix"},
+        .scanFormat = "%" PRIx64,
+        .valueName = "prefix",
+        .value = &prefixIndex,
+        .required = true,
+        .helpText = "Print cell boundaries descendent from this index."};
+    Arg kmlArg = {.names = {"-k", "--kml"},
+                  .helpText = "Print output in KML format."};
+    Arg kmlNameArg = {.names = {"--kn", "--kml-name"},
+                      .scanFormat = "%255c",  // BUFF_SIZE - 1
+                      .valueName = "name",
+                      .value = &userKmlName,
+                      .helpText = "Text for the KML name tag."};
+    Arg kmlDescArg = {.names = {"--kd", "--kml-description"},
+                      .scanFormat = "%255c",  // BUFF_SIZE - 1
+                      .valueName = "description",
+                      .value = &userKmlDesc,
+                      .helpText = "Text for the KML description tag."};
+
+    Arg *args[] = {&helpArg, &resArg,     &prefixArg,
+                   &kmlArg,  &kmlNameArg, &kmlDescArg};
+    const int numArgs = 6;
+    const char *helpText = "Print cell boundaries for descendants of an index";
+
+    if (parseArgs(argc, argv, numArgs, args, &helpArg, helpText)) {
+        return helpArg.found ? 0 : 1;
     }
 
-    H3Index rootCell = H3_EXPORT(stringToH3)(argv[1]);
-    int baseCell = H3_GET_BASE_CELL(rootCell);
-    int rootRes = H3_GET_RESOLUTION(rootCell);
-    if (baseCell < 0 || baseCell >= NUM_BASE_CELLS) {
-        error("invalid base cell number");
+    if (res > MAX_H3_RES) {
+        printHelp(stderr, argv[0], helpText, numArgs, args,
+                  "Resolution exceeds maximum resolution.", NULL);
+        return 1;
     }
 
-    int res = 0;
-    int isKmlOut = 0;
-    if (argc > 2) {
-        if (!sscanf(argv[2], "%d", &res))
-            error("resolution must be an integer");
+    if (!H3_EXPORT(h3IsValid)(prefixIndex)) {
+        printHelp(stderr, argv[0], helpText, numArgs, args,
+                  "Prefix index is invalid.", NULL);
+        return 1;
+    }
 
-        if (res > MAX_H3_RES)
-            error("specified resolution exceeds max resolution");
+    int rootRes = H3_GET_RESOLUTION(prefixIndex);
 
-        if (argc > 3) {
-            if (!sscanf(argv[3], "%d", &isKmlOut))
-                error("outputMode must be an integer");
+    if (kmlArg.found) {
+        char *kmlName;
+        if (kmlNameArg.found) {
+            kmlName = strdup(userKmlName);
+        } else {
+            kmlName = calloc(BUFF_SIZE, sizeof(char));
 
-            if (isKmlOut != 0 && isKmlOut != 1)
-                error("outputMode must be 0 or 1");
-
-            if (isKmlOut) {
-                char name[BUFF_SIZE];
-
-                sprintf(name, "Cell %" PRIx64 " Res %d", rootCell,
-                        ((res <= rootRes) ? rootRes : res));
-
-                kmlBoundaryHeader(name, "cell boundary");
-            }
+            sprintf(kmlName, "Cell %" PRIx64 " Res %d", prefixIndex,
+                    ((res <= rootRes) ? rootRes : res));
         }
+
+        char *kmlDesc = "Generated by h3ToGeoBoundaryHier";
+        if (kmlDescArg.found) kmlDesc = userKmlDesc;
+
+        kmlBoundaryHeader(kmlName, kmlDesc);
+
+        free(kmlName);
     }
 
     // generate the points
-
     if (res <= rootRes) {
-        doCell(rootCell, isKmlOut);
+        doCell(prefixIndex, kmlArg.found);
     } else {
-        H3_SET_RESOLUTION(rootCell, res);
-        recursiveH3IndexToGeo(rootCell, rootRes + 1, isKmlOut);
+        H3_SET_RESOLUTION(prefixIndex, res);
+        recursiveH3IndexToGeo(prefixIndex, rootRes + 1, kmlArg.found);
     }
 
-    if (isKmlOut) kmlBoundaryFooter();
+    if (kmlArg.found) kmlBoundaryFooter();
 }

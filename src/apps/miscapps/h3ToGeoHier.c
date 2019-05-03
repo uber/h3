@@ -17,7 +17,8 @@
  * @brief takes an H3 index and generates cell center points for descendants a
  * specified resolution.
  *
- *  usage: `h3ToGeoHier H3Index [resolution outputMode]`
+ *  usage: `h3ToGeoHier --prefix prefix [--resolution res] [--kml [--kml-name
+ * name] [--kml-description desc]]`
  *
  *  The program generates the cell center points in lat/lon coordinates for all
  *  hierarchical children of H3Index at the specified resolution. If the
@@ -27,22 +28,23 @@
  *  `resolution` should be a positive integer. The default is 0 (i.e., only the
  *       specified cell H3Index would be processed).
  *
- *  `outputMode` indicates the type of output; currently the choices are 0 for
- *       plain text output (the default) and 1 for KML output.
+ *  `--kml` indicates KML output format; if not specified plain text output is
+ *       the default.
  *
  *  Examples:
  *  ---------
  *
- *     `h3ToGeoHier 836e9bfffffffff`
+ *     `h3ToGeoHier --prefix 836e9bfffffffff`
  *        - outputs the cell center point in lat/lon for cell
  *          `836e9bfffffffff` as plain text
  *
- *     `h3ToGeoHier 820ceffffffffff 4 1 > pts.kml`
+ *     `h3ToGeoHier --prefix 820ceffffffffff --resolution 4 --kml > pts.kml`
  *        - outputs the cell center points of all of the resolution 4
  *          descendants of cell `820ceffffffffff` as a KML file (redirected to
  *          `pts.kml`).
  *
- *     `h3ToGeoHier 86283082fffffff 9 1 > uber9pts.kml`
+ *     `h3ToGeoHier --prefix 86283082fffffff --resolution 9 --kml >
+ *          uber9pts.kml`
  *        - creates a KML file containing the cell center points of all of the
  *          resolution 9 hexagons covering Uber HQ and the surrounding region of
  *          San Francisco.
@@ -96,7 +98,7 @@ void recursiveH3IndexToGeo(H3Index h, int res, int isKmlOut) {
 }
 
 int main(int argc, char *argv[]) {
-    int res;
+    int res = 0;
     H3Index prefixIndex = 0;
     char userKmlName[BUFF_SIZE] = {0};
     char userKmlDesc[BUFF_SIZE] = {0};
@@ -107,8 +109,9 @@ int main(int argc, char *argv[]) {
                   .scanFormat = "%d",
                   .valueName = "res",
                   .value = &res,
-                  .required = true,
-                  .helpText = "Resolution, 0-15 inclusive."};
+                  .helpText =
+                      "Resolution, if less than the resolution of the prefix "
+                      "only the prefix is printed. Default 0."};
     Arg prefixArg = {
         .names = {"-p", "--prefix"},
         .scanFormat = "%" PRIx64,
@@ -151,16 +154,12 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    int baseCell = H3_GET_BASE_CELL(prefixIndex);
     int rootRes = H3_GET_RESOLUTION(prefixIndex);
-    if (baseCell < 0 || baseCell >= NUM_BASE_CELLS) {
-        error("invalid base cell number");
-    }
 
     if (kmlArg.found) {
         char *kmlName;
         if (kmlNameArg.found) {
-            kmlName = userKmlName;
+            kmlName = strdup(userKmlName);
         } else {
             kmlName = calloc(BUFF_SIZE, sizeof(char));
 
@@ -173,9 +172,7 @@ int main(int argc, char *argv[]) {
 
         kmlBoundaryHeader(kmlName, kmlDesc);
 
-        if (kmlNameArg.found) {
-            free(kmlName);
-        }
+        free(kmlName);
     }
 
     // generate the points
