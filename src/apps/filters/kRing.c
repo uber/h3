@@ -68,7 +68,7 @@ int main(int argc, char* argv[]) {
                 .helpText = "Radius of hexagons."};
     Arg printDistancesArg = {
         .names = {"-d", "--print-distances"},
-        .helpText = "Print distance from origin after index."};
+        .helpText = "Print distance from origin after each index."};
     Arg originArg = {
         .names = {"-o", "--origin"},
         .scanFormat = "%" PRIx64,

@@ -37,6 +37,22 @@
 #include "h3Index.h"
 #include "utility.h"
 
+/**
+ * Convert coordinates to cell and print it.
+ *
+ * @param lat Degrees latitude
+ * @param lon Degrees longitude
+ * @param res Resolution
+ */
+void doCoords(double lat, double lon, int res) {
+    GeoCoord g;
+    setGeoDegs(&g, lat, lon);
+
+    H3Index h = H3_EXPORT(geoToH3)(&g, res);
+
+    h3Println(h);
+}
+
 int main(int argc, char* argv[]) {
     int res = 0;
     double lat = 0;
@@ -80,12 +96,7 @@ int main(int argc, char* argv[]) {
     }
 
     if (latArg.found) {
-        GeoCoord g;
-        setGeoDegs(&g, lat, lon);
-
-        H3Index h = H3_EXPORT(geoToH3)(&g, res);
-
-        h3Println(h);
+        doCoords(lat, lon, res);
     } else {
         // process the lat/lon's on stdin
         char buff[BUFF_SIZE];
@@ -102,12 +113,7 @@ int main(int argc, char* argv[]) {
                 error("parsing lat/lon");
 
             // convert to H3
-            GeoCoord g;
-            setGeoDegs(&g, lat, lon);
-
-            H3Index h = H3_EXPORT(geoToH3)(&g, res);
-
-            h3Println(h);
+            doCoords(lat, lon, res);
         }
     }
 }
