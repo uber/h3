@@ -6,9 +6,13 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+
+## [3.4.3] - 2019-05-02
 ### Added
 - `localIjToH3` filter application (#222)
 - An option to print distances in the `kRing` filter application (#222)
+### Changed
+- Arguments parsing for `kRing` filter application is more flexible. (#224)
 ### Fixed
 - `benchmarkPolyfill` allocates its memory on the heap (#198)
 - Fixed constraints of vertex longitudes (#213)
