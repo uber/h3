@@ -63,7 +63,9 @@ int main(int argc, char *argv[]) {
                 .scanFormat = "%d",
                 .valueName = "i",
                 .value = &ij.i,
-                .helpText = "I coordinate."};
+                .helpText =
+                    "I coordinate. If not specified \"i j\" pairs will be read "
+                    "from stdin."};
     Arg jArg = {.names = {"-j", NULL},
                 .scanFormat = "%d",
                 .valueName = "j",
