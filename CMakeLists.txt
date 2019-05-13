@@ -79,12 +79,6 @@ include(CMakeDependentOption)
 include(CheckIncludeFile)
 include(CTest)
 
-include(CheckAlloca)
-include(CheckVLA)
-
-check_alloca(have_alloca)
-check_vla(have_vla)
-
 set(LIB_SOURCE_FILES
     src/h3lib/include/bbox.h
     src/h3lib/include/polygon.h
@@ -103,7 +97,6 @@ set(LIB_SOURCE_FILES
     src/h3lib/include/constants.h
     src/h3lib/include/coordijk.h
     src/h3lib/include/algos.h
-    src/h3lib/include/stackAlloc.h
     src/h3lib/lib/algos.c
     src/h3lib/lib/coordijk.c
     src/h3lib/lib/bbox.c
