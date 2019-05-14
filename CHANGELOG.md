@@ -16,6 +16,7 @@ The public API of this library consists of the functions declared in file
 ### Fixed
 - `benchmarkPolyfill` allocates its memory on the heap (#198)
 - Fixed constraints of vertex longitudes (#213)
+- Zero only input to `uncompact` does not produce an error (#223)
 
 ## [3.4.2] - 2019-02-21
 ### Changed
