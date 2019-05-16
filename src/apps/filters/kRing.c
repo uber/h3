@@ -65,7 +65,7 @@ int main(int argc, char* argv[]) {
                 .scanFormat = "%d",
                 .valueName = "k",
                 .value = &k,
-                .helpText = "Radius of hexagons."};
+                .helpText = "Radius in hexagons."};
     Arg printDistancesArg = {
         .names = {"-d", "--print-distances"},
         .helpText = "Print distance from origin after each index."};
