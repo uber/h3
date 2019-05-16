@@ -19,6 +19,7 @@
  * These functions try to provide a useful coordinate space in the vicinity of
  * an origin index.
  */
+#include <assert.h>
 #include <faceijk.h>
 #include <inttypes.h>
 #include <math.h>
@@ -28,7 +29,6 @@
 #include "faceijk.h"
 #include "h3Index.h"
 #include "mathExtensions.h"
-#include "stackAlloc.h"
 
 /**
  * Origin leading digit -> index leading digit -> rotations 60 cw

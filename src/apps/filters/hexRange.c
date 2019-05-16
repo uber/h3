@@ -32,7 +32,6 @@
 #include <stdlib.h>
 #include "algos.h"
 #include "h3Index.h"
-#include "stackAlloc.h"
 #include "utility.h"
 
 void doCell(H3Index h, int k) {

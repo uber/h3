@@ -18,10 +18,12 @@
  */
 
 #include "algos.h"
+#include <assert.h>
 #include <float.h>
 #include <math.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 #include "baseCells.h"
 #include "bbox.h"
 #include "faceijk.h"
@@ -30,7 +32,6 @@
 #include "h3api.h"
 #include "linkedGeo.h"
 #include "polygon.h"
-#include "stackAlloc.h"
 #include "vertexGraph.h"
 
 /*

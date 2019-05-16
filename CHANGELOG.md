@@ -6,14 +6,19 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+### Changed
+- All dynamic internal memory allocations happen on the heap instead of the stack
+
+## [3.4.3] - 2019-05-02
 ### Added
 - `localIjToH3` filter application (#222)
 - An option to print distances in the `kRing` filter application (#222)
 ### Changed
-- Arguments parsing for filter applications is more flexible. (#224)
+- Arguments parsing for `kRing` filter application is more flexible. (#224)
 ### Fixed
 - `benchmarkPolyfill` allocates its memory on the heap (#198)
 - Fixed constraints of vertex longitudes (#213)
+- Zero only input to `uncompact` does not produce an error (#223)
 
 ## [3.4.2] - 2019-02-21
 ### Changed
