@@ -97,7 +97,7 @@ const int PENTAGON_ROTATIONS_REVERSE_POLAR[7][7] = {
  * within the pentagon base cell.
  *
  * This previously included a Class II/Class III check but these were removed
- * due failure cases. It's possible this could be restricted to a narrower set
+ * due to failure cases. It's possible this could be restricted to a narrower set
  * of a failure cases. Currently, the logic is any unfolding across more than
  * one icosahedron face is not permitted.
  */
@@ -188,8 +188,7 @@ int h3ToLocalIjk(H3Index origin, H3Index h3, CoordIJK* out) {
             int originLeadingDigit = _h3LeadingNonZeroDigit(origin);
 
             if (FAILED_DIRECTIONS[originLeadingDigit][dir]) {
-                // TODO this part of the pentagon might not be unfolded
-                // correctly.
+                // TODO In this case this part of the pentagon might not be unfolded correctly.
                 return 3;
             }
 
@@ -199,8 +198,7 @@ int h3ToLocalIjk(H3Index origin, H3Index h3, CoordIJK* out) {
             int indexLeadingDigit = _h3LeadingNonZeroDigit(h3);
 
             if (FAILED_DIRECTIONS[indexLeadingDigit][revDir]) {
-                // TODO this part of the pentagon might not be unfolded
-                // correctly.
+                // TODO In this case this part of the pentagon might not be unfolded correctly.
                 return 4;
             }
 
@@ -244,8 +242,7 @@ int h3ToLocalIjk(H3Index origin, H3Index h3, CoordIJK* out) {
         int indexLeadingDigit = _h3LeadingNonZeroDigit(h3);
 
         if (FAILED_DIRECTIONS[originLeadingDigit][indexLeadingDigit]) {
-            // TODO this part of the pentagon might not be unfolded
-            // correctly.
+            // TODO In this case this part of the pentagon might not be unfolded correctly.
             return 5;
         }
 

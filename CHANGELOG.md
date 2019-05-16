@@ -7,8 +7,8 @@ The public API of this library consists of the functions declared in file
 
 ## [Unreleased]
 ### Changed
-- Local coordinate spaces cannot cross more than one icosahedron face.
-- All dynamic internal memory allocations happen on the heap instead of the stack
+- Local coordinate spaces cannot cross more than one icosahedron edge. (#234)
+- All dynamic internal memory allocations happen on the heap instead of the stack. (#235)
 
 ## [3.4.3] - 2019-05-02
 ### Added
