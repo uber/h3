@@ -28,7 +28,6 @@
 #include "h3Index.h"
 #include "h3api.h"
 #include "localij.h"
-#include "stackAlloc.h"
 #include "test.h"
 #include "utility.h"
 
