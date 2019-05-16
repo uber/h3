@@ -25,7 +25,6 @@
 #include "h3Index.h"
 #include "h3api.h"
 #include "localij.h"
-#include "stackAlloc.h"
 #include "test.h"
 #include "utility.h"
 
@@ -37,7 +36,7 @@ static const int MAX_DISTANCES[] = {1, 2, 5, 12, 19, 26};
 static void h3Line_assertions(H3Index start, H3Index end) {
     int sz = H3_EXPORT(h3LineSize)(start, end);
     t_assert(sz > 0, "got valid size");
-    STACK_ARRAY_CALLOC(H3Index, line, sz);
+    H3Index *line = calloc(sz, sizeof(H3Index));
 
     int err = H3_EXPORT(h3Line)(start, end, line);
 
@@ -51,10 +50,12 @@ static void h3Line_assertions(H3Index start, H3Index end) {
                  "index is a neighbor of the previous index");
         if (i > 1) {
             t_assert(
-                !H3_EXPORT(h3IndexesAreNeighbors)(line[i], line[i - 3]),
+                !H3_EXPORT(h3IndexesAreNeighbors)(line[i], line[i - 2]),
                 "index is not a neighbor of the index before the previous");
         }
     }
+
+    free(line);
 }
 
 /**
@@ -64,7 +65,7 @@ static void h3Line_invalid_assertions(H3Index start, H3Index end) {
     int sz = H3_EXPORT(h3LineSize)(start, end);
     t_assert(sz < 0, "line size marked as invalid");
 
-    H3Index* line = {0};
+    H3Index *line = {0};
     int err = H3_EXPORT(h3Line)(start, end, line);
     t_assert(err != 0, "line marked as invalid");
 }
@@ -78,12 +79,13 @@ static void h3Line_kRing_assertions(H3Index h3) {
     int maxK = MAX_DISTANCES[r];
 
     int sz = H3_EXPORT(maxKringSize)(maxK);
-    STACK_ARRAY_CALLOC(H3Index, neighbors, sz);
-    H3_EXPORT(kRing)(h3, maxK, neighbors);
 
     if (H3_EXPORT(h3IsPentagon)(h3)) {
         return;
     }
+
+    H3Index *neighbors = calloc(sz, sizeof(H3Index));
+    H3_EXPORT(kRing)(h3, maxK, neighbors);
 
     for (int i = 0; i < sz; i++) {
         if (neighbors[i] == 0) {
@@ -96,6 +98,8 @@ static void h3Line_kRing_assertions(H3Index h3) {
             h3Line_invalid_assertions(h3, neighbors[i]);
         }
     }
+
+    free(neighbors);
 }
 
 SUITE(h3Line) {

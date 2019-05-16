@@ -26,7 +26,6 @@
 #include "baseCells.h"
 #include "faceijk.h"
 #include "mathExtensions.h"
-#include "stackAlloc.h"
 
 /**
  * Returns the H3 resolution of an H3 index.
