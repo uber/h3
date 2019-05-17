@@ -188,8 +188,9 @@ int h3ToLocalIjk(H3Index origin, H3Index h3, CoordIJK* out) {
             int originLeadingDigit = _h3LeadingNonZeroDigit(origin);
 
             if (FAILED_DIRECTIONS[originLeadingDigit][dir]) {
-                // TODO In this case this part of the pentagon might not be
-                // unfolded correctly.
+                // TODO: We may be unfolding the pentagon incorrectly in this
+                // case; return an error code until this is guaranteed to be
+                // correct.
                 return 3;
             }
 
@@ -199,8 +200,9 @@ int h3ToLocalIjk(H3Index origin, H3Index h3, CoordIJK* out) {
             int indexLeadingDigit = _h3LeadingNonZeroDigit(h3);
 
             if (FAILED_DIRECTIONS[indexLeadingDigit][revDir]) {
-                // TODO In this case this part of the pentagon might not be
-                // unfolded correctly.
+                // TODO: We may be unfolding the pentagon incorrectly in this
+                // case; return an error code until this is guaranteed to be
+                // correct.
                 return 4;
             }
 
@@ -244,8 +246,8 @@ int h3ToLocalIjk(H3Index origin, H3Index h3, CoordIJK* out) {
         int indexLeadingDigit = _h3LeadingNonZeroDigit(h3);
 
         if (FAILED_DIRECTIONS[originLeadingDigit][indexLeadingDigit]) {
-            // TODO In this case this part of the pentagon might not be unfolded
-            // correctly.
+            // TODO: We may be unfolding the pentagon incorrectly in this case;
+            // return an error code until this is guaranteed to be correct.
             return 5;
         }
 
