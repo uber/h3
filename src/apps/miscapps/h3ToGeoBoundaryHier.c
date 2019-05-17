@@ -17,7 +17,7 @@
  * @brief takes an H3 index and generates cell boundaries for all descendants
  * at a specified resolution.
  *
- *  usage: `h3ToGeoBoundaryHier --prefix prefix [--resolution res] [--kml
+ *  usage: `h3ToGeoBoundaryHier --parent parent [--resolution res] [--kml
  * [--kml-name name] [--kml-description desc]]`
  *
  *  The program generates the cell boundaries in lat/lon coordinates for all
@@ -34,16 +34,16 @@
  *  Examples:
  *  ---------
  *
- *     `h3ToGeoBoundaryHier --prefix 836e9bfffffffff`
+ *     `h3ToGeoBoundaryHier --parent 836e9bfffffffff`
  *        - outputs the cell boundary in lat/lon for cell `836e9bfffffffff` as
  *          plain text
  *
- *     `h3ToGeoBoundaryHier --prefix 820ceffffffffff --resolution 4 --kml >
+ *     `h3ToGeoBoundaryHier --parent 820ceffffffffff --resolution 4 --kml >
  *          cells.kml`
  *        - outputs the cell boundaries of all of the resolution 4 descendants
  *          of cell `820ceffffffffff` as a KML file (redirected to `cells.kml`).
  *
- *     `h3ToGeoBoundaryHier --prefix 86283082fffffff --resolution 9 --kml >
+ *     `h3ToGeoBoundaryHier --parent 86283082fffffff --resolution 9 --kml >
  *          uber9cells.kml`
  *        - creates a KML file containing the cell boundaries of all of the
  *          resolution 9 hexagons covering Uber HQ and the surrounding region of
@@ -99,7 +99,7 @@ void recursiveH3IndexToGeo(H3Index h, int res, int isKmlOut) {
 
 int main(int argc, char *argv[]) {
     int res;
-    H3Index prefixIndex = 0;
+    H3Index parentIndex = 0;
     char userKmlName[BUFF_SIZE] = {0};
     char userKmlDesc[BUFF_SIZE] = {0};
 
@@ -110,13 +110,13 @@ int main(int argc, char *argv[]) {
                   .valueName = "res",
                   .value = &res,
                   .helpText =
-                      "Resolution, if less than the resolution of the prefix "
-                      "only the prefix is printed. Default 0."};
-    Arg prefixArg = {
-        .names = {"-p", "--prefix"},
+                      "Resolution, if less than the resolution of the parent "
+                      "only the parent is printed. Default 0."};
+    Arg parentArg = {
+        .names = {"-p", "--parent"},
         .scanFormat = "%" PRIx64,
-        .valueName = "prefix",
-        .value = &prefixIndex,
+        .valueName = "parent",
+        .value = &parentIndex,
         .required = true,
         .helpText = "Print cell boundaries descendent from this index."};
     Arg kmlArg = {.names = {"-k", "--kml"},
@@ -132,7 +132,7 @@ int main(int argc, char *argv[]) {
                       .value = &userKmlDesc,
                       .helpText = "Text for the KML description tag."};
 
-    Arg *args[] = {&helpArg, &resArg,     &prefixArg,
+    Arg *args[] = {&helpArg, &resArg,     &parentArg,
                    &kmlArg,  &kmlNameArg, &kmlDescArg};
     const int numArgs = 6;
     const char *helpText = "Print cell boundaries for descendants of an index";
@@ -147,13 +147,13 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    if (!H3_EXPORT(h3IsValid)(prefixIndex)) {
+    if (!H3_EXPORT(h3IsValid)(parentIndex)) {
         printHelp(stderr, argv[0], helpText, numArgs, args,
-                  "Prefix index is invalid.", NULL);
+                  "Parent index is invalid.", NULL);
         return 1;
     }
 
-    int rootRes = H3_GET_RESOLUTION(prefixIndex);
+    int rootRes = H3_GET_RESOLUTION(parentIndex);
 
     if (kmlArg.found) {
         char *kmlName;
@@ -162,7 +162,7 @@ int main(int argc, char *argv[]) {
         } else {
             kmlName = calloc(BUFF_SIZE, sizeof(char));
 
-            sprintf(kmlName, "Cell %" PRIx64 " Res %d", prefixIndex,
+            sprintf(kmlName, "Cell %" PRIx64 " Res %d", parentIndex,
                     ((res <= rootRes) ? rootRes : res));
         }
 
@@ -176,10 +176,10 @@ int main(int argc, char *argv[]) {
 
     // generate the points
     if (res <= rootRes) {
-        doCell(prefixIndex, kmlArg.found);
+        doCell(parentIndex, kmlArg.found);
     } else {
-        H3_SET_RESOLUTION(prefixIndex, res);
-        recursiveH3IndexToGeo(prefixIndex, rootRes + 1, kmlArg.found);
+        H3_SET_RESOLUTION(parentIndex, res);
+        recursiveH3IndexToGeo(parentIndex, rootRes + 1, kmlArg.found);
     }
 
     if (kmlArg.found) kmlBoundaryFooter();

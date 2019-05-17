@@ -17,7 +17,7 @@
  * @brief takes an optional H3 index and generates all descendant cells at the
  * specified resolution.
  *
- *  usage: `h3ToHier --resolution res [--prefix prefix]`
+ *  usage: `h3ToHier --resolution res [--parent parent]`
  *
  *  The program generates all cells at the specified resolution, optionally
  *  only the children of the given index.
@@ -25,7 +25,7 @@
  *  `resolution` should be a positive integer. The default is 0 (i.e., only the
  *       base cells).
  *
- *  `prefix` should be an H3Index. By default, all indices at the specified
+ *  `parent` should be an H3Index. By default, all indices at the specified
  *       resolution are generated.
  */
 
@@ -58,7 +58,7 @@ void recursiveH3IndexToHier(H3Index h, int res) {
 
 int main(int argc, char *argv[]) {
     int res;
-    H3Index prefixIndex = 0;
+    H3Index parentIndex = 0;
 
     Arg helpArg = {.names = {"-h", "--help"},
                    .helpText = "Show this help message."};
@@ -68,14 +68,14 @@ int main(int argc, char *argv[]) {
                   .value = &res,
                   .required = true,
                   .helpText = "Resolution, 0-15 inclusive."};
-    Arg prefixArg = {
-        .names = {"-p", "--prefix"},
+    Arg parentArg = {
+        .names = {"-p", "--parent"},
         .scanFormat = "%" PRIx64,
-        .valueName = "prefix",
-        .value = &prefixIndex,
+        .valueName = "parent",
+        .value = &parentIndex,
         .helpText = "Print only indexes descendent from this index."};
 
-    Arg *args[] = {&helpArg, &resArg, &prefixArg};
+    Arg *args[] = {&helpArg, &resArg, &parentArg};
     const int numArgs = 3;
     const char *helpText = "Print all indexes at the specified resolution";
 
@@ -89,20 +89,20 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    if (prefixArg.found && !H3_EXPORT(h3IsValid)(prefixIndex)) {
+    if (parentArg.found && !H3_EXPORT(h3IsValid)(parentIndex)) {
         printHelp(stderr, argv[1], helpText, numArgs, args,
-                  "Prefix index is invalid.", NULL);
+                  "Parent index is invalid.", NULL);
         return 1;
     }
 
-    if (prefixArg.found) {
-        // prefix is the same or higher resolution than the target.
-        if (res <= H3_GET_RESOLUTION(prefixIndex)) {
-            h3Println(prefixIndex);
+    if (parentArg.found) {
+        // parent is the same or higher resolution than the target.
+        if (res <= H3_GET_RESOLUTION(parentIndex)) {
+            h3Println(parentIndex);
         } else {
-            int rootRes = H3_GET_RESOLUTION(prefixIndex);
-            H3_SET_RESOLUTION(prefixIndex, res);
-            recursiveH3IndexToHier(prefixIndex, rootRes + 1);
+            int rootRes = H3_GET_RESOLUTION(parentIndex);
+            H3_SET_RESOLUTION(parentIndex, res);
+            recursiveH3IndexToHier(parentIndex, rootRes + 1);
         }
     } else {
         // Generate all
