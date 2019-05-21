@@ -17,7 +17,7 @@
  * @brief generates random lat/lon pairs and bins them at the specified
  * resolution
  *
- *  usage: `mkRandGeo numPoints resolution`
+ *  See `mkRandGeo --help` for usage.
  *
  *  The program generates `numPoints` random lat/lon coordinates and outputs
  *  them along with the corresponding H3Index at the specified `resolution`.

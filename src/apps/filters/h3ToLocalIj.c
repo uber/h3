@@ -17,7 +17,7 @@
  * @brief stdin/stdout filter that converts from H3 indexes to local IJ
  * coordinates. This is experimental.
  *
- *  usage: `h3ToLocalIj [origin]`
+ *  See `h3ToLocalIj --help` for usage.
  *
  *  The program reads H3 indexes from stdin and outputs the corresponding
  *  IJ coordinates to stdout, until EOF is encountered. `NA` is printed if the
@@ -65,7 +65,9 @@ int main(int argc, char* argv[]) {
                     .scanFormat = "%" PRIx64,
                     .valueName = "index",
                     .value = &index,
-                    .helpText = "Index to convert to IJ coordinates."};
+                    .helpText =
+                        "Index to convert to IJ coordinates, or not specified "
+                        "to read from standard input."};
 
     Arg* args[] = {&helpArg, &originArg, &indexArg};
     const int numArgs = 3;

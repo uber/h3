@@ -17,7 +17,7 @@
  * @brief stdin/stdout filter that converts from lat/lon coordinates to integer
  * H3 indexes
  *
- *  usage: `geoToH3 --resolution res [--latitude lat --longitude lon]`
+ *  See `geoToH3 --help` for usage.
  *
  *  The program reads lat/lon pairs from stdin until EOF is encountered. For
  *  each lat/lon the program outputs to stdout the integer H3 index of the
@@ -72,7 +72,7 @@ int main(int argc, char* argv[]) {
                   .value = &lat,
                   .helpText =
                       "Latitude in degrees. If not specified, \"latitude "
-                      "longitude\" pairs will be read from stdin."};
+                      "longitude\" pairs will be read from standard input."};
     Arg lonArg = {.names = {"--lon", "--longitude"},
                   .scanFormat = "%lf",
                   .valueName = "lon",

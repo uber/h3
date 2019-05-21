@@ -16,7 +16,7 @@
 /** @file
  * @brief generates random cell indexes and the corresponding cell boundaries
  *
- *  usage: `mkRandGeoBoundary numPoints resolution`
+ *  See `mkRandGeoBoundary --help` for usage.
  *
  *  The program generates `numPoints` random lat/lon coordinates and outputs
  *  them along with the corresponding H3Index at the specified `resolution`.

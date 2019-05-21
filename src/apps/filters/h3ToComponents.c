@@ -17,7 +17,7 @@
  * @brief stdin/stdout filter that converts from integer H3 indexes to
  * components.
  *
- *  usage: `h3ToComponents [--verbose] [--index index]`
+ *  See `h3ToComponents --help` for usage.
  *
  *  The program reads H3 indexes from stdin until EOF and outputs the
  *  corresponding component strings to stdout.
@@ -116,7 +116,7 @@ int main(int argc, char* argv[]) {
         .valueName = "index",
         .value = &index,
         .helpText =
-            "Index, or not specified to read indexes from standard in."};
+            "Index, or not specified to read indexes from standard input."};
 
     Arg* args[] = {&helpArg, &verboseArg, &indexArg};
 

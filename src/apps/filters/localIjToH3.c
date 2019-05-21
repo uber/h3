@@ -17,7 +17,7 @@
  * @brief stdin/stdout filter that converts from local IJ coordinates to
  * H3 indexes. This is experimental.
  *
- *  usage: `localIjToH3 [origin]`
+ *  See `localIjToH3 --help` for usage.
  *
  *  The program reads IJ coordinates (in the format `i j` separated by newlines)
  *  from stdin and outputs the corresponding H3 indexes to stdout, until EOF is
@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
                 .value = &ij.i,
                 .helpText =
                     "I coordinate. If not specified \"i j\" pairs will be read "
-                    "from stdin."};
+                    "from standard input."};
     Arg jArg = {.names = {"-j", NULL},
                 .scanFormat = "%d",
                 .valueName = "j",
@@ -108,7 +108,8 @@ int main(int argc, char *argv[]) {
             }
 
             if (!sscanf(buff, "%d %d", &ij.i, &ij.j))
-                error("Parsing IJ coordinates. Expected `i j`.");
+                error(
+                    "Parsing IJ coordinates. Expected `<integer> <integer>`.");
 
             doCell(&ij, origin);
         }

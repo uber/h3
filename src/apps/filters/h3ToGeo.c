@@ -17,8 +17,7 @@
  * @brief stdin/stdout filter that converts from integer H3 indexes to lat/lon
  * cell center point
  *
- *  usage: `h3ToGeo [--index index] [--kml [--kml-name name] [--kml-description
- *  desc]]`
+ *  See `h3ToGeo --help` for usage.
  *
  *  The program reads H3 indexes from stdin and outputs the corresponding
  *  cell center points to stdout, until EOF is encountered. The H3 indexes
@@ -78,7 +77,7 @@ int main(int argc, char *argv[]) {
         .valueName = "index",
         .value = &index,
         .helpText =
-            "Index, or not specified to read indexes from standard in."};
+            "Index, or not specified to read indexes from standard input."};
     Arg kmlArg = {.names = {"-k", "--kml"},
                   .helpText = "Print output in KML format."};
     Arg kmlNameArg = {.names = {"--kn", "--kml-name"},

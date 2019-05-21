@@ -17,8 +17,7 @@
  * @brief takes an H3 index and generates cell center points for descendants a
  * specified resolution.
  *
- *  usage: `h3ToGeoHier --parent parent [--resolution res] [--kml [--kml-name
- * name] [--kml-description desc]]`
+ *  See `h3ToGeoHier --help` for usage.
  *
  *  The program generates the cell center points in lat/lon coordinates for all
  *  hierarchical children of H3Index at the specified resolution. If the

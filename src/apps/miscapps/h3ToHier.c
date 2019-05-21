@@ -17,7 +17,7 @@
  * @brief takes an optional H3 index and generates all descendant cells at the
  * specified resolution.
  *
- *  usage: `h3ToHier --resolution res [--parent parent]`
+ *  See `h3ToHier --help` for usage.
  *
  *  The program generates all cells at the specified resolution, optionally
  *  only the children of the given index.

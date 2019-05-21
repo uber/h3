@@ -17,8 +17,7 @@
  * @brief takes an H3 index and generates cell boundaries for all descendants
  * at a specified resolution.
  *
- *  usage: `h3ToGeoBoundaryHier --parent parent [--resolution res] [--kml
- * [--kml-name name] [--kml-description desc]]`
+ *  See `h3ToGeoBoundaryHier` for usage.
  *
  *  The program generates the cell boundaries in lat/lon coordinates for all
  *  hierarchical children of H3Index at the specified resolution. If the

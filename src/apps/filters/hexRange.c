@@ -17,7 +17,7 @@
  * @brief stdin/stdout filter that converts from integer H3 indexes to
  * k-rings
  *
- *  usage: `hexRange [k]`
+ *  See `hexRange --help` for usage.
  *
  *  The program reads H3 indexes from stdin until EOF and outputs
  *  the H3 indexes within k-ring `k` to stdout. Requires all indexes
@@ -60,14 +60,14 @@ int main(int argc, char* argv[]) {
                 .scanFormat = "%d",
                 .valueName = "k",
                 .value = &k,
-                .helpText = "Radius of hexagons."};
+                .helpText = "Radius in hexagons."};
     Arg originArg = {
         .names = {"-o", "--origin"},
         .scanFormat = "%" PRIx64,
         .valueName = "origin",
         .value = &origin,
         .helpText =
-            "Origin, or not specified to read origins from standard in."};
+            "Origin, or not specified to read origins from standard input."};
 
     Arg* args[] = {&helpArg, &kArg, &originArg};
 
