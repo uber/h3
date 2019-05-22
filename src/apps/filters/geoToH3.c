@@ -32,8 +32,7 @@
  *       latN lonN
  */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include "args.h"
 #include "h3Index.h"
 #include "utility.h"
 
@@ -58,8 +57,7 @@ int main(int argc, char* argv[]) {
     double lat = 0;
     double lon = 0;
 
-    Arg helpArg = {.names = {"-h", "--help"},
-                   .helpText = "Show this help message."};
+    Arg helpArg = ARG_HELP;
     Arg resArg = {.names = {"-r", "--resolution"},
                   .required = true,
                   .scanFormat = "%d",

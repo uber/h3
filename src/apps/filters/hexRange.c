@@ -31,6 +31,7 @@
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "args.h"
 #include "h3api.h"
 #include "utility.h"
 
@@ -53,8 +54,7 @@ int main(int argc, char* argv[]) {
     int k = 0;
     H3Index origin = 0;
 
-    Arg helpArg = {.names = {"-h", "--help"},
-                   .helpText = "Show this help message."};
+    Arg helpArg = ARG_HELP;
     Arg kArg = {.names = {"-k", NULL},
                 .required = true,
                 .scanFormat = "%d",

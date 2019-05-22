@@ -24,9 +24,7 @@
  */
 
 #include <inttypes.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "args.h"
 #include "h3Index.h"
 #include "utility.h"
 
@@ -106,8 +104,7 @@ void doCell(H3Index h, bool verboseMode) {
 int main(int argc, char* argv[]) {
     H3Index index = 0;
 
-    Arg helpArg = {.names = {"-h", "--help"},
-                   .helpText = "Show this help message."};
+    Arg helpArg = ARG_HELP;
     Arg verboseArg = {.names = {"-v", "--verbose"},
                       .helpText = "Verbose output mode."};
     Arg indexArg = {

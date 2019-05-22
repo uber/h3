@@ -25,14 +25,14 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "args.h"
 #include "utility.h"
 
 int main(int argc, char* argv[]) {
     int res = 0;
     int numPoints = 0;
 
-    Arg helpArg = {.names = {"-h", "--help"},
-                   .helpText = "Show this help message."};
+    Arg helpArg = ARG_HELP;
     Arg numPointsArg = {
         .names = {"-n", "--num-points"},
         .required = true,

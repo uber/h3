@@ -53,14 +53,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "args.h"
 #include "baseCells.h"
-#include "coordijk.h"
-#include "geoCoord.h"
 #include "h3Index.h"
 #include "h3api.h"
 #include "kml.h"
 #include "utility.h"
-#include "vec2d.h"
 
 void doCell(H3Index h, int isKmlOut) {
     GeoBoundary b;
@@ -99,18 +97,15 @@ void recursiveH3IndexToGeo(H3Index h, int res, int isKmlOut) {
 int main(int argc, char *argv[]) {
     int res;
     H3Index parentIndex = 0;
-    char userKmlName[BUFF_SIZE] = {0};
-    char userKmlDesc[BUFF_SIZE] = {0};
 
-    Arg helpArg = {.names = {"-h", "--help"},
-                   .helpText = "Show this help message."};
+    Arg helpArg = ARG_HELP;
     Arg resArg = {.names = {"-r", "--resolution"},
                   .scanFormat = "%d",
                   .valueName = "res",
                   .value = &res,
                   .helpText =
                       "Resolution, if less than the resolution of the parent "
-                      "only the parent is printed. Default 0."};
+                      "only the parent is printed. Default the resolution of the parent."};
     Arg parentArg = {
         .names = {"-p", "--parent"},
         .scanFormat = "%" PRIx64,
@@ -118,18 +113,9 @@ int main(int argc, char *argv[]) {
         .value = &parentIndex,
         .required = true,
         .helpText = "Print cell boundaries descendent from this index."};
-    Arg kmlArg = {.names = {"-k", "--kml"},
-                  .helpText = "Print output in KML format."};
-    Arg kmlNameArg = {.names = {"--kn", "--kml-name"},
-                      .scanFormat = "%255c",  // BUFF_SIZE - 1
-                      .valueName = "name",
-                      .value = &userKmlName,
-                      .helpText = "Text for the KML name tag."};
-    Arg kmlDescArg = {.names = {"--kd", "--kml-description"},
-                      .scanFormat = "%255c",  // BUFF_SIZE - 1
-                      .valueName = "description",
-                      .value = &userKmlDesc,
-                      .helpText = "Text for the KML description tag."};
+    Arg kmlArg = ARG_KML;
+    DEFINE_KML_NAME_ARG(userKmlName, kmlNameArg);
+    DEFINE_KML_DESC_ARG(userKmlDesc, kmlDescArg);
 
     Arg *args[] = {&helpArg, &resArg,     &parentArg,
                    &kmlArg,  &kmlNameArg, &kmlDescArg};

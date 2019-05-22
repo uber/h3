@@ -32,6 +32,7 @@
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "args.h"
 #include "baseCells.h"
 #include "h3Index.h"
 #include "h3api.h"
@@ -60,8 +61,7 @@ int main(int argc, char *argv[]) {
     int res;
     H3Index parentIndex = 0;
 
-    Arg helpArg = {.names = {"-h", "--help"},
-                   .helpText = "Show this help message."};
+    Arg helpArg = ARG_HELP;
     Arg resArg = {.names = {"-r", "--resolution"},
                   .scanFormat = "%d",
                   .valueName = "res",
