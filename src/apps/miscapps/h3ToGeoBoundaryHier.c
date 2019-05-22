@@ -105,7 +105,8 @@ int main(int argc, char *argv[]) {
                   .value = &res,
                   .helpText =
                       "Resolution, if less than the resolution of the parent "
-                      "only the parent is printed. Default the resolution of the parent."};
+                      "only the parent is printed. Default the resolution of "
+                      "the parent."};
     Arg parentArg = {
         .names = {"-p", "--parent"},
         .scanFormat = "%" PRIx64,

@@ -91,19 +91,22 @@ int _parseArgsList(int argc, char* argv[], int numArgs, Arg* args[],
     { .names = {"-h", "--help"}, .helpText = "Show this help message." }
 #define ARG_KML \
     { .names = {"-k", "--kml"}, .helpText = "Print output in KML format." }
-#define DEFINE_KML_NAME_ARG(varName, argName)                 \
-    char varName[BUFF_SIZE] = {0};                            \
-    Arg argName = {.names = {"--kn", "--kml-name"},           \
-                   .scanFormat = "%255c", /* BUFF_SIZE - 1 */ \
-                   .valueName = "name",                       \
-                   .value = &varName,                         \
-                   .helpText = "Text for the KML name tag, if --kml is specified."}
-#define DEFINE_KML_DESC_ARG(varName, argName)                 \
-    char varName[BUFF_SIZE] = {0};                            \
-    Arg argName = {.names = {"--kd", "--kml-description"},    \
-                   .scanFormat = "%255c", /* BUFF_SIZE - 1 */ \
-                   .valueName = "description",                \
-                   .value = &varName,                         \
-                   .helpText = "Text for the KML description tag, if --kml is specified."}
+#define DEFINE_KML_NAME_ARG(varName, argName)      \
+    char varName[BUFF_SIZE] = {0};                 \
+    Arg argName = {                                \
+        .names = {"--kn", "--kml-name"},           \
+        .scanFormat = "%255c", /* BUFF_SIZE - 1 */ \
+        .valueName = "name",                       \
+        .value = &varName,                         \
+        .helpText = "Text for the KML name tag, if --kml is specified."}
+#define DEFINE_KML_DESC_ARG(varName, argName)      \
+    char varName[BUFF_SIZE] = {0};                 \
+    Arg argName = {                                \
+        .names = {"--kd", "--kml-description"},    \
+        .scanFormat = "%255c", /* BUFF_SIZE - 1 */ \
+        .valueName = "description",                \
+        .value = &varName,                         \
+        .helpText =                                \
+            "Text for the KML description tag, if --kml is specified."}
 
 #endif
