@@ -341,4 +341,74 @@ SUITE(h3ToLocalIj) {
         t_assert(H3_EXPORT(experimentalH3ToLocalIj)(pent1, bc3, &ij) != 0,
                  "found IJ (5)");
     }
+
+    /**
+     * Test that coming from the same direction outside the pentagon is handled
+     * the same as coming from the same direction inside the pentagon.
+     */
+    TEST(onOffPentagonSame) {
+        for (int bc = 0; bc < NUM_BASE_CELLS; bc++) {
+            for (int res = 1; res <= MAX_H3_RES; res++) {
+                // K_AXES_DIGIT is the first internal direction, and it's also
+                // invalid for pentagons, so skip to next.
+                Direction startDir = K_AXES_DIGIT;
+                if (_isBaseCellPentagon(bc)) {
+                    startDir++;
+                }
+
+                for (Direction dir = startDir; dir < NUM_DIGITS; dir++) {
+                    H3Index internalOrigin;
+                    setH3Index(&internalOrigin, res, bc, dir);
+
+                    H3Index externalOrigin;
+                    setH3Index(&externalOrigin, res,
+                               _getBaseCellNeighbor(bc, dir), CENTER_DIGIT);
+
+                    for (Direction testDir = startDir; testDir < NUM_DIGITS;
+                         testDir++) {
+                        H3Index testIndex;
+                        setH3Index(&testIndex, res, bc, testDir);
+
+                        CoordIJ internalIj;
+                        int internalIjFailed =
+                            H3_EXPORT(experimentalH3ToLocalIj)(
+                                internalOrigin, testIndex, &internalIj);
+                        CoordIJ externalIj;
+                        int externalIjFailed =
+                            H3_EXPORT(experimentalH3ToLocalIj)(
+                                externalOrigin, testIndex, &externalIj);
+
+                        t_assert(
+                            (bool)internalIjFailed == (bool)externalIjFailed,
+                            "internal/external failed matches when getting IJ");
+
+                        if (internalIjFailed) {
+                            continue;
+                        }
+
+                        H3Index internalIndex;
+                        int internalIjFailed2 =
+                            H3_EXPORT(experimentalLocalIjToH3)(
+                                internalOrigin, &internalIj, &internalIndex);
+                        H3Index externalIndex;
+                        int externalIjFailed2 =
+                            H3_EXPORT(experimentalLocalIjToH3)(
+                                externalOrigin, &externalIj, &externalIndex);
+
+                        t_assert(
+                            (bool)internalIjFailed2 == (bool)externalIjFailed2,
+                            "internal/external failed matches when getting "
+                            "index");
+
+                        if (internalIjFailed2) {
+                            continue;
+                        }
+
+                        t_assert(internalIndex == externalIndex,
+                                 "internal/external index matches");
+                    }
+                }
+            }
+        }
+    }
 }
