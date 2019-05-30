@@ -6,6 +6,8 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+
+## [3.4.4] - 2019-05-30
 ### Changed
 - Local coordinate spaces cannot cross more than one icosahedron edge. (#234)
 - All dynamic internal memory allocations happen on the heap instead of the stack. (#235)
