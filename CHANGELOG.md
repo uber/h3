@@ -11,6 +11,7 @@ The public API of this library consists of the functions declared in file
 ### Changed
 - Local coordinate spaces cannot cross more than one icosahedron edge. (#234)
 - All dynamic internal memory allocations happen on the heap instead of the stack. (#235)
+- Argument parsing for `h3ToGeo`, `geoToH3`, and `h3ToGeoBoundary` is more flexible. (#227)
 
 ## [3.4.3] - 2019-05-02
 ### Added
