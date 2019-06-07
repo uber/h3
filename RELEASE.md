@@ -1,8 +1,9 @@
 # Release Process
 
 1. Create a PR "Preparing for release X.Y.Z" against master branch
-    * Update VERSION to `X.Y.Z`
     * Alter CHANGELOG.md from `[Unreleased]` to `[X.Y.Z] YYYY-MM-DD`
+    * Run `scripts/update_version.sh` and give `X.Y.Z` when prompted
+    * Check that all merges that need to be in the changelog are present
 
 2. Create a release "Release X.Y.Z" on Github
     * Create Tag `vX.Y.Z`
