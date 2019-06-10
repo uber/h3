@@ -7,7 +7,7 @@ The public API of this library consists of the functions declared in file
 
 ## [Unreleased]
 ### Added
-- CMake options for excluding filter applications or benchmarks from the build.
+- CMake options for excluding filter applications or benchmarks from the build. (#247)
 
 ## [3.4.4] - 2019-05-30
 ### Changed
