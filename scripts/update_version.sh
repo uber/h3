@@ -16,7 +16,7 @@
 # This script is used interactively as part of the H3 release process 
 # (RELEASE.md) to update the version number in the VERSION file. Before
 # writing the new version to the file, changelog information is presented
-# for verification.
+# for verification. It is invoked by the make target `update-version`.
 
 set -eo pipefail
 
@@ -45,5 +45,6 @@ if [ "y" = "$CHANGELOG_OK" ] || [ "Y" = "$CHANGELOG_OK" ]; then
     echo "Wrote $NEXT_VERSION to the VERSION file"
 else
     echo "Cancelled - did not write VERSION file"
+    echo "Please update the CHANGELOG with the appropriate entries before bumping the version."
     exit 2
 fi
