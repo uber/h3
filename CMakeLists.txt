@@ -1,4 +1,4 @@
-# Copyright 2017, 2018 Uber Technologies, Inc.
+# Copyright 2017-2019 Uber Technologies, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -29,6 +29,8 @@ set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cmake/toolchain.cmake"
     "Toolchain to use for building this project")
 
 option(ENABLE_COVERAGE "Enable compiling tests with coverage." ON)
+option(BUILD_BENCHMARKS "Build benchmarking applications." ON)
+option(BUILD_FILTERS "Build filter applications." ON)
 
 if(WIN32)
     set(SHELL PowerShell -Command)
@@ -301,43 +303,45 @@ macro(add_h3_executable name)
     endif()
 endmacro()
 
-add_h3_executable(geoToH3 src/apps/filters/geoToH3.c ${APP_SOURCE_FILES})
-add_h3_executable(h3ToComponents src/apps/filters/h3ToComponents.c ${APP_SOURCE_FILES})
-add_h3_executable(h3ToGeo src/apps/filters/h3ToGeo.c ${APP_SOURCE_FILES})
-add_h3_executable(h3ToLocalIj src/apps/filters/h3ToLocalIj.c ${APP_SOURCE_FILES})
-add_h3_executable(localIjToH3 src/apps/filters/localIjToH3.c ${APP_SOURCE_FILES})
-add_h3_executable(h3ToGeoBoundary src/apps/filters/h3ToGeoBoundary.c ${APP_SOURCE_FILES})
-add_h3_executable(hexRange src/apps/filters/hexRange.c ${APP_SOURCE_FILES})
-add_h3_executable(kRing src/apps/filters/kRing.c ${APP_SOURCE_FILES})
-add_h3_executable(generateBaseCellNeighbors src/apps/miscapps/generateBaseCellNeighbors.c ${APP_SOURCE_FILES})
-add_h3_executable(generateNumHexagons src/apps/miscapps/generateNumHexagons.c ${APP_SOURCE_FILES})
-add_h3_executable(generateFaceCenterPoint src/apps/miscapps/generateFaceCenterPoint.c ${APP_SOURCE_FILES})
-add_h3_executable(h3ToGeoBoundaryHier src/apps/miscapps/h3ToGeoBoundaryHier.c ${APP_SOURCE_FILES})
-add_h3_executable(h3ToGeoHier src/apps/miscapps/h3ToGeoHier.c ${APP_SOURCE_FILES})
-add_h3_executable(h3ToHier src/apps/miscapps/h3ToHier.c ${APP_SOURCE_FILES})
+if(BUILD_FILTERS)
+    add_h3_executable(geoToH3 src/apps/filters/geoToH3.c ${APP_SOURCE_FILES})
+    add_h3_executable(h3ToComponents src/apps/filters/h3ToComponents.c ${APP_SOURCE_FILES})
+    add_h3_executable(h3ToGeo src/apps/filters/h3ToGeo.c ${APP_SOURCE_FILES})
+    add_h3_executable(h3ToLocalIj src/apps/filters/h3ToLocalIj.c ${APP_SOURCE_FILES})
+    add_h3_executable(localIjToH3 src/apps/filters/localIjToH3.c ${APP_SOURCE_FILES})
+    add_h3_executable(h3ToGeoBoundary src/apps/filters/h3ToGeoBoundary.c ${APP_SOURCE_FILES})
+    add_h3_executable(hexRange src/apps/filters/hexRange.c ${APP_SOURCE_FILES})
+    add_h3_executable(kRing src/apps/filters/kRing.c ${APP_SOURCE_FILES})
+    add_h3_executable(generateBaseCellNeighbors src/apps/miscapps/generateBaseCellNeighbors.c ${APP_SOURCE_FILES})
+    add_h3_executable(generateNumHexagons src/apps/miscapps/generateNumHexagons.c ${APP_SOURCE_FILES})
+    add_h3_executable(generateFaceCenterPoint src/apps/miscapps/generateFaceCenterPoint.c ${APP_SOURCE_FILES})
+    add_h3_executable(h3ToGeoBoundaryHier src/apps/miscapps/h3ToGeoBoundaryHier.c ${APP_SOURCE_FILES})
+    add_h3_executable(h3ToGeoHier src/apps/miscapps/h3ToGeoHier.c ${APP_SOURCE_FILES})
+    add_h3_executable(h3ToHier src/apps/miscapps/h3ToHier.c ${APP_SOURCE_FILES})
 
-# Generate KML files for visualizing the H3 grid
-add_custom_target(create-kml-dir
-    COMMAND ${CMAKE_COMMAND} -E make_directory KML)
-add_custom_target(kml)
+    # Generate KML files for visualizing the H3 grid
+    add_custom_target(create-kml-dir
+        COMMAND ${CMAKE_COMMAND} -E make_directory KML)
+    add_custom_target(kml)
 
-# Only the first 3 resolution grids are generated. The others can be generated,
-# but the file sizes would be very, very large.
-foreach(resolution RANGE 3)
-    set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "KML/res${resolution}cells.kml")
-    set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "KML/res${resolution}centers.kml")
-    add_custom_target(kml_cells_${resolution}
-        COMMAND ${SHELL} "$<TARGET_FILE:h3ToHier> ${resolution} | $<TARGET_FILE:h3ToGeoBoundary> 1 res${resolution}cells.kml \"Res ${resolution} Cells\" > KML/res${resolution}cells.kml"
-        VERBATIM
-        DEPENDS create-kml-dir)
-    add_custom_target(kml_centers_${resolution}
-        COMMAND ${SHELL} "$<TARGET_FILE:h3ToHier> ${resolution} | $<TARGET_FILE:h3ToGeo> 1 res${resolution}centers.kml \"Res ${resolution} Centers\" > KML/res${resolution}centers.kml"
-        VERBATIM
-        DEPENDS create-kml-dir)
-    add_dependencies(kml
-        kml_cells_${resolution}
-        kml_centers_${resolution})
-endforeach()
+    # Only the first 3 resolution grids are generated. The others can be generated,
+    # but the file sizes would be very, very large.
+    foreach(resolution RANGE 3)
+        set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "KML/res${resolution}cells.kml")
+        set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "KML/res${resolution}centers.kml")
+        add_custom_target(kml_cells_${resolution}
+            COMMAND ${SHELL} "$<TARGET_FILE:h3ToHier> ${resolution} | $<TARGET_FILE:h3ToGeoBoundary> 1 res${resolution}cells.kml \"Res ${resolution} Cells\" > KML/res${resolution}cells.kml"
+            VERBATIM
+            DEPENDS create-kml-dir)
+        add_custom_target(kml_centers_${resolution}
+            COMMAND ${SHELL} "$<TARGET_FILE:h3ToHier> ${resolution} | $<TARGET_FILE:h3ToGeo> 1 res${resolution}centers.kml \"Res ${resolution} Centers\" > KML/res${resolution}centers.kml"
+            VERBATIM
+            DEPENDS create-kml-dir)
+        add_dependencies(kml
+            kml_cells_${resolution}
+            kml_centers_${resolution})
+    endforeach()
+endif()
 
 if(BUILD_TESTING)
     option(PRINT_TEST_FILES "Print which test files correspond to which tests" OFF)
@@ -491,7 +495,9 @@ if(BUILD_TESTING)
     # Miscellaneous testing applications
     add_h3_executable(mkRandGeo src/apps/testapps/mkRandGeo.c ${APP_SOURCE_FILES})
     add_h3_executable(mkRandGeoBoundary src/apps/testapps/mkRandGeoBoundary.c ${APP_SOURCE_FILES})
+endif()
 
+if(BUILD_BENCHMARKS)
     # Benchmarks
     add_custom_target(benchmarks)
 
@@ -551,9 +557,14 @@ configure_package_config_file(
 #   * header location after install: <prefix>/include/h3/h3api.h
 #   * headers can be included by C++ code `#include <h3/h3api.h>`
 # Installing the library and filters system-wide.
+set(INSTALL_TARGETS h3)
+if(BUILD_FILTERS)
+   list(APPEND INSTALL_TARGETS geoToH3 h3ToComponents h3ToGeo h3ToGeoBoundary hexRange
+                               kRing h3ToGeoBoundaryHier h3ToGeoHier h3ToHier
+       )
+endif()
 install(
-    TARGETS h3 geoToH3 h3ToComponents h3ToGeo h3ToGeoBoundary hexRange
-            kRing h3ToGeoBoundaryHier h3ToGeoHier h3ToHier
+    TARGETS ${INSTALL_TARGETS}
     EXPORT "${TARGETS_EXPORT_NAME}"
     LIBRARY DESTINATION "lib"
     ARCHIVE DESTINATION "lib"

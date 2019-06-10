@@ -6,6 +6,8 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+### Added
+- CMake options for excluding filter applications or benchmarks from the build.
 
 ## [3.4.4] - 2019-05-30
 ### Changed
