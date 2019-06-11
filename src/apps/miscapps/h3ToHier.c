@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 Uber Technologies, Inc.
+ * Copyright 2016-2017, 2019 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
  * @brief takes an optional H3 index and generates all descendant cells at the
  * specified resolution.
  *
- *  usage: `h3ToHier [resolution H3Index]`
+ *  See `h3ToHier --help` for usage.
  *
  *  The program generates all cells at the specified resolution, optionally
  *  only the children of the given index.
@@ -25,30 +25,25 @@
  *  `resolution` should be a positive integer. The default is 0 (i.e., only the
  *       base cells).
  *
- *  `H3Index` should be an H3Index. By default, all indices at the specified
+ *  `parent` should be an H3Index. By default, all indices at the specified
  *       resolution are generated.
  */
 
+#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include "args.h"
 #include "baseCells.h"
-#include "coordijk.h"
-#include "geoCoord.h"
 #include "h3Index.h"
 #include "h3api.h"
 #include "kml.h"
 #include "utility.h"
-#include "vec2d.h"
-
-#include "algos.h"
 
 void recursiveH3IndexToHier(H3Index h, int res) {
     for (int d = 0; d < 7; d++) {
         H3_SET_INDEX_DIGIT(h, res, d);
 
         // skip the pentagonal deleted subsequence
-
         if (_isBaseCellPentagon(H3_GET_BASE_CELL(h)) &&
             _h3LeadingNonZeroDigit(h) == 1) {
             continue;
@@ -62,28 +57,54 @@ void recursiveH3IndexToHier(H3Index h, int res) {
     }
 }
 
-int main(int argc, char* argv[]) {
-    // check command line args
-    if (argc < 2 || argc > 3) {
-        fprintf(stderr, "usage: %s [resolution H3Index]\n", argv[0]);
-        exit(1);
+int main(int argc, char *argv[]) {
+    int res;
+    H3Index parentIndex = 0;
+
+    Arg helpArg = ARG_HELP;
+    Arg resArg = {.names = {"-r", "--resolution"},
+                  .scanFormat = "%d",
+                  .valueName = "res",
+                  .value = &res,
+                  .required = true,
+                  .helpText = "Resolution, 0-15 inclusive."};
+    Arg parentArg = {
+        .names = {"-p", "--parent"},
+        .scanFormat = "%" PRIx64,
+        .valueName = "parent",
+        .value = &parentIndex,
+        .helpText = "Print only indexes descendent from this index."};
+
+    Arg *args[] = {&helpArg, &resArg, &parentArg};
+    const int numArgs = 3;
+    const char *helpText = "Print all indexes at the specified resolution";
+
+    if (parseArgs(argc, argv, numArgs, args, &helpArg, helpText)) {
+        return helpArg.found ? 0 : 1;
     }
 
-    int res = 0;
-    if (!sscanf(argv[1], "%d", &res)) error("resolution must be an integer");
+    if (res > MAX_H3_RES) {
+        printHelp(stderr, argv[1], helpText, numArgs, args,
+                  "Resolution exceeds maximum resolution.", NULL);
+        return 1;
+    }
 
-    if (res > MAX_H3_RES) error("specified resolution exceeds max resolution");
+    if (parentArg.found && !H3_EXPORT(h3IsValid)(parentIndex)) {
+        printHelp(stderr, argv[1], helpText, numArgs, args,
+                  "Parent index is invalid.", NULL);
+        return 1;
+    }
 
-    H3Index prefixIndex = 0;
-    if (argc > 2) {
-        prefixIndex = H3_EXPORT(stringToH3)(argv[2]);
-        int h3BaseCell = H3_GET_BASE_CELL(prefixIndex);
-        if (h3BaseCell < 0 || h3BaseCell >= NUM_BASE_CELLS) {
-            error("invalid base cell number");
+    if (parentArg.found) {
+        // parent is the same or higher resolution than the target.
+        if (res <= H3_GET_RESOLUTION(parentIndex)) {
+            h3Println(parentIndex);
+        } else {
+            int rootRes = H3_GET_RESOLUTION(parentIndex);
+            H3_SET_RESOLUTION(parentIndex, res);
+            recursiveH3IndexToHier(parentIndex, rootRes + 1);
         }
-    }
-
-    if (prefixIndex == 0) {
+    } else {
         // Generate all
         for (int bc = 0; bc < NUM_BASE_CELLS; bc++) {
             H3Index rootCell = H3_INIT;
@@ -95,16 +116,6 @@ int main(int argc, char* argv[]) {
                 H3_SET_RESOLUTION(rootCell, res);
                 recursiveH3IndexToHier(rootCell, 1);
             }
-        }
-    } else {
-        // prefix is the same or higher resolution than
-        // the target.
-        if (res <= H3_GET_RESOLUTION(prefixIndex)) {
-            h3Println(prefixIndex);
-        } else {
-            int rootRes = H3_GET_RESOLUTION(prefixIndex);
-            H3_SET_RESOLUTION(prefixIndex, res);
-            recursiveH3IndexToHier(prefixIndex, rootRes + 1);
         }
     }
 }

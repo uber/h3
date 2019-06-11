@@ -17,7 +17,7 @@
  * @brief stdin/stdout filter that converts from integer H3 indexes to
  * k-rings
  *
- *  usage: `kRing -k <k> [--print-distances] [--origin origin]`
+ *  See `kRing --help` for usage.
  *
  *  The program reads H3 indexes from stdin until EOF and outputs
  *  the H3 indexes within k-ring `k` to stdout.
@@ -30,6 +30,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "args.h"
 #include "h3api.h"
 #include "utility.h"
 
@@ -58,8 +59,7 @@ int main(int argc, char* argv[]) {
     int k = 0;
     H3Index origin = 0;
 
-    Arg helpArg = {.names = {"-h", "--help"},
-                   .helpText = "Show this help message."};
+    Arg helpArg = ARG_HELP;
     Arg kArg = {.names = {"-k", NULL},
                 .required = true,
                 .scanFormat = "%d",
@@ -75,7 +75,7 @@ int main(int argc, char* argv[]) {
         .valueName = "origin",
         .value = &origin,
         .helpText =
-            "Origin, or not specified to read origins from standard in."};
+            "Origin, or not specified to read origins from standard input."};
 
     Arg* args[] = {&helpArg, &kArg, &printDistancesArg, &originArg};
 
