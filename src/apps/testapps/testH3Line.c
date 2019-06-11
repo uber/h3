@@ -111,4 +111,12 @@ SUITE(h3Line) {
         iterateAllIndexesAtResPartial(3, h3Line_kRing_assertions, 6);
         // Further resolutions aren't tested to save time.
     }
+
+    TEST(h3Line_acrossMultipleFaces) {
+        H3Index start = 0x85285aa7fffffff;
+        H3Index end = 0x851d9b1bfffffff;
+
+        int lineSz = H3_EXPORT(h3LineSize)(start, end);
+        t_assert(lineSz < 0, "Line not computable across multiple icosa faces");
+    }
 }
