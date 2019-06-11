@@ -102,22 +102,14 @@ void doCell(H3Index h, bool verboseMode) {
 }
 
 int main(int argc, char* argv[]) {
-    H3Index index = 0;
-
     Arg helpArg = ARG_HELP;
     Arg verboseArg = {.names = {"-v", "--verbose"},
                       .helpText = "Verbose output mode."};
-    Arg indexArg = {
-        .names = {"-i", "--index"},
-        .scanFormat = "%" PRIx64,
-        .valueName = "index",
-        .value = &index,
-        .helpText =
-            "Index, or not specified to read indexes from standard input."};
-
+    DEFINE_INDEX_ARG(index, indexArg);
+    const int numArgs = 3;
     Arg* args[] = {&helpArg, &verboseArg, &indexArg};
 
-    if (parseArgs(argc, argv, 3, args, &helpArg,
+    if (parseArgs(argc, argv, numArgs, args, &helpArg,
                   "Converts H3 indexes to component parts")) {
         return helpArg.found ? 0 : 1;
     }

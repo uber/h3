@@ -63,16 +63,8 @@ void doCell(H3Index h, int isKmlOut) {
 }
 
 int main(int argc, char *argv[]) {
-    H3Index index = 0;
-
     Arg helpArg = ARG_HELP;
-    Arg indexArg = {
-        .names = {"-i", "--index"},
-        .scanFormat = "%" PRIx64,
-        .valueName = "index",
-        .value = &index,
-        .helpText =
-            "Index, or not specified to read indexes from standard input."};
+    DEFINE_INDEX_ARG(index, indexArg);
     Arg kmlArg = ARG_KML;
     DEFINE_KML_NAME_ARG(userKmlName, kmlNameArg);
     DEFINE_KML_DESC_ARG(userKmlDesc, kmlDescArg);

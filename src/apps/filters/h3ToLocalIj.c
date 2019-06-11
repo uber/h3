@@ -48,7 +48,6 @@ void doCell(H3Index h, H3Index origin) {
 
 int main(int argc, char* argv[]) {
     H3Index origin = 0;
-    H3Index index = 0;
 
     Arg helpArg = ARG_HELP;
     Arg originArg = {
@@ -59,13 +58,7 @@ int main(int argc, char* argv[]) {
         .required = true,
         .helpText =
             "Origin (anchoring index) for the local coordinate system."};
-    Arg indexArg = {.names = {"-i", "--index"},
-                    .scanFormat = "%" PRIx64,
-                    .valueName = "index",
-                    .value = &index,
-                    .helpText =
-                        "Index to convert to IJ coordinates, or not specified "
-                        "to read from standard input."};
+    DEFINE_INDEX_ARG(index, indexArg);
 
     Arg* args[] = {&helpArg, &originArg, &indexArg};
     const int numArgs = 3;

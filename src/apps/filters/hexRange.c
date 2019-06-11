@@ -68,10 +68,10 @@ int main(int argc, char* argv[]) {
         .value = &origin,
         .helpText =
             "Origin, or not specified to read origins from standard input."};
-
+    const int numArgs = 3;
     Arg* args[] = {&helpArg, &kArg, &originArg};
 
-    if (parseArgs(argc, argv, 3, args, &helpArg,
+    if (parseArgs(argc, argv, numArgs, args, &helpArg,
                   "Print indexes k distance away from the origin")) {
         return helpArg.found ? 0 : 1;
     }

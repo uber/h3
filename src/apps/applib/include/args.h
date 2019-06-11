@@ -20,6 +20,7 @@
 #ifndef ARGS_H
 #define ARGS_H
 
+#include <inttypes.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include "utility.h"
@@ -89,6 +90,15 @@ int _parseArgsList(int argc, char* argv[], int numArgs, Arg* args[],
 
 #define ARG_HELP \
     { .names = {"-h", "--help"}, .helpText = "Show this help message." }
+#define DEFINE_INDEX_ARG(varName, argName) \
+    H3Index varName = 0;                   \
+    Arg argName = {                        \
+        .names = {"-i", "--index"},        \
+        .scanFormat = "%" PRIx64,          \
+        .valueName = "index",              \
+        .value = &varName,                 \
+        .helpText =                        \
+            "Index, or not specified to read indexes from standard input."}
 #define ARG_KML \
     { .names = {"-k", "--kml"}, .helpText = "Print output in KML format." }
 #define DEFINE_KML_NAME_ARG(varName, argName)      \
