@@ -6,6 +6,8 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+### Changed
+- Argument parsing for all filter applications is more flexible. (#238)
 
 ## [3.4.4] - 2019-05-30
 ### Changed
