@@ -17,7 +17,7 @@
  * @brief stdin/stdout filter that converts from lat/lon coordinates to integer
  * H3 indexes
  *
- *  usage: `geoToH3 --resolution res [--latitude lat --longitude lon]`
+ *  See `geoToH3 --help` for usage.
  *
  *  The program reads lat/lon pairs from stdin until EOF is encountered. For
  *  each lat/lon the program outputs to stdout the integer H3 index of the
@@ -32,8 +32,7 @@
  *       latN lonN
  */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include "args.h"
 #include "h3Index.h"
 #include "utility.h"
 
@@ -58,8 +57,7 @@ int main(int argc, char* argv[]) {
     double lat = 0;
     double lon = 0;
 
-    Arg helpArg = {.names = {"-h", "--help"},
-                   .helpText = "Show this help message."};
+    Arg helpArg = ARG_HELP;
     Arg resArg = {.names = {"-r", "--resolution"},
                   .required = true,
                   .scanFormat = "%d",
@@ -72,7 +70,7 @@ int main(int argc, char* argv[]) {
                   .value = &lat,
                   .helpText =
                       "Latitude in degrees. If not specified, \"latitude "
-                      "longitude\" pairs will be read from stdin."};
+                      "longitude\" pairs will be read from standard input."};
     Arg lonArg = {.names = {"--lon", "--longitude"},
                   .scanFormat = "%lf",
                   .valueName = "lon",
@@ -80,17 +78,17 @@ int main(int argc, char* argv[]) {
                   .helpText = "Longitude in degrees."};
 
     Arg* args[] = {&helpArg, &resArg, &latArg, &lonArg};
-
+    const int numArgs = 4;
     const char* helpText =
         "Convert degrees latitude/longitude coordinates to H3 indexes.";
 
-    if (parseArgs(argc, argv, 4, args, &helpArg, helpText)) {
+    if (parseArgs(argc, argv, numArgs, args, &helpArg, helpText)) {
         return helpArg.found ? 0 : 1;
     }
 
     if (latArg.found != lonArg.found) {
         // One is found but the other is not.
-        printHelp(stderr, argv[0], helpText, 4, args,
+        printHelp(stderr, argv[0], helpText, numArgs, args,
                   "Latitude and longitude must both be specified.", NULL);
         return 1;
     }

@@ -120,9 +120,11 @@ set(APP_SOURCE_FILES
     src/apps/applib/include/kml.h
     src/apps/applib/include/benchmark.h
     src/apps/applib/include/utility.h
+    src/apps/applib/include/args.h
+    src/apps/applib/lib/test.c
     src/apps/applib/lib/kml.c
     src/apps/applib/lib/utility.c
-    src/apps/applib/lib/test.c)
+    src/apps/applib/lib/args.c)
 set(EXAMPLE_SOURCE_FILES
     examples/index.c
     examples/distance.c

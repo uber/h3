@@ -17,8 +17,7 @@
  * @brief stdin/stdout filter that converts from integer H3 indexes to lat/lon
  * cell boundaries
  *
- *  usage: `h3ToGeoBoundary [--index index] [--kml [--kml-name name]
- * [--kml-description desc]]`
+ *  See `h3ToGeoBoundary --help` for usage.
  *
  *  The program reads H3 indexes from stdin and outputs the corresponding
  *  cell boundaries to stdout, until EOF is encountered.
@@ -44,6 +43,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "args.h"
 #include "h3api.h"
 #include "kml.h"
 #include "utility.h"
@@ -64,31 +64,11 @@ void doCell(H3Index h, int isKmlOut) {
 }
 
 int main(int argc, char *argv[]) {
-    H3Index index = 0;
-    char userKmlName[BUFF_SIZE] = {0};
-    char userKmlDesc[BUFF_SIZE] = {0};
-
-    Arg helpArg = {.names = {"-h", "--help"},
-                   .helpText = "Show this help message."};
-    Arg indexArg = {
-        .names = {"-i", "--index"},
-        .scanFormat = "%" PRIx64,
-        .valueName = "index",
-        .value = &index,
-        .helpText =
-            "Index, or not specified to read indexes from standard in."};
-    Arg kmlArg = {.names = {"-k", "--kml"},
-                  .helpText = "Print output in KML format."};
-    Arg kmlNameArg = {.names = {"--kn", "--kml-name"},
-                      .scanFormat = "%255c",  // BUFF_SIZE - 1
-                      .valueName = "name",
-                      .value = &userKmlName,
-                      .helpText = "Text for the KML name tag."};
-    Arg kmlDescArg = {.names = {"--kd", "--kml-description"},
-                      .scanFormat = "%255c",  // BUFF_SIZE - 1
-                      .valueName = "description",
-                      .value = &userKmlDesc,
-                      .helpText = "Text for the KML description tag."};
+    Arg helpArg = ARG_HELP;
+    DEFINE_INDEX_ARG(index, indexArg);
+    Arg kmlArg = ARG_KML;
+    DEFINE_KML_NAME_ARG(userKmlName, kmlNameArg);
+    DEFINE_KML_DESC_ARG(userKmlDesc, kmlDescArg);
 
     Arg *args[] = {&helpArg, &indexArg, &kmlArg, &kmlNameArg, &kmlDescArg};
 
