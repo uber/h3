@@ -6,6 +6,10 @@ As a C library, bindings can be made to call H3 functions from different program
 
 - [entrepreneur-interet-general/h3.standard](https://github.com/entrepreneur-interet-general/H3.Standard)
 
+## ClickHouse
+
+- [geoToH3 function, since version 19.11](https://github.com/yandex/ClickHouse/blob/master/dbms/src/Functions/geoToH3.cpp#L35)
+
 ## ECL
 
 - [hpcc-systems/HPCC-Platform](https://github.com/hpcc-systems/HPCC-Platform/tree/master/plugins/h3)
