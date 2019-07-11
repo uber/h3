@@ -69,8 +69,11 @@ void _faceIjkToGeo(const FaceIJK* h, int res, GeoCoord* g);
 void _faceIjkToGeoBoundary(const FaceIJK* h, int res, int isPentagon,
                            GeoBoundary* g);
 void _faceIjkPentToGeoBoundary(const FaceIJK* h, int res, GeoBoundary* g);
+void _faceIjkToVerts(FaceIJK* fijk, int* res, FaceIJK* fijkVerts);
+void _faceIjkPentToVerts(FaceIJK* fijk, int* res, FaceIJK* fijkVerts);
 void _hex2dToGeo(const Vec2d* v, int face, int res, int substrate, GeoCoord* g);
 int _adjustOverageClassII(FaceIJK* fijk, int res, int pentLeading4,
                           int substrate);
+int _adjustPentVertOverage(FaceIJK* fijk, int res);
 
 #endif
