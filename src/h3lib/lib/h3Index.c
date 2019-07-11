@@ -780,6 +780,67 @@ void H3_EXPORT(h3ToGeoBoundary)(H3Index h3, GeoBoundary* gb) {
 }
 
 /**
+ * Returns the max number of possible icosahedron faces an H3 index
+ * may intersect.
+ *
+ * @return int count of faces
+ */
+int H3_EXPORT(maxFaceCount)(H3Index h3) {
+    // a pentagon always intersects 5 faces, a hexagon never intersects more
+    // than 2 (but may only intersect 1)
+    return H3_EXPORT(h3IsPentagon)(h3) ? 5 : 2;
+}
+
+/**
+ * Find all icosahedron faces intersected by a given  H3 index, represented
+ * as integers from 0-19. The array is sparse; since 0 is a valid value,
+ * invalid array values are represented as -1. It is the responsibility of
+ * the caller to filter out invalid values.
+ *
+ * @param h3 The H3 index
+ * @param out Output array. Must be of size maxFaceCount(h3).
+ */
+void H3_EXPORT(h3GetFaces)(H3Index h3, int* out) {
+    // convert to FaceIJK
+    FaceIJK fijk;
+    _h3ToFaceIjk(h3, &fijk);
+
+    int faceCount = maxFaceCount(h3);
+    int res = H3_GET_RESOLUTION(h3);
+
+    // Get all vertices as FaceIJK addresses. For simplicity, always
+    // initialize the array with 6 verts, ignoring the last one for pentagons
+    FaceIJK fijkVerts[NUM_HEX_VERTS];
+    int vertexCount;
+
+    if (H3_EXPORT(h3IsPentagon)(h3)) {
+        // Pentagon case
+        vertexCount = NUM_PENT_VERTS;
+        _faceIjkPentToVerts(&fijk, &res, fijkVerts);
+    } else {
+        // Hexagon case
+        vertexCount = NUM_HEX_VERTS;
+        _faceIjkToVerts(&fijk, &res, fijkVerts);
+    }
+
+    // We may not use all of the slots in the output array,
+    // so fill with invalid values to indicate unused slots
+    for (int i = 0; i < faceCount; i++) {
+        out[i] = INVALID_FACE;
+    }
+
+    // add each vertex face, using the output array as a hash set
+    for (int i = 0; i < vertexCount; i++) {
+        int face = fijkVerts[i].face;
+        int pos = face % faceCount;
+        while (out[pos] != INVALID_FACE && out[pos] != face) {
+            pos = (pos + 1) % faceCount;
+        }
+        out[pos] = face;
+    }
+}
+
+/**
  * Returns whether or not a resolution is a Class III grid. Note that odd
  * resolutions are Class III and even resolutions are Class II.
  * @param res The H3 resolution.

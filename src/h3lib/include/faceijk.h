@@ -50,16 +50,15 @@ typedef struct {
 extern const GeoCoord faceCenterGeo[NUM_ICOSA_FACES];
 
 // indexes for faceNeighbors table
-/** Invalid faceNeighbors table direction */
-#define INVALID -1
-/** Center faceNeighbors table direction */
-#define CENTER 0
 /** IJ quadrant faceNeighbors table direction */
 #define IJ 1
 /** KI quadrant faceNeighbors table direction */
 #define KI 2
 /** JK quadrant faceNeighbors table direction */
 #define JK 3
+
+/** Invalid face index */
+#define INVALID_FACE -1
 
 // Internal functions
 

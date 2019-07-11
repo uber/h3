@@ -394,6 +394,17 @@ int H3_EXPORT(h3IsResClassIII)(H3Index h);
 int H3_EXPORT(h3IsPentagon)(H3Index h);
 /** @} */
 
+/** @defgroup h3GetFaces h3GetFaces
+ * Functions for h3GetFaces
+ * @{
+ */
+/** @brief Max number of icosahedron faces intersected by an index */
+int H3_EXPORT(maxFaceCount)(H3Index h3);
+
+/** @brief Find all icosahedron faces intersected by a given  H3 index */
+void H3_EXPORT(h3GetFaces)(H3Index h3, int *out);
+/** @} */
+
 /** @defgroup h3IndexesAreNeighbors h3IndexesAreNeighbors
  * Functions for h3IndexesAreNeighbors
  * @{
