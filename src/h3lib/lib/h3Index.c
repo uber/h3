@@ -810,11 +810,11 @@ void H3_EXPORT(h3GetFaces)(H3Index h3, int* out) {
 
     // Get all vertices as FaceIJK addresses. For simplicity, always
     // initialize the array with 6 verts, ignoring the last one for pentagons
+    int isPentagon = H3_EXPORT(h3IsPentagon)(h3);
     FaceIJK fijkVerts[NUM_HEX_VERTS];
     int vertexCount;
 
-    if (H3_EXPORT(h3IsPentagon)(h3)) {
-        // Pentagon case
+    if (isPentagon) {
         vertexCount = NUM_PENT_VERTS;
         _faceIjkPentToVerts(&fijk, &res, fijkVerts);
     } else {
@@ -831,7 +831,17 @@ void H3_EXPORT(h3GetFaces)(H3Index h3, int* out) {
 
     // add each vertex face, using the output array as a hash set
     for (int i = 0; i < vertexCount; i++) {
-        int face = fijkVerts[i].face;
+        FaceIJK vert = fijkVerts[i];
+
+        // Adjust overage (i.e. whether this vertex is on another face)
+        if (isPentagon) {
+            _adjustPentVertOverage(&vert, res);
+        } else {
+            _adjustOverageClassII(&vert, res, 0, 1);
+        }
+
+        // Save the face to the output array
+        int face = vert.face;
         int pos = face % faceCount;
         while (out[pos] != INVALID_FACE && out[pos] != face) {
             pos = (pos + 1) % faceCount;

@@ -190,22 +190,31 @@ void iterateAllIndexesAtResPartial(int res, void (*callback)(H3Index),
                                    int baseCells) {
     assert(baseCells <= NUM_BASE_CELLS);
     for (int i = 0; i < baseCells; i++) {
-        H3Index bc;
-        setH3Index(&bc, 0, i, 0);
-        int childrenSz = H3_EXPORT(maxUncompactSize)(&bc, 1, res);
-        H3Index* children = calloc(childrenSz, sizeof(H3Index));
-        H3_EXPORT(uncompact)(&bc, 1, children, childrenSz, res);
+        iterateBaseCellIndexesAtRes(res, callback, i);
+    }
+}
 
-        for (int j = 0; j < childrenSz; j++) {
-            if (children[j] == 0) {
-                continue;
-            }
+/**
+ * Call the callback for every index at the given resolution in a
+ * specific base cell
+ */
+void iterateBaseCellIndexesAtRes(int res, void (*callback)(H3Index),
+                                 int baseCell) {
+    H3Index bc;
+    setH3Index(&bc, 0, baseCell, 0);
+    int childrenSz = H3_EXPORT(maxUncompactSize)(&bc, 1, res);
+    H3Index* children = calloc(childrenSz, sizeof(H3Index));
+    H3_EXPORT(uncompact)(&bc, 1, children, childrenSz, res);
 
-            (*callback)(children[j]);
+    for (int j = 0; j < childrenSz; j++) {
+        if (children[j] == 0) {
+            continue;
         }
 
-        free(children);
+        (*callback)(children[j]);
     }
+
+    free(children);
 }
 
 /**

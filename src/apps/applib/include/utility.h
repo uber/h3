@@ -52,5 +52,7 @@ void randomGeo(GeoCoord* p);
 void iterateAllIndexesAtRes(int res, void (*callback)(H3Index));
 void iterateAllIndexesAtResPartial(int res, void (*callback)(H3Index),
                                    int maxBaseCell);
+void iterateBaseCellIndexesAtRes(int res, void (*callback)(H3Index),
+                                 int baseCell);
 
 #endif
