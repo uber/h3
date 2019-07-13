@@ -27,7 +27,7 @@
 #include "test.h"
 #include "utility.h"
 
-static int countFaces(h3, expectedMax) {
+static int countFaces(H3Index h3, int expectedMax) {
     int sz = H3_EXPORT(maxFaceCount)(h3);
     t_assert(sz == expectedMax, "got expected max face count");
     int *faces = calloc(sz, sizeof(int));
@@ -54,6 +54,7 @@ static void assertMultipleHexFaces(H3Index h3) {
 }
 
 static void assertPentagonFaces(H3Index h3) {
+    t_assert(H3_EXPORT(h3IsPentagon)(h3), "got a pentagon");
     int validCount = countFaces(h3, 5);
     t_assert(validCount == 5, "got 5 valid faces for a pentagon");
 }
@@ -73,14 +74,8 @@ SUITE(h3GetFaces) {
     }
 
     TEST(hexagonWithDistortion) {
-        // Class III pentagon neighbor
+        // Class III pentagon neighbor, distortion across faces
         H3Index h3 = 0x831c06fffffffff;
-        assertMultipleHexFaces(h3);
-    }
-
-    TEST(hexagonCrossingFaces) {
-        // Class II hex with two non-adjacent vertices on edge
-        H3Index h3 = 0x821ce7fffffffff;
         assertMultipleHexFaces(h3);
     }
 
@@ -96,11 +91,11 @@ SUITE(h3GetFaces) {
         assertPentagonFaces(pentagon);
     }
 
-    // TEST(classIIPentagon) {
-    //     H3Index pentagon;
-    //     setH3Index(&pentagon, 2, 4, 0);
-    //     assertPentagonFaces(pentagon);
-    // }
+    TEST(classIIPentagon) {
+        H3Index pentagon;
+        setH3Index(&pentagon, 2, 4, 0);
+        assertPentagonFaces(pentagon);
+    }
 
     TEST(baseCellHexagons) {
         int singleCount = 0;
@@ -120,20 +115,20 @@ SUITE(h3GetFaces) {
             }
         }
         t_assert(singleCount == 4 * 20,
-                 "got single face for 4 face-aligned hex base cells");
+                 "got single face for 4 aligned hex base cells per face");
         t_assert(multipleCount == 1.5 * 20,
-                 "got multiple faces for non-face-aligned hex base cells");
+                 "got multiple faces for non-aligned hex base cells");
     }
 
-    // TEST(baseCellPentagons) {
-    //     for (int i = 0; i < NUM_BASE_CELLS; i++) {
-    //         if (_isBaseCellPentagon(i)) {
-    //             // Make the base cell index
-    //             H3Index baseCell = H3_INIT;
-    //             H3_SET_MODE(baseCell, H3_HEXAGON_MODE);
-    //             H3_SET_BASE_CELL(baseCell, i);
-    //             assertPentagonFaces(baseCell);
-    //         }
-    //     }
-    // }
+    TEST(baseCellPentagons) {
+        for (int i = 0; i < NUM_BASE_CELLS; i++) {
+            if (_isBaseCellPentagon(i)) {
+                // Make the base cell index
+                H3Index baseCell = H3_INIT;
+                H3_SET_MODE(baseCell, H3_HEXAGON_MODE);
+                H3_SET_BASE_CELL(baseCell, i);
+                assertPentagonFaces(baseCell);
+            }
+        }
+    }
 }

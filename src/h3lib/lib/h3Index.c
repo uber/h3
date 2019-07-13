@@ -801,16 +801,24 @@ int H3_EXPORT(maxFaceCount)(H3Index h3) {
  * @param out Output array. Must be of size maxFaceCount(h3).
  */
 void H3_EXPORT(h3GetFaces)(H3Index h3, int* out) {
+    int res = H3_GET_RESOLUTION(h3);
+    int isPentagon = H3_EXPORT(h3IsPentagon)(h3);
+
+    // We can't use the vertex-based approach here for class II pentagons,
+    // because all their vertices are on the icosahedron edges. Their
+    // direct child pentagons cross the same faces, so use those instead.
+    if (isPentagon && !isResClassIII(res)) {
+        H3Index childPentagon = makeDirectChild(h3, 0);
+        H3_EXPORT(h3GetFaces)(childPentagon, out);
+        return;
+    }
+
     // convert to FaceIJK
     FaceIJK fijk;
     _h3ToFaceIjk(h3, &fijk);
 
-    int faceCount = maxFaceCount(h3);
-    int res = H3_GET_RESOLUTION(h3);
-
     // Get all vertices as FaceIJK addresses. For simplicity, always
     // initialize the array with 6 verts, ignoring the last one for pentagons
-    int isPentagon = H3_EXPORT(h3IsPentagon)(h3);
     FaceIJK fijkVerts[NUM_HEX_VERTS];
     int vertexCount;
 
@@ -818,13 +826,13 @@ void H3_EXPORT(h3GetFaces)(H3Index h3, int* out) {
         vertexCount = NUM_PENT_VERTS;
         _faceIjkPentToVerts(&fijk, &res, fijkVerts);
     } else {
-        // Hexagon case
         vertexCount = NUM_HEX_VERTS;
         _faceIjkToVerts(&fijk, &res, fijkVerts);
     }
 
     // We may not use all of the slots in the output array,
     // so fill with invalid values to indicate unused slots
+    int faceCount = H3_EXPORT(maxFaceCount)(h3);
     for (int i = 0; i < faceCount; i++) {
         out[i] = INVALID_FACE;
     }
@@ -833,7 +841,8 @@ void H3_EXPORT(h3GetFaces)(H3Index h3, int* out) {
     for (int i = 0; i < vertexCount; i++) {
         FaceIJK vert = fijkVerts[i];
 
-        // Adjust overage (i.e. whether this vertex is on another face)
+        // Adjust overage, determining whether this vertex is
+        // on another face
         if (isPentagon) {
             _adjustPentVertOverage(&vert, res);
         } else {
