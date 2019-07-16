@@ -739,12 +739,12 @@ void _h3ToFaceIjk(H3Index h, FaceIJK* fijk) {
     // a pentagon base cell with a leading 4 digit requires special handling
     int pentLeading4 =
         (_isBaseCellPentagon(baseCell) && _h3LeadingNonZeroDigit(h) == 4);
-    if (_adjustOverageClassII(fijk, res, pentLeading4, 0)) {
+    if (_adjustOverageClassII(fijk, res, pentLeading4, 0) != NO_OVERAGE) {
         // if the base cell is a pentagon we have the potential for secondary
         // overages
         if (_isBaseCellPentagon(baseCell)) {
             while (1) {
-                if (!_adjustOverageClassII(fijk, res, 0, 0)) break;
+                if (_adjustOverageClassII(fijk, res, 0, 0) == NO_OVERAGE) break;
             }
         }
 

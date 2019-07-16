@@ -846,9 +846,9 @@ void _faceIjkToVerts(FaceIJK* fijk, int* res, FaceIJK* fijkVerts) {
  * @return 0 if on original face (no overage); 1 if on face edge (only occurs
  *         on substrate grids); 2 if overage on new face interior
  */
-int _adjustOverageClassII(FaceIJK* fijk, int res, int pentLeading4,
-                          int substrate) {
-    int overage = 0;
+Overage _adjustOverageClassII(FaceIJK* fijk, int res, int pentLeading4,
+                              int substrate) {
+    Overage overage = NO_OVERAGE;
 
     CoordIJK* ijk = &fijk->coord;
 
@@ -858,10 +858,10 @@ int _adjustOverageClassII(FaceIJK* fijk, int res, int pentLeading4,
 
     // check for overage
     if (substrate && ijk->i + ijk->j + ijk->k == maxDim)  // on edge
-        overage = 1;
+        overage = FACE_EDGE;
     else if (ijk->i + ijk->j + ijk->k > maxDim)  // overage
     {
-        overage = 2;
+        overage = NEW_FACE;
 
         const FaceOrientIJK* fijkOrient;
         if (ijk->k > 0) {
@@ -901,7 +901,7 @@ int _adjustOverageClassII(FaceIJK* fijk, int res, int pentLeading4,
 
         // overage points on pentagon boundaries can end up on edges
         if (substrate && ijk->i + ijk->j + ijk->k == maxDim)  // on edge
-            overage = 1;
+            overage = FACE_EDGE;
     }
 
     return overage;
@@ -915,10 +915,10 @@ int _adjustOverageClassII(FaceIJK* fijk, int res, int pentLeading4,
  * @param fijk The FaceIJK address of the cell.
  * @param res The H3 resolution of the cell.
  */
-int _adjustPentVertOverage(FaceIJK* fijk, int res) {
+Overage _adjustPentVertOverage(FaceIJK* fijk, int res) {
     int pentLeading4 = 0;
-    int overage = _adjustOverageClassII(fijk, res, pentLeading4, 1);
-    while (overage == 2) {
+    Overage overage = _adjustOverageClassII(fijk, res, pentLeading4, 1);
+    while (overage == NEW_FACE) {
         // in a different triangle
         overage = _adjustOverageClassII(fijk, res, pentLeading4, 1);
     }

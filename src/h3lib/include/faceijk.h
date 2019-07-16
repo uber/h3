@@ -60,6 +60,16 @@ extern const GeoCoord faceCenterGeo[NUM_ICOSA_FACES];
 /** Invalid face index */
 #define INVALID_FACE -1
 
+/** Digit representing overage type */
+typedef enum {
+    /** No overage (on original face) */
+    NO_OVERAGE = 0,
+    /** On face edge (only occurs on substrate grids) */
+    FACE_EDGE = 1,
+    /** Overage on new face interior */
+    NEW_FACE = 2
+} Overage;
+
 // Internal functions
 
 void _geoToFaceIjk(const GeoCoord* g, int res, FaceIJK* h);
@@ -71,8 +81,8 @@ void _faceIjkPentToGeoBoundary(const FaceIJK* h, int res, GeoBoundary* g);
 void _faceIjkToVerts(FaceIJK* fijk, int* res, FaceIJK* fijkVerts);
 void _faceIjkPentToVerts(FaceIJK* fijk, int* res, FaceIJK* fijkVerts);
 void _hex2dToGeo(const Vec2d* v, int face, int res, int substrate, GeoCoord* g);
-int _adjustOverageClassII(FaceIJK* fijk, int res, int pentLeading4,
-                          int substrate);
-int _adjustPentVertOverage(FaceIJK* fijk, int res);
+Overage _adjustOverageClassII(FaceIJK* fijk, int res, int pentLeading4,
+                              int substrate);
+Overage _adjustPentVertOverage(FaceIJK* fijk, int res);
 
 #endif
