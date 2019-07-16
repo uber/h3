@@ -97,6 +97,12 @@ SUITE(h3GetFaces) {
         assertPentagonFaces(pentagon);
     }
 
+    TEST(res15Pentagon) {
+        H3Index pentagon;
+        setH3Index(&pentagon, 15, 4, 0);
+        assertPentagonFaces(pentagon);
+    }
+
     TEST(baseCellHexagons) {
         int singleCount = 0;
         int multipleCount = 0;
