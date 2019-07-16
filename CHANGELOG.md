@@ -8,6 +8,8 @@ The public API of this library consists of the functions declared in file
 ## [Unreleased]
 ### Changed
 - Argument parsing for all filter applications is more flexible. (#238)
+### Fixed
+- Fix printing program name in `h3ToHier` error messages. (#254)
 
 ## [3.4.4] - 2019-05-30
 ### Changed
