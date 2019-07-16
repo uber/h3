@@ -84,13 +84,13 @@ int main(int argc, char *argv[]) {
     }
 
     if (res > MAX_H3_RES) {
-        printHelp(stderr, argv[1], helpText, numArgs, args,
+        printHelp(stderr, argv[0], helpText, numArgs, args,
                   "Resolution exceeds maximum resolution.", NULL);
         return 1;
     }
 
     if (parentArg.found && !H3_EXPORT(h3IsValid)(parentIndex)) {
-        printHelp(stderr, argv[1], helpText, numArgs, args,
+        printHelp(stderr, argv[0], helpText, numArgs, args,
                   "Parent index is invalid.", NULL);
         return 1;
     }
