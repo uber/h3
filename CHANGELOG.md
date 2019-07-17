@@ -8,6 +8,7 @@ The public API of this library consists of the functions declared in file
 ## [Unreleased]
 ### Added
 - CMake options for excluding filter applications or benchmarks from the build. (#247)
+- `h3GetFaces` function to find icosahedron faces for an index, and helper function `maxFaceCount` (#253)
 ### Changed
 - Argument parsing for all filter applications is more flexible. (#238)
 ### Fixed
