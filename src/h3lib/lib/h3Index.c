@@ -851,10 +851,10 @@ void H3_EXPORT(h3GetFaces)(H3Index h3, int* out) {
 
         // Save the face to the output array
         int face = vert->face;
-        int pos = face % faceCount;
-        while (out[pos] != INVALID_FACE && out[pos] != face) {
-            pos = (pos + 1) % faceCount;
-        }
+        int pos = 0;
+        // Find the first empty output position, or the first position
+        // matching the current face
+        while (out[pos] != INVALID_FACE && out[pos] != face) pos++;
         out[pos] = face;
     }
 
