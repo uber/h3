@@ -539,12 +539,16 @@ int H3_EXPORT(hexRanges)(H3Index* h3Set, int length, int k, H3Index* out) {
 }
 
 /**
- * Returns the hollow hexagonal ring centered at origin with sides of length k.
+ * Returns the "hollow" ring of hexagons at exactly grid distance k from
+ * the origin hexagon. In particular, k=0 returns just the origin hexagon.
+ *
+ * A nonzero failure return code may happen, for example, if a pentagon is
+ * encountered. Failure cases may be fixed in future versions.
  *
  * @param origin Origin location.
  * @param k k >= 0
  * @param out Array which must be of size 6 * k (or 1 if k == 0)
- * @return 0 if no pentagonal distortion was encountered.
+ * @return 0 if successful; nonzero otherwise.
  */
 int H3_EXPORT(hexRing)(H3Index origin, int k, H3Index* out) {
     // Short-circuit on 'identity' ring
