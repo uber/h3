@@ -743,9 +743,8 @@ void _h3ToFaceIjk(H3Index h, FaceIJK* fijk) {
         // if the base cell is a pentagon we have the potential for secondary
         // overages
         if (_isBaseCellPentagon(baseCell)) {
-            while (1) {
-                if (_adjustOverageClassII(fijk, res, 0, 0) == NO_OVERAGE) break;
-            }
+            while (_adjustOverageClassII(fijk, res, 0, 0) != NO_OVERAGE)
+                continue;
         }
 
         if (res != H3_GET_RESOLUTION(h)) _upAp7r(&fijk->coord);

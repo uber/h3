@@ -917,10 +917,9 @@ Overage _adjustOverageClassII(FaceIJK* fijk, int res, int pentLeading4,
  */
 Overage _adjustPentVertOverage(FaceIJK* fijk, int res) {
     int pentLeading4 = 0;
-    Overage overage = _adjustOverageClassII(fijk, res, pentLeading4, 1);
-    while (overage == NEW_FACE) {
-        // in a different triangle
+    Overage overage;
+    do {
         overage = _adjustOverageClassII(fijk, res, pentLeading4, 1);
-    }
+    } while (overage == NEW_FACE);
     return overage;
 }
