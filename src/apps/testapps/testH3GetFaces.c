@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 /** @file
- * @brief tests H3 distance function.
- *
- *  usage: `testH3Distance`
+ * @brief tests the h3GetFaces function
  */
 
 #include <stdio.h>
@@ -109,9 +107,8 @@ SUITE(h3GetFaces) {
         for (int i = 0; i < NUM_BASE_CELLS; i++) {
             if (!_isBaseCellPentagon(i)) {
                 // Make the base cell index
-                H3Index baseCell = H3_INIT;
-                H3_SET_MODE(baseCell, H3_HEXAGON_MODE);
-                H3_SET_BASE_CELL(baseCell, i);
+                H3Index baseCell;
+                setH3Index(&baseCell, 0, i, 0);
                 int validCount = countFaces(baseCell, 2);
                 t_assert(validCount > 0, "got at least one face");
                 if (validCount == 1)
@@ -130,9 +127,8 @@ SUITE(h3GetFaces) {
         for (int i = 0; i < NUM_BASE_CELLS; i++) {
             if (_isBaseCellPentagon(i)) {
                 // Make the base cell index
-                H3Index baseCell = H3_INIT;
-                H3_SET_MODE(baseCell, H3_HEXAGON_MODE);
-                H3_SET_BASE_CELL(baseCell, i);
+                H3Index baseCell;
+                setH3Index(&baseCell, 0, i, 0);
                 assertPentagonFaces(baseCell);
             }
         }
