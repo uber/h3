@@ -284,6 +284,12 @@ else()
         )
 endif()
 
+# Release publishing
+add_custom_target(update-version
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/update_version.sh
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    )
+
 # Website publishing
 add_custom_target(publish-website
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/publish_website.sh
