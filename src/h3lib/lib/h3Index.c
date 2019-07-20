@@ -818,7 +818,7 @@ void H3_EXPORT(h3GetFaces)(H3Index h3, int* out) {
 
     // Get all vertices as FaceIJK addresses. For simplicity, always
     // initialize the array with 6 verts, ignoring the last one for pentagons
-    FaceIJK fijkVerts[NUM_HEX_VERTS] = {0};
+    FaceIJK fijkVerts[NUM_HEX_VERTS] = {};
     int vertexCount;
 
     if (isPentagon) {
