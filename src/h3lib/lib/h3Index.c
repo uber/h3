@@ -818,7 +818,7 @@ void H3_EXPORT(h3GetFaces)(H3Index h3, int* out) {
 
     // Get all vertices as FaceIJK addresses. For simplicity, always
     // initialize the array with 6 verts, ignoring the last one for pentagons
-    FaceIJK* fijkVerts = malloc(NUM_HEX_VERTS * sizeof(FaceIJK));
+    FaceIJK fijkVerts[NUM_HEX_VERTS] = {0};
     int vertexCount;
 
     if (isPentagon) {
@@ -856,8 +856,6 @@ void H3_EXPORT(h3GetFaces)(H3Index h3, int* out) {
         while (out[pos] != INVALID_FACE && out[pos] != face) pos++;
         out[pos] = face;
     }
-
-    free(fijkVerts);
 }
 
 /**
