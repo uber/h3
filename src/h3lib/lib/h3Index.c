@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2018 Uber Technologies, Inc.
+ * Copyright 2016-2019 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -739,13 +739,12 @@ void _h3ToFaceIjk(H3Index h, FaceIJK* fijk) {
     // a pentagon base cell with a leading 4 digit requires special handling
     int pentLeading4 =
         (_isBaseCellPentagon(baseCell) && _h3LeadingNonZeroDigit(h) == 4);
-    if (_adjustOverageClassII(fijk, res, pentLeading4, 0)) {
+    if (_adjustOverageClassII(fijk, res, pentLeading4, 0) != NO_OVERAGE) {
         // if the base cell is a pentagon we have the potential for secondary
         // overages
         if (_isBaseCellPentagon(baseCell)) {
-            while (1) {
-                if (!_adjustOverageClassII(fijk, res, 0, 0)) break;
-            }
+            while (_adjustOverageClassII(fijk, res, 0, 0) != NO_OVERAGE)
+                continue;
         }
 
         if (res != H3_GET_RESOLUTION(h)) _upAp7r(&fijk->coord);
@@ -777,6 +776,88 @@ void H3_EXPORT(h3ToGeoBoundary)(H3Index h3, GeoBoundary* gb) {
     _h3ToFaceIjk(h3, &fijk);
     _faceIjkToGeoBoundary(&fijk, H3_GET_RESOLUTION(h3),
                           H3_EXPORT(h3IsPentagon)(h3), gb);
+}
+
+/**
+ * Returns the max number of possible icosahedron faces an H3 index
+ * may intersect.
+ *
+ * @return int count of faces
+ */
+int H3_EXPORT(maxFaceCount)(H3Index h3) {
+    // a pentagon always intersects 5 faces, a hexagon never intersects more
+    // than 2 (but may only intersect 1)
+    return H3_EXPORT(h3IsPentagon)(h3) ? 5 : 2;
+}
+
+/**
+ * Find all icosahedron faces intersected by a given  H3 index, represented
+ * as integers from 0-19. The array is sparse; since 0 is a valid value,
+ * invalid array values are represented as -1. It is the responsibility of
+ * the caller to filter out invalid values.
+ *
+ * @param h3 The H3 index
+ * @param out Output array. Must be of size maxFaceCount(h3).
+ */
+void H3_EXPORT(h3GetFaces)(H3Index h3, int* out) {
+    int res = H3_GET_RESOLUTION(h3);
+    int isPentagon = H3_EXPORT(h3IsPentagon)(h3);
+
+    // We can't use the vertex-based approach here for class II pentagons,
+    // because all their vertices are on the icosahedron edges. Their
+    // direct child pentagons cross the same faces, so use those instead.
+    if (isPentagon && !isResClassIII(res)) {
+        // Note that this would not work for res 15, but this is only run on
+        // Class II pentagons, it should never be invoked for a res 15 index.
+        H3Index childPentagon = makeDirectChild(h3, 0);
+        H3_EXPORT(h3GetFaces)(childPentagon, out);
+        return;
+    }
+
+    // convert to FaceIJK
+    FaceIJK fijk;
+    _h3ToFaceIjk(h3, &fijk);
+
+    // Get all vertices as FaceIJK addresses. For simplicity, always
+    // initialize the array with 6 verts, ignoring the last one for pentagons
+    FaceIJK fijkVerts[NUM_HEX_VERTS];
+    int vertexCount;
+
+    if (isPentagon) {
+        vertexCount = NUM_PENT_VERTS;
+        _faceIjkPentToVerts(&fijk, &res, fijkVerts);
+    } else {
+        vertexCount = NUM_HEX_VERTS;
+        _faceIjkToVerts(&fijk, &res, fijkVerts);
+    }
+
+    // We may not use all of the slots in the output array,
+    // so fill with invalid values to indicate unused slots
+    int faceCount = H3_EXPORT(maxFaceCount)(h3);
+    for (int i = 0; i < faceCount; i++) {
+        out[i] = INVALID_FACE;
+    }
+
+    // add each vertex face, using the output array as a hash set
+    for (int i = 0; i < vertexCount; i++) {
+        FaceIJK* vert = &fijkVerts[i];
+
+        // Adjust overage, determining whether this vertex is
+        // on another face
+        if (isPentagon) {
+            _adjustPentVertOverage(vert, res);
+        } else {
+            _adjustOverageClassII(vert, res, 0, 1);
+        }
+
+        // Save the face to the output array
+        int face = vert->face;
+        int pos = 0;
+        // Find the first empty output position, or the first position
+        // matching the current face
+        while (out[pos] != INVALID_FACE && out[pos] != face) pos++;
+        out[pos] = face;
+    }
 }
 
 /**

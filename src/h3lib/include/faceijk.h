@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2018 Uber Technologies, Inc.
+ * Copyright 2016-2019 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,16 +50,25 @@ typedef struct {
 extern const GeoCoord faceCenterGeo[NUM_ICOSA_FACES];
 
 // indexes for faceNeighbors table
-/** Invalid faceNeighbors table direction */
-#define INVALID -1
-/** Center faceNeighbors table direction */
-#define CENTER 0
 /** IJ quadrant faceNeighbors table direction */
 #define IJ 1
 /** KI quadrant faceNeighbors table direction */
 #define KI 2
 /** JK quadrant faceNeighbors table direction */
 #define JK 3
+
+/** Invalid face index */
+#define INVALID_FACE -1
+
+/** Digit representing overage type */
+typedef enum {
+    /** No overage (on original face) */
+    NO_OVERAGE = 0,
+    /** On face edge (only occurs on substrate grids) */
+    FACE_EDGE = 1,
+    /** Overage on new face interior */
+    NEW_FACE = 2
+} Overage;
 
 // Internal functions
 
@@ -69,8 +78,11 @@ void _faceIjkToGeo(const FaceIJK* h, int res, GeoCoord* g);
 void _faceIjkToGeoBoundary(const FaceIJK* h, int res, int isPentagon,
                            GeoBoundary* g);
 void _faceIjkPentToGeoBoundary(const FaceIJK* h, int res, GeoBoundary* g);
+void _faceIjkToVerts(FaceIJK* fijk, int* res, FaceIJK* fijkVerts);
+void _faceIjkPentToVerts(FaceIJK* fijk, int* res, FaceIJK* fijkVerts);
 void _hex2dToGeo(const Vec2d* v, int face, int res, int substrate, GeoCoord* g);
-int _adjustOverageClassII(FaceIJK* fijk, int res, int pentLeading4,
-                          int substrate);
+Overage _adjustOverageClassII(FaceIJK* fijk, int res, int pentLeading4,
+                              int substrate);
+Overage _adjustPentVertOverage(FaceIJK* fijk, int res);
 
 #endif
