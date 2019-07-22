@@ -6,6 +6,8 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+
+## [3.5.0] - 2019-07-22
 ### Added
 - CMake options for excluding filter applications or benchmarks from the build. (#247)
 - `h3GetFaces` function to find icosahedron faces for an index, and helper function `maxFaceCount` (#253)
