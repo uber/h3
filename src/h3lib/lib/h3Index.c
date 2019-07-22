@@ -807,6 +807,8 @@ void H3_EXPORT(h3GetFaces)(H3Index h3, int* out) {
     // because all their vertices are on the icosahedron edges. Their
     // direct child pentagons cross the same faces, so use those instead.
     if (isPentagon && !isResClassIII(res)) {
+        // Note that this would not work for res 15, but this is only run on
+        // Class II pentagons, it should never be invoked for a res 15 index.
         H3Index childPentagon = makeDirectChild(h3, 0);
         H3_EXPORT(h3GetFaces)(childPentagon, out);
         return;
