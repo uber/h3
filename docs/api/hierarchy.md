@@ -1,5 +1,7 @@
 # Hierarchical grid functions
 
+These functions permit moving between resolutions in the H3 grid system. The functions produce parent (coarser) or children (finer) cells.
+
 ## h3ToParent
 
 ```

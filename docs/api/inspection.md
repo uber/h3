@@ -1,5 +1,7 @@
 # Index inspection functions
 
+These functions provide metadata about an H3 index, such as its resolution or base cell, and provide utilities for converting into and out of the 64-bit representation of an H3 index.
+
 ## h3GetResolution
 
 ```
@@ -57,3 +59,21 @@ int h3IsPentagon(H3Index h);
 ```
 
 Returns non-zero if this index represents a pentagonal cell.
+
+## h3GetFaces
+
+```
+void h3GetFaces(H3Index h, int* out);
+```
+
+Find all icosahedron faces intersected by a given H3 index and places them in the array `out`. `out` must be at least of length `maxFaceCount(h)`.
+
+Faces are represented as integers from 0-19, inclusive. The array is sparse, and empty (no intersection) array values are represented by -1.
+
+### maxFaceCount
+
+```
+int maxFaceCount(H3Index h3);
+```
+
+Returns the maximum number of icosahedron faces the given H3 index may intersect.

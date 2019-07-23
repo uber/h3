@@ -791,7 +791,7 @@ int H3_EXPORT(maxFaceCount)(H3Index h3) {
 }
 
 /**
- * Find all icosahedron faces intersected by a given  H3 index, represented
+ * Find all icosahedron faces intersected by a given H3 index, represented
  * as integers from 0-19. The array is sparse; since 0 is a valid value,
  * invalid array values are represented as -1. It is the responsibility of
  * the caller to filter out invalid values.
