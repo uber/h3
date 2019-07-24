@@ -57,6 +57,7 @@ dev-docs/_build/
 env_docs/
 node_modules/
 website/dist/
+website/package-lock.json
 # Generated Doxyfile
 dev-docs/Doxyfile
 
