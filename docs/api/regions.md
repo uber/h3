@@ -1,5 +1,7 @@
 # Region functions
 
+These functions convert H3 indexes to and from polygonal areas.
+
 ## polyfill
 
 ```

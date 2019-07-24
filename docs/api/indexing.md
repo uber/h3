@@ -1,12 +1,14 @@
 # Indexing functions
 
+These function are used for finding the H3 index containing coordinates, and for finding the center and boundary of H3 indexes.
+
 ## geoToH3
 
 ```
 H3Index geoToH3(const GeoCoord *g, int res);
 ```
 
-Indexes the location at the specified resolution.
+Indexes the location at the specified resolution, returning the index of the cell containing the location.
 
 Returns 0 on error.
 

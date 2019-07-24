@@ -1,5 +1,7 @@
 # Miscellaneous H3 functions
 
+These functions include descriptions of the H3 grid system.
+
 ## degsToRads
 
 ```

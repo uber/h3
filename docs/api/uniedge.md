@@ -1,5 +1,7 @@
 # Unidirectional edge functions
 
+Unidirectional edges allow encoding the directed edge from one cell to a neighboring cell.
+
 ## h3IndexesAreNeighbors
 
 ```

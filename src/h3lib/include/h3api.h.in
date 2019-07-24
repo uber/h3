@@ -401,7 +401,7 @@ int H3_EXPORT(h3IsPentagon)(H3Index h);
 /** @brief Max number of icosahedron faces intersected by an index */
 int H3_EXPORT(maxFaceCount)(H3Index h3);
 
-/** @brief Find all icosahedron faces intersected by a given  H3 index */
+/** @brief Find all icosahedron faces intersected by a given H3 index */
 void H3_EXPORT(h3GetFaces)(H3Index h3, int *out);
 /** @} */
 
