@@ -55,6 +55,17 @@ matrix:
         - make && make coverage
       after_success:
         - coveralls --lcov-file coverage.cleaned.info --verbose
+    - env: NAME="Valgrind test"
+      compiler: gcc
+      addons:
+        apt:
+          packages:
+            - valgrind
+      before_script:
+        - cmake -DCMAKE_BUILD_TYPE=Debug -DWRAP_VALGRIND=ON .
+      script:
+        - make
+        - make test
     - env: NAME="Mac OSX (Xcode 8)"
       os: osx
     - env: NAME="binding-functions target"
