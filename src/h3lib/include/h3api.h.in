@@ -355,6 +355,15 @@ int H3_EXPORT(maxH3ToChildrenSize)(H3Index h, int childRes);
 void H3_EXPORT(h3ToChildren)(H3Index h, int childRes, H3Index *children);
 /** @} */
 
+/** @defgroup h3ToCenterChild h3ToCenterChild
+ * Functions for h3ToCenterChild
+ * @{
+ */
+/** @brief returns the center child of the given hexagon at the specified
+ * resolution */
+H3Index H3_EXPORT(h3ToCenterChild)(H3Index h, int childRes);
+/** @} */
+
 /** @defgroup compact compact
  * Functions for compact
  * @{

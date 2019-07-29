@@ -215,6 +215,31 @@ void H3_EXPORT(h3ToChildren)(H3Index h, int childRes, H3Index* children) {
 }
 
 /**
+ * h3ToCenterChild produces the center child index for a given H3 index at
+ * the specified resolution
+ *
+ * @param h H3Index to find center child of
+ * @param childRes The resolution to switch to
+ *
+ * @return H3Index of the center child, or 0 if you actually asked for a parent
+ */
+H3Index H3_EXPORT(h3ToCenterChild)(H3Index parentH, int childRes) {
+    int parentRes = H3_GET_RESOLUTION(parentH);
+    if (childRes < parentRes) {
+        return H3_INVALID_INDEX;
+    } else if (childRes == parentRes) {
+        return parentH;
+    } else if (childRes < 0 || childRes > MAX_H3_RES) {
+        return H3_INVALID_INDEX;
+    }
+    H3Index childH = H3_SET_RESOLUTION(parentH, childRes);
+    for (int i = parentRes + 1; i <= childRes; i++) {
+        H3_SET_INDEX_DIGIT(childH, i, 0);
+    }
+    return childH;
+}
+
+/**
  * compact takes a set of hexagons all at the same resolution and compresses
  * them by pruning full child branches to the parent level. This is also done
  * for all parents recursively to get the minimum number of hex addresses that

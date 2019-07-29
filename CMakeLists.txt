@@ -153,6 +153,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testMaxH3ToChildrenSize.c
     src/apps/testapps/testHexRanges.c
     src/apps/testapps/testH3ToGeo.c
+    src/apps/testapps/testH3ToCenterChild.c
     src/apps/testapps/testH3ToChildren.c
     src/apps/testapps/testH3GetFaces.c
     src/apps/testapps/testGeoCoord.c
@@ -491,6 +492,7 @@ if(BUILD_TESTING)
     add_h3_test(testHexRing src/apps/testapps/testHexRing.c)
     add_h3_test(testHexRanges src/apps/testapps/testHexRanges.c)
     add_h3_test(testH3ToParent src/apps/testapps/testH3ToParent.c)
+    add_h3_test(testH3ToCenterChild src/apps/testapps/testH3ToCenterChild.c)
     add_h3_test(testH3ToChildren src/apps/testapps/testH3ToChildren.c)
     add_h3_test(testH3GetFaces src/apps/testapps/testH3GetFaces.c)
     add_h3_test(testMaxH3ToChildrenSize src/apps/testapps/testMaxH3ToChildrenSize.c)
