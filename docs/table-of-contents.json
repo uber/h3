@@ -1,0 +1,12 @@
+{
+  "id": "table-of-contents",
+  "chapters": [
+    {
+      "title": "Overview",
+      "entries": [
+        {"entry": "docs/overview/mainpage"},
+        {"entry": "docs/overview/usecases"}
+      ]
+    }
+  ]
+}
