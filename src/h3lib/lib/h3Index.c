@@ -886,6 +886,29 @@ void H3_EXPORT(h3GetFaces)(H3Index h3, int* out) {
 }
 
 /**
+ * pentagonIndexCount returns the number of pentagons (same at any resolution)
+ *
+ * @return int count of pentagon indexes
+ */
+int H3_EXPORT(pentagonIndexCount)() { return 12; }
+
+/**
+ * Generates all pentagons at the specified resolution
+ *
+ * @param res The resolution to produce pentagons at
+ */
+void H3_EXPORT(getPentagonsAtRes)(int res, H3Index* out) {
+    int i = 0;
+    for (int bc = 0; bc < NUM_BASE_CELLS; bc++) {
+        if (_isBaseCellPentagon(bc)) {
+            H3Index pentagonH;
+            setH3Index(&pentagonH, res, bc, 0);
+            out[i++] = pentagonH;
+        }
+    }
+}
+
+/**
  * Returns whether or not a resolution is a Class III grid. Note that odd
  * resolutions are Class III and even resolutions are Class II.
  * @param res The H3 resolution.

@@ -293,6 +293,17 @@ int H3_EXPORT(res0IndexCount)();
 void H3_EXPORT(getRes0Indexes)(H3Index *out);
 /** @} */
 
+/** @defgroup getPentagonsAtRes getPentagonsAtRes
+ * Functions for getPentagonsAtRes
+ * @{
+ */
+/** @brief returns the number of resolution 0 indexes */
+int H3_EXPORT(pentagonIndexCount)();
+
+/** @brief generates all pentagons at the specified resolution */
+void H3_EXPORT(getPentagonsAtRes)(int res, H3Index *out);
+/** @} */
+
 /** @defgroup h3GetResolution h3GetResolution
  * Functions for h3GetResolution
  * @{

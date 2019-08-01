@@ -143,6 +143,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testVertexGraph.c
     src/apps/testapps/testCompact.c
     src/apps/testapps/testPolyfill.c
+    src/apps/testapps/testPentagonsAtRes.c
     src/apps/testapps/testKRing.c
     src/apps/testapps/testH3ToGeoBoundary.c
     src/apps/testapps/testH3ToParent.c
@@ -515,6 +516,7 @@ if(BUILD_TESTING)
     add_h3_test(testCoordIj src/apps/testapps/testCoordIj.c)
     add_h3_test(testCoordIjk src/apps/testapps/testCoordIjk.c)
     add_h3_test(testBaseCells src/apps/testapps/testBaseCells.c)
+    add_h3_test(testPentagonsAtRes src/apps/testapps/testPentagonsAtRes.c)
 
     add_h3_test_with_arg(testH3NeighborRotations src/apps/testapps/testH3NeighborRotations.c 0)
     add_h3_test_with_arg(testH3NeighborRotations src/apps/testapps/testH3NeighborRotations.c 1)
