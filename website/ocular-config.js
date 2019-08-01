@@ -47,9 +47,8 @@ module.exports = {
     }
   ],
 
-  PROJECTS: {
+  PROJECTS: [],
     // 'Project name': 'http://project.url',
-  },
   ADDITIONAL_LINKS: [
     // {name: 'link label', href: 'http://link.url'}
   ],
