@@ -73,3 +73,19 @@ int res0IndexCount();
 ```
 
 Number of resolution 0 **H3** indexes.
+
+## getPentagonsAtRes
+
+```
+void getPentagonsAtRes(int res, H3Index *out);
+```
+
+All the pentagon **H3** indexes at specified resolution.
+
+## pentagonIndexCount
+
+```
+int pentagonIndexCount();
+```
+
+Number of pentagon **H3** indexes.

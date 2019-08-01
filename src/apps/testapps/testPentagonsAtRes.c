@@ -33,8 +33,8 @@ SUITE(getPentagonsAtRes) {
             for (int i = 0; i < PADDED_COUNT; i++) {
                 H3Index h = indexes[i];
                 if (H3_EXPORT(h3IsValid)(h)) {
-                    t_assert(h3IsPentagon(h), "only pentagons");
-                    t_assert(h3GetResolution(h) == res,
+                    t_assert(H3_EXPORT(h3IsPentagon(h)), "only pentagons");
+                    t_assert(H3_EXPORT(h3GetResolution(h)) == res,
                              "only correct resolution");
                     numFound++;
                 }
