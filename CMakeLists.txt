@@ -525,8 +525,8 @@ if(BUILD_TESTING)
     add_h3_test_with_arg(testH3NeighborRotations src/apps/testapps/testH3NeighborRotations.c 1)
     add_h3_test_with_arg(testH3NeighborRotations src/apps/testapps/testH3NeighborRotations.c 2)
 
-    # The "Exhaustive" part of the test name is used by the Valgrind CI test to exclude
-    # these files in .travis.yml.
+    # The "Exhaustive" part of the test name is used by the test-fast to exclude these files.
+    # test-fast exists so that Travis CI can run Valgrind on tests without taking a very long time.
     add_h3_test(testH3ToLocalIjExhaustive src/apps/testapps/testH3ToLocalIjExhaustive.c)
     add_h3_test(testH3LineExhaustive src/apps/testapps/testH3LineExhaustive.c)
     add_h3_test(testH3DistanceExhaustive src/apps/testapps/testH3DistanceExhaustive.c)
