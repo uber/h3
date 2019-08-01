@@ -65,7 +65,7 @@ matrix:
         - cmake -DCMAKE_BUILD_TYPE=Debug -DWRAP_VALGRIND=ON .
       script:
         - make
-        - make test-fast
+        - CTEST_OUTPUT_ON_FAILURE=1 make test-fast
     - env: NAME="Mac OSX (Xcode 8)"
       os: osx
     - env: NAME="binding-functions target"
