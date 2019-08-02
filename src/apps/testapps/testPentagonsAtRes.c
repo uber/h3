@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Uber Technologies, Inc.
+ * Copyright 2019 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,26 +21,30 @@
 #define PADDED_COUNT 16
 
 SUITE(getPentagonsAtRes) {
-    TEST(allResolutions) {
+    TEST(propertyTests) {
         int expectedCount = H3_EXPORT(pentagonIndexCount)();
 
         for (int res = 0; res <= 15; res++) {
-            H3Index indexes[PADDED_COUNT] = {0};
-            H3_EXPORT(getPentagonsAtRes)(res, indexes);
+            H3Index h3Indexes[PADDED_COUNT] = {0};
+            H3_EXPORT(getPentagonsAtRes)(res, h3Indexes);
 
             int numFound = 0;
 
             for (int i = 0; i < PADDED_COUNT; i++) {
-                H3Index h = indexes[i];
-                if (H3_EXPORT(h3IsValid)(h)) {
-                    t_assert(H3_EXPORT(h3IsPentagon(h)), "only pentagons");
-                    t_assert(H3_EXPORT(h3GetResolution(h)) == res,
-                             "only correct resolution");
+                H3Index h3Index = h3Indexes[i];
+                if (h3Index) {
+                    t_assert(H3_EXPORT(h3IsValid(h3Index)),
+                             "index should be valid");
+                    t_assert(H3_EXPORT(h3IsPentagon(h3Index)),
+                             "index should be pentagon");
+                    t_assert(H3_EXPORT(h3GetResolution(h3Index)) == res,
+                             "index should have correct resolution");
                     numFound++;
                 }
             }
 
-            t_assert(numFound == expectedCount, "exactly 12 pentagons");
+            t_assert(numFound == expectedCount,
+                     "there should be exactly 12 pentagons");
         }
     }
 }
