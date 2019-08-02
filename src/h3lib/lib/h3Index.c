@@ -223,20 +223,18 @@ void H3_EXPORT(h3ToChildren)(H3Index h, int childRes, H3Index* children) {
  *
  * @return H3Index of the center child, or 0 if you actually asked for a parent
  */
-H3Index H3_EXPORT(h3ToCenterChild)(H3Index parentH, int childRes) {
-    int parentRes = H3_GET_RESOLUTION(parentH);
-    if (childRes < parentRes) {
+H3Index H3_EXPORT(h3ToCenterChild)(H3Index h, int childRes) {
+    int parentRes = H3_GET_RESOLUTION(h);
+    if (childRes < parentRes || childRes > MAX_H3_RES) {
         return H3_INVALID_INDEX;
     } else if (childRes == parentRes) {
-        return parentH;
-    } else if (childRes < 0 || childRes > MAX_H3_RES) {
-        return H3_INVALID_INDEX;
+        return h;
     }
-    H3Index childH = H3_SET_RESOLUTION(parentH, childRes);
+    H3Index child = H3_SET_RESOLUTION(h, childRes);
     for (int i = parentRes + 1; i <= childRes; i++) {
-        H3_SET_INDEX_DIGIT(childH, i, 0);
+        H3_SET_INDEX_DIGIT(child, i, 0);
     }
-    return childH;
+    return child;
 }
 
 /**
