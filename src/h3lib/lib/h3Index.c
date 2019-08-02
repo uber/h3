@@ -895,7 +895,7 @@ int H3_EXPORT(pentagonIndexCount)() { return 12; }
  *
  * @param res The resolution to produce pentagons at
  */
-void H3_EXPORT(getPentagonsAtRes)(int res, H3Index* out) {
+void H3_EXPORT(getPentagonIndexes)(int res, H3Index* out) {
     int i = 0;
     for (int bc = 0; bc < NUM_BASE_CELLS; bc++) {
         if (_isBaseCellPentagon(bc)) {

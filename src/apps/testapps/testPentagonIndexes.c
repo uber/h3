@@ -20,13 +20,13 @@
 
 #define PADDED_COUNT 16
 
-SUITE(getPentagonsAtRes) {
+SUITE(getPentagonIndexes) {
     TEST(propertyTests) {
         int expectedCount = H3_EXPORT(pentagonIndexCount)();
 
         for (int res = 0; res <= 15; res++) {
             H3Index h3Indexes[PADDED_COUNT] = {0};
-            H3_EXPORT(getPentagonsAtRes)(res, h3Indexes);
+            H3_EXPORT(getPentagonIndexes)(res, h3Indexes);
 
             int numFound = 0;
 
