@@ -181,6 +181,21 @@ H3Index makeDirectChild(H3Index h, int cellNumber) {
 }
 
 /**
+ * Determines whether a one resolution is a valid child resolution of another
+ *
+ * @param parentRes int resolution of the parent
+ * @param childRes int resolution of the child
+ *
+ * @return The validity of the child resolution
+ */
+static bool _isValidChildRes(int parentRes, int childRes) {
+    if (childRes < parentRes || childRes > MAX_H3_RES) {
+        return false;
+    }
+    return true;
+}
+
+/**
  * h3ToChildren takes the given hexagon id and generates all of the children
  * at the specified resolution storing them into the provided memory pointer.
  * It's assumed that maxH3ToChildrenSize was used to determine the allocation.
@@ -191,7 +206,7 @@ H3Index makeDirectChild(H3Index h, int cellNumber) {
  */
 void H3_EXPORT(h3ToChildren)(H3Index h, int childRes, H3Index* children) {
     int parentRes = H3_GET_RESOLUTION(h);
-    if (parentRes > childRes) {
+    if (!_isValidChildRes(parentRes, childRes)) {
         return;
     } else if (parentRes == childRes) {
         *children = h;
@@ -225,7 +240,7 @@ void H3_EXPORT(h3ToChildren)(H3Index h, int childRes, H3Index* children) {
  */
 H3Index H3_EXPORT(h3ToCenterChild)(H3Index h, int childRes) {
     int parentRes = H3_GET_RESOLUTION(h);
-    if (childRes < parentRes || childRes > MAX_H3_RES) {
+    if (!_isValidChildRes(parentRes, childRes)) {
         return H3_INVALID_INDEX;
     } else if (childRes == parentRes) {
         return h;
@@ -416,7 +431,7 @@ int H3_EXPORT(uncompact)(const H3Index* compactedSet, const int numHexes,
             return -1;
         }
         int currentRes = H3_GET_RESOLUTION(compactedSet[i]);
-        if (currentRes > res) {
+        if (!_isValidChildRes(currentRes, res)) {
             // Nonsensical. Abort.
             return -2;
         }
@@ -454,7 +469,7 @@ int H3_EXPORT(maxUncompactSize)(const H3Index* compactedSet, const int numHexes,
     for (int i = 0; i < numHexes; i++) {
         if (compactedSet[i] == 0) continue;
         int currentRes = H3_GET_RESOLUTION(compactedSet[i]);
-        if (currentRes > res) {
+        if (!_isValidChildRes(currentRes, res)) {
             // Nonsensical. Abort.
             return -1;
         }
