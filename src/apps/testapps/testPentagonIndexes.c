@@ -33,13 +33,22 @@ SUITE(getPentagonIndexes) {
             for (int i = 0; i < PADDED_COUNT; i++) {
                 H3Index h3Index = h3Indexes[i];
                 if (h3Index) {
+                    numFound++;
                     t_assert(H3_EXPORT(h3IsValid(h3Index)),
                              "index should be valid");
                     t_assert(H3_EXPORT(h3IsPentagon(h3Index)),
                              "index should be pentagon");
                     t_assert(H3_EXPORT(h3GetResolution(h3Index)) == res,
                              "index should have correct resolution");
-                    numFound++;
+
+                    // verify uniqueness
+                    int indexSeen = 0;
+                    for (int j = i + 1; j < PADDED_COUNT; j++) {
+                        if (h3Indexes[j] == h3Index) {
+                            indexSeen++;
+                        }
+                    }
+                    t_assert(indexSeen == 0, "index should be seen only once");
                 }
             }
 
