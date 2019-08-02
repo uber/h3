@@ -914,9 +914,9 @@ void H3_EXPORT(getPentagonIndexes)(int res, H3Index* out) {
     int i = 0;
     for (int bc = 0; bc < NUM_BASE_CELLS; bc++) {
         if (_isBaseCellPentagon(bc)) {
-            H3Index pentagonH;
-            setH3Index(&pentagonH, res, bc, 0);
-            out[i++] = pentagonH;
+            H3Index pentagon;
+            setH3Index(&pentagon, res, bc, 0);
+            out[i++] = pentagon;
         }
     }
 }

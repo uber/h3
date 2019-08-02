@@ -297,7 +297,7 @@ void H3_EXPORT(getRes0Indexes)(H3Index *out);
  * Functions for getPentagonIndexes
  * @{
  */
-/** @brief returns the number of resolution 0 indexes */
+/** @brief returns the number of pentagons per resolution */
 int H3_EXPORT(pentagonIndexCount)();
 
 /** @brief generates all pentagons at the specified resolution */
