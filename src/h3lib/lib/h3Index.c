@@ -146,6 +146,21 @@ H3Index H3_EXPORT(h3ToParent)(H3Index h, int parentRes) {
 }
 
 /**
+ * Determines whether a one resolution is a valid child resolution of another
+ *
+ * @param parentRes int resolution of the parent
+ * @param childRes int resolution of the child
+ *
+ * @return The validity of the child resolution
+ */
+static bool _isValidChildRes(int parentRes, int childRes) {
+    if (childRes < parentRes || childRes > MAX_H3_RES) {
+        return false;
+    }
+    return true;
+}
+
+/**
  * maxH3ToChildrenSize returns the maximum number of children possible for a
  * given child level.
  *
@@ -157,7 +172,7 @@ H3Index H3_EXPORT(h3ToParent)(H3Index h, int parentRes) {
  */
 int H3_EXPORT(maxH3ToChildrenSize)(H3Index h, int childRes) {
     int parentRes = H3_GET_RESOLUTION(h);
-    if (parentRes > childRes) {
+    if (!_isValidChildRes(parentRes, childRes)) {
         return 0;
     }
     return _ipow(7, (childRes - parentRes));
@@ -178,21 +193,6 @@ H3Index makeDirectChild(H3Index h, int cellNumber) {
     H3Index childH = H3_SET_RESOLUTION(h, childRes);
     H3_SET_INDEX_DIGIT(childH, childRes, cellNumber);
     return childH;
-}
-
-/**
- * Determines whether a one resolution is a valid child resolution of another
- *
- * @param parentRes int resolution of the parent
- * @param childRes int resolution of the child
- *
- * @return The validity of the child resolution
- */
-static bool _isValidChildRes(int parentRes, int childRes) {
-    if (childRes < parentRes || childRes > MAX_H3_RES) {
-        return false;
-    }
-    return true;
 }
 
 /**
