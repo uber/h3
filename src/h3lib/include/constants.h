@@ -74,6 +74,8 @@
 #define NUM_HEX_VERTS 6
 /** The number of vertices in a pentagon */
 #define NUM_PENT_VERTS 5
+/** The number of pentagons per resolution **/
+#define NUM_PENTAGONS 12
 
 /** H3 index modes */
 #define H3_HEXAGON_MODE 1

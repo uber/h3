@@ -903,7 +903,7 @@ void H3_EXPORT(h3GetFaces)(H3Index h3, int* out) {
  *
  * @return int count of pentagon indexes
  */
-int H3_EXPORT(pentagonIndexCount)() { return 12; }
+int H3_EXPORT(pentagonIndexCount)() { return NUM_PENTAGONS; }
 
 /**
  * Generates all pentagons at the specified resolution
