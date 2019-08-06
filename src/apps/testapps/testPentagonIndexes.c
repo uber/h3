@@ -45,10 +45,9 @@ SUITE(getPentagonIndexes) {
                     int indexSeen = 0;
                     for (int j = i + 1; j < PADDED_COUNT; j++) {
                         if (h3Indexes[j] == h3Index) {
-                            indexSeen++;
+                            t_assert(false, "index should be seen only once");
                         }
                     }
-                    t_assert(indexSeen == 0, "index should be seen only once");
                 }
             }
 

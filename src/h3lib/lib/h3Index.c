@@ -146,7 +146,7 @@ H3Index H3_EXPORT(h3ToParent)(H3Index h, int parentRes) {
 }
 
 /**
- * Determines whether a one resolution is a valid child resolution of another
+ * Determines whether one resolution is a valid child resolution of another
  *
  * @param parentRes int resolution of the parent
  * @param childRes int resolution of the child
