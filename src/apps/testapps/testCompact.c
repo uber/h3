@@ -190,7 +190,6 @@ SUITE(compact) {
         }
         uncompactResult = H3_EXPORT(uncompact)(
             someHexagons, numHex, uncompressed, numHex * 7, MAX_H3_RES + 1);
-        fprintf(stderr, "@@\n%d\n", uncompactResult);
         t_assert(uncompactResult != 0,
                  "uncompact fails when given resolutions beyond max");
     }
