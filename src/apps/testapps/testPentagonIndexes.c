@@ -42,7 +42,6 @@ SUITE(getPentagonIndexes) {
                              "index should have correct resolution");
 
                     // verify uniqueness
-                    int indexSeen = 0;
                     for (int j = i + 1; j < PADDED_COUNT; j++) {
                         if (h3Indexes[j] == h3Index) {
                             t_assert(false, "index should be seen only once");
