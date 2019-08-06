@@ -90,4 +90,4 @@ All the pentagon **H3** indexes at the specified resolution.
 int pentagonIndexCount();
 ```
 
-Number of pentagon **H3** indexes per resolution.
+Number of pentagon **H3** indexes per resolution. This is always 12, but provided as a convenience.
