@@ -1,5 +1,4 @@
-H3 Index Representations
----
+# H3 Index Representations
 
 Introduction
 ---

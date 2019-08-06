@@ -1,3 +1,4 @@
+const DOCS = require('../docs/table-of-contents.json');
 
 module.exports = {
   // Adjusts amount of debug information from ocular-gatsby
@@ -15,9 +16,7 @@ module.exports = {
     //   componentUrl: '../examples/app.js'
     // }
   ],
-  DOCS: [
-    // your table of contents go there
-  ],
+  DOCS,
 
   THEME_OVERRIDES: [
     //  {key: 'primaryFontFamily', value: 'serif'}
@@ -27,23 +26,29 @@ module.exports = {
   PROJECT_NAME: 'H3',
   PROJECT_ORG: 'uber',
   PROJECT_URL: 'https://github.com/uber/H3',
-  PROJECT_DESC: 'DESCRPTION GOES HERE',
-  PATH_PREFIX: '',
+  PROJECT_DESC: 'Hexagonal hierarchical geospatial indexing system.',
+  PATH_PREFIX: '/h3/',
 
   FOOTER_LOGO: '',
 
   HOME_PATH: '/',
-  HOME_HEADING: 'DESCRPTION GOES HERE',
+  HOME_HEADING: 'Hexagonal hierarchical geospatial indexing system.',
   HOME_RIGHT: null,
   HOME_BULLETS: [
     {
-      text: 'Designed for React',
-      desc: 'Seamless integration.',
-      img: 'images/icon-react.svg'
+      text: 'Partition data into a hexagonal grid',
+      desc: 'H3 has an easy API for indexing coordinates into a hexagonal, global grid.',
+      img: 'images/high-precision.svg'
     },
     {
-      text: 'Totally ready for production',
+      text: 'Hierarchical grid system',
+      desc: 'Easy, bitwise truncation to coarser, approximate cells, along with area compression/decompression algorithms.',
       img: 'images/icon-layers.svg'
+    },
+    {
+      text: 'Fully global',
+      desc: 'Along with twelve pentagons, the entire world is addressable in H3, down to square meter resolution.',
+      img: 'images/icon-chart.svg'
     }
   ],
 

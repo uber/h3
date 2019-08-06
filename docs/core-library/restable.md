@@ -1,5 +1,4 @@
-Table of Cell Areas for H3 Resolutions
----
+# Table of Cell Areas for H3 Resolutions
 
 | H3 Resolution | Average Hexagon Area (km<sup>2</sup>) | Average Hexagon Edge Length (km) | Number of unique indexes
 | ------------- | ------------------------------------: | -------------------------------: | -----------------------:

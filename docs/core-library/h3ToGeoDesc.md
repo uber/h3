@@ -1,5 +1,4 @@
-Determine the latitude/longitude coordinates of the center point of an H3Index cell
----
+# Determine the latitude/longitude coordinates of the center point of an H3Index cell
 
 This operation is performed by function `h3ToGeo`. See the comments in the function source code for more detail.
 

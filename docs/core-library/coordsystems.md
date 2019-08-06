@@ -1,5 +1,6 @@
-Coordinate Systems used by the H3 Core Library
----
+# Coordinate systems
+
+The **H3 Core Library** uses the following coordinate systems internally.
 
 IJK Coordinates
 ---

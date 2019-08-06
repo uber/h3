@@ -1,5 +1,4 @@
-Generate the cell boundary in latitude/longitude coordinates of an H3Index cell
----
+# Generate the cell boundary in latitude/longitude coordinates of an H3Index cell
 
 This operation is performed by function `h3ToGeoBoundary`. See the comments in the function source code for more detail.
 

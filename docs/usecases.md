@@ -1,8 +1,4 @@
-Why H3
----
-
-Use cases
----
+# Use cases
 
 Analysis of data sets of locations, such as locations of cars in a city, may be done by bucketing locations. ([Sahr et al., 2003](http://webpages.sou.edu/~sahrk/sqspc/pubs/gdggs03.pdf)) There are several options for partitioning an area into buckets, such as manually drawing regions using human knowledge, or to partition the surface using a regular grid.
 

@@ -1,5 +1,4 @@
-Conversion from latitude/longitude to containing H3 cell index
----
+# Conversion from latitude/longitude to containing H3 cell index
 
 This operation is performed by function `geoToH3`. See the comments in the function for more detail.
 

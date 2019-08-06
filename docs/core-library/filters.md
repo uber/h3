@@ -1,5 +1,4 @@
-Unix-style Filters for Address Conversion
----
+# Unix-style Filters for H3
 
 The directory `src/apps/filters` contains unix-style stdin/stdout filters that perform conversions between integer **H3** indexes and other useful types. It currently contains the filters listed in the table below. See the header comments in each application source code file for more information.
 
