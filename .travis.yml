@@ -48,13 +48,13 @@ matrix:
           packages:
             - lcov
       install:
-        - pip install --user cpp-coveralls
+        - gem install coveralls-lcov
       before_script:
         - cmake -DCMAKE_BUILD_TYPE=Debug -DWARNINGS_AS_ERRORS=ON -DH3_PREFIX=testprefix_ .
       script:
         - make && make coverage
       after_success:
-        - coveralls --lcov-file coverage.cleaned.info --verbose
+        - coveralls-lcov coverage.cleaned.info
     - env: NAME="Mac OSX (Xcode 8)"
       os: osx
     - env: NAME="binding-functions target"
