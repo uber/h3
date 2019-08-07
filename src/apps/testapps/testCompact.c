@@ -165,6 +165,10 @@ SUITE(compact) {
         sizeResult = H3_EXPORT(maxUncompactSize)(someHexagons, numHex, -1);
         t_assert(sizeResult < 0,
                  "maxUncompactSize fails when given illegal resolutions");
+        sizeResult =
+            H3_EXPORT(maxUncompactSize)(someHexagons, numHex, MAX_H3_RES + 1);
+        t_assert(sizeResult < 0,
+                 "maxUncompactSize fails when given resolutions beyond max");
 
         H3Index uncompressed[] = {0, 0, 0};
         int uncompactResult =
@@ -180,6 +184,14 @@ SUITE(compact) {
         t_assert(
             uncompactResult != 0,
             "uncompact fails when given too little buffer (same resolution)");
+
+        for (int i = 0; i < numHex; i++) {
+            setH3Index(&someHexagons[i], MAX_H3_RES, i, 0);
+        }
+        uncompactResult = H3_EXPORT(uncompact)(
+            someHexagons, numHex, uncompressed, numHex * 7, MAX_H3_RES + 1);
+        t_assert(uncompactResult != 0,
+                 "uncompact fails when given resolutions beyond max");
     }
 
     TEST(someHexagon) {

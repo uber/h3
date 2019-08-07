@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Uber Technologies, Inc.
+ * Copyright 2017-2019 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -109,12 +109,24 @@ SUITE(h3ToChildren) {
         free(children);
     }
 
-    TEST(childResTooHigh) {
+    TEST(childResTooCoarse) {
         const int expectedCount = 0;
         const int paddedCount = 7;
 
         H3Index* children = calloc(paddedCount, sizeof(H3Index));
         H3_EXPORT(h3ToChildren)(sfHex8, 7, children);
+
+        verifyCountAndUniqueness(children, paddedCount, expectedCount);
+        free(children);
+    }
+
+    TEST(childResTooFine) {
+        const int expectedCount = 0;
+        const int paddedCount = 7;
+        H3Index sfHexMax = H3_EXPORT(geoToH3)(&sf, MAX_H3_RES);
+
+        H3Index* children = calloc(paddedCount, sizeof(H3Index));
+        H3_EXPORT(h3ToChildren)(sfHexMax, MAX_H3_RES + 1, children);
 
         verifyCountAndUniqueness(children, paddedCount, expectedCount);
         free(children);

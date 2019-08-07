@@ -146,6 +146,22 @@ H3Index H3_EXPORT(h3ToParent)(H3Index h, int parentRes) {
 }
 
 /**
+ * Determines whether one resolution is a valid child resolution of another.
+ * Each resolution is considered a valid child resolution of itself.
+ *
+ * @param parentRes int resolution of the parent
+ * @param childRes int resolution of the child
+ *
+ * @return The validity of the child resolution
+ */
+static bool _isValidChildRes(int parentRes, int childRes) {
+    if (childRes < parentRes || childRes > MAX_H3_RES) {
+        return false;
+    }
+    return true;
+}
+
+/**
  * maxH3ToChildrenSize returns the maximum number of children possible for a
  * given child level.
  *
@@ -157,7 +173,7 @@ H3Index H3_EXPORT(h3ToParent)(H3Index h, int parentRes) {
  */
 int H3_EXPORT(maxH3ToChildrenSize)(H3Index h, int childRes) {
     int parentRes = H3_GET_RESOLUTION(h);
-    if (parentRes > childRes) {
+    if (!_isValidChildRes(parentRes, childRes)) {
         return 0;
     }
     return _ipow(7, (childRes - parentRes));
@@ -191,7 +207,7 @@ H3Index makeDirectChild(H3Index h, int cellNumber) {
  */
 void H3_EXPORT(h3ToChildren)(H3Index h, int childRes, H3Index* children) {
     int parentRes = H3_GET_RESOLUTION(h);
-    if (parentRes > childRes) {
+    if (!_isValidChildRes(parentRes, childRes)) {
         return;
     } else if (parentRes == childRes) {
         *children = h;
@@ -212,6 +228,29 @@ void H3_EXPORT(h3ToChildren)(H3Index h, int childRes, H3Index* children) {
             children += bufferChildStep;
         }
     }
+}
+
+/**
+ * h3ToCenterChild produces the center child index for a given H3 index at
+ * the specified resolution
+ *
+ * @param h H3Index to find center child of
+ * @param childRes The resolution to switch to
+ *
+ * @return H3Index of the center child, or 0 if you actually asked for a parent
+ */
+H3Index H3_EXPORT(h3ToCenterChild)(H3Index h, int childRes) {
+    int parentRes = H3_GET_RESOLUTION(h);
+    if (!_isValidChildRes(parentRes, childRes)) {
+        return H3_INVALID_INDEX;
+    } else if (childRes == parentRes) {
+        return h;
+    }
+    H3Index child = H3_SET_RESOLUTION(h, childRes);
+    for (int i = parentRes + 1; i <= childRes; i++) {
+        H3_SET_INDEX_DIGIT(child, i, 0);
+    }
+    return child;
 }
 
 /**
@@ -393,7 +432,7 @@ int H3_EXPORT(uncompact)(const H3Index* compactedSet, const int numHexes,
             return -1;
         }
         int currentRes = H3_GET_RESOLUTION(compactedSet[i]);
-        if (currentRes > res) {
+        if (!_isValidChildRes(currentRes, res)) {
             // Nonsensical. Abort.
             return -2;
         }
@@ -431,7 +470,7 @@ int H3_EXPORT(maxUncompactSize)(const H3Index* compactedSet, const int numHexes,
     for (int i = 0; i < numHexes; i++) {
         if (compactedSet[i] == 0) continue;
         int currentRes = H3_GET_RESOLUTION(compactedSet[i]);
-        if (currentRes > res) {
+        if (!_isValidChildRes(currentRes, res)) {
             // Nonsensical. Abort.
             return -1;
         }
@@ -857,6 +896,30 @@ void H3_EXPORT(h3GetFaces)(H3Index h3, int* out) {
         // matching the current face
         while (out[pos] != INVALID_FACE && out[pos] != face) pos++;
         out[pos] = face;
+    }
+}
+
+/**
+ * pentagonIndexCount returns the number of pentagons (same at any resolution)
+ *
+ * @return int count of pentagon indexes
+ */
+int H3_EXPORT(pentagonIndexCount)() { return NUM_PENTAGONS; }
+
+/**
+ * Generates all pentagons at the specified resolution
+ *
+ * @param res The resolution to produce pentagons at.
+ * @param out Output array. Must be of size pentagonIndexCount().
+ */
+void H3_EXPORT(getPentagonIndexes)(int res, H3Index* out) {
+    int i = 0;
+    for (int bc = 0; bc < NUM_BASE_CELLS; bc++) {
+        if (_isBaseCellPentagon(bc)) {
+            H3Index pentagon;
+            setH3Index(&pentagon, res, bc, 0);
+            out[i++] = pentagon;
+        }
     }
 }
 

@@ -65,6 +65,7 @@ void getRes0Indexes(H3Index *out);
 ```
 
 All the resolution 0 **H3** indexes.
+`out` must be an array of at least size `res0IndexCount()`.
 
 ## res0IndexCount
 
@@ -73,3 +74,20 @@ int res0IndexCount();
 ```
 
 Number of resolution 0 **H3** indexes.
+
+## getPentagonIndexes
+
+```
+void getPentagonIndexes(int res, H3Index *out);
+```
+
+All the pentagon **H3** indexes at the specified resolution.
+`out` must be an array of at least size `pentagonIndexCount()`.
+
+## pentagonIndexCount
+
+```
+int pentagonIndexCount();
+```
+
+Number of pentagon **H3** indexes per resolution. This is always 12, but provided as a convenience.

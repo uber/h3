@@ -28,8 +28,6 @@
 #include <stdlib.h>
 #include "constants.h"
 
-#define NUM_PENTAGONS 12
-
 /**
  * Generates and prints the numHexagons table.
  */

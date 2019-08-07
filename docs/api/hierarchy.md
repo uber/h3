@@ -26,6 +26,14 @@ int maxH3ToChildrenSize(H3Index h, int childRes);
 
 Returns the size of the array needed by `h3ToChildren` for these inputs.
 
+## h3ToCenterChild
+
+```
+H3Index h3ToCenterChild(H3Index h, int childRes);
+```
+
+Returns the center child (finer) index contained by `h` at resolution `childRes`.
+
 ## compact
 
 ```
