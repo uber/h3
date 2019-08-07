@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2018 Uber Technologies, Inc.
+ * Copyright 2016-2019 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -469,7 +469,7 @@ int H3_EXPORT(hexRangeDistances)(H3Index origin, int k, H3Index* out,
             // the end of this ring.
             origin =
                 h3NeighborRotations(origin, NEXT_RING_DIRECTION, &rotations);
-            if (origin == 0) {
+            if (origin == 0) {  // LCOV_EXCL_BR_LINE
                 // Should not be possible because `origin` would have to be a
                 // pentagon
                 return HEX_RANGE_K_SUBSEQUENCE;  // LCOV_EXCL_LINE
@@ -482,7 +482,7 @@ int H3_EXPORT(hexRangeDistances)(H3Index origin, int k, H3Index* out,
         }
 
         origin = h3NeighborRotations(origin, DIRECTIONS[direction], &rotations);
-        if (origin == 0) {
+        if (origin == 0) {  // LCOV_EXCL_BR_LINE
             // Should not be possible because `origin` would have to be a
             // pentagon
             return HEX_RANGE_K_SUBSEQUENCE;  // LCOV_EXCL_LINE
@@ -569,7 +569,7 @@ int H3_EXPORT(hexRing)(H3Index origin, int k, H3Index* out) {
 
     for (int ring = 0; ring < k; ring++) {
         origin = h3NeighborRotations(origin, NEXT_RING_DIRECTION, &rotations);
-        if (origin == 0) {
+        if (origin == 0) {  // LCOV_EXCL_BR_LINE
             // Should not be possible because `origin` would have to be a
             // pentagon
             return HEX_RANGE_K_SUBSEQUENCE;  // LCOV_EXCL_LINE
@@ -589,7 +589,7 @@ int H3_EXPORT(hexRing)(H3Index origin, int k, H3Index* out) {
         for (int pos = 0; pos < k; pos++) {
             origin =
                 h3NeighborRotations(origin, DIRECTIONS[direction], &rotations);
-            if (origin == 0) {
+            if (origin == 0) {  // LCOV_EXCL_BR_LINE
                 // Should not be possible because `origin` would have to be a
                 // pentagon
                 return HEX_RANGE_K_SUBSEQUENCE;  // LCOV_EXCL_LINE

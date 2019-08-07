@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2018 Uber Technologies, Inc.
+# Copyright 2018-2019 Uber Technologies, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -44,7 +44,11 @@ fi
 src_dir=${1:-"Missing source directory"}
 binary_dir=${2:-"Missing binary directory"}
 
+# Exclude the usual LCOV exclusion comment, and also
+# do not require branch coverage for assertions.
+br_exclusion='LCOV_EXCL_BR_LINE|assert\('
+
 cd "${binary_dir}"
-lcov --rc lcov_branch_coverage=1 --directory . --capture --output-file coverage.info
-lcov --rc lcov_branch_coverage=1 --extract coverage.info "${src_dir}/src/h3lib/*" --output-file coverage.cleaned.info
+lcov --rc lcov_branch_coverage=1 --rc "lcov_excl_br_line=$br_exclusion" --directory . --capture --output-file coverage.info
+lcov --rc lcov_branch_coverage=1 --rc "lcov_excl_br_line=$br_exclusion" --extract coverage.info "${src_dir}/src/h3lib/*" --output-file coverage.cleaned.info
 genhtml --branch-coverage -o coverage coverage.cleaned.info --title 'h3 coverage'

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Uber Technologies, Inc.
+ * Copyright 2018-2019 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -139,8 +139,8 @@ int h3ToLocalIjk(H3Index origin, H3Index h3, CoordIJK* out) {
     int baseCell = H3_GET_BASE_CELL(h3);
 
     // Direction from origin base cell to index base cell
-    Direction dir = 0;
-    Direction revDir = 0;
+    Direction dir = CENTER_DIGIT;
+    Direction revDir = CENTER_DIGIT;
     if (originBaseCell != baseCell) {
         dir = _getBaseCellDirection(originBaseCell, baseCell);
         if (dir == INVALID_DIGIT) {
