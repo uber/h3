@@ -1,3 +1,5 @@
+<img align="right" src="https://uber.github.io/res/h3Logo-color.svg" alt="H3 Logo" width="200">
+
 # H3: A Hexagonal Hierarchical Geospatial Indexing System
 
 [![Build Status](https://travis-ci.com/uber/h3.svg?branch=master)](https://travis-ci.com/uber/h3)
@@ -92,8 +94,7 @@ To build the documentation website, see the [website/](./website/) directory.
 To get the H3 index for some location:
 
 ```
-./bin/geoToH3 10
-40.689167 -74.044444
+./bin/geoToH3 --resolution 10 --latitude 40.689167 --longitude -74.044444
 ```
 
 10 is the H3 resolution, between 0 (coarsest) and 15 (finest). The coordinates entered are the latitude and longitude, in degrees, you want the index for (these coordinates are the Statue of Liberty).  You should get an H3 index as output, like `8a2a1072b59ffff`.
@@ -101,8 +102,7 @@ To get the H3 index for some location:
 You can then take this index and get some information about it, for example:
 
 ```
-./bin/h3ToGeoBoundary
-8a2a1072b59ffff
+./bin/h3ToGeoBoundary --index 8a2a1072b59ffff
 ```
 
 This will produce the vertices of the hexagon at this location:
@@ -122,8 +122,7 @@ This will produce the vertices of the hexagon at this location:
 You can get the center coordinate of the hexagon like so:
 
 ```
-./bin/h3ToGeo
-8a2a1072b59ffff
+./bin/h3ToGeo --index 8a2a1072b59ffff
 ```
 
 This will produce some coordinate:
