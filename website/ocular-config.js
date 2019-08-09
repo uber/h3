@@ -31,6 +31,8 @@ module.exports = {
 
   FOOTER_LOGO: '',
 
+  DOC_PAGE_URL: 'src/templates/doc-page-markdown.jsx',
+
   HOME_PATH: '/',
   HOME_HEADING: 'Hexagonal hierarchical geospatial indexing system.',
   HOME_RIGHT: null,
