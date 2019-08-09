@@ -684,14 +684,14 @@ void _faceIjkToGeoBoundary(const FaceIJK* h, int res, int isPentagon,
     // edge-crossing vertices as needed
     g->numVerts = 0;
     int lastFace = -1;
-    int lastOverage = 0;  // 0: none; 1: edge; 2: overage
+    Overage lastOverage = NO_OVERAGE;
     for (int vert = 0; vert < NUM_HEX_VERTS + 1; vert++) {
         int v = vert % NUM_HEX_VERTS;
 
         FaceIJK fijk = fijkVerts[v];
 
         int pentLeading4 = 0;
-        int overage = _adjustOverageClassII(&fijk, adjRes, pentLeading4, 1);
+        Overage overage = _adjustOverageClassII(&fijk, adjRes, pentLeading4, 1);
 
         /*
         Check for edge-crossing. Each face of the underlying icosahedron is a
@@ -703,7 +703,7 @@ void _faceIjkToGeoBoundary(const FaceIJK* h, int res, int isPentagon,
         edge, with no edge line intersections.
         */
         if (isResClassIII(res) && vert > 0 && fijk.face != lastFace &&
-            lastOverage != 1) {
+            lastOverage != FACE_EDGE) {
             // find hex2d of the two vertexes on original face
             int lastV = (v + 5) % NUM_HEX_VERTS;
             Vec2d orig2d0;

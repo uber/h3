@@ -293,7 +293,7 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
                 int loc = (int)(parent % numRemainingHexes);
                 int loopCount = 0;
                 while (hashSetArray[loc] != 0) {
-                    if (loopCount > numRemainingHexes) {
+                    if (loopCount > numRemainingHexes) {  // LCOV_EXCL_BR_LINE
                         // LCOV_EXCL_START
                         // This case should not be possible because at most one
                         // index is placed into hashSetArray per
@@ -369,7 +369,7 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
                 int loopCount = 0;
                 bool isUncompactable = true;
                 do {
-                    if (loopCount > numRemainingHexes) {
+                    if (loopCount > numRemainingHexes) {  // LCOV_EXCL_BR_LINE
                         // LCOV_EXCL_START
                         // This case should not be possible because at most one
                         // index is placed into hashSetArray per input hexagon.
