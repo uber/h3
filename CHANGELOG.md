@@ -7,7 +7,7 @@ The public API of this library consists of the functions declared in file
 
 ## [Unreleased]
 
-## [3.5.1] - 2019-08-12
+## [3.6.0] - 2019-08-12
 ### Added
 - `h3ToCenterChild` function to find center child at given resolution (#267)
 - `getPentagonIndexes` (and `pentagonIndexCount`) function to find pentagons at given resolution (#267)
