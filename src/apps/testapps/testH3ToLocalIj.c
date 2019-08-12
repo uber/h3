@@ -72,7 +72,17 @@ SUITE(h3ToLocalIj) {
         ij.i = 2;
         t_assert(
             H3_EXPORT(experimentalLocalIjToH3)(origin, &ij, &retrieved) != 0,
-            "out of range base cell");
+            "out of range base cell (1)");
+        ij.i = 0;
+        ij.j = 2;
+        t_assert(
+            H3_EXPORT(experimentalLocalIjToH3)(origin, &ij, &retrieved) != 0,
+            "out of range base cell (2)");
+        ij.i = -2;
+        ij.j = -2;
+        t_assert(
+            H3_EXPORT(experimentalLocalIjToH3)(origin, &ij, &retrieved) != 0,
+            "out of range base cell (3)");
     }
 
     TEST(ijOutOfRange) {

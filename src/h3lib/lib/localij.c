@@ -290,7 +290,7 @@ int localIjkToH3(H3Index origin, const CoordIJK* ijk, H3Index* out) {
 
     // check for res 0/base cell
     if (res == 0) {
-        if (ijk->i > 1 || ijk->i > 1 || ijk->i > 1) {
+        if (ijk->i > 1 || ijk->j > 1 || ijk->k > 1) {
             // out of range input
             return 1;
         }
