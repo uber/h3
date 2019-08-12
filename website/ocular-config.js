@@ -31,7 +31,7 @@ module.exports = {
 
   FOOTER_LOGO: '',
 
-  DOC_PAGE_URL: 'src/templates/doc-page-markdown.jsx',
+  DOC_MARKDOWN_PAGE_URL: `${__dirname}/src/templates/doc-page-markdown-modified.jsx`,
 
   HOME_PATH: '/',
   HOME_HEADING: 'Hexagonal hierarchical geospatial indexing system.',
@@ -40,7 +40,7 @@ module.exports = {
     {
       text: 'Partition data into a hexagonal grid',
       desc: 'H3 has an easy API for indexing coordinates into a hexagonal, global grid.',
-      img: 'images/high-precision.svg'
+      img: 'images/icon-high-precision.svg'
     },
     {
       text: 'Hierarchical grid system',

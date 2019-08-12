@@ -8,7 +8,7 @@ The **H3** system assigns a unique hierarchical index to each cell. The **H3** i
 Child hexagons are linearly smaller than their parent hexagons.
 
 <div align="center">
-  <img height="300" src="images/cpidigits.png" />
+  <img height="300" src="/h3/images/cpidigits.png" />
 </div>
 
 

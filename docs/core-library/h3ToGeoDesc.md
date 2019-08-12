@@ -10,7 +10,7 @@ The conversion is performed as a series of coordinate system conversions describ
      We determine whether an overage exists by taking the sum of the *ijk* components, and if there is an overage the positive *ijk* components indicate which adjacent face the cell center lies on. A lookup operation is then performed to find the appropriate rotation and translation to transform the *ijk* coordinates into the adjacent face-centered *ijk* system.
 
 <div align="center">
-  <img height="300" src="images/triEdge.png" />
+  <img height="300" src="/h3/images/triEdge.png" />
 </div>
 
 * The face-centered *ijk* coordinates are then converted into corresponding *Hex2d* coordinates using the function `_ijkToHex2d`.
