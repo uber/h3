@@ -6,9 +6,13 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+
+## [3.6.0] - 2019-08-12
 ### Added
-- `h3ToCenterChild` function to find center child at given resolution (#263)
-- `getPentagonIndexes` (and `pentagonIndexCount`) function to find pentagons at given resolution (#263)
+- `h3ToCenterChild` function to find center child at given resolution (#267)
+- `getPentagonIndexes` (and `pentagonIndexCount`) function to find pentagons at given resolution (#267)
+### Fixed
+- Fix bounds check for local IJ coordinates (#271)
 
 ## [3.5.0] - 2019-07-22
 ### Added
