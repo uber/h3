@@ -2,7 +2,7 @@
 
 This operation is performed by function `h3ToGeo`. See the comments in the function source code for more detail.
 
-The conversion is performed as a series of coordinate system conversions described below. See the page <a href="#/documentation/core-library/coordinate-systems">Coordinate Systems used by the **H3 Core Library**</a> for more information on each of these coordinate systems.
+The conversion is performed as a series of coordinate system conversions described below. See the page <a href="../coordsystems.md">Coordinate Systems used by the **H3 Core Library**</a> for more information on each of these coordinate systems.
 
 *  The function `_h3ToFaceIjk` then converts the **H3** index to the appropriate icosahedron face number and normalized *ijk* coordinate's on that face's coordinate system as follows:
    * We start by assuming that the cell center point falls on the same icosahedron face as its base cell.

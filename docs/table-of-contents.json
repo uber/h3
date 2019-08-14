@@ -12,7 +12,7 @@
       "title": "Core Library",
       "entries": [
         {"entry": "docs/core-library/overview"},
-        {"entry": "docs/core-library/h3indexing"},
+        {"entry": "docs/core-library/h3Indexing"},
         {"entry": "docs/core-library/coordsystems"},
         {"entry": "docs/core-library/geoToH3desc"},
         {"entry": "docs/core-library/h3ToGeoDesc"},

@@ -6,7 +6,7 @@ The source of the pages in the documentation is in the [docs](../docs) directory
 
 ## Building Locally
 
-Building the documentation requires Node.js. To build and view the H3 documentation, 
+Building the documentation requires Node.js. To build and view the H3 documentation,
 run the following from `./website`:
 
 ```

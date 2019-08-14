@@ -38,6 +38,9 @@ function replaceLinks(props) {
     // - known physical files, either relative to this file or relative to root
     // - known routes, either relative to the route of this page or to the home page
     // by a link to their corresponding route, expresed relative to the home page
+    if (relativeLinks[hrefWithoutLeadingSlash] === undefined) {
+      throw new Error(`Unresolved href ${hrefWithoutLeadingSlash}`);
+    }
     return `href="${relativeLinks[hrefWithoutLeadingSlash]}"`;
   });
 }
