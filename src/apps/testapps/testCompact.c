@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Uber Technologies, Inc.
+ * Copyright 2017-2019 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -152,6 +152,31 @@ SUITE(compact) {
                  "compact fails on duplicate input");
     }
 
+    TEST(compact_empty) {
+        t_assert(H3_EXPORT(compact)(NULL, NULL, 0) == 0,
+                 "compact succeeds on empty input");
+    }
+
+    TEST(compact_disparate) {
+        // Exercises a case where compaction needs to be tested but none is
+        // possible
+        const int numHex = 7;
+        H3Index disparate[numHex] = {0};
+        for (int i = 0; i < numHex; i++) {
+            setH3Index(&disparate[i], 1, i, CENTER_DIGIT);
+        }
+        H3Index output[numHex] = {0};
+
+        t_assert(H3_EXPORT(compact)(disparate, output, numHex) == 0,
+                 "compact succeeds on disparate input");
+
+        // Assumes that `output` is an exact copy of `disparate`, including
+        // the ordering (which may not necessarily be the case)
+        for (int i = 0; i < numHex; i++) {
+            t_assert(disparate[i] == output[i], "output set equals input set");
+        }
+    }
+
     TEST(uncompact_wrongRes) {
         int numHex = 3;
         H3Index someHexagons[] = {0, 0, 0};
@@ -221,6 +246,13 @@ SUITE(compact) {
         free(result);
     }
 
+    TEST(uncompact_empty) {
+        int uncompactSz = H3_EXPORT(maxUncompactSize)(NULL, 0, 0);
+        t_assert(uncompactSz == 0, "maxUncompactSize accepts empty input");
+        t_assert(H3_EXPORT(uncompact)(NULL, 0, NULL, 0, 0) == 0,
+                 "uncompact accepts empty input");
+    }
+
     TEST(uncompact_onlyZero) {
         // maxUncompactSize and uncompact both permit 0 indexes
         // in the input array, and skip them. When only a zero is
@@ -237,7 +269,7 @@ SUITE(compact) {
         free(children);
     }
 
-    TEST(uncompactZero) {
+    TEST(uncompact_withZero) {
         // maxUncompactSize and uncompact both permit 0 indexes
         // in the input array, and skip them.
 

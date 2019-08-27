@@ -266,6 +266,9 @@ H3Index H3_EXPORT(h3ToCenterChild)(H3Index h, int childRes) {
  */
 int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
                        const int numHexes) {
+    if (numHexes == 0) {
+        return 0;
+    }
     int res = H3_GET_RESOLUTION(h3Set[0]);
     if (res == 0) {
         // No compaction possible, just copy the set to output
