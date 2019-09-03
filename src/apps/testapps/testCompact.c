@@ -161,11 +161,11 @@ SUITE(compact) {
         // Exercises a case where compaction needs to be tested but none is
         // possible
         const int numHex = 7;
-        H3Index disparate[numHex] = {0};
+        H3Index disparate[] = {0, 0, 0, 0, 0, 0, 0};
         for (int i = 0; i < numHex; i++) {
             setH3Index(&disparate[i], 1, i, CENTER_DIGIT);
         }
-        H3Index output[numHex] = {0};
+        H3Index output[] = {0, 0, 0, 0, 0, 0, 0};
 
         t_assert(H3_EXPORT(compact)(disparate, output, numHex) == 0,
                  "compact succeeds on disparate input");
