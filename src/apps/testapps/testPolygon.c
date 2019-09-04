@@ -576,11 +576,6 @@ SUITE(polygon) {
         t_assert(result == NORMALIZATION_ERR_UNASSIGNED_HOLES,
                  "Expected error code returned");
 
-        t_assert(countLinkedPolygons(&polygon) == 1, "Polygon count correct");
-        t_assert(countLinkedLoops(&polygon) == 1,
-                 "Loop count on first polygon correct");
-        t_assert(polygon.first == outer, "Got expected outer loop");
-
         H3_EXPORT(destroyLinkedPolygon)(&polygon);
     }
 }
