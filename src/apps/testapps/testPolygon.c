@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Uber Technologies, Inc.
+ * Copyright 2017-2019 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -550,6 +550,31 @@ SUITE(polygon) {
         t_assert(countLinkedLoops(polygon.next) == 1,
                  "Loop count on second polygon correct");
         t_assert(polygon.next->first == outer2, "Got expected outer loop");
+
+        H3_EXPORT(destroyLinkedPolygon)(&polygon);
+    }
+
+    TEST(normalizeMultiPolygon_unassignedHole) {
+        GeoCoord verts[] = {{0, 0}, {0, 1}, {1, 1}, {1, 0}};
+
+        LinkedGeoLoop* outer = malloc(sizeof(*outer));
+        assert(outer != NULL);
+        createLinkedLoop(outer, &verts[0], 4);
+
+        GeoCoord verts2[] = {{2, 2}, {3, 3}, {2, 3}};
+
+        LinkedGeoLoop* inner = malloc(sizeof(*inner));
+        assert(inner != NULL);
+        createLinkedLoop(inner, &verts2[0], 3);
+
+        LinkedGeoPolygon polygon = {0};
+        addLinkedLoop(&polygon, inner);
+        addLinkedLoop(&polygon, outer);
+
+        int result = normalizeMultiPolygon(&polygon);
+
+        t_assert(result == NORMALIZATION_ERR_UNASSIGNED_HOLES,
+                 "Expected error code returned");
 
         H3_EXPORT(destroyLinkedPolygon)(&polygon);
     }

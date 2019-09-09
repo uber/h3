@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Uber Technologies, Inc.
+ * Copyright 2017-2019 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -166,6 +166,18 @@ SUITE(geoCoord) {
         _geoAzDistanceRads(&start2, azimuth + degrees180, distance, &out);
         // TODO: Epsilon is relatively large
         t_assert(_geoDistRads(&start, &out) < 0.01, "moved back to origin");
+    }
+
+    TEST(_geoDistRads_wrappedLongitude) {
+        const GeoCoord negativeLongitude = {.lat = 0, .lon = -(M_PI + M_PI_2)};
+        const GeoCoord zero = {.lat = 0, .lon = 0};
+
+        t_assert(fabs(M_PI_2 - _geoDistRads(&negativeLongitude, &zero)) <
+                     EPSILON_RAD,
+                 "Distance with wrapped longitude");
+        t_assert(fabs(M_PI_2 - _geoDistRads(&zero, &negativeLongitude)) <
+                     EPSILON_RAD,
+                 "Distance with wrapped longitude and swapped arguments");
     }
 
     TEST(doubleConstants) {

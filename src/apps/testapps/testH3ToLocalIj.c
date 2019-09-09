@@ -86,10 +86,12 @@ SUITE(h3ToLocalIj) {
     }
 
     TEST(ijOutOfRange) {
-        const int numCoords = 5;
-        const CoordIJ coords[] = {{0, 0}, {1, 0}, {2, 0}, {3, 0}, {4, 0}};
+        const int numCoords = 7;
+        const CoordIJ coords[] = {{0, 0}, {1, 0},  {2, 0}, {3, 0},
+                                  {4, 0}, {-4, 0}, {0, 4}};
         const H3Index expected[] = {0x81283ffffffffff, 0x81293ffffffffff,
                                     0x8150bffffffffff, 0x8151bffffffffff,
+                                    H3_INVALID_INDEX,  H3_INVALID_INDEX,
                                     H3_INVALID_INDEX};
 
         for (int i = 0; i < numCoords; i++) {
