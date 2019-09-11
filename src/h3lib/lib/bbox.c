@@ -117,5 +117,5 @@ int bboxHexRadius(const BBox* bbox, int res) {
     // any orientation of the GeoJSON encased in a circle defined by the
     // bounding box radius and center, it is guaranteed to fit in this k-ring
     // Rounded *up* to guarantee containment
-    return (int)ceil(bboxRadiusKm / (1.5 * centerHexRadiusKm));
+    return (int)ceil(bboxRadiusKm / (1.0 * centerHexRadiusKm));
 }
