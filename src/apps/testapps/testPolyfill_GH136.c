@@ -41,7 +41,6 @@ static int countActualHexagons(H3Index* hexagons, int numHexagons) {
 }
 
 SUITE(polyfill_gh136) {
-
     testPolygon.geofence = testGeofence;
     testPolygon.numHoles = 0;
 
