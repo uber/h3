@@ -143,6 +143,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testVertexGraph.c
     src/apps/testapps/testCompact.c
     src/apps/testapps/testPolyfill.c
+    src/apps/testapps/testPolyfill_GH136.c
     src/apps/testapps/testPentagonIndexes.c
     src/apps/testapps/testKRing.c
     src/apps/testapps/testH3ToGeoBoundary.c
@@ -506,6 +507,7 @@ if(BUILD_TESTING)
     add_h3_test(testH3SetToVertexGraph src/apps/testapps/testH3SetToVertexGraph.c)
     add_h3_test(testLinkedGeo src/apps/testapps/testLinkedGeo.c)
     add_h3_test(testPolyfill src/apps/testapps/testPolyfill.c)
+    add_h3_test(testPolyfill_GH136 src/apps/testapps/testPolyfill_GH136.c)
     add_h3_test(testVertexGraph src/apps/testapps/testVertexGraph.c)
     add_h3_test(testH3UniEdge src/apps/testapps/testH3UniEdge.c)
     add_h3_test(testGeoCoord src/apps/testapps/testGeoCoord.c)

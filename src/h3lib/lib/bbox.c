@@ -112,10 +112,14 @@ int bboxHexRadius(const BBox* bbox, int res) {
     // Determine the radius of the center hexagon
     double centerHexRadiusKm = _hexRadiusKm(H3_EXPORT(geoToH3)(&center, res));
 
-    // The closest point along a hexagon drawn through the center points
-    // of a k-ring aggregation is exactly 1.5 radii of the hexagon. For
-    // any orientation of the GeoJSON encased in a circle defined by the
-    // bounding box radius and center, it is guaranteed to fit in this k-ring
-    // Rounded *up* to guarantee containment
-    return (int)ceil(bboxRadiusKm / (1.5 * centerHexRadiusKm));
+    // We use centerHexRadiusKm un-scaled and rounded *up* to guarantee
+    // containment ot the bbox.  Ideal, undistorted hexagons could scale
+    // centerHexRadiusKm by a factor of up to 1.5, reducing bboxHexRadius.
+    // This is because the closest point along an undistorted hexagon drawn
+    // through the center points of a k-ring aggregation is exactly 1.5 radii
+    // of the hexagon.  But there is distortion near pentagons, and for those
+    // cases, the scaling needs to be less than 1.5.  Using the un-scaled value
+    // conservatively guarantees containment for all cases, at the expense of a
+    // larger bboxHexRadius.
+    return (int)ceil(bboxRadiusKm / centerHexRadiusKm);
 }
