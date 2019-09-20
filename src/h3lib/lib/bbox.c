@@ -87,39 +87,28 @@ double _hexRadiusKm(H3Index h3Index) {
     return _geoDistKm(&h3Center, h3Boundary.verts);
 }
 
-/**
- * Get the radius of the bbox in hexagons - i.e. the radius of a k-ring centered
- * on the bbox center and covering the entire bbox.
- * @param  bbox Bounding box to measure
- * @param  res  Resolution of hexagons to use in measurement
- * @return      Radius in hexagons
- */
-int bboxHexRadius(const BBox* bbox, int res) {
-    // Determine the center of the bounding box
-    GeoCoord center;
-    bboxCenter(bbox, &center);
+int bboxHexEstimate(const BBox* bbox, int res) {
+    // Get the area of the pentagon as the maximally-distored area possible
+    H3Index pentagons[12] = {0};
+    getPentagonIndexes(res, pentagons);
+    double pentagonRadiusKm = _hexRadiusKm(pentagons[0]);
+    // Area of a regular hexagon is 3/2*sqrt(3) * r * r
+    double pentagonAreaKm2 =
+        2.59807621135 * pentagonRadiusKm * pentagonRadiusKm;
 
-    // Use a vertex on the side closest to the equator, to ensure the longest
-    // radius in cases with significant distortion. East/west is arbitrary.
-    double lat =
-        fabs(bbox->north) > fabs(bbox->south) ? bbox->south : bbox->north;
-    GeoCoord vertex = {lat, bbox->east};
+    // Then get the area of the bounding box of the geofence in question
+    GeoCoord p1, p2;
+    p1.lat = bbox->north;
+    p1.lon = bbox->east;
+    p2.lat = bbox->south;
+    p2.lon = bbox->east;
+    double h = _geoDistKm(&p1, &p2);
+    p2.lat = bbox->north;
+    p2.lon = bbox->west;
+    double w = _geoDistKm(&p1, &p2);
 
-    // Determine the length of the bounding box "radius" to then use
-    // as a circle on the earth that the k-rings must be greater than
-    double bboxRadiusKm = _geoDistKm(&center, &vertex);
-
-    // Determine the radius of the center hexagon
-    double centerHexRadiusKm = _hexRadiusKm(H3_EXPORT(geoToH3)(&center, res));
-
-    // We use centerHexRadiusKm un-scaled and rounded *up* to guarantee
-    // containment ot the bbox.  Ideal, undistorted hexagons could scale
-    // centerHexRadiusKm by a factor of up to 1.5, reducing bboxHexRadius.
-    // This is because the closest point along an undistorted hexagon drawn
-    // through the center points of a k-ring aggregation is exactly 1.5 radii
-    // of the hexagon.  But there is distortion near pentagons, and for those
-    // cases, the scaling needs to be less than 1.5.  Using the un-scaled value
-    // conservatively guarantees containment for all cases, at the expense of a
-    // larger bboxHexRadius.
-    return (int)ceil(bboxRadiusKm / centerHexRadiusKm);
+    // Divide the two to get an estimate of the number of hexagons needed
+    int estimate = (int)ceil(w * h / pentagonAreaKm2);
+    if (estimate == 0) estimate = 1;
+    return estimate;
 }

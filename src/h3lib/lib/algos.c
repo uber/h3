@@ -635,11 +635,7 @@ int H3_EXPORT(maxPolyfillSize)(const GeoPolygon* geoPolygon, int res) {
     // Get the bounding box for the GeoJSON-like struct
     BBox bbox;
     bboxFromGeofence(&geoPolygon->geofence, &bbox);
-    int minK = bboxHexRadius(&bbox, res);
-
-    // The total number of hexagons to allocate can now be determined by
-    // the k-ring hex allocation helper function.
-    return H3_EXPORT(maxKringSize)(minK);
+    return bboxHexEstimate(&bbox, res);
 }
 
 /**
@@ -655,7 +651,7 @@ int H3_EXPORT(maxPolyfillSize)(const GeoPolygon* geoPolygon, int res) {
  * @param res The Hexagon resolution (0-15)
  * @param out The slab of zeroed memory to write to. Assumed to be big enough.
  */
-void H3_EXPORT(polyfill)(const GeoPolygon* geoPolygon, int res, H3Index* out) {
+int H3_EXPORT(polyfill)(const GeoPolygon* geoPolygon, int res, H3Index* out) {
     // One of the goals of the polyfill algorithm is that two adjacent polygons
     // with zero overlap have zero overlapping hexagons. That the hexagons are
     // uniquely assigned. There are a few approaches to take here, such as
@@ -677,36 +673,160 @@ void H3_EXPORT(polyfill)(const GeoPolygon* geoPolygon, int res, H3Index* out) {
     BBox* bboxes = malloc((geoPolygon->numHoles + 1) * sizeof(BBox));
     assert(bboxes != NULL);
     bboxesFromGeoPolygon(geoPolygon, bboxes);
-    int minK = bboxHexRadius(&bboxes[0], res);
-    int numHexagons = H3_EXPORT(maxKringSize)(minK);
 
-    // Get the center hex
-    GeoCoord center;
-    bboxCenter(&bboxes[0], &center);
-    H3Index centerH3 = H3_EXPORT(geoToH3)(&center, res);
+    // Get the estimated number of hexagons and allocate some temporary memory
+    // for the hexagons
+    int numHexagons = H3_EXPORT(maxPolyfillSize)(geoPolygon, res);
+    // This algorithm assumes that the number of vertices is usually less than
+    // the number of hexagons, but when it's wrong, this will keep it from
+    // failing
+    const Geofence geofence = geoPolygon->geofence;
+    int numVerts = geofence.numVerts;
+    for (int i = 0; i < geoPolygon->numHoles; i++) {
+        numVerts += geoPolygon->holes[i].numVerts;
+    }
+    if (numHexagons < numVerts) numHexagons = numVerts;
+    H3Index* search = calloc(numHexagons, sizeof(H3Index));
+    H3Index* found = calloc(numHexagons, sizeof(H3Index));
 
-    // From here on it works differently, first we get all potential
-    // hexagons inserted into the available memory
-    H3_EXPORT(kRing)(centerH3, minK, out);
+    // Some metadata for tracking the state of the search and found memory
+    // blocks
+    int numSearchHexes = 0;
+    int numFoundHexes = 0;
 
-    // Next we iterate through each hexagon, and test its center point to see if
-    // it's contained in the GeoJSON-like struct
-    for (int i = 0; i < numHexagons; i++) {
-        // Skip records that are already zeroed
-        if (out[i] == 0) {
-            continue;
-        }
-        // Check if hexagon is inside of polygon
-        GeoCoord hexCenter;
-        H3_EXPORT(h3ToGeo)(out[i], &hexCenter);
-        hexCenter.lat = constrainLat(hexCenter.lat);
-        hexCenter.lon = constrainLng(hexCenter.lon);
-        // And remove from list if not
-        if (!pointInsidePolygon(geoPolygon, bboxes, &hexCenter)) {
-            out[i] = H3_INVALID_INDEX;
+    // 1. Get all points of the main polygon, convert them to hexagons and add
+    // them to the search hash. The hexagon containing the geofence point may or
+    // may not be contained by the geofence (as the hexagon's center point may
+    // be outside of the boundary.)
+    for (int i = 0; i < geofence.numVerts; i++) {
+        H3Index pointHex = H3_EXPORT(geoToH3)(&(geofence.verts[i]), res);
+        // For the search buffer, the initial seeding is just going to put the
+        // hexagons in packed in the order they're found in this loop, and also
+        // update the metadata as needed.
+        search[numSearchHexes] = pointHex;
+        numSearchHexes++;
+    }
+
+    // 2. Iterate over all holes, get all points of the holes, convert them to
+    // hexagons and add to only the search hash. We're going to temporarily use
+    // the `found` hash to use for dedupe purposes and then re-zero it once
+    // we're done here, otherwise we'd have to scan the whole set on each insert
+    // to make sure there's no duplicates, which is very inefficient.
+    for (int i = 0; i < geoPolygon->numHoles; i++) {
+        Geofence* hole = &(geoPolygon->holes[i]);
+        for (int j = 0; j < hole->numVerts; j++) {
+            H3Index pointHex = H3_EXPORT(geoToH3)(&(hole->verts[j]), res);
+            // A simple hash to store the hexagon, or move to another place if
+            // needed
+            int loc = (int)(pointHex % numHexagons);
+            int loopCount = 0;
+            while (found[loc] != 0) {
+                if (loopCount > numHexagons) {
+                    free(search);
+                    free(found);
+                    free(bboxes);
+                    return -1;
+                }
+                if (found[loc] == pointHex)
+                    break;  // At least two points of the geofence are identical
+                loc = (loc + 1) % numHexagons;
+                loopCount++;
+            }
+            if (found[loc] == pointHex)
+                continue;  // Skip this hex, already exists in the found hash
+            // Otherwise, set it in the found hash for now
+            found[loc] = pointHex;
+
+            // Set the hexagon in the search hash, as well
+            search[numSearchHexes] = pointHex;
+            numSearchHexes++;
         }
     }
+
+    // 3. Re-zero the found hash so it can be used in the main loop below
+    for (int i = 0; i < numHexagons; i++) found[i] = 0;
+
+    // 4. Begin main loop. While the search hash is not empty do the following
+    while (numSearchHexes > 0) {
+        // Iterate through all hexagons in the current search hash, then loop
+        // through all neighbors and test Point-in-Poly, if point-in-poly
+        // succeeds, add to out and found hashes if not already there.
+        H3Index ring[7] = {0};
+        int currentSearchNum = 0;
+        int i = 0;
+        while (currentSearchNum < numSearchHexes) {
+            H3Index searchHex = search[i];
+            if (searchHex == 0) {  // Gap, skip it
+                i++;
+                continue;
+            }
+            kRing(searchHex, 1, ring);
+            for (int j = 1; j < 7; j++) {
+                if (ring[j] == 0) {
+                    continue;  // Skip if this was a pentagon and only had 5
+                               // neighbors
+                }
+
+                H3Index hex = ring[j];
+
+                // A simple hash to store the hexagon, or move to another place
+                // if needed. This MUST be done before the point-in-poly check
+                // since that's far more expensive
+                int loc = (int)(hex % numHexagons);
+                int loopCount = 0;
+                while (out[loc] != 0) {
+                    if (loopCount > numHexagons) {
+                        free(search);
+                        free(found);
+                        free(bboxes);
+                        return -1;
+                    }
+                    if (out[loc] == hex) break;  // Skip duplicates found
+                    loc = (loc + 1) % numHexagons;
+                    loopCount++;
+                }
+                if (out[loc] == hex)
+                    continue;  // Skip this hex, already exists in the out hash
+
+                // Check if the hexagon is in the polygon or not
+                GeoCoord hexCenter;
+                H3_EXPORT(h3ToGeo)(hex, &hexCenter);
+                hexCenter.lat = constrainLat(hexCenter.lat);
+                hexCenter.lon = constrainLng(hexCenter.lon);
+
+                // If not, skip
+                if (!pointInsidePolygon(geoPolygon, bboxes, &hexCenter)) {
+                    continue;
+                }
+
+                // Otherwise set it in the output array
+                out[loc] = hex;
+
+                // Set the hexagon in the found hash
+                found[numFoundHexes] = hex;
+                numFoundHexes++;
+                // Wipe the current hex ring value back out
+                ring[j] = 0;
+            }
+            currentSearchNum++;
+            i++;
+        }
+
+        // Swap the search and found pointers, copy the found hex count to the
+        // search hex count, and zero everything related to the found memory.
+        H3Index* temp = search;
+        search = found;
+        found = temp;
+        for (int j = 0; j < numSearchHexes; j++) found[j] = 0;
+        numSearchHexes = numFoundHexes;
+        numFoundHexes = 0;
+        // Repeat until no new hexagons are found
+    }
+    // The out memory structure should be complete, end it here
     free(bboxes);
+    free(search);
+    free(found);
+    return 0;
 }
 
 /**
