@@ -688,6 +688,7 @@ int H3_EXPORT(polyfill)(const GeoPolygon* geoPolygon, int res, H3Index* out) {
     if (numHexagons < numVerts) numHexagons = numVerts;
     H3Index* search = calloc(numHexagons, sizeof(H3Index));
     H3Index* found = calloc(numHexagons, sizeof(H3Index));
+    H3Index* rejects = calloc(numHexagons, sizeof(H3Index));
 
     // Some metadata for tracking the state of the search and found memory
     // blocks
@@ -724,6 +725,7 @@ int H3_EXPORT(polyfill)(const GeoPolygon* geoPolygon, int res, H3Index* out) {
                 if (loopCount > numHexagons) {
                     free(search);
                     free(found);
+                    free(rejects);
                     free(bboxes);
                     return -1;
                 }
@@ -760,7 +762,7 @@ int H3_EXPORT(polyfill)(const GeoPolygon* geoPolygon, int res, H3Index* out) {
                 i++;
                 continue;
             }
-            kRing(searchHex, 1, ring);
+            H3_EXPORT(kRing)(searchHex, 1, ring);
             for (int j = 1; j < 7; j++) {
                 if (ring[j] == 0) {
                     continue;  // Skip if this was a pentagon and only had 5
@@ -778,6 +780,7 @@ int H3_EXPORT(polyfill)(const GeoPolygon* geoPolygon, int res, H3Index* out) {
                     if (loopCount > numHexagons) {
                         free(search);
                         free(found);
+                        free(rejects);
                         free(bboxes);
                         return -1;
                     }
@@ -785,8 +788,26 @@ int H3_EXPORT(polyfill)(const GeoPolygon* geoPolygon, int res, H3Index* out) {
                     loc = (loc + 1) % numHexagons;
                     loopCount++;
                 }
-                if (out[loc] == hex)
+                if (out[loc] == hex) {
                     continue;  // Skip this hex, already exists in the out hash
+                }
+                loopCount = 0;
+                int rloc = (int)(hex % numHexagons);
+                while (rejects[rloc] != 0) {
+                    if (loopCount > numHexagons) {
+                        free(search);
+                        free(found);
+                        free(rejects);
+                        free(bboxes);
+                        return -1;
+                    }
+                    if (rejects[rloc] == hex) break;  // Skip duplicates found
+                    rloc = (rloc + 1) % numHexagons;
+                    loopCount++;
+                }
+                if (rejects[rloc] == hex) {
+                    continue;  // Skip this hex, already rejected
+                }
 
                 // Check if the hexagon is in the polygon or not
                 GeoCoord hexCenter;
@@ -796,6 +817,7 @@ int H3_EXPORT(polyfill)(const GeoPolygon* geoPolygon, int res, H3Index* out) {
 
                 // If not, skip
                 if (!pointInsidePolygon(geoPolygon, bboxes, &hexCenter)) {
+                    rejects[rloc] = hex;  // Mark this hex as rejected
                     continue;
                 }
 
@@ -826,6 +848,7 @@ int H3_EXPORT(polyfill)(const GeoPolygon* geoPolygon, int res, H3Index* out) {
     free(bboxes);
     free(search);
     free(found);
+    free(rejects);
     return 0;
 }
 
