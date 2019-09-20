@@ -90,7 +90,7 @@ double _hexRadiusKm(H3Index h3Index) {
 int bboxHexEstimate(const BBox* bbox, int res) {
     // Get the area of the pentagon as the maximally-distored area possible
     H3Index pentagons[12] = {0};
-    getPentagonIndexes(res, pentagons);
+    H3_EXPORT(getPentagonIndexes)(res, pentagons);
     double pentagonRadiusKm = _hexRadiusKm(pentagons[0]);
     // Area of a regular hexagon is 3/2*sqrt(3) * r * r
     double pentagonAreaKm2 =
