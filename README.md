@@ -1,4 +1,4 @@
-<img align="right" src="https://uber.github.io/res/h3Logo-color.svg" alt="H3 Logo" width="200">
+<img align="right" src="https://uber.github.io/img/h3Logo-color.svg" alt="H3 Logo" width="200">
 
 # H3: A Hexagonal Hierarchical Geospatial Indexing System
 
