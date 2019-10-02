@@ -112,3 +112,16 @@ int bboxHexEstimate(const BBox* bbox, int res) {
     if (estimate == 0) estimate = 1;
     return estimate;
 }
+
+int lineHexEstimate(const GeoCoord* origin, const GeoCoord* destination,
+                    int res) {
+    // Get the area of the pentagon as the maximally-distored area possible
+    H3Index pentagons[12] = {0};
+    H3_EXPORT(getPentagonIndexes)(res, pentagons);
+    double pentagonRadiusKm = _hexRadiusKm(pentagons[0]);
+
+    double dist = _geoDistKm(origin, destination);
+    int estimate = (int)ceil(dist / (2 * pentagonRadiusKm));
+    if (estimate == 0) estimate = 1;
+    return estimate;
+}
