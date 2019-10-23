@@ -651,7 +651,58 @@ int H3_EXPORT(maxPolyfillSize)(const GeoPolygon* geoPolygon, int res) {
  * @param res The Hexagon resolution (0-15)
  * @param out The slab of zeroed memory to write to. Assumed to be big enough.
  */
-int H3_EXPORT(polyfill)(const GeoPolygon* geoPolygon, int res, H3Index* out) {
+void H3_EXPORT(polyfill)(const GeoPolygon* geoPolygon, int res, H3Index* out) {
+    int failure = _polyfill_internal(geoPolygon, res, out);
+    if (failure) {
+        int numHexagons = H3_EXPORT(maxPolyfillSize)(geoPolygon, res);
+        for (int i = 0; i < numHexagons; i++) out[i] = 0;
+    }
+}
+
+int _get_edge_hexagons(const Geofence* geofence, int numHexagons, int res,
+                       int* numSearchHexes, H3Index* search, H3Index* found) {
+    for (int i = 0; i < geofence->numVerts; i++) {
+        GeoCoord origin, destination;
+        origin = geofence->verts[i];
+        destination = i == geofence->numVerts - 1 ? geofence->verts[0]
+                                                  : geofence->verts[i + 1];
+        const int numHexesEstimate =
+            lineHexEstimate(&origin, &destination, res);
+        for (int j = 0; j < numHexesEstimate; j++) {
+            GeoCoord interpolate;
+            interpolate.lat =
+                (origin.lat * (numHexesEstimate - j) / numHexesEstimate) +
+                (destination.lat * j / numHexesEstimate);
+            interpolate.lon =
+                (origin.lon * (numHexesEstimate - j) / numHexesEstimate) +
+                (destination.lon * j / numHexesEstimate);
+            H3Index pointHex = H3_EXPORT(geoToH3)(&interpolate, res);
+            // A simple hash to store the hexagon, or move to another place if
+            // needed
+            int loc = (int)(pointHex % numHexagons);
+            int loopCount = 0;
+            while (found[loc] != 0) {
+                if (loopCount > numHexagons) {
+                    return -1;
+                }
+                if (found[loc] == pointHex)
+                    break;  // At least two points of the geofence are identical
+                loc = (loc + 1) % numHexagons;
+                loopCount++;
+            }
+            if (found[loc] == pointHex)
+                continue;  // Skip this hex, already exists in the found hash
+            // Otherwise, set it in the found hash for now
+            found[loc] = pointHex;
+
+            search[*numSearchHexes] = pointHex;
+            (*numSearchHexes)++;
+        }
+    }
+    return 0;
+}
+
+int _polyfill_internal(const GeoPolygon* geoPolygon, int res, H3Index* out) {
     // One of the goals of the polyfill algorithm is that two adjacent polygons
     // with zero overlap have zero overlapping hexagons. That the hexagons are
     // uniquely assigned. There are a few approaches to take here, such as
@@ -698,46 +749,13 @@ int H3_EXPORT(polyfill)(const GeoPolygon* geoPolygon, int res, H3Index* out) {
     // them to the search hash. The hexagon containing the geofence point may or
     // may not be contained by the geofence (as the hexagon's center point may
     // be outside of the boundary.)
-    for (int i = 0; i < geofence.numVerts; i++) {
-        GeoCoord origin, destination;
-        origin = geofence.verts[i];
-        destination = i == geofence.numVerts - 1 ? geofence.verts[0]
-                                                 : geofence.verts[i + 1];
-        const int numHexesEstimate =
-            lineHexEstimate(&origin, &destination, res);
-        for (int j = 0; j < numHexesEstimate; j++) {
-            GeoCoord interpolate;
-            interpolate.lat =
-                (origin.lat * (numHexesEstimate - j) / numHexesEstimate) +
-                (destination.lat * j / numHexesEstimate);
-            interpolate.lon =
-                (origin.lon * (numHexesEstimate - j) / numHexesEstimate) +
-                (destination.lon * j / numHexesEstimate);
-            H3Index pointHex = H3_EXPORT(geoToH3)(&interpolate, res);
-            // A simple hash to store the hexagon, or move to another place if
-            // needed
-            int loc = (int)(pointHex % numHexagons);
-            int loopCount = 0;
-            while (found[loc] != 0) {
-                if (loopCount > numHexagons) {
-                    free(search);
-                    free(found);
-                    free(bboxes);
-                    return -1;
-                }
-                if (found[loc] == pointHex)
-                    break;  // At least two points of the geofence are identical
-                loc = (loc + 1) % numHexagons;
-                loopCount++;
-            }
-            if (found[loc] == pointHex)
-                continue;  // Skip this hex, already exists in the found hash
-            // Otherwise, set it in the found hash for now
-            found[loc] = pointHex;
-
-            search[numSearchHexes] = pointHex;
-            numSearchHexes++;
-        }
+    int failure = _get_edge_hexagons(&geofence, numHexagons, res,
+                                     &numSearchHexes, search, found);
+    if (failure) {
+        free(search);
+        free(found);
+        free(bboxes);
+        return failure;
     }
 
     // 2. Iterate over all holes, get all points of the holes, convert them to
@@ -747,48 +765,13 @@ int H3_EXPORT(polyfill)(const GeoPolygon* geoPolygon, int res, H3Index* out) {
     // to make sure there's no duplicates, which is very inefficient.
     for (int i = 0; i < geoPolygon->numHoles; i++) {
         Geofence* hole = &(geoPolygon->holes[i]);
-        for (int j = 0; j < hole->numVerts; j++) {
-            GeoCoord origin, destination;
-            origin = hole->verts[j];
-            destination =
-                j == hole->numVerts - 1 ? hole->verts[0] : hole->verts[j + 1];
-            const int numHexesEstimate =
-                lineHexEstimate(&origin, &destination, res);
-            for (int k = 0; k < numHexesEstimate; k++) {
-                GeoCoord interpolate;
-                interpolate.lat =
-                    (origin.lat * (numHexesEstimate - k) / numHexesEstimate) +
-                    (destination.lat * k / numHexesEstimate);
-                interpolate.lon =
-                    (origin.lon * (numHexesEstimate - k) / numHexesEstimate) +
-                    (destination.lon * k / numHexesEstimate);
-                H3Index pointHex = H3_EXPORT(geoToH3)(&interpolate, res);
-                // A simple hash to store the hexagon, or move to another place
-                // if needed
-                int loc = (int)(pointHex % numHexagons);
-                int loopCount = 0;
-                while (found[loc] != 0) {
-                    if (loopCount > numHexagons) {
-                        free(search);
-                        free(found);
-                        free(bboxes);
-                        return -1;
-                    }
-                    if (found[loc] == pointHex)
-                        break;  // At least two points of the geofence are
-                                // identical
-                    loc = (loc + 1) % numHexagons;
-                    loopCount++;
-                }
-                if (found[loc] == pointHex)
-                    continue;  // Skip this hex, already exists in the found
-                               // hash
-                // Otherwise, set it in the found hash for now
-                found[loc] = pointHex;
-
-                search[numSearchHexes] = pointHex;
-                numSearchHexes++;
-            }
+        failure = _get_edge_hexagons(hole, numHexagons, res, &numSearchHexes,
+                                     search, found);
+        if (failure) {
+            free(search);
+            free(found);
+            free(bboxes);
+            return failure;
         }
     }
 

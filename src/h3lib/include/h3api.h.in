@@ -221,7 +221,7 @@ int H3_EXPORT(hexRing)(H3Index origin, int k, H3Index *out);
 int H3_EXPORT(maxPolyfillSize)(const GeoPolygon *geoPolygon, int res);
 
 /** @brief hexagons within the given geofence */
-int H3_EXPORT(polyfill)(const GeoPolygon *geoPolygon, int res, H3Index *out);
+void H3_EXPORT(polyfill)(const GeoPolygon *geoPolygon, int res, H3Index *out);
 /** @} */
 
 /** @defgroup h3SetToMultiPolygon h3SetToMultiPolygon
