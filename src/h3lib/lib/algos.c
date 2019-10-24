@@ -800,7 +800,7 @@ int _polyfill_internal(const GeoPolygon* geoPolygon, int res, H3Index* out) {
                 // A simple hash to store the hexagon, or move to another place
                 // if needed. This MUST be done before the point-in-poly check
                 // since that's far more expensive
-                int loc = (int)(hex % numHexagons);
+                int loc = (int)(hex % (numHexagons - 1));
                 int loopCount = 0;
                 while (out[loc] != 0) {
                     if (loopCount > numHexagons) {
