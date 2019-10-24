@@ -652,15 +652,15 @@ int H3_EXPORT(maxPolyfillSize)(const GeoPolygon* geoPolygon, int res) {
  * @param out The slab of zeroed memory to write to. Assumed to be big enough.
  */
 void H3_EXPORT(polyfill)(const GeoPolygon* geoPolygon, int res, H3Index* out) {
-    int failure = _polyfill_internal(geoPolygon, res, out);
+    int failure = _polyfillInternal(geoPolygon, res, out);
     if (failure) {
         int numHexagons = H3_EXPORT(maxPolyfillSize)(geoPolygon, res);
         for (int i = 0; i < numHexagons; i++) out[i] = 0;
     }
 }
 
-int _get_edge_hexagons(const Geofence* geofence, int numHexagons, int res,
-                       int* numSearchHexes, H3Index* search, H3Index* found) {
+int _getEdgeHexagons(const Geofence* geofence, int numHexagons, int res,
+                     int* numSearchHexes, H3Index* search, H3Index* found) {
     for (int i = 0; i < geofence->numVerts; i++) {
         GeoCoord origin, destination;
         origin = geofence->verts[i];
@@ -702,7 +702,7 @@ int _get_edge_hexagons(const Geofence* geofence, int numHexagons, int res,
     return 0;
 }
 
-int _polyfill_internal(const GeoPolygon* geoPolygon, int res, H3Index* out) {
+int _polyfillInternal(const GeoPolygon* geoPolygon, int res, H3Index* out) {
     // One of the goals of the polyfill algorithm is that two adjacent polygons
     // with zero overlap have zero overlapping hexagons. That the hexagons are
     // uniquely assigned. There are a few approaches to take here, such as
@@ -737,8 +737,8 @@ int _polyfill_internal(const GeoPolygon* geoPolygon, int res, H3Index* out) {
         numVerts += geoPolygon->holes[i].numVerts;
     }
     if (numHexagons < numVerts) numHexagons = numVerts;
-    H3Index* search = calloc(numHexagons, sizeof(H3Index));
-    H3Index* found = calloc(numHexagons, sizeof(H3Index));
+    H3Index* search = calloc(numHexagons + 1, sizeof(H3Index));
+    H3Index* found = calloc(numHexagons + 1, sizeof(H3Index));
 
     // Some metadata for tracking the state of the search and found memory
     // blocks
@@ -749,8 +749,8 @@ int _polyfill_internal(const GeoPolygon* geoPolygon, int res, H3Index* out) {
     // them to the search hash. The hexagon containing the geofence point may or
     // may not be contained by the geofence (as the hexagon's center point may
     // be outside of the boundary.)
-    int failure = _get_edge_hexagons(&geofence, numHexagons, res,
-                                     &numSearchHexes, search, found);
+    int failure = _getEdgeHexagons(&geofence, numHexagons, res, &numSearchHexes,
+                                   search, found);
     if (failure) {
         free(search);
         free(found);
@@ -765,8 +765,8 @@ int _polyfill_internal(const GeoPolygon* geoPolygon, int res, H3Index* out) {
     // to make sure there's no duplicates, which is very inefficient.
     for (int i = 0; i < geoPolygon->numHoles; i++) {
         Geofence* hole = &(geoPolygon->holes[i]);
-        failure = _get_edge_hexagons(hole, numHexagons, res, &numSearchHexes,
-                                     search, found);
+        failure = _getEdgeHexagons(hole, numHexagons, res, &numSearchHexes,
+                                   search, found);
         if (failure) {
             free(search);
             free(found);
@@ -800,7 +800,7 @@ int _polyfill_internal(const GeoPolygon* geoPolygon, int res, H3Index* out) {
                 // A simple hash to store the hexagon, or move to another place
                 // if needed. This MUST be done before the point-in-poly check
                 // since that's far more expensive
-                int loc = (int)(hex % (numHexagons - 1));
+                int loc = (int)(hex % numHexagons);
                 int loopCount = 0;
                 while (out[loc] != 0) {
                     if (loopCount > numHexagons) {

@@ -41,9 +41,9 @@ void h3SetToVertexGraph(const H3Index* h3Set, const int numHexes,
 void _vertexGraphToLinkedGeo(VertexGraph* graph, LinkedGeoPolygon* out);
 
 // Internal functions for polyfill
-int _get_edge_hexagons(const Geofence* geofence, int numHexagons, int res,
-                       int* numSearchHexes, H3Index* search, H3Index* found);
+int _getEdgeHexagons(const Geofence* geofence, int numHexagons, int res,
+                     int* numSearchHexes, H3Index* search, H3Index* found);
 
-int _polyfill_internal(const GeoPolygon* geoPolygon, int res, H3Index* out);
+int _polyfillInternal(const GeoPolygon* geoPolygon, int res, H3Index* out);
 
 #endif
