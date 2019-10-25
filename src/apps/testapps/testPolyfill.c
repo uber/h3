@@ -70,7 +70,7 @@ SUITE(polyfill) {
         t_assert(numHexagons == 3457, "got expected max polyfill size (hole)");
 
         numHexagons = H3_EXPORT(maxPolyfillSize)(&emptyGeoPolygon, 9);
-        t_assert(numHexagons == 1, "got expected max polyfill size (empty)");
+        t_assert(numHexagons == 3, "got expected max polyfill size (empty)");
     }
 
     TEST(polyfill) {

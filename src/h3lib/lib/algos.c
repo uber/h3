@@ -634,8 +634,18 @@ int H3_EXPORT(hexRing)(H3Index origin, int k, H3Index* out) {
 int H3_EXPORT(maxPolyfillSize)(const GeoPolygon* geoPolygon, int res) {
     // Get the bounding box for the GeoJSON-like struct
     BBox bbox;
-    bboxFromGeofence(&geoPolygon->geofence, &bbox);
-    return bboxHexEstimate(&bbox, res);
+    const Geofence geofence = geoPolygon->geofence;
+    bboxFromGeofence(&geofence, &bbox);
+    int numHexagons = bboxHexEstimate(&bbox, res);
+    // This algorithm assumes that the number of vertices is usually less than
+    // the number of hexagons, but when it's wrong, this will keep it from
+    // failing
+    int numVerts = geofence.numVerts;
+    for (int i = 0; i < geoPolygon->numHoles; i++) {
+        numVerts += geoPolygon->holes[i].numVerts;
+    }
+    if (numHexagons < numVerts) numHexagons = numVerts;
+    return numHexagons;
 }
 
 /**
@@ -728,17 +738,8 @@ int _polyfillInternal(const GeoPolygon* geoPolygon, int res, H3Index* out) {
     // Get the estimated number of hexagons and allocate some temporary memory
     // for the hexagons
     int numHexagons = H3_EXPORT(maxPolyfillSize)(geoPolygon, res);
-    // This algorithm assumes that the number of vertices is usually less than
-    // the number of hexagons, but when it's wrong, this will keep it from
-    // failing
-    const Geofence geofence = geoPolygon->geofence;
-    int numVerts = geofence.numVerts;
-    for (int i = 0; i < geoPolygon->numHoles; i++) {
-        numVerts += geoPolygon->holes[i].numVerts;
-    }
-    if (numHexagons < numVerts) numHexagons = numVerts;
-    H3Index* search = calloc(numHexagons + 1, sizeof(H3Index));
-    H3Index* found = calloc(numHexagons + 1, sizeof(H3Index));
+    H3Index* search = calloc(numHexagons, sizeof(H3Index));
+    H3Index* found = calloc(numHexagons, sizeof(H3Index));
 
     // Some metadata for tracking the state of the search and found memory
     // blocks
@@ -749,6 +750,7 @@ int _polyfillInternal(const GeoPolygon* geoPolygon, int res, H3Index* out) {
     // them to the search hash. The hexagon containing the geofence point may or
     // may not be contained by the geofence (as the hexagon's center point may
     // be outside of the boundary.)
+    const Geofence geofence = geoPolygon->geofence;
     int failure = _getEdgeHexagons(&geofence, numHexagons, res, &numSearchHexes,
                                    search, found);
     if (failure) {
