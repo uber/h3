@@ -663,10 +663,12 @@ int H3_EXPORT(maxPolyfillSize)(const GeoPolygon* geoPolygon, int res) {
 void H3_EXPORT(polyfill)(const GeoPolygon* geoPolygon, int res, H3Index* out) {
     // TODO: Eliminate this wrapper with the H3 4.0.0 release
     int failure = _polyfillInternal(geoPolygon, res, out);
+    // LCOV_EXCL_START
     if (failure) {
         int numHexagons = H3_EXPORT(maxPolyfillSize)(geoPolygon, res);
         for (int i = 0; i < numHexagons; i++) out[i] = H3_INVALID_INDEX;
     }
+    // LCOV_EXCL_STOP
 }
 
 /**
@@ -710,9 +712,7 @@ int _getEdgeHexagons(const Geofence* geofence, int numHexagons, int res,
             int loc = (int)(pointHex % numHexagons);
             int loopCount = 0;
             while (found[loc] != 0) {
-                if (loopCount > numHexagons) {
-                    return -1;
-                }
+                if (loopCount > numHexagons) return -1;  // LCOV_EXCL_LINE
                 if (found[loc] == pointHex)
                     break;  // At least two points of the geofence index to the
                             // same cell
@@ -788,12 +788,14 @@ int _polyfillInternal(const GeoPolygon* geoPolygon, int res, H3Index* out) {
     const Geofence geofence = geoPolygon->geofence;
     int failure = _getEdgeHexagons(&geofence, numHexagons, res, &numSearchHexes,
                                    search, found);
+    // LCOV_EXCL_START
     if (failure) {
         free(search);
         free(found);
         free(bboxes);
         return failure;
     }
+    // LCOV_EXCL_STOP
 
     // 2. Iterate over all holes, trace the polygons defining the holes with
     // hexagons and add to only the search hash. We're going to temporarily use
@@ -804,12 +806,14 @@ int _polyfillInternal(const GeoPolygon* geoPolygon, int res, H3Index* out) {
         Geofence* hole = &(geoPolygon->holes[i]);
         failure = _getEdgeHexagons(hole, numHexagons, res, &numSearchHexes,
                                    search, found);
+        // LCOV_EXCL_START
         if (failure) {
             free(search);
             free(found);
             free(bboxes);
             return failure;
         }
+        // LCOV_EXCL_STOP
     }
 
     // 3. Re-zero the found hash so it can be used in the main loop below
@@ -840,12 +844,14 @@ int _polyfillInternal(const GeoPolygon* geoPolygon, int res, H3Index* out) {
                 int loc = (int)(hex % numHexagons);
                 int loopCount = 0;
                 while (out[loc] != 0) {
+                    // LCOV_EXCL_START
                     if (loopCount > numHexagons) {
                         free(search);
                         free(found);
                         free(bboxes);
                         return -1;
                     }
+                    // LCOV_EXCL_STOP
                     if (out[loc] == hex) break;  // Skip duplicates found
                     loc = (loc + 1) % numHexagons;
                     loopCount++;
