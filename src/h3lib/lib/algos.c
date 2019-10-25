@@ -623,9 +623,8 @@ int H3_EXPORT(hexRing)(H3Index origin, int k, H3Index* out) {
  * maxPolyfillSize returns the number of hexagons to allocate space for when
  * performing a polyfill on the given GeoJSON-like data structure.
  *
- * Currently a laughably padded response, being a k-ring that wholly contains
- * a bounding box of the GeoJSON, but still less wasted memory than initializing
- * a Python application? ;)
+ * The size is the maximum of either the number of points in the geofence or the
+ * number of hexagons in the bounding box of the geofence.
  *
  * @param geoPolygon A GeoJSON-like data structure indicating the poly to fill
  * @param res Hexagon resolution (0-15)
@@ -653,29 +652,48 @@ int H3_EXPORT(maxPolyfillSize)(const GeoPolygon* geoPolygon, int res) {
  * zeroed memory, and fills it with the hexagons that are contained by
  * the GeoJSON-like data structure.
  *
- * The current implementation is very primitive and slow, but correct,
- * performing a point-in-poly operation on every hexagon in a k-ring defined
- * around the given geofence.
+ * This implementation traces the GeoJSON geofence(s) with hexagons, tests
+ * them and their neighbors to be contained by the geofence(s), and then any
+ * newly found hexagons are used to test again until no new hexagons are found.
  *
  * @param geoPolygon The geofence and holes defining the relevant area
  * @param res The Hexagon resolution (0-15)
  * @param out The slab of zeroed memory to write to. Assumed to be big enough.
  */
 void H3_EXPORT(polyfill)(const GeoPolygon* geoPolygon, int res, H3Index* out) {
+    // TODO: Eliminate this wrapper with the H3 4.0.0 release
     int failure = _polyfillInternal(geoPolygon, res, out);
     if (failure) {
         int numHexagons = H3_EXPORT(maxPolyfillSize)(geoPolygon, res);
-        for (int i = 0; i < numHexagons; i++) out[i] = 0;
+        for (int i = 0; i < numHexagons; i++) out[i] = H3_INVALID_INDEX;
     }
 }
 
+/**
+ * _getEdgeHexagons takes a given geofence ring (either the main geofence or
+ * one of the holes) and traces it with hexagons and updates the search and
+ * found memory blocks. This is used for determining the initial hexagon set
+ * for the polyfill algorithm to execute on.
+ *
+ * @param geofence The geofence (or hole) to be traced
+ * @param numHexagons The maximum number of hexagons possible for the geofence
+ *                    (also the bounds of the search and found arrays)
+ * @param res The hexagon resolution (0-15)
+ * @param numSearchHexes The number of hexagons found so far to be searched
+ * @param search The block of memory containing the hexagons to search from
+ * @param found The block of memory containing the hexagons found from the
+ * search
+ *
+ * @return An error code if the hash function cannot insert a found hexagon
+ *         into the found array.
+ */
 int _getEdgeHexagons(const Geofence* geofence, int numHexagons, int res,
                      int* numSearchHexes, H3Index* search, H3Index* found) {
     for (int i = 0; i < geofence->numVerts; i++) {
-        GeoCoord origin, destination;
-        origin = geofence->verts[i];
-        destination = i == geofence->numVerts - 1 ? geofence->verts[0]
-                                                  : geofence->verts[i + 1];
+        GeoCoord origin = geofence->verts[i];
+        GeoCoord destination = i == geofence->numVerts - 1
+                                   ? geofence->verts[0]
+                                   : geofence->verts[i + 1];
         const int numHexesEstimate =
             lineHexEstimate(&origin, &destination, res);
         for (int j = 0; j < numHexesEstimate; j++) {
@@ -696,7 +714,8 @@ int _getEdgeHexagons(const Geofence* geofence, int numHexagons, int res,
                     return -1;
                 }
                 if (found[loc] == pointHex)
-                    break;  // At least two points of the geofence are identical
+                    break;  // At least two points of the geofence index to the
+                            // same cell
                 loc = (loc + 1) % numHexagons;
                 loopCount++;
             }
@@ -712,6 +731,22 @@ int _getEdgeHexagons(const Geofence* geofence, int numHexagons, int res,
     return 0;
 }
 
+/**
+ * _polyfillInternal traces the provided geoPolygon data structure with hexagons
+ * and then iteratively searches through these hexagons and their immediate
+ * neighbors to see if they are contained within the polygon or not. Those that
+ * are found are added to the out array as well as the found array. Once all
+ * hexagons to search are checked, the found hexagons become the new search
+ * array and the found array is wiped and the process repeats until no new
+ * hexagons can be found.
+ *
+ * @param geoPolygon The geofence and holes defining the relevant area
+ * @param res The Hexagon resolution (0-15)
+ * @param out The slab of zeroed memory to write to. Assumed to be big enough.
+ *
+ * @return An error code if any of the hash operations fails to insert a hexagon
+ *         into an array of memory.
+ */
 int _polyfillInternal(const GeoPolygon* geoPolygon, int res, H3Index* out) {
     // One of the goals of the polyfill algorithm is that two adjacent polygons
     // with zero overlap have zero overlapping hexagons. That the hexagons are
@@ -746,10 +781,10 @@ int _polyfillInternal(const GeoPolygon* geoPolygon, int res, H3Index* out) {
     int numSearchHexes = 0;
     int numFoundHexes = 0;
 
-    // 1. Get all points of the main polygon, convert them to hexagons and add
-    // them to the search hash. The hexagon containing the geofence point may or
-    // may not be contained by the geofence (as the hexagon's center point may
-    // be outside of the boundary.)
+    // 1. Trace the hexagons along the polygon defining the outer geofence and
+    // add them to the search hash. The hexagon containing the geofence point
+    // may or may not be contained by the geofence (as the hexagon's center
+    // point may be outside of the boundary.)
     const Geofence geofence = geoPolygon->geofence;
     int failure = _getEdgeHexagons(&geofence, numHexagons, res, &numSearchHexes,
                                    search, found);
@@ -760,7 +795,7 @@ int _polyfillInternal(const GeoPolygon* geoPolygon, int res, H3Index* out) {
         return failure;
     }
 
-    // 2. Iterate over all holes, get all points of the holes, convert them to
+    // 2. Iterate over all holes, trace the polygons defining the holes with
     // hexagons and add to only the search hash. We're going to temporarily use
     // the `found` hash to use for dedupe purposes and then re-zero it once
     // we're done here, otherwise we'd have to scan the whole set on each insert
@@ -791,8 +826,8 @@ int _polyfillInternal(const GeoPolygon* geoPolygon, int res, H3Index* out) {
         while (currentSearchNum < numSearchHexes) {
             H3Index searchHex = search[i];
             H3_EXPORT(kRing)(searchHex, 1, ring);
-            for (int j = 1; j < 7; j++) {
-                if (ring[j] == 0) {
+            for (int j = 0; j < 7; j++) {
+                if (ring[j] == H3_INVALID_INDEX) {
                     continue;  // Skip if this was a pentagon and only had 5
                                // neighbors
                 }
@@ -822,8 +857,6 @@ int _polyfillInternal(const GeoPolygon* geoPolygon, int res, H3Index* out) {
                 // Check if the hexagon is in the polygon or not
                 GeoCoord hexCenter;
                 H3_EXPORT(h3ToGeo)(hex, &hexCenter);
-                hexCenter.lat = constrainLat(hexCenter.lat);
-                hexCenter.lon = constrainLng(hexCenter.lon);
 
                 // If not, skip
                 if (!pointInsidePolygon(geoPolygon, bboxes, &hexCenter)) {
