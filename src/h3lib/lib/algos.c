@@ -41,6 +41,7 @@
 #define HEX_RANGE_SUCCESS 0
 #define HEX_RANGE_PENTAGON 1
 #define HEX_RANGE_K_SUBSEQUENCE 2
+#define MAX_ONE_RING_SIZE 7
 
 /**
  * Directions used for traversing a hexagonal ring counterclockwise around
@@ -824,13 +825,13 @@ int _polyfillInternal(const GeoPolygon* geoPolygon, int res, H3Index* out) {
         // Iterate through all hexagons in the current search hash, then loop
         // through all neighbors and test Point-in-Poly, if point-in-poly
         // succeeds, add to out and found hashes if not already there.
-        H3Index ring[7] = {0};
         int currentSearchNum = 0;
         int i = 0;
         while (currentSearchNum < numSearchHexes) {
+            H3Index ring[MAX_ONE_RING_SIZE] = {0};
             H3Index searchHex = search[i];
             H3_EXPORT(kRing)(searchHex, 1, ring);
-            for (int j = 0; j < 7; j++) {
+            for (int j = 0; j < MAX_ONE_RING_SIZE; j++) {
                 if (ring[j] == H3_INVALID_INDEX) {
                     continue;  // Skip if this was a pentagon and only had 5
                                // neighbors
@@ -878,7 +879,6 @@ int _polyfillInternal(const GeoPolygon* geoPolygon, int res, H3Index* out) {
                 // Wipe the current hex ring value back out
                 ring[j] = 0;
             }
-            ring[0] = 0;
             currentSearchNum++;
             i++;
         }
