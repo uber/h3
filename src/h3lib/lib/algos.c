@@ -655,8 +655,8 @@ int H3_EXPORT(maxPolyfillSize)(const GeoPolygon* geoPolygon, int res) {
  *
  * This implementation traces the GeoJSON geofence(s) in cartesian space with
  * hexagons, tests them and their neighbors to be contained by the geofence(s),
- * and then any newly found hexagons are used to test again until no new hexagons
- * are found.
+ * and then any newly found hexagons are used to test again until no new
+ * hexagons are found.
  *
  * @param geoPolygon The geofence and holes defining the relevant area
  * @param res The Hexagon resolution (0-15)
