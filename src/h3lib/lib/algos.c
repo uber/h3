@@ -664,6 +664,9 @@ int H3_EXPORT(maxPolyfillSize)(const GeoPolygon* geoPolygon, int res) {
 void H3_EXPORT(polyfill)(const GeoPolygon* geoPolygon, int res, H3Index* out) {
     // TODO: Eliminate this wrapper with the H3 4.0.0 release
     int failure = _polyfillInternal(geoPolygon, res, out);
+    // The polyfill algorithm can theoretically fail if the allocated memory is
+    // not large enough for the polygon, but this should be impossible given the
+    // conservative overestimation of the number of hexagons possible.
     // LCOV_EXCL_START
     if (failure) {
         int numHexagons = H3_EXPORT(maxPolyfillSize)(geoPolygon, res);
@@ -713,6 +716,8 @@ int _getEdgeHexagons(const Geofence* geofence, int numHexagons, int res,
             int loc = (int)(pointHex % numHexagons);
             int loopCount = 0;
             while (found[loc] != 0) {
+                // If this conditional is reached, the `found` memory block is
+                // too small for the given polygon. This should not happen.
                 if (loopCount > numHexagons) return -1;  // LCOV_EXCL_LINE
                 if (found[loc] == pointHex)
                     break;  // At least two points of the geofence index to the
@@ -789,6 +794,8 @@ int _polyfillInternal(const GeoPolygon* geoPolygon, int res, H3Index* out) {
     const Geofence geofence = geoPolygon->geofence;
     int failure = _getEdgeHexagons(&geofence, numHexagons, res, &numSearchHexes,
                                    search, found);
+    // If this branch is reached, we have exceeded the maximum number of
+    // hexagons possible and need to clean up the allocated memory.
     // LCOV_EXCL_START
     if (failure) {
         free(search);
@@ -807,6 +814,8 @@ int _polyfillInternal(const GeoPolygon* geoPolygon, int res, H3Index* out) {
         Geofence* hole = &(geoPolygon->holes[i]);
         failure = _getEdgeHexagons(hole, numHexagons, res, &numSearchHexes,
                                    search, found);
+        // If this branch is reached, we have exceeded the maximum number of
+        // hexagons possible and need to clean up the allocated memory.
         // LCOV_EXCL_START
         if (failure) {
             free(search);
@@ -845,6 +854,9 @@ int _polyfillInternal(const GeoPolygon* geoPolygon, int res, H3Index* out) {
                 int loc = (int)(hex % numHexagons);
                 int loopCount = 0;
                 while (out[loc] != 0) {
+                    // If this branch is reached, we have exceeded the maximum
+                    // number of hexagons possible and need to clean up the
+                    // allocated memory.
                     // LCOV_EXCL_START
                     if (loopCount > numHexagons) {
                         free(search);
@@ -876,8 +888,6 @@ int _polyfillInternal(const GeoPolygon* geoPolygon, int res, H3Index* out) {
                 // Set the hexagon in the found hash
                 found[numFoundHexes] = hex;
                 numFoundHexes++;
-                // Wipe the current hex ring value back out
-                ring[j] = 0;
             }
             currentSearchNum++;
             i++;
