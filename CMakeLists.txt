@@ -350,11 +350,11 @@ if(BUILD_FILTERS)
         set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "KML/res${resolution}cells.kml")
         set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "KML/res${resolution}centers.kml")
         add_custom_target(kml_cells_${resolution}
-            COMMAND ${SHELL} "$<TARGET_FILE:h3ToHier> ${resolution} | $<TARGET_FILE:h3ToGeoBoundary> 1 res${resolution}cells.kml \"Res ${resolution} Cells\" > KML/res${resolution}cells.kml"
+            COMMAND ${SHELL} "$<TARGET_FILE:h3ToHier> -r ${resolution} | $<TARGET_FILE:h3ToGeoBoundary> --kml --kml-name res${resolution}cells.kml --kml-description \"Res ${resolution} Cells\" > KML/res${resolution}cells.kml"
             VERBATIM
             DEPENDS create-kml-dir)
         add_custom_target(kml_centers_${resolution}
-            COMMAND ${SHELL} "$<TARGET_FILE:h3ToHier> ${resolution} | $<TARGET_FILE:h3ToGeo> 1 res${resolution}centers.kml \"Res ${resolution} Centers\" > KML/res${resolution}centers.kml"
+            COMMAND ${SHELL} "$<TARGET_FILE:h3ToHier> -r ${resolution} | $<TARGET_FILE:h3ToGeo> --kml --kml-name res${resolution}centers.kml --kml-description \"Res ${resolution} Centers\" > KML/res${resolution}centers.kml"
             VERBATIM
             DEPENDS create-kml-dir)
         add_dependencies(kml
