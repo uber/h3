@@ -87,6 +87,14 @@ double _hexRadiusKm(H3Index h3Index) {
     return _geoDistKm(&h3Center, h3Boundary.verts);
 }
 
+/**
+ * bboxHexEstimate returns an estimated number of hexagons that fit
+ *                 within the cartesian-projected bounding box
+ *
+ * @param bbox the bounding box to estimate the hexagon fill level
+ * @param res the resolution of the H3 hexagons to fill the bounding box
+ * @return the estimated number of hexagons to fill the bounding box
+ */
 int bboxHexEstimate(const BBox* bbox, int res) {
     // Get the area of the pentagon as the maximally-distorted area possible
     H3Index pentagons[12] = {0};
@@ -115,6 +123,15 @@ int bboxHexEstimate(const BBox* bbox, int res) {
     return estimate;
 }
 
+/**
+ * lineHexEstimate returns an estimated number of hexagons that trace
+ *                 the cartesian-projected line
+ *
+ *  @param origin the origin coordinates
+ *  @param destination the destination coordinates
+ *  @param res the resolution of the H3 hexagons to trace the line
+ *  @return the estimated number of hexagons required to trace the line
+ */
 int lineHexEstimate(const GeoCoord* origin, const GeoCoord* destination,
                     int res) {
     // Get the area of the pentagon as the maximally-distorted area possible

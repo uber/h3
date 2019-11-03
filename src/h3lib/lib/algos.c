@@ -640,11 +640,11 @@ int H3_EXPORT(maxPolyfillSize)(const GeoPolygon* geoPolygon, int res) {
     // This algorithm assumes that the number of vertices is usually less than
     // the number of hexagons, but when it's wrong, this will keep it from
     // failing
-    int numVerts = geofence.numVerts;
+    int totalVerts = geofence.numVerts;
     for (int i = 0; i < geoPolygon->numHoles; i++) {
-        numVerts += geoPolygon->holes[i].numVerts;
+        totalVerts += geoPolygon->holes[i].numVerts;
     }
-    if (numHexagons < numVerts) numHexagons = numVerts;
+    if (numHexagons < totalVerts) numHexagons = totalVerts;
     return numHexagons;
 }
 
