@@ -6,10 +6,13 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+
+## [3.6.1] - 2019-11-11
 ### Fixed
 - `compact` handles zero length input correctly. (#278)
 - `bboxHexRadius` scaling factor adjusted to guarantee containment for `polyfill`. (#279)
 - `polyfill` new algorithm for up to 3x perf boost. (#282)
+- Fix CMake targets for KML generation. (#285)
 
 ## [3.6.0] - 2019-08-12
 ### Added
