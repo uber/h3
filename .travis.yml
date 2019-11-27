@@ -31,7 +31,7 @@ addons:
 matrix:
   include:
       # Check that clang-format doesn't detect some files are not formatted.
-    - env: NAME="Formatting check"
+    - name: "Formatting check"
       compiler: clang
       addons:
         apt:
@@ -41,7 +41,7 @@ matrix:
             - clang-format-5.0
       script: make format && git diff --exit-code
       # Submit coverage report to Coveralls.io, also test that prefixing works.
-    - env: NAME="Coverage report"
+    - name: "Coverage and FOSSA report"
       compiler: gcc
       addons:
         apt:
@@ -50,12 +50,14 @@ matrix:
       install:
         - gem install coveralls-lcov
       before_script:
+        - "curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | sudo bash"
         - cmake -DCMAKE_BUILD_TYPE=Debug -DWARNINGS_AS_ERRORS=ON -DH3_PREFIX=testprefix_ .
       script:
         - make && make coverage
+        - 'if [ -n "$FOSSA_API_KEY" ]; then fossa; fi'
       after_success:
         - coveralls-lcov coverage.cleaned.info
-    - env: NAME="Valgrind test"
+    - name: "Valgrind test"
       compiler: gcc
       addons:
         apt:
@@ -66,9 +68,9 @@ matrix:
       script:
         - make
         - CTEST_OUTPUT_ON_FAILURE=1 make test-fast
-    - env: NAME="Mac OSX (Xcode 8)"
+    - name: "Mac OSX (Xcode 8)"
       os: osx
-    - env: NAME="binding-functions target"
+    - name: "binding-functions target"
       script:
         - make binding-functions
         # Check that the file exists and has contents
