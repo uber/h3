@@ -6,6 +6,7 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+- Revert new `polyfill` algorithm until reported issues are fixed.
 
 ## [3.6.1] - 2019-11-11
 ### Fixed
