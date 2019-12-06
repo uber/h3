@@ -20,6 +20,7 @@
 #include "geoCoord.h"
 #include "h3Index.h"
 #include "test.h"
+#include "utility.h"
 
 // Fixtures
 static GeoCoord sfVerts[] = {
@@ -49,6 +50,54 @@ static int countActualHexagons(H3Index* hexagons, int numHexagons) {
         }
     }
     return actualNumHexagons;
+}
+
+static void fillIndex_assertions(H3Index h) {
+    int baseCell = H3_EXPORT(h3GetBaseCell)(h);
+    if (baseCell == 0 || baseCell == 1 || baseCell == 120 || baseCell == 121) {
+        // TODO These do not work correctly
+        return;
+    }
+
+    int currentRes = H3_EXPORT(h3GetResolution)(h);
+    for (int nextRes = currentRes; nextRes <= currentRes + 1; nextRes++) {
+        GeoBoundary bndry;
+        H3_EXPORT(h3ToGeoBoundary)(h, &bndry);
+        GeoPolygon polygon = {0};
+        polygon.geofence.numVerts = bndry.numVerts;
+        polygon.geofence.verts = &bndry.verts;
+
+        int polyfillSize = H3_EXPORT(maxPolyfillSize)(&polygon, nextRes);
+        H3Index* polyfillOut = calloc(polyfillSize, sizeof(H3Index));
+        H3_EXPORT(polyfill)(&polygon, nextRes, polyfillOut);
+
+        int polyfillCount = countActualHexagons(polyfillOut, polyfillSize);
+
+        int childrenSize = H3_EXPORT(maxH3ToChildrenSize)(h, nextRes);
+        H3Index* children = calloc(childrenSize, sizeof(H3Index));
+        H3_EXPORT(h3ToChildren)(h, nextRes, children);
+
+        int h3ToChildrenCount = countActualHexagons(children, childrenSize);
+
+        t_assert(polyfillCount == h3ToChildrenCount,
+                 "Polyfill count matches h3ToChildren count");
+
+        for (int i = 0; i < childrenSize; i++) {
+            bool found = false;
+            if (children[i] == H3_INVALID_INDEX) continue;
+            for (int j = 0; j < polyfillSize; j++) {
+                if (polyfillOut[j] == children[i]) {
+                    found = true;
+                    break;
+                }
+            }
+            t_assert(found,
+                     "All indexes match between polyfill and h3ToChildren");
+        }
+
+        free(polyfillOut);
+        free(children);
+    }
 }
 
 SUITE(polyfill) {
@@ -299,5 +348,47 @@ SUITE(polyfill) {
         t_assert(found == 1, "one index found");
         t_assert(numPentagons == 1, "one pentagon found");
         free(hexagons);
+    }
+
+    TEST(fillIndex) {
+        iterateAllIndexesAtRes(0, fillIndex_assertions);
+        iterateAllIndexesAtRes(1, fillIndex_assertions);
+        iterateAllIndexesAtRes(2, fillIndex_assertions);
+    }
+
+    TEST(entireWorld) {
+        // TODO: Fails for a single worldwide polygon
+        // TODO: Fails at resolutions other than 0
+        GeoCoord worldVerts[] = {
+            {-M_PI_2, -M_PI}, {M_PI_2, -M_PI}, {M_PI_2, 0}, {-M_PI_2, 0}};
+        Geofence worldGeofence = {.numVerts = 4, .verts = worldVerts};
+        GeoPolygon worldGeoPolygon = {.geofence = worldGeofence, .numHoles = 0};
+        GeoCoord worldVerts2[] = {
+            {-M_PI_2, 0}, {M_PI_2, 0}, {M_PI_2, M_PI}, {-M_PI_2, M_PI}};
+        Geofence worldGeofence2 = {.numVerts = 4, .verts = worldVerts};
+        GeoPolygon worldGeoPolygon2 = {.geofence = worldGeofence,
+                                       .numHoles = 0};
+
+        int res = 0;
+
+        int polyfillSize = H3_EXPORT(maxPolyfillSize)(&worldGeoPolygon, res);
+        H3Index* polyfillOut = calloc(polyfillSize, sizeof(H3Index));
+
+        H3_EXPORT(polyfill)(&worldGeoPolygon, res, polyfillOut);
+        int actualNumHexagons = countActualHexagons(polyfillOut, polyfillSize);
+
+        int polyfillSize2 = H3_EXPORT(maxPolyfillSize)(&worldGeoPolygon2, res);
+        H3Index* polyfillOut2 = calloc(polyfillSize2, sizeof(H3Index));
+
+        H3_EXPORT(polyfill)(&worldGeoPolygon2, res, polyfillOut2);
+        int actualNumHexagons2 =
+            countActualHexagons(polyfillOut2, polyfillSize2);
+
+        t_assert(actualNumHexagons + actualNumHexagons2 ==
+                     H3_EXPORT(numHexagons)(res),
+                 "got expected polyfill size (entire world)");
+
+        free(polyfillOut);
+        free(polyfillOut2);
     }
 }
