@@ -41,7 +41,6 @@
 #define HEX_RANGE_SUCCESS 0
 #define HEX_RANGE_PENTAGON 1
 #define HEX_RANGE_K_SUBSEQUENCE 2
-#define MAX_ONE_RING_SIZE 7
 
 /**
  * Directions used for traversing a hexagonal ring counterclockwise around
@@ -624,8 +623,9 @@ int H3_EXPORT(hexRing)(H3Index origin, int k, H3Index* out) {
  * maxPolyfillSize returns the number of hexagons to allocate space for when
  * performing a polyfill on the given GeoJSON-like data structure.
  *
- * The size is the maximum of either the number of points in the geofence or the
- * number of hexagons in the bounding box of the geofence.
+ * Currently a laughably padded response, being a k-ring that wholly contains
+ * a bounding box of the GeoJSON, but still less wasted memory than initializing
+ * a Python application? ;)
  *
  * @param geoPolygon A GeoJSON-like data structure indicating the poly to fill
  * @param res Hexagon resolution (0-15)
@@ -634,18 +634,12 @@ int H3_EXPORT(hexRing)(H3Index origin, int k, H3Index* out) {
 int H3_EXPORT(maxPolyfillSize)(const GeoPolygon* geoPolygon, int res) {
     // Get the bounding box for the GeoJSON-like struct
     BBox bbox;
-    const Geofence geofence = geoPolygon->geofence;
-    bboxFromGeofence(&geofence, &bbox);
-    int numHexagons = bboxHexEstimate(&bbox, res);
-    // This algorithm assumes that the number of vertices is usually less than
-    // the number of hexagons, but when it's wrong, this will keep it from
-    // failing
-    int totalVerts = geofence.numVerts;
-    for (int i = 0; i < geoPolygon->numHoles; i++) {
-        totalVerts += geoPolygon->holes[i].numVerts;
-    }
-    if (numHexagons < totalVerts) numHexagons = totalVerts;
-    return numHexagons;
+    bboxFromGeofence(&geoPolygon->geofence, &bbox);
+    int minK = bboxHexRadius(&bbox, res);
+
+    // The total number of hexagons to allocate can now be determined by
+    // the k-ring hex allocation helper function.
+    return H3_EXPORT(maxKringSize)(minK);
 }
 
 /**
@@ -653,108 +647,15 @@ int H3_EXPORT(maxPolyfillSize)(const GeoPolygon* geoPolygon, int res) {
  * zeroed memory, and fills it with the hexagons that are contained by
  * the GeoJSON-like data structure.
  *
- * This implementation traces the GeoJSON geofence(s) in cartesian space with
- * hexagons, tests them and their neighbors to be contained by the geofence(s),
- * and then any newly found hexagons are used to test again until no new
- * hexagons are found.
+ * The current implementation is very primitive and slow, but correct,
+ * performing a point-in-poly operation on every hexagon in a k-ring defined
+ * around the given geofence.
  *
  * @param geoPolygon The geofence and holes defining the relevant area
  * @param res The Hexagon resolution (0-15)
  * @param out The slab of zeroed memory to write to. Assumed to be big enough.
  */
 void H3_EXPORT(polyfill)(const GeoPolygon* geoPolygon, int res, H3Index* out) {
-    // TODO: Eliminate this wrapper with the H3 4.0.0 release
-    int failure = _polyfillInternal(geoPolygon, res, out);
-    // The polyfill algorithm can theoretically fail if the allocated memory is
-    // not large enough for the polygon, but this should be impossible given the
-    // conservative overestimation of the number of hexagons possible.
-    // LCOV_EXCL_START
-    if (failure) {
-        int numHexagons = H3_EXPORT(maxPolyfillSize)(geoPolygon, res);
-        for (int i = 0; i < numHexagons; i++) out[i] = H3_INVALID_INDEX;
-    }
-    // LCOV_EXCL_STOP
-}
-
-/**
- * _getEdgeHexagons takes a given geofence ring (either the main geofence or
- * one of the holes) and traces it with hexagons and updates the search and
- * found memory blocks. This is used for determining the initial hexagon set
- * for the polyfill algorithm to execute on.
- *
- * @param geofence The geofence (or hole) to be traced
- * @param numHexagons The maximum number of hexagons possible for the geofence
- *                    (also the bounds of the search and found arrays)
- * @param res The hexagon resolution (0-15)
- * @param numSearchHexes The number of hexagons found so far to be searched
- * @param search The block of memory containing the hexagons to search from
- * @param found The block of memory containing the hexagons found from the
- * search
- *
- * @return An error code if the hash function cannot insert a found hexagon
- *         into the found array.
- */
-int _getEdgeHexagons(const Geofence* geofence, int numHexagons, int res,
-                     int* numSearchHexes, H3Index* search, H3Index* found) {
-    for (int i = 0; i < geofence->numVerts; i++) {
-        GeoCoord origin = geofence->verts[i];
-        GeoCoord destination = i == geofence->numVerts - 1
-                                   ? geofence->verts[0]
-                                   : geofence->verts[i + 1];
-        const int numHexesEstimate =
-            lineHexEstimate(&origin, &destination, res);
-        for (int j = 0; j < numHexesEstimate; j++) {
-            GeoCoord interpolate;
-            interpolate.lat =
-                (origin.lat * (numHexesEstimate - j) / numHexesEstimate) +
-                (destination.lat * j / numHexesEstimate);
-            interpolate.lon =
-                (origin.lon * (numHexesEstimate - j) / numHexesEstimate) +
-                (destination.lon * j / numHexesEstimate);
-            H3Index pointHex = H3_EXPORT(geoToH3)(&interpolate, res);
-            // A simple hash to store the hexagon, or move to another place if
-            // needed
-            int loc = (int)(pointHex % numHexagons);
-            int loopCount = 0;
-            while (found[loc] != 0) {
-                // If this conditional is reached, the `found` memory block is
-                // too small for the given polygon. This should not happen.
-                if (loopCount > numHexagons) return -1;  // LCOV_EXCL_LINE
-                if (found[loc] == pointHex)
-                    break;  // At least two points of the geofence index to the
-                            // same cell
-                loc = (loc + 1) % numHexagons;
-                loopCount++;
-            }
-            if (found[loc] == pointHex)
-                continue;  // Skip this hex, already exists in the found hash
-            // Otherwise, set it in the found hash for now
-            found[loc] = pointHex;
-
-            search[*numSearchHexes] = pointHex;
-            (*numSearchHexes)++;
-        }
-    }
-    return 0;
-}
-
-/**
- * _polyfillInternal traces the provided geoPolygon data structure with hexagons
- * and then iteratively searches through these hexagons and their immediate
- * neighbors to see if they are contained within the polygon or not. Those that
- * are found are added to the out array as well as the found array. Once all
- * hexagons to search are checked, the found hexagons become the new search
- * array and the found array is wiped and the process repeats until no new
- * hexagons can be found.
- *
- * @param geoPolygon The geofence and holes defining the relevant area
- * @param res The Hexagon resolution (0-15)
- * @param out The slab of zeroed memory to write to. Assumed to be big enough.
- *
- * @return An error code if any of the hash operations fails to insert a hexagon
- *         into an array of memory.
- */
-int _polyfillInternal(const GeoPolygon* geoPolygon, int res, H3Index* out) {
     // One of the goals of the polyfill algorithm is that two adjacent polygons
     // with zero overlap have zero overlapping hexagons. That the hexagons are
     // uniquely assigned. There are a few approaches to take here, such as
@@ -776,139 +677,36 @@ int _polyfillInternal(const GeoPolygon* geoPolygon, int res, H3Index* out) {
     BBox* bboxes = malloc((geoPolygon->numHoles + 1) * sizeof(BBox));
     assert(bboxes != NULL);
     bboxesFromGeoPolygon(geoPolygon, bboxes);
+    int minK = bboxHexRadius(&bboxes[0], res);
+    int numHexagons = H3_EXPORT(maxKringSize)(minK);
 
-    // Get the estimated number of hexagons and allocate some temporary memory
-    // for the hexagons
-    int numHexagons = H3_EXPORT(maxPolyfillSize)(geoPolygon, res);
-    H3Index* search = calloc(numHexagons, sizeof(H3Index));
-    H3Index* found = calloc(numHexagons, sizeof(H3Index));
+    // Get the center hex
+    GeoCoord center;
+    bboxCenter(&bboxes[0], &center);
+    H3Index centerH3 = H3_EXPORT(geoToH3)(&center, res);
 
-    // Some metadata for tracking the state of the search and found memory
-    // blocks
-    int numSearchHexes = 0;
-    int numFoundHexes = 0;
+    // From here on it works differently, first we get all potential
+    // hexagons inserted into the available memory
+    H3_EXPORT(kRing)(centerH3, minK, out);
 
-    // 1. Trace the hexagons along the polygon defining the outer geofence and
-    // add them to the search hash. The hexagon containing the geofence point
-    // may or may not be contained by the geofence (as the hexagon's center
-    // point may be outside of the boundary.)
-    const Geofence geofence = geoPolygon->geofence;
-    int failure = _getEdgeHexagons(&geofence, numHexagons, res, &numSearchHexes,
-                                   search, found);
-    // If this branch is reached, we have exceeded the maximum number of
-    // hexagons possible and need to clean up the allocated memory.
-    // LCOV_EXCL_START
-    if (failure) {
-        free(search);
-        free(found);
-        free(bboxes);
-        return failure;
-    }
-    // LCOV_EXCL_STOP
-
-    // 2. Iterate over all holes, trace the polygons defining the holes with
-    // hexagons and add to only the search hash. We're going to temporarily use
-    // the `found` hash to use for dedupe purposes and then re-zero it once
-    // we're done here, otherwise we'd have to scan the whole set on each insert
-    // to make sure there's no duplicates, which is very inefficient.
-    for (int i = 0; i < geoPolygon->numHoles; i++) {
-        Geofence* hole = &(geoPolygon->holes[i]);
-        failure = _getEdgeHexagons(hole, numHexagons, res, &numSearchHexes,
-                                   search, found);
-        // If this branch is reached, we have exceeded the maximum number of
-        // hexagons possible and need to clean up the allocated memory.
-        // LCOV_EXCL_START
-        if (failure) {
-            free(search);
-            free(found);
-            free(bboxes);
-            return failure;
+    // Next we iterate through each hexagon, and test its center point to see if
+    // it's contained in the GeoJSON-like struct
+    for (int i = 0; i < numHexagons; i++) {
+        // Skip records that are already zeroed
+        if (out[i] == 0) {
+            continue;
         }
-        // LCOV_EXCL_STOP
-    }
-
-    // 3. Re-zero the found hash so it can be used in the main loop below
-    for (int i = 0; i < numHexagons; i++) found[i] = 0;
-
-    // 4. Begin main loop. While the search hash is not empty do the following
-    while (numSearchHexes > 0) {
-        // Iterate through all hexagons in the current search hash, then loop
-        // through all neighbors and test Point-in-Poly, if point-in-poly
-        // succeeds, add to out and found hashes if not already there.
-        int currentSearchNum = 0;
-        int i = 0;
-        while (currentSearchNum < numSearchHexes) {
-            H3Index ring[MAX_ONE_RING_SIZE] = {0};
-            H3Index searchHex = search[i];
-            H3_EXPORT(kRing)(searchHex, 1, ring);
-            for (int j = 0; j < MAX_ONE_RING_SIZE; j++) {
-                if (ring[j] == H3_INVALID_INDEX) {
-                    continue;  // Skip if this was a pentagon and only had 5
-                               // neighbors
-                }
-
-                H3Index hex = ring[j];
-
-                // A simple hash to store the hexagon, or move to another place
-                // if needed. This MUST be done before the point-in-poly check
-                // since that's far more expensive
-                int loc = (int)(hex % numHexagons);
-                int loopCount = 0;
-                while (out[loc] != 0) {
-                    // If this branch is reached, we have exceeded the maximum
-                    // number of hexagons possible and need to clean up the
-                    // allocated memory.
-                    // LCOV_EXCL_START
-                    if (loopCount > numHexagons) {
-                        free(search);
-                        free(found);
-                        free(bboxes);
-                        return -1;
-                    }
-                    // LCOV_EXCL_STOP
-                    if (out[loc] == hex) break;  // Skip duplicates found
-                    loc = (loc + 1) % numHexagons;
-                    loopCount++;
-                }
-                if (out[loc] == hex) {
-                    continue;  // Skip this hex, already exists in the out hash
-                }
-
-                // Check if the hexagon is in the polygon or not
-                GeoCoord hexCenter;
-                H3_EXPORT(h3ToGeo)(hex, &hexCenter);
-
-                // If not, skip
-                if (!pointInsidePolygon(geoPolygon, bboxes, &hexCenter)) {
-                    continue;
-                }
-
-                // Otherwise set it in the output array
-                out[loc] = hex;
-
-                // Set the hexagon in the found hash
-                found[numFoundHexes] = hex;
-                numFoundHexes++;
-            }
-            currentSearchNum++;
-            i++;
+        // Check if hexagon is inside of polygon
+        GeoCoord hexCenter;
+        H3_EXPORT(h3ToGeo)(out[i], &hexCenter);
+        hexCenter.lat = constrainLat(hexCenter.lat);
+        hexCenter.lon = constrainLng(hexCenter.lon);
+        // And remove from list if not
+        if (!pointInsidePolygon(geoPolygon, bboxes, &hexCenter)) {
+            out[i] = H3_INVALID_INDEX;
         }
-
-        // Swap the search and found pointers, copy the found hex count to the
-        // search hex count, and zero everything related to the found memory.
-        H3Index* temp = search;
-        search = found;
-        found = temp;
-        for (int j = 0; j < numSearchHexes; j++) found[j] = 0;
-        numSearchHexes = numFoundHexes;
-        numFoundHexes = 0;
-        // Repeat until no new hexagons are found
     }
-    // The out memory structure should be complete, end it here
     free(bboxes);
-    free(search);
-    free(found);
-    return 0;
 }
 
 /**

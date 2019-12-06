@@ -37,8 +37,6 @@ bool bboxIsTransmeridian(const BBox* bbox);
 void bboxCenter(const BBox* bbox, GeoCoord* center);
 bool bboxContains(const BBox* bbox, const GeoCoord* point);
 bool bboxEquals(const BBox* b1, const BBox* b2);
-int bboxHexEstimate(const BBox* bbox, int res);
-int lineHexEstimate(const GeoCoord* origin, const GeoCoord* destination,
-                    int res);
+int bboxHexRadius(const BBox* bbox, int res);
 
 #endif
