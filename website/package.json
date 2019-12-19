@@ -14,11 +14,11 @@
     "deploy": "NODE_DEBUG=gh-pages gh-pages -d public"
   },
   "dependencies": {
-    "gatsby": "^2.13.48",
-    "gatsby-remark-katex": "^3.1.2",
-    "gatsby-transformer-remark": "^2.6.12",
-    "katex": "^0.10.2",
-    "ocular-gatsby": "^1.0.0-alpha.46",
+    "gatsby": "^2.18.0",
+    "gatsby-remark-katex": "^3.1.20",
+    "gatsby-theme-ocular": "*",
+    "gatsby-transformer-remark": "^2.6.44",
+    "katex": "^0.11.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6"
   },
