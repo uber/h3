@@ -42,20 +42,26 @@ static GeoCoord emptyVerts[] = {{0.659966917655, -2.1364398519394},
 static Geofence emptyGeofence = {.numVerts = 3, .verts = emptyVerts};
 static GeoPolygon emptyGeoPolygon;
 
-static int countActualHexagons(H3Index* hexagons, int numHexagons) {
-    int actualNumHexagons = 0;
-    for (int i = 0; i < numHexagons; i++) {
-        if (hexagons[i] != 0) {
-            actualNumHexagons++;
-        }
+/**
+ * Return true if the cell crosses the meridian.
+ */
+static bool isTransmeridianCell(H3Index h) {
+    GeoBoundary bndry;
+    H3_EXPORT(h3ToGeoBoundary)(h, &bndry);
+
+    double minLon = M_PI, maxLon = -M_PI;
+    for (int i = 0; i < bndry.numVerts; i++) {
+        if (bndry.verts[i].lon < minLon) minLon = bndry.verts[i].lon;
+        if (bndry.verts[i].lon > maxLon) maxLon = bndry.verts[i].lon;
     }
-    return actualNumHexagons;
+
+    return maxLon - minLon > M_PI - (M_PI / 4);
 }
 
 static void fillIndex_assertions(H3Index h) {
     int baseCell = H3_EXPORT(h3GetBaseCell)(h);
-    if (baseCell == 0 || baseCell == 1 || baseCell == 120 || baseCell == 121) {
-        // TODO These do not work correctly
+    if (isTransmeridianCell(h)) {
+        // TODO these do not work correctly
         return;
     }
 
@@ -354,41 +360,5 @@ SUITE(polyfill) {
         iterateAllIndexesAtRes(0, fillIndex_assertions);
         iterateAllIndexesAtRes(1, fillIndex_assertions);
         iterateAllIndexesAtRes(2, fillIndex_assertions);
-    }
-
-    TEST(entireWorld) {
-        // TODO: Fails for a single worldwide polygon
-        // TODO: Fails at resolutions other than 0
-        GeoCoord worldVerts[] = {
-            {-M_PI_2, -M_PI}, {M_PI_2, -M_PI}, {M_PI_2, 0}, {-M_PI_2, 0}};
-        Geofence worldGeofence = {.numVerts = 4, .verts = worldVerts};
-        GeoPolygon worldGeoPolygon = {.geofence = worldGeofence, .numHoles = 0};
-        GeoCoord worldVerts2[] = {
-            {-M_PI_2, 0}, {M_PI_2, 0}, {M_PI_2, M_PI}, {-M_PI_2, M_PI}};
-        Geofence worldGeofence2 = {.numVerts = 4, .verts = worldVerts};
-        GeoPolygon worldGeoPolygon2 = {.geofence = worldGeofence,
-                                       .numHoles = 0};
-
-        int res = 0;
-
-        int polyfillSize = H3_EXPORT(maxPolyfillSize)(&worldGeoPolygon, res);
-        H3Index* polyfillOut = calloc(polyfillSize, sizeof(H3Index));
-
-        H3_EXPORT(polyfill)(&worldGeoPolygon, res, polyfillOut);
-        int actualNumHexagons = countActualHexagons(polyfillOut, polyfillSize);
-
-        int polyfillSize2 = H3_EXPORT(maxPolyfillSize)(&worldGeoPolygon2, res);
-        H3Index* polyfillOut2 = calloc(polyfillSize2, sizeof(H3Index));
-
-        H3_EXPORT(polyfill)(&worldGeoPolygon2, res, polyfillOut2);
-        int actualNumHexagons2 =
-            countActualHexagons(polyfillOut2, polyfillSize2);
-
-        t_assert(actualNumHexagons + actualNumHexagons2 ==
-                     H3_EXPORT(numHexagons)(res),
-                 "got expected polyfill size (entire world)");
-
-        free(polyfillOut);
-        free(polyfillOut2);
     }
 }

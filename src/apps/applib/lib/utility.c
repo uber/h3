@@ -233,3 +233,16 @@ void randomGeo(GeoCoord* g) {
         (((float)rand() / (float)(RAND_MAX)) * 180.0) - 90.0);
     g->lon = H3_EXPORT(degsToRads)((float)rand() / (float)(RAND_MAX)) * 360.0;
 }
+
+/**
+ * Returns the number of non-invalid indexes in the array.
+ */
+int countActualHexagons(H3Index* hexagons, int numHexagons) {
+    int actualNumHexagons = 0;
+    for (int i = 0; i < numHexagons; i++) {
+        if (hexagons[i] != H3_INVALID_INDEX) {
+            actualNumHexagons++;
+        }
+    }
+    return actualNumHexagons;
+}
