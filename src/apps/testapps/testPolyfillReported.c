@@ -28,7 +28,6 @@ SUITE(polyfill_reported) {
     // https://github.com/uber/h3-js/issues/76#issuecomment-561204505
     TEST(entireWorld) {
         // TODO: Fails for a single worldwide polygon
-        // TODO: Fails at resolutions other than 0
         GeoCoord worldVerts[] = {
             {-M_PI_2, -M_PI}, {M_PI_2, -M_PI}, {M_PI_2, 0}, {-M_PI_2, 0}};
         Geofence worldGeofence = {.numVerts = 4, .verts = worldVerts};
@@ -39,27 +38,46 @@ SUITE(polyfill_reported) {
         GeoPolygon worldGeoPolygon2 = {.geofence = worldGeofence2,
                                        .numHoles = 0};
 
-        int res = 0;
+        for (int res = 0; res < 3; res++) {
+            int polyfillSize =
+                H3_EXPORT(maxPolyfillSize)(&worldGeoPolygon, res);
+            H3Index* polyfillOut = calloc(polyfillSize, sizeof(H3Index));
 
-        int polyfillSize = H3_EXPORT(maxPolyfillSize)(&worldGeoPolygon, res);
-        H3Index* polyfillOut = calloc(polyfillSize, sizeof(H3Index));
+            H3_EXPORT(polyfill)(&worldGeoPolygon, res, polyfillOut);
+            int actualNumHexagons =
+                countActualHexagons(polyfillOut, polyfillSize);
 
-        H3_EXPORT(polyfill)(&worldGeoPolygon, res, polyfillOut);
-        int actualNumHexagons = countActualHexagons(polyfillOut, polyfillSize);
+            int polyfillSize2 =
+                H3_EXPORT(maxPolyfillSize)(&worldGeoPolygon2, res);
+            H3Index* polyfillOut2 = calloc(polyfillSize2, sizeof(H3Index));
 
-        int polyfillSize2 = H3_EXPORT(maxPolyfillSize)(&worldGeoPolygon2, res);
-        H3Index* polyfillOut2 = calloc(polyfillSize2, sizeof(H3Index));
+            H3_EXPORT(polyfill)(&worldGeoPolygon2, res, polyfillOut2);
+            int actualNumHexagons2 =
+                countActualHexagons(polyfillOut2, polyfillSize2);
 
-        H3_EXPORT(polyfill)(&worldGeoPolygon2, res, polyfillOut2);
-        int actualNumHexagons2 =
-            countActualHexagons(polyfillOut2, polyfillSize2);
+            t_assert(actualNumHexagons + actualNumHexagons2 ==
+                         H3_EXPORT(numHexagons)(res),
+                     "got expected polyfill size (entire world)");
 
-        t_assert(actualNumHexagons + actualNumHexagons2 ==
-                     H3_EXPORT(numHexagons)(res),
-                 "got expected polyfill size (entire world)");
+            // Sets should be disjoint
+            for (int i = 0; i < polyfillSize; i++) {
+                if (polyfillOut[i] == 0) continue;
 
-        free(polyfillOut);
-        free(polyfillOut2);
+                bool found = false;
+                for (int j = 0; j < polyfillSize2; j++) {
+                    if (polyfillOut[i] == polyfillOut2[j]) {
+                        found = true;
+                        break;
+                    }
+                }
+                t_assert(!found,
+                         "Index found more than once when polyfilling the "
+                         "entire world");
+            }
+
+            free(polyfillOut);
+            free(polyfillOut2);
+        }
     }
 
     // https://github.com/uber/h3-js/issues/67

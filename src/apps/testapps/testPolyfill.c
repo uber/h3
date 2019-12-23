@@ -68,9 +68,10 @@ static void fillIndex_assertions(H3Index h) {
     for (int nextRes = currentRes; nextRes <= currentRes + 1; nextRes++) {
         GeoBoundary bndry;
         H3_EXPORT(h3ToGeoBoundary)(h, &bndry);
-        GeoPolygon polygon = {0};
-        polygon.geofence.numVerts = bndry.numVerts;
-        polygon.geofence.verts = bndry.verts;
+        GeoPolygon polygon = {
+            .geofence = {.numVerts = bndry.numVerts, .verts = bndry.verts},
+            .numHoles = 0,
+            .holes = 0};
 
         int polyfillSize = H3_EXPORT(maxPolyfillSize)(&polygon, nextRes);
         H3Index* polyfillOut = calloc(polyfillSize, sizeof(H3Index));
