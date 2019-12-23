@@ -59,9 +59,8 @@ static bool isTransmeridianCell(H3Index h) {
 }
 
 static void fillIndex_assertions(H3Index h) {
-    int baseCell = H3_EXPORT(h3GetBaseCell)(h);
     if (isTransmeridianCell(h)) {
-        // TODO these do not work correctly
+        // TODO: these do not work correctly
         return;
     }
 
@@ -71,7 +70,7 @@ static void fillIndex_assertions(H3Index h) {
         H3_EXPORT(h3ToGeoBoundary)(h, &bndry);
         GeoPolygon polygon = {0};
         polygon.geofence.numVerts = bndry.numVerts;
-        polygon.geofence.verts = &bndry.verts;
+        polygon.geofence.verts = bndry.verts;
 
         int polyfillSize = H3_EXPORT(maxPolyfillSize)(&polygon, nextRes);
         H3Index* polyfillOut = calloc(polyfillSize, sizeof(H3Index));

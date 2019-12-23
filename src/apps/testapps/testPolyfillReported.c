@@ -20,6 +20,7 @@
 #include "geoCoord.h"
 #include "h3Index.h"
 #include "test.h"
+#include "utility.h"
 
 // Tests for specific polyfill examples
 
@@ -34,8 +35,8 @@ SUITE(polyfill_reported) {
         GeoPolygon worldGeoPolygon = {.geofence = worldGeofence, .numHoles = 0};
         GeoCoord worldVerts2[] = {
             {-M_PI_2, 0}, {M_PI_2, 0}, {M_PI_2, M_PI}, {-M_PI_2, M_PI}};
-        Geofence worldGeofence2 = {.numVerts = 4, .verts = worldVerts};
-        GeoPolygon worldGeoPolygon2 = {.geofence = worldGeofence,
+        Geofence worldGeofence2 = {.numVerts = 4, .verts = worldVerts2};
+        GeoPolygon worldGeoPolygon2 = {.geofence = worldGeofence2,
                                        .numHoles = 0};
 
         int res = 0;
