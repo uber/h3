@@ -150,7 +150,7 @@ typedef struct {
  * Functions for geoToH3
  * @{
  */
-/** @brief find the H3 index of the resolution res cell containing the lat/lon g
+/** @brief find the H3 index of the resolution res cell containing the lat/lng
  */
 H3Index H3_EXPORT(geoToH3)(const GeoCoord *g, int res);
 /** @} */
@@ -341,7 +341,8 @@ void H3_EXPORT(h3ToString)(H3Index h, char *str, size_t sz);
  * @{
  */
 /** @brief confirms if an H3Index is a valid cell (hexagon or pentagon)
- * In particular, returns 0 (False) for H3 undirectional edges */
+ * In particular, returns 0 (False) for H3 undirectional edges or invalid data
+ */
 int H3_EXPORT(h3IsValid)(H3Index h);
 /** @} */
 

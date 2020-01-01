@@ -70,7 +70,7 @@ void H3_EXPORT(h3ToString)(H3Index h, char* str, size_t sz) {
 }
 
 /**
- * Returns whether or not an H3 index is valid.
+ * Returns whether or not an H3 index is a valid cell (hexagon or pentagon).
  * @param h The H3 index to validate.
  * @return 1 if the H3 index if valid, and 0 if it is not.
  */
