@@ -316,7 +316,7 @@ int H3_EXPORT(h3GetResolution)(H3Index h);
  * Functions for h3GetBaseCell
  * @{
  */
-/** @brief returns the base cell "number" (0 to 121) of the provided hexagon */
+/** @brief returns the base cell "number" (0 to 121) of the provided H3 cell */
 int H3_EXPORT(h3GetBaseCell)(H3Index h);
 /** @} */
 

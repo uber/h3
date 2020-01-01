@@ -35,9 +35,9 @@
 int H3_EXPORT(h3GetResolution)(H3Index h) { return H3_GET_RESOLUTION(h); }
 
 /**
- * Returns the H3 base cell number of an H3 index.
- * @param h The H3 index.
- * @return The base cell of the H3 index argument.
+ * Returns the H3 base cell "number" of an H3 cell (hexagon or pentagon).
+ * @param h The H3 cell.
+ * @return The base cell "number" of the H3 cell argument.
  */
 int H3_EXPORT(h3GetBaseCell)(H3Index h) { return H3_GET_BASE_CELL(h); }
 
