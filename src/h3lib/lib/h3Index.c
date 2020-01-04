@@ -35,9 +35,13 @@
 int H3_EXPORT(h3GetResolution)(H3Index h) { return H3_GET_RESOLUTION(h); }
 
 /**
- * Returns the H3 base cell number of an H3 index.
- * @param h The H3 index.
- * @return The base cell of the H3 index argument.
+ * Returns the H3 base cell "number" of an H3 cell (hexagon or pentagon).
+ *
+ * Note: Technically works on H3 edges, but will return base cell of the
+ * origin cell.
+ *
+ * @param h The H3 cell.
+ * @return The base cell "number" of the H3 cell argument.
  */
 int H3_EXPORT(h3GetBaseCell)(H3Index h) { return H3_GET_BASE_CELL(h); }
 
@@ -70,7 +74,7 @@ void H3_EXPORT(h3ToString)(H3Index h, char* str, size_t sz) {
 }
 
 /**
- * Returns whether or not an H3 index is valid.
+ * Returns whether or not an H3 index is a valid cell (hexagon or pentagon).
  * @param h The H3 index to validate.
  * @return 1 if the H3 index if valid, and 0 if it is not.
  */
