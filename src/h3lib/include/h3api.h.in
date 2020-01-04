@@ -183,8 +183,7 @@ int H3_EXPORT(hexRange)(H3Index origin, int k, H3Index *out);
 /** @} */
 
 /** @brief hexagons neighbors in all directions, assuming no pentagons,
- * reporting
- * distance from origin */
+ * reporting distance from origin */
 int H3_EXPORT(hexRangeDistances)(H3Index origin, int k, H3Index *out,
                                  int *distances);
 
@@ -308,7 +307,8 @@ void H3_EXPORT(getPentagonIndexes)(int res, H3Index *out);
  * Functions for h3GetResolution
  * @{
  */
-/** @brief returns the resolution of the provided H3 cell */
+/** @brief returns the resolution of the provided H3 index
+ * Works on both cells and unidirectional edges. */
 int H3_EXPORT(h3GetResolution)(H3Index h);
 /** @} */
 
@@ -316,7 +316,10 @@ int H3_EXPORT(h3GetResolution)(H3Index h);
  * Functions for h3GetBaseCell
  * @{
  */
-/** @brief returns the base cell "number" (0 to 121) of the provided H3 cell */
+/** @brief returns the base cell "number" (0 to 121) of the provided H3 cell
+ *
+ * Note: Technically works on H3 edges, but will return base cell of the
+ * origin cell. */
 int H3_EXPORT(h3GetBaseCell)(H3Index h);
 /** @} */
 
@@ -360,8 +363,7 @@ H3Index H3_EXPORT(h3ToParent)(H3Index h, int parentRes);
  * @{
  */
 /** @brief determines the maximum number of children (or grandchildren, etc)
- * that
- * could be returned for the given hexagon */
+ * that could be returned for the given hexagon */
 int H3_EXPORT(maxH3ToChildrenSize)(H3Index h, int childRes);
 
 /** @brief provides the children (or grandchildren, etc) of the given hexagon */

@@ -36,6 +36,10 @@ int H3_EXPORT(h3GetResolution)(H3Index h) { return H3_GET_RESOLUTION(h); }
 
 /**
  * Returns the H3 base cell "number" of an H3 cell (hexagon or pentagon).
+ *
+ * Note: Technically works on H3 edges, but will return base cell of the
+ * origin cell.
+ *
  * @param h The H3 cell.
  * @return The base cell "number" of the H3 cell argument.
  */
