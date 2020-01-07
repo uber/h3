@@ -314,7 +314,15 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
                         hashSetArray[loc] & H3_RESERVED_MASK_NEGATIVE;
                     if (tempIndex == parent) {
                         int count = H3_GET_RESERVED_BITS(hashSetArray[loc]) + 1;
-                        if (count > 7) {
+                        int limitCount = 7;
+                        if (H3_EXPORT(h3IsPentagon)(
+                                tempIndex & H3_RESERVED_MASK_NEGATIVE)) {
+                            limitCount--;
+                        }
+                        // One is added to count for this check to match one
+                        // being added to count later in this function when
+                        // checking for all children being present.
+                        if (count + 1 > limitCount) {
                             // Only possible on duplicate input
                             free(remainingHexes);
                             free(hashSetArray);
