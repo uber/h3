@@ -55,4 +55,6 @@ void iterateAllIndexesAtResPartial(int res, void (*callback)(H3Index),
 void iterateBaseCellIndexesAtRes(int res, void (*callback)(H3Index),
                                  int baseCell);
 
+int countActualHexagons(H3Index* hexagons, int numHexagons);
+
 #endif

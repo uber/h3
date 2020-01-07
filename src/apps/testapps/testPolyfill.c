@@ -20,6 +20,7 @@
 #include "geoCoord.h"
 #include "h3Index.h"
 #include "test.h"
+#include "utility.h"
 
 // Fixtures
 static GeoCoord sfVerts[] = {
@@ -41,14 +42,69 @@ static GeoCoord emptyVerts[] = {{0.659966917655, -2.1364398519394},
 static Geofence emptyGeofence = {.numVerts = 3, .verts = emptyVerts};
 static GeoPolygon emptyGeoPolygon;
 
-static int countActualHexagons(H3Index* hexagons, int numHexagons) {
-    int actualNumHexagons = 0;
-    for (int i = 0; i < numHexagons; i++) {
-        if (hexagons[i] != 0) {
-            actualNumHexagons++;
-        }
+/**
+ * Return true if the cell crosses the meridian.
+ */
+static bool isTransmeridianCell(H3Index h) {
+    GeoBoundary bndry;
+    H3_EXPORT(h3ToGeoBoundary)(h, &bndry);
+
+    double minLon = M_PI, maxLon = -M_PI;
+    for (int i = 0; i < bndry.numVerts; i++) {
+        if (bndry.verts[i].lon < minLon) minLon = bndry.verts[i].lon;
+        if (bndry.verts[i].lon > maxLon) maxLon = bndry.verts[i].lon;
     }
-    return actualNumHexagons;
+
+    return maxLon - minLon > M_PI - (M_PI / 4);
+}
+
+static void fillIndex_assertions(H3Index h) {
+    if (isTransmeridianCell(h)) {
+        // TODO: these do not work correctly
+        return;
+    }
+
+    int currentRes = H3_EXPORT(h3GetResolution)(h);
+    // TODO: Not testing more than one depth because the assertions fail.
+    for (int nextRes = currentRes; nextRes <= currentRes + 1; nextRes++) {
+        GeoBoundary bndry;
+        H3_EXPORT(h3ToGeoBoundary)(h, &bndry);
+        GeoPolygon polygon = {
+            .geofence = {.numVerts = bndry.numVerts, .verts = bndry.verts},
+            .numHoles = 0,
+            .holes = 0};
+
+        int polyfillSize = H3_EXPORT(maxPolyfillSize)(&polygon, nextRes);
+        H3Index* polyfillOut = calloc(polyfillSize, sizeof(H3Index));
+        H3_EXPORT(polyfill)(&polygon, nextRes, polyfillOut);
+
+        int polyfillCount = countActualHexagons(polyfillOut, polyfillSize);
+
+        int childrenSize = H3_EXPORT(maxH3ToChildrenSize)(h, nextRes);
+        H3Index* children = calloc(childrenSize, sizeof(H3Index));
+        H3_EXPORT(h3ToChildren)(h, nextRes, children);
+
+        int h3ToChildrenCount = countActualHexagons(children, childrenSize);
+
+        t_assert(polyfillCount == h3ToChildrenCount,
+                 "Polyfill count matches h3ToChildren count");
+
+        for (int i = 0; i < childrenSize; i++) {
+            bool found = false;
+            if (children[i] == H3_INVALID_INDEX) continue;
+            for (int j = 0; j < polyfillSize; j++) {
+                if (polyfillOut[j] == children[i]) {
+                    found = true;
+                    break;
+                }
+            }
+            t_assert(found,
+                     "All indexes match between polyfill and h3ToChildren");
+        }
+
+        free(polyfillOut);
+        free(children);
+    }
 }
 
 SUITE(polyfill) {
@@ -299,5 +355,11 @@ SUITE(polyfill) {
         t_assert(found == 1, "one index found");
         t_assert(numPentagons == 1, "one pentagon found");
         free(hexagons);
+    }
+
+    TEST(fillIndex) {
+        iterateAllIndexesAtRes(0, fillIndex_assertions);
+        iterateAllIndexesAtRes(1, fillIndex_assertions);
+        iterateAllIndexesAtRes(2, fillIndex_assertions);
     }
 }
