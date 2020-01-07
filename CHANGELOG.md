@@ -6,7 +6,8 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
-- `compact` detects and fails on cases with duplicated input indexes.
+### Fixed
+- `compact` detects and fails on cases with duplicated input indexes. (#299)
 
 ## [3.6.2] - 2019-12-9
 - Revert new `polyfill` algorithm until reported issues are fixed. (#293)
