@@ -9,8 +9,8 @@ The public API of this library consists of the functions declared in file
 ### Fixed
 - `compact` detects and fails on cases with duplicated input indexes. (#299)
 ### Changed
-- `h3IsValid` rejects indexes that have non-zero reserved bits. (#300)
-- `h3IsValid` and `h3UnidirectionalEdgeIsValid` rejects indexes with the high bit set. (#300)
+- `h3IsValid` returns false for indexes that have non-zero reserved bits. (#300)
+- `h3IsValid` and `h3UnidirectionalEdgeIsValid` return false for indexes with the high bit set. (#300)
 
 ## [3.6.2] - 2019-12-9
 - Revert new `polyfill` algorithm until reported issues are fixed. (#293)
