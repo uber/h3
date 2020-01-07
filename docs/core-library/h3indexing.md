@@ -21,7 +21,7 @@ The **H3Index** is the integer representation of an **H3** index, which can be p
 The components of the **H3** cell index (mode 1) are packed into the lowest order 63 bits of a 64-bit integer in order as follows:
 
 * 4 bits to indicate the index mode,
-* 3 bits reserved,
+* 3 bits reserved and set to 0,
 * 4 bits to indicate the cell resolution 0-15,
 * 7 bits to indicate the base cell 0-121, and
 * 3 bits to indicate each subsequent digit 0-6 from resolution 1 up to the resolution of the cell (45 bits total is reserved for resolutions 1-15)
@@ -34,9 +34,11 @@ The components of the **H3** unidirectional edge index (mode 2) are packed into 
 * 7 bits to indicate the base cell 0-121, and
 * 3 bits to indicate each subsequent digit 0-6 from resolution 1 up to the resolution of the cell (45 bits total is reserved for resolutions 1-15)
 
-The canonical string representation of an **H3Index** is the hexadecimal representation of the integer.
+The canonical string representation of an **H3Index** is the hexadecimal representation of the integer, using lowercase letters.
 
 The three bits for each unused digit are set to 7.
+
+The highest order bit of an **H3Index** must be set to 0.
 
 Bit layout of H3Index
 ---

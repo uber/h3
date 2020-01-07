@@ -166,6 +166,11 @@ SUITE(h3UniEdge) {
         H3_SET_RESERVED_BITS(badPentagonalEdge, 1);
         t_assert(H3_EXPORT(h3UnidirectionalEdgeIsValid)(badPentagonalEdge) == 0,
                  "missing pentagonal edge does not validate");
+
+        H3Index highBitEdge = edge;
+        H3_SET_HIGH_BIT(highBitEdge, 1);
+        t_assert(H3_EXPORT(h3UnidirectionalEdgeIsValid)(highBitEdge) == 0,
+                 "high bit set edge does not validate");
     }
 
     TEST(getH3UnidirectionalEdgesFromHexagon) {

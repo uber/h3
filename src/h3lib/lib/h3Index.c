@@ -79,7 +79,12 @@ void H3_EXPORT(h3ToString)(H3Index h, char* str, size_t sz) {
  * @return 1 if the H3 index if valid, and 0 if it is not.
  */
 int H3_EXPORT(h3IsValid)(H3Index h) {
+    if (H3_GET_HIGH_BIT(h) != 0) return 0;
+
     if (H3_GET_MODE(h) != H3_HEXAGON_MODE) return 0;
+
+    int reservedBits = H3_GET_RESERVED_BITS(h);
+    if (reservedBits != 0) return 0;
 
     int baseCell = H3_GET_BASE_CELL(h);
     if (baseCell < 0 || baseCell >= NUM_BASE_CELLS) return 0;

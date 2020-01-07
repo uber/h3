@@ -46,6 +46,12 @@
 /** The number of bits in a single H3 resolution digit. */
 #define H3_PER_DIGIT_OFFSET 3
 
+/** 1 in the highest bit, 0's everywhere else. */
+#define H3_HIGH_BIT_MASK ((uint64_t)(1) << H3_MAX_OFFSET)
+
+/** 1 in the highest bit, 0's everywhere else. */
+#define H3_HIGH_BIT_MASK_NEGATIVE (~H3_HIGH_BIT_MASK)
+
 /** 1's in the 4 mode bits, 0's everywhere else. */
 #define H3_MODE_MASK ((uint64_t)(15) << H3_MODE_OFFSET)
 
@@ -78,6 +84,18 @@
 
 /** H3 index with mode 0, res 0, base cell 0, and 7 for all index digits. */
 #define H3_INIT (UINT64_C(35184372088831))
+
+/**
+ * Gets the highest bit of the H3 index.
+ */
+#define H3_GET_HIGH_BIT(h3) ((int)((((h3)&H3_HIGH_BIT_MASK) >> H3_MAX_OFFSET)))
+
+/**
+ * Sets the highest bit of the h3 to v.
+ */
+#define H3_SET_HIGH_BIT(h3, v)                 \
+    (h3) = (((h3)&H3_HIGH_BIT_MASK_NEGATIVE) | \
+            (((uint64_t)(v)) << H3_MAX_OFFSET))
 
 /**
  * Gets the integer mode of h3.

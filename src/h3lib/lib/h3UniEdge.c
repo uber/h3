@@ -179,7 +179,7 @@ int H3_EXPORT(h3UnidirectionalEdgeIsValid)(H3Index edge) {
         return 0;
     }
 
-    return H3_EXPORT(h3IsValid)(origin);
+    return H3_EXPORT(h3IsValid)(origin & H3_RESERVED_MASK_NEGATIVE);
 }
 
 /**
