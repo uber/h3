@@ -49,7 +49,7 @@
 /** 1 in the highest bit, 0's everywhere else. */
 #define H3_HIGH_BIT_MASK ((uint64_t)(1) << H3_MAX_OFFSET)
 
-/** 1 in the highest bit, 0's everywhere else. */
+/** 0 in the highest bit, 1's everywhere else. */
 #define H3_HIGH_BIT_MASK_NEGATIVE (~H3_HIGH_BIT_MASK)
 
 /** 1's in the 4 mode bits, 0's everywhere else. */
