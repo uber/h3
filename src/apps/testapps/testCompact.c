@@ -155,20 +155,21 @@ SUITE(compact) {
     TEST(compact_duplicateMinimum) {
         // Test that the minimum number of duplicate hexagons causes failure
         H3Index h3;
+        int res = 10;
         // Arbitrary index
-        setH3Index(&h3, 5, 0, 2);
+        setH3Index(&h3, res, 0, 2);
 
-        int arrSize = H3_EXPORT(maxH3ToChildrenSize)(h3, 11) + 1;
+        int arrSize = H3_EXPORT(maxH3ToChildrenSize)(h3, res + 1) + 1;
         H3Index* children = calloc(arrSize, sizeof(H3Index));
 
-        H3_EXPORT(h3ToChildren)(h3, 11, children);
+        H3_EXPORT(h3ToChildren)(h3, res + 1, children);
         // duplicate one index
         children[arrSize - 1] = children[0];
 
         H3Index* output = calloc(arrSize, sizeof(H3Index));
 
         int compactResult = H3_EXPORT(compact)(children, output, arrSize);
-        t_assert(compactResult != 0,
+        t_assert(compactResult == COMPACT_DUPLICATE,
                  "compact fails on duplicate input (single duplicate)");
 
         free(output);
@@ -178,21 +179,48 @@ SUITE(compact) {
     TEST(compact_duplicatePentagonLimit) {
         // Test that the minimum number of duplicate hexagons causes failure
         H3Index h3;
+        int res = 10;
         // Arbitrary pentagon parent cell
-        setH3Index(&h3, 5, 4, 0);
+        setH3Index(&h3, res, 4, 0);
 
-        int arrSize = H3_EXPORT(maxH3ToChildrenSize)(h3, 11) + 1;
+        int arrSize = H3_EXPORT(maxH3ToChildrenSize)(h3, res + 1) + 1;
         H3Index* children = calloc(arrSize, sizeof(H3Index));
 
-        H3_EXPORT(h3ToChildren)(h3, 11, children);
+        H3_EXPORT(h3ToChildren)(h3, res + 1, children);
         // duplicate one index
-        children[arrSize - 1] = H3_EXPORT(h3ToCenterChild)(h3, 11);
+        children[arrSize - 1] = H3_EXPORT(h3ToCenterChild)(h3, res + 1);
 
         H3Index* output = calloc(arrSize, sizeof(H3Index));
 
         int compactResult = H3_EXPORT(compact)(children, output, arrSize);
-        t_assert(compactResult != 0,
+        t_assert(compactResult == COMPACT_DUPLICATE,
                  "compact fails on duplicate input (pentagon parent)");
+
+        free(output);
+        free(children);
+    }
+
+    TEST(compact_duplicateIgnored) {
+        // Test that duplicated cells are not rejected by compact.
+        // This is not necessarily desired - just asserting the
+        // existing behavior.
+        H3Index h3;
+        int res = 10;
+        // Arbitrary index
+        setH3Index(&h3, res, 0, 2);
+
+        int arrSize = H3_EXPORT(maxH3ToChildrenSize)(h3, res + 1);
+        H3Index* children = calloc(arrSize, sizeof(H3Index));
+
+        H3_EXPORT(h3ToChildren)(h3, res + 1, children);
+        // duplicate one index
+        children[arrSize - 1] = children[0];
+
+        H3Index* output = calloc(arrSize, sizeof(H3Index));
+
+        int compactResult = H3_EXPORT(compact)(children, output, arrSize);
+        t_assert(compactResult == COMPACT_SUCCESS,
+                 "compact succeeds on duplicate input (correct count)");
 
         free(output);
         free(children);

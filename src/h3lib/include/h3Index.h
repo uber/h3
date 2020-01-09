@@ -147,6 +147,14 @@
  */
 #define H3_INVALID_INDEX 0
 
+/*
+ * Return codes for compact
+ */
+
+#define COMPACT_SUCCESS 0
+#define COMPACT_LOOP_EXCEEDED -1
+#define COMPACT_DUPLICATE -2
+
 void setH3Index(H3Index* h, int res, int baseCell, Direction initDigit);
 int isResClassIII(int res);
 
