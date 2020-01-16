@@ -271,7 +271,7 @@ H3Index H3_EXPORT(h3ToCenterChild)(H3Index h, int childRes) {
 int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
                        const int numHexes) {
     if (numHexes == 0) {
-        return 0;
+        return COMPACT_SUCCESS;
     }
     int res = H3_GET_RESOLUTION(h3Set[0]);
     if (res == 0) {
@@ -279,7 +279,7 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
         for (int i = 0; i < numHexes; i++) {
             compactedSet[i] = h3Set[i];
         }
-        return 0;
+        return COMPACT_SUCCESS;
     }
     H3Index* remainingHexes = malloc(numHexes * sizeof(H3Index));
     memcpy(remainingHexes, h3Set, numHexes * sizeof(H3Index));
@@ -307,18 +307,26 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
                         // numRemainingHexes.
                         free(remainingHexes);
                         free(hashSetArray);
-                        return -1;
+                        return COMPACT_LOOP_EXCEEDED;
                         // LCOV_EXCL_STOP
                     }
                     H3Index tempIndex =
                         hashSetArray[loc] & H3_RESERVED_MASK_NEGATIVE;
                     if (tempIndex == parent) {
                         int count = H3_GET_RESERVED_BITS(hashSetArray[loc]) + 1;
-                        if (count > 7) {
+                        int limitCount = 7;
+                        if (H3_EXPORT(h3IsPentagon)(
+                                tempIndex & H3_RESERVED_MASK_NEGATIVE)) {
+                            limitCount--;
+                        }
+                        // One is added to count for this check to match one
+                        // being added to count later in this function when
+                        // checking for all children being present.
+                        if (count + 1 > limitCount) {
                             // Only possible on duplicate input
                             free(remainingHexes);
                             free(hashSetArray);
-                            return -2;
+                            return COMPACT_DUPLICATE;
                         }
                         H3_SET_RESERVED_BITS(parent, count);
                         hashSetArray[loc] = H3_INVALID_INDEX;
@@ -383,7 +391,7 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
                         free(compactableHexes);
                         free(remainingHexes);
                         free(hashSetArray);
-                        return -1;  // Only possible on duplicate input
+                        return COMPACT_LOOP_EXCEEDED;
                         // LCOV_EXCL_STOP
                     }
                     H3Index tempIndex =
@@ -415,7 +423,7 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
     }
     free(remainingHexes);
     free(hashSetArray);
-    return 0;
+    return COMPACT_SUCCESS;
 }
 
 /**
