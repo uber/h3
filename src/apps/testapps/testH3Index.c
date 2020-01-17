@@ -109,10 +109,39 @@ SUITE(h3Index) {
         for (int i = 0; i <= 0xf; i++) {
             H3Index h = H3_INIT;
             H3_SET_MODE(h, i);
-            char failureMessage[BUFF_SIZE];
-            sprintf(failureMessage, "h3IsValid failed on mode %d", i);
-            t_assert(!H3_EXPORT(h3IsValid)(h) || i == 1, failureMessage);
+            if (i == H3_HEXAGON_MODE) {
+                t_assert(H3_EXPORT(h3IsValid)(h),
+                         "h3IsValid succeeds on valid mode");
+            } else {
+                char failureMessage[BUFF_SIZE];
+                sprintf(failureMessage, "h3IsValid failed on mode %d", i);
+                t_assert(!H3_EXPORT(h3IsValid)(h), failureMessage);
+            }
         }
+    }
+
+    TEST(h3IsValidReservedBits) {
+        for (int i = 0; i < 8; i++) {
+            H3Index h = H3_INIT;
+            H3_SET_MODE(h, H3_HEXAGON_MODE);
+            H3_SET_RESERVED_BITS(h, i);
+            if (i == 0) {
+                t_assert(H3_EXPORT(h3IsValid)(h),
+                         "h3IsValid succeeds on valid reserved bits");
+            } else {
+                char failureMessage[BUFF_SIZE];
+                sprintf(failureMessage, "h3IsValid failed on reserved bits %d",
+                        i);
+                t_assert(!H3_EXPORT(h3IsValid)(h), failureMessage);
+            }
+        }
+    }
+
+    TEST(h3IsValidHighBit) {
+        H3Index h = H3_INIT;
+        H3_SET_MODE(h, H3_HEXAGON_MODE);
+        H3_SET_HIGH_BIT(h, 1);
+        t_assert(!H3_EXPORT(h3IsValid)(h), "h3IsValid failed on high bit");
     }
 
     TEST(h3BadDigitInvalid) {
