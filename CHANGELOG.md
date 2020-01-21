@@ -6,6 +6,8 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+
+## [3.6.3] - 2020-01-21
 ### Fixed
 - `compact` detects and fails on cases with duplicated input indexes. (#299)
 ### Changed
