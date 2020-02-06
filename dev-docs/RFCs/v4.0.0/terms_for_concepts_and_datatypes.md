@@ -71,6 +71,7 @@ A few more function name change proposals:
 
 |       Current name      |    Proposed name    |                  Notes                  |
 |-------------------------|---------------------|-----------------------------------------|
+| (doesn't exist)         | `isValidIndex`      |                                         |
 | `h3IsValid`             | `isValidCell`       |                                         |
 | `h3ToParent`            | `cellToParent`      |                                         |
 | `h3ToChildren`          | `cellToChildren`    |                                         |
