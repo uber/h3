@@ -63,3 +63,32 @@ Function name changes:
 | `getH3IndexesFromUnidirectionalEdge`          | `getDirectedEdgeCells`       |
 | `getH3UnidirectionalEdgesFromHexagon`         | `getDirectedEdgesFromCell`   |
 | `getH3UnidirectionalEdgeBoundary`             | `getDirectedEdgeBoundary`    |
+
+
+## Function Names
+
+A few more function name change proposals:
+
+|       Current name      |    Proposed name    |                  Notes                  |
+|-------------------------|---------------------|-----------------------------------------|
+| `h3IsValid`             | `isValidCell`       |                                         |
+| `h3ToParent`            | `cellToParent`      |                                         |
+| `h3ToChildren`          | `cellToChildren`    |                                         |
+| `h3IsPentagon`          | `isPentagon`        |                                         |
+| `h3IndexesAreNeighbors` | `cellsAreNeighbors` |                                         |
+| `geoToH3`               | `geoToCell`         |                                         |
+| `h3ToGeo`               | `cellToGeo`         |                                         |
+| `kRing`                 | `disk`              | filled-in disk                          |
+| `hexRing`               | `ring`              | hollow ring                             |
+| `numHexagons`           | `numCells`          |                                         |
+| `getRes0Indexes`        | `getRes0Cells`      |                                         |
+| `getPentagonIndexes`    | `getPentagons`      |                                         |
+| `h3GetBaseCell`         | `getBaseCellNumber` |                                         |
+| `h3Distance`            | `gridDistance`      | no `get` prefix?                        |
+| `h3Line`                | `cellPath`          | future: `edgePath`, `directedEdgePath`? |
+
+
+For the `kRing`, `hexRange`, `hexRing`, etc. family of functions, should we come up with some standard prefix or suffix to denote that the function will fail if it encounters a pentagon?
+I'm anticipating that, at least in the wrappers, we'd probably just expose users to the "works in all cases" version of the function.
+
+
