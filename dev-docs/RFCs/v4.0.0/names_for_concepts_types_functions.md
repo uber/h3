@@ -76,28 +76,31 @@ Function name changes:
 
 A few more function name change proposals:
 
-|          Current name         |     Proposed name     |                  Notes                  |
-|-------------------------------|-----------------------|-----------------------------------------|
-| (doesn't exist)               | `isValidIndex`        |                                         |
-| `h3IsValid`                   | `isValidCell`         |                                         |
-| `h3UnidirectionalEdgeIsValid` | `isValidDirectedEdge` |                                         |
-| `h3IsPentagon`                | `isPentagon`          |                                         |
-| `h3ToParent`                  | `cellToParent`        |                                         |
-| `h3ToChildren`                | `cellToChildren`      |                                         |
-| `h3IndexesAreNeighbors`       | `cellsAreNeighbors`   |                                         |
-| `geoToH3`                     | `geoToCell`           |                                         |
-| `h3ToGeo`                     | `cellToGeo`           |                                         |
-| `kRing`                       | `disk`                | filled-in disk                          |
-| `hexRing`                     | `ring`                | hollow ring                             |
-| `numHexagons`                 | `numCells`            |                                         |
-| `getRes0Indexes`              | `getRes0Cells`        |                                         |
-| `getPentagonIndexes`          | `getPentagons`        |                                         |
-| `h3GetBaseCell`               | `getBaseCellNumber`   |                                         |
-| `h3Distance`                  | `gridDistance`        | no `get` prefix?                        |
-| `h3Line`                      | `cellPath`            | future: `edgePath`, `directedEdgePath`? |
+|          Current name         |     Proposed name     |                      Notes                      |
+|-------------------------------|-----------------------|-------------------------------------------------|
+| (doesn't exist)               | `isValidIndex`        |                                                 |
+| `h3IsValid`                   | `isValidCell`         |                                                 |
+| `h3UnidirectionalEdgeIsValid` | `isValidDirectedEdge` |                                                 |
+| `h3IsPentagon`                | `isPentagon`          |                                                 |
+| `h3ToParent`                  | `cellToParent`        |                                                 |
+| `h3ToChildren`                | `cellToChildren`      |                                                 |
+| `h3IndexesAreNeighbors`       | `cellsAreNeighbors`   |                                                 |
+| `geoToH3`                     | `geoToCell`           |                                                 |
+| `h3ToGeo`                     | `cellToGeo`           |                                                 |
+| `kRing`                       | `disk`                | filled-in disk                                  |
+| `hexRing`                     | `ring`                | hollow ring                                     |
+| `numHexagons`                 | `numCells`            |                                                 |
+| `getRes0Indexes`              | `getRes0Cells`        |                                                 |
+| `getPentagonIndexes`          | `getPentagons`        |                                                 |
+| `h3GetBaseCell`               | `getBaseCellNumber`   |                                                 |
+| `h3Distance`                  | `gridDistance`        | no `get` prefix?                                |
+| `h3Line`                      | `gridPathCell`        | future: `gridPathEdge`, `gridPathDirectedEdge`? |
 
 
 For the `kRing`, `hexRange`, `hexRing`, etc. family of functions, should we come up with some standard prefix or suffix to denote that the function will fail if it encounters a pentagon?
 I'm anticipating that, at least in the wrappers, we'd probably just expose users to the "works in all cases" version of the function.
 
+### Notes
+
+- todo: Do we have general guidance on when to use a `get` prefix with a function and when not?
 
