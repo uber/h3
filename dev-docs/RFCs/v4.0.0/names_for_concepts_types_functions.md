@@ -19,9 +19,10 @@ Reaching a consensus on the precise, technical language used when discussing H3 
 
 The following technical terms should be used in the documentation, the H3 codebase, and precise technical discussions of the library.
 
-- `Index` or `H3Index`:
+- `H3Index`:
     - an unsigned 64-bit integer representing **any** H3 object (hexagon, pentagon, directed edge, ...)
     - often represented as a 15-character (or 16-character) hexadecimal string, like `'8928308280fffff'`
+    - the full term "H3 index" should be used to avoid confusion with other common uses of "index"; when a "traditional" index is needed, prefer using "number", "pos", or another term to avoid confusion
 - `Cell`:
     - an H3 index of `mode 1` (hexagon or pentagon)
     - for functions that can handle either hexagons or pentagons, the more general term "cell" should be used whenever possible
