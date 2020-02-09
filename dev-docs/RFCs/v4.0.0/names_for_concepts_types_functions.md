@@ -34,7 +34,9 @@ The following technical terms should be used in the documentation, the H3 codeba
 - `DirectedEdge`
     - an H3 index of `mode 2`
     - representing a traversal from an origin cell to an adjacent destination cell
-
+- grid:
+    - the graph with nodes corresponding to H3 cells, and edges given by pairs of adjacent cells
+    - for example, `gridDistance` is the minimal number of edges in a graph path connecting two cells
 
 ### Notes
 
