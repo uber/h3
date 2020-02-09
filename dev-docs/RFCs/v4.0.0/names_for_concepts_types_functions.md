@@ -6,10 +6,8 @@
 
 ## Motivation
 
-Concepts like `hexagon`, `cell`, and `index` are currently used ambiguously
-in the H3 codebase and in documentation. This can cause confusion, for example,
-when a function might only work on strict H3 *hexagons*, but fails when
-encountering H3 *pentagons*.
+Concepts like `hexagon`, `cell`, and `index` are currently used ambiguously in the H3 codebase and in documentation.
+This can cause confusion, for example, when a function might only work on strict H3 *hexagons*, but fails when encountering H3 *pentagons*.
 
 Reaching a consensus on the precise, technical language used when discussing H3 concepts will clarify future library discussions and improve end-user documentation.
 
@@ -82,8 +80,8 @@ A few more function name change proposals:
 | `h3IsValid`                   | `isValidCell`         |                                                 |
 | `h3UnidirectionalEdgeIsValid` | `isValidDirectedEdge` |                                                 |
 | `h3IsPentagon`                | `isPentagon`          |                                                 |
-| `h3ToParent`                  | `cellToParent`        |                                                 |
-| `h3ToChildren`                | `cellToChildren`      |                                                 |
+| `h3ToParent`                  | `cellToParent`        | or `getParent`?                                 |
+| `h3ToChildren`                | `cellToChildren`      | or `getChildren`?                               |
 | `h3IndexesAreNeighbors`       | `cellsAreNeighbors`   |                                                 |
 | `geoToH3`                     | `geoToCell`           |                                                 |
 | `h3ToGeo`                     | `cellToGeo`           |                                                 |
