@@ -1,8 +1,8 @@
-# RFC: Terms for H3 Concepts and Data Types
+# RFC: Names for H3 Concepts, Types, and Functions
 
 - **Authors**: AJ Friend
 - **Date**: 2020-02-02
-- **Status**: Work In Progress
+- **Status**: Draft
 
 ## Motivation
 
