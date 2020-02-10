@@ -68,11 +68,20 @@ See, for example: https://github.com/uber/h3-js/issues/53
 | `getRes0Indexes`              | `getRes0Cells`        |                                                 |
 | `getPentagonIndexes`          | `getPentagons`        |                                                 |
 | `h3GetBaseCell`               | `getBaseCellNumber`   |                                                 |
-| `h3Distance`                  | `gridDistance`        | no `get` prefix?                                |
-| `h3Line`                      | `gridPathCell`        | future: `gridPathEdge`, `gridPathDirectedEdge`? |
 
 todo: Do we have general guidance on when to use a `get` prefix with a function and when not?
 
+
+## H3 Grid Functions
+
+| Current name |     Proposed name      |
+|--------------|------------------------|
+| `h3Distance` | `gridDistance`         |
+| `h3Line`     | `gridPathCell`         |
+| *DNE*        | `gridPathEdge`         |
+| *DNE*        | `gridPathDirectedEdge` |
+    
+todo: do we not use the `get` prefix for these functions? When to use vs. not use?
 
 ## H3 Edge Types
 
