@@ -40,8 +40,8 @@ The following technical terms should be used in the documentation, the H3 codeba
 
 We realize that "hexagon" will still be used informally to refer to the concept of "cell" (As the development team, we do it ourselves!).
 This should be expected in casual, informal discussions of H3.
-When **precision** is required, however, we advise the use of strict technical terms like "index", "cell", "hexagon", "pentagon", etc.
-In the codebase and in the documentation, strictly correct terminology should always be used.
+However, when **precision** is required, we advise the use of strict technical terms like "index", "cell", "hexagon", "pentagon", etc.
+In the codebase and in the documentation, strictly correct terminology should **always** be used.
 
 
 ## Use of "Topological"
