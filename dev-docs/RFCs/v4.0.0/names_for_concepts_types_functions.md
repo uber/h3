@@ -70,9 +70,10 @@ Function name changes:
 | `getH3UnidirectionalEdgeBoundary`             | `getDirectedEdgeBoundary`    |
 
 
-## Function Names
+todo: do we want/need to use `get` to prefix all these functions?
 
-A few more function name change proposals:
+
+## General Function Names
 
 |          Current name         |     Proposed name     |                      Notes                      |
 |-------------------------------|-----------------------|-------------------------------------------------|
@@ -85,14 +86,19 @@ A few more function name change proposals:
 | `h3IndexesAreNeighbors`       | `cellsAreNeighbors`   |                                                 |
 | `geoToH3`                     | `geoToCell`           |                                                 |
 | `h3ToGeo`                     | `cellToGeo`           |                                                 |
-| `kRing`                       | `disk`                | filled-in disk                                  |
-| `hexRing`                     | `ring`                | hollow ring                                     |
 | `numHexagons`                 | `numCells`            |                                                 |
 | `getRes0Indexes`              | `getRes0Cells`        |                                                 |
 | `getPentagonIndexes`          | `getPentagons`        |                                                 |
 | `h3GetBaseCell`               | `getBaseCellNumber`   |                                                 |
 | `h3Distance`                  | `gridDistance`        | no `get` prefix?                                |
 | `h3Line`                      | `gridPathCell`        | future: `gridPathEdge`, `gridPathDirectedEdge`? |
+
+todo: Do we have general guidance on when to use a `get` prefix with a function and when not?
+
+## Area/Length Functions
+
+|          Current name         |     Proposed name     |                      Notes                      |
+|-------------------------------|-----------------------|-------------------------------------------------|
 | `hexAreaKm2`                  | `hexAreaAvgKm2`       | todo: `hexAreaMaxKm2` and `hexAreaMinKm2`?      |
 | `hexAreaM2`                   | `hexAreaAvgM2`        | todo: add min/max version?                      |
 | `edgeLengthKm`                | `hexEdgeLengthAvgKm`  | todo: add min/max version?                      |
@@ -100,10 +106,15 @@ A few more function name change proposals:
 | *DNE*                         | `pentagonAreaAvgKm2`  | plus others                                     |
 
 
-For the `kRing`, `hexRange`, `hexRing`, etc. family of functions, should we come up with some standard prefix or suffix to denote that the function will fail if it encounters a pentagon?
+## Cell Neighborhood Functions
+
+|          Current name         |     Proposed name     |                      Notes                      |
+|-------------------------------|-----------------------|-------------------------------------------------|
+| `kRing`                       | `disk`                | filled-in disk                                  |
+| `hexRing`                     | `ring`                | hollow ring                                     |
+
+
+todo: For the `kRing`, `hexRange`, `hexRing`, etc. family of functions, should we come up with some standard prefix or suffix to denote that the function will fail if it encounters a pentagon?
+
 I'm anticipating that, at least in the wrappers, we'd probably just expose users to the "works in all cases" version of the function.
-
-### Notes
-
-- todo: Do we have general guidance on when to use a `get` prefix with a function and when not?
 
