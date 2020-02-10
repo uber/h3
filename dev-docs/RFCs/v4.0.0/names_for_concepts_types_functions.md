@@ -51,28 +51,6 @@ We should clarify in the documentation that H3 works with **topological** hexago
 See, for example: https://github.com/uber/h3-js/issues/53
 
 
-## Names for H3 Edge Types
-
-Instead of `UnidirectionalEdge`, use the term `DirectedEdge`.
-
-For a future undirected edge mode, use the term `Edge`.
-
-Function name changes:
-
-|                  Current name                 |        Proposed name         |
-|-----------------------------------------------|------------------------------|
-| `getH3UnidirectionalEdge`                     | `getDirectedEdge`            |
-| `h3UnidirectionalEdgeIsValid`                 | `isValidDirectedEdge`        |
-| `getOriginH3IndexFromUnidirectionalEdge`      | `getDirectedEdgeOrigin`      |
-| `getDestinationH3IndexFromUnidirectionalEdge` | `getDirectedEdgeDestination` |
-| `getH3IndexesFromUnidirectionalEdge`          | `getDirectedEdgeCells`       |
-| `getH3UnidirectionalEdgesFromHexagon`         | `getDirectedEdgesFromCell`   |
-| `getH3UnidirectionalEdgeBoundary`             | `getDirectedEdgeBoundary`    |
-
-
-todo: do we want/need to use `get` to prefix all these functions?
-
-
 ## General Function Names
 
 |          Current name         |     Proposed name     |                      Notes                      |
@@ -95,6 +73,28 @@ todo: do we want/need to use `get` to prefix all these functions?
 
 todo: Do we have general guidance on when to use a `get` prefix with a function and when not?
 
+
+## H3 Edge Types
+
+Instead of `UnidirectionalEdge`, use the term `DirectedEdge`.
+
+For a future undirected edge mode, use the term `Edge`.
+
+Function name changes:
+
+|                  Current name                 |        Proposed name         |
+|-----------------------------------------------|------------------------------|
+| `getH3UnidirectionalEdge`                     | `getDirectedEdge`            |
+| `h3UnidirectionalEdgeIsValid`                 | `isValidDirectedEdge`        |
+| `getOriginH3IndexFromUnidirectionalEdge`      | `getDirectedEdgeOrigin`      |
+| `getDestinationH3IndexFromUnidirectionalEdge` | `getDirectedEdgeDestination` |
+| `getH3IndexesFromUnidirectionalEdge`          | `getDirectedEdgeCells`       |
+| `getH3UnidirectionalEdgesFromHexagon`         | `getDirectedEdgesFromCell`   |
+| `getH3UnidirectionalEdgeBoundary`             | `getDirectedEdgeBoundary`    |
+
+
+todo: do we want/need to use `get` to prefix all these functions?
+
 ## Area/Length Functions
 
 |          Current name         |     Proposed name     |                      Notes                      |
@@ -104,6 +104,8 @@ todo: Do we have general guidance on when to use a `get` prefix with a function 
 | `edgeLengthKm`                | `hexEdgeLengthAvgKm`  | todo: add min/max version?                      |
 | `edgeLengthM`                 | `hexEdgeLengthAvgM`   | todo: add min/max version?                      |
 | *DNE*                         | `pentagonAreaAvgKm2`  | plus others                                     |
+
+todo: Could we add functions with signatures like `float cellAreaKm2(H3Index h)` to compute the actual area of a specific H3 cell?
 
 
 ## Cell Neighborhood Functions
