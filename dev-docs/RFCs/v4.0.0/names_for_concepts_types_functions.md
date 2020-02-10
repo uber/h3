@@ -53,21 +53,21 @@ See, for example: https://github.com/uber/h3-js/issues/53
 
 ## General Function Names
 
-|          Current name         |     Proposed name     |                      Notes                      |
-|-------------------------------|-----------------------|-------------------------------------------------|
-| *Does Not Exist (DNE)*        | `isValidIndex`        |                                                 |
-| `h3IsValid`                   | `isValidCell`         |                                                 |
-| `h3UnidirectionalEdgeIsValid` | `isValidDirectedEdge` |                                                 |
-| `h3IsPentagon`                | `isPentagon`          |                                                 |
-| `h3ToParent`                  | `cellToParent`        | or `getParent`?                                 |
-| `h3ToChildren`                | `cellToChildren`      | or `getChildren`?                               |
-| `h3IndexesAreNeighbors`       | `cellsAreNeighbors`   |                                                 |
-| `geoToH3`                     | `geoToCell`           |                                                 |
-| `h3ToGeo`                     | `cellToGeo`           |                                                 |
-| `numHexagons`                 | `numCells`            |                                                 |
-| `getRes0Indexes`              | `getRes0Cells`        |                                                 |
-| `getPentagonIndexes`          | `getPentagons`        |                                                 |
-| `h3GetBaseCell`               | `getBaseCellNumber`   |                                                 |
+|          Current name         |     Proposed name     |       Notes       |
+|-------------------------------|-----------------------|-------------------|
+| *Does Not Exist (DNE)*        | `isValidIndex`        |                   |
+| `h3IsValid`                   | `isValidCell`         |                   |
+| `h3UnidirectionalEdgeIsValid` | `isValidDirectedEdge` |                   |
+| `h3IsPentagon`                | `isPentagon`          |                   |
+| `h3ToParent`                  | `cellToParent`        | or `getParent`?   |
+| `h3ToChildren`                | `cellToChildren`      | or `getChildren`? |
+| `h3IndexesAreNeighbors`       | `cellsAreNeighbors`   |                   |
+| `geoToH3`                     | `geoToCell`           |                   |
+| `h3ToGeo`                     | `cellToGeo`           |                   |
+| `numHexagons`                 | `numCells`            |                   |
+| `getRes0Indexes`              | `getRes0Cells`        |                   |
+| `getPentagonIndexes`          | `getPentagons`        |                   |
+| `h3GetBaseCell`               | `getBaseCellNumber`   |                   |
 
 todo: Do we have general guidance on when to use a `get` prefix with a function and when not?
 
@@ -106,23 +106,23 @@ todo: do we want/need to use `get` to prefix all these functions?
 
 ## Area/Length Functions
 
-|          Current name         |     Proposed name     |                      Notes                      |
-|-------------------------------|-----------------------|-------------------------------------------------|
-| `hexAreaKm2`                  | `hexAreaAvgKm2`       | todo: `hexAreaMaxKm2` and `hexAreaMinKm2`?      |
-| `hexAreaM2`                   | `hexAreaAvgM2`        | todo: add min/max version?                      |
-| `edgeLengthKm`                | `hexEdgeLengthAvgKm`  | todo: add min/max version?                      |
-| `edgeLengthM`                 | `hexEdgeLengthAvgM`   | todo: add min/max version?                      |
-| *DNE*                         | `pentagonAreaAvgKm2`  | plus others                                     |
+|  Current name  |    Proposed name     |                   Notes                    |
+|----------------|----------------------|--------------------------------------------|
+| `hexAreaKm2`   | `hexAreaAvgKm2`      | todo: `hexAreaMaxKm2` and `hexAreaMinKm2`? |
+| `hexAreaM2`    | `hexAreaAvgM2`       | todo: add min/max version?                 |
+| `edgeLengthKm` | `hexEdgeLengthAvgKm` | todo: add min/max version?                 |
+| `edgeLengthM`  | `hexEdgeLengthAvgM`  | todo: add min/max version?                 |
+| *DNE*          | `pentagonAreaAvgKm2` | plus others                                |
 
 todo: Could we add functions with signatures like `float cellAreaKm2(H3Index h)` to compute the actual area of a specific H3 cell?
 
 
 ## Cell Neighborhood Functions
 
-|          Current name         |     Proposed name     |                      Notes                      |
-|-------------------------------|-----------------------|-------------------------------------------------|
-| `kRing`                       | `disk`                | filled-in disk                                  |
-| `hexRing`                     | `ring`                | hollow ring                                     |
+| Current name | Proposed name |     Notes      |
+|--------------|---------------|----------------|
+| `kRing`      | `disk`        | filled-in disk |
+| `hexRing`    | `ring`        | hollow ring    |
 
 
 todo: For the `kRing`, `hexRange`, `hexRing`, etc. family of functions, should we come up with some standard prefix or suffix to denote that the function will fail if it encounters a pentagon?
