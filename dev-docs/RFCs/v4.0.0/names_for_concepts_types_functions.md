@@ -76,7 +76,7 @@ A few more function name change proposals:
 
 |          Current name         |     Proposed name     |                      Notes                      |
 |-------------------------------|-----------------------|-------------------------------------------------|
-| (doesn't exist)               | `isValidIndex`        |                                                 |
+| Does Not Exist (DNE)          | `isValidIndex`        |                                                 |
 | `h3IsValid`                   | `isValidCell`         |                                                 |
 | `h3UnidirectionalEdgeIsValid` | `isValidDirectedEdge` |                                                 |
 | `h3IsPentagon`                | `isPentagon`          |                                                 |
@@ -93,6 +93,11 @@ A few more function name change proposals:
 | `h3GetBaseCell`               | `getBaseCellNumber`   |                                                 |
 | `h3Distance`                  | `gridDistance`        | no `get` prefix?                                |
 | `h3Line`                      | `gridPathCell`        | future: `gridPathEdge`, `gridPathDirectedEdge`? |
+| `hexAreaKm2`                  | `hexAreaAvgKm2`       | todo: `hexAreaMaxKm2` and `hexAreaMinKm2`?      |
+| `hexAreaM2`                   | `hexAreaAvgM2`        | todo: add min/max version?                      |
+| `edgeLengthKm`                | `hexEdgeLengthAvgKm`  | todo: add min/max version?                      |
+| `edgeLengthM`                 | `hexEdgeLengthAvgM`   | todo: add min/max version?                      |
+| DNE                           | `pentagonAreaAvgKm2`  | plus others                                     |
 
 
 For the `kRing`, `hexRange`, `hexRing`, etc. family of functions, should we come up with some standard prefix or suffix to denote that the function will fail if it encounters a pentagon?
