@@ -76,7 +76,7 @@ A few more function name change proposals:
 
 |          Current name         |     Proposed name     |                      Notes                      |
 |-------------------------------|-----------------------|-------------------------------------------------|
-| Does Not Exist (DNE)          | `isValidIndex`        |                                                 |
+| *Does Not Exist (DNE)*        | `isValidIndex`        |                                                 |
 | `h3IsValid`                   | `isValidCell`         |                                                 |
 | `h3UnidirectionalEdgeIsValid` | `isValidDirectedEdge` |                                                 |
 | `h3IsPentagon`                | `isPentagon`          |                                                 |
@@ -97,7 +97,7 @@ A few more function name change proposals:
 | `hexAreaM2`                   | `hexAreaAvgM2`        | todo: add min/max version?                      |
 | `edgeLengthKm`                | `hexEdgeLengthAvgKm`  | todo: add min/max version?                      |
 | `edgeLengthM`                 | `hexEdgeLengthAvgM`   | todo: add min/max version?                      |
-| DNE                           | `pentagonAreaAvgKm2`  | plus others                                     |
+| *DNE*                         | `pentagonAreaAvgKm2`  | plus others                                     |
 
 
 For the `kRing`, `hexRange`, `hexRing`, etc. family of functions, should we come up with some standard prefix or suffix to denote that the function will fail if it encounters a pentagon?
