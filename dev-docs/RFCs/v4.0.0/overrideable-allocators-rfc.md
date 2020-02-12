@@ -13,15 +13,31 @@ malloc implementation.
 
 This will address the following use cases:
 
-* H3 is used inside of another application which has its own heap managememnt scheme. For example, using the allocation
+* H3 is used inside of another application which has its own heap management scheme. For example, using the allocation
   functions provided by Postgres or the Java Virtual Machine.
 * Testing of failure cases of H3, by simulating allocation failures.
+
+Most H3 functions accept memory from the caller in order to avoid this problem. This will still be the preferred way
+to handle memory management in H3. Stack allocation is avoided because H3 cannot know whether there is sufficient stack
+memory available. (Note that `_kRingInternal`/`kRingDistances` implicitly uses stack allocation because it implements DFS
+recursively.)
+
+A few functions in H3 do heap allocate memory because it is not feasible to do otherwise, or as a convenience. The
+functions that heap allocate are:
+
+| Function | Reason
+| --- | ---
+| `kRing`| Convenience wrapper around `kRingDistances`
+| `polyfill` | Convenience (could be passed in, requires internal knowledge)
+| `compact` | Convenience (could be passed in, requires internal knowledge)
+| `h3SetToLinkedGeo` | Requires knowledge of how to initialize the internal struct
+| `destroyLinkedPolygon` | Required for `h3SetToLinkedGeo`
 
 ## Prior Art
 
 Reading materials to reference:
 
-* [C++ `vector`](http://www.cplusplus.com/reference/vector/vector/)
+* [C++ `vector`](http://www.cplusplus.com/reference/vector/vector/) (via templates)
 * [SDL](https://discourse.libsdl.org/t/sdl-2-0-7-prerelease/23232) (via `SDL_SetMemoryFunctions`)
 * [PostgreSQL](https://www.postgresql.org/docs/10/xfunc-c.html) (via `palloc`)
 * [SQLite](https://sqlite.org/malloc.html)
