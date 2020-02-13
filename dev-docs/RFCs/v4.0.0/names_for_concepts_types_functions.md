@@ -74,14 +74,13 @@ todo: Do we have general guidance on when to use a `get` prefix with a function 
 
 ## H3 Grid Functions
 
-| Current name |     Proposed name      |
-|--------------|------------------------|
-| `h3Distance` | `gridDistance`         |
-| `h3Line`     | `gridPathCell`         |
-| *DNE*        | `gridPathEdge`         |
-| *DNE*        | `gridPathDirectedEdge` |
-    
-todo: do we not use the `get` prefix for these functions? When to use vs. not use?
+| Current name |     Proposed name      |      Alternate      |
+|--------------|------------------------|---------------------|
+| `h3Distance` | `gridDistance`         | `pathDistance`      |
+| `h3Line`     | `gridPathCell`         | `pathCells`         |
+| *DNE*        | `gridPathEdge`         | `pathEdges`         |
+| *DNE*        | `gridPathDirectedEdge` | `pathDirectedEdges` |
+
 
 ## H3 Edge Types
 
