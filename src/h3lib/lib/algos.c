@@ -172,9 +172,9 @@ int H3_EXPORT(maxKringSize)(int k) { return 3 * k * (k + 1) + 1; }
  */
 void H3_EXPORT(kRing)(H3Index origin, int k, H3Index* out) {
     int maxIdx = H3_EXPORT(maxKringSize)(k);
-    int* distances = malloc(maxIdx * sizeof(int));
+    int* distances = H3_MEMORY(malloc)(maxIdx * sizeof(int));
     H3_EXPORT(kRingDistances)(origin, k, out, distances);
-    free(distances);
+    H3_MEMORY(free)(distances);
 }
 
 /**
@@ -674,7 +674,7 @@ void H3_EXPORT(polyfill)(const GeoPolygon* geoPolygon, int res, H3Index* out) {
     // This first part is identical to the maxPolyfillSize above.
 
     // Get the bounding boxes for the polygon and any holes
-    BBox* bboxes = malloc((geoPolygon->numHoles + 1) * sizeof(BBox));
+    BBox* bboxes = H3_MEMORY(malloc)((geoPolygon->numHoles + 1) * sizeof(BBox));
     assert(bboxes != NULL);
     bboxesFromGeoPolygon(geoPolygon, bboxes);
     int minK = bboxHexRadius(&bboxes[0], res);
@@ -706,7 +706,7 @@ void H3_EXPORT(polyfill)(const GeoPolygon* geoPolygon, int res, H3Index* out) {
             out[i] = H3_INVALID_INDEX;
         }
     }
-    free(bboxes);
+    H3_MEMORY(free)(bboxes);
 }
 
 /**

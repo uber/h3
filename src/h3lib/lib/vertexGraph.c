@@ -33,7 +33,7 @@
  */
 void initVertexGraph(VertexGraph* graph, int numBuckets, int res) {
     if (numBuckets > 0) {
-        graph->buckets = calloc(numBuckets, sizeof(VertexNode*));
+        graph->buckets = H3_MEMORY(calloc)(numBuckets, sizeof(VertexNode*));
         assert(graph->buckets != NULL);
     } else {
         graph->buckets = NULL;
@@ -53,7 +53,7 @@ void destroyVertexGraph(VertexGraph* graph) {
     while ((node = firstVertexNode(graph)) != NULL) {
         removeVertexNode(graph, node);
     }
-    free(graph->buckets);
+    H3_MEMORY(free)(graph->buckets);
 }
 
 /**
@@ -91,7 +91,7 @@ void _initVertexNode(VertexNode* node, const GeoCoord* fromVtx,
 VertexNode* addVertexNode(VertexGraph* graph, const GeoCoord* fromVtx,
                           const GeoCoord* toVtx) {
     // Make the new node
-    VertexNode* node = malloc(sizeof(VertexNode));
+    VertexNode* node = H3_MEMORY(malloc)(sizeof(VertexNode));
     assert(node != NULL);
     _initVertexNode(node, fromVtx, toVtx);
     // Determine location
@@ -108,7 +108,7 @@ VertexNode* addVertexNode(VertexGraph* graph, const GeoCoord* fromVtx,
             if (geoAlmostEqual(&currentNode->from, fromVtx) &&
                 geoAlmostEqual(&currentNode->to, toVtx)) {
                 // already exists, bail
-                free(node);
+                H3_MEMORY(free)(node);
                 return currentNode;
             }
             if (currentNode->next != NULL) {
@@ -150,7 +150,7 @@ int removeVertexNode(VertexGraph* graph, VertexNode* node) {
         }
     }
     if (found) {
-        free(node);
+        H3_MEMORY(free)(node);
         graph->size--;
         return 0;
     }

@@ -285,9 +285,9 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
         }
         return COMPACT_SUCCESS;
     }
-    H3Index* remainingHexes = malloc(numHexes * sizeof(H3Index));
+    H3Index* remainingHexes = H3_MEMORY(malloc)(numHexes * sizeof(H3Index));
     memcpy(remainingHexes, h3Set, numHexes * sizeof(H3Index));
-    H3Index* hashSetArray = calloc(numHexes, sizeof(H3Index));
+    H3Index* hashSetArray = H3_MEMORY(calloc)(numHexes, sizeof(H3Index));
     H3Index* compactedSetOffset = compactedSet;
     int numRemainingHexes = numHexes;
     while (numRemainingHexes) {
@@ -309,8 +309,8 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
                         // This case should not be possible because at most one
                         // index is placed into hashSetArray per
                         // numRemainingHexes.
-                        free(remainingHexes);
-                        free(hashSetArray);
+                        H3_MEMORY(free)(remainingHexes);
+                        H3_MEMORY(free)(hashSetArray);
                         return COMPACT_LOOP_EXCEEDED;
                         // LCOV_EXCL_STOP
                     }
@@ -328,8 +328,8 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
                         // checking for all children being present.
                         if (count + 1 > limitCount) {
                             // Only possible on duplicate input
-                            free(remainingHexes);
-                            free(hashSetArray);
+                            H3_MEMORY(free)(remainingHexes);
+                            H3_MEMORY(free)(hashSetArray);
                             return COMPACT_DUPLICATE;
                         }
                         H3_SET_RESERVED_BITS(parent, count);
@@ -353,7 +353,7 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
             break;
         }
         H3Index* compactableHexes =
-            malloc(maxCompactableCount * sizeof(H3Index));
+            H3_MEMORY(malloc)(maxCompactableCount * sizeof(H3Index));
         for (int i = 0; i < numRemainingHexes; i++) {
             if (hashSetArray[i] == 0) continue;
             int count = H3_GET_RESERVED_BITS(hashSetArray[i]) + 1;
@@ -392,9 +392,9 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
                         // LCOV_EXCL_START
                         // This case should not be possible because at most one
                         // index is placed into hashSetArray per input hexagon.
-                        free(compactableHexes);
-                        free(remainingHexes);
-                        free(hashSetArray);
+                        H3_MEMORY(free)(compactableHexes);
+                        H3_MEMORY(free)(remainingHexes);
+                        H3_MEMORY(free)(hashSetArray);
                         return COMPACT_LOOP_EXCEEDED;
                         // LCOV_EXCL_STOP
                     }
@@ -423,10 +423,10 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
         memcpy(remainingHexes, compactableHexes,
                compactableCount * sizeof(H3Index));
         numRemainingHexes = compactableCount;
-        free(compactableHexes);
+        H3_MEMORY(free)(compactableHexes);
     }
-    free(remainingHexes);
-    free(hashSetArray);
+    H3_MEMORY(free)(remainingHexes);
+    H3_MEMORY(free)(hashSetArray);
     return COMPACT_SUCCESS;
 }
 

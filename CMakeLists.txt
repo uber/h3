@@ -15,6 +15,7 @@
 cmake_minimum_required(VERSION 3.1)
 
 set(H3_PREFIX "" CACHE STRING "Prefix for exported symbols")
+set(H3_ALLOC_PREFIX "" CACHE STRING "Prefix for allocation functions")
 
 # Needed due to CMP0042
 set(CMAKE_MACOSX_RPATH 1)
@@ -216,6 +217,9 @@ if(BUILD_SHARED_LIBS)
 endif()
 
 target_compile_definitions(h3 PUBLIC H3_PREFIX=${H3_PREFIX})
+if(H3_ALLOC_PREFIX)
+    target_compile_definitions(h3 PUBLIC H3_ALLOC_PREFIX=${H3_ALLOC_PREFIX})
+endif()
 if(have_alloca)
     target_compile_definitions(h3 PUBLIC H3_HAVE_ALLOCA)
 endif()
