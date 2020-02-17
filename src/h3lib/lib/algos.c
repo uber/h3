@@ -660,6 +660,8 @@ int H3_EXPORT(maxPolyfillSize)(const GeoPolygon* geoPolygon, int res) {
         totalVerts += geoPolygon->holes[i].numVerts;
     }
     if (numHexagons < totalVerts) numHexagons = totalVerts;
+    numHexagons += 12;  // TODO: Get a better constant here, but this seems
+                        // related to the rotation issue for odd hexes
     return numHexagons;
 }
 

@@ -106,21 +106,20 @@ int bboxHexEstimate(const BBox* bbox, int res) {
     // The pentagon has the most distortion (smallest edges) and shares its
     // edges with hexagons, so the most-distorted hexagons have this area
     double pentagonAreaKm2 =
-        2.59807621135 * pentagonRadiusKm * pentagonRadiusKm;
+        0.8 * (2.59807621135 * pentagonRadiusKm * pentagonRadiusKm);
 
     // Then get the area of the bounding box of the geofence in question
     GeoCoord p1, p2;
     p1.lat = bbox->north;
     p1.lon = bbox->east;
     p2.lat = bbox->south;
-    p2.lon = bbox->east;
-    double h = _geoDistKm(&p1, &p2);
-    p2.lat = bbox->north;
     p2.lon = bbox->west;
-    double w = _geoDistKm(&p1, &p2);
+    double d = _geoDistKm(&p1, &p2);
+    double a = d * d / 2.5;  // Derived constant based on:
+                             // https://math.stackexchange.com/a/1921940
 
     // Divide the two to get an estimate of the number of hexagons needed
-    int estimate = (int)ceil(w * h / pentagonAreaKm2);
+    int estimate = (int)ceil(a / pentagonAreaKm2);
     if (estimate == 0) estimate = 1;
     return estimate;
 }
