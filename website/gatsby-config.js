@@ -18,7 +18,7 @@ module.exports = {
       PROJECT_TYPE: 'github',
       PROJECT_NAME: 'H3',
       PROJECT_ORG: 'uber',
-      PROJECT_URL: 'https://h3geo.org/',
+      PROJECT_URL: 'https://github.com/uber/h3',
       PROJECT_DESC: 'Hexagonal hierarchical geospatial indexing system.',
       PATH_PREFIX: '/',
 
