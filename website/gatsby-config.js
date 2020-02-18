@@ -49,23 +49,14 @@ module.exports = {
       DOCS,
 
       EXAMPLES: [
-        //{
-        //  title: 'Minimal Example',
-        //  path: 'examples/minimal/',
-        //  image: 'images/hero.jpg',
-        //  componentUrl: resolve('../examples/minimal/app.js')
-        //}
       ],
 
       THEME_OVERRIDES: [
-        //  {key: 'primaryFontFamily', value: 'serif'}
       ],
 
       PROJECTS: [
-        // {name: 'Project name', url: 'http://project.url'},
       ],
       ADDITIONAL_LINKS: [
-        // {name: 'link label', href: 'http://link.url'}
       ],
 
       GA_TRACKING: null,
