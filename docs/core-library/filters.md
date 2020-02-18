@@ -22,19 +22,19 @@ Unix Command Line Examples
 
 * find the index for coordinates at resolution 5
 
-     `echo 40.689167 -74.044444 | geoToH3 5`
+     `geoToH3 --resolution 5 --latitude 40.689167 --longitude -74.044444`
 
 * output the cell center point for `H3Index` 845ad1bffffffff
 
-     `echo 845ad1bffffffff | h3ToGeo`
+     `h3ToGeo --index 845ad1bffffffff`
 
 * output the cell boundary for `H3Index` 845ad1bffffffff
 
-     `echo 845ad1bffffffff | h3ToGeoBoundary`
+     `h3ToGeoBoundary --index 845ad1bffffffff`
 
 * find the components for the `H3Index` 845ad1bffffffff
 
-     `echo 845ad1bffffffff | h3ToComponents`
+     `h3ToComponents --index 845ad1bffffffff`
 
 * output all indexes within distance 1 of the `H3Index` 845ad1bffffffff
 
