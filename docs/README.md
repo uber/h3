@@ -7,4 +7,4 @@ The **H3** geospatial indexing system is a multi-precision hexagonal tiling of t
 * given an **H3** index, determine the cell boundary in latitude/longitude coordinates
 * and more.
 
-The **H3 Core Library** is written entirely in *C*. <a href="/docs/community/bindings">Bindings for other languages</a> are available.
+The **H3 Core Library** is written entirely in *C*. [Bindings for other languages](/docs/community/bindings) are available.

@@ -10,16 +10,17 @@ module.exports = {
       // Adjusts amount of debug information from gatsby-theme-ocular
       logLevel: 1,
 
-      DOC_FOLDER: `${__dirname}/../docs/`,
+      DOC_FOLDERS: [`${__dirname}/../docs/`],
       ROOT_FOLDER: `${__dirname}/../`,
       DIR_NAME: `${__dirname}`,
+      SOURCE: [`${__dirname}/static`, `${__dirname}/src`],
 
       PROJECT_TYPE: 'github',
       PROJECT_NAME: 'H3',
       PROJECT_ORG: 'uber',
-      PROJECT_URL: 'https://github.com/uber/h3',
+      PROJECT_URL: 'https://h3geo.org/',
       PROJECT_DESC: 'Hexagonal hierarchical geospatial indexing system.',
-      PATH_PREFIX: '/h3/',
+      PATH_PREFIX: '/',
 
       FOOTER_LOGO: '',
 
