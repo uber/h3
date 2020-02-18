@@ -23,6 +23,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "alloc.h"
 #include "geoCoord.h"
 
 /**

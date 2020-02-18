@@ -23,6 +23,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
+#include "alloc.h"
 #include "baseCells.h"
 #include "faceijk.h"
 #include "mathExtensions.h"

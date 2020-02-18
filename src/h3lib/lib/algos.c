@@ -24,6 +24,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include "alloc.h"
 #include "baseCells.h"
 #include "bbox.h"
 #include "faceijk.h"
