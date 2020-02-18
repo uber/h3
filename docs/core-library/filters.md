@@ -38,10 +38,10 @@ Unix Command Line Examples
 
 * output all indexes within distance 1 of the `H3Index` 845ad1bffffffff
 
-     `echo 845ad1bffffffff | kRing 1`
+     `kRing -k 1 --origin 845ad1bffffffff`
 
 * output all hexagon indexes within distance 2 of the `H3Index` 845ad1bffffffff
 
-     `echo 845ad1bffffffff | hexRange 2`
+     `hexRange -k 2 --origin 845ad1bffffffff`
 
 Note that the filters `h3ToGeo` and `h3ToGeoBoundary` take optional arguments that allow them to generate `kml` output. See the header comments in the corresponding source code files for details.
