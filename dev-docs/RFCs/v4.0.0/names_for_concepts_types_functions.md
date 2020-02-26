@@ -69,8 +69,20 @@ See, for example: https://github.com/uber/h3-js/issues/53
 | `getPentagonIndexes`          | `getPentagons`        |
 | `h3GetBaseCell`               | `getBaseCellNumber`   |
 
+### naming note
 
-todo: Do we have general guidance on when to use a `get` prefix with a function and when not?
+- `isValid*` should mean that a full validity check is made
+- without `Valid` (like in the case of `isPentagon`), we do not guarantee
+  that a full validity check is made; instead, a user should assume only a
+  minimal bit mask check is done
+    - we could imagine a `isValidPengaton` function, if full verification
+      would be convenient
+- similarly, a function like `cellsAreNeighbors` will assume each cell
+  has passed the `isValidCell` check; the function will do only minimal
+  work to determine if they are neighbors
+
+### todo
+- Do we have general guidance on when to use a `get` prefix with a function and when not?
 
 
 ## H3 Grid Functions
