@@ -75,12 +75,12 @@ todo: Do we have general guidance on when to use a `get` prefix with a function 
 
 ## H3 Grid Functions
 
-| Current name |     Proposed name      |      Alternate      |
-|--------------|------------------------|---------------------|
-| `h3Distance` | `gridDistance`         | `pathDistance`      |
-| `h3Line`     | `gridPathCell`         | `pathCells`         |
-| *DNE*        | `gridPathEdge`         | `pathEdges`         |
-| *DNE*        | `gridPathDirectedEdge` | `pathDirectedEdges` |
+| Current name |     Proposed name      |
+|--------------|------------------------|
+| `h3Distance` | `gridDistance`         |
+| `h3Line`     | `gridPathCell`         |
+| *DNE*        | `gridPathEdge`         |
+| *DNE*        | `gridPathDirectedEdge` |
 
 
 ## H3 Edge Types
@@ -116,13 +116,12 @@ todo: do we want/need to use `get` to prefix all these functions?
 
 todo: Could we add functions with signatures like `float cellAreaKm2(H3Index h)` to compute the actual area of a specific H3 cell?
 
-
 ## Cell Neighborhood Functions
 
-| Current name | Proposed name |     Notes      |
-|--------------|---------------|----------------|
-| `kRing`      | `disk`        | filled-in disk |
-| `hexRing`    | `ring`        | hollow ring    |
+| Current name |    Proposed names    |     Notes      |
+|--------------|----------------------|----------------|
+| `kRing`      | `disk` or `gridDisk` | filled-in disk |
+| `hexRing`    | `ring` or `gridRing` | hollow ring    |
 
 
 todo: For the `kRing`, `hexRange`, `hexRing`, etc. family of functions, should we come up with some standard prefix or suffix to denote that the function will fail if it encounters a pentagon?
