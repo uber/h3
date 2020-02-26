@@ -53,21 +53,22 @@ See, for example: https://github.com/uber/h3-js/issues/53
 
 ## General Function Names
 
-|          Current name         |     Proposed name     |       Notes       |
-|-------------------------------|-----------------------|-------------------|
-| *Does Not Exist (DNE)*        | `isValidIndex`        |                   |
-| `h3IsValid`                   | `isValidCell`         |                   |
-| `h3UnidirectionalEdgeIsValid` | `isValidDirectedEdge` |                   |
-| `h3IsPentagon`                | `isPentagon`          |                   |
-| `h3ToParent`                  | `cellToParent`        | or `getParent`?   |
-| `h3ToChildren`                | `cellToChildren`      | or `getChildren`? |
-| `h3IndexesAreNeighbors`       | `cellsAreNeighbors`   |                   |
-| `geoToH3`                     | `geoToCell`           |                   |
-| `h3ToGeo`                     | `cellToGeo`           |                   |
-| `numHexagons`                 | `numCells`            |                   |
-| `getRes0Indexes`              | `getRes0Cells`        |                   |
-| `getPentagonIndexes`          | `getPentagons`        |                   |
-| `h3GetBaseCell`               | `getBaseCellNumber`   |                   |
+|          Current name         |     Proposed name     |
+|-------------------------------|-----------------------|
+| *Does Not Exist (DNE)*        | `isValidIndex`        |
+| `h3IsValid`                   | `isValidCell`         |
+| `h3UnidirectionalEdgeIsValid` | `isValidDirectedEdge` |
+| `h3IsPentagon`                | `isPentagon`          |
+| `h3ToParent`                  | `cellParent`          |
+| `h3ToChildren`                | `cellChildren`        |
+| `h3IndexesAreNeighbors`       | `cellsAreNeighbors`   |
+| `geoToH3`                     | `geoToCell`           |
+| `h3ToGeo`                     | `cellToGeo`           |
+| `numHexagons`                 | `numCells`            |
+| `getRes0Indexes`              | `getRes0Cells`        |
+| `getPentagonIndexes`          | `getPentagons`        |
+| `h3GetBaseCell`               | `getBaseCellNumber`   |
+
 
 todo: Do we have general guidance on when to use a `get` prefix with a function and when not?
 
