@@ -32,7 +32,7 @@ cd ..
 git checkout $CURRENT_COMMIT -- .gitignore
 # Remove all existing content, which will then be replaced with
 # the updated content
-git rm *.js *.js.map *.css static images docs
+git rm *.js *.js.map *.css *.json static images docs page-data search
 cp -R website/public/* .
 git add .
 git commit
