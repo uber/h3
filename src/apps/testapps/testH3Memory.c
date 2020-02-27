@@ -33,6 +33,7 @@
 static int failAlloc = 0;
 
 void* H3_MEMORY(malloc)(size_t size) {
+    printf("malloc %lx\n", size);
     if (failAlloc) {
         return NULL;
     }
@@ -40,6 +41,7 @@ void* H3_MEMORY(malloc)(size_t size) {
 }
 
 void* H3_MEMORY(calloc)(size_t num, size_t size) {
+    printf("calloc %lx\n", size);
     if (failAlloc) {
         return NULL;
     }
@@ -47,13 +49,17 @@ void* H3_MEMORY(calloc)(size_t num, size_t size) {
 }
 
 void* H3_MEMORY(realloc)(void* ptr, size_t size) {
+    printf("realloc %lx\n", size);
     if (failAlloc) {
         return NULL;
     }
     return realloc(ptr, size);
 }
 
-void H3_MEMORY(free)(void* ptr) { return free(ptr); }
+void H3_MEMORY(free)(void* ptr) {
+    printf("free\n");
+    return free(ptr);
+}
 
 H3Index sunnyvale = 0x89283470c27ffff;
 
