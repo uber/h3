@@ -69,7 +69,7 @@ See, for example: https://github.com/uber/h3-js/issues/53
 | `getPentagonIndexes`          | `getPentagons`        |
 | `h3GetBaseCell`               | `getBaseCellNumber`   |
 
-### naming note
+### Naming note
 
 - `isValid*` should mean that a full validity check is made
 - without `Valid` (like in the case of `isPentagon`), we do not guarantee
@@ -87,12 +87,12 @@ See, for example: https://github.com/uber/h3-js/issues/53
 
 ## H3 Grid Functions
 
-| Current name |     Proposed name      |
-|--------------|------------------------|
-| `h3Distance` | `gridDistance`         |
-| `h3Line`     | `gridPathCell`         |
-| *DNE*        | `gridPathEdge`         |
-| *DNE*        | `gridPathDirectedEdge` |
+| Current name |      Proposed name      |
+|--------------|-------------------------|
+| `h3Distance` | `gridDistance`          |
+| `h3Line`     | `gridPathCells`         |
+| *DNE*        | `gridPathEdges`         |
+| *DNE*        | `gridPathDirectedEdges` |
 
 
 ## H3 Edge Types
