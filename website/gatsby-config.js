@@ -1,5 +1,3 @@
-const {resolve} = require('path');
-
 // default location for table of contents
 const DOCS = require('../docs/table-of-contents.json');
 
@@ -8,12 +6,14 @@ module.exports = {
     resolve: `gatsby-theme-ocular`,
     options: {
       // Adjusts amount of debug information from gatsby-theme-ocular
-      logLevel: 1,
+      logLevel: 0,
 
       DOC_FOLDERS: [`${__dirname}/../docs/`],
       ROOT_FOLDER: `${__dirname}/../`,
       DIR_NAME: `${__dirname}`,
       SOURCE: [`${__dirname}/static`, `${__dirname}/src`],
+
+      DOC_MARKDOWN_PAGE_URL: `${__dirname}/templates/documentation.jsx`,
 
       PROJECT_TYPE: 'github',
       PROJECT_NAME: 'H3',
@@ -79,5 +79,5 @@ module.exports = {
         }
       ],
     },
-  },
+  }
 ]};
