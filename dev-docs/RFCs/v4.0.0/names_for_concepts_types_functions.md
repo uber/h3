@@ -29,12 +29,14 @@ The following technical terms should be used in the documentation, the H3 codeba
     - todo: advise use of the term "strict" for functions that can only handle hexagons?
 - pentagon:
     - an H3 cell which is a **topological** pentagon
-- `DirectedEdge`
+- `DirectedEdge`:
     - an H3 index of `mode 2`
     - representing a traversal from an origin cell to an adjacent destination cell
 - grid:
     - the graph with nodes corresponding to H3 cells, and edges given by pairs of adjacent cells
     - for example, `gridDistance` is the minimal number of edges in a graph path connecting two cells
+- `geo`:
+    - a representation of a point in terms of a latitude/longitude pair
 
 ### Notes
 
@@ -53,21 +55,27 @@ See, for example: https://github.com/uber/h3-js/issues/53
 
 ## General Function Names
 
-|          Current name         |     Proposed name     |
-|-------------------------------|-----------------------|
-| *Does Not Exist (DNE)*        | `isValidIndex`        |
-| `h3IsValid`                   | `isValidCell`         |
-| `h3UnidirectionalEdgeIsValid` | `isValidDirectedEdge` |
-| `h3IsPentagon`                | `isPentagon`          |
-| `h3ToParent`                  | `cellParent`          |
-| `h3ToChildren`                | `cellChildren`        |
-| `h3IndexesAreNeighbors`       | `cellsAreNeighbors`   |
-| `geoToH3`                     | `geoToCell`           |
-| `h3ToGeo`                     | `cellToGeo`           |
-| `numHexagons`                 | `numCells`            |
-| `getRes0Indexes`              | `getRes0Cells`        |
-| `getPentagonIndexes`          | `getPentagons`        |
-| `h3GetBaseCell`               | `getBaseCellNumber`   |
+|          Current name         |             Proposed name              |
+|-------------------------------|----------------------------------------|
+| *Does Not Exist (DNE)*        | `isValidIndex`                         |
+| `h3IsValid`                   | `isValidCell`                          |
+| `h3UnidirectionalEdgeIsValid` | `isValidDirectedEdge`                  |
+| `h3IsPentagon`                | `isPentagon`                           |
+| `h3IsResClassIII`             | `isResClassIII`                        |
+| `h3IndexesAreNeighbors`       | `areNeighborCells`                     |
+| `h3ToParent`                  | `getParent` or `getCellParent`         |
+| `h3ToChildren`                | `getChildren` or `getCellChildren`     |
+| `numHexagons`                 | `getNumCells`                          |
+| `getRes0Indexes`              | `getRes0Cells`                         |
+| `getPentagonIndexes`          | `getPentagons`                         |
+| `h3GetBaseCell`               | `getBaseCellNumber`                    |
+| `h3GetResolution`             | `getResolution` or `getCellResolution` |
+| `geoToH3`                     | `geoToCell`                            |
+| `h3ToGeo`                     | `cellToGeo`                            |
+| `compact`                     |                                        |
+| `uncompact`                   |                                        |
+| `polyfill`                    |                                        |
+
 
 ### Naming note
 
@@ -77,7 +85,7 @@ See, for example: https://github.com/uber/h3-js/issues/53
   minimal bit mask check is done
     - we could imagine a `isValidPengaton` function, if full verification
       would be convenient
-- similarly, a function like `cellsAreNeighbors` will assume each cell
+- similarly, a function like `areNeighborCells` will assume each cell
   has passed the `isValidCell` check; the function will do only minimal
   work to determine if they are neighbors
 
@@ -95,13 +103,24 @@ See, for example: https://github.com/uber/h3-js/issues/53
 | *DNE*        | `gridPathDirectedEdges` |
 
 
+## Grid Neighborhood Functions
+
+| Current name |    Proposed names    |     Notes      |
+|--------------|----------------------|----------------|
+| `kRing`      | `disk` or `gridDisk` | filled-in disk |
+| `hexRing`    | `ring` or `gridRing` | hollow ring    |
+
+
+todo: For the `kRing`, `hexRange`, `hexRing`, etc. family of functions, should we come up with some standard prefix or suffix to denote that the function will fail if it encounters a pentagon?
+
+I'm anticipating that, at least in the wrappers, we'd probably just expose users to the "works in all cases" version of the function.
+
+
 ## H3 Edge Types
 
 Instead of `UnidirectionalEdge`, use the term `DirectedEdge`.
 
 For a future undirected edge mode, use the term `Edge`.
-
-Function name changes:
 
 |                  Current name                 |        Proposed name         |
 |-----------------------------------------------|------------------------------|
@@ -114,8 +133,6 @@ Function name changes:
 | `getH3UnidirectionalEdgeBoundary`             | `getDirectedEdgeBoundary`    |
 
 
-todo: do we want/need to use `get` to prefix all these functions?
-
 ## Area/Length Functions
 
 |  Current name  |    Proposed name     |                   Notes                    |
@@ -125,18 +142,4 @@ todo: do we want/need to use `get` to prefix all these functions?
 | `edgeLengthKm` | `hexEdgeLengthAvgKm` | todo: add min/max version?                 |
 | `edgeLengthM`  | `hexEdgeLengthAvgM`  | todo: add min/max version?                 |
 | *DNE*          | `pentagonAreaAvgKm2` | plus others                                |
-
-todo: Could we add functions with signatures like `float cellAreaKm2(H3Index h)` to compute the actual area of a specific H3 cell?
-
-## Cell Neighborhood Functions
-
-| Current name |    Proposed names    |     Notes      |
-|--------------|----------------------|----------------|
-| `kRing`      | `disk` or `gridDisk` | filled-in disk |
-| `hexRing`    | `ring` or `gridRing` | hollow ring    |
-
-
-todo: For the `kRing`, `hexRange`, `hexRing`, etc. family of functions, should we come up with some standard prefix or suffix to denote that the function will fail if it encounters a pentagon?
-
-I'm anticipating that, at least in the wrappers, we'd probably just expose users to the "works in all cases" version of the function.
-
+| *DNE*          | `cellAreaKm2`        | area of specific cell                      |
