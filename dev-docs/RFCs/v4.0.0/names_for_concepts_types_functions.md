@@ -55,26 +55,27 @@ See, for example: https://github.com/uber/h3-js/issues/53
 
 ## General Function Names
 
-|          Current name         |             Proposed name              |
-|-------------------------------|----------------------------------------|
-| *Does Not Exist (DNE)*        | `isValidIndex`                         |
-| `h3IsValid`                   | `isValidCell`                          |
-| `h3UnidirectionalEdgeIsValid` | `isValidDirectedEdge`                  |
-| `h3IsPentagon`                | `isPentagon`                           |
-| `h3IsResClassIII`             | `isResClassIII`                        |
-| `h3IndexesAreNeighbors`       | `areNeighborCells`                     |
-| `h3ToParent`                  | `getParent` or `getCellParent`         |
-| `h3ToChildren`                | `getChildren` or `getCellChildren`     |
-| `numHexagons`                 | `getNumCells`                          |
-| `getRes0Indexes`              | `getRes0Cells`                         |
-| `getPentagonIndexes`          | `getPentagons`                         |
-| `h3GetBaseCell`               | `getBaseCellNumber`                    |
-| `h3GetResolution`             | `getResolution` or `getCellResolution` |
-| `geoToH3`                     | `geoToCell`                            |
-| `h3ToGeo`                     | `cellToGeo`                            |
-| `compact`                     |                                        |
-| `uncompact`                   |                                        |
-| `polyfill`                    |                                        |
+|          Current name         |                     Proposed name                      |
+|-------------------------------|--------------------------------------------------------|
+| *Does Not Exist (DNE)*        | `isValidIndex`                                         |
+| `h3IsValid`                   | `isValidCell`                                          |
+| `h3UnidirectionalEdgeIsValid` | `isValidDirectedEdge`                                  |
+| `h3IsPentagon`                | `isPentagon`                                           |
+| `h3IsResClassIII`             | `isResClassIII`                                        |
+| `h3IndexesAreNeighbors`       | `areNeighborCells`                                     |
+| `h3ToParent`                  | `getParent` or `getCellParent` or `cellToParent`       |
+| `h3ToChildren`                | `getChildren` or `getCellChildren` or `cellToChildren` |
+| `numHexagons`                 | `getNumCells`                                          |
+| `getRes0Indexes`              | `getRes0Cells`                                         |
+| `getPentagonIndexes`          | `getPentagons`                                         |
+| `h3GetBaseCell`               | `getBaseCellNumber`                                    |
+| `h3GetResolution`             | `getResolution` or `getCellResolution`                 |
+| `geoToH3`                     | `geoToCell`                                            |
+| `h3ToGeo`                     | `cellToGeo`                                            |
+| `h3ToGeoBoundary`             | `cellToGeoBoundary`                                    |
+| `compact`                     |                                                        |
+| `uncompact`                   |                                                        |
+| `polyfill`                    |                                                        |
 
 
 ### Naming note
@@ -122,24 +123,27 @@ Instead of `UnidirectionalEdge`, use the term `DirectedEdge`.
 
 For a future undirected edge mode, use the term `Edge`.
 
-|                  Current name                 |        Proposed name         |
-|-----------------------------------------------|------------------------------|
-| `getH3UnidirectionalEdge`                     | `getDirectedEdge`            |
-| `h3UnidirectionalEdgeIsValid`                 | `isValidDirectedEdge`        |
-| `getOriginH3IndexFromUnidirectionalEdge`      | `getDirectedEdgeOrigin`      |
-| `getDestinationH3IndexFromUnidirectionalEdge` | `getDirectedEdgeDestination` |
-| `getH3IndexesFromUnidirectionalEdge`          | `getDirectedEdgeCells`       |
-| `getH3UnidirectionalEdgesFromHexagon`         | `getDirectedEdgesFromCell`   |
-| `getH3UnidirectionalEdgeBoundary`             | `getDirectedEdgeBoundary`    |
+|                  Current name                 |    Proposed name (`get`)     |         Alternate (`to`)         |
+|-----------------------------------------------|------------------------------|----------------------------------|
+| `getH3UnidirectionalEdge`                     | `getDirectedEdge`            |                                  |
+| `h3UnidirectionalEdgeIsValid`                 | `isValidDirectedEdge`        |                                  |
+| `getOriginH3IndexFromUnidirectionalEdge`      | `getDirectedEdgeOrigin`      | `directedEdgeToOrigin`           |
+| `getDestinationH3IndexFromUnidirectionalEdge` | `getDirectedEdgeDestination` | `directedEdgeToDestination`      |
+| `getH3IndexesFromUnidirectionalEdge`          | `getDirectedEdgeCells`       | `directedEdgeToCells`            |
+| `getH3UnidirectionalEdgesFromHexagon`         | `getDirectedEdgesFromCell`   | `cellToDirectedEdges` (6 or 12?) |
+| `getH3UnidirectionalEdgeBoundary`             | `getDirectedEdgeBoundary`    | `directedEdgeToBoundary`         |
 
 
 ## Area/Length Functions
 
-|  Current name  |    Proposed name     |                   Notes                    |
-|----------------|----------------------|--------------------------------------------|
-| `hexAreaKm2`   | `hexAreaAvgKm2`      | todo: `hexAreaMaxKm2` and `hexAreaMinKm2`? |
-| `hexAreaM2`    | `hexAreaAvgM2`       | todo: add min/max version?                 |
-| `edgeLengthKm` | `hexEdgeLengthAvgKm` | todo: add min/max version?                 |
-| `edgeLengthM`  | `hexEdgeLengthAvgM`  | todo: add min/max version?                 |
-| *DNE*          | `pentagonAreaAvgKm2` | plus others                                |
-| *DNE*          | `cellAreaKm2`        | area of specific cell                      |
+|  Current name  |    Proposed name     |         Notes         |
+|----------------|----------------------|-----------------------|
+| `hexAreaKm2`   | `hexAreaAvgKm2`      |                       |
+| `hexAreaM2`    | `hexAreaAvgM2`       |                       |
+| `edgeLengthKm` | `hexEdgeLengthAvgKm` |                       |
+| `edgeLengthM`  | `hexEdgeLengthAvgM`  |                       |
+| *DNE*          | `pentagonAreaAvgKm2` | + others              |
+| *DNE*          | `cellAreaKm2`        | area of specific cell |
+
+todo: add min/max versions in addition to avg.
+todo: should all these functions have a `get` prefix?
