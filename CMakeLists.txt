@@ -179,6 +179,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testH3LineExhaustive.c
     src/apps/testapps/testCoordIj.c
     src/apps/testapps/testCoordIjk.c
+    src/apps/testapps/testH3Memory.c
     src/apps/miscapps/h3ToGeoBoundaryHier.c
     src/apps/miscapps/h3ToGeoHier.c
     src/apps/miscapps/generateBaseCellNeighbors.c
@@ -379,6 +380,7 @@ if(BUILD_GENERATORS)
 endif()
 
 if(BUILD_TESTING)
+    option(RUN_MEMORY_TESTS "Run memory allocator tests (requires H3_ALLOC_PREFIX to be set)" OFF)
     option(PRINT_TEST_FILES "Print which test files correspond to which tests" OFF)
 
     include(TestWrapValgrind)
@@ -530,6 +532,10 @@ if(BUILD_TESTING)
     add_h3_test_with_arg(testH3NeighborRotations src/apps/testapps/testH3NeighborRotations.c 0)
     add_h3_test_with_arg(testH3NeighborRotations src/apps/testapps/testH3NeighborRotations.c 1)
     add_h3_test_with_arg(testH3NeighborRotations src/apps/testapps/testH3NeighborRotations.c 2)
+
+    if(RUN_MEMORY_TESTS)
+        add_h3_test(testH3Memory src/apps/testapps/testH3Memory.c)
+    endif()
 
     # The "Exhaustive" part of the test name is used by the test-fast to exclude these files.
     # test-fast exists so that Travis CI can run Valgrind on tests without taking a very long time.
