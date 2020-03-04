@@ -31,33 +31,34 @@
 #endif
 
 static int failAlloc = 0;
+static int actualAllocCalls = 0;
 
-void* H3_MEMORY(malloc)(size_t size) {
-    printf("malloc %lx\n", size);
+void* test_prefix_malloc(size_t size) {
+    actualAllocCalls++;
     if (failAlloc) {
         return NULL;
     }
     return malloc(size);
 }
 
-void* H3_MEMORY(calloc)(size_t num, size_t size) {
-    printf("calloc %lx\n", size);
+void* test_prefix_calloc(size_t num, size_t size) {
+    actualAllocCalls++;
     if (failAlloc) {
         return NULL;
     }
     return calloc(num, size);
 }
 
-void* H3_MEMORY(realloc)(void* ptr, size_t size) {
-    printf("realloc %lx\n", size);
+void* test_prefix_realloc(void* ptr, size_t size) {
+    actualAllocCalls++;
     if (failAlloc) {
         return NULL;
     }
     return realloc(ptr, size);
 }
 
-void H3_MEMORY(free)(void* ptr) {
-    printf("free\n");
+void test_prefix_free(void* ptr) {
+    actualAllocCalls++;
     return free(ptr);
 }
 
@@ -71,5 +72,6 @@ SUITE(h3Memory) {
         // Generate a set of hexagons to compact
         H3Index* sunnyvaleExpanded = calloc(hexCount, sizeof(H3Index));
         H3_EXPORT(kRing)(sunnyvale, k, sunnyvaleExpanded);
+        t_assert(actualAllocCalls == 2, "Number of allocation calls for kRing");
     }
 }

@@ -202,34 +202,41 @@ configure_file(${UNCONFIGURED_API_HEADER} ${CONFIGURED_API_HEADER})
 
 set(INSTALL_TARGETS h3)
 
+function(add_h3_library name h3_alloc_prefix_override)
+    add_library(${name} ${LIB_SOURCE_FILES} ${CONFIGURED_API_HEADER})
+
+    target_compile_options(${name} PRIVATE ${H3_COMPILE_FLAGS})
+    target_link_libraries(${name} PRIVATE ${H3_LINK_FLAGS})
+
+    find_library(M_LIB m)
+    if(M_LIB)
+        target_link_libraries(${name} PUBLIC ${M_LIB})
+    endif()
+
+    if(BUILD_SHARED_LIBS)
+        set_target_properties(${name} PROPERTIES SOVERSION ${H3_SOVERSION})
+    endif()
+
+    target_compile_definitions(${name} PUBLIC H3_PREFIX=${H3_PREFIX})
+    if(h3_alloc_prefix_override)
+        message("Using override " ${h3_alloc_prefix_override})
+        target_compile_definitions(${name} PUBLIC H3_ALLOC_PREFIX=${h3_alloc_prefix_override})
+    elseif(H3_ALLOC_PREFIX)
+        target_compile_definitions(${name} PUBLIC H3_ALLOC_PREFIX=${H3_ALLOC_PREFIX})
+    endif()
+    if(have_alloca)
+        target_compile_definitions(${name} PUBLIC H3_HAVE_ALLOCA)
+    endif()
+    if(have_vla)
+        target_compile_definitions(${name} PUBLIC H3_HAVE_VLA)
+    endif()
+    target_include_directories(${name} PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/h3lib/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/src/h3lib/include>)
+endfunction()
+
 # Build the H3 library
-add_library(h3 ${LIB_SOURCE_FILES} ${CONFIGURED_API_HEADER})
-
-target_compile_options(h3 PRIVATE ${H3_COMPILE_FLAGS})
-target_link_libraries(h3 PRIVATE ${H3_LINK_FLAGS})
-
-find_library(M_LIB m)
-if(M_LIB)
-    target_link_libraries(h3 PUBLIC ${M_LIB})
-endif()
-
-if(BUILD_SHARED_LIBS)
-    set_target_properties(h3 PROPERTIES SOVERSION ${H3_SOVERSION})
-endif()
-
-target_compile_definitions(h3 PUBLIC H3_PREFIX=${H3_PREFIX})
-if(H3_ALLOC_PREFIX)
-    target_compile_definitions(h3 PUBLIC H3_ALLOC_PREFIX=${H3_ALLOC_PREFIX})
-endif()
-if(have_alloca)
-    target_compile_definitions(h3 PUBLIC H3_HAVE_ALLOCA)
-endif()
-if(have_vla)
-    target_compile_definitions(h3 PUBLIC H3_HAVE_VLA)
-endif()
-target_include_directories(h3 PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/h3lib/include>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/src/h3lib/include>)
+add_h3_library(h3 "")
 
 # Automatic code formatting
 find_program(CLANG_FORMAT_PATH clang-format)
@@ -380,7 +387,6 @@ if(BUILD_GENERATORS)
 endif()
 
 if(BUILD_TESTING)
-    option(RUN_MEMORY_TESTS "Run memory allocator tests (requires H3_ALLOC_PREFIX to be set)" OFF)
     option(PRINT_TEST_FILES "Print which test files correspond to which tests" OFF)
 
     include(TestWrapValgrind)
@@ -404,6 +410,37 @@ if(BUILD_TESTING)
             COMMENT "Zeroing counters"
             )
     endif()
+
+    add_h3_library(h3WithTestAllocators test_prefix_)
+
+    macro(add_h3_memory_test name srcfile)
+        # Like other test code, but these need to be linked against
+        # a different copy of the H3 library which has known intercepted
+        # allocator functions.
+        add_executable(${ARGV} ${APP_SOURCE_FILES})
+
+        if(TARGET ${name})
+            target_link_libraries(${name} PUBLIC h3WithTestAllocators)
+            target_include_directories(${name} PUBLIC
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/apps/applib/include>)
+            target_compile_options(${name} PRIVATE ${H3_COMPILE_FLAGS})
+            target_link_libraries(${name} PRIVATE ${H3_LINK_FLAGS})
+        endif()
+
+        math(EXPR test_number "${test_number}+1")
+
+        add_test(NAME ${name}_test${test_number} COMMAND ${TEST_WRAPPER} "$<TARGET_FILE:${name}>")
+
+        if(ENABLE_COVERAGE)
+            add_custom_target(${name}_coverage${test_number}
+                COMMAND ${name} > /dev/null
+                COMMENT "Running ${name}_coverage${test_number}"
+                )
+
+            add_dependencies(coverage ${name}_coverage${test_number})
+            add_dependencies(${name}_coverage${test_number} clean-coverage)
+        endif()
+    endmacro()
 
     macro(add_h3_test_common name srcfile)
         # need to actually make the test target
@@ -477,71 +514,68 @@ if(BUILD_TESTING)
     endmacro()
 
     # Add each individual test
+    file(GLOB all_centers tests/inputfiles/bc*centers.txt)
+    foreach(file ${all_centers})
+        add_h3_test_with_file(testH3ToGeo src/apps/testapps/testH3ToGeo.c ${file})
+    endforeach()
 
-    if(RUN_MEMORY_TESTS)
-        add_h3_test(testH3Memory src/apps/testapps/testH3Memory.c)
-    else()
-        file(GLOB all_centers tests/inputfiles/bc*centers.txt)
-        foreach(file ${all_centers})
-            add_h3_test_with_file(testH3ToGeo src/apps/testapps/testH3ToGeo.c ${file})
-        endforeach()
+    file(GLOB all_ic_files tests/inputfiles/res*ic.txt)
+    foreach(file ${all_ic_files})
+        add_h3_test_with_file(testH3ToGeo src/apps/testapps/testH3ToGeo.c ${file})
+    endforeach()
 
-        file(GLOB all_ic_files tests/inputfiles/res*ic.txt)
-        foreach(file ${all_ic_files})
-            add_h3_test_with_file(testH3ToGeo src/apps/testapps/testH3ToGeo.c ${file})
-        endforeach()
+    file(GLOB all_centers tests/inputfiles/rand*centers.txt)
+    foreach(file ${all_centers})
+        add_h3_test_with_file(testGeoToH3 src/apps/testapps/testGeoToH3.c ${file})
+    endforeach()
 
-        file(GLOB all_centers tests/inputfiles/rand*centers.txt)
-        foreach(file ${all_centers})
-            add_h3_test_with_file(testGeoToH3 src/apps/testapps/testGeoToH3.c ${file})
-        endforeach()
+    file(GLOB all_cells tests/inputfiles/*cells.txt)
+    foreach(file ${all_cells})
+        add_h3_test_with_file(testH3ToGeoBoundary src/apps/testapps/testH3ToGeoBoundary.c ${file})
+    endforeach()
 
-        file(GLOB all_cells tests/inputfiles/*cells.txt)
-        foreach(file ${all_cells})
-            add_h3_test_with_file(testH3ToGeoBoundary src/apps/testapps/testH3ToGeoBoundary.c ${file})
-        endforeach()
-        
-        add_h3_test(testCompact src/apps/testapps/testCompact.c)
-        add_h3_test(testKRing src/apps/testapps/testKRing.c)
-        add_h3_test(testHexRing src/apps/testapps/testHexRing.c)
-        add_h3_test(testHexRanges src/apps/testapps/testHexRanges.c)
-        add_h3_test(testH3ToParent src/apps/testapps/testH3ToParent.c)
-        add_h3_test(testH3ToCenterChild src/apps/testapps/testH3ToCenterChild.c)
-        add_h3_test(testH3ToChildren src/apps/testapps/testH3ToChildren.c)
-        add_h3_test(testH3GetFaces src/apps/testapps/testH3GetFaces.c)
-        add_h3_test(testMaxH3ToChildrenSize src/apps/testapps/testMaxH3ToChildrenSize.c)
-        add_h3_test(testH3Index src/apps/testapps/testH3Index.c)
-        add_h3_test(testH3Api src/apps/testapps/testH3Api.c)
-        add_h3_test(testH3SetToLinkedGeo src/apps/testapps/testH3SetToLinkedGeo.c)
-        add_h3_test(testH3SetToVertexGraph src/apps/testapps/testH3SetToVertexGraph.c)
-        add_h3_test(testLinkedGeo src/apps/testapps/testLinkedGeo.c)
-        add_h3_test(testPolyfill src/apps/testapps/testPolyfill.c)
-        add_h3_test(testPolyfillReported src/apps/testapps/testPolyfillReported.c)
-        add_h3_test(testVertexGraph src/apps/testapps/testVertexGraph.c)
-        add_h3_test(testH3UniEdge src/apps/testapps/testH3UniEdge.c)
-        add_h3_test(testGeoCoord src/apps/testapps/testGeoCoord.c)
-        add_h3_test(testBBox src/apps/testapps/testBBox.c)
-        add_h3_test(testPolygon src/apps/testapps/testPolygon.c)
-        add_h3_test(testVec2d src/apps/testapps/testVec2d.c)
-        add_h3_test(testVec3d src/apps/testapps/testVec3d.c)
-        add_h3_test(testH3ToLocalIj src/apps/testapps/testH3ToLocalIj.c)
-        add_h3_test(testH3Distance src/apps/testapps/testH3Distance.c)
-        add_h3_test(testH3Line src/apps/testapps/testH3Line.c)
-        add_h3_test(testCoordIj src/apps/testapps/testCoordIj.c)
-        add_h3_test(testCoordIjk src/apps/testapps/testCoordIjk.c)
-        add_h3_test(testBaseCells src/apps/testapps/testBaseCells.c)
-        add_h3_test(testPentagonIndexes src/apps/testapps/testPentagonIndexes.c)
+    add_h3_test(testCompact src/apps/testapps/testCompact.c)
+    add_h3_test(testKRing src/apps/testapps/testKRing.c)
+    add_h3_test(testHexRing src/apps/testapps/testHexRing.c)
+    add_h3_test(testHexRanges src/apps/testapps/testHexRanges.c)
+    add_h3_test(testH3ToParent src/apps/testapps/testH3ToParent.c)
+    add_h3_test(testH3ToCenterChild src/apps/testapps/testH3ToCenterChild.c)
+    add_h3_test(testH3ToChildren src/apps/testapps/testH3ToChildren.c)
+    add_h3_test(testH3GetFaces src/apps/testapps/testH3GetFaces.c)
+    add_h3_test(testMaxH3ToChildrenSize src/apps/testapps/testMaxH3ToChildrenSize.c)
+    add_h3_test(testH3Index src/apps/testapps/testH3Index.c)
+    add_h3_test(testH3Api src/apps/testapps/testH3Api.c)
+    add_h3_test(testH3SetToLinkedGeo src/apps/testapps/testH3SetToLinkedGeo.c)
+    add_h3_test(testH3SetToVertexGraph src/apps/testapps/testH3SetToVertexGraph.c)
+    add_h3_test(testLinkedGeo src/apps/testapps/testLinkedGeo.c)
+    add_h3_test(testPolyfill src/apps/testapps/testPolyfill.c)
+    add_h3_test(testPolyfillReported src/apps/testapps/testPolyfillReported.c)
+    add_h3_test(testVertexGraph src/apps/testapps/testVertexGraph.c)
+    add_h3_test(testH3UniEdge src/apps/testapps/testH3UniEdge.c)
+    add_h3_test(testGeoCoord src/apps/testapps/testGeoCoord.c)
+    add_h3_test(testBBox src/apps/testapps/testBBox.c)
+    add_h3_test(testPolygon src/apps/testapps/testPolygon.c)
+    add_h3_test(testVec2d src/apps/testapps/testVec2d.c)
+    add_h3_test(testVec3d src/apps/testapps/testVec3d.c)
+    add_h3_test(testH3ToLocalIj src/apps/testapps/testH3ToLocalIj.c)
+    add_h3_test(testH3Distance src/apps/testapps/testH3Distance.c)
+    add_h3_test(testH3Line src/apps/testapps/testH3Line.c)
+    add_h3_test(testCoordIj src/apps/testapps/testCoordIj.c)
+    add_h3_test(testCoordIjk src/apps/testapps/testCoordIjk.c)
+    add_h3_test(testBaseCells src/apps/testapps/testBaseCells.c)
+    add_h3_test(testPentagonIndexes src/apps/testapps/testPentagonIndexes.c)
 
-        add_h3_test_with_arg(testH3NeighborRotations src/apps/testapps/testH3NeighborRotations.c 0)
-        add_h3_test_with_arg(testH3NeighborRotations src/apps/testapps/testH3NeighborRotations.c 1)
-        add_h3_test_with_arg(testH3NeighborRotations src/apps/testapps/testH3NeighborRotations.c 2)
+    add_h3_test_with_arg(testH3NeighborRotations src/apps/testapps/testH3NeighborRotations.c 0)
+    add_h3_test_with_arg(testH3NeighborRotations src/apps/testapps/testH3NeighborRotations.c 1)
+    add_h3_test_with_arg(testH3NeighborRotations src/apps/testapps/testH3NeighborRotations.c 2)
 
-        # The "Exhaustive" part of the test name is used by the test-fast to exclude these files.
-        # test-fast exists so that Travis CI can run Valgrind on tests without taking a very long time.
-        add_h3_test(testH3ToLocalIjExhaustive src/apps/testapps/testH3ToLocalIjExhaustive.c)
-        add_h3_test(testH3LineExhaustive src/apps/testapps/testH3LineExhaustive.c)
-        add_h3_test(testH3DistanceExhaustive src/apps/testapps/testH3DistanceExhaustive.c)
-    endif()
+    # The "Exhaustive" part of the test name is used by the test-fast to exclude these files.
+    # test-fast exists so that Travis CI can run Valgrind on tests without taking a very long time.
+    add_h3_test(testH3ToLocalIjExhaustive src/apps/testapps/testH3ToLocalIjExhaustive.c)
+    add_h3_test(testH3LineExhaustive src/apps/testapps/testH3LineExhaustive.c)
+    add_h3_test(testH3DistanceExhaustive src/apps/testapps/testH3DistanceExhaustive.c)
+
+    add_h3_memory_test(testH3Memory src/apps/testapps/testH3Memory.c)
 
     add_custom_target(test-fast COMMAND ctest -E Exhaustive)
 endif()
