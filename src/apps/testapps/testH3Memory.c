@@ -20,21 +20,33 @@
  */
 
 #include <math.h>
-#include "alloc.h"
 #include "geoCoord.h"
+#include "h3Index.h"
 #include "h3api.h"
 #include "test.h"
 #include "utility.h"
 
-#ifndef H3_ALLOC_PREFIX
-#error "This test can only be run with a prefix for alloc functions"
-#endif
-
-static int failAlloc = 0;
+// Whether to fail all allocations
+static bool failAlloc = false;
+// Actual number of malloc/calloc/realloc calls observed
 static int actualAllocCalls = 0;
+// Actual number of free calls observed
+static int actualFreeCalls = 0;
+// Set to non-zero to begin failing allocations after a certain number of calls
+static int permittedAllocCalls = 0;
+
+void resetMemoryCounters(int permitted) {
+    failAlloc = false;
+    actualAllocCalls = 0;
+    actualFreeCalls = 0;
+    permittedAllocCalls = permitted;
+}
 
 void* test_prefix_malloc(size_t size) {
     actualAllocCalls++;
+    if (permittedAllocCalls && actualAllocCalls > permittedAllocCalls) {
+        failAlloc = true;
+    }
     if (failAlloc) {
         return NULL;
     }
@@ -43,6 +55,9 @@ void* test_prefix_malloc(size_t size) {
 
 void* test_prefix_calloc(size_t num, size_t size) {
     actualAllocCalls++;
+    if (permittedAllocCalls && actualAllocCalls > permittedAllocCalls) {
+        failAlloc = true;
+    }
     if (failAlloc) {
         return NULL;
     }
@@ -51,6 +66,9 @@ void* test_prefix_calloc(size_t num, size_t size) {
 
 void* test_prefix_realloc(void* ptr, size_t size) {
     actualAllocCalls++;
+    if (permittedAllocCalls && actualAllocCalls > permittedAllocCalls) {
+        failAlloc = true;
+    }
     if (failAlloc) {
         return NULL;
     }
@@ -58,21 +76,66 @@ void* test_prefix_realloc(void* ptr, size_t size) {
 }
 
 void test_prefix_free(void* ptr) {
-    actualAllocCalls++;
+    actualFreeCalls++;
     return free(ptr);
 }
 
 H3Index sunnyvale = 0x89283470c27ffff;
 
 SUITE(h3Memory) {
-    TEST(t) {
+    TEST(compact) {
         int k = 9;
         int hexCount = H3_EXPORT(maxKringSize)(k);
+        int expectedCompactCount = 73;
 
         // Generate a set of hexagons to compact
         H3Index* sunnyvaleExpanded = calloc(hexCount, sizeof(H3Index));
         H3_EXPORT(kRing)(sunnyvale, k, sunnyvaleExpanded);
-        t_assert(actualAllocCalls == 2, "Number of allocation calls for kRing");
+        t_assert(actualAllocCalls == 1, "kRing called alloc");
+        t_assert(actualFreeCalls == 1, "kRing caleld free");
+
+        H3Index* compressed = calloc(hexCount, sizeof(H3Index));
+
+        resetMemoryCounters(0);
+        failAlloc = true;
+        int err = H3_EXPORT(compact)(sunnyvaleExpanded, compressed, hexCount);
+        t_assert(err == COMPACT_ALLOC_FAILED, "malloc failed (1)");
+        t_assert(actualAllocCalls == 1, "alloc called once");
+        t_assert(actualFreeCalls == 0, "free not called");
+
+        resetMemoryCounters(1);
+        err = H3_EXPORT(compact)(sunnyvaleExpanded, compressed, hexCount);
+        t_assert(err == COMPACT_ALLOC_FAILED, "malloc failed (2)");
+        t_assert(actualAllocCalls == 2, "alloc called twice");
+        t_assert(actualFreeCalls == 1, "free called once");
+
+        resetMemoryCounters(2);
+        err = H3_EXPORT(compact)(sunnyvaleExpanded, compressed, hexCount);
+        t_assert(err == COMPACT_ALLOC_FAILED, "malloc failed (3)");
+        t_assert(actualAllocCalls == 3, "alloc called three times");
+        t_assert(actualFreeCalls == 2, "free called twice");
+
+        resetMemoryCounters(3);
+        err = H3_EXPORT(compact)(sunnyvaleExpanded, compressed, hexCount);
+        t_assert(err == COMPACT_ALLOC_FAILED, "compact failed (4)");
+        t_assert(actualAllocCalls == 4, "alloc called four times");
+        t_assert(actualFreeCalls == 3, "free called three times");
+
+        resetMemoryCounters(4);
+        err = H3_EXPORT(compact)(sunnyvaleExpanded, compressed, hexCount);
+        t_assert(err == COMPACT_SUCCESS, "compact using successful malloc");
+        t_assert(actualAllocCalls == 4, "alloc called four times");
+        t_assert(actualFreeCalls == 4, "free called four times");
+
+        int count = 0;
+        for (int i = 0; i < hexCount; i++) {
+            if (compressed[i] != 0) {
+                count++;
+            }
+        }
+        t_assert(count == expectedCompactCount, "got expected compacted count");
+
+        free(compressed);
         free(sunnyvaleExpanded);
     }
 }

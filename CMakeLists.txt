@@ -219,7 +219,6 @@ function(add_h3_library name h3_alloc_prefix_override)
 
     target_compile_definitions(${name} PUBLIC H3_PREFIX=${H3_PREFIX})
     if(h3_alloc_prefix_override)
-        message("Using override " ${h3_alloc_prefix_override})
         target_compile_definitions(${name} PUBLIC H3_ALLOC_PREFIX=${h3_alloc_prefix_override})
     elseif(H3_ALLOC_PREFIX)
         target_compile_definitions(${name} PUBLIC H3_ALLOC_PREFIX=${H3_ALLOC_PREFIX})

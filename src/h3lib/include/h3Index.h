@@ -172,6 +172,7 @@
 #define COMPACT_SUCCESS 0
 #define COMPACT_LOOP_EXCEEDED -1
 #define COMPACT_DUPLICATE -2
+#define COMPACT_ALLOC_FAILED -3
 
 void setH3Index(H3Index* h, int res, int baseCell, Direction initDigit);
 int isResClassIII(int res);

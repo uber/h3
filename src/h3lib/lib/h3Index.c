@@ -287,8 +287,15 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
         return COMPACT_SUCCESS;
     }
     H3Index* remainingHexes = H3_MEMORY(malloc)(numHexes * sizeof(H3Index));
+    if (!remainingHexes) {
+        return COMPACT_ALLOC_FAILED;
+    }
     memcpy(remainingHexes, h3Set, numHexes * sizeof(H3Index));
     H3Index* hashSetArray = H3_MEMORY(calloc)(numHexes, sizeof(H3Index));
+    if (!hashSetArray) {
+        H3_MEMORY(free)(remainingHexes);
+        return COMPACT_ALLOC_FAILED;
+    }
     H3Index* compactedSetOffset = compactedSet;
     int numRemainingHexes = numHexes;
     while (numRemainingHexes) {
@@ -355,6 +362,11 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
         }
         H3Index* compactableHexes =
             H3_MEMORY(malloc)(maxCompactableCount * sizeof(H3Index));
+        if (!compactableHexes) {
+            H3_MEMORY(free)(remainingHexes);
+            H3_MEMORY(free)(hashSetArray);
+            return COMPACT_ALLOC_FAILED;
+        }
         for (int i = 0; i < numRemainingHexes; i++) {
             if (hashSetArray[i] == 0) continue;
             int count = H3_GET_RESERVED_BITS(hashSetArray[i]) + 1;
