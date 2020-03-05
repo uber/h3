@@ -73,5 +73,6 @@ SUITE(h3Memory) {
         H3Index* sunnyvaleExpanded = calloc(hexCount, sizeof(H3Index));
         H3_EXPORT(kRing)(sunnyvale, k, sunnyvaleExpanded);
         t_assert(actualAllocCalls == 2, "Number of allocation calls for kRing");
+        free(sunnyvaleExpanded);
     }
 }
