@@ -121,12 +121,12 @@ There is some ambiguity between property, transform, and computation, so use you
 
 #### Distance
 
-| Current name |      Proposed name      |     Notes      |
-|--------------|-------------------------|----------------|
-| `h3Distance` | `gridDistance`          |                |
-| `h3Line`     | `gridPathCells`         |                |
-| *DNE*        | `gridPathEdges`         |                |
-| *DNE*        | `gridPathDirectedEdges` |                |
+| Current name |      Proposed name      |
+|--------------|-------------------------|
+| `h3Distance` | `gridDistance`          |
+| `h3Line`     | `gridPathCells`         |
+| *DNE*        | `gridPathEdges`         |
+| *DNE*        | `gridPathDirectedEdges` |
 
 
 #### Filled-In Disk With Distances
@@ -137,21 +137,24 @@ There is some ambiguity between property, transform, and computation, so use you
 | `_kRingInternal`    | `gridDiskDistances_slow` | pentagons | disk/distances | NONE                                 |
 | `kRingDistances`    | `gridDiskDistances`      | general   | disk/distances | `hexRangeDistances`,`_kRingInternal` |
 
+**Note**: The distances array is *optional* for `hexRangeDistances`, but *required* for the other two functions.
+
 #### Filled-In Disk Without Distances
 
-| Current name |  Proposed name   |    Type   | Notes |                        Calls                         |
-|--------------|------------------|-----------|-------|------------------------------------------------------|
-| `kRing`      | `gridDisk`       | general   | disk  | `kRingDistances`, drops distances                    |
-| `hexRange`   | `gridDisk_fast`? | hex only  | disk  | `hexRangeDistances`, does not allocate for distances |
-| *DNE*        | `gridDisk_slow`? | pentagons | disk  |                                                      |
+| Current name |  Proposed name   |    Type   | Notes |                      Calls                       |
+|--------------|------------------|-----------|-------|--------------------------------------------------|
+| `hexRange`   | `gridDisk_fast`? | hex only  | disk  | `hexRangeDistances`, does not allocate distances |
+| *DNE*        | `gridDisk_slow`? | pentagons | disk  |                                                  |
+| `kRing`      | `gridDisk`       | general   | disk  | `kRingDistances`, allocates and drops distances  |
+
 
 #### Hollow Ring
 
 | Current name |  Proposed name  |    Type   | Notes | Calls |
 |--------------|-----------------|-----------|-------|-------|
-| *DNE*        | `gridRing`      | general   | ring  |       |
 | `hexRing`    | `gridRing_fast` | hex only  | ring  | NONE  |
 | *DNE*        | `gridRing_slow` | pentagons | ring  |       |
+| *DNE*        | `gridRing`      | general   | ring  |       |
 
 
 #### To Remove
@@ -162,23 +165,8 @@ There is some ambiguity between property, transform, and computation, so use you
 
 
 #### Todo
+
 - maybe there's a better suffix than `_fast`/`_slow`?
-- what's going on with these distance allocations (or lack of)?
-
-```C
-// unnecessary malloc?
-void H3_EXPORT(kRing)(H3Index origin, int k, H3Index* out) {
-    int maxIdx = H3_EXPORT(maxKringSize)(k);
-    int* distances = malloc(maxIdx * sizeof(int));
-    H3_EXPORT(kRingDistances)(origin, k, out, distances);
-    free(distances);
-}
-
-// missing malloc?
-int H3_EXPORT(hexRange)(H3Index origin, int k, H3Index* out) {
-    return H3_EXPORT(hexRangeDistances)(origin, k, out, 0);
-}
-```
 
 ### H3 Edge Types
 
