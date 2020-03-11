@@ -3,6 +3,8 @@
 - **Authors**: AJ Friend
 - **Date**: 2020-02-02
 - **Status**: Draft
+- **Discussions**:
+    - <https://github.com/uber/h3/pull/308>
 
 ## Motivation
 
