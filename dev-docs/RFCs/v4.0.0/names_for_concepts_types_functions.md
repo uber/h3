@@ -139,11 +139,11 @@ There is some ambiguity between property, transform, and computation, so use you
 
 #### Filled-In Disk Without Distances
 
-| Current name |  Proposed name   |    Type   | Notes |                Calls                 |
-|--------------|------------------|-----------|-------|--------------------------------------|
-| `kRing`      | `gridDisk`       | general   | disk  | `kRingDistances`, drops distances    |
-| `hexRange`   | `gridDisk_fast`? | hex only  | disk  | `hexRangeDistances`, drops distances |
-| *DNE*        | `gridDisk_slow`? | pentagons | disk  |                                      |
+| Current name |  Proposed name   |    Type   | Notes |                        Calls                         |
+|--------------|------------------|-----------|-------|------------------------------------------------------|
+| `kRing`      | `gridDisk`       | general   | disk  | `kRingDistances`, drops distances                    |
+| `hexRange`   | `gridDisk_fast`? | hex only  | disk  | `hexRangeDistances`, does not allocate for distances |
+| *DNE*        | `gridDisk_slow`? | pentagons | disk  |                                                      |
 
 #### Hollow Ring
 
