@@ -22,6 +22,9 @@ The following technical terms should be used in the documentation, the H3 codeba
     - often represented as a 15-character (or 16-character) hexadecimal string, like `'8928308280fffff'`
     - the full term "H3 index" should be used to avoid confusion with other common uses of "index";
       when a "traditional" index is needed, prefer using "number", "pos", or another term to avoid confusion
+- **mode**:
+    - an integer describing the type of object being represented by an H3 index
+    - this integer is encoded in the `H3Index`
 - **cell** or **H3 cell**:
     - a geometric polygon corresponding to an `H3Index` of `mode 1` (hexagon or pentagon)
     - for functions that can handle either hexagons or pentagons, the more general term "cell" should be used whenever possible
@@ -51,13 +54,17 @@ This should be expected in casual, informal discussions of H3.
 However, when *precision* is required, we advise the use of strict technical terms like "index", "cell", "hexagon", "pentagon", etc.
 In the codebase and in the documentation, strictly correct terminology should *always* be used, as many functions and algorithms distinguish between hexagons and pentagons.
 
+
+## `H3_EXPORT` and C name collisions
+
+To avoid C name collisions, we should build the bindings (`h3-py`, `h3-java`, `h3-go`, and `h3-node`) with a standard function prefix, using the `H3_EXPORT` C macro.
+The `h3-js` binding would not need this.
+
+The proposed prefix is `h3_`.
+
 ## Functions
 
-### Naming Conventions
-
-todo: move topological and hexagon notes to here?
-
-Rules of thumb for function naming:
+### Conventions for "property getters" and transforms
 
 - use `get` prefix for
     + constant data (`getNumCells`, `getRes0Cells`)
@@ -69,7 +76,6 @@ Rules of thumb for function naming:
     + e.g., `polyfill`, `compact`, `cellAreaKm2`
 
 There is some ambiguity between property, transform, and computation, so use your best judgement with these guidelines in mind.
-
 
 ### Validity checks
 
@@ -84,40 +90,33 @@ There is some ambiguity between property, transform, and computation, so use you
   work to determine if they are neighbors
 
 
-### `H3_EXPORT` and C naming collisions
+### General Function Names
 
-todo
-
-## General Function Names
-
-|          Current name         |                Proposed name                |                      Notes                      |
-|-------------------------------|---------------------------------------------|-------------------------------------------------|
-| *Does Not Exist (DNE)*        | `isValidIndex`                              |                                                 |
-| `h3IsValid`                   | `isValidCell`                               |                                                 |
-| `h3UnidirectionalEdgeIsValid` | `isValidDirectedEdge`                       |                                                 |
-| `h3IsPentagon`                | `isPentagon`                                |                                                 |
-| `h3IsResClassIII`             | `isResClassIII`                             |                                                 |
-| `h3IndexesAreNeighbors`       | `areNeighborCells`                          |                                                 |
-| `h3ToParent`                  | `cellToParent`                              |                                                 |
-| `h3ToChildren`                | `cellToChildren`                            |                                                 |
-| `numHexagons`                 | `getNumCells`                               |                                                 |
-| `getRes0Indexes`              | `getRes0Cells`                              |                                                 |
-| `getPentagonIndexes`          | `getPentagons`                              |                                                 |
-| `h3GetBaseCell`               | `getBaseCellNumber`, `cellToBaseCellNumber` |                                                 |
-| `h3GetResolution`             | `getResolution`                             | should this work for all modes, not just cells? |
-| `geoToH3`                     | `pointToCell`                               |                                                 |
-| `h3ToGeo`                     | `cellToPoint`                               |                                                 |
-| `h3ToGeoBoundary`             | `cellToPoly`                                |                                                 |
-| `compact`                     | same                                        |                                                 |
-| `uncompact`                   | same                                        |                                                 |
-| `polyfill`                    | same                                        |                                                 |
-| *DNE*                         | `getMode`, `getH3Mode`, `getIndexMode`      |                                                 |
+|          Current name         |     Proposed name     |                      Notes                      |
+|-------------------------------|-----------------------|-------------------------------------------------|
+| *Does Not Exist (DNE)*        | `isValidIndex`        |                                                 |
+| `h3IsValid`                   | `isValidCell`         |                                                 |
+| `h3UnidirectionalEdgeIsValid` | `isValidDirectedEdge` |                                                 |
+| `h3IsPentagon`                | `isPentagon`          |                                                 |
+| `h3IsResClassIII`             | `isResClassIII`       |                                                 |
+| `h3IndexesAreNeighbors`       | `areNeighborCells`    |                                                 |
+| `h3ToParent`                  | `cellToParent`        |                                                 |
+| `h3ToChildren`                | `cellToChildren`      |                                                 |
+| `numHexagons`                 | `getNumCells`         |                                                 |
+| `getRes0Indexes`              | `getRes0Cells`        |                                                 |
+| `getPentagonIndexes`          | `getPentagons`        |                                                 |
+| `h3GetBaseCell`               | `getBaseCellNumber`   |                                                 |
+| `h3GetResolution`             | `getResolution`       | should this work for all modes, not just cells? |
+| `geoToH3`                     | `pointToCell`         |                                                 |
+| `h3ToGeo`                     | `cellToPoint`         |                                                 |
+| `h3ToGeoBoundary`             | `cellToPoly`          |                                                 |
+| `compact`                     | same                  |                                                 |
+| `uncompact`                   | same                  |                                                 |
+| `polyfill`                    | same                  |                                                 |
+| *DNE*                         | `getMode`             |                                                 |
 
 
-note: there was some discussion to change `getBaseCellNumber` to `cellToBaseCellNumber`, but that seems to go against our "property" rule for `get`
-
-
-## H3 Grid Functions
+### H3 Grid Functions
 
 | Current name |      Proposed name      |     Notes      |
 |--------------|-------------------------|----------------|
@@ -133,7 +132,7 @@ todo: add C function to correspond to "works with pentagons" version of `hexRing
 todo: For the `kRing`, `hexRange`, `hexRing`, etc. family of functions, should we come up with some standard prefix or suffix to denote that the function will fail if it encounters a pentagon?
 
 
-## H3 Edge Types
+### H3 Edge Types
 
 Instead of `UnidirectionalEdge`, use the term `DirectedEdge`.
 
@@ -151,7 +150,7 @@ For a future undirected edge mode, use the term `Edge`.
 | `getDestinationH3IndexFromUnidirectionalEdge` | `getDirectedEdgeDestination`, `directedEdgeToDestination` |
 
 
-## Area/Length Functions
+### Area/Length Functions
 
 |  Current name  |      Proposed name      |         Notes         |
 |----------------|-------------------------|-----------------------|
