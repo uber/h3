@@ -13,45 +13,43 @@ Reaching a consensus on the precise, technical language used when discussing H3 
 
 We would also like to standardize a function-naming scheme.
 
-## Concepts
+## Terminology
 
 The following technical terms should be used in the documentation, the H3 codebase, and precise technical discussions of the library.
 
 - `H3Index`:
-    - an unsigned 64-bit integer representing **any** H3 object (hexagon, pentagon, directed edge, ...)
+    - an unsigned 64-bit integer representing *any* H3 object (hexagon, pentagon, directed edge, ...)
     - often represented as a 15-character (or 16-character) hexadecimal string, like `'8928308280fffff'`
-    - the full term "H3 index" should be used to avoid confusion with other common uses of "index"; when a "traditional" index is needed, prefer using "number", "pos", or another term to avoid confusion
-- `cell`:
-    - an H3 index of `mode 1` (hexagon or pentagon)
+    - the full term "H3 index" should be used to avoid confusion with other common uses of "index";
+      when a "traditional" index is needed, prefer using "number", "pos", or another term to avoid confusion
+- **cell** or **H3 cell**:
+    - a geometric polygon corresponding to an `H3Index` of `mode 1` (hexagon or pentagon)
     - for functions that can handle either hexagons or pentagons, the more general term "cell" should be used whenever possible
-- hexagon:
-    - an H3 cell which is a **topological** hexagon
+- **hexagon**:
+    - an H3 **cell** which is a **topological** hexagon
     - todo: advise use of the term "strict" for functions that can only handle hexagons?
-- pentagon:
-    - an H3 cell which is a **topological** pentagon
-- `DirectedEdge`:
-    - an H3 index of `mode 2`
-    - representing a traversal from an origin cell to an adjacent destination cell
-- grid:
+- **pentagon**:
+    - an H3 **cell** which is a **topological** pentagon
+- **directed edge**:
+    - represents a traversal from an origin **cell** to an adjacent destination **cell**
+    - corresponds to an `H3Index` of `mode 2`
+- **grid**:
     - the graph with nodes corresponding to H3 cells, and edges given by pairs of adjacent cells
     - for example, `gridDistance` is the minimal number of edges in a graph path connecting two cells
-- `point`:
-    - a representation of a point in terms of a latitude/longitude pair
+- **point**:
+    - a representation of a geometric point in terms of a latitude/longitude pair
+- **topological**:
+    - H3 cells are **topological** pentagons or hexagons, in the sense that they have 5 or 6 neighbors, respectively, in the H3 **grid**
+    - the majority of **hexagons** are also **geometric** hexagons (similarly with **pentagons**), in that they have 6 edges and vertices when represented as polygons of lat/lng points
+    - a small number of **hexagons** are not **geometric** hexagons (similarly with **pentagons**), in that they have extra vertices and edges due to distortion around icosahedron boundaries
+    - for more details, see this [h3-js issue](https://github.com/uber/h3-js/issues/53) or this [Observable post](https://observablehq.com/@fil/h3-oddities)
 
-### Notes
+### Use of "hex", "hexagon", "cell", "pentagon", etc.
 
-We realize that "hexagon" will still be used informally to refer to the concept of "cell" (As the development team, we do it ourselves!).
+We realize that "hex" or "hexagon" will still be used informally to refer to the concept of "cell" (As the development team, we do it ourselves!).
 This should be expected in casual, informal discussions of H3.
-However, when **precision** is required, we advise the use of strict technical terms like "index", "cell", "hexagon", "pentagon", etc.
-In the codebase and in the documentation, strictly correct terminology should **always** be used.
-
-
-## Use of "Topological"
-
-We should clarify in the documentation that H3 works with **topological** hexagons and pentagons, rather than true **geometric** hexagons and pentagons.
-
-See, for example: https://github.com/uber/h3-js/issues/53
-
+However, when *precision* is required, we advise the use of strict technical terms like "index", "cell", "hexagon", "pentagon", etc.
+In the codebase and in the documentation, strictly correct terminology should *always* be used, as many functions and algorithms distinguish between hexagons and pentagons.
 
 ## Functions
 
