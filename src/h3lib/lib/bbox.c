@@ -104,7 +104,9 @@ int bboxHexEstimate(const BBox* bbox, int res) {
     double pentagonRadiusKm = _hexRadiusKm(pentagons[0]);
     // Area of a regular hexagon is 3/2*sqrt(3) * r * r
     // The pentagon has the most distortion (smallest edges) and shares its
-    // edges with hexagons, so the most-distorted hexagons have this area
+    // edges with hexagons, so the most-distorted hexagons have this area,
+    // shrunk by 20% off chance that the bounding box perfectly bounds a
+    // pentagon.
     double pentagonAreaKm2 =
         0.8 * (2.59807621135 * pentagonRadiusKm * pentagonRadiusKm);
 
@@ -115,8 +117,9 @@ int bboxHexEstimate(const BBox* bbox, int res) {
     p2.lat = bbox->south;
     p2.lon = bbox->west;
     double d = _geoDistKm(&p1, &p2);
-    double a = d * d / 2.5;  // Derived constant based on:
-                             // https://math.stackexchange.com/a/1921940
+    // Derived constant based on: https://math.stackexchange.com/a/1921940
+    // Clamped to 3 as higher values tend to rapidly drag the estimate to zero.
+    double a = d * d / fmin(3.0, fabs((p1.lon - p2.lon) / (p1.lat - p2.lat)));
 
     // Divide the two to get an estimate of the number of hexagons needed
     int estimate = (int)ceil(a / pentagonAreaKm2);

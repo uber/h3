@@ -45,7 +45,7 @@ void _vertexGraphToLinkedGeo(VertexGraph* graph, LinkedGeoPolygon* out);
 int _getEdgeHexagons(const Geofence* geofence, int numHexagons, int res,
                      int* numSearchHexes, H3Index* search, H3Index* found);
 
-// The new polyfill algorithm. Separated out because it can theoretically fail
+// The polyfill algorithm. Separated out because it can theoretically fail
 int _polyfillInternal(const GeoPolygon* geoPolygon, int res, H3Index* out);
 
 #endif

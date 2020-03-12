@@ -45,6 +45,7 @@
 #define HEX_RANGE_PENTAGON 1
 #define HEX_RANGE_K_SUBSEQUENCE 2
 #define MAX_ONE_RING_SIZE 7
+#define HEX_HASH_OVERFLOW -1
 
 /**
  * Directions used for traversing a hexagonal ring counterclockwise around
@@ -736,7 +737,8 @@ int _getEdgeHexagons(const Geofence* geofence, int numHexagons, int res,
             while (found[loc] != 0) {
                 // If this conditional is reached, the `found` memory block is
                 // too small for the given polygon. This should not happen.
-                if (loopCount > numHexagons) return -1;  // LCOV_EXCL_LINE
+                if (loopCount > numHexagons)
+                    return HEX_HASH_OVERFLOW;  // LCOV_EXCL_LINE
                 if (found[loc] == pointHex)
                     break;  // At least two points of the geofence index to the
                             // same cell

@@ -121,10 +121,10 @@ SUITE(polyfill) {
 
     TEST(maxPolyfillSize) {
         int numHexagons = H3_EXPORT(maxPolyfillSize)(&sfGeoPolygon, 9);
-        t_assert(numHexagons == 3559, "got expected max polyfill size");
+        t_assert(numHexagons == 5613, "got expected max polyfill size");
 
         numHexagons = H3_EXPORT(maxPolyfillSize)(&holeGeoPolygon, 9);
-        t_assert(numHexagons == 3559, "got expected max polyfill size (hole)");
+        t_assert(numHexagons == 5613, "got expected max polyfill size (hole)");
 
         numHexagons = H3_EXPORT(maxPolyfillSize)(&emptyGeoPolygon, 9);
         t_assert(numHexagons == 15, "got expected max polyfill size (empty)");
