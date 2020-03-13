@@ -94,31 +94,53 @@ There is some ambiguity between property, transform, and computation, so use you
 
 ### General Function Names
 
-|          Current name         |     Proposed name     |                      Notes                      |
-|-------------------------------|-----------------------|-------------------------------------------------|
-| *Does Not Exist (DNE)*        | `isValidIndex`        |                                                 |
-| `h3IsValid`                   | `isValidCell`         |                                                 |
-| `h3UnidirectionalEdgeIsValid` | `isValidDirectedEdge` |                                                 |
-| `h3IsPentagon`                | `isPentagon`          |                                                 |
-| `h3IsResClassIII`             | `isResClassIII`       |                                                 |
-| `h3IndexesAreNeighbors`       | `areNeighborCells`    |                                                 |
-| `h3ToParent`                  | `cellToParent`        |                                                 |
-| `h3ToChildren`                | `cellToChildren`      |                                                 |
-| `numHexagons`                 | `getNumCells`         |                                                 |
-| `getRes0Indexes`              | `getRes0Cells`        |                                                 |
-| `getPentagonIndexes`          | `getPentagons`        |                                                 |
-| `h3GetBaseCell`               | `getBaseCellNumber`   |                                                 |
-| `h3GetResolution`             | `getResolution`       | should this work for all modes, not just cells? |
-| `geoToH3`                     | `pointToCell`         |                                                 |
-| `h3ToGeo`                     | `cellToPoint`         |                                                 |
-| `h3ToGeoBoundary`             | `cellToPoly`          |                                                 |
-| `compact`                     | same                  |                                                 |
-| `uncompact`                   | same                  |                                                 |
-| `polyfill`                    | same                  |                                                 |
-| *DNE*                         | `getMode`             |                                                 |
+|          Current name         |     Proposed name     |
+|-------------------------------|-----------------------|
+| *Does Not Exist (DNE)*        | `isValidIndex`        |
+| `h3IsValid`                   | `isValidCell`         |
+| `h3UnidirectionalEdgeIsValid` | `isValidDirectedEdge` |
+| `h3IsPentagon`                | `isPentagon`          |
+| `h3IsResClassIII`             | `isResClassIII`       |
+| `h3IndexesAreNeighbors`       | `areNeighborCells`    |
+| `h3ToParent`                  | `cellToParent`        |
+| `h3ToChildren`                | `cellToChildren`      |
+| `numHexagons`                 | `getNumCells`         |
+| `getRes0Indexes`              | `getRes0Cells`        |
+| `getPentagonIndexes`          | `getPentagons`        |
+| `h3GetBaseCell`               | `getBaseCellNumber`   |
+| `h3GetResolution`             | `getResolution`       |
+| `geoToH3`                     | `pointToCell`         |
+| `h3ToGeo`                     | `cellToPoint`         |
+| `h3ToGeoBoundary`             | `cellToPoly`          |
+| `compact`                     | same                  |
+| `uncompact`                   | same                  |
+| `polyfill`                    | same                  |
+| *DNE*                         | `getMode`             |
 
+- note: `getResolution` should work for cells and edges
 
 ### H3 Grid Functions
+
+Many of these functions will have three forms:
+- `<func_name>`
+- `<func_name>Unsafe`
+- `<func_name>Safe`
+
+The `Unsafe` version is fast, but may fail if it encounters a pentagon.
+It should return a failure code in this case.
+
+The `Safe` version is slower, but will work in all cases.
+
+The version without either suffix is intended to be the one typically
+used.
+This version will first attempt the `Unsafe` version, and if
+it detects failure, will fall back to the `Safe` version.
+Encountering pentagons is rare in most use-cases, so this version
+should usually be equivalent to the fast version, but with a guarantee
+that it will not fail.
+
+Initially, we **will not** expose the `Safe` versions to users in the API.
+We may expose them in the future if a need becomes clear.
 
 
 #### Distance
@@ -133,11 +155,11 @@ There is some ambiguity between property, transform, and computation, so use you
 
 #### Filled-In Disk With Distances
 
-|     Current name    |      Proposed name       |    Type   |     Notes      |                Calls                 |
-|---------------------|--------------------------|-----------|----------------|--------------------------------------|
-| `hexRangeDistances` | `gridDiskDistances_fast` | hex only  | disk/distances | NONE                                 |
-| `_kRingInternal`    | `gridDiskDistances_slow` | pentagons | disk/distances | NONE                                 |
-| `kRingDistances`    | `gridDiskDistances`      | general   | disk/distances | `hexRangeDistances`,`_kRingInternal` |
+|     Current name    |       Proposed name       |    Type   |     Notes      |                Calls                 |
+|---------------------|---------------------------|-----------|----------------|--------------------------------------|
+| `hexRangeDistances` | `gridDiskDistancesUnsafe` | hex only  | disk/distances | NONE                                 |
+| `_kRingInternal`    | `gridDiskDistancesSafe`   | pentagons | disk/distances | NONE                                 |
+| `kRingDistances`    | `gridDiskDistances`       | general   | disk/distances | `hexRangeDistances`,`_kRingInternal` |
 
 **Note**: The distances array is *optional* for `hexRangeDistances`, but *required* for the other two functions.
 
@@ -145,18 +167,18 @@ There is some ambiguity between property, transform, and computation, so use you
 
 | Current name |  Proposed name   |    Type   | Notes |                      Calls                       |
 |--------------|------------------|-----------|-------|--------------------------------------------------|
-| `hexRange`   | `gridDisk_fast`? | hex only  | disk  | `hexRangeDistances`, does not allocate distances |
-| *DNE*        | `gridDisk_slow`? | pentagons | disk  |                                                  |
+| `hexRange`   | `gridDiskUnsafe` | hex only  | disk  | `hexRangeDistances`, does not allocate distances |
+| *DNE*        | `gridDiskSafe`   | pentagons | disk  |                                                  |
 | `kRing`      | `gridDisk`       | general   | disk  | `kRingDistances`, allocates and drops distances  |
 
 
 #### Hollow Ring
 
-| Current name |  Proposed name  |    Type   | Notes | Calls |
-|--------------|-----------------|-----------|-------|-------|
-| `hexRing`    | `gridRing_fast` | hex only  | ring  | NONE  |
-| *DNE*        | `gridRing_slow` | pentagons | ring  |       |
-| *DNE*        | `gridRing`      | general   | ring  |       |
+| Current name |  Proposed name   |    Type   | Notes | Calls |
+|--------------|------------------|-----------|-------|-------|
+| `hexRing`    | `gridRingUnsafe` | hex only  | ring  | NONE  |
+| *DNE*        | `gridRingSafe`   | pentagons | ring  |       |
+| *DNE*        | `gridRing`       | general   | ring  |       |
 
 
 #### To Remove
@@ -165,10 +187,8 @@ There is some ambiguity between property, transform, and computation, so use you
 |--------------|---------------|----------|----------------|
 | `hexRanges`  | (remove)      | hex only | N x `hexRange` |
 
+todo: we'll probably keep this one, as it has existing applications.
 
-#### Todo
-
-- maybe there's a better suffix than `_fast`/`_slow`?
 
 ### H3 Edge Types
 
@@ -176,16 +196,16 @@ Instead of `UnidirectionalEdge`, use the term `DirectedEdge`.
 
 For a future undirected edge mode, use the term `Edge`.
 
-|                  Current name                 |                       Proposed name                       |
-|-----------------------------------------------|-----------------------------------------------------------|
-| `h3UnidirectionalEdgeIsValid`                 | `isValidDirectedEdge`                                     |
-| `getH3UnidirectionalEdge`                     | `cellsToDirectedEdge`                                     |
-| `getH3IndexesFromUnidirectionalEdge`          | `directedEdgeToCells`                                     |
-| `getH3UnidirectionalEdgesFromHexagon`         | `originToDirectedEdges`                                   |
-| *DNE*                                         | `destinationToDirectedEdges`                              |
-| `getH3UnidirectionalEdgeBoundary`             | `directedEdgeToLine`                                      |
-| `getOriginH3IndexFromUnidirectionalEdge`      | `getDirectedEdgeOrigin`, `directedEdgeToOrigin`           |
-| `getDestinationH3IndexFromUnidirectionalEdge` | `getDirectedEdgeDestination`, `directedEdgeToDestination` |
+|                  Current name                 |        Proposed name         |
+|-----------------------------------------------|------------------------------|
+| `h3UnidirectionalEdgeIsValid`                 | `isValidDirectedEdge`        |
+| `getH3UnidirectionalEdge`                     | `cellsToDirectedEdge`        |
+| `getH3IndexesFromUnidirectionalEdge`          | `directedEdgeToCells`        |
+| `getH3UnidirectionalEdgesFromHexagon`         | `originToDirectedEdges`      |
+| *DNE*                                         | `destinationToDirectedEdges` |
+| `getH3UnidirectionalEdgeBoundary`             | `directedEdgeToLine`         |
+| `getOriginH3IndexFromUnidirectionalEdge`      | `getDirectedEdgeOrigin`      |
+| `getDestinationH3IndexFromUnidirectionalEdge` | `getDirectedEdgeDestination` |
 
 
 ### Area/Length Functions
