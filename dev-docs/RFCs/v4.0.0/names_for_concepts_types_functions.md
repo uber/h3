@@ -155,30 +155,30 @@ We may expose them in the future if a need becomes clear.
 
 #### Filled-In Disk With Distances
 
-|     Current name    |       Proposed name       |    Type   |     Notes      |                Calls                 |
-|---------------------|---------------------------|-----------|----------------|--------------------------------------|
-| `hexRangeDistances` | `gridDiskDistancesUnsafe` | hex only  | disk/distances | NONE                                 |
-| `_kRingInternal`    | `gridDiskDistancesSafe`   | pentagons | disk/distances | NONE                                 |
-| `kRingDistances`    | `gridDiskDistances`       | general   | disk/distances | `hexRangeDistances`,`_kRingInternal` |
+|     Current name    |       Proposed name       |     Notes      |                Calls                 |
+|---------------------|---------------------------|----------------|--------------------------------------|
+| `hexRangeDistances` | `gridDiskDistancesUnsafe` | disk/distances | NONE                                 |
+| `_kRingInternal`    | `gridDiskDistancesSafe`   | disk/distances | NONE                                 |
+| `kRingDistances`    | `gridDiskDistances`       | disk/distances | `hexRangeDistances`,`_kRingInternal` |
 
 **Note**: The distances array is *optional* for `hexRangeDistances`, but *required* for the other two functions.
 
 #### Filled-In Disk Without Distances
 
-| Current name |  Proposed name   |    Type   | Notes |                      Calls                       |
-|--------------|------------------|-----------|-------|--------------------------------------------------|
-| `hexRange`   | `gridDiskUnsafe` | hex only  | disk  | `hexRangeDistances`, does not allocate distances |
-| *DNE*        | `gridDiskSafe`   | pentagons | disk  |                                                  |
-| `kRing`      | `gridDisk`       | general   | disk  | `kRingDistances`, allocates and drops distances  |
+| Current name |  Proposed name   | Notes |                      Calls                       |
+|--------------|------------------|-------|--------------------------------------------------|
+| `hexRange`   | `gridDiskUnsafe` | disk  | `hexRangeDistances`, does not allocate distances |
+| *DNE*        | `gridDiskSafe`   | disk  |                                                  |
+| `kRing`      | `gridDisk`       | disk  | `kRingDistances`, allocates and drops distances  |
 
 
 #### Hollow Ring
 
-| Current name |  Proposed name   |    Type   | Notes | Calls |
-|--------------|------------------|-----------|-------|-------|
-| `hexRing`    | `gridRingUnsafe` | hex only  | ring  | NONE  |
-| *DNE*        | `gridRingSafe`   | pentagons | ring  |       |
-| *DNE*        | `gridRing`       | general   | ring  |       |
+| Current name |  Proposed name   | Notes | Calls |
+|--------------|------------------|-------|-------|
+| `hexRing`    | `gridRingUnsafe` | ring  | NONE  |
+| *DNE*        | `gridRingSafe`   | ring  |       |
+| *DNE*        | `gridRing`       | ring  |       |
 
 
 #### To Remove
@@ -206,6 +206,8 @@ For a future undirected edge mode, use the term `Edge`.
 | `getH3UnidirectionalEdgeBoundary`             | `directedEdgeToLine`         |
 | `getOriginH3IndexFromUnidirectionalEdge`      | `getDirectedEdgeOrigin`      |
 | `getDestinationH3IndexFromUnidirectionalEdge` | `getDirectedEdgeDestination` |
+
+todo: happy with `directedEdgeToLine`?
 
 
 ### Area/Length Functions
