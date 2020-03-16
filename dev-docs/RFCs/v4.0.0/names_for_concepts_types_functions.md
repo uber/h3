@@ -1,6 +1,10 @@
 # RFC: Names for H3 Concepts, Types, and Functions
 
-- **Authors**: AJ Friend
+- **Authors**:
+    - AJ Friend
+    - Nick Rabinowitz
+    - Isaac Brodsky
+    - David Ellis
 - **Date**: 2020-02-02
 - **Status**: Draft
 - **Discussions**:
