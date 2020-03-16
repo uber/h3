@@ -32,7 +32,8 @@ The following technical terms should be used in the documentation, the H3 codeba
     - for functions that can handle either hexagons or pentagons, the more general term "cell" should be used whenever possible
 - **hexagon**:
     - an H3 **cell** which is a **topological** hexagon
-    - todo: advise use of the term "strict" for functions that can only handle hexagons?
+    - below, we explain that functions which *only* work with **hexagons** have an `Unsafe` suffix;
+      these functions are paried with ones having a `Safe` suffix, meaning they can handle **pentagons**, but are slower
 - **pentagon**:
     - an H3 **cell** which is a **topological** pentagon
 - **directed edge**:
@@ -172,10 +173,10 @@ We may expose them in the future if a need becomes clear.
 | `kRing`      | `gridDisk`                               | `kRingDistances`, allocates and drops distances  |
 | `hexRanges`  | `gridDiskMultiUnsafe`, `gridDisksUnsafe` | N x `hexRange`                                   |
 
-- todo: Do we *really* want to keep `hexRanges` in the API? It sounds like it currently has applications, but how
-  hard would it really be for a user to reproduce this code by just calling `hexRange` multiple times, and moving
+- **TODO**: Do we *really* want to keep `hexRanges` in the API? It sounds like it currently has applications, but how
+  hard would it really be for a user to reproduce this functionality by just calling `hexRange` multiple times, and moving
   the pointer before each call? It is also weird that we only provide the "unsafe" version of this function in the API.
-- Idea: leave it out initially, and see if anyone complains? It would be very easy to add back in.
+- **Idea**: leave it out initially, and see if anyone complains? It would be very easy to add back in.
 
 #### Hollow Ring
 
@@ -208,13 +209,13 @@ todo: happy with `directedEdgeToLine`?
 
 ### Area/Length Functions
 
-|  Current name  |      Proposed name      |         Notes         |
-|----------------|-------------------------|-----------------------|
-| `hexAreaKm2`   | `getHexAreaAvgKm2`      |                       |
-| `hexAreaM2`    | `getHexAreaAvgM2`       |                       |
-| `edgeLengthKm` | `getHexEdgeLengthAvgKm` |                       |
-| `edgeLengthM`  | `getHexEdgeLengthAvgM`  |                       |
-| *DNE*          | `getPentagonAreaAvgKm2` | + others              |
-| *DNE*          | `cellAreaKm2`           | area of specific cell |
-
-todo: add min/max versions in addition to avg
+|  Current name  |        Proposed name        |         Notes         |
+|----------------|-----------------------------|-----------------------|
+| `hexAreaKm2`   | `getHexagonAreaAvgKm2`      |                       |
+| `hexAreaM2`    | `getHexagonAreaAvgM2`       |                       |
+| `edgeLengthKm` | `getHexagonEdgeLengthAvgKm` |                       |
+| `edgeLengthM`  | `getHexagonEdgeLengthAvgM`  |                       |
+| *DNE*          | `getPentagonAreaAvg*`       |                       |
+| *DNE*          | `getPentagonEdgeLengthAvg*` |                       |
+| *DNE*          | `cellAreaKm2`               | area of specific cell |
+| *DNE*          | `cellAreaM2`                | area of specific cell |
