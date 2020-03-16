@@ -172,9 +172,10 @@ We may expose them in the future if a need becomes clear.
 | `kRing`      | `gridDisk`                               | `kRingDistances`, allocates and drops distances  |
 | `hexRanges`  | `gridDiskMultiUnsafe`, `gridDisksUnsafe` | N x `hexRange`                                   |
 
-todo: Do we *really* want to keep `hexRanges` in the API? It sounds like it currently has applications, but how
-hard would it really be for a user to reproduce this code by just calling `hexRange` multiple times, and moving
-the pointer before each call?
+- todo: Do we *really* want to keep `hexRanges` in the API? It sounds like it currently has applications, but how
+  hard would it really be for a user to reproduce this code by just calling `hexRange` multiple times, and moving
+  the pointer before each call? It is also weird that we only provide the "unsafe" version of this function in the API.
+- Idea: leave it out initially, and see if anyone complains? It would be very easy to add back in.
 
 #### Hollow Ring
 
