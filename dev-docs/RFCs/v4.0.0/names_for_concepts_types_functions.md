@@ -81,7 +81,7 @@ There is some ambiguity between property, transform, and computation, so use you
 
 ### Validity checks
 
-- `isValid*` should mean that a full validity check is made
+- `isValid*` should mean that a *full* validity check is made
 - without `Valid` (like in the case of `isPentagon`), we do not guarantee
   that a full validity check is made; instead, a user should assume only a
   minimal bit mask check is done
@@ -117,7 +117,7 @@ There is some ambiguity between property, transform, and computation, so use you
 | `polyfill`                    | same                  |
 | *DNE*                         | `getMode`             |
 
-- note: `getResolution` should work for cells and edges
+- note: `getResolution` and `getBaseCellNumber` should work for both cells and edges
 
 ### H3 Grid Functions
 
@@ -155,39 +155,34 @@ We may expose them in the future if a need becomes clear.
 
 #### Filled-In Disk With Distances
 
-|     Current name    |       Proposed name       |     Notes      |                Calls                 |
-|---------------------|---------------------------|----------------|--------------------------------------|
-| `hexRangeDistances` | `gridDiskDistancesUnsafe` | disk/distances | NONE                                 |
-| `_kRingInternal`    | `gridDiskDistancesSafe`   | disk/distances | NONE                                 |
-| `kRingDistances`    | `gridDiskDistances`       | disk/distances | `hexRangeDistances`,`_kRingInternal` |
+|     Current name    |       Proposed name       |                Calls                 |
+|---------------------|---------------------------|--------------------------------------|
+| `hexRangeDistances` | `gridDiskDistancesUnsafe` | NONE                                 |
+| `_kRingInternal`    | `gridDiskDistancesSafe`   | NONE                                 |
+| `kRingDistances`    | `gridDiskDistances`       | `hexRangeDistances`,`_kRingInternal` |
 
 **Note**: The distances array is *optional* for `hexRangeDistances`, but *required* for the other two functions.
 
 #### Filled-In Disk Without Distances
 
-| Current name |  Proposed name   | Notes |                      Calls                       |
-|--------------|------------------|-------|--------------------------------------------------|
-| `hexRange`   | `gridDiskUnsafe` | disk  | `hexRangeDistances`, does not allocate distances |
-| *DNE*        | `gridDiskSafe`   | disk  |                                                  |
-| `kRing`      | `gridDisk`       | disk  | `kRingDistances`, allocates and drops distances  |
+| Current name |              Proposed name               |                      Calls                       |
+|--------------|------------------------------------------|--------------------------------------------------|
+| `hexRange`   | `gridDiskUnsafe`                         | `hexRangeDistances`, does not allocate distances |
+| *DNE*        | `gridDiskSafe`                           |                                                  |
+| `kRing`      | `gridDisk`                               | `kRingDistances`, allocates and drops distances  |
+| `hexRanges`  | `gridDiskMultiUnsafe`, `gridDisksUnsafe` | N x `hexRange`                                   |
 
+todo: Do we *really* want to keep `hexRanges` in the API? It sounds like it currently has applications, but how
+hard would it really be for a user to reproduce this code by just calling `hexRange` multiple times, and moving
+the pointer before each call?
 
 #### Hollow Ring
 
-| Current name |  Proposed name   | Notes | Calls |
-|--------------|------------------|-------|-------|
-| `hexRing`    | `gridRingUnsafe` | ring  | NONE  |
-| *DNE*        | `gridRingSafe`   | ring  |       |
-| *DNE*        | `gridRing`       | ring  |       |
-
-
-#### To Remove
-
-| Current name | Proposed name |   Type   |     Calls      |
-|--------------|---------------|----------|----------------|
-| `hexRanges`  | (remove)      | hex only | N x `hexRange` |
-
-todo: we'll probably keep this one, as it has existing applications.
+| Current name |  Proposed name   | Calls |
+|--------------|------------------|-------|
+| `hexRing`    | `gridRingUnsafe` | NONE  |
+| *DNE*        | `gridRingSafe`   |       |
+| *DNE*        | `gridRing`       |       |
 
 
 ### H3 Edge Types
