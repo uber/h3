@@ -3,7 +3,7 @@
 As a C library, bindings can be made to call H3 functions from different programming languages. This page lists different bindings currently available. Contributions to this list are welcome, please feel free to open a [pull request](https://github.com/uber/h3/tree/master/docs/community/bindings.md).
 
 ## BigQuery
-  
+
 - [cartodb/bigquery-jslibs](https://github.com/CartoDB/bigquery-jslibs)
 
 ## C&#35;
@@ -64,3 +64,8 @@ As a C library, bindings can be made to call H3 functions from different program
 ## Ruby
 
 - [StuartApp/h3_ruby](https://github.com/StuartApp/h3_ruby)
+
+## Rust
+
+- [rustyconover/libh3-sys](https://github.com/rustyconover/libh3-sys)
+- [rustyconover/libh3](https://github.com/rustyconover/libh3)
