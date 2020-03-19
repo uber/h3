@@ -32,7 +32,7 @@ The following technical terms should be used in the documentation, the H3 codeba
     - an integer describing the type of object being represented by an H3 index
     - this integer is encoded in the `H3Index`
 - **cell** or **H3 cell**:
-    - a geometric polygon corresponding to an `H3Index` of `mode 1` (hexagon or pentagon)
+    - a geometric/geographic unit polygon in the H3 grid, corresponding to an `H3Index` of `mode 1` (hexagon or pentagon)
     - for functions that can handle either hexagons or pentagons, the more general term "cell" should be used whenever possible
 - **hexagon**:
     - an H3 **cell** which is a **topological** hexagon
