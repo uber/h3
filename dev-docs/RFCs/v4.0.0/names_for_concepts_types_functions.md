@@ -116,7 +116,7 @@ There is some ambiguity between property, transform, and computation, so use you
 | `h3GetResolution`             | `getResolution`       |
 | `geoToH3`                     | `pointToCell`         |
 | `h3ToGeo`                     | `cellToPoint`         |
-| `h3ToGeoBoundary`             | `cellToPoly`          |
+| `h3ToGeoBoundary`             | `cellToPolygon`       |
 | `compact`                     | same                  |
 | `uncompact`                   | same                  |
 | `polyfill`                    | same                  |
