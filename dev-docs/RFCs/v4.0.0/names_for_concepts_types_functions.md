@@ -47,7 +47,7 @@ The following technical terms should be used in the documentation, the H3 codeba
     - the graph with nodes corresponding to H3 cells, and edges given by pairs of adjacent cells
     - for example, `gridDistance` is the minimal number of edges in a graph path connecting two cells
 - **point**:
-    - a representation of a geometric point in terms of a latitude/longitude pair
+    - a representation of a geographic point in terms of a latitude/longitude pair
 - **topological**:
     - H3 cells are **topological** pentagons or hexagons, in the sense that they have 5 or 6 neighbors, respectively, in the H3 **grid**
     - the majority of **hexagons** are also **geometric** hexagons (similarly with **pentagons**), in that they have 6 edges and vertices when represented as polygons of lat/lng points
