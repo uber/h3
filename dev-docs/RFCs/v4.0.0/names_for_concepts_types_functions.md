@@ -37,7 +37,7 @@ The following technical terms should be used in the documentation, the H3 codeba
 - **hexagon**:
     - an H3 **cell** which is a **topological** hexagon
     - below, we explain that functions which *only* work with **hexagons** have an `Unsafe` suffix;
-      these functions are paried with ones having a `Safe` suffix, meaning they can handle **pentagons**, but are slower
+      these functions are paired with ones having a `Safe` suffix, meaning they can handle **pentagons**, but are slower
 - **pentagon**:
     - an H3 **cell** which is a **topological** pentagon
 - **directed edge**:
@@ -168,6 +168,7 @@ We may expose them in the future if a need becomes clear.
 
 **Note**: The distances array is *optional* for `hexRangeDistances`, but *required* for the other two functions.
 
+
 #### Filled-In Disk Without Distances
 
 | Current name |   Proposed name   |                      Calls                       |
@@ -180,7 +181,7 @@ We may expose them in the future if a need becomes clear.
 - Note: We may remove `hexRanges` from the API, as it is just a very simple wrapper around
   `hexRange`. Inclusion is a discussion separate from this RFC. We'll simply state that
   *if we do* include it, we will rename it `gridDisksUnsafe`.
-  
+
 
 #### Hollow Ring
 
