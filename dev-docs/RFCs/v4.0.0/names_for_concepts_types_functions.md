@@ -170,17 +170,17 @@ We may expose them in the future if a need becomes clear.
 
 #### Filled-In Disk Without Distances
 
-| Current name |              Proposed name               |                      Calls                       |
-|--------------|------------------------------------------|--------------------------------------------------|
-| `hexRange`   | `gridDiskUnsafe`                         | `hexRangeDistances`, does not allocate distances |
-| *DNE*        | `gridDiskSafe`                           |                                                  |
-| `kRing`      | `gridDisk`                               | `kRingDistances`, allocates and drops distances  |
-| `hexRanges`  | `gridDiskMultiUnsafe`, `gridDisksUnsafe` | N x `hexRange`                                   |
+| Current name |   Proposed name   |                      Calls                       |
+|--------------|-------------------|--------------------------------------------------|
+| `hexRange`   | `gridDiskUnsafe`  | `hexRangeDistances`, does not allocate distances |
+| *DNE*        | `gridDiskSafe`    |                                                  |
+| `kRing`      | `gridDisk`        | `kRingDistances`, allocates and drops distances  |
+| `hexRanges`  | `gridDisksUnsafe` | N x `hexRange`                                   |
 
-- **TODO**: Do we *really* want to keep `hexRanges` in the API? It sounds like it currently has applications, but how
-  hard would it really be for a user to reproduce this functionality by just calling `hexRange` multiple times, and moving
-  the pointer before each call? It is also weird that we only provide the "unsafe" version of this function in the API.
-- **Idea**: leave it out initially, and see if anyone complains? It would be very easy to add back in.
+- Note: We may remove `hexRanges` from the API, as it is just a very simple wrapper around
+  `hexRange`. Inclusion is a discussion separate from this RFC. We'll simply state that
+  *if we do* include it, we will rename it `gridDisksUnsafe`.
+  
 
 #### Hollow Ring
 
