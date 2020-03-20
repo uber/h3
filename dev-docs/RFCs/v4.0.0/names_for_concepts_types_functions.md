@@ -53,6 +53,13 @@ The following technical terms should be used in the documentation, the H3 codeba
     - the majority of **hexagons** are also **geometric** hexagons (similarly with **pentagons**), in that they have 6 edges and vertices when represented as polygons of lat/lng points
     - a small number of **hexagons** are not **geometric** hexagons (similarly with **pentagons**), in that they have extra vertices and edges due to distortion around icosahedron boundaries
     - for more details, see this [h3-js issue](https://github.com/uber/h3-js/issues/53) or this [Observable post](https://observablehq.com/@fil/h3-oddities)
+- **base cell**:
+    - one of the 122 H3 **cells** (110 hexagons and 12 pentagons) of resolution `0`
+    - every other cell in H3 is a child of a base cell
+    - each base cell has a "base cell number" (0--121), which is encoded into the `H3Index` representation of every H3 cell
+    - there is a one-to-one correspondence between the "base cell number" and the `H3Index` representation of resolution `0` cells
+        + e.g., base cell 0 has `H3Index` hexadecimal representation `'8001fffffffffff'`
+
 
 ### Use of "hex", "hexagon", "cell", "pentagon", etc.
 
