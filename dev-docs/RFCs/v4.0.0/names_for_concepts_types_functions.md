@@ -192,12 +192,11 @@ We may expose them in the future if a need becomes clear.
 
 #### Hollow Ring
 
-| Current name |  Proposed name   | Calls |
-|--------------|------------------|-------|
-| `hexRing`    | `gridRingUnsafe` | NONE  |
-| *DNE*        | `gridRingSafe`   |       |
-| *DNE*        | `gridRing`       |       |
-
+| Current name |  Proposed name   |              Calls               |
+|--------------|------------------|----------------------------------|
+| `hexRing`    | `gridRingUnsafe` | NONE                             |
+| *DNE*        | `gridRingSafe`   | `gridDiskDistancesSafe`          |
+| *DNE*        | `gridRing`       | `gridRingUnsafe`, `gridRingSafe` |
 
 ### H3 Edge Types
 
