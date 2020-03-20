@@ -230,3 +230,21 @@ todo: happy with `directedEdgeToLine`?
 | *DNE*          | `getPentagonEdgeLengthAvg*` |                       |
 | *DNE*          | `cellAreaKm2`               | area of specific cell |
 | *DNE*          | `cellAreaM2`                | area of specific cell |
+
+
+## TODO: Data Structure Names
+
+- todo: make sure these (mostly internal) data structures are named
+  to align with the API function names
+
+|    Current name    | Proposed name | Notes |
+|--------------------|---------------|-------|
+| `GeoCoord`         |               |       |
+| `GeoBoundary`      |               |       |
+| `Geofence`         |               |       |
+| `GeoPolygon`       |               |       |
+| `GeoMultiPolygon`  |               |       |
+| `LinkedGeoCoord`   |               |       |
+| `LinkedGeoLoop`    |               |       |
+| `LinkedGeoPolygon` |               |       |
+| `CoordIJ`          |               |       |
