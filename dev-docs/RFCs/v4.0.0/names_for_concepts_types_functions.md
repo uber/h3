@@ -106,30 +106,29 @@ There is some ambiguity between property, transform, and computation, so use you
 
 ### General Function Names
 
-|          Current name         |     Proposed name     |
-|-------------------------------|-----------------------|
-| *Does Not Exist (DNE)*        | `isValidIndex`        |
-| `h3IsValid`                   | `isValidCell`         |
-| `h3UnidirectionalEdgeIsValid` | `isValidDirectedEdge` |
-| `h3IsPentagon`                | `isPentagon`          |
-| `h3IsResClassIII`             | `isResClassIII`       |
-| `h3IndexesAreNeighbors`       | `areNeighborCells`    |
-| `h3ToParent`                  | `cellToParent`        |
-| `h3ToChildren`                | `cellToChildren`      |
-| `numHexagons`                 | `getNumCells`         |
-| `getRes0Indexes`              | `getRes0Cells`        |
-| `getPentagonIndexes`          | `getPentagons`        |
-| `h3GetBaseCell`               | `getBaseCellNumber`   |
-| `h3GetResolution`             | `getResolution`       |
-| `geoToH3`                     | `pointToCell`         |
-| `h3ToGeo`                     | `cellToPoint`         |
-| `h3ToGeoBoundary`             | `cellToPolygon`       |
-| `compact`                     | same                  |
-| `uncompact`                   | same                  |
-| `polyfill`                    | same                  |
-| *DNE*                         | `getMode`             |
+|          Current name         |     Proposed name      |
+|-------------------------------|------------------------|
+| *Does Not Exist (DNE)*        | `isValidIndex`         |
+| `h3IsValid`                   | `isValidCell`          |
+| `h3UnidirectionalEdgeIsValid` | `isValidDirectedEdge`  |
+| `h3IsPentagon`                | `isPentagon`           |
+| `h3IsResClassIII`             | `isResClassIII`        |
+| `h3IndexesAreNeighbors`       | `areNeighborCells`     |
+| `h3ToParent`                  | `cellToParent`         |
+| `h3ToChildren`                | `cellToChildren`       |
+| `numHexagons`                 | `getNumCells`          |
+| `getRes0Indexes`              | `getRes0Cells`         |
+| `getPentagonIndexes`          | `getPentagons`         |
+| `h3GetBaseCell`               | `getBaseCellNumber`    |
+| `h3GetResolution`             | `getResolution`        |
+| `geoToH3`                     | `pointToCell`          |
+| `h3ToGeo`                     | `cellToPoint`          |
+| `compact`                     | same, `compactCells`   |
+| `uncompact`                   | same, `uncompactCells` |
+| *DNE*                         | `getMode`              |
 
 - note: `getResolution` and `getBaseCellNumber` should work for both cells and edges
+
 
 ### H3 Grid Functions
 
@@ -211,11 +210,9 @@ For a future undirected edge mode, use the term `Edge`.
 | `getH3IndexesFromUnidirectionalEdge`          | `directedEdgeToCells`        |
 | `getH3UnidirectionalEdgesFromHexagon`         | `originToDirectedEdges`      |
 | *DNE*                                         | `destinationToDirectedEdges` |
-| `getH3UnidirectionalEdgeBoundary`             | `directedEdgeToLine`         |
+| `getH3UnidirectionalEdgeBoundary`             | `directedEdgeToBoundary`     |
 | `getOriginH3IndexFromUnidirectionalEdge`      | `getDirectedEdgeOrigin`      |
 | `getDestinationH3IndexFromUnidirectionalEdge` | `getDirectedEdgeDestination` |
-
-todo: happy with `directedEdgeToLine`?
 
 
 ### Area/Length Functions
@@ -232,19 +229,42 @@ todo: happy with `directedEdgeToLine`?
 | *DNE*          | `cellAreaM2`                | area of specific cell |
 
 
-## TODO: Data Structure Names
+## Polygons
 
-- todo: make sure these (mostly internal) data structures are named
-  to align with the API function names
+### Data Structures
 
-|    Current name    | Proposed name | Notes |
-|--------------------|---------------|-------|
-| `GeoCoord`         |               |       |
-| `GeoBoundary`      |               |       |
-| `Geofence`         |               |       |
-| `GeoPolygon`       |               |       |
-| `GeoMultiPolygon`  |               |       |
-| `LinkedGeoCoord`   |               |       |
-| `LinkedGeoLoop`    |               |       |
-| `LinkedGeoPolygon` |               |       |
-| `CoordIJ`          |               |       |
+Remove the `LinkedGeoCoord`, `LinkedGeoLoop`, and `LinkedGeoPolygon` from the public API
+and only use them internally.
+Expose `GeoMultiPolygon` instead of `LinkedGeoPolygon`; `GeoMultiPolygon` is
+easier for clients to work with.
+Rename `GeoBoundary` to `CellBoundary` to indicate it is limited to describing
+the geometry of cells.
+
+|    Current name    |   Proposed name   |                   Notes                   |
+|--------------------|-------------------|-------------------------------------------|
+| `GeoBoundary`      | `CellBoundary`    | <= 10 stack-allocated `GeoPoint`s         |
+|--------------------|-------------------|-------------------------------------------|
+| `GeoCoord`         | `GeoPoint`        |                                           |
+| `Geofence`         | `GeoLoop`         | heap-allocated `GeoPoint`s                |
+| `GeoPolygon`       | `GeoPolygon`      |                                           |
+| `GeoMultiPolygon`  | `GeoMultiPolygon` | replaces `LinkedGeoPolygon` in public API |
+|--------------------|-------------------|-------------------------------------------|
+| `LinkedGeoCoord`   | `LinkedPoint`     | (remove from public API)                  |
+| `LinkedGeoLoop`    | `LinkedLoop`      | (remove from public API)                  |
+| `LinkedGeoPolygon` | `LinkedPolygon`   | (remove from public API)                  |
+|--------------------|-------------------|-------------------------------------------|
+| `CoordIJ`          | same              |                                           |
+
+### Functions
+
+|            Current name           |      Proposed name       |           Notes           |
+|-----------------------------------|--------------------------|---------------------------|
+| `h3ToGeoBoundary`                 | `cellToBoundary`         | returns `CellBoundary`    |
+| *DNE*                             | `cellToLoop`             | returns `GeoLoop`         |
+| *DNE*                             | `loopToBoundary`         |                           |
+| *DNE*                             | `boundaryToLoop`         |                           |
+| `getH3UnidirectionalEdgeBoundary` | `directedEdgeToBoundary` | returns `CellBoundary`    |
+|-----------------------------------|--------------------------|---------------------------|
+| `polyfill`                        | same, `polygonToCells`   | takes `GeoPolygon`        |
+| *DNE*                             | `multiPolygonToCells`    | takes `GeoMultiPolygon`   |
+| `h3SetToLinkedGeo`                | `cellsToMultiPolygon`    | returns `GeoMultiPolygon` |
