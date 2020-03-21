@@ -233,27 +233,27 @@ For a future undirected edge mode, use the term `Edge`.
 
 ### Data Structures
 
-Remove the `LinkedGeoCoord`, `LinkedGeoLoop`, and `LinkedGeoPolygon` from the public API
-and only use them internally.
-Expose `GeoMultiPolygon` instead of `LinkedGeoPolygon`; `GeoMultiPolygon` is
-easier for clients to work with.
-Rename `GeoBoundary` to `CellBoundary` to indicate it is limited to describing
-the geometry of cells.
+- remove the `LinkedGeoCoord`, `LinkedGeoLoop`, and `LinkedGeoPolygon` from the public API
+and only use them internally
+- expose `GeoMultiPolygon` instead of `LinkedGeoPolygon`
+    - `GeoMultiPolygon` is easier for clients to work with
+- rename `GeoBoundary` to `CellBoundary` to indicate it is limited to describing the geometry of cells
 
 |    Current name    |   Proposed name   |                   Notes                   |
 |--------------------|-------------------|-------------------------------------------|
 | `GeoBoundary`      | `CellBoundary`    | <= 10 stack-allocated `GeoPoint`s         |
-|--------------------|-------------------|-------------------------------------------|
+| .                  |                   |                                           |
 | `GeoCoord`         | `GeoPoint`        |                                           |
 | `Geofence`         | `GeoLoop`         | heap-allocated `GeoPoint`s                |
 | `GeoPolygon`       | `GeoPolygon`      |                                           |
 | `GeoMultiPolygon`  | `GeoMultiPolygon` | replaces `LinkedGeoPolygon` in public API |
-|--------------------|-------------------|-------------------------------------------|
+| .                  |                   |                                           |
 | `LinkedGeoCoord`   | `LinkedPoint`     | (remove from public API)                  |
 | `LinkedGeoLoop`    | `LinkedLoop`      | (remove from public API)                  |
 | `LinkedGeoPolygon` | `LinkedPolygon`   | (remove from public API)                  |
-|--------------------|-------------------|-------------------------------------------|
+| .                  |                   |                                           |
 | `CoordIJ`          | same              |                                           |
+
 
 ### Functions
 
@@ -264,7 +264,7 @@ the geometry of cells.
 | *DNE*                             | `loopToBoundary`         |                           |
 | *DNE*                             | `boundaryToLoop`         |                           |
 | `getH3UnidirectionalEdgeBoundary` | `directedEdgeToBoundary` | returns `CellBoundary`    |
-|-----------------------------------|--------------------------|---------------------------|
+| .                                 |                          |                           |
 | `polyfill`                        | same, `polygonToCells`   | takes `GeoPolygon`        |
 | *DNE*                             | `multiPolygonToCells`    | takes `GeoMultiPolygon`   |
 | `h3SetToLinkedGeo`                | `cellsToMultiPolygon`    | returns `GeoMultiPolygon` |
