@@ -237,7 +237,7 @@ For a future undirected edge mode, use the term `Edge`.
 and only use them internally
 - expose `GeoMultiPolygon` instead of `LinkedGeoPolygon`
     - `GeoMultiPolygon` is easier for clients to work with
-- rename `GeoBoundary` to `CellBoundary` to indicate it is limited to describing the geometry of cells
+- rename `GeoBoundary` to `CellBoundary` to indicate it is space-limited to describing the geometry of cells
 
 |    Current name    |   Proposed name   |                   Notes                   |
 |--------------------|-------------------|-------------------------------------------|
