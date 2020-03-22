@@ -150,57 +150,64 @@ static const Direction NEW_ADJUSTMENT_III[7][7] = {
      CENTER_DIGIT, IJ_AXES_DIGIT}};
 
 /**
- * Maximum number of indices that result from the kRing algorithm with the given
+ * Maximum number of cells that result from the kRing algorithm with the given
  * k. Formula source and proof: https://oeis.org/A003215
  *
- * @param k k value, k >= 0.
+ * @param  k   k value, k >= 0.
  */
 int H3_EXPORT(maxKringSize)(int k) { return 3 * k * (k + 1) + 1; }
 
 /**
- * k-rings produces indices within k distance of the origin index.
+ * Produce cells within grid distance k the origin cell.
  *
- * k-ring 0 is defined as the origin index, k-ring 1 is defined as k-ring 0 and
- * all neighboring indices, and so on.
+ * k-ring 0 is defined as the origin cell, k-ring 1 is defined as k-ring 0 and
+ * all neighboring cells, and so on.
  *
  * Output is placed in the provided array in no particular order. Elements of
  * the output array may be left zero, as can happen when crossing a pentagon.
  *
- * @param origin Origin location.
- * @param k k >= 0
- * @param out Zero-filled array which must be of size maxKringSize(k).
+ * @param  origin  origin cell
+ * @param  k       k >= 0
+ * @param  out     zero-filled array which must be of size maxKringSize(k)
  */
 void H3_EXPORT(kRing)(H3Index origin, int k, H3Index* out) {
-    int maxIdx = H3_EXPORT(maxKringSize)(k);
-    int* distances = malloc(maxIdx * sizeof(int));
-    H3_EXPORT(kRingDistances)(origin, k, out, distances);
-    free(distances);
-}
-
-/**
- * k-rings produces indices within k distance of the origin index.
- *
- * k-ring 0 is defined as the origin index, k-ring 1 is defined as k-ring 0 and
- * all neighboring indices, and so on.
- *
- * Output is placed in the provided array in no particular order. Elements of
- * the output array may be left zero, as can happen when crossing a pentagon.
- *
- * @param origin Origin location.
- * @param k k >= 0
- * @param out Zero-filled array which must be of size maxKringSize(k).
- * @param distances Zero-filled array which must be of size maxKringSize(k).
- */
-void H3_EXPORT(kRingDistances)(H3Index origin, int k, H3Index* out,
-                               int* distances) {
-    const int maxIdx = H3_EXPORT(maxKringSize)(k);
-    // Optimistically try the faster hexRange algorithm first
-    const bool failed = H3_EXPORT(hexRangeDistances)(origin, k, out, distances);
+    const bool failed = H3_EXPORT(hexRangeDistances)(origin, k, out, 0);
     if (failed) {
         // Fast algo failed, fall back to slower, correct algo
         // and also wipe out array because contents untrustworthy
-        memset(out, 0, maxIdx * sizeof(out[0]));
-        memset(distances, 0, maxIdx * sizeof(distances[0]));
+        int maxIdx = H3_EXPORT(maxKringSize)(k);
+        memset(out, 0, maxIdx * sizeof(H3Index));
+        int* distances = malloc(maxIdx * sizeof(int));
+        _kRingInternal(origin, k, out, distances, maxIdx, 0);
+        free(distances);
+    }
+}
+
+/**
+ * Produce cells and their distances from the given origin cell, up to
+ * distance k.
+ *
+ * k-ring 0 is defined as the origin cell, k-ring 1 is defined as k-ring 0 and
+ * all neighboring cells, and so on.
+ *
+ * Output is placed in the provided array in no particular order. Elements of
+ * the output array may be left zero, as can happen when crossing a pentagon.
+ *
+ * @param  origin     origin cell
+ * @param  k          k >= 0
+ * @param  out        zero-filled array which must be of size maxKringSize(k)
+ * @param  distances  zero-filled array which must be of size maxKringSize(k)
+ */
+void H3_EXPORT(kRingDistances)(H3Index origin, int k, H3Index* out,
+                               int* distances) {
+    // Optimistically try the faster hexRange algorithm first
+    const bool failed = H3_EXPORT(hexRangeDistances)(origin, k, out, distances);
+    if (failed) {
+        const int maxIdx = H3_EXPORT(maxKringSize)(k);
+        // Fast algo failed, fall back to slower, correct algo
+        // and also wipe out array because contents untrustworthy
+        memset(out, 0, maxIdx * sizeof(H3Index));
+        memset(distances, 0, maxIdx * sizeof(int));
         _kRingInternal(origin, k, out, distances, maxIdx, 0);
     }
 }
@@ -208,16 +215,18 @@ void H3_EXPORT(kRingDistances)(H3Index origin, int k, H3Index* out,
 /**
  * Internal helper function called recursively for kRingDistances.
  *
- * Adds the origin index to the output set (treating it as a hash set)
+ * Adds the origin cell to the output set (treating it as a hash set)
  * and recurses to its neighbors, if needed.
  *
- * @param origin
- * @param k Maximum distance to move from the origin.
- * @param out Array treated as a hash set, elements being either H3Index or 0.
- * @param distances Scratch area, with elements paralleling the out array.
- * Elements indicate ijk distance from the origin index to the output index.
- * @param maxIdx Size of out and scratch arrays (must be maxKringSize(k))
- * @param curK Current distance from the origin.
+ * @param  origin      Origin cell
+ * @param  k           Maximum distance to move from the origin
+ * @param  out         Array treated as a hash set, elements being either
+ *                     H3Index or 0.
+ * @param  distances   Scratch area, with elements paralleling the out array.
+ *                     Elements indicate ijk distance from the origin cell to
+ *                     the output cell
+ * @param  maxIdx      Size of out and scratch arrays (must be maxKringSize(k))
+ * @param  curK        Current distance from the origin
  */
 void _kRingInternal(H3Index origin, int k, H3Index* out, int* distances,
                     int maxIdx, int curK) {
