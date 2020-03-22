@@ -179,10 +179,16 @@ void H3_EXPORT(kRing)(H3Index origin, int k, H3Index* out) {
         int maxIdx = H3_EXPORT(maxKringSize)(k);
         memset(out, 0, maxIdx * sizeof(H3Index));
         int* distances = calloc(maxIdx, sizeof(int));
-        _kRingInternal(origin, k, out, distances, maxIdx, NULL);
+        _kRingInternal(origin, k, out, distances, maxIdx, 0);
         free(distances);
     }
 }
+// void H3_EXPORT(kRing)(H3Index origin, int k, H3Index* out) {
+//     int maxIdx = H3_EXPORT(maxKringSize)(k);
+//     int* distances = malloc(maxIdx * sizeof(int));
+//     H3_EXPORT(kRingDistances)(origin, k, out, distances);
+//     free(distances);
+// }
 
 /**
  * Produce cells and their distances from the given origin cell, up to
@@ -199,12 +205,8 @@ void H3_EXPORT(kRing)(H3Index origin, int k, H3Index* out) {
  * @param  out         zero-filled array which must be of size maxKringSize(k)
  * @param  distances   zero-filled array which must be of size maxKringSize(k)
  */
-void H3_EXPORT(kRingDistances)(
-    H3Index origin,
-    int k,
-    H3Index* out,
-    int* distances
-) {
+void H3_EXPORT(kRingDistances)(H3Index origin, int k, H3Index* out,
+                               int* distances) {
     // Optimistically try the faster hexRange algorithm first
     const bool failed = H3_EXPORT(hexRangeDistances)(origin, k, out, distances);
     if (failed) {
@@ -213,7 +215,7 @@ void H3_EXPORT(kRingDistances)(
         // and also wipe out array because contents untrustworthy
         memset(out, 0, maxIdx * sizeof(H3Index));
         memset(distances, 0, maxIdx * sizeof(int));
-        _kRingInternal(origin, k, out, distances, maxIdx, NULL);
+        _kRingInternal(origin, k, out, distances, maxIdx, 0);
     }
 }
 
@@ -233,14 +235,8 @@ void H3_EXPORT(kRingDistances)(
  * @param  maxIdx      Size of out and scratch arrays (must be maxKringSize(k))
  * @param  curK        Current distance from the origin
  */
-void _kRingInternal(
-    H3Index origin,
-    int k,
-    H3Index* out,
-    int* distances,
-    int maxIdx,
-    int curK
-) {
+void _kRingInternal(H3Index origin, int k, H3Index* out, int* distances,
+                    int maxIdx, int curK) {
     if (origin == 0) return;
 
     // Put origin in the output array. out is used as a hash set.
