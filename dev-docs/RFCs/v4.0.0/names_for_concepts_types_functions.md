@@ -127,7 +127,7 @@ There is some ambiguity between property, transform, and computation, so use you
 | `uncompact`                   | same, `uncompactCells` |
 | *DNE*                         | `getMode`              |
 
-- note: `getResolution` and `getBaseCellNumber` should work for both cells and edges
+- **Note**: `getResolution` and `getBaseCellNumber` should work for both cells and edges.
 
 
 ### H3 Grid Functions
@@ -184,7 +184,7 @@ We may expose them in the future if a need becomes clear.
 | `kRing`      | `gridDisk`        | `kRingDistances`, allocates and drops distances  |
 | `hexRanges`  | `gridDisksUnsafe` | N x `hexRange`                                   |
 
-- Note: We may remove `hexRanges` from the API, as it is just a very simple wrapper around
+- **Note**: We may remove `hexRanges` from the API, as it is just a very simple wrapper around
   `hexRange`. Inclusion is a discussion separate from this RFC. We'll simply state that
   *if we do* include it, we will rename it `gridDisksUnsafe`.
 
