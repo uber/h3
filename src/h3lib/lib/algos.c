@@ -171,6 +171,7 @@ int H3_EXPORT(maxKringSize)(int k) { return 3 * k * (k + 1) + 1; }
  * @param  out      zero-filled array which must be of size maxKringSize(k)
  */
 void H3_EXPORT(kRing)(H3Index origin, int k, H3Index* out) {
+    // Optimistically try the faster k-ring algorithm first
     const bool failed = H3_EXPORT(hexRangeDistances)(origin, k, out, 0);
     if (failed) {
         // Fast algo failed, fall back to slower, correct algo
