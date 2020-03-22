@@ -172,14 +172,14 @@ int H3_EXPORT(maxKringSize)(int k) { return 3 * k * (k + 1) + 1; }
  */
 void H3_EXPORT(kRing)(H3Index origin, int k, H3Index* out) {
     // Optimistically try the faster k-ring algorithm first
-    const bool failed = H3_EXPORT(hexRangeDistances)(origin, k, out, 0);
+    const bool failed = H3_EXPORT(hexRangeDistances)(origin, k, out, NULL);
     if (failed) {
         // Fast algo failed, fall back to slower, correct algo
         // and also wipe out array because contents untrustworthy
         int maxIdx = H3_EXPORT(maxKringSize)(k);
         memset(out, 0, maxIdx * sizeof(H3Index));
-        int* distances = malloc(maxIdx * sizeof(int));
-        _kRingInternal(origin, k, out, distances, maxIdx, 0);
+        int* distances = calloc(maxIdx, sizeof(int));
+        _kRingInternal(origin, k, out, distances, maxIdx, NULL);
         free(distances);
     }
 }
@@ -213,7 +213,7 @@ void H3_EXPORT(kRingDistances)(
         // and also wipe out array because contents untrustworthy
         memset(out, 0, maxIdx * sizeof(H3Index));
         memset(distances, 0, maxIdx * sizeof(int));
-        _kRingInternal(origin, k, out, distances, maxIdx, 0);
+        _kRingInternal(origin, k, out, distances, maxIdx, NULL);
     }
 }
 
@@ -430,7 +430,7 @@ H3Index h3NeighborRotations(H3Index origin, Direction dir, int* rotations) {
  * @return 0 if no pentagon or pentagonal distortion area was encountered.
  */
 int H3_EXPORT(hexRange)(H3Index origin, int k, H3Index* out) {
-    return H3_EXPORT(hexRangeDistances)(origin, k, out, 0);
+    return H3_EXPORT(hexRangeDistances)(origin, k, out, NULL);
 }
 
 /**
