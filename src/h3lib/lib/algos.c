@@ -183,12 +183,6 @@ void H3_EXPORT(kRing)(H3Index origin, int k, H3Index* out) {
         free(distances);
     }
 }
-// void H3_EXPORT(kRing)(H3Index origin, int k, H3Index* out) {
-//     int maxIdx = H3_EXPORT(maxKringSize)(k);
-//     int* distances = malloc(maxIdx * sizeof(int));
-//     H3_EXPORT(kRingDistances)(origin, k, out, distances);
-//     free(distances);
-// }
 
 /**
  * Produce cells and their distances from the given origin cell, up to
