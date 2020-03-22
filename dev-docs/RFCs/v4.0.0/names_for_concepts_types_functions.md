@@ -248,9 +248,9 @@ and only use them internally
 | `GeoPolygon`       | `GeoPolygon`      |                                           |
 | `GeoMultiPolygon`  | `GeoMultiPolygon` | replaces `LinkedGeoPolygon` in public API |
 | .                  |                   |                                           |
-| `LinkedGeoCoord`   | `LinkedPoint`     | (remove from public API)                  |
-| `LinkedGeoLoop`    | `LinkedLoop`      | (remove from public API)                  |
-| `LinkedGeoPolygon` | `LinkedPolygon`   | (remove from public API)                  |
+| `LinkedGeoCoord`   | `LinkedGeoPoint`  | (remove from public API)                  |
+| `LinkedGeoLoop`    |                   | (remove from public API)                  |
+| `LinkedGeoPolygon` |                   | (remove from public API)                  |
 | .                  |                   |                                           |
 | `CoordIJ`          | same              |                                           |
 
