@@ -158,7 +158,7 @@ static const Direction NEW_ADJUSTMENT_III[7][7] = {
 int H3_EXPORT(maxKringSize)(int k) { return 3 * k * (k + 1) + 1; }
 
 /**
- * Produce cells within grid distance k the origin cell.
+ * Produce cells within grid distance k of the origin cell.
  *
  * k-ring 0 is defined as the origin cell, k-ring 1 is defined as k-ring 0 and
  * all neighboring cells, and so on.
