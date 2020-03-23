@@ -171,17 +171,7 @@ int H3_EXPORT(maxKringSize)(int k) { return 3 * k * (k + 1) + 1; }
  * @param  out      zero-filled array which must be of size maxKringSize(k)
  */
 void H3_EXPORT(kRing)(H3Index origin, int k, H3Index* out) {
-    // Optimistically try the faster k-ring algorithm first
-    const bool failed = H3_EXPORT(hexRangeDistances)(origin, k, out, NULL);
-    if (failed) {
-        // Fast algo failed, fall back to slower, correct algo
-        // and also wipe out array because contents untrustworthy
-        int maxIdx = H3_EXPORT(maxKringSize)(k);
-        memset(out, 0, maxIdx * sizeof(H3Index));
-        int* distances = calloc(maxIdx, sizeof(int));
-        _kRingInternal(origin, k, out, distances, maxIdx, 0);
-        free(distances);
-    }
+    H3_EXPORT(kRingDistances)(origin, k, out, NULL);
 }
 
 /**
@@ -197,7 +187,8 @@ void H3_EXPORT(kRing)(H3Index origin, int k, H3Index* out) {
  * @param  origin      origin cell
  * @param  k           k >= 0
  * @param  out         zero-filled array which must be of size maxKringSize(k)
- * @param  distances   zero-filled array which must be of size maxKringSize(k)
+ * @param  distances   NULL or a zero-filled array which must be of size
+ *                     maxKringSize(k)
  */
 void H3_EXPORT(kRingDistances)(H3Index origin, int k, H3Index* out,
                                int* distances) {
@@ -208,8 +199,15 @@ void H3_EXPORT(kRingDistances)(H3Index origin, int k, H3Index* out,
         // Fast algo failed, fall back to slower, correct algo
         // and also wipe out array because contents untrustworthy
         memset(out, 0, maxIdx * sizeof(H3Index));
-        memset(distances, 0, maxIdx * sizeof(int));
-        _kRingInternal(origin, k, out, distances, maxIdx, 0);
+
+        if (distances == NULL) {
+            distances = calloc(maxIdx, sizeof(int));
+            _kRingInternal(origin, k, out, distances, maxIdx, 0);
+            free(distances);
+        } else {
+            memset(distances, 0, maxIdx * sizeof(int));
+            _kRingInternal(origin, k, out, distances, maxIdx, 0);
+        }
     }
 }
 
