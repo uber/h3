@@ -126,6 +126,7 @@ There is some ambiguity between property, transform, and computation, so use you
 | `compact`                     | same, `compactCells`   |
 | `uncompact`                   | same, `uncompactCells` |
 | *DNE*                         | `getMode`              |
+| `polyfill`                    | same, `polygonToCells` |
 
 - **Note**: `getResolution` and `getBaseCellNumber` should work for both cells and edges.
 
