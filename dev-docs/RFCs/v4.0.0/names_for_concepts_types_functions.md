@@ -24,7 +24,7 @@ We would also like to standardize a function-naming scheme.
 The following technical terms should be used in the documentation, the H3 codebase, and precise technical discussions of the library.
 
 - `H3Index`:
-    - an unsigned 64-bit integer representing *any* H3 object (hexagon, pentagon, directed edge, ...)
+    - an unsigned 64-bit integer representing *any* H3 object (hexagon, pentagon, directed edge ...)
     - often represented as a 15-character (or 16-character) hexadecimal string, like `'8928308280fffff'`
     - the full term "H3 index" should be used to avoid confusion with other common uses of "index";
       when a "traditional" index is needed, prefer using "number", "pos", or another term to avoid confusion
@@ -35,11 +35,11 @@ The following technical terms should be used in the documentation, the H3 codeba
     - a geometric/geographic unit polygon in the H3 grid, corresponding to an `H3Index` of `mode 1` (hexagon or pentagon)
     - for functions that can handle either hexagons or pentagons, the more general term "cell" should be used whenever possible
 - **hexagon**:
-    - an H3 **cell** which is a **topological** hexagon
-    - below, we explain that functions which *only* work with **hexagons** have an `Unsafe` suffix;
+    - an H3 **cell** that is a **topological** hexagon
+    - below, we explain that functions that *only* work with **hexagons** have an `Unsafe` suffix;
       these functions are paired with ones having a `Safe` suffix, meaning they can handle **pentagons**, but are slower
 - **pentagon**:
-    - an H3 **cell** which is a **topological** pentagon
+    - an H3 **cell** that is a **topological** pentagon
 - **directed edge**:
     - represents a traversal from an origin **cell** to an adjacent destination **cell**
     - corresponds to an `H3Index` of `mode 2`
