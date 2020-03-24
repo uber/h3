@@ -6,7 +6,7 @@
     - Isaac Brodsky
     - David Ellis
 - **Date**: 2020-02-02
-- **Status**: Draft
+- **Status**: Under review
 - **Discussions**:
     - <https://github.com/uber/h3/pull/308>
 
