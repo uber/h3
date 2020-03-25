@@ -128,7 +128,7 @@ There is some ambiguity between property, transform, and computation, so use you
 | *DNE*                         | `getMode`              |
 | `polyfill`                    | same, `polygonToCells` |
 
-- **Note**: `getResolution` and `getBaseCellNumber` should work for both cells and edges.
+**Note**: `getResolution` and `getBaseCellNumber` should work for both cells and edges.
 
 
 ### H3 Grid Functions
@@ -231,6 +231,11 @@ For a future undirected edge mode, use the term `Edge`.
 
 
 ## Polygons
+
+**Note**: In addition to the changes listed in this section, we are considering
+removing the `Linked*` data types from the public API. However, that is a larger
+discussion requiring benchmarking, so we will defer that to a
+[separate issue](https://github.com/uber/h3/issues/323) outside of this RFC.
 
 ### Data Structures
 
