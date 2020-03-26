@@ -108,6 +108,19 @@ if(ENABLE_WARNINGS)
     endif()
 endif()
 
+option(ENABLE_LTO "Enable interprocedural optimization for Release builds." ON)
+if(ENABLE_LTO)
+    include(CheckIPOSupported)
+    check_ipo_supported(RESULT H3_IPO_SUPPORTED
+                        OUTPUT H3_IPO_CHECK_OUTPUT
+                        LANGUAGES C)
+    if(H3_IPO_SUPPORTED)
+        set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE ON)
+    else()
+        message(STATUS "IPO/LTO is not supported: ${H3_IPO_CHECK_OUTPUT}")
+    endif()
+endif()
+
 if(NOT MSVC)
     # Compiler options are set only on non-Windows, since these options are not
     # correct for MSVC.
