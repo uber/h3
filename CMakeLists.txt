@@ -12,7 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.9)
+cmake_policy(SET CMP0069 NEW)
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 set(H3_PREFIX "" CACHE STRING "Prefix for exported symbols")
 
@@ -56,8 +58,8 @@ set(H3_SOVERSION 1)
 
 project(h3 LANGUAGES C VERSION ${H3_VERSION})
 
-set(H3_COMPILE_FLAGS "")
-set(H3_LINK_FLAGS "")
+set(H3_COMPILE_FLAGS "-O1" "-finline-small-functions" "-finline-functions")
+set(H3_LINK_FLAGS "-Wl,-Bsymbolic-functions" "-Wl,-z,relro")
 if(NOT WIN32)
     # Compiler options are set only on non-Windows, since these options
     # are not correct for MSVC.
