@@ -106,27 +106,27 @@ There is some ambiguity between property, transform, and computation, so use you
 
 ### General Function Names
 
-|          Current name         |     Proposed name      |
-|-------------------------------|------------------------|
-| *Does Not Exist (DNE)*        | `isValidIndex`         |
-| `h3IsValid`                   | `isValidCell`          |
-| `h3UnidirectionalEdgeIsValid` | `isValidDirectedEdge`  |
-| `h3IsPentagon`                | `isPentagon`           |
-| `h3IsResClassIII`             | `isResClassIII`        |
-| `h3IndexesAreNeighbors`       | `areNeighborCells`     |
-| `h3ToParent`                  | `cellToParent`         |
-| `h3ToChildren`                | `cellToChildren`       |
-| `numHexagons`                 | `getNumCells`          |
-| `getRes0Indexes`              | `getRes0Cells`         |
-| `getPentagonIndexes`          | `getPentagons`         |
-| `h3GetBaseCell`               | `getBaseCellNumber`    |
-| `h3GetResolution`             | `getResolution`        |
-| `geoToH3`                     | `pointToCell`          |
-| `h3ToGeo`                     | `cellToPoint`          |
-| `compact`                     | same, `compactCells`   |
-| `uncompact`                   | same, `uncompactCells` |
-| *DNE*                         | `getMode`              |
-| `polyfill`                    | same, `polygonToCells` |
+|          Current name         |     Proposed name     |
+|-------------------------------|-----------------------|
+| *Does Not Exist (DNE)*        | `isValidIndex`        |
+| `h3IsValid`                   | `isValidCell`         |
+| `h3UnidirectionalEdgeIsValid` | `isValidDirectedEdge` |
+| `h3IsPentagon`                | `isPentagon`          |
+| `h3IsResClassIII`             | `isResClassIII`       |
+| `h3IndexesAreNeighbors`       | `areNeighborCells`    |
+| `h3ToParent`                  | `cellToParent`        |
+| `h3ToChildren`                | `cellToChildren`      |
+| `numHexagons`                 | `getNumCells`         |
+| `getRes0Indexes`              | `getRes0Cells`        |
+| `getPentagonIndexes`          | `getPentagons`        |
+| `h3GetBaseCell`               | `getBaseCellNumber`   |
+| `h3GetResolution`             | `getResolution`       |
+| *DNE*                         | `getMode`             |
+| `geoToH3`                     | `pointToCell`         |
+| `h3ToGeo`                     | `cellToPoint`         |
+| `compact`                     | `compactCells`        |
+| `uncompact`                   | `uncompactCells`      |
+| `polyfill`                    | `polygonToCells`      |
 
 **Note**: `getResolution` and `getBaseCellNumber` should work for both cells and edges.
 
@@ -167,23 +167,21 @@ We may expose them in the future if a need becomes clear.
 
 #### Filled-In Disk With Distances
 
-|     Current name    |       Proposed name       |                Calls                 |
-|---------------------|---------------------------|--------------------------------------|
-| `hexRangeDistances` | `gridDiskDistancesUnsafe` | NONE                                 |
-| `_kRingInternal`    | `gridDiskDistancesSafe`   | NONE                                 |
-| `kRingDistances`    | `gridDiskDistances`       | `hexRangeDistances`,`_kRingInternal` |
-
-**Note**: The distances array is *optional* for `hexRangeDistances`, but *required* for the other two functions.
+|     Current name    |       Proposed name       |      Calls       |
+|---------------------|---------------------------|------------------|
+| `hexRangeDistances` | `gridDiskDistancesUnsafe` | NONE             |
+| `_kRingInternal`    | `gridDiskDistancesSafe`   | NONE             |
+| `kRingDistances`    | `gridDiskDistances`       | `_kRingInternal` |
 
 
 #### Filled-In Disk Without Distances
 
-| Current name |   Proposed name   |                      Calls                       |
-|--------------|-------------------|--------------------------------------------------|
-| `hexRange`   | `gridDiskUnsafe`  | `hexRangeDistances`, does not allocate distances |
-| *DNE*        | `gridDiskSafe`    |                                                  |
-| `kRing`      | `gridDisk`        | `kRingDistances`, allocates and drops distances  |
-| `hexRanges`  | `gridDisksUnsafe` | N x `hexRange`                                   |
+| Current name |   Proposed name   |        Calls        |
+|--------------|-------------------|---------------------|
+| `hexRange`   | `gridDiskUnsafe`  | `hexRangeDistances` |
+| *DNE*        | `gridDiskSafe`    |                     |
+| `kRing`      | `gridDisk`        | `kRingDistances`    |
+| `hexRanges`  | `gridDisksUnsafe` | N x `hexRange`      |
 
 - **Note**: We may remove `hexRanges` from the API, as it is just a very simple wrapper around
   `hexRange`. Inclusion is a discussion separate from this RFC. We'll simply state that
@@ -218,16 +216,19 @@ For a future undirected edge mode, use the term `Edge`.
 
 ### Area/Length Functions
 
-|  Current name  |        Proposed name        |         Notes         |
-|----------------|-----------------------------|-----------------------|
-| `hexAreaKm2`   | `getHexagonAreaAvgKm2`      |                       |
-| `hexAreaM2`    | `getHexagonAreaAvgM2`       |                       |
-| `edgeLengthKm` | `getHexagonEdgeLengthAvgKm` |                       |
-| `edgeLengthM`  | `getHexagonEdgeLengthAvgM`  |                       |
-| *DNE*          | `getPentagonAreaAvg*`       |                       |
-| *DNE*          | `getPentagonEdgeLengthAvg*` |                       |
-| *DNE*          | `cellAreaKm2`               | area of specific cell |
-| *DNE*          | `cellAreaM2`                | area of specific cell |
+|  Current name  |        Proposed name        |
+|----------------|-----------------------------|
+| `hexAreaKm2`   | `getHexagonAreaAvgKm2`      |
+| `hexAreaM2`    | `getHexagonAreaAvgM2`       |
+| `edgeLengthKm` | `getHexagonEdgeLengthAvgKm` |
+| `edgeLengthM`  | `getHexagonEdgeLengthAvgM`  |
+| *DNE*          | `getPentagonAreaAvg*`       |
+| *DNE*          | `getPentagonEdgeLengthAvg*` |
+| *DNE*          | `cellAreaKm2`               |
+| *DNE*          | `cellAreaM2`                |
+
+**Note**: `cellAreaKm2` and `cellAreaM2` would return the actual area of
+the passed-in cell.
 
 
 ## Polygons
@@ -236,6 +237,7 @@ For a future undirected edge mode, use the term `Edge`.
 removing the `Linked*` data types from the public API. However, that is a larger
 discussion requiring benchmarking, so we will defer that to a
 [separate issue](https://github.com/uber/h3/issues/323) outside of this RFC.
+
 
 ### Data Structures
 
