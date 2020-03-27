@@ -5,7 +5,7 @@
     - Nick Rabinowitz
     - Isaac Brodsky
     - David Ellis
-- **Date**:
+- **Dates**:
     - Started: 2020-02-02
     - Accepted: 2020-03-26
 - **Status**: Accepted
