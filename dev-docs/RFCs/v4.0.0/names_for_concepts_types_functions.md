@@ -5,8 +5,10 @@
     - Nick Rabinowitz
     - Isaac Brodsky
     - David Ellis
-- **Date**: 2020-02-02
-- **Status**: Under review
+- **Date**:
+    - Started: 2020-02-02
+    - Accepted: 2020-03-26
+- **Status**: Accepted
 - **Discussions**:
     - <https://github.com/uber/h3/pull/308>
 
