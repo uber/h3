@@ -169,11 +169,11 @@ We may expose them in the future if a need becomes clear.
 
 #### Filled-In Disk With Distances
 
-|     Current name    |       Proposed name       |      Calls       |
-|---------------------|---------------------------|------------------|
-| `hexRangeDistances` | `gridDiskDistancesUnsafe` | NONE             |
-| `_kRingInternal`    | `gridDiskDistancesSafe`   | NONE             |
-| `kRingDistances`    | `gridDiskDistances`       | `_kRingInternal` |
+|     Current name    |       Proposed name       |                 Calls                 |
+|---------------------|---------------------------|---------------------------------------|
+| `hexRangeDistances` | `gridDiskDistancesUnsafe` | NONE                                  |
+| `_kRingInternal`    | `gridDiskDistancesSafe`   | NONE                                  |
+| `kRingDistances`    | `gridDiskDistances`       | `hexRangeDistances`, `_kRingInternal` |
 
 
 #### Filled-In Disk Without Distances
