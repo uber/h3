@@ -173,7 +173,14 @@ int H3_EXPORT(maxKringSize)(int k) { return 3 * k * (k + 1) + 1; }
  */
 void H3_EXPORT(kRing)(H3Index origin, int k, H3Index* out) {
     int maxIdx = H3_EXPORT(maxKringSize)(k);
+    // Using malloc is OK here instead of calloc because kRingDistances has two
+    // things it tries in order. First is hexRangeDistances which does not read
+    // distances. If that fails, distances is zeroed before the next call.
     int* distances = H3_MEMORY(malloc)(maxIdx * sizeof(int));
+    if (!distances) {
+        // TODO: Return an error code when this is not void
+        return;
+    }
     H3_EXPORT(kRingDistances)(origin, k, out, distances);
     H3_MEMORY(free)(distances);
 }

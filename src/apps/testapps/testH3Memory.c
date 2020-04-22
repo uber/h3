@@ -20,6 +20,7 @@
  */
 
 #include <math.h>
+#include <string.h>
 #include "geoCoord.h"
 #include "h3Index.h"
 #include "h3api.h"
@@ -83,6 +84,37 @@ void test_prefix_free(void* ptr) {
 H3Index sunnyvale = 0x89283470c27ffff;
 
 SUITE(h3Memory) {
+    TEST(kRing) {
+        int k = 2;
+        int hexCount = H3_EXPORT(maxKringSize)(k);
+        H3Index* kRingOutput = calloc(hexCount, sizeof(H3Index));
+
+        resetMemoryCounters(0);
+        H3_EXPORT(kRing)(sunnyvale, k, kRingOutput);
+        t_assert(actualAllocCalls == 1, "kRing called alloc");
+        t_assert(actualFreeCalls == 1, "kRing called free");
+
+        for (int i = 0; i < hexCount; i++) {
+            t_assert(kRingOutput[i], "kRing produced output");
+            t_assert(H3_EXPORT(h3IsValid)(kRingOutput[i]),
+                     "kRing produced valid output");
+        }
+
+        resetMemoryCounters(0);
+        failAlloc = true;
+        memset(kRingOutput, 0, hexCount * sizeof(H3Index));
+        H3_EXPORT(kRing)(sunnyvale, k, kRingOutput);
+        t_assert(actualAllocCalls == 1, "kRing called alloc");
+        t_assert(actualFreeCalls == 0, "kRing did not call free");
+
+        for (int i = 0; i < hexCount; i++) {
+            t_assert(!kRingOutput[i],
+                     "kRing did not produce output without alloc");
+        }
+
+        free(kRingOutput);
+    }
+
     TEST(compact) {
         int k = 9;
         int hexCount = H3_EXPORT(maxKringSize)(k);
@@ -90,6 +122,7 @@ SUITE(h3Memory) {
 
         // Generate a set of hexagons to compact
         H3Index* sunnyvaleExpanded = calloc(hexCount, sizeof(H3Index));
+        resetMemoryCounters(0);
         H3_EXPORT(kRing)(sunnyvale, k, sunnyvaleExpanded);
         t_assert(actualAllocCalls == 1, "kRing called alloc");
         t_assert(actualFreeCalls == 1, "kRing caleld free");

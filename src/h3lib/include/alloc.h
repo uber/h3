@@ -15,12 +15,16 @@
  */
 /** @file alloc.h
  * @brief   Memory management functions
+ *
+ * This file contains macros and the necessary declarations to be able
+ * to point H3 at different memory management functions than the standard
+ * malloc/free/etc functions.
  */
 
 #ifndef ALLOC_H
 #define ALLOC_H
 
-#include "h3api.h"
+#include "h3api.h" // for TJOIN
 
 #ifdef H3_ALLOC_PREFIX
 #define H3_MEMORY(name) TJOIN(H3_ALLOC_PREFIX, name)
