@@ -24,7 +24,7 @@ TARGET_BRANCH=gh-pages
 CURRENT_COMMIT=`git rev-parse HEAD`
 
 yarn
-yarn run build
+yarn build
 # The dist directory is not removed because it is gitignore'd.
 git checkout "$TARGET_BRANCH"
 cd ..

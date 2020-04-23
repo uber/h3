@@ -65,8 +65,8 @@ matrix:
         - "curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | sudo bash"
       script:
         - cd website
-        - npm install
-        - npm run build
+        - yarn
+        - yarn build
         - cd ..
         - 'if [ -n "$FOSSA_API_KEY" ]; then fossa; fi'
     - name: "Valgrind test"
