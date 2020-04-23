@@ -78,7 +78,7 @@ matrix:
       before_script:
         - cmake -DCMAKE_BUILD_TYPE=Debug -DWRAP_VALGRIND=ON .
       script:
-    - make
+        - make
         - CTEST_OUTPUT_ON_FAILURE=1 make test-fast
     - name: "Mac OSX (Xcode 8)"
       os: osx
