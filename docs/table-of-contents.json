@@ -1,0 +1,47 @@
+{
+  "id": "table-of-contents",
+  "chapters": [
+    {
+      "title": "Overview",
+      "entries": [
+        {"entry": "docs/README"},
+        {"entry": "docs/usecases"}
+      ]
+    },
+    {
+      "title": "Core Library",
+      "entries": [
+        {"entry": "docs/core-library/overview"},
+        {"entry": "docs/core-library/h3indexing"},
+        {"entry": "docs/core-library/coordsystems"},
+        {"entry": "docs/core-library/geoToH3desc"},
+        {"entry": "docs/core-library/h3ToGeoDesc"},
+        {"entry": "docs/core-library/h3ToGeoBoundaryDesc"},
+        {"entry": "docs/core-library/filters"},
+        {"entry": "docs/core-library/usage"},
+        {"entry": "docs/core-library/restable"}
+      ]
+    },
+    {
+      "title": "API Reference",
+      "entries": [
+        {"entry": "docs/api/indexing"},
+        {"entry": "docs/api/inspection"},
+        {"entry": "docs/api/traversal"},
+        {"entry": "docs/api/hierarchy"},
+        {"entry": "docs/api/regions"},
+        {"entry": "docs/api/uniedge"},
+        {"entry": "docs/api/misc"}
+      ]
+    },
+    {
+      "title": "Community",
+      "entries": [
+        {"entry": "docs/community/bindings"},
+        {"entry": "docs/community/libraries"},
+        {"entry": "docs/community/tutorials"},
+        {"entry": "docs/community/applications"}
+      ]
+    }
+  ]
+}

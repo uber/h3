@@ -1,5 +1,6 @@
-Coordinate Systems used by the H3 Core Library
----
+# Coordinate systems
+
+The **H3 Core Library** uses the following coordinate systems internally.
 
 IJK Coordinates
 ---
@@ -9,7 +10,7 @@ Discrete hexagon planar grid systems naturally have 3 coordinate axes spaced 120
 Using an *ijk* coordinate system to address hexagon grid cells provides multiple valid addresses for each cell. *Normalizing* an *ijk* address (function `_ijkNormalize`) creates a unique address consisting of the minimal positive *ijk* components; this always results in at most two non-zero components.
 
 <div align="center">
-  <img height="300" src="images/ijkp.png" />
+  <img height="300" src="/images/ijkp.png" />
 </div>
 
 FaceIJK Coordinates
@@ -20,7 +21,7 @@ The **H3 Core Library** centers an *ijk* coordinate system on each face of the i
 Each grid resolution is rotated ~19.1&deg; relative to the next coarser resolution. The rotation alternates between counterclockwise and clockwise at each successive resolution, so that each resolution will have one of two possible orientations: *Class II* or *Class III* (using a terminology coined by R. Buckminster Fuller). The base cells, which make up resolution 0, are *Class II*.
 
 <div align="center">
-  <img height="300" src="images/classII.III.png" />
+  <img height="300" src="/images/classII.III.png" />
 </div>
 
 Hex2d Coordinates

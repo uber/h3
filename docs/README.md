@@ -1,5 +1,4 @@
-H3 Core
----
+# Introduction
 
 The **H3** geospatial indexing system is a multi-precision hexagonal tiling of the sphere indexed with hierarchical linear indexes. The **H3 Core Library** provides functions for converting between latitude/longitude coordinates and **H3** geospatial indexes. Specifically, the major library entry point functions (defined in `h3api.h`) provide the functionality:
 
@@ -8,4 +7,4 @@ The **H3** geospatial indexing system is a multi-precision hexagonal tiling of t
 * given an **H3** index, determine the cell boundary in latitude/longitude coordinates
 * and more.
 
-The **H3 Core Library** is written entirely in *C*. <a href="#/documentation/community/bindings">Bindings for other languages</a> are available.
+The **H3 Core Library** is written entirely in *C*. [Bindings for other languages](/docs/community/bindings) are available.

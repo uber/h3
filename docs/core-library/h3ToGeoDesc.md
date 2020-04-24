@@ -1,9 +1,8 @@
-Determine the latitude/longitude coordinates of the center point of an H3Index cell
----
+# Determine the latitude/longitude coordinates of the center point of an H3Index cell
 
 This operation is performed by function `h3ToGeo`. See the comments in the function source code for more detail.
 
-The conversion is performed as a series of coordinate system conversions described below. See the page <a href="#/documentation/core-library/coordinate-systems">Coordinate Systems used by the **H3 Core Library**</a> for more information on each of these coordinate systems.
+The conversion is performed as a series of coordinate system conversions described below. See the page [Coordinate Systems used by the **H3 Core Library**](/docs/core-library/coordsystems) for more information on each of these coordinate systems.
 
 *  The function `_h3ToFaceIjk` then converts the **H3** index to the appropriate icosahedron face number and normalized *ijk* coordinate's on that face's coordinate system as follows:
    * We start by assuming that the cell center point falls on the same icosahedron face as its base cell.
@@ -11,7 +10,7 @@ The conversion is performed as a series of coordinate system conversions describ
      We determine whether an overage exists by taking the sum of the *ijk* components, and if there is an overage the positive *ijk* components indicate which adjacent face the cell center lies on. A lookup operation is then performed to find the appropriate rotation and translation to transform the *ijk* coordinates into the adjacent face-centered *ijk* system.
 
 <div align="center">
-  <img height="300" src="images/triEdge.png" />
+  <img height="300" src="/images/triEdge.png" />
 </div>
 
 * The face-centered *ijk* coordinates are then converted into corresponding *Hex2d* coordinates using the function `_ijkToHex2d`.

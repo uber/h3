@@ -1,11 +1,10 @@
-Unix-style Filters for Address Conversion
----
+# Unix-style Filters for H3
 
 The directory `src/apps/filters` contains unix-style stdin/stdout filters that perform conversions between integer **H3** indexes and other useful types. It currently contains the filters listed in the table below. See the header comments in each application source code file for more information.
 
 Filters are experimental and are not part of the semantic version of the H3 library.
 
-All latitude/longitude coordinates are in decimal degrees. See the <a href="#/documentation/core-library/h3-index-representations"> **H3** Index Representations</a> page for information on the integer `H3Index`.
+All latitude/longitude coordinates are in decimal degrees. See the [**H3** Index Representations](/docs/core-library/h3indexing) page for information on the integer `H3Index`.
 
 
 | filter           | input     | outputs

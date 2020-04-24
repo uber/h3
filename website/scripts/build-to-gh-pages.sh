@@ -23,14 +23,16 @@ set -ex
 TARGET_BRANCH=gh-pages
 CURRENT_COMMIT=`git rev-parse HEAD`
 
-npm install
-npm run build
+yarn
+yarn build
 # The dist directory is not removed because it is gitignore'd.
 git checkout "$TARGET_BRANCH"
 cd ..
 # Copy over the .gitignore file
 git checkout $CURRENT_COMMIT -- .gitignore
-git rm bundle-*.js styles-*.css
-cp -R website/dist/* .
+# Remove all existing content, which will then be replaced with
+# the updated content
+git rm --ignore-unmatch -r -- *.js *.js.map *.css *.json static images docs page-data search
+cp -R website/public/* .
 git add .
 git commit

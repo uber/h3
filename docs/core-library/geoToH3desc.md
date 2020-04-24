@@ -1,9 +1,8 @@
-Conversion from latitude/longitude to containing H3 cell index
----
+# Conversion from latitude/longitude to containing H3 cell index
 
 This operation is performed by function `geoToH3`. See the comments in the function for more detail.
 
-The conversion is performed as a series of coordinate system conversions described below. See the page <a href="#/documentation/core-library/coordinate-systems">Coordinate Systems used by the **H3 Core Library**</a> for more information on each of these coordinate systems.
+The conversion is performed as a series of coordinate system conversions described below. See the page [Coordinate Systems used by the **H3 Core Library**](/docs/core-library/coordsystems) for more information on each of these coordinate systems.
 
 1. The input latitude/longitude coordinate is first converted into the containing icosahedron face and a *Hex2d* coordinate on that face using function `_geoToHex2d`, which determines the correct face and then performs a face-centered gnomonic projection into face-centered polar coordinates. These polar coordinates are then scaled appropriately to a *Hex2d* coordinate on the input grid resolution *r*.
 2. The *Hex2d* coordinate is converted into resolution *r* normalized *ijk* coordinates using function `_hex2dToCoordIJK`.

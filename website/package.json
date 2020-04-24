@@ -1,18 +1,26 @@
 {
-  "name": "h3-website",
-  "description": "Website for H3",
-  "main": "index.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/uber/h3.git"
-  },
-  "scripts": {
-    "start": "ocular start open",
-    "build": "ocular build",
-    "lint": "ocular lint"
-  },
+  "description": "A website built with ocular",
   "license": "Apache-2.0",
+  "keywords": [
+    "ocular"
+  ],
+  "main": "index.js",
+  "scripts": {
+    "start": "yarn clean && yarn develop",
+    "clean": "rm -rf ./.cache ./public",
+    "develop": "gatsby develop --port=8001",
+    "build": "yarn clean && gatsby build --prefix-paths",
+    "serve": "gatsby serve --prefix-paths",
+    "deploy": "NODE_DEBUG=gh-pages gh-pages -d public"
+  },
   "dependencies": {
-    "ocular": "^0.5.5"
-  }
+    "gatsby": "^2.18.0",
+    "gatsby-remark-katex": "^3.1.20",
+    "gatsby-theme-ocular": "^1.2.0-beta.8",
+    "gatsby-transformer-remark": "^2.6.44",
+    "katex": "^0.11.1",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6"
+  },
+  "devDependencies": {}
 }
