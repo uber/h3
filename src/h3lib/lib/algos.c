@@ -24,6 +24,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include "alloc.h"
 #include "baseCells.h"
 #include "bbox.h"
 #include "faceijk.h"
@@ -201,9 +202,13 @@ void H3_EXPORT(kRingDistances)(H3Index origin, int k, H3Index* out,
         memset(out, 0, maxIdx * sizeof(H3Index));
 
         if (distances == NULL) {
-            distances = calloc(maxIdx, sizeof(int));
+            distances = H3_MEMORY(calloc)(maxIdx, sizeof(int));
+            if (!distances) {
+                // TODO: Return an error code when this is not void
+                return;
+            }
             _kRingInternal(origin, k, out, distances, maxIdx, 0);
-            free(distances);
+            H3_MEMORY(free)(distances);
         } else {
             memset(distances, 0, maxIdx * sizeof(int));
             _kRingInternal(origin, k, out, distances, maxIdx, 0);
@@ -682,7 +687,7 @@ void H3_EXPORT(polyfill)(const GeoPolygon* geoPolygon, int res, H3Index* out) {
     // This first part is identical to the maxPolyfillSize above.
 
     // Get the bounding boxes for the polygon and any holes
-    BBox* bboxes = malloc((geoPolygon->numHoles + 1) * sizeof(BBox));
+    BBox* bboxes = H3_MEMORY(malloc)((geoPolygon->numHoles + 1) * sizeof(BBox));
     assert(bboxes != NULL);
     bboxesFromGeoPolygon(geoPolygon, bboxes);
     int minK = bboxHexRadius(&bboxes[0], res);
@@ -714,7 +719,7 @@ void H3_EXPORT(polyfill)(const GeoPolygon* geoPolygon, int res, H3Index* out) {
             out[i] = H3_INVALID_INDEX;
         }
     }
-    free(bboxes);
+    H3_MEMORY(free)(bboxes);
 }
 
 /**

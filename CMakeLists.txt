@@ -15,6 +15,7 @@
 cmake_minimum_required(VERSION 3.1)
 
 set(H3_PREFIX "" CACHE STRING "Prefix for exported symbols")
+set(H3_ALLOC_PREFIX "" CACHE STRING "Prefix for allocation functions")
 
 # Needed due to CMP0042
 set(CMAKE_MACOSX_RPATH 1)
@@ -178,6 +179,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testH3LineExhaustive.c
     src/apps/testapps/testCoordIj.c
     src/apps/testapps/testCoordIjk.c
+    src/apps/testapps/testH3Memory.c
     src/apps/miscapps/h3ToGeoBoundaryHier.c
     src/apps/miscapps/h3ToGeoHier.c
     src/apps/miscapps/generateBaseCellNeighbors.c
@@ -200,31 +202,40 @@ configure_file(${UNCONFIGURED_API_HEADER} ${CONFIGURED_API_HEADER})
 
 set(INSTALL_TARGETS h3)
 
+function(add_h3_library name h3_alloc_prefix_override)
+    add_library(${name} ${LIB_SOURCE_FILES} ${CONFIGURED_API_HEADER})
+
+    target_compile_options(${name} PRIVATE ${H3_COMPILE_FLAGS})
+    target_link_libraries(${name} PRIVATE ${H3_LINK_FLAGS})
+
+    find_library(M_LIB m)
+    if(M_LIB)
+        target_link_libraries(${name} PUBLIC ${M_LIB})
+    endif()
+
+    if(BUILD_SHARED_LIBS)
+        set_target_properties(${name} PROPERTIES SOVERSION ${H3_SOVERSION})
+    endif()
+
+    target_compile_definitions(${name} PUBLIC H3_PREFIX=${H3_PREFIX})
+    if(h3_alloc_prefix_override)
+        target_compile_definitions(${name} PUBLIC H3_ALLOC_PREFIX=${h3_alloc_prefix_override})
+    elseif(H3_ALLOC_PREFIX)
+        target_compile_definitions(${name} PUBLIC H3_ALLOC_PREFIX=${H3_ALLOC_PREFIX})
+    endif()
+    if(have_alloca)
+        target_compile_definitions(${name} PUBLIC H3_HAVE_ALLOCA)
+    endif()
+    if(have_vla)
+        target_compile_definitions(${name} PUBLIC H3_HAVE_VLA)
+    endif()
+    target_include_directories(${name} PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/h3lib/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/src/h3lib/include>)
+endfunction()
+
 # Build the H3 library
-add_library(h3 ${LIB_SOURCE_FILES} ${CONFIGURED_API_HEADER})
-
-target_compile_options(h3 PRIVATE ${H3_COMPILE_FLAGS})
-target_link_libraries(h3 PRIVATE ${H3_LINK_FLAGS})
-
-find_library(M_LIB m)
-if(M_LIB)
-    target_link_libraries(h3 PUBLIC ${M_LIB})
-endif()
-
-if(BUILD_SHARED_LIBS)
-    set_target_properties(h3 PROPERTIES SOVERSION ${H3_SOVERSION})
-endif()
-
-target_compile_definitions(h3 PUBLIC H3_PREFIX=${H3_PREFIX})
-if(have_alloca)
-    target_compile_definitions(h3 PUBLIC H3_HAVE_ALLOCA)
-endif()
-if(have_vla)
-    target_compile_definitions(h3 PUBLIC H3_HAVE_VLA)
-endif()
-target_include_directories(h3 PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/h3lib/include>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/src/h3lib/include>)
+add_h3_library(h3 "")
 
 # Automatic code formatting
 find_program(CLANG_FORMAT_PATH clang-format)
@@ -399,6 +410,37 @@ if(BUILD_TESTING)
             )
     endif()
 
+    add_h3_library(h3WithTestAllocators test_prefix_)
+
+    macro(add_h3_memory_test name srcfile)
+        # Like other test code, but these need to be linked against
+        # a different copy of the H3 library which has known intercepted
+        # allocator functions.
+        add_executable(${ARGV} ${APP_SOURCE_FILES})
+
+        if(TARGET ${name})
+            target_link_libraries(${name} PUBLIC h3WithTestAllocators)
+            target_include_directories(${name} PUBLIC
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/apps/applib/include>)
+            target_compile_options(${name} PRIVATE ${H3_COMPILE_FLAGS})
+            target_link_libraries(${name} PRIVATE ${H3_LINK_FLAGS})
+        endif()
+
+        math(EXPR test_number "${test_number}+1")
+
+        add_test(NAME ${name}_test${test_number} COMMAND ${TEST_WRAPPER} "$<TARGET_FILE:${name}>")
+
+        if(ENABLE_COVERAGE)
+            add_custom_target(${name}_coverage${test_number}
+                COMMAND ${name} > /dev/null
+                COMMENT "Running ${name}_coverage${test_number}"
+                )
+
+            add_dependencies(coverage ${name}_coverage${test_number})
+            add_dependencies(${name}_coverage${test_number} clean-coverage)
+        endif()
+    endmacro()
+
     macro(add_h3_test_common name srcfile)
         # need to actually make the test target
         if(NOT TARGET ${name})
@@ -471,7 +513,6 @@ if(BUILD_TESTING)
     endmacro()
 
     # Add each individual test
-
     file(GLOB all_centers tests/inputfiles/bc*centers.txt)
     foreach(file ${all_centers})
         add_h3_test_with_file(testH3ToGeo src/apps/testapps/testH3ToGeo.c ${file})
@@ -532,6 +573,8 @@ if(BUILD_TESTING)
     add_h3_test(testH3ToLocalIjExhaustive src/apps/testapps/testH3ToLocalIjExhaustive.c)
     add_h3_test(testH3LineExhaustive src/apps/testapps/testH3LineExhaustive.c)
     add_h3_test(testH3DistanceExhaustive src/apps/testapps/testH3DistanceExhaustive.c)
+
+    add_h3_memory_test(testH3Memory src/apps/testapps/testH3Memory.c)
 
     add_custom_target(test-fast COMMAND ctest -E Exhaustive)
 endif()

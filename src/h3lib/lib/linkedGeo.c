@@ -20,6 +20,7 @@
 #include "linkedGeo.h"
 #include <assert.h>
 #include <stdlib.h>
+#include "alloc.h"
 #include "geoCoord.h"
 #include "h3api.h"
 
@@ -30,7 +31,7 @@
  */
 LinkedGeoPolygon* addNewLinkedPolygon(LinkedGeoPolygon* polygon) {
     assert(polygon->next == NULL);
-    LinkedGeoPolygon* next = calloc(1, sizeof(*next));
+    LinkedGeoPolygon* next = H3_MEMORY(calloc)(1, sizeof(*next));
     assert(next != NULL);
     polygon->next = next;
     return next;
@@ -42,7 +43,7 @@ LinkedGeoPolygon* addNewLinkedPolygon(LinkedGeoPolygon* polygon) {
  * @return         Pointer to loop
  */
 LinkedGeoLoop* addNewLinkedLoop(LinkedGeoPolygon* polygon) {
-    LinkedGeoLoop* loop = calloc(1, sizeof(*loop));
+    LinkedGeoLoop* loop = H3_MEMORY(calloc)(1, sizeof(*loop));
     assert(loop != NULL);
     return addLinkedLoop(polygon, loop);
 }
@@ -71,7 +72,7 @@ LinkedGeoLoop* addLinkedLoop(LinkedGeoPolygon* polygon, LinkedGeoLoop* loop) {
  * @return        Pointer to the coordinate
  */
 LinkedGeoCoord* addLinkedCoord(LinkedGeoLoop* loop, const GeoCoord* vertex) {
-    LinkedGeoCoord* coord = malloc(sizeof(*coord));
+    LinkedGeoCoord* coord = H3_MEMORY(malloc)(sizeof(*coord));
     assert(coord != NULL);
     *coord = (LinkedGeoCoord){.vertex = *vertex, .next = NULL};
     LinkedGeoCoord* last = loop->last;
@@ -95,7 +96,7 @@ void destroyLinkedGeoLoop(LinkedGeoLoop* loop) {
     for (LinkedGeoCoord* currentCoord = loop->first; currentCoord != NULL;
          currentCoord = nextCoord) {
         nextCoord = currentCoord->next;
-        free(currentCoord);
+        H3_MEMORY(free)(currentCoord);
     }
 }
 
@@ -115,14 +116,14 @@ void H3_EXPORT(destroyLinkedPolygon)(LinkedGeoPolygon* polygon) {
              currentLoop != NULL; currentLoop = nextLoop) {
             destroyLinkedGeoLoop(currentLoop);
             nextLoop = currentLoop->next;
-            free(currentLoop);
+            H3_MEMORY(free)(currentLoop);
         }
         nextPolygon = currentPolygon->next;
         if (skip) {
             // do not free the input polygon
             skip = false;
         } else {
-            free(currentPolygon);
+            H3_MEMORY(free)(currentPolygon);
         }
     }
 }
@@ -242,9 +243,10 @@ static const LinkedGeoPolygon* findPolygonForHole(
     }
     // Initialize arrays for candidate loops and their bounding boxes
     const LinkedGeoPolygon** candidates =
-        malloc(polygonCount * sizeof(LinkedGeoPolygon*));
+        H3_MEMORY(malloc)(polygonCount * sizeof(LinkedGeoPolygon*));
     assert(candidates != NULL);
-    const BBox** candidateBBoxes = malloc(polygonCount * sizeof(BBox*));
+    const BBox** candidateBBoxes =
+        H3_MEMORY(malloc)(polygonCount * sizeof(BBox*));
     assert(candidateBBoxes != NULL);
 
     // Find all polygons that contain the loop
@@ -267,8 +269,8 @@ static const LinkedGeoPolygon* findPolygonForHole(
         findDeepestContainer(candidates, candidateBBoxes, candidateCount);
 
     // Free allocated memory
-    free(candidates);
-    free(candidateBBoxes);
+    H3_MEMORY(free)(candidates);
+    H3_MEMORY(free)(candidateBBoxes);
 
     return parent;
 }
@@ -308,11 +310,12 @@ int normalizeMultiPolygon(LinkedGeoPolygon* root) {
     // Create an array to hold all of the inner loops. Note that
     // this array will never be full, as there will always be fewer
     // inner loops than outer loops.
-    LinkedGeoLoop** innerLoops = malloc(loopCount * sizeof(LinkedGeoLoop*));
+    LinkedGeoLoop** innerLoops =
+        H3_MEMORY(malloc)(loopCount * sizeof(LinkedGeoLoop*));
     assert(innerLoops != NULL);
 
     // Create an array to hold the bounding boxes for the outer loops
-    BBox* bboxes = malloc(loopCount * sizeof(BBox));
+    BBox* bboxes = H3_MEMORY(malloc)(loopCount * sizeof(BBox));
     assert(bboxes != NULL);
 
     // Get the first loop and unlink it from root
@@ -349,14 +352,14 @@ int normalizeMultiPolygon(LinkedGeoPolygon* root) {
             // been unlinked from the root and the caller will no longer have
             // a way to destroy it with destroyLinkedPolygon.
             destroyLinkedGeoLoop(innerLoops[i]);
-            free(innerLoops[i]);
+            H3_MEMORY(free)(innerLoops[i]);
             resultCode = NORMALIZATION_ERR_UNASSIGNED_HOLES;
         }
     }
 
     // Free allocated memory
-    free(innerLoops);
-    free(bboxes);
+    H3_MEMORY(free)(innerLoops);
+    H3_MEMORY(free)(bboxes);
 
     return resultCode;
 }
