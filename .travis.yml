@@ -40,7 +40,7 @@ matrix:
         packages:
           - clang-format-9
       script:
-        - clang-format --version
+        - clang-format-9 --version
         - make format
         - git diff --exit-code
       # Submit coverage report to Coveralls.io, also test that prefixing works.
@@ -90,6 +90,8 @@ matrix:
         - make binding-functions
         # Check that the file exists and has contents
         - test -s binding-functions
+    - name: "ARM64"
+      arch: arm64
 
 # Configure the build script, out of source.
 before_script:
