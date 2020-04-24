@@ -58,6 +58,8 @@ env_docs/
 node_modules/
 website/dist/
 website/package-lock.json
+website/.cache/
+website/public/
 # Generated Doxyfile
 dev-docs/Doxyfile
 
