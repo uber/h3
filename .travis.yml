@@ -33,12 +33,13 @@ matrix:
       # Check that clang-format doesn't detect some files are not formatted.
     - name: "Formatting check"
       compiler: clang
-      apt:
-        sources:
-          - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main'
-            key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
-        packages:
-          - clang-format-9
+      addons:
+        apt:
+          sources:
+            - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main'
+              key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+          packages:
+            - clang-format-9
       script:
         - clang-format-9 --version
         - make format
