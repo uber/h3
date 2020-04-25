@@ -21,6 +21,7 @@
 #define POLYGON_H
 
 #include <stdbool.h>
+
 #include "bbox.h"
 #include "geoCoord.h"
 #include "h3api.h"

@@ -16,6 +16,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "geoCoord.h"
 #include "h3api.h"
 #include "linkedGeo.h"

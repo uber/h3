@@ -21,6 +21,7 @@
 
 #include <math.h>
 #include <string.h>
+
 #include "geoCoord.h"
 #include "h3Index.h"
 #include "h3api.h"

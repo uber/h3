@@ -32,6 +32,7 @@
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "args.h"
 #include "baseCells.h"
 #include "h3Index.h"

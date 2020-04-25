@@ -15,6 +15,7 @@
  */
 
 #include <stdio.h>
+
 #include "algos.h"
 #include "test.h"
 #include "utility.h"

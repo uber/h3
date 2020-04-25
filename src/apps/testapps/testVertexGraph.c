@@ -16,6 +16,7 @@
 
 #include <assert.h>
 #include <stdio.h>
+
 #include "geoCoord.h"
 #include "h3api.h"
 #include "test.h"

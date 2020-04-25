@@ -18,8 +18,10 @@
  */
 
 #include "linkedGeo.h"
+
 #include <assert.h>
 #include <stdlib.h>
+
 #include "alloc.h"
 #include "geoCoord.h"
 #include "h3api.h"

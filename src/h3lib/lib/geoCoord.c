@@ -18,8 +18,10 @@
  */
 
 #include "geoCoord.h"
+
 #include <math.h>
 #include <stdbool.h>
+
 #include "constants.h"
 #include "h3api.h"
 

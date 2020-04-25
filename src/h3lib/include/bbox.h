@@ -21,6 +21,7 @@
 #define BBOX_H
 
 #include <stdbool.h>
+
 #include "geoCoord.h"
 
 /** @struct BBox
