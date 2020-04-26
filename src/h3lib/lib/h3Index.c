@@ -18,7 +18,6 @@
  *          (see h3api.h for the main library entry functions)
  */
 #include "h3Index.h"
-#include <faceijk.h>
 #include <inttypes.h>
 #include <math.h>
 #include <stdlib.h>
