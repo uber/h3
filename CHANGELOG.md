@@ -6,6 +6,11 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+### Added
+- `H3_MEMORY_PREFIX` CMake option for replacing the memory management functions used in H3. (#317)
+### Fixed
+- Removed duplicate include statements. (#333)
+- Fixed macro `H3_DIGIT_MASK_NEGATIVE`. (#329)
 
 ## [3.6.3] - 2020-01-21
 ### Fixed
