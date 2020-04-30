@@ -20,6 +20,7 @@
  */
 
 #include <math.h>
+
 #include "constants.h"
 #include "geoCoord.h"
 #include "h3api.h"

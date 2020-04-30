@@ -19,6 +19,7 @@
 
 #include <inttypes.h>
 #include <stdbool.h>
+
 #include "algos.h"
 #include "constants.h"
 #include "coordijk.h"

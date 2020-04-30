@@ -31,6 +31,7 @@
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "args.h"
 #include "h3api.h"
 #include "utility.h"

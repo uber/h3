@@ -21,6 +21,7 @@
 #define UTILITY_H
 
 #include <stdio.h>
+
 #include "coordijk.h"
 #include "h3api.h"
 

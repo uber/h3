@@ -18,6 +18,7 @@
  */
 
 #include "baseCells.h"
+
 #include "h3Index.h"
 
 /** @struct BaseCellOrient

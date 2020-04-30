@@ -19,6 +19,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "baseCells.h"
 #include "h3Index.h"
 #include "h3api.h"

@@ -23,6 +23,7 @@
 #include <inttypes.h>
 #include <stdbool.h>
 #include <stdio.h>
+
 #include "utility.h"
 
 /** Maximum number of names an argument may have. */

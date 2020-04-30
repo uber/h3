@@ -22,6 +22,7 @@
 
 #include <stdint.h>
 #include <stdlib.h>
+
 #include "geoCoord.h"
 
 /** @struct VertexNode

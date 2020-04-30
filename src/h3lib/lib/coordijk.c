@@ -19,10 +19,12 @@
  */
 
 #include "coordijk.h"
+
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "constants.h"
 #include "geoCoord.h"
 #include "mathExtensions.h"

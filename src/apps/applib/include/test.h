@@ -21,6 +21,7 @@
 #define TEST_H
 
 #include <stdio.h>
+
 #include "geoCoord.h"
 #include "h3api.h"
 

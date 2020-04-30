@@ -53,6 +53,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "args.h"
 #include "baseCells.h"
 #include "h3Index.h"

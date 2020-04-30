@@ -16,6 +16,7 @@
 
 #include <inttypes.h>
 #include <stdlib.h>
+
 #include "h3Index.h"
 #include "test.h"
 

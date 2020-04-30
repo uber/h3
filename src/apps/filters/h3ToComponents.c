@@ -24,6 +24,7 @@
  */
 
 #include <inttypes.h>
+
 #include "args.h"
 #include "h3Index.h"
 #include "utility.h"

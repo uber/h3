@@ -18,12 +18,14 @@
  */
 
 #include "algos.h"
+
 #include <assert.h>
 #include <float.h>
 #include <math.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "alloc.h"
 #include "baseCells.h"
 #include "bbox.h"

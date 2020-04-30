@@ -18,7 +18,9 @@
  */
 
 #include "kml.h"
+
 #include <stdio.h>
+
 #include "h3api.h"
 
 void kmlPtsHeader(const char* name, const char* desc) {

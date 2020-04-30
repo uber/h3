@@ -18,12 +18,14 @@
  */
 
 #include "utility.h"
+
 #include <assert.h>
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+
 #include "coordijk.h"
 #include "h3Index.h"
 #include "h3api.h"

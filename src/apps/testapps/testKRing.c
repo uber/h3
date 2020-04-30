@@ -20,6 +20,7 @@
  */
 
 #include <stdlib.h>
+
 #include "algos.h"
 #include "baseCells.h"
 #include "h3Index.h"

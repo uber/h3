@@ -26,6 +26,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "constants.h"
 #include "geoCoord.h"
 #include "h3Index.h"

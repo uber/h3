@@ -18,9 +18,11 @@
  */
 
 #include "bbox.h"
+
 #include <float.h>
 #include <math.h>
 #include <stdbool.h>
+
 #include "constants.h"
 #include "geoCoord.h"
 #include "h3Index.h"

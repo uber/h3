@@ -20,6 +20,7 @@
  */
 
 #include <stdlib.h>
+
 #include "faceijk.h"
 #include "vec3d.h"
 

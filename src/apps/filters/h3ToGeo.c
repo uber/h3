@@ -41,6 +41,7 @@
  */
 
 #include <inttypes.h>
+
 #include "args.h"
 #include "h3api.h"
 #include "kml.h"
