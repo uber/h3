@@ -805,8 +805,8 @@ int _polyfillInternal(const GeoPolygon* geoPolygon, int res, H3Index* out) {
     // Get the estimated number of hexagons and allocate some temporary memory
     // for the hexagons
     int numHexagons = H3_EXPORT(maxPolyfillSize)(geoPolygon, res);
-    H3Index* search = calloc(numHexagons, sizeof(H3Index));
-    H3Index* found = calloc(numHexagons, sizeof(H3Index));
+    H3Index* search = H3_MEMORY(calloc)(numHexagons, sizeof(H3Index));
+    H3Index* found = H3_MEMORY(calloc)(numHexagons, sizeof(H3Index));
 
     // Some metadata for tracking the state of the search and found memory
     // blocks
