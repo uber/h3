@@ -46,6 +46,7 @@
 #define HEX_RANGE_K_SUBSEQUENCE 2
 #define MAX_ONE_RING_SIZE 7
 #define HEX_HASH_OVERFLOW -1
+#define POLYFILL_BUFFER 12
 
 /**
  * Directions used for traversing a hexagonal ring counterclockwise around
@@ -661,8 +662,13 @@ int H3_EXPORT(maxPolyfillSize)(const GeoPolygon* geoPolygon, int res) {
         totalVerts += geoPolygon->holes[i].numVerts;
     }
     if (numHexagons < totalVerts) numHexagons = totalVerts;
-    numHexagons += 12;  // TODO: Get a better constant here, but this seems
-                        // related to the rotation issue for odd hexes
+    numHexagons += POLYFILL_BUFFER;  // When the polygon is very small, near an
+                                     // icosahedron edge and is an odd
+                                     // resolution, the line tracing needs an
+                                     // extra buffer than the estimator function
+                                     // provides (but beefing that up to cover
+                                     // causes most situations to overallocate
+                                     // memory)
     return numHexagons;
 }
 
