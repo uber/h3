@@ -105,6 +105,7 @@ script:
   - make
   - make test
   - sudo make install
+  - cpack
   - mkdir examples
   - cd examples
   - cmake ../../examples
