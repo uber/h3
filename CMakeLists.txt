@@ -200,7 +200,7 @@ set(UNCONFIGURED_API_HEADER src/h3lib/include/h3api.h.in)
 set(CONFIGURED_API_HEADER src/h3lib/include/h3api.h)
 configure_file(${UNCONFIGURED_API_HEADER} ${CONFIGURED_API_HEADER})
 
-set(INSTALL_TARGETS h3)
+set(INSTALL_TARGETS)
 
 function(add_h3_library name h3_alloc_prefix_override)
     add_library(${name} ${LIB_SOURCE_FILES} ${CONFIGURED_API_HEADER})
@@ -643,10 +643,16 @@ configure_package_config_file(
 install(
     TARGETS ${INSTALL_TARGETS}
     EXPORT "${TARGETS_EXPORT_NAME}"
+    RUNTIME DESTINATION "bin"
+    COMPONENT h3
+)
+
+install(
+    TARGETS h3
+    EXPORT "${TARGETS_EXPORT_NAME}"
     LIBRARY DESTINATION "lib"
     ARCHIVE DESTINATION "lib"
-    RUNTIME DESTINATION "bin"
-    INCLUDES DESTINATION "${include_install_dir}"
+    COMPONENT libh3
 )
 
 # Headers:
@@ -655,6 +661,7 @@ install(
 install(
     FILES "${CMAKE_CURRENT_BINARY_DIR}/src/h3lib/include/h3api.h"
     DESTINATION "${include_install_dir}/h3"
+    COMPONENT libh3-dev
 )
 
 # Config
@@ -663,6 +670,7 @@ install(
 install(
     FILES "${project_config}" "${version_config}"
     DESTINATION "${config_install_dir}"
+    COMPONENT libh3-dev
 )
 
 # Config
@@ -671,4 +679,22 @@ install(
     EXPORT "${TARGETS_EXPORT_NAME}"
     NAMESPACE "${namespace}"
     DESTINATION "${config_install_dir}"
+    COMPONENT libh3-dev
 )
+
+# Debian package build
+set(CPACK_DEB_COMPONENT_INSTALL 1)
+set(CPACK_GENERATOR "DEB")
+set(CPACK_DEBIAN_FILE_NAME "DEB-DEFAULT")
+# set(CPACK_DEBIAN_PACKAGE_MAINTAINER "TEST PACKAGE") # Required
+set(CPACK_DEBIAN_LIBH3_PACKAGE_DEPENDS "libc6 (>= 2.27)")
+set(CPACK_DEBIAN_LIBH3-DEV_PACKAGE_DEPENDS "libh3 (= ${H3_VERSION})")
+set(CPACK_DEBIAN_H3_PACKAGE_DEPENDS "libc6 (>= 2.27), libh3 (= ${H3_VERSION})")
+set(CPACK_DEBIAN_LIBH3_DESCRIPTION "Library files for the H3 hexagonal discrete global grid system.")
+set(CPACK_DEBIAN_LIBH3-DEV_DESCRIPTION "Development files and headers for the H3 hexagonal discrete global grid system.")
+set(CPACK_DEBIAN_H3_DESCRIPTION "UNIX style filter (command line) tools for the H3 hexagonal discrete global grid system.")
+set(CPACK_DEBIAN_LIBH3_PACKAGE_NAME "libh3")
+set(CPACK_DEBIAN_LIBH3-DEV_PACKAGE_NAME "libh3-dev")
+set(CPACK_DEBIAN_H3_PACKAGE_NAME "h3")
+
+include(CPack)
