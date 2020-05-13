@@ -615,6 +615,10 @@ set(project_config "${generated_dir}/${PROJECT_NAME}Config.cmake")
 set(TARGETS_EXPORT_NAME "${PROJECT_NAME}Targets")
 set(namespace "${PROJECT_NAME}::")
 
+# TODO: Unclear why this is needed to get the libh3 Debian package to build correctly
+# with shared libraries.
+set(CMAKE_INSTALL_DEFAULT_COMPONENT_NAME "libh3")
+
 # Include module with fuction 'write_basic_package_version_file'
 include(CMakePackageConfigHelpers)
 
@@ -687,6 +691,8 @@ set(CPACK_DEB_COMPONENT_INSTALL 1)
 set(CPACK_GENERATOR "DEB")
 set(CPACK_DEBIAN_FILE_NAME "DEB-DEFAULT")
 # set(CPACK_DEBIAN_PACKAGE_MAINTAINER "TEST PACKAGE") # Required
+set(CPACK_PACKAGE_HOMEPAGE_URL "https://www.h3geo.org")
+set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/LICENSE")
 set(CPACK_DEBIAN_LIBH3_PACKAGE_DEPENDS "libc6 (>= 2.27)")
 set(CPACK_DEBIAN_LIBH3-DEV_PACKAGE_DEPENDS "libh3 (= ${H3_VERSION})")
 set(CPACK_DEBIAN_H3_PACKAGE_DEPENDS "libc6 (>= 2.27), libh3 (= ${H3_VERSION})")
@@ -696,5 +702,8 @@ set(CPACK_DEBIAN_H3_DESCRIPTION "UNIX style filter (command line) tools for the 
 set(CPACK_DEBIAN_LIBH3_PACKAGE_NAME "libh3")
 set(CPACK_DEBIAN_LIBH3-DEV_PACKAGE_NAME "libh3-dev")
 set(CPACK_DEBIAN_H3_PACKAGE_NAME "h3")
+set(CPACK_DEBIAN_LIBH3_PACKAGE_SECTION "libs")
+set(CPACK_DEBIAN_LIBH3-DEV_PACKAGE_SECTION "libdevel")
+set(CPACK_DEBIAN_H3_PACKAGE_SECTION "science")
 
 include(CPack)
