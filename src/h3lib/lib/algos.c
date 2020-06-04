@@ -662,13 +662,11 @@ int H3_EXPORT(maxPolyfillSize)(const GeoPolygon* geoPolygon, int res) {
         totalVerts += geoPolygon->holes[i].numVerts;
     }
     if (numHexagons < totalVerts) numHexagons = totalVerts;
-    numHexagons += POLYFILL_BUFFER;  // When the polygon is very small, near an
-                                     // icosahedron edge and is an odd
-                                     // resolution, the line tracing needs an
-                                     // extra buffer than the estimator function
-                                     // provides (but beefing that up to cover
-                                     // causes most situations to overallocate
-                                     // memory)
+    // When the polygon is very small, near an icosahedron edge and is an odd
+    // resolution, the line tracing needs an extra buffer than the estimator
+    // function provides (but beefing that up to cover causes most situations to
+    // overallocate memory)
+    numHexagons += POLYFILL_BUFFER;
     return numHexagons;
 }
 
