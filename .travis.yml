@@ -105,6 +105,8 @@ script:
   - make
   - make test
   - sudo make install
+  # Note the packages aren't used to test the examples below
+  - 'if [ "$TRAVIS_OS_NAME" = "linux" ]; then cpack -D CPACK_PACKAGE_CONTACT="Test build in CI"; fi'
   - mkdir examples
   - cd examples
   - cmake ../../examples
