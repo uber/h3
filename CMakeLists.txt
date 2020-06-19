@@ -13,8 +13,6 @@
 # limitations under the License.
 
 cmake_minimum_required(VERSION 3.9)
-cmake_policy(SET CMP0069 NEW)
-set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 set(H3_PREFIX "" CACHE STRING "Prefix for exported symbols")
 set(H3_ALLOC_PREFIX "" CACHE STRING "Prefix for allocation functions")
@@ -25,6 +23,9 @@ set(CMAKE_MACOSX_RPATH 1)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 # YCM needs compilation database
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+# Interprocedural optimization
+cmake_policy(SET CMP0069 NEW)
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cmake/toolchain.cmake"
@@ -59,13 +60,14 @@ set(H3_SOVERSION 1)
 
 project(h3 LANGUAGES C VERSION ${H3_VERSION})
 
-set(H3_COMPILE_FLAGS "-O1" "-finline-small-functions" "-finline-functions")
-set(H3_LINK_FLAGS "-Wl,-Bsymbolic-functions" "-Wl,-z,relro")
+set(H3_COMPILE_FLAGS "")
+set(H3_LINK_FLAGS "")
 if(NOT WIN32)
     # Compiler options are set only on non-Windows, since these options
     # are not correct for MSVC.
     list(APPEND H3_COMPILE_FLAGS -Wall)
 
+    list(APPEND H3_COMPILE_FLAGS $<$<CONFIG:Release>:-O2 -finline-functions>)
     list(APPEND H3_COMPILE_FLAGS $<$<CONFIG:Debug>:-gdwarf-2 -g3 -O0 -fno-inline -fno-eliminate-unused-debug-types>)
 
     if(ENABLE_COVERAGE)
