@@ -266,17 +266,17 @@ elseif(NOT CLANG_FORMAT_PATH)
                     "so automatic source code reformatting is disabled")
 endif()
 
-option(ENABLE_LINTING "Run clang-tidy on source files" ON)
-find_program(CLANG_TIDY_PATH "clang-tidy")
-cmake_dependent_option(
-    ENABLE_LINTING "Enable running clang-tidy on sources during compilation" ON
-    "CLANG_TIDY_PATH" OFF)
-if(ENABLE_LINTING)
-    set_target_properties(h3 PROPERTIES C_CLANG_TIDY "${CLANG_TIDY_PATH}")
-elseif(NOT CLANG_TIDY_PATH)
-    message(WARNING "clang-tidy was not detected, "
-                  "so source code linting is disabled")
-endif()
+# option(ENABLE_LINTING "Run clang-tidy on source files" ON)
+# find_program(CLANG_TIDY_PATH "clang-tidy")
+# cmake_dependent_option(
+#     ENABLE_LINTING "Enable running clang-tidy on sources during compilation" ON
+#     "CLANG_TIDY_PATH" OFF)
+# if(ENABLE_LINTING)
+#     set_target_properties(h3 PROPERTIES C_CLANG_TIDY "${CLANG_TIDY_PATH}")
+# elseif(NOT CLANG_TIDY_PATH)
+#     message(WARNING "clang-tidy was not detected, "
+#                   "so source code linting is disabled")
+# endif()
 
 # Docs
 find_package(Doxygen)
