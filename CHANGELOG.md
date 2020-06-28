@@ -6,6 +6,8 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+### Fixed
+- Fixed building the library with custom memory allocation functions on Mac OSX. (#356)
 
 ## [3.6.4] - 2020-06-19
 ### Added
