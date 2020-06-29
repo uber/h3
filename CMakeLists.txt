@@ -218,11 +218,20 @@ function(add_h3_library name h3_alloc_prefix_override)
     endif()
 
     target_compile_definitions(${name} PUBLIC H3_PREFIX=${H3_PREFIX})
+    set(has_alloc_prefix NO)
     if(h3_alloc_prefix_override)
+        set(has_alloc_prefix YES)
         target_compile_definitions(${name} PUBLIC H3_ALLOC_PREFIX=${h3_alloc_prefix_override})
     elseif(H3_ALLOC_PREFIX)
+        set(has_alloc_prefix YES)
         target_compile_definitions(${name} PUBLIC H3_ALLOC_PREFIX=${H3_ALLOC_PREFIX})
     endif()
+    # Mac OSX defaults to not looking up undefined symbols dynamically,
+    # so enable that explicitly.
+    if(has_alloc_prefix AND APPLE)
+        target_link_libraries(${name} PRIVATE "-undefined dynamic_lookup")
+    endif()
+
     if(have_alloca)
         target_compile_definitions(${name} PUBLIC H3_HAVE_ALLOCA)
     endif()
