@@ -61,6 +61,10 @@ The following technical terms should be used in the documentation, the H3 codeba
     - each base cell has a "base cell number" (0--121), which is encoded into the `H3Index` representation of every H3 cell
     - there is a one-to-one correspondence between the "base cell number" and the `H3Index` representation of resolution `0` cells
         + e.g., base cell 0 has `H3Index` hexadecimal representation `'8001fffffffffff'`
+- **boundary**:
+    - all or part of the geometric points that enclose an H3 cell
+    - may include more than 6 points in the case that a cell is not a geometric hexagon
+    - may also be used to describe the boundary between two geometric cells, as in the case of an edge
 
 
 ### Use of "hex", "hexagon", "cell", "pentagon", etc.
@@ -117,6 +121,7 @@ There is some ambiguity between property, transform, and computation, so use you
 | `h3IsResClassIII`             | `isResClassIII`       |
 | `h3IndexesAreNeighbors`       | `areNeighborCells`    |
 | `h3ToParent`                  | `cellToParent`        |
+| `h3ToCenterChild`             | `cellToCenterChild`   |
 | `h3ToChildren`                | `cellToChildren`      |
 | `numHexagons`                 | `getNumCells`         |
 | `getRes0Indexes`              | `getRes0Cells`        |
@@ -124,6 +129,7 @@ There is some ambiguity between property, transform, and computation, so use you
 | `h3GetBaseCell`               | `getBaseCellNumber`   |
 | `h3GetResolution`             | `getResolution`       |
 | *DNE*                         | `getMode`             |
+| `h3GetFaces`                  | `getIcosahedronFaces` |
 | `geoToH3`                     | `pointToCell`         |
 | `h3ToGeo`                     | `cellToPoint`         |
 | `compact`                     | `compactCells`        |
