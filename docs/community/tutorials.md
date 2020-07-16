@@ -24,6 +24,6 @@ This page lists further learning materials and code walkthroughs for the H3 libr
 
 ## Python
 
-- [Usage (IPython Notebook)](https://github.com/uber/h3-py-notebooks/blob/master/Usage.ipynb)
-- [Unified Data Layers (IPython Notebook)](https://github.com/uber/h3-py-notebooks/blob/master/UnifiedDataLayers.ipynb)
-- [H3 API examples on Urban Analytics(IPython Notebook)](https://github.com/uber/h3-py-notebooks/blob/master/H3%20API%20examples%20on%20Urban%20Analytics.ipynb)
+- [Usage (IPython Notebook)](https://github.com/uber/h3-py-notebooks/blob/master/notebooks/usage.ipynb)
+- [Unified Data Layers (IPython Notebook)](https://github.com/uber/h3-py-notebooks/blob/master/notebooks/unified_data_layers.ipynb)
+- [H3 API examples on Urban Analytics(IPython Notebook)](https://github.com/uber/h3-py-notebooks/blob/master/notebooks/urban_analytics.ipynb)
