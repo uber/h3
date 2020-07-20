@@ -32,13 +32,13 @@
 /** epsilon of ~0.1mm in radians */
 #define EPSILON_RAD (EPSILON_DEG * M_PI_180)
 
-DECLSPEC void setGeoDegs(GeoCoord* p, double latDegs, double lonDegs);
+void setGeoDegs(GeoCoord* p, double latDegs, double lonDegs);
 double constrainLat(double lat);
 double constrainLng(double lng);
 
-DECLSPEC bool geoAlmostEqual(const GeoCoord* p1, const GeoCoord* p2);
-DECLSPEC bool geoAlmostEqualThreshold(const GeoCoord* p1, const GeoCoord* p2,
-                                      double threshold);
+bool geoAlmostEqual(const GeoCoord* p1, const GeoCoord* p2);
+bool geoAlmostEqualThreshold(const GeoCoord* p1, const GeoCoord* p2,
+                             double threshold);
 
 // Internal functions
 
