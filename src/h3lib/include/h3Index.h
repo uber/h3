@@ -174,7 +174,8 @@
 #define COMPACT_DUPLICATE -2
 #define COMPACT_ALLOC_FAILED -3
 
-void setH3Index(H3Index* h, int res, int baseCell, Direction initDigit);
+DECLSPEC void setH3Index(H3Index* h, int res, int baseCell,
+                         Direction initDigit);
 int isResClassIII(int res);
 
 // Internal functions

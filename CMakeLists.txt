@@ -19,8 +19,6 @@ set(H3_ALLOC_PREFIX "" CACHE STRING "Prefix for allocation functions")
 
 # Needed due to CMP0042
 set(CMAKE_MACOSX_RPATH 1)
-# H3 doesn't export selected symbols right now
-set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 # YCM needs compilation database
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -218,6 +216,7 @@ function(add_h3_library name h3_alloc_prefix_override)
     endif()
 
     target_compile_definitions(${name} PUBLIC H3_PREFIX=${H3_PREFIX})
+    target_compile_definitions(${name} PRIVATE BUILDING_H3=1)
     set(has_alloc_prefix NO)
     if(h3_alloc_prefix_override)
         set(has_alloc_prefix YES)
@@ -227,9 +226,11 @@ function(add_h3_library name h3_alloc_prefix_override)
         target_compile_definitions(${name} PUBLIC H3_ALLOC_PREFIX=${H3_ALLOC_PREFIX})
     endif()
     # Mac OSX defaults to not looking up undefined symbols dynamically,
-    # so enable that explicitly.
+    # so enable that explicitly. Windows needs something similar.
     if(has_alloc_prefix AND APPLE)
         target_link_libraries(${name} PRIVATE "-undefined dynamic_lookup")
+    elseif(has_alloc_prefix AND MSVC)
+        set(TARGET ${name} PROPERTY APPEND LINK_FLAGS "/FORCE:UNRESOLVED")
     endif()
 
     if(have_alloca)
@@ -396,6 +397,7 @@ if(BUILD_GENERATORS)
 endif()
 
 if(BUILD_TESTING)
+	option(BUILD_ALLOC_TESTS "Build tests for custom allocation functions" ON)
     option(PRINT_TEST_FILES "Print which test files correspond to which tests" OFF)
 
     include(TestWrapValgrind)
@@ -419,8 +421,6 @@ if(BUILD_TESTING)
             COMMENT "Zeroing counters"
             )
     endif()
-
-    add_h3_library(h3WithTestAllocators test_prefix_)
 
     macro(add_h3_memory_test name srcfile)
         # Like other test code, but these need to be linked against
@@ -584,7 +584,11 @@ if(BUILD_TESTING)
     add_h3_test(testH3LineExhaustive src/apps/testapps/testH3LineExhaustive.c)
     add_h3_test(testH3DistanceExhaustive src/apps/testapps/testH3DistanceExhaustive.c)
 
-    add_h3_memory_test(testH3Memory src/apps/testapps/testH3Memory.c)
+    if(BUILD_ALLOC_TESTS)
+        add_h3_library(h3WithTestAllocators test_prefix_)
+
+        add_h3_memory_test(testH3Memory src/apps/testapps/testH3Memory.c)
+    endif()
 
     add_custom_target(test-fast COMMAND ctest -E Exhaustive)
 endif()

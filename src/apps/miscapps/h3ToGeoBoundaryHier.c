@@ -78,14 +78,12 @@ void doCell(H3Index h, int isKmlOut) {
 
 void recursiveH3IndexToGeo(H3Index h, int res, int isKmlOut) {
     for (int d = 0; d < 7; d++) {
-        H3_SET_INDEX_DIGIT(h, res, d);
-
         // skip the pentagonal deleted subsequence
-
-        if (_isBaseCellPentagon(H3_GET_BASE_CELL(h)) &&
-            _h3LeadingNonZeroDigit(h) == 1) {
+        if (H3_EXPORT(h3IsPentagon)(h) && d == 1) {
             continue;
         }
+
+        H3_SET_INDEX_DIGIT(h, res, d);
 
         if (res == H3_GET_RESOLUTION(h)) {
             doCell(h, isKmlOut);

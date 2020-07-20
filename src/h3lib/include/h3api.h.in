@@ -38,6 +38,17 @@
 #define H3_EXPORT(name) name
 #endif
 
+/* Windows DLL requires attributes indicating what to export */
+#if _WIN32
+#if BUILDING_H3
+#define DECLSPEC __declspec(dllexport)
+#else
+#define DECLSPEC __declspec(dllimport)
+#endif
+#else
+#define DECLSPEC
+#endif
+
 /* For uint64_t */
 #include <stdint.h>
 /* For size_t */
@@ -152,7 +163,7 @@ typedef struct {
  */
 /** @brief find the H3 index of the resolution res cell containing the lat/lng
  */
-H3Index H3_EXPORT(geoToH3)(const GeoCoord *g, int res);
+DECLSPEC H3Index H3_EXPORT(geoToH3)(const GeoCoord *g, int res);
 /** @} */
 
 /** @defgroup h3ToGeo h3ToGeo
@@ -160,7 +171,7 @@ H3Index H3_EXPORT(geoToH3)(const GeoCoord *g, int res);
  * @{
  */
 /** @brief find the lat/lon center point g of the cell h3 */
-void H3_EXPORT(h3ToGeo)(H3Index h3, GeoCoord *g);
+DECLSPEC void H3_EXPORT(h3ToGeo)(H3Index h3, GeoCoord *g);
 /** @} */
 
 /** @defgroup h3ToGeoBoundary h3ToGeoBoundary
@@ -168,7 +179,7 @@ void H3_EXPORT(h3ToGeo)(H3Index h3, GeoCoord *g);
  * @{
  */
 /** @brief give the cell boundary in lat/lon coordinates for the cell h3 */
-void H3_EXPORT(h3ToGeoBoundary)(H3Index h3, GeoBoundary *gp);
+DECLSPEC void H3_EXPORT(h3ToGeoBoundary)(H3Index h3, GeoBoundary *gp);
 /** @} */
 
 /** @defgroup kRing kRing
@@ -176,22 +187,23 @@ void H3_EXPORT(h3ToGeoBoundary)(H3Index h3, GeoBoundary *gp);
  * @{
  */
 /** @brief maximum number of hexagons in k-ring */
-int H3_EXPORT(maxKringSize)(int k);
+DECLSPEC int H3_EXPORT(maxKringSize)(int k);
 
 /** @brief hexagons neighbors in all directions, assuming no pentagons */
-int H3_EXPORT(hexRange)(H3Index origin, int k, H3Index *out);
+DECLSPEC int H3_EXPORT(hexRange)(H3Index origin, int k, H3Index *out);
 /** @} */
 
 /** @brief hexagons neighbors in all directions, assuming no pentagons,
  * reporting distance from origin */
-int H3_EXPORT(hexRangeDistances)(H3Index origin, int k, H3Index *out,
-                                 int *distances);
+DECLSPEC int H3_EXPORT(hexRangeDistances)(H3Index origin, int k, H3Index *out,
+                                          int *distances);
 
 /** @brief collection of hex rings sorted by ring for all given hexagons */
-int H3_EXPORT(hexRanges)(H3Index *h3Set, int length, int k, H3Index *out);
+DECLSPEC int H3_EXPORT(hexRanges)(H3Index *h3Set, int length, int k,
+                                  H3Index *out);
 
 /** @brief hexagon neighbors in all directions */
-void H3_EXPORT(kRing)(H3Index origin, int k, H3Index *out);
+DECLSPEC void H3_EXPORT(kRing)(H3Index origin, int k, H3Index *out);
 /** @} */
 
 /** @defgroup kRingDistances kRingDistances
@@ -200,8 +212,8 @@ void H3_EXPORT(kRing)(H3Index origin, int k, H3Index *out);
  */
 /** @brief hexagon neighbors in all directions, reporting distance from origin
  */
-void H3_EXPORT(kRingDistances)(H3Index origin, int k, H3Index *out,
-                               int *distances);
+DECLSPEC void H3_EXPORT(kRingDistances)(H3Index origin, int k, H3Index *out,
+                                        int *distances);
 /** @} */
 
 /** @defgroup hexRing hexRing
@@ -209,7 +221,7 @@ void H3_EXPORT(kRingDistances)(H3Index origin, int k, H3Index *out,
  * @{
  */
 /** @brief hollow hexagon ring at some origin */
-int H3_EXPORT(hexRing)(H3Index origin, int k, H3Index *out);
+DECLSPEC int H3_EXPORT(hexRing)(H3Index origin, int k, H3Index *out);
 /** @} */
 
 /** @defgroup polyfill polyfill
@@ -217,10 +229,11 @@ int H3_EXPORT(hexRing)(H3Index origin, int k, H3Index *out);
  * @{
  */
 /** @brief maximum number of hexagons in the geofence */
-int H3_EXPORT(maxPolyfillSize)(const GeoPolygon *geoPolygon, int res);
+DECLSPEC int H3_EXPORT(maxPolyfillSize)(const GeoPolygon *geoPolygon, int res);
 
 /** @brief hexagons within the given geofence */
-void H3_EXPORT(polyfill)(const GeoPolygon *geoPolygon, int res, H3Index *out);
+DECLSPEC void H3_EXPORT(polyfill)(const GeoPolygon *geoPolygon, int res,
+                                  H3Index *out);
 /** @} */
 
 /** @defgroup h3SetToMultiPolygon h3SetToMultiPolygon
@@ -228,11 +241,12 @@ void H3_EXPORT(polyfill)(const GeoPolygon *geoPolygon, int res, H3Index *out);
  * @{
  */
 /** @brief Create a LinkedGeoPolygon from a set of contiguous hexagons */
-void H3_EXPORT(h3SetToLinkedGeo)(const H3Index *h3Set, const int numHexes,
-                                 LinkedGeoPolygon *out);
+DECLSPEC void H3_EXPORT(h3SetToLinkedGeo)(const H3Index *h3Set,
+                                          const int numHexes,
+                                          LinkedGeoPolygon *out);
 
 /** @brief Free all memory created for a LinkedGeoPolygon */
-void H3_EXPORT(destroyLinkedPolygon)(LinkedGeoPolygon *polygon);
+DECLSPEC void H3_EXPORT(destroyLinkedPolygon)(LinkedGeoPolygon *polygon);
 /** @} */
 
 /** @defgroup degsToRads degsToRads
@@ -240,7 +254,7 @@ void H3_EXPORT(destroyLinkedPolygon)(LinkedGeoPolygon *polygon);
  * @{
  */
 /** @brief converts degrees to radians */
-double H3_EXPORT(degsToRads)(double degrees);
+DECLSPEC double H3_EXPORT(degsToRads)(double degrees);
 /** @} */
 
 /** @defgroup radsToDegs radsToDegs
@@ -248,7 +262,7 @@ double H3_EXPORT(degsToRads)(double degrees);
  * @{
  */
 /** @brief converts radians to degrees */
-double H3_EXPORT(radsToDegs)(double radians);
+DECLSPEC double H3_EXPORT(radsToDegs)(double radians);
 /** @} */
 
 /** @defgroup hexArea hexArea
@@ -256,10 +270,10 @@ double H3_EXPORT(radsToDegs)(double radians);
  * @{
  */
 /** @brief average hexagon area in square kilometers (excludes pentagons) */
-double H3_EXPORT(hexAreaKm2)(int res);
+DECLSPEC double H3_EXPORT(hexAreaKm2)(int res);
 
 /** @brief average hexagon area in square meters (excludes pentagons) */
-double H3_EXPORT(hexAreaM2)(int res);
+DECLSPEC double H3_EXPORT(hexAreaM2)(int res);
 /** @} */
 
 /** @defgroup edgeLength edgeLength
@@ -267,10 +281,10 @@ double H3_EXPORT(hexAreaM2)(int res);
  * @{
  */
 /** @brief average hexagon edge length in kilometers (excludes pentagons) */
-double H3_EXPORT(edgeLengthKm)(int res);
+DECLSPEC double H3_EXPORT(edgeLengthKm)(int res);
 
 /** @brief average hexagon edge length in meters (excludes pentagons) */
-double H3_EXPORT(edgeLengthM)(int res);
+DECLSPEC double H3_EXPORT(edgeLengthM)(int res);
 /** @} */
 
 /** @defgroup numHexagons numHexagons
@@ -278,7 +292,7 @@ double H3_EXPORT(edgeLengthM)(int res);
  * @{
  */
 /** @brief number of cells (hexagons and pentagons) for a given resolution */
-int64_t H3_EXPORT(numHexagons)(int res);
+DECLSPEC int64_t H3_EXPORT(numHexagons)(int res);
 /** @} */
 
 /** @defgroup getRes0Indexes getRes0Indexes
@@ -286,10 +300,10 @@ int64_t H3_EXPORT(numHexagons)(int res);
  * @{
  */
 /** @brief returns the number of resolution 0 cells (hexagons and pentagons) */
-int H3_EXPORT(res0IndexCount)();
+DECLSPEC int H3_EXPORT(res0IndexCount)();
 
 /** @brief provides all base cells in H3Index format*/
-void H3_EXPORT(getRes0Indexes)(H3Index *out);
+DECLSPEC void H3_EXPORT(getRes0Indexes)(H3Index *out);
 /** @} */
 
 /** @defgroup getPentagonIndexes getPentagonIndexes
@@ -297,10 +311,10 @@ void H3_EXPORT(getRes0Indexes)(H3Index *out);
  * @{
  */
 /** @brief returns the number of pentagons per resolution */
-int H3_EXPORT(pentagonIndexCount)();
+DECLSPEC int H3_EXPORT(pentagonIndexCount)();
 
 /** @brief generates all pentagons at the specified resolution */
-void H3_EXPORT(getPentagonIndexes)(int res, H3Index *out);
+DECLSPEC void H3_EXPORT(getPentagonIndexes)(int res, H3Index *out);
 /** @} */
 
 /** @defgroup h3GetResolution h3GetResolution
@@ -309,7 +323,7 @@ void H3_EXPORT(getPentagonIndexes)(int res, H3Index *out);
  */
 /** @brief returns the resolution of the provided H3 index
  * Works on both cells and unidirectional edges. */
-int H3_EXPORT(h3GetResolution)(H3Index h);
+DECLSPEC int H3_EXPORT(h3GetResolution)(H3Index h);
 /** @} */
 
 /** @defgroup h3GetBaseCell h3GetBaseCell
@@ -320,7 +334,7 @@ int H3_EXPORT(h3GetResolution)(H3Index h);
  *
  * Note: Technically works on H3 edges, but will return base cell of the
  * origin cell. */
-int H3_EXPORT(h3GetBaseCell)(H3Index h);
+DECLSPEC int H3_EXPORT(h3GetBaseCell)(H3Index h);
 /** @} */
 
 /** @defgroup stringToH3 stringToH3
@@ -328,7 +342,7 @@ int H3_EXPORT(h3GetBaseCell)(H3Index h);
  * @{
  */
 /** @brief converts the canonical string format to H3Index format */
-H3Index H3_EXPORT(stringToH3)(const char *str);
+DECLSPEC H3Index H3_EXPORT(stringToH3)(const char *str);
 /** @} */
 
 /** @defgroup h3ToString h3ToString
@@ -336,7 +350,7 @@ H3Index H3_EXPORT(stringToH3)(const char *str);
  * @{
  */
 /** @brief converts an H3Index to a canonical string */
-void H3_EXPORT(h3ToString)(H3Index h, char *str, size_t sz);
+DECLSPEC void H3_EXPORT(h3ToString)(H3Index h, char *str, size_t sz);
 /** @} */
 
 /** @defgroup h3IsValid h3IsValid
@@ -346,7 +360,7 @@ void H3_EXPORT(h3ToString)(H3Index h, char *str, size_t sz);
 /** @brief confirms if an H3Index is a valid cell (hexagon or pentagon)
  * In particular, returns 0 (False) for H3 undirectional edges or invalid data
  */
-int H3_EXPORT(h3IsValid)(H3Index h);
+DECLSPEC int H3_EXPORT(h3IsValid)(H3Index h);
 /** @} */
 
 /** @defgroup h3ToParent h3ToParent
@@ -355,7 +369,7 @@ int H3_EXPORT(h3IsValid)(H3Index h);
  */
 /** @brief returns the parent (or grandparent, etc) hexagon of the given hexagon
  */
-H3Index H3_EXPORT(h3ToParent)(H3Index h, int parentRes);
+DECLSPEC H3Index H3_EXPORT(h3ToParent)(H3Index h, int parentRes);
 /** @} */
 
 /** @defgroup h3ToChildren h3ToChildren
@@ -364,10 +378,11 @@ H3Index H3_EXPORT(h3ToParent)(H3Index h, int parentRes);
  */
 /** @brief determines the maximum number of children (or grandchildren, etc)
  * that could be returned for the given hexagon */
-int H3_EXPORT(maxH3ToChildrenSize)(H3Index h, int childRes);
+DECLSPEC int H3_EXPORT(maxH3ToChildrenSize)(H3Index h, int childRes);
 
 /** @brief provides the children (or grandchildren, etc) of the given hexagon */
-void H3_EXPORT(h3ToChildren)(H3Index h, int childRes, H3Index *children);
+DECLSPEC void H3_EXPORT(h3ToChildren)(H3Index h, int childRes,
+                                      H3Index *children);
 /** @} */
 
 /** @defgroup h3ToCenterChild h3ToCenterChild
@@ -376,7 +391,7 @@ void H3_EXPORT(h3ToChildren)(H3Index h, int childRes, H3Index *children);
  */
 /** @brief returns the center child of the given hexagon at the specified
  * resolution */
-H3Index H3_EXPORT(h3ToCenterChild)(H3Index h, int childRes);
+DECLSPEC H3Index H3_EXPORT(h3ToCenterChild)(H3Index h, int childRes);
 /** @} */
 
 /** @defgroup compact compact
@@ -384,8 +399,8 @@ H3Index H3_EXPORT(h3ToCenterChild)(H3Index h, int childRes);
  * @{
  */
 /** @brief compacts the given set of hexagons as best as possible */
-int H3_EXPORT(compact)(const H3Index *h3Set, H3Index *compactedSet,
-                       const int numHexes);
+DECLSPEC int H3_EXPORT(compact)(const H3Index *h3Set, H3Index *compactedSet,
+                                const int numHexes);
 /** @} */
 
 /** @defgroup uncompact uncompact
@@ -394,12 +409,13 @@ int H3_EXPORT(compact)(const H3Index *h3Set, H3Index *compactedSet,
  */
 /** @brief determines the maximum number of hexagons that could be uncompacted
  * from the compacted set */
-int H3_EXPORT(maxUncompactSize)(const H3Index *compactedSet, const int numHexes,
-                                const int res);
+DECLSPEC int H3_EXPORT(maxUncompactSize)(const H3Index *compactedSet,
+                                         const int numHexes, const int res);
 
 /** @brief uncompacts the compacted hexagon set */
-int H3_EXPORT(uncompact)(const H3Index *compactedSet, const int numHexes,
-                         H3Index *h3Set, const int maxHexes, const int res);
+DECLSPEC int H3_EXPORT(uncompact)(const H3Index *compactedSet,
+                                  const int numHexes, H3Index *h3Set,
+                                  const int maxHexes, const int res);
 /** @} */
 
 /** @defgroup h3IsResClassIII h3IsResClassIII
@@ -407,7 +423,7 @@ int H3_EXPORT(uncompact)(const H3Index *compactedSet, const int numHexes,
  * @{
  */
 /** @brief determines if a hexagon is Class III (or Class II) */
-int H3_EXPORT(h3IsResClassIII)(H3Index h);
+DECLSPEC int H3_EXPORT(h3IsResClassIII)(H3Index h);
 /** @} */
 
 /** @defgroup h3IsPentagon h3IsPentagon
@@ -415,7 +431,7 @@ int H3_EXPORT(h3IsResClassIII)(H3Index h);
  * @{
  */
 /** @brief determines if an H3 cell is a pentagon */
-int H3_EXPORT(h3IsPentagon)(H3Index h);
+DECLSPEC int H3_EXPORT(h3IsPentagon)(H3Index h);
 /** @} */
 
 /** @defgroup h3GetFaces h3GetFaces
@@ -423,10 +439,10 @@ int H3_EXPORT(h3IsPentagon)(H3Index h);
  * @{
  */
 /** @brief Max number of icosahedron faces intersected by an index */
-int H3_EXPORT(maxFaceCount)(H3Index h3);
+DECLSPEC int H3_EXPORT(maxFaceCount)(H3Index h3);
 
 /** @brief Find all icosahedron faces intersected by a given H3 index */
-void H3_EXPORT(h3GetFaces)(H3Index h3, int *out);
+DECLSPEC void H3_EXPORT(h3GetFaces)(H3Index h3, int *out);
 /** @} */
 
 /** @defgroup h3IndexesAreNeighbors h3IndexesAreNeighbors
@@ -434,7 +450,8 @@ void H3_EXPORT(h3GetFaces)(H3Index h3, int *out);
  * @{
  */
 /** @brief returns whether or not the provided hexagons border */
-int H3_EXPORT(h3IndexesAreNeighbors)(H3Index origin, H3Index destination);
+DECLSPEC int H3_EXPORT(h3IndexesAreNeighbors)(H3Index origin,
+                                              H3Index destination);
 /** @} */
 
 /** @defgroup getH3UnidirectionalEdge getH3UnidirectionalEdge
@@ -443,7 +460,8 @@ int H3_EXPORT(h3IndexesAreNeighbors)(H3Index origin, H3Index destination);
  */
 /** @brief returns the unidirectional edge H3Index for the specified origin and
  * destination */
-H3Index H3_EXPORT(getH3UnidirectionalEdge)(H3Index origin, H3Index destination);
+DECLSPEC H3Index H3_EXPORT(getH3UnidirectionalEdge)(H3Index origin,
+                                                    H3Index destination);
 /** @} */
 
 /** @defgroup h3UnidirectionalEdgeIsValid h3UnidirectionalEdgeIsValid
@@ -451,7 +469,7 @@ H3Index H3_EXPORT(getH3UnidirectionalEdge)(H3Index origin, H3Index destination);
  * @{
  */
 /** @brief returns whether the H3Index is a valid unidirectional edge */
-int H3_EXPORT(h3UnidirectionalEdgeIsValid)(H3Index edge);
+DECLSPEC int H3_EXPORT(h3UnidirectionalEdgeIsValid)(H3Index edge);
 /** @} */
 
 /** @defgroup getOriginH3IndexFromUnidirectionalEdge \
@@ -461,7 +479,8 @@ int H3_EXPORT(h3UnidirectionalEdgeIsValid)(H3Index edge);
  */
 /** @brief Returns the origin hexagon H3Index from the unidirectional edge
  * H3Index */
-H3Index H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(H3Index edge);
+DECLSPEC H3Index
+    H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(H3Index edge);
 /** @} */
 
 /** @defgroup getDestinationH3IndexFromUnidirectionalEdge \
@@ -471,7 +490,8 @@ H3Index H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(H3Index edge);
  */
 /** @brief Returns the destination hexagon H3Index from the unidirectional edge
  * H3Index */
-H3Index H3_EXPORT(getDestinationH3IndexFromUnidirectionalEdge)(H3Index edge);
+DECLSPEC H3Index
+    H3_EXPORT(getDestinationH3IndexFromUnidirectionalEdge)(H3Index edge);
 /** @} */
 
 /** @defgroup getH3IndexesFromUnidirectionalEdge \
@@ -481,8 +501,8 @@ H3Index H3_EXPORT(getDestinationH3IndexFromUnidirectionalEdge)(H3Index edge);
  */
 /** @brief Returns the origin and destination hexagons from the unidirectional
  * edge H3Index */
-void H3_EXPORT(getH3IndexesFromUnidirectionalEdge)(H3Index edge,
-                                                   H3Index *originDestination);
+DECLSPEC void H3_EXPORT(getH3IndexesFromUnidirectionalEdge)(
+    H3Index edge, H3Index *originDestination);
 /** @} */
 
 /** @defgroup getH3UnidirectionalEdgesFromHexagon \
@@ -492,8 +512,8 @@ void H3_EXPORT(getH3IndexesFromUnidirectionalEdge)(H3Index edge,
  */
 /** @brief Returns the 6 (or 5 for pentagons) edges associated with the H3Index
  */
-void H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(H3Index origin,
-                                                    H3Index *edges);
+DECLSPEC void H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(H3Index origin,
+                                                             H3Index *edges);
 /** @} */
 
 /** @defgroup getH3UnidirectionalEdgeBoundary getH3UnidirectionalEdgeBoundary
@@ -501,7 +521,8 @@ void H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(H3Index origin,
  * @{
  */
 /** @brief Returns the GeoBoundary containing the coordinates of the edge */
-void H3_EXPORT(getH3UnidirectionalEdgeBoundary)(H3Index edge, GeoBoundary *gb);
+DECLSPEC void H3_EXPORT(getH3UnidirectionalEdgeBoundary)(H3Index edge,
+                                                         GeoBoundary *gb);
 /** @} */
 
 /** @defgroup h3Distance h3Distance
@@ -509,7 +530,7 @@ void H3_EXPORT(getH3UnidirectionalEdgeBoundary)(H3Index edge, GeoBoundary *gb);
  * @{
  */
 /** @brief Returns grid distance between two indexes */
-int H3_EXPORT(h3Distance)(H3Index origin, H3Index h3);
+DECLSPEC int H3_EXPORT(h3Distance)(H3Index origin, H3Index h3);
 /** @} */
 
 /** @defgroup h3Line h3Line
@@ -517,10 +538,10 @@ int H3_EXPORT(h3Distance)(H3Index origin, H3Index h3);
  * @{
  */
 /** @brief Number of indexes in a line connecting two indexes */
-int H3_EXPORT(h3LineSize)(H3Index start, H3Index end);
+DECLSPEC int H3_EXPORT(h3LineSize)(H3Index start, H3Index end);
 
 /** @brief Line of h3 indexes connecting two indexes */
-int H3_EXPORT(h3Line)(H3Index start, H3Index end, H3Index *out);
+DECLSPEC int H3_EXPORT(h3Line)(H3Index start, H3Index end, H3Index *out);
 /** @} */
 
 /** @defgroup experimentalH3ToLocalIj experimentalH3ToLocalIj
@@ -528,8 +549,8 @@ int H3_EXPORT(h3Line)(H3Index start, H3Index end, H3Index *out);
  * @{
  */
 /** @brief Returns two dimensional coordinates for the given index */
-int H3_EXPORT(experimentalH3ToLocalIj)(H3Index origin, H3Index h3,
-                                       CoordIJ *out);
+DECLSPEC int H3_EXPORT(experimentalH3ToLocalIj)(H3Index origin, H3Index h3,
+                                                CoordIJ *out);
 /** @} */
 
 /** @defgroup experimentalLocalIjToH3 experimentalLocalIjToH3
@@ -537,8 +558,9 @@ int H3_EXPORT(experimentalH3ToLocalIj)(H3Index origin, H3Index h3,
  * @{
  */
 /** @brief Returns index for the given two dimensional coordinates */
-int H3_EXPORT(experimentalLocalIjToH3)(H3Index origin, const CoordIJ *ij,
-                                       H3Index *out);
+DECLSPEC int H3_EXPORT(experimentalLocalIjToH3)(H3Index origin,
+                                                const CoordIJ *ij,
+                                                H3Index *out);
 /** @} */
 
 #ifdef __cplusplus
