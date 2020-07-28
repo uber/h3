@@ -1,6 +1,10 @@
-# Tutorials
+# Learning Resources
 
 This page lists further learning materials and code walkthroughs for the H3 library and bindings. Contributions to this list are welcome, please feel free to open a [pull request](https://github.com/uber/h3/tree/master/docs/community/tutorials.md).
+
+## Community
+
+- [H3 Slack workspace](https://join.slack.com/t/h3-core/shared_invite/zt-g6u5r1hf-W_~uVJmfeiWtMQuBGc1NNg)
 
 ## Videos
 
