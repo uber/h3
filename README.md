@@ -13,6 +13,7 @@ Documentation is available at [https://uber.github.io/h3/](https://uber.github.i
 
  * Post **bug reports or feature requests** to the [GitHub Issues page](https://github.com/uber/h3/issues)
  * Ask **questions** by posting to the [H3 tag on StackOverflow](https://stackoverflow.com/questions/tagged/h3)
+ * There is also an [H3 Slack workspace](https://join.slack.com/t/h3-core/shared_invite/zt-g6u5r1hf-W_~uVJmfeiWtMQuBGc1NNg)
 
 ## Installing
 
