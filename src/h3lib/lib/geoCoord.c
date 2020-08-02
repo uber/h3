@@ -304,6 +304,16 @@ double H3_EXPORT(edgeLengthM)(int res) {
 
 /** @brief Number of unique valid H3Indexes at given resolution. */
 int64_t H3_EXPORT(numHexagons)(int res) {
+    /**
+     * Note: this *actually* returns the number of *cells*
+     * (which includes the 12 pentagons) at each resolution.
+     *
+     * This table comes from the recurrence:
+     *
+     *  num_cells(0) = 122
+     *  num_cells(i+1) = (num_cells(i)-12)*7 + 12*6
+     *
+     */
     static const int64_t nums[] = {122L,
                                    842L,
                                    5882L,
