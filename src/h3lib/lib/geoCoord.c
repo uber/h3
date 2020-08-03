@@ -332,3 +332,74 @@ int64_t H3_EXPORT(numHexagons)(int res) {
                                    569707381193162L};
     return nums[res];
 }
+
+// do we have a preference towards passing pointers instead of the struct?
+// duplicate of _geoDistRads?
+double haversine_points(GeoCoord a, GeoCoord b) {
+    // Haversine distance between two points.
+    // Input/output: both in radians
+
+    double x, y, z;
+
+    a.lon -= b.lon;
+
+    x = cos(a.lon) * cos(a.lat) - cos(b.lat);
+    y = sin(a.lon) * cos(a.lat);
+    z = sin(a.lat) - sin(b.lat);
+
+    return 2 * asin(0.5 * sqrt(x * x + y * y + z * z));
+}
+
+double area_triangle(GeoCoord a, GeoCoord b, GeoCoord c) {
+    // Surface area of a spherical triangle given by three lat/lng points
+    // input: radians
+    // ouput: unit sphere area
+
+    double A, B, C, S, T, E;
+
+    A = haversine_points(b, c);
+    B = haversine_points(c, a);
+    C = haversine_points(a, b);
+
+    S = (A + B + C) / 2;
+
+    A = (S - A) / 2;
+    B = (S - B) / 2;
+    C = (S - C) / 2;
+    S = S / 2;
+
+    T = sqrt(tan(S) * tan(A) * tan(B) * tan(C));
+    E = 4 * atan(T);
+
+    return E;
+}
+
+double cell_area_radians(H3Index h) {
+    GeoCoord c;
+    GeoBoundary gb;
+    double A = 0.0;
+
+    H3_EXPORT(h3ToGeo)(h, &c);
+    H3_EXPORT(h3ToGeoBoundary)(h, &gb);
+
+    // can probably optimize this by re-using the shared edges
+    // how to clean up this for loop in C?
+    int N = gb.numVerts;
+    for (int i = 0; i < N; i++) {
+        int j = (i + 1) % N;
+        A += area_triangle(gb.verts[i], gb.verts[j], c);
+    }
+
+    return A;
+}
+
+double cell_area_km(H3Index h) {
+    // how about a `unit_per_km` factor, defaults to 1?
+    // we really don't need two functions...
+    // except, maybe, for radian functions
+
+    float unit_per_km = 1.0;
+    float R = EARTH_RADIUS_KM * unit_per_km;
+
+    return cell_area_radians(h) * R * R;
+}
