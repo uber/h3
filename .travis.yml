@@ -33,6 +33,7 @@ matrix:
       # https://travis-ci.community/t/xenial-image-includes-clang-without-llvmgold-support/3522/4
       env:
         - CC="/usr/bin/clang-7"
+        - CXX="/usr/bin/clang++-7"
       addons:
         apt:
           packages:
