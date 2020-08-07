@@ -17,10 +17,6 @@ language: c
 os: linux
 dist: bionic
 
-compiler:
-  - gcc
-  - clang
-
 # Docs are built during the normal compile/test check.
 addons:
   apt:
@@ -30,6 +26,18 @@ addons:
 
 matrix:
   include:
+    - name: "GCC"
+      compiler: gcc
+    - name: "Clang"
+      # Fix missing LLVMgold
+      # https://travis-ci.community/t/xenial-image-includes-clang-without-llvmgold-support/3522/4
+      env:
+        - CC="/usr/bin/clang-7"
+      addons:
+        apt:
+          packages:
+            - clang-7
+            - llvm-7-dev
       # Check that clang-format doesn't detect some files are not formatted.
     - name: "Formatting check"
       compiler: clang
