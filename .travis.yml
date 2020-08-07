@@ -29,6 +29,7 @@ matrix:
     - name: "GCC"
       compiler: gcc
     - name: "Clang"
+      compiler: clang
       # Fix missing LLVMgold
       # https://travis-ci.community/t/xenial-image-includes-clang-without-llvmgold-support/3522/4
       env:
