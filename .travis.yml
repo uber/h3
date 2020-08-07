@@ -33,16 +33,16 @@ matrix:
       # Fix missing LLVMgold
       # https://travis-ci.community/t/xenial-image-includes-clang-without-llvmgold-support/3522/4
       env:
-        - CC="/usr/bin/clang-7"
-        - CXX="/usr/bin/clang++-7"
+        - CC="/usr/bin/clang-9"
+        - CXX="/usr/bin/clang++-9"
       addons:
         apt:
           sources:
-            - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-7 main'
+            - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main'
               key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
           packages:
-            - clang-7
-            - llvm-7-dev
+            - clang-9
+            - llvm-9-dev
       # Check that clang-format doesn't detect some files are not formatted.
     - name: "Formatting check"
       compiler: clang
