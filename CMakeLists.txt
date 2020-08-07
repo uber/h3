@@ -27,6 +27,12 @@ set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cmake/toolchain.cmake"
     CACHE FILEPATH
     "Toolchain to use for building this project")
 
+# Some misc apps do not work with shared libraries on Windows
+# because they require access to internal H3 functions. Build these
+# using either static libraries or an option to expose all
+# function symbols.
+set(ENABLE_REQUIRES_ALL_SYMBOLS !(WIN32 AND BUILD_SHARED_LIBS))
+
 option(ENABLE_COVERAGE "Enable compiling tests with coverage." ON)
 option(BUILD_BENCHMARKS "Build benchmarking applications." ON)
 option(BUILD_FILTERS "Build filter applications." ON)
@@ -115,15 +121,16 @@ set(LIB_SOURCE_FILES
     src/h3lib/lib/faceijk.c
     src/h3lib/lib/baseCells.c)
 set(APP_SOURCE_FILES
-    src/apps/applib/include/test.h
     src/apps/applib/include/kml.h
     src/apps/applib/include/benchmark.h
     src/apps/applib/include/utility.h
     src/apps/applib/include/args.h
-    src/apps/applib/lib/test.c
     src/apps/applib/lib/kml.c
     src/apps/applib/lib/utility.c
     src/apps/applib/lib/args.c)
+set(TEST_APP_SOURCE_FILES
+    src/apps/applib/include/test.h
+    src/apps/applib/lib/test.c)
 set(EXAMPLE_SOURCE_FILES
     examples/index.c
     examples/distance.c
@@ -192,7 +199,7 @@ set(OTHER_SOURCE_FILES
     src/apps/benchmarks/benchmarkH3Api.c)
 
 set(ALL_SOURCE_FILES
-    ${LIB_SOURCE_FILES} ${APP_SOURCE_FILES} ${OTHER_SOURCE_FILES})
+    ${LIB_SOURCE_FILES} ${APP_SOURCE_FILES} ${TEST_APP_SOURCE_FILES} ${OTHER_SOURCE_FILES})
 
 set(UNCONFIGURED_API_HEADER src/h3lib/include/h3api.h.in)
 set(CONFIGURED_API_HEADER src/h3lib/include/h3api.h)
@@ -387,9 +394,11 @@ endif()
 
 if(BUILD_GENERATORS)
     # Code generation
-    add_h3_executable(generateBaseCellNeighbors src/apps/miscapps/generateBaseCellNeighbors.c ${APP_SOURCE_FILES})
+    if(ENABLE_REQUIRES_ALL_SYMBOLS)
+        add_h3_executable(generateBaseCellNeighbors src/apps/miscapps/generateBaseCellNeighbors.c ${APP_SOURCE_FILES})
+	    add_h3_executable(generateFaceCenterPoint src/apps/miscapps/generateFaceCenterPoint.c ${APP_SOURCE_FILES})
+    endif()
     add_h3_executable(generateNumHexagons src/apps/miscapps/generateNumHexagons.c ${APP_SOURCE_FILES})
-    add_h3_executable(generateFaceCenterPoint src/apps/miscapps/generateFaceCenterPoint.c ${APP_SOURCE_FILES})
 
     # Miscellaneous testing applications - generating random data
     add_h3_executable(mkRandGeo src/apps/testapps/mkRandGeo.c ${APP_SOURCE_FILES})
@@ -426,7 +435,7 @@ if(BUILD_TESTING)
         # Like other test code, but these need to be linked against
         # a different copy of the H3 library which has known intercepted
         # allocator functions.
-        add_executable(${ARGV} ${APP_SOURCE_FILES})
+        add_executable(${ARGV} ${APP_SOURCE_FILES} ${TEST_APP_SOURCE_FILES})
 
         if(TARGET ${name})
             target_link_libraries(${name} PUBLIC h3WithTestAllocators)
@@ -454,7 +463,7 @@ if(BUILD_TESTING)
     macro(add_h3_test_common name srcfile)
         # need to actually make the test target
         if(NOT TARGET ${name})
-            add_h3_executable(${name} ${srcfile} ${APP_SOURCE_FILES})
+            add_h3_executable(${name} ${srcfile} ${APP_SOURCE_FILES} ${TEST_APP_SOURCE_FILES})
         endif()
 
         math(EXPR test_number "${test_number}+1")
@@ -608,7 +617,9 @@ if(BUILD_BENCHMARKS)
     add_h3_benchmark(benchmarkH3Line src/apps/benchmarks/benchmarkH3Line.c)
     add_h3_benchmark(benchmarkH3SetToLinkedGeo src/apps/benchmarks/benchmarkH3SetToLinkedGeo.c)
     add_h3_benchmark(benchmarkPolyfill src/apps/benchmarks/benchmarkPolyfill.c)
-    add_h3_benchmark(benchmarkPolygon src/apps/benchmarks/benchmarkPolygon.c)
+    if(ENABLE_REQUIRES_ALL_SYMBOLS)
+        add_h3_benchmark(benchmarkPolygon src/apps/benchmarks/benchmarkPolygon.c)
+    endif()
 endif()
 
 # Installation (https://github.com/forexample/package-example)

@@ -26,18 +26,46 @@ environment:
   matrix:
     - GENERATOR: "Visual Studio 12"
       CONFIG: Debug
+      BUILD_SHARED_LIBS: false
+      BUILD_TESTING: true
+
+    - GENERATOR: "Visual Studio 12"
+      CONFIG: Debug
+      BUILD_SHARED_LIBS: true
+      BUILD_TESTING: false
 
     - GENERATOR: "Visual Studio 12"
       CONFIG: Release
+      BUILD_SHARED_LIBS: false
+      BUILD_TESTING: true
+
+    - GENERATOR: "Visual Studio 12"
+      CONFIG: Release
+      BUILD_SHARED_LIBS: true
+      BUILD_TESTING: false
 
     - GENERATOR: "Visual Studio 12 Win64"
       CONFIG: Debug
+      BUILD_SHARED_LIBS: false
+      BUILD_TESTING: true
+
+    - GENERATOR: "Visual Studio 12 Win64"
+      CONFIG: Debug
+      BUILD_SHARED_LIBS: true
+      BUILD_TESTING: false
 
     - GENERATOR: "Visual Studio 12 Win64"
       CONFIG: Release
+      BUILD_SHARED_LIBS: false
+      BUILD_TESTING: true
+
+    - GENERATOR: "Visual Studio 12 Win64"
+      CONFIG: Release
+      BUILD_SHARED_LIBS: true
+      BUILD_TESTING: false
 
 build_script:
-  - cmake "-G%GENERATOR%" -H. -Bbuild
+  - cmake "-G%GENERATOR%" "-DBUILD_SHARED_LIBS=%BUILD_SHARED_LIBS%" "-DBUILD_TESTING=%BUILD_TESTING%" -H. -Bbuild
   - cmake --build build --config "%CONFIG%"
   - cmake --build build --config "%CONFIG%" --target binding-functions
 
