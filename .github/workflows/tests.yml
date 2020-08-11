@@ -8,7 +8,7 @@ on:
 
 jobs:
   tests:
-    name: Py${{ matrix.compiler }} ${{ matrix.os }}
+    name: Test Compile ${{ matrix.compiler }} ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -32,27 +32,27 @@ jobs:
       ## End Windows stuff
 
       - name: Configure build
-        run: |
-          mkdir build
-          cd build
-          cmake -DWARNINGS_AS_ERRORS=ON ..
+        run: cmake -Bbuild -DWARNINGS_AS_ERRORS=ON .
 
       - name: Build
+        working-directory: build
         run: make
 
       - name: Tests
+        working-directory: build
         run: |
           make test
           sudo make install
 
       - name: Test packaging
+        working-directory: build
         if: startsWith(matrix.os, 'ubuntu')
         run: cpack -D CPACK_PACKAGE_CONTACT="Test build in CI"
 
       - name: Examples
         run: |
-          mkdir examples
-          cd examples
+          mkdir build/examples
+          cd build/examples
           cmake ../../examples
           make
           make test
