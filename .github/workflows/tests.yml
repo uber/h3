@@ -1,0 +1,58 @@
+name: tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  tests:
+    name: Py${{ matrix.compiler }} ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
+        # compiler: [clang, gcc, msvc]
+
+    steps:
+      - uses: actions/checkout@v2.1.1
+
+      ## Start Windows stuff
+      - uses: ilammy/msvc-dev-cmd@v1.2.0
+        if: startsWith(matrix.os, 'windows')
+
+      - name: Set Windows Compiler
+        if: startsWith(matrix.os, 'windows')
+        # && matrix.compiler == 'msvc'
+        run: |
+          echo "::set-env name=CC::cl.exe"
+          echo "::set-env name=CXX::cl.exe"
+      ## End Windows stuff
+
+      - name: Configure build
+        run: |
+          mkdir build
+          cd build
+          cmake -DWARNINGS_AS_ERRORS=ON ..
+
+      - name: Build
+        run: make
+
+      - name: Tests
+        run: |
+          make test
+          sudo make install
+
+      - name: Test packaging
+        if: startsWith(matrix.os, 'ubuntu')
+        run: cpack -D CPACK_PACKAGE_CONTACT="Test build in CI"
+
+      - name: Examples
+        run: |
+          mkdir examples
+          cd examples
+          cmake ../../examples
+          make
+          make test
