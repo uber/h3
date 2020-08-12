@@ -43,6 +43,7 @@ jobs:
 
       - name: Tests
         working-directory: build
+        shell: cmd
         env:
           CTEST_OUTPUT_ON_FAILURE: 1
         run: ctest -C ${{ matrix.config }}
