@@ -10,6 +10,9 @@ jobs:
   tests:
     name: Test Compile ${{ matrix.config }}
     runs-on: windows-latest
+    env:
+      CC: cl.exe
+      CXX: cl.exe
 
     strategy:
       matrix:
@@ -20,15 +23,8 @@ jobs:
 
       - uses: ilammy/msvc-dev-cmd@v1.2.0
 
-      - name: Set Windows Compiler
-        run: |
-          echo "::set-env name=CC::cl.exe"
-          echo "::set-env name=CXX::cl.exe"
-
       - name: Configure build
-        env:
-          CC: cl.exe
-          CXX: cl.exe
+        shell: cmd
         run: cmake -Bbuild -DWARNINGS_AS_ERRORS=ON .
 
       - name: Build
