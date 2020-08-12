@@ -1,4 +1,4 @@
-name: test-linux
+name: test-website
 
 on:
   push:
@@ -10,11 +10,15 @@ jobs:
   tests:
     name: Test Website
     runs-on: ubuntu-latest
-    node-version: 10.x
 
     steps:
       - uses: actions/checkout@v2.1.1
       
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: 10.x
+
       - name: Install FOSSA
         run: |
           curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | sudo bash

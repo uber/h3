@@ -23,13 +23,11 @@ jobs:
       - name: Install Doxygen
         run: sudo apt-get install doxygen graphviz
 
-      - name: Install clang-format
-        run: sudo apt-get install clang-format-9
-
       - name: Configure build
         run: cmake -Bbuild -DWARNINGS_AS_ERRORS=ON .
 
       - name: Formatting check
+        working-directory: build
         run: |
           clang-format-9 --version
           make format

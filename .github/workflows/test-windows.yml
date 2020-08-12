@@ -34,12 +34,12 @@ jobs:
 
       - name: Build
         working-directory: build
-        run: cmake --config ${{ matrix.config }} .
+        run: cmake --build . --config ${{ matrix.config }}
 
       - name: binding-functions
         working-directory: build
         run: |
-          cmake --config ${{ matrix.config }} --target binding-functions .
+          cmake --build . --config ${{ matrix.config }} --target binding-functions
           if ((Get-Item "binding-functions").Length -lt 10) { $host.SetShouldExit(1) }
 
       - name: Tests

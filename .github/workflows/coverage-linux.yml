@@ -18,9 +18,6 @@ jobs:
       
       - name: Install lcov
         run: sudo apt-get install lcov
-      
-      - name: Install coveralls-lcov
-        run: gem install coveralls-lcov
 
       - name: Configure build
         run: cmake -DCMAKE_BUILD_TYPE=Debug -DWARNINGS_AS_ERRORS=ON -DH3_PREFIX=testprefix_ .
@@ -33,5 +30,7 @@ jobs:
           make test
           sudo make install
 
-      - name: Submit coverage
-        run: coveralls-lcov coverage.cleaned.info
+      - name: Submit Coveralls Coverage
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
