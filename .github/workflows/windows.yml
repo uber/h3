@@ -1,0 +1,48 @@
+name: windows-tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  tests:
+    name: Test Compile ${{ matrix.compiler }} ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [windows-latest]
+        compiler: [msvc]
+        config: [Release, Debug]
+
+    steps:
+      - uses: actions/checkout@v2.1.1
+
+      - uses: ilammy/msvc-dev-cmd@v1.2.0
+
+      - name: Set Windows Compiler
+        run: |
+          echo "::set-env name=CC::cl.exe"
+          echo "::set-env name=CXX::cl.exe"
+
+      - name: Configure build
+        env:
+          CC: cl.exe
+          CXX: cl.exe
+        run: cmake -Bbuild -DWARNINGS_AS_ERRORS=ON .
+
+      - name: Build
+        working-directory: build
+        run: cmake --config ${{ matrix.config }} ..
+
+      - name: binding-functions
+        working-directory: build
+        run: |
+          cmake --config ${{ matrix.config }} --target binding-functions ..
+          if ((Get-Item "binding-functions").Length -lt 10) { $host.SetShouldExit(1) }
+
+      - name: Tests
+        working-directory: build
+        run: ctest -C ${{ matrix.config }}

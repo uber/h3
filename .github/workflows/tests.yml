@@ -13,30 +13,26 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-latest, windows-latest, ubuntu-latest]
-        # compiler: [clang, gcc, msvc]
+        os: [macos-latest, ubuntu-latest]
+        compiler: [clang, gcc]
 
     steps:
       - uses: actions/checkout@v2.1.1
 
-      ## Start Windows stuff
-      - uses: ilammy/msvc-dev-cmd@v1.2.0
-        if: startsWith(matrix.os, 'windows')
-
-      - name: Set Windows Compiler
-        if: startsWith(matrix.os, 'windows')
-        # && matrix.compiler == 'msvc'
-        run: |
-          echo "::set-env name=CC::cl.exe"
-          echo "::set-env name=CXX::cl.exe"
-      ## End Windows stuff
-
       - name: Configure build
+        env:
+          CC: ${{ matrix.compiler }}
         run: cmake -Bbuild -DWARNINGS_AS_ERRORS=ON .
 
       - name: Build
         working-directory: build
         run: make
+
+      - name: binding-functions
+        working-directory: build
+        run: |
+          make binding-functions
+          test -s binding-functions
 
       - name: Tests
         working-directory: build
