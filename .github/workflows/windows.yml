@@ -8,13 +8,12 @@ on:
 
 jobs:
   tests:
-    name: Test Compile ${{ matrix.compiler }} ${{ matrix.os }}
+    name: Test Compile ${{ matrix.config }} ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
         os: [windows-latest]
-        compiler: [msvc]
         config: [Release, Debug]
 
     steps:
