@@ -1,4 +1,4 @@
-name: tests
+name: test-osx
 
 on:
   push:
@@ -8,15 +8,8 @@ on:
 
 jobs:
   tests:
-    name: Test Compile ${{ matrix.compiler }} ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    env:
-      CC: ${{ matrix.compiler }}
-
-    strategy:
-      matrix:
-        os: [macos-latest, ubuntu-latest]
-        compiler: [clang, gcc]
+    name: Test Compile ${{ matrix.compiler }}
+    runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@v2.1.1
@@ -39,11 +32,6 @@ jobs:
         run: |
           make test
           sudo make install
-
-      - name: Test packaging
-        working-directory: build
-        if: startsWith(matrix.os, 'ubuntu')
-        run: cpack -D CPACK_PACKAGE_CONTACT="Test build in CI"
 
       - name: Examples
         run: |

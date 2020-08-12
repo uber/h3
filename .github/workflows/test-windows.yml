@@ -1,4 +1,4 @@
-name: windows-tests
+name: test-windows
 
 on:
   push:
@@ -34,12 +34,12 @@ jobs:
 
       - name: Build
         working-directory: build
-        run: cmake --config ${{ matrix.config }} ..
+        run: cmake --config ${{ matrix.config }} .
 
       - name: binding-functions
         working-directory: build
         run: |
-          cmake --config ${{ matrix.config }} --target binding-functions ..
+          cmake --config ${{ matrix.config }} --target binding-functions .
           if ((Get-Item "binding-functions").Length -lt 10) { $host.SetShouldExit(1) }
 
       - name: Tests

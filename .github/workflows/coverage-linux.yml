@@ -1,0 +1,37 @@
+name: coverage-linux
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  tests:
+    name: Coverage
+    runs-on: ubuntu-latest
+    env:
+      CC: gcc
+
+    steps:
+      - uses: actions/checkout@v2.1.1
+      
+      - name: Install lcov
+        run: sudo apt-get install lcov
+      
+      - name: Install coveralls-lcov
+        run: gem install coveralls-lcov
+
+      - name: Configure build
+        run: cmake -DCMAKE_BUILD_TYPE=Debug -DWARNINGS_AS_ERRORS=ON -DH3_PREFIX=testprefix_ .
+
+      - name: Build
+        run: make
+
+      - name: Tests
+        run: |
+          make test
+          sudo make install
+
+      - name: Submit coverage
+        run: coveralls-lcov coverage.cleaned.info

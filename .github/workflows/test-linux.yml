@@ -1,0 +1,65 @@
+name: test-linux
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  tests:
+    name: Test Compile ${{ matrix.compiler }}
+    runs-on: ubuntu-latest
+    env:
+      CC: ${{ matrix.compiler }}
+
+    strategy:
+      matrix:
+        compiler: [clang, gcc]
+
+    steps:
+      - uses: actions/checkout@v2.1.1
+      
+      - name: Install Doxygen
+        run: sudo apt-get install doxygen graphviz
+
+      - name: Install clang-format
+        run: sudo apt-get install clang-format-9
+
+      - name: Configure build
+        run: cmake -Bbuild -DWARNINGS_AS_ERRORS=ON .
+
+      - name: Formatting check
+        run: |
+          clang-format-9 --version
+          make format
+          git diff --exit-code
+
+      - name: Build
+        working-directory: build
+        run: make
+
+      - name: binding-functions
+        working-directory: build
+        run: |
+          make binding-functions
+          test -s binding-functions
+
+      - name: Tests
+        working-directory: build
+        run: |
+          make test
+          sudo make install
+
+        # Note the packages aren't used to test the examples below
+      - name: Test packaging
+        working-directory: build
+        run: cpack -D CPACK_PACKAGE_CONTACT="Test build in CI"
+
+      - name: Examples
+        run: |
+          mkdir build/examples
+          cd build/examples
+          cmake ../../examples
+          make
+          make test

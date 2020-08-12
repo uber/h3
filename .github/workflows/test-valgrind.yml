@@ -1,0 +1,31 @@
+name: test-valgrind
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  tests:
+    name: Test Valgrind
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2.1.1
+      
+      - name: Install Valgrind
+        run: sudo apt-get install valgrind
+
+      - name: Configure build
+        run: cmake -Bbuild -DCMAKE_BUILD_TYPE=Debug -DWRAP_VALGRIND=ON .
+
+      - name: Build
+        working-directory: build
+        run: make
+
+      - name: Tests
+        working-directory: build
+        env:
+          CTEST_OUTPUT_ON_FAILURE: 1
+        run: make test-fast

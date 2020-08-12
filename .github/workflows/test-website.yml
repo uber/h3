@@ -1,0 +1,29 @@
+name: test-linux
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  tests:
+    name: Test Website
+    runs-on: ubuntu-latest
+    node-version: 10.x
+
+    steps:
+      - uses: actions/checkout@v2.1.1
+      
+      - name: Install FOSSA
+        run: |
+          curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | sudo bash
+      
+      - name: Test Website Build
+        working-directory: website
+        run: |
+          yarn
+          yarn build
+
+      - name: Submit FOSSA report
+        run: if [ -n "$FOSSA_API_KEY" ]; then fossa; fi
