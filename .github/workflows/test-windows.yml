@@ -8,12 +8,11 @@ on:
 
 jobs:
   tests:
-    name: Test Compile ${{ matrix.config }} ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
+    name: Test Compile ${{ matrix.config }}
+    runs-on: windows-latest
 
     strategy:
       matrix:
-        os: [windows-latest]
         config: [Release, Debug]
 
     steps:
@@ -44,4 +43,6 @@ jobs:
 
       - name: Tests
         working-directory: build
+        env:
+          CTEST_OUTPUT_ON_FAILURE: 1
         run: ctest -C ${{ matrix.config }}

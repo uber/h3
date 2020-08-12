@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2.1.1
-      
+
       - name: Install lcov
         run: sudo apt-get install lcov
 
@@ -30,7 +30,7 @@ jobs:
           make test
           sudo make install
 
-      - name: Submit Coveralls Coverage
-        uses: coverallsapp/github-action@master
+      - uses: coverallsapp/github-action@master
         with:
+          path-to-lcov: ./coverage.info
           github-token: ${{ secrets.GITHUB_TOKEN }}

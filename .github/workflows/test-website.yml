@@ -8,21 +8,20 @@ on:
 
 jobs:
   tests:
-    name: Test Website
+    name: Test Website and FOSSA
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2.1.1
-      
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+
+      - uses: actions/setup-node@v1
         with:
           node-version: 10.x
 
       - name: Install FOSSA
         run: |
           curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | sudo bash
-      
+
       - name: Test Website Build
         working-directory: website
         run: |
@@ -30,4 +29,4 @@ jobs:
           yarn build
 
       - name: Submit FOSSA report
-        run: if [ -n "$FOSSA_API_KEY" ]; then fossa; fi
+        run: if [ -n "${{ secrets.FOSSA_API_KEY }}" ]; then fossa; fi

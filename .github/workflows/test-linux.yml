@@ -19,7 +19,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2.1.1
-      
+
       - name: Install Doxygen
         run: sudo apt-get install doxygen graphviz
 
