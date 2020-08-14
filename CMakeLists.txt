@@ -167,7 +167,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testVec2d.c
     src/apps/testapps/testVec3d.c
     src/apps/testapps/testH3UniEdge.c
-    src/apps/testapps/testH3uniEdgeExhaustive.c
+    src/apps/testapps/testH3UniEdgeExhaustive.c
     src/apps/testapps/testLinkedGeo.c
     src/apps/testapps/mkRandGeo.c
     src/apps/testapps/testH3Api.c
