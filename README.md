@@ -76,6 +76,14 @@ You can install system-wide with:
 sudo make install
 ```
 
+To clean the directory of any build artifacts and return it to its initial checked out state, run:
+
+```
+git clean -ffdx
+```
+
+**Warning**: This will remove **all** files not commited to the repo. Make sure you've committed your work!
+
 #### Testing
 
 After making the project, you can test with `make test`, and if `lcov` is installed you can `make coverage` to generate a code coverage report.
