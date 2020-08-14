@@ -51,7 +51,8 @@ int H3_EXPORT(h3GetBaseCell)(H3Index h) { return H3_GET_BASE_CELL(h); }
 /**
  * Converts a string representation of an H3 index into an H3 index.
  * @param str The string representation of an H3 index.
- * @return The H3 index corresponding to the string argument, or H3_NULL if invalid.
+ * @return The H3 index corresponding to the string argument, or H3_NULL if
+ * invalid.
  */
 H3Index H3_EXPORT(stringToH3)(const char* str) {
     H3Index h = H3_NULL;
@@ -248,7 +249,8 @@ void H3_EXPORT(h3ToChildren)(H3Index h, int childRes, H3Index* children) {
  * @param h H3Index to find center child of
  * @param childRes The resolution to switch to
  *
- * @return H3Index of the center child, or H3_NULL if you actually asked for a parent
+ * @return H3Index of the center child, or H3_NULL if you actually asked for a
+ * parent
  */
 H3Index H3_EXPORT(h3ToCenterChild)(H3Index h, int childRes) {
     int parentRes = H3_GET_RESOLUTION(h);
