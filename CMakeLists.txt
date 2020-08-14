@@ -167,6 +167,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testVec2d.c
     src/apps/testapps/testVec3d.c
     src/apps/testapps/testH3UniEdge.c
+    src/apps/testapps/testH3uniEdgeExhaustive.c
     src/apps/testapps/testLinkedGeo.c
     src/apps/testapps/mkRandGeo.c
     src/apps/testapps/testH3Api.c
@@ -580,6 +581,7 @@ if(BUILD_TESTING)
 
     # The "Exhaustive" part of the test name is used by the test-fast to exclude these files.
     # test-fast exists so that Travis CI can run Valgrind on tests without taking a very long time.
+    add_h3_test(testH3UniEdgeExhaustive src/apps/testapps/testH3UniEdgeExhaustive.c)
     add_h3_test(testH3ToLocalIjExhaustive src/apps/testapps/testH3ToLocalIjExhaustive.c)
     add_h3_test(testH3LineExhaustive src/apps/testapps/testH3LineExhaustive.c)
     add_h3_test(testH3DistanceExhaustive src/apps/testapps/testH3DistanceExhaustive.c)
