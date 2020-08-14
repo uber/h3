@@ -92,7 +92,7 @@ static void fillIndex_assertions(H3Index h) {
 
         for (int i = 0; i < childrenSize; i++) {
             bool found = false;
-            if (children[i] == H3_INVALID_INDEX) continue;
+            if (children[i] == H3_NULL) continue;
             for (int j = 0; j < polyfillSize; j++) {
                 if (polyfillOut[j] == children[i]) {
                     found = true;

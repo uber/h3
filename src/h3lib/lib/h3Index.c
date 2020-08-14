@@ -51,11 +51,11 @@ int H3_EXPORT(h3GetBaseCell)(H3Index h) { return H3_GET_BASE_CELL(h); }
 /**
  * Converts a string representation of an H3 index into an H3 index.
  * @param str The string representation of an H3 index.
- * @return The H3 index corresponding to the string argument, or 0 if invalid.
+ * @return The H3 index corresponding to the string argument, or H3_NULL if invalid.
  */
 H3Index H3_EXPORT(stringToH3)(const char* str) {
-    H3Index h = H3_INVALID_INDEX;
-    // If failed, h will be unmodified and we should return 0 anyways.
+    H3Index h = H3_NULL;
+    // If failed, h will be unmodified and we should return H3_NULL anyways.
     sscanf(str, "%" PRIx64, &h);
     return h;
 }
@@ -138,16 +138,16 @@ void setH3Index(H3Index* hp, int res, int baseCell, Direction initDigit) {
  * @param h H3Index to find parent of
  * @param parentRes The resolution to switch to (parent, grandparent, etc)
  *
- * @return H3Index of the parent, or 0 if you actually asked for a child
+ * @return H3Index of the parent, or H3_NULL if you actually asked for a child
  */
 H3Index H3_EXPORT(h3ToParent)(H3Index h, int parentRes) {
     int childRes = H3_GET_RESOLUTION(h);
     if (parentRes > childRes) {
-        return H3_INVALID_INDEX;
+        return H3_NULL;
     } else if (parentRes == childRes) {
         return h;
     } else if (parentRes < 0 || parentRes > MAX_H3_RES) {
-        return H3_INVALID_INDEX;
+        return H3_NULL;
     }
     H3Index parentH = H3_SET_RESOLUTION(h, parentRes);
     for (int i = parentRes + 1; i <= childRes; i++) {
@@ -231,7 +231,7 @@ void H3_EXPORT(h3ToChildren)(H3Index h, int childRes, H3Index* children) {
         if (isAPentagon && i == K_AXES_DIGIT) {
             H3Index* nextChild = children + bufferChildStep;
             while (children < nextChild) {
-                *children = H3_INVALID_INDEX;
+                *children = H3_NULL;
                 children++;
             }
         } else {
@@ -248,12 +248,12 @@ void H3_EXPORT(h3ToChildren)(H3Index h, int childRes, H3Index* children) {
  * @param h H3Index to find center child of
  * @param childRes The resolution to switch to
  *
- * @return H3Index of the center child, or 0 if you actually asked for a parent
+ * @return H3Index of the center child, or H3_NULL if you actually asked for a parent
  */
 H3Index H3_EXPORT(h3ToCenterChild)(H3Index h, int childRes) {
     int parentRes = H3_GET_RESOLUTION(h);
     if (!_isValidChildRes(parentRes, childRes)) {
-        return H3_INVALID_INDEX;
+        return H3_NULL;
     } else if (childRes == parentRes) {
         return h;
     }
@@ -343,7 +343,7 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
                             return COMPACT_DUPLICATE;
                         }
                         H3_SET_RESERVED_BITS(parent, count);
-                        hashSetArray[loc] = H3_INVALID_INDEX;
+                        hashSetArray[loc] = H3_NULL;
                     } else {
                         loc = (loc + 1) % numRemainingHexes;
                     }
@@ -394,7 +394,7 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
         int uncompactableCount = 0;
         for (int i = 0; i < numRemainingHexes; i++) {
             H3Index currIndex = remainingHexes[i];
-            if (currIndex != H3_INVALID_INDEX) {
+            if (currIndex != H3_NULL) {
                 H3Index parent = H3_EXPORT(h3ToParent)(currIndex, parentRes);
                 // Modulus hash the parent into the temp array
                 // to determine if this index was included in
@@ -634,7 +634,7 @@ H3Index _h3Rotate60cw(H3Index h) {
  * Convert an FaceIJK address to the corresponding H3Index.
  * @param fijk The FaceIJK address.
  * @param res The cell resolution.
- * @return The encoded H3Index (or 0 on failure).
+ * @return The encoded H3Index (or H3_NULL on failure).
  */
 H3Index _faceIjkToH3(const FaceIJK* fijk, int res) {
     // initialize the index
@@ -647,7 +647,7 @@ H3Index _faceIjkToH3(const FaceIJK* fijk, int res) {
         if (fijk->coord.i > MAX_FACE_COORD || fijk->coord.j > MAX_FACE_COORD ||
             fijk->coord.k > MAX_FACE_COORD) {
             // out of range input
-            return H3_INVALID_INDEX;
+            return H3_NULL;
         }
 
         H3_SET_BASE_CELL(h, _faceIjkToBaseCell(fijk));
@@ -691,7 +691,7 @@ H3Index _faceIjkToH3(const FaceIJK* fijk, int res) {
     if (fijkBC.coord.i > MAX_FACE_COORD || fijkBC.coord.j > MAX_FACE_COORD ||
         fijkBC.coord.k > MAX_FACE_COORD) {
         // out of range input
-        return H3_INVALID_INDEX;
+        return H3_NULL;
     }
 
     // lookup the correct base cell
@@ -730,14 +730,14 @@ H3Index _faceIjkToH3(const FaceIJK* fijk, int res) {
  *
  * @param g The spherical coordinates to encode.
  * @param res The desired H3 resolution for the encoding.
- * @return The encoded H3Index (or 0 on failure).
+ * @return The encoded H3Index (or H3_NULL on failure).
  */
 H3Index H3_EXPORT(geoToH3)(const GeoCoord* g, int res) {
     if (res < 0 || res > MAX_H3_RES) {
-        return H3_INVALID_INDEX;
+        return H3_NULL;
     }
     if (!isfinite(g->lat) || !isfinite(g->lon)) {
-        return H3_INVALID_INDEX;
+        return H3_NULL;
     }
 
     FaceIJK fijk;

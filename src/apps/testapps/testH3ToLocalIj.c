@@ -92,14 +92,14 @@ SUITE(h3ToLocalIj) {
                                   {4, 0}, {-4, 0}, {0, 4}};
         const H3Index expected[] = {0x81283ffffffffff, 0x81293ffffffffff,
                                     0x8150bffffffffff, 0x8151bffffffffff,
-                                    H3_INVALID_INDEX,  H3_INVALID_INDEX,
-                                    H3_INVALID_INDEX};
+                                    H3_NULL,  H3_NULL,
+                                    H3_NULL};
 
         for (int i = 0; i < numCoords; i++) {
             H3Index result;
             const int err = H3_EXPORT(experimentalLocalIjToH3)(
                 expected[0], &coords[i], &result);
-            if (expected[i] == H3_INVALID_INDEX) {
+            if (expected[i] == H3_NULL) {
                 t_assert(err != 0, "coordinates out of range");
             } else {
                 t_assert(err == 0, "coordinates in range");

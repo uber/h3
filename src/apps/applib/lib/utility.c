@@ -242,7 +242,7 @@ void randomGeo(GeoCoord* g) {
 int countActualHexagons(H3Index* hexagons, int numHexagons) {
     int actualNumHexagons = 0;
     for (int i = 0; i < numHexagons; i++) {
-        if (hexagons[i] != H3_INVALID_INDEX) {
+        if (hexagons[i] != H3_NULL) {  // should we actually use `h3IsValid` here?
             actualNumHexagons++;
         }
     }
