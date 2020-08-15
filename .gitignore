@@ -66,6 +66,8 @@ dev-docs/Doxyfile
 # CMake generated
 CMakeFiles
 CMakeCache.txt
+CPackConfig.cmake
+CPackSourceConfig.cmake
 Makefile
 cmake_install.cmake
 install_manifest.txt
