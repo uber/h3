@@ -17,7 +17,7 @@
 #include "geoCoord.h"
 #include "h3api.h"
 
-// Fixtures
+// Fixtures (arbitrary res 9 hexagon)
 H3Index edges[6] = {0};
 H3Index hex = 0x89283080ddbffff;
 
