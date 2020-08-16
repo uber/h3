@@ -246,9 +246,7 @@ SUITE(h3UniEdge) {
         const int expectedVertices[][2] = {{3, 4}, {1, 2}, {2, 3},
                                            {5, 0}, {4, 5}, {0, 1}};
 
-        // TODO: The current implementation relies on lat/lon comparison and
-        // fails on resolutions finer than 12
-        for (int res = 0; res < 13; res++) {
+        for (int res = 0; res < 16; res++) {
             sf = H3_EXPORT(geoToH3)(&sfGeo, res);
             H3_EXPORT(h3ToGeoBoundary)(sf, &boundary);
             H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(sf, edges);
@@ -277,9 +275,7 @@ SUITE(h3UniEdge) {
         const int expectedVertices[][3] = {{-1, -1, -1}, {2, 3, 4}, {4, 5, 6},
                                            {8, 9, 0},    {6, 7, 8}, {0, 1, 2}};
 
-        // TODO: The current implementation relies on lat/lon comparison and
-        // fails on resolutions finer than 12
-        for (int res = 1; res < 13; res += 2) {
+        for (int res = 1; res < 16; res += 2) {
             setH3Index(&pentagon, res, 24, 0);
             H3_EXPORT(h3ToGeoBoundary)(pentagon, &boundary);
             H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(pentagon, edges);
@@ -317,9 +313,7 @@ SUITE(h3UniEdge) {
         const int expectedVertices[][3] = {{-1, -1}, {1, 2}, {2, 3},
                                            {4, 0},   {3, 4}, {0, 1}};
 
-        // TODO: The current implementation relies on lat/lon comparison and
-        // fails on resolutions finer than 12
-        for (int res = 0; res < 12; res += 2) {
+        for (int res = 0; res < 16; res += 2) {
             setH3Index(&pentagon, res, 24, 0);
             H3_EXPORT(h3ToGeoBoundary)(pentagon, &boundary);
             H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(pentagon, edges);

@@ -857,6 +857,29 @@ int _faceIjkToBaseCellCCWrot60(const FaceIJK* h) {
         .ccwRot60;
 }
 
+/**
+ * Get the CCW rotations of a given base cell on a given face
+ * @param face Icosahedron face to check
+ * @param baseCell Base cell
+ * @return Number of CCW rotations for the base cell, or -1 if the base cell
+ *         was not found on this face
+ */
+int _faceBaseCellCCWrot60(int face, int baseCell) {
+    FaceIJK baseFijk;
+    _baseCellToFaceIjk(baseCell, &baseFijk);
+    if (baseFijk.face == face) {
+        return 0;
+    } else {
+        for (int i = 0; i < 3; i++)
+            for (int j = 0; j < 3; j++)
+                for (int k = 0; k < 3; k++)
+                    if (faceIjkBaseCells[face][i][j][k].baseCell == baseCell)
+                        return faceIjkBaseCells[face][i][j][k].ccwRot60;
+    }
+    // Failure case, should not be reachable
+    return -1;
+}
+
 /** @brief Find the FaceIJK given a base cell.
  */
 void _baseCellToFaceIjk(int baseCell, FaceIJK* h) {
