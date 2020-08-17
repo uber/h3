@@ -39,12 +39,7 @@ environment:
 build_script:
   - cmake "-G%GENERATOR%" -H. -Bbuild
   - cmake --build build --config "%CONFIG%"
-  - cmake --build build --config "%CONFIG%" --target binding-functions
 
 test_script:
   - ps: cd build
   - ctest -C "%CONFIG%"
-  # Check that binding-functions was generated and has content
-  - ps: |
-      $ErrorActionPreference = "Stop"
-      if ((Get-Item "binding-functions").Length -lt 10) { $host.SetShouldExit(1) }
