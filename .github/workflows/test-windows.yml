@@ -8,7 +8,7 @@ on:
 
 jobs:
   tests:
-    name: Test Compile ${{ matrix.config }}
+    name: Test Compile ${{ matrix.config }} ${{ matrix.arch }}
     runs-on: windows-latest
     env:
       CC: cl.exe
@@ -17,11 +17,14 @@ jobs:
     strategy:
       matrix:
         config: [Release, Debug]
+        arch: [x86, x64]
 
     steps:
       - uses: actions/checkout@v2.1.1
 
       - uses: ilammy/msvc-dev-cmd@v1.2.0
+        with:
+          arch: ${{ matrix.arch }}
 
       - name: Configure build
         shell: cmd
