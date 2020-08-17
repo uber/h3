@@ -17,18 +17,16 @@ jobs:
     strategy:
       matrix:
         config: [Release, Debug]
-        arch: [x86, x64]
+        arch: [Win32, x64]
 
     steps:
       - uses: actions/checkout@v2.1.1
 
       - uses: ilammy/msvc-dev-cmd@v1.2.0
-        with:
-          arch: ${{ matrix.arch }}
 
       - name: Configure build
         shell: cmd
-        run: cmake -Bbuild -DWARNINGS_AS_ERRORS=ON .
+        run: cmake -Bbuild -A ${{ matrix.arch }} -DWARNINGS_AS_ERRORS=ON .
 
       - name: Build
         working-directory: build
