@@ -485,7 +485,8 @@ if(BUILD_TESTING)
         endif()
 
         add_test(NAME ${name}_test${test_number}
-                 COMMAND ${SHELL} "${dump_command} ${argfile} | ${TEST_WRAPPER_STR} $<TARGET_FILE:${name}>")
+                 COMMAND ${SHELL} "${dump_command} ${argfile} | ${TEST_WRAPPER_STR} $<TARGET_FILE:${name}>"
+                 WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
 
         if(PRINT_TEST_FILES)
             message("${name}_test${test_number} - ${argfile}")
