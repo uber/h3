@@ -25,6 +25,7 @@
 #include "geoCoord.h"
 #include "h3Index.h"
 #include "test.h"
+#include "utility.h"
 
 // Fixtures
 static GeoCoord sfGeo = {0.659966917655, -2.1364398519396};
