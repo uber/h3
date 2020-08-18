@@ -38,7 +38,7 @@ static void h3UniEdge_correctness_assertions(H3Index h3) {
 
     for (int i = 0; i < 6; i++) {
         if (isPentagon && i == 0) {
-            t_assert(edges[i] == H3_INVALID_INDEX,
+            t_assert(edges[i] == H3_NULL,
                      "last pentagon edge is empty");
             continue;
         }
@@ -64,7 +64,7 @@ static void h3UniEdge_boundary_assertions(H3Index h3) {
     GeoBoundary revEdgeBoundary;
 
     for (int i = 0; i < 6; i++) {
-        if (edges[i] == H3_INVALID_INDEX) continue;
+        if (edges[i] == H3_NULL) continue;
         H3_EXPORT(getH3UnidirectionalEdgeBoundary)(edges[i], &edgeBoundary);
         destination =
             H3_EXPORT(getDestinationH3IndexFromUnidirectionalEdge)(edges[i]);
