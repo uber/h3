@@ -22,8 +22,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2.1.1
 
-      - uses: ilammy/msvc-dev-cmd@v1.2.0
-
       - name: Configure build
         shell: cmd
         run: cmake -Bbuild -A ${{ matrix.arch }} -DWARNINGS_AS_ERRORS=ON .
@@ -38,10 +36,9 @@ jobs:
           cmake --build . --config ${{ matrix.config }} --target binding-functions
           if ((Get-Item "binding-functions").Length -lt 10) { $host.SetShouldExit(1) }
 
-      # TODO: Doesn't work because of tests reading from stdin
-      # - name: Tests
-      #   working-directory: build
-      #   shell: cmd
-      #   env:
-      #     CTEST_OUTPUT_ON_FAILURE: 1
-      #   run: ctest -C ${{ matrix.config }}
+      - name: Tests
+        working-directory: build
+        shell: cmd
+        env:
+          CTEST_OUTPUT_ON_FAILURE: 1
+        run: ctest -C ${{ matrix.config }}

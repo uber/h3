@@ -10,9 +10,14 @@ cd build
 cmake ..
 ```
 
-You can now open `h3.sln` and build the `ALL_BUILD` project to build the H3 library, filter applications, and tests. Tests can be run by building the `RUN_TESTS` project. From the command line:
+You can now open `h3.sln` and build the `ALL_BUILD` project to build the H3 library, filter applications, and tests. From the command line:
 
 ```
 msbuild ALL_BUILD.vcxproj
+```
+
+Tests can be run by building the `RUN_TESTS` project. Tests require `bash` be available, which is usually supplied by Git for Windows. From the command line:
+
+```
 msbuild RUN_TESTS.vcxproj
 ```
