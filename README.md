@@ -72,9 +72,11 @@ cmake ..
 make
 ```
 
+All subsequent `make` commands should be run from within the `build` directory.
+
 **Note**: There are several ways to build H3 with CMake; the method above is just one example that restricts all build artifacts to the `build` directory.
 
-You can install system-wide (from the `build` directory) with:
+You can install system-wide with:
 
 ```
 sudo make install
