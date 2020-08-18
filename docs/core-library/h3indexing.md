@@ -13,7 +13,18 @@ Child hexagons are linearly smaller than their parent hexagons.
 
 ## H3Index Representation
 
-The **H3Index** is the integer representation of an **H3** index, which can be placed into multiple modes to indicate the kind of concept being indexed. Mode 1 is an **H3** Cell (Hexagon) Index, mode 2 is an **H3** Unidirectional Edge (Hexagon A -> Hexagon B) Index, mode 3 is planned to be a bidirectional edge (Hexagon A <-> Hexagon B). Mode 0 is reserved and indicates an invalid **H3** index.
+The **H3Index** is the integer representation of an **H3** index, which can be placed into multiple modes to indicate the concept being indexed.
+
+* Mode 1 is an **H3** Cell (Hexagon/Pentagon) index.
+* Mode 2 is an **H3** Unidirectional Edge (Cell A -> Cell B) index.
+* Mode 3 is planned to be a bidirectional edge (Cell A <-> Cell B).
+* Mode 0 is reserved and indicates an invalid **H3** index.
+  * This mode remains, partially, for backwards compatibility with an older version of H3.
+
+Mode 0 contains a special index, `H3_NULL`, which is unique: it is bit-equivalent to `0`.
+This index indicates, *specifically*, an invalid, missing, or uninitialized **H3** index;
+it is analogous to `NaN` in floating point.
+It should be used instead of an arbitrary Mode 0 index, due to its uniqueness and easy identifiability.
 
 The components of the **H3** cell index (mode 1) are packed into a 64-bit integer in order, highest bit first, as follows:
 
