@@ -63,26 +63,28 @@ You will need to install CMake and Visual Studio, including the Visual C++ compi
 
 #### Compilation
 
-From the repository you would then compile like so:
+From the repository root, you can compile H3 with:
 
 ```
-cmake .
+mkdir build
+cd build
+cmake ..
 make
 ```
 
-You can install system-wide with:
+**Note**: There are several ways to build H3 with CMake; the method above is just one example that restricts all build artifacts to the `build` directory.
+
+You can install system-wide (from the `build` directory) with:
 
 ```
 sudo make install
 ```
 
-To clean the directory of any build artifacts and return it to its initial checked out state, run:
+If using the method above, from the repository root, you can clean all build artifacts with:
 
 ```
-git clean -ffdx
+rm -rf build
 ```
-
-**Warning**: This will remove **all** files not commited to the repo. Make sure you've committed your work!
 
 #### Testing
 
