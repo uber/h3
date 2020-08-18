@@ -38,8 +38,7 @@ static void h3UniEdge_correctness_assertions(H3Index h3) {
 
     for (int i = 0; i < 6; i++) {
         if (isPentagon && i == 0) {
-            t_assert(edges[i] == H3_NULL,
-                     "last pentagon edge is empty");
+            t_assert(edges[i] == H3_NULL, "last pentagon edge is empty");
             continue;
         }
         t_assert(H3_EXPORT(h3UnidirectionalEdgeIsValid)(edges[i]) == 1,
