@@ -24,7 +24,7 @@ The **H3Index** is the integer representation of an **H3** index, which can be p
 Mode 0 contains a special index, `H3_NULL`, which is unique: it is bit-equivalent to `0`.
 This index indicates, *specifically*, an invalid, missing, or uninitialized **H3** index;
 it is analogous to `NaN` in floating point.
-Going forward, it should be used instead of an arbitrary Mode 0 index, due to its uniqueness and easy identifiability.
+It should be used instead of an arbitrary Mode 0 index, due to its uniqueness and easy identifiability.
 
 The components of the **H3** cell index (mode 1) are packed into a 64-bit integer in order, highest bit first, as follows:
 
