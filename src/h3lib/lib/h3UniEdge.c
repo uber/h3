@@ -97,13 +97,13 @@ int H3_EXPORT(h3IndexesAreNeighbors)(H3Index origin, H3Index destination) {
  * destination
  * @param origin The origin H3 hexagon index
  * @param destination The destination H3 hexagon index
- * @return The unidirectional edge H3Index, or 0 on failure.
+ * @return The unidirectional edge H3Index, or H3_NULL on failure.
  */
 H3Index H3_EXPORT(getH3UnidirectionalEdge)(H3Index origin,
                                            H3Index destination) {
     // Short-circuit and return an invalid index value if they are not neighbors
     if (H3_EXPORT(h3IndexesAreNeighbors)(origin, destination) == 0) {
-        return H3_INVALID_INDEX;
+        return H3_NULL;
     }
 
     // Otherwise, determine the IJK direction from the origin to the destination
@@ -124,18 +124,18 @@ H3Index H3_EXPORT(getH3UnidirectionalEdge)(H3Index origin,
         }
     }
 
-    // This should be impossible, return an invalid H3Index in this case;
-    return H3_INVALID_INDEX;  // LCOV_EXCL_LINE
+    // This should be impossible, return H3_NULL in this case;
+    return H3_NULL;  // LCOV_EXCL_LINE
 }
 
 /**
  * Returns the origin hexagon from the unidirectional edge H3Index
  * @param edge The edge H3 index
- * @return The origin H3 hexagon index
+ * @return The origin H3 hexagon index, or H3_NULL on failure
  */
 H3Index H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(H3Index edge) {
     if (H3_GET_MODE(edge) != H3_UNIEDGE_MODE) {
-        return H3_INVALID_INDEX;
+        return H3_NULL;
     }
     H3Index origin = edge;
     H3_SET_MODE(origin, H3_HEXAGON_MODE);
@@ -146,11 +146,11 @@ H3Index H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(H3Index edge) {
 /**
  * Returns the destination hexagon from the unidirectional edge H3Index
  * @param edge The edge H3 index
- * @return The destination H3 hexagon index
+ * @return The destination H3 hexagon index, or H3_NULL on failure
  */
 H3Index H3_EXPORT(getDestinationH3IndexFromUnidirectionalEdge)(H3Index edge) {
     if (H3_GET_MODE(edge) != H3_UNIEDGE_MODE) {
-        return H3_INVALID_INDEX;
+        return H3_NULL;
     }
     Direction direction = H3_GET_RESERVED_BITS(edge);
     int rotations = 0;
@@ -212,7 +212,7 @@ void H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(H3Index origin,
     // which is zeroed.
     for (int i = 0; i < 6; i++) {
         if (isPentagon && i == 0) {
-            edges[i] = H3_INVALID_INDEX;
+            edges[i] = H3_NULL;
         } else {
             edges[i] = origin;
             H3_SET_MODE(edges[i], H3_UNIEDGE_MODE);

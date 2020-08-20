@@ -278,7 +278,7 @@ void _kRingInternal(H3Index origin, int k, H3Index* out, int* distances,
  * @param rotations Number of ccw rotations to perform to reorient the
  *                  translation vector. Will be modified to the new number of
  *                  rotations to perform (such as when crossing a face edge.)
- * @return H3Index of the specified neighbor or 0 if deleted k-subsequence
+ * @return H3Index of the specified neighbor or H3_NULL if deleted k-subsequence
  *         distortion is encountered.
  */
 H3Index h3NeighborRotations(H3Index origin, Direction dir, int* rotations) {
@@ -363,7 +363,7 @@ H3Index h3NeighborRotations(H3Index origin, Direction dir, int* rotations) {
                 // base cell.
                 if (oldLeadingDigit == CENTER_DIGIT) {
                     // Undefined: the k direction is deleted from here
-                    return H3_INVALID_INDEX;
+                    return H3_NULL;
                 } else if (oldLeadingDigit == JK_AXES_DIGIT) {
                     // Rotate out of the deleted k subsequence
                     // We also need an additional change to the direction we're
@@ -378,7 +378,7 @@ H3Index h3NeighborRotations(H3Index origin, Direction dir, int* rotations) {
                     *rotations = *rotations + 5;
                 } else {
                     // Should never occur
-                    return H3_INVALID_INDEX;  // LCOV_EXCL_LINE
+                    return H3_NULL;  // LCOV_EXCL_LINE
                 }
             }
         }
@@ -693,7 +693,7 @@ void H3_EXPORT(polyfill)(const GeoPolygon* geoPolygon, int res, H3Index* out) {
     // LCOV_EXCL_START
     if (failure) {
         int numHexagons = H3_EXPORT(maxPolyfillSize)(geoPolygon, res);
-        for (int i = 0; i < numHexagons; i++) out[i] = H3_INVALID_INDEX;
+        for (int i = 0; i < numHexagons; i++) out[i] = H3_NULL;
     }
     // LCOV_EXCL_STOP
 }
@@ -865,7 +865,7 @@ int _polyfillInternal(const GeoPolygon* geoPolygon, int res, H3Index* out) {
             H3Index searchHex = search[i];
             H3_EXPORT(kRing)(searchHex, 1, ring);
             for (int j = 0; j < MAX_ONE_RING_SIZE; j++) {
-                if (ring[j] == H3_INVALID_INDEX) {
+                if (ring[j] == H3_NULL) {
                     continue;  // Skip if this was a pentagon and only had 5
                                // neighbors
                 }
