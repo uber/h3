@@ -124,13 +124,22 @@ SUITE(h3UniEdge) {
     }
 
     TEST(getH3UnidirectionalEdgeFromPentagon) {
-        H3Index pentagon;
-        setH3Index(&pentagon, 0, 4, 0);
-        H3Index adjacent;
-        setH3Index(&adjacent, 0, 8, 0);
+        H3Index pentagon = 0x801dfffffffffff;
+        H3Index ring[7] = {0};
+        H3Index edge;
 
-        H3Index edge = H3_EXPORT(getH3UnidirectionalEdge)(pentagon, adjacent);
-        t_assert(edge != 0, "Produces a valid edge");
+        H3_EXPORT(kRing)(pentagon, 1, ring);
+
+        for (int i = 0; i < 7; i++) {
+            H3Index neighbor = ring[i];
+            if (neighbor == pentagon || neighbor == 0) continue;
+            edge = H3_EXPORT(getH3UnidirectionalEdge)(pentagon, neighbor);
+            t_assert(H3_EXPORT(h3UnidirectionalEdgeIsValid)(edge),
+                     "pentagon-to-neighbor is a valid edge");
+            edge = H3_EXPORT(getH3UnidirectionalEdge)(neighbor, pentagon);
+            t_assert(H3_EXPORT(h3UnidirectionalEdgeIsValid)(edge),
+                     "neighbor-to-pentagon is a valid edge");
+        }
     }
 
     TEST(h3UnidirectionalEdgeIsValid) {
