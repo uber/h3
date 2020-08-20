@@ -8,7 +8,8 @@
 /bin/
 /examples/bin/
 /lib/
-
+# Travis CI build directory
+/build/
 # Local build directories
 /Debug/
 /Release/
