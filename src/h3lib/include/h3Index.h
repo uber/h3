@@ -82,7 +82,11 @@
 /** 0's in the 7 base cell bits, 1's everywhere else. */
 #define H3_DIGIT_MASK_NEGATIVE (~H3_DIGIT_MASK)
 
-/** H3 index with mode 0, res 0, base cell 0, and 7 for all index digits. */
+/**
+ * H3 index with mode 0, res 0, base cell 0, and 7 for all index digits.
+ * Typically used to initialize the creation of an H3 cell index, which
+ * expects all direction digits to be 7 beyond the cell's resolution.
+ */
 #define H3_INIT (UINT64_C(35184372088831))
 
 /**
