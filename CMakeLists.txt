@@ -660,10 +660,11 @@ install(
 install(
     TARGETS h3
     EXPORT "${TARGETS_EXPORT_NAME}"
+    COMPONENT libh3
     LIBRARY DESTINATION "lib"
     ARCHIVE DESTINATION "lib"
     RUNTIME DESTINATION "bin"
-    COMPONENT libh3
+    INCLUDES DESTINATION "${include_install_dir}"
 )
 
 # Headers:

@@ -8,6 +8,7 @@ The public API of this library consists of the functions declared in file
 ## [Unreleased]
 ### Fixed
 - Fixed building the library with custom memory allocation functions on Mac OSX. (#362)
+- The installed H3 CMake target should have include directories specified. (#381)
 ### Changed
 - Tests now use `bash` on Windows. (#381)
 
