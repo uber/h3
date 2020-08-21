@@ -137,7 +137,7 @@ SUITE(h3UniEdge) {
 
                 for (int i = 0; i < 7; i++) {
                     H3Index neighbor = ring[i];
-                    if (neighbor == pentagon || neighbor == 0) continue;
+                    if (neighbor == pentagon || neighbor == H3_NULL) continue;
                     edge =
                         H3_EXPORT(getH3UnidirectionalEdge)(pentagon, neighbor);
                     t_assert(H3_EXPORT(h3UnidirectionalEdgeIsValid)(edge),
