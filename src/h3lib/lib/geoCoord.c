@@ -375,7 +375,6 @@ double area_triangle(GeoCoord a, GeoCoord b, GeoCoord c) {
 }
 
 double cell_area_radians(H3Index h) {
-
     GeoCoord c;
     GeoBoundary gb;
     double A = 0.0;
