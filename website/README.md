@@ -1,6 +1,6 @@
 # H3 Documentation Website
 
-This is the source for the [H3 documentation website](https://uber.github.io/h3/).
+This is the source for the [H3 documentation website](https://h3geo.org/).
 
 The source of the pages in the documentation is in the [docs](../docs) directory.
 

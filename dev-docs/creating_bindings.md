@@ -2,13 +2,13 @@
 
 H3 is a C library, in part to make it simpler to create bindings for different programming languages. Each language usually has its own way to bind to C functions, but this document can serve as a starting point and list of tips.
 
-There may already be [H3 bindings](https://uber.github.io/h3/#/documentation/community/bindings) available for your language of choice.
+There may already be [H3 bindings](https://h3geo.org/docs/community/bindings) available for your language of choice.
 
 ## Function naming
 
 The `make binding-functions` target produces a file `binding-functions` containing a list of function in the H3 public API, one per line. You can use this as part of your build process to check how much of the H3 public API your bindings expose. This list does not include memory management functions that are needed to allocate arrays to be passed to the H3 API.
 
-Keeping similar names and purposes for functions can make it easier for your users to use the H3 [API Reference](https://uber.github.io/h3/#/documentation/api-reference/).
+Keeping similar names and purposes for functions can make it easier for your users to use the H3 [API Reference](https://h3geo.org/docs/api/indexing).
 
 ## Community
 
@@ -16,7 +16,7 @@ When ready, make a [pull request](https://github.com/uber/h3/edit/master/docs/co
 
 ## Documentation
 
-To be included in the H3 [API reference](https://uber.github.io/h3/#/documentation/api-reference/), your binding should:
+To be included in the H3 [API reference](https://h3geo.org/docs/api/indexing), your binding should:
 
 * Be reasonably up to date with uber/h3.
 * Include bindings for the relevant functions in the output of `make binding-functions`. For example, `stringToH3` may not be necessary if your bindings only supports string H3 indexes.

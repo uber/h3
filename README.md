@@ -9,7 +9,7 @@
 
 H3 is a geospatial indexing system using a hexagonal grid that can be (approximately) subdivided into finer and finer hexagonal grids, combining the benefits of a hexagonal grid with [S2](https://code.google.com/archive/p/s2-geometry-library/)'s hierarchical subdivisions.
 
-Documentation is available at [https://uber.github.io/h3/](https://uber.github.io/h3/). Developer documentation in Markdown format is available under the [dev-docs](./dev-docs/) directory.
+Documentation is available at [https://h3geo.org/](https://h3geo.org/). Developer documentation in Markdown format is available under the [dev-docs](./dev-docs/) directory.
 
  * Post **bug reports or feature requests** to the [GitHub Issues page](https://github.com/uber/h3/issues)
  * Ask **questions** by posting to the [H3 tag on StackOverflow](https://stackoverflow.com/questions/tagged/h3)
@@ -17,7 +17,7 @@ Documentation is available at [https://uber.github.io/h3/](https://uber.github.i
 
 ## Installing
 
-We recommend using prebuilt bindings if they are available for your programming language. Bindings for [Go](https://github.com/uber/h3-go), [Java](https://github.com/uber/h3-java), [JavaScript](https://github.com/uber/h3-js), [Python](https://github.com/uber/h3-py), and [others](https://uber.github.io/h3/#/documentation/community/bindings) are available.
+We recommend using prebuilt bindings if they are available for your programming language. Bindings for [Go](https://github.com/uber/h3-go), [Java](https://github.com/uber/h3-java), [JavaScript](https://github.com/uber/h3-js), [Python](https://github.com/uber/h3-py), and [others](https://h3geo.org/docs/community/bindings) are available.
 
 On macOS, you can install H3 using `brew`:
 ```
