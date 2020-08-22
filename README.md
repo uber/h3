@@ -19,7 +19,7 @@ Documentation is available at [https://uber.github.io/h3/](https://uber.github.i
 
 We recommend using prebuilt bindings if they are available for your programming language. Bindings for [Go](https://github.com/uber/h3-go), [Java](https://github.com/uber/h3-java), [JavaScript](https://github.com/uber/h3-js), [Python](https://github.com/uber/h3-py), and [others](https://uber.github.io/h3/#/documentation/community/bindings) are available.
 
-On macOS, you can install H3 using brew:
+On macOS, you can install H3 using `brew`:
 ```
 brew install h3
 ```
@@ -46,7 +46,7 @@ sudo apt install cmake make gcc libtool
 sudo apt install clang-format cmake-curses-gui lcov doxygen
 ```
 
-* macOS (using brew)
+* macOS (using `brew`)
 
 First make sure you [have the developer tools installed](http://osxdaily.com/2014/02/12/install-command-line-tools-mac-os-x/) and then
 
@@ -63,17 +63,29 @@ You will need to install CMake and Visual Studio, including the Visual C++ compi
 
 #### Compilation
 
-From the repository you would then compile like so:
+From the repository root, you can compile H3 with:
 
 ```
-cmake .
+mkdir build
+cd build
+cmake ..
 make
 ```
+
+All subsequent `make` commands should be run from within the `build` directory.
+
+**Note**: There are several ways to build H3 with CMake; the method above is just one example that restricts all build artifacts to the `build` directory.
 
 You can install system-wide with:
 
 ```
 sudo make install
+```
+
+If using the method above, from the repository root, you can clean all build artifacts with:
+
+```
+rm -rf build
 ```
 
 #### Testing

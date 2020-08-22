@@ -167,6 +167,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testVec2d.c
     src/apps/testapps/testVec3d.c
     src/apps/testapps/testH3UniEdge.c
+    src/apps/testapps/testH3UniEdgeExhaustive.c
     src/apps/testapps/testLinkedGeo.c
     src/apps/testapps/mkRandGeo.c
     src/apps/testapps/testH3Api.c
@@ -191,6 +192,7 @@ set(OTHER_SOURCE_FILES
     src/apps/benchmarks/benchmarkH3SetToLinkedGeo.c
     src/apps/benchmarks/benchmarkKRing.c
     src/apps/benchmarks/benchmarkH3Line.c
+    src/apps/benchmarks/benchmarkH3UniEdge.c
     src/apps/benchmarks/benchmarkH3Api.c)
 
 set(ALL_SOURCE_FILES
@@ -580,6 +582,7 @@ if(BUILD_TESTING)
 
     # The "Exhaustive" part of the test name is used by the test-fast to exclude these files.
     # test-fast exists so that Travis CI can run Valgrind on tests without taking a very long time.
+    add_h3_test(testH3UniEdgeExhaustive src/apps/testapps/testH3UniEdgeExhaustive.c)
     add_h3_test(testH3ToLocalIjExhaustive src/apps/testapps/testH3ToLocalIjExhaustive.c)
     add_h3_test(testH3LineExhaustive src/apps/testapps/testH3LineExhaustive.c)
     add_h3_test(testH3DistanceExhaustive src/apps/testapps/testH3DistanceExhaustive.c)
@@ -602,6 +605,7 @@ if(BUILD_BENCHMARKS)
     add_h3_benchmark(benchmarkH3Api src/apps/benchmarks/benchmarkH3Api.c)
     add_h3_benchmark(benchmarkKRing src/apps/benchmarks/benchmarkKRing.c)
     add_h3_benchmark(benchmarkH3Line src/apps/benchmarks/benchmarkH3Line.c)
+    add_h3_benchmark(benchmarkH3UniEdge src/apps/benchmarks/benchmarkH3UniEdge.c)
     add_h3_benchmark(benchmarkH3SetToLinkedGeo src/apps/benchmarks/benchmarkH3SetToLinkedGeo.c)
     add_h3_benchmark(benchmarkPolyfill src/apps/benchmarks/benchmarkPolyfill.c)
     add_h3_benchmark(benchmarkPolygon src/apps/benchmarks/benchmarkPolygon.c)
