@@ -220,5 +220,8 @@ SUITE(geoCoord) {
         double eps = 100.0;
         t_assert(fabs(A - earth_area_km2) < eps,
                  "sum of res 0 cells should give earth area");
+
+        // todo: do area calculation with radians^2 function, convert to Km^2
+        // at the last step, see if that helps
     }
 }
