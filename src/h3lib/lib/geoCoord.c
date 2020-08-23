@@ -136,49 +136,47 @@ double constrainLng(double lng) {
 }
 
 /**
- * Find the great circle distance in radians between two spherical coordinates.
+ * define several `_pointDist_*` functions to compare/evaluate.
+ * Whatever choice is made, the same function should be used throughout the
+ * library, and should be exposed to users.
  *
- * @param p1 The first spherical coordinates.
- * @param p2 The second spherical coordinates.
- * @return The great circle distance in radians between p1 and p2.
+ * TODO: better to pass-by-value, or pass-by-reference for these functions?
+ * TODO: determine if one of these is numerically better.
+ * TODO: determine if one of these is faster.
  */
-double _geoDistRads(const GeoCoord* p1, const GeoCoord* p2) {
-    // use spherical triangle with p1 at A, p2 at B, and north pole at C
-    double bigC = fabs(p2->lon - p1->lon);
+
+// Law of cosines shouldn't be as numerically stable as haversine.
+// However, this is what H3 has been using, and stability might not matter
+// (for our uses) when using 64-bit floats.
+double _pointDist_lawOfCosines(GeoCoord a, GeoCoord b) {
+    // use spherical triangle with `a` at A, `b` at B, and north pole at C
+    double bigC = fabs(b.lon - a.lon);
     if (bigC > M_PI)  // assume we want the complement
     {
         // note that in this case they can't both be negative
-        double lon1 = p1->lon;
+        double lon1 = a.lon;
         if (lon1 < 0.0L) lon1 += 2.0L * M_PI;
-        double lon2 = p2->lon;
+        double lon2 = b.lon;
         if (lon2 < 0.0L) lon2 += 2.0L * M_PI;
 
         bigC = fabs(lon2 - lon1);
     }
 
-    double b = M_PI_2 - p1->lat;
-    double a = M_PI_2 - p2->lat;
+    double y = M_PI_2 - a.lat;
+    double x = M_PI_2 - b.lat;
 
     // use law of cosines to find c
-    double cosc = cos(a) * cos(b) + sin(a) * sin(b) * cos(bigC);
+    double cosc = cos(x) * cos(y) + sin(x) * sin(y) * cos(bigC);
     if (cosc > 1.0L) cosc = 1.0L;
     if (cosc < -1.0L) cosc = -1.0L;
 
     return acos(cosc);
 }
 
-/**
- * _geoDistRads uses the law of cosines, while haversine_points uses
- * the haversine formula. haversine should be numerically superior, but
- * it might not really matter when using 64-bit floats.
- *
- * One question: is haversine faster? (no if-statements..)
- */
-
-// do we have a preference towards passing pointers instead of the struct?
-// duplicate of _geoDistRads?
-double haversine_points(GeoCoord a, GeoCoord b) {
-    // Haversine distance between two points.
+// I'm not sure where this formula came from, but it exists in
+// `./examples/distance.c`.
+double _pointDist_mystery(GeoCoord a, GeoCoord b) {
+    // Great circle distance between two points.
     // Input/output: both in radians
 
     double x, y, z;
@@ -192,14 +190,16 @@ double haversine_points(GeoCoord a, GeoCoord b) {
     return 2 * asin(0.5 * sqrt(x * x + y * y + z * z));
 }
 
-// compare to gridDist/gridDistCells
-// geoDistPoints? greatCircleDistPointsRads? pointDistRads?
-// not sure if we want pass-by-reference or pass-by-value here..
-// GeoCoords are pretty small...
-// what about vertexDistRads?
+double _pointDist_haversine(GeoCoord a, GeoCoord b) {
+    // Not Implemented!
+    return 0.0;
+}
+
+// *Note*: this is the main function we export to users, and use throughout
+// the library.
 double H3_EXPORT(pointDistRads)(GeoCoord a, GeoCoord b) {
     // return haversine_points(a, b);
-    return _geoDistRads(&a, &b);
+    return _pointDist_lawOfCosines(a, b);
 }
 
 double H3_EXPORT(pointDistKm)(GeoCoord a, GeoCoord b) {
@@ -212,6 +212,24 @@ double H3_EXPORT(pointDistM)(GeoCoord a, GeoCoord b) {
 }
 
 /**
+ * Find the great circle distance in radians between two spherical coordinates.
+ *
+ * @param p1 The first spherical coordinates.
+ * @param p2 The second spherical coordinates.
+ * @return The great circle distance in radians between p1 and p2.
+ */
+double _geoDistRads(const GeoCoord* p1, const GeoCoord* p2) {
+    GeoCoord a, b;
+    a = *p1;
+    b = *p2;
+
+    // I kept this function because i didn't want to have to change all the
+    // tests. Temporary pointer manipulation until we converge on the right
+    // signature.
+    return H3_EXPORT(pointDistRads)(a, b);
+}
+
+/**
  * Find the great circle distance in kilometers between two spherical
  * coordinates.
  *
@@ -220,6 +238,7 @@ double H3_EXPORT(pointDistM)(GeoCoord a, GeoCoord b) {
  * @return The distance in kilometers between p1 and p2.
  */
 double _geoDistKm(const GeoCoord* p1, const GeoCoord* p2) {
+    // todo: consider this function in light of user-exposed functions
     return EARTH_RADIUS_KM * _geoDistRads(p1, p2);
 }
 
@@ -384,9 +403,9 @@ double area_triangle(GeoCoord a, GeoCoord b, GeoCoord c) {
 
     double A, B, C, S, T, E;
 
-    A = haversine_points(b, c);
-    B = haversine_points(c, a);
-    C = haversine_points(a, b);
+    A = H3_EXPORT(pointDistRads)(b, c);
+    B = H3_EXPORT(pointDistRads)(c, a);
+    C = H3_EXPORT(pointDistRads)(a, b);
 
     S = (A + B + C) / 2;
 
