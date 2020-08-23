@@ -217,8 +217,14 @@ SUITE(geoCoord) {
 
         double earth_area_km2 = 4 * M_PI * EARTH_RADIUS_KM * EARTH_RADIUS_KM;
         // fails at eps = 10. (numerical improvements possible?)
-        double eps = 10.0;
-        t_assert(fabs(A - earth_area_km2) < eps,
+
+        // Numerics:
+        //_pointDist_lawOfCosines
+        // passes at tol = 1e-6;
+        // fails at tol = 1e-7;
+
+        double tol = 1e-6;
+        t_assert(fabs(A - earth_area_km2) < tol,
                  "sum of res 0 cells should give earth area");
 
         // todo: do area calculation with radians^2 function, convert to Km^2
