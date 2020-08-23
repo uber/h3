@@ -21,6 +21,11 @@ compiler:
   - gcc
   - clang
 
+arch:
+  - arm64
+  - ppc64le
+  - s390x
+
 # Docs are built during the normal compile/test check.
 addons:
   apt:
@@ -30,24 +35,11 @@ addons:
 
 matrix:
   include:
-      # Submit coverage report to Coveralls.io, also test that prefixing works.
-    - name: "Coverage report"
-      compiler: gcc
-      addons:
-        apt:
-          packages:
-            - lcov
-      install:
-        - gem install coveralls-lcov
-      before_script:
-        - cmake -DCMAKE_BUILD_TYPE=Debug -DWARNINGS_AS_ERRORS=ON -DH3_PREFIX=testprefix_ .
-      script:
-        - make
-        - make coverage
-      after_success:
-        - coveralls-lcov coverage.cleaned.info
       # Test building the website also - needed for FOSSA to pick up dependencies
+      # FOSSA is run here because the API key will not be present in Github Actions.
+      # Blocked on https://github.com/fossas/fossa-cli/issues/617
     - name: "Website and FOSSA report"
+      arch: amd64
       language: node_js
       node_js: 10
       install: []
@@ -59,8 +51,6 @@ matrix:
         - yarn build
         - cd ..
         - 'if [ -n "$FOSSA_API_KEY" ]; then fossa; fi'
-    - name: "ARM64"
-      arch: arm64
 
 # Configure the build script, out of source.
 before_script:
