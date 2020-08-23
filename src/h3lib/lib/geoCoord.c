@@ -192,6 +192,25 @@ double haversine_points(GeoCoord a, GeoCoord b) {
     return 2 * asin(0.5 * sqrt(x * x + y * y + z * z));
 }
 
+// compare to gridDist/gridDistCells
+// geoDistPoints? greatCircleDistPointsRads? pointDistRads?
+// not sure if we want pass-by-reference or pass-by-value here..
+// GeoCoords are pretty small...
+// what about vertexDistRads?
+double H3_EXPORT(pointDistRads)(GeoCoord a, GeoCoord b) {
+    // return haversine_points(a, b);
+    return _geoDistRads(&a, &b);
+}
+
+double H3_EXPORT(pointDistKm)(GeoCoord a, GeoCoord b) {
+    return H3_EXPORT(pointDistRads)(a, b) * EARTH_RADIUS_KM;
+}
+
+double H3_EXPORT(pointDistM)(GeoCoord a, GeoCoord b) {
+    double R = EARTH_RADIUS_KM * 1000.0;
+    return H3_EXPORT(pointDistRads)(a, b) * R;
+}
+
 /**
  * Find the great circle distance in kilometers between two spherical
  * coordinates.

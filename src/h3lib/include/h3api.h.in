@@ -262,6 +262,12 @@ double H3_EXPORT(hexAreaKm2)(int res);
 double H3_EXPORT(hexAreaM2)(int res);
 /** @} */
 
+/** @brief "great circle distance" between pairs of GeoCoord points */
+// todo: do we want pass-by-reference or by value?
+double H3_EXPORT(pointDistRads)(GeoCoord a, GeoCoord b);
+double H3_EXPORT(pointDistKm)(GeoCoord a, GeoCoord b);
+double H3_EXPORT(pointDistM)(GeoCoord a, GeoCoord b);
+
 /** @brief exact area for a specific cell (hexagon or pentagon) */
 double H3_EXPORT(cellAreaRads2)(H3Index h);
 double H3_EXPORT(cellAreaKm2)(H3Index h);
