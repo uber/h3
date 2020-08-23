@@ -1,0 +1,42 @@
+name: test-macos
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  tests:
+    name: Test Compile ${{ matrix.compiler }}
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v2.1.1
+
+      - name: Configure build
+        run: cmake -Bbuild -DWARNINGS_AS_ERRORS=ON .
+
+      - name: Build
+        working-directory: build
+        run: make
+
+      - name: binding-functions
+        working-directory: build
+        run: |
+          make binding-functions
+          test -s binding-functions
+
+      - name: Tests
+        working-directory: build
+        run: |
+          make test
+          sudo make install
+
+      - name: Examples
+        run: |
+          mkdir build/examples
+          cd build/examples
+          cmake ../../examples
+          make
+          make test
