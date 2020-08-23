@@ -391,10 +391,11 @@ double cell_area_radians(H3Index h) {
     H3_EXPORT(h3ToGeoBoundary)(h, &gb);
 
     // can probably optimize this by re-using the shared edges
-    // how to clean up this for loop in C?
     int N = gb.numVerts;
-    for (int i = 0; i < N; i++) {
-        int j = (i + 1) % N;
+    int i, j;
+
+    for (i = 0; i < N; i++) {
+        j = (i + 1) % N;
         A += area_triangle(gb.verts[i], gb.verts[j], c);
     }
 

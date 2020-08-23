@@ -200,4 +200,24 @@ SUITE(geoCoord) {
             last = next;
         }
     }
+
+    TEST(cellArea) {
+        int N = H3_EXPORT(res0IndexCount)();
+        H3Index* cells = malloc(N * sizeof(H3Index));
+        H3_EXPORT(getRes0Indexes)(cells);
+
+        double a, A;
+
+        A = 0.0;
+        for (int i = 0; i < N; i++) {
+            a = H3_EXPORT(cellAreaKm2)(cells[i]);
+            t_assert(a > 0, "cell has positive area");
+            A += a;
+        }
+        free(cells);
+
+        double earth_area_km2 = 4 * M_PI * EARTH_RADIUS_KM * EARTH_RADIUS_KM;
+        t_assert(fabs(A - earth_area_km2) < 100.0,
+                 "sum of res 0 cells should give earth area");
+    }
 }
