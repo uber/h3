@@ -382,7 +382,7 @@ double area_triangle(GeoCoord a, GeoCoord b, GeoCoord c) {
     return E;
 }
 
-double cell_area_radians(H3Index h) {
+double H3_EXPORT(cellAreaRads2)(H3Index h) {
     GeoCoord c;
     GeoBoundary gb;
     double A = 0.0;
@@ -403,12 +403,10 @@ double cell_area_radians(H3Index h) {
 }
 
 double H3_EXPORT(cellAreaKm2)(H3Index h) {
-    // how about a `unit_per_km` factor, defaults to 1?
-    // we really don't need two functions...
-    // except, maybe, for radian functions
+    return H3_EXPORT(cellAreaRads2)(h) * EARTH_RADIUS_KM * EARTH_RADIUS_KM;
+}
 
-    float unit_per_km = 1.0;
-    float R = EARTH_RADIUS_KM * unit_per_km;
-
-    return cell_area_radians(h) * R * R;
+double H3_EXPORT(cellAreaM2)(H3Index h) {
+    double R = EARTH_RADIUS_KM * 1000.0;
+    return H3_EXPORT(cellAreaRads2)(h) * R * R;
 }
