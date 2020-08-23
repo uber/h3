@@ -198,8 +198,8 @@ double _pointDist_haversine(GeoCoord a, GeoCoord b) {
 // *Note*: this is the main function we export to users, and use throughout
 // the library.
 double H3_EXPORT(pointDistRads)(GeoCoord a, GeoCoord b) {
-    // return haversine_points(a, b);
-    return _pointDist_lawOfCosines(a, b);
+    // return _pointDist_lawOfCosines(a, b);
+    return _pointDist_mystery(a, b);
 }
 
 double H3_EXPORT(pointDistKm)(GeoCoord a, GeoCoord b) {

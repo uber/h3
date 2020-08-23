@@ -217,7 +217,7 @@ SUITE(geoCoord) {
 
         double earth_area_km2 = 4 * M_PI * EARTH_RADIUS_KM * EARTH_RADIUS_KM;
         // fails at eps = 10. (numerical improvements possible?)
-        double eps = 100.0;
+        double eps = 10.0;
         t_assert(fabs(A - earth_area_km2) < eps,
                  "sum of res 0 cells should give earth area");
 
