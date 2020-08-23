@@ -168,6 +168,31 @@ double _geoDistRads(const GeoCoord* p1, const GeoCoord* p2) {
 }
 
 /**
+ * _geoDistRads uses the law of cosines, while haversine_points uses
+ * the haversine formula. haversine should be numerically superior, but
+ * it might not really matter when using 64-bit floats.
+ *
+ * One question: is haversine faster? (no if-statements..)
+ */
+
+// do we have a preference towards passing pointers instead of the struct?
+// duplicate of _geoDistRads?
+double haversine_points(GeoCoord a, GeoCoord b) {
+    // Haversine distance between two points.
+    // Input/output: both in radians
+
+    double x, y, z;
+
+    a.lon -= b.lon;
+
+    x = cos(a.lon) * cos(a.lat) - cos(b.lat);
+    y = sin(a.lon) * cos(a.lat);
+    z = sin(a.lat) - sin(b.lat);
+
+    return 2 * asin(0.5 * sqrt(x * x + y * y + z * z));
+}
+
+/**
  * Find the great circle distance in kilometers between two spherical
  * coordinates.
  *
@@ -333,23 +358,6 @@ int64_t H3_EXPORT(numHexagons)(int res) {
     return nums[res];
 }
 
-// do we have a preference towards passing pointers instead of the struct?
-// duplicate of _geoDistRads?
-double haversine_points(GeoCoord a, GeoCoord b) {
-    // Haversine distance between two points.
-    // Input/output: both in radians
-
-    double x, y, z;
-
-    a.lon -= b.lon;
-
-    x = cos(a.lon) * cos(a.lat) - cos(b.lat);
-    y = sin(a.lon) * cos(a.lat);
-    z = sin(a.lat) - sin(b.lat);
-
-    return 2 * asin(0.5 * sqrt(x * x + y * y + z * z));
-}
-
 double area_triangle(GeoCoord a, GeoCoord b, GeoCoord c) {
     // Surface area of a spherical triangle given by three lat/lng points
     // input: radians
@@ -393,7 +401,7 @@ double cell_area_radians(H3Index h) {
     return A;
 }
 
-double cell_area_km(H3Index h) {
+double H3_EXPORT(cellAreaKm2)(H3Index h) {
     // how about a `unit_per_km` factor, defaults to 1?
     // we really don't need two functions...
     // except, maybe, for radian functions
