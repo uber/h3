@@ -206,9 +206,8 @@ SUITE(geoCoord) {
         H3Index* cells = malloc(N * sizeof(H3Index));
         H3_EXPORT(getRes0Indexes)(cells);
 
-        double a, A;
+        double a, A = 0.0;
 
-        A = 0.0;
         for (int i = 0; i < N; i++) {
             a = H3_EXPORT(cellAreaKm2)(cells[i]);
             t_assert(a > 0, "cell has positive area");
@@ -217,7 +216,9 @@ SUITE(geoCoord) {
         free(cells);
 
         double earth_area_km2 = 4 * M_PI * EARTH_RADIUS_KM * EARTH_RADIUS_KM;
-        t_assert(fabs(A - earth_area_km2) < 100.0,
+        // fails at eps = 10. (numerical improvements possible?)
+        double eps = 100.0;
+        t_assert(fabs(A - earth_area_km2) < eps,
                  "sum of res 0 cells should give earth area");
     }
 }
