@@ -59,8 +59,6 @@ matrix:
         - yarn build
         - cd ..
         - 'if [ -n "$FOSSA_API_KEY" ]; then fossa; fi'
-    - name: "Mac OSX (Xcode 8)"
-      os: osx
     - name: "ARM64"
       arch: arm64
 
