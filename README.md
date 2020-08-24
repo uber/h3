@@ -5,6 +5,7 @@
 [![test-linux](https://github.com/uber/h3/workflows/test-linux/badge.svg)](https://github.com/uber/h3/actions)
 [![test-macos](https://github.com/uber/h3/workflows/test-macos/badge.svg)](https://github.com/uber/h3/actions)
 [![test-windows](https://github.com/uber/h3/workflows/test-windows/badge.svg)](https://github.com/uber/h3/actions)
+[![test-website](https://github.com/uber/h3/workflows/test-website/badge.svg)](https://github.com/uber/h3/actions)
 [![Coverage Status](https://coveralls.io/repos/github/uber/h3/badge.svg?branch=master)](https://coveralls.io/github/uber/h3?branch=master)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
