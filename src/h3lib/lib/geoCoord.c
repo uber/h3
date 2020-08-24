@@ -183,8 +183,8 @@ double _pointDist_mystery(const GeoCoord *a, const GeoCoord *b) {
 
     dlon = a->lon - b->lon;
 
-    x = cos(a->lon) * cos(a->lat) - cos(b->lat);
-    y = sin(a->lon) * cos(a->lat);
+    x = cos(dlon) * cos(a->lat) - cos(b->lat);
+    y = sin(dlon) * cos(a->lat);
     z = sin(a->lat) - sin(b->lat);
 
     return 2 * asin(0.5 * sqrt(x * x + y * y + z * z));
@@ -203,8 +203,8 @@ double _pointDist_haversine(const GeoCoord *a, const GeoCoord *b) {
 // the library.
 double H3_EXPORT(pointDistRads)(const GeoCoord *a, const GeoCoord *b) {
     // return _pointDist_lawOfCosines(a, b);
-    // return _pointDist_mystery(a, b);
-    return _pointDist_haversine(a, b);
+    return _pointDist_mystery(a, b);
+    // return _pointDist_haversine(a, b);
 }
 
 double H3_EXPORT(pointDistKm)(const GeoCoord *a, const GeoCoord *b) {
