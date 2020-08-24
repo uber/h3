@@ -191,15 +191,20 @@ double _pointDist_mystery(GeoCoord a, GeoCoord b) {
 }
 
 double _pointDist_haversine(GeoCoord a, GeoCoord b) {
-    // Not Implemented!
-    return 0.0;
+    double T = sin((b.lat - a.lat) / 2);
+    double N = sin((b.lon - a.lon) / 2);
+
+    double A = T * T + cos(a.lat) * cos(b.lat) * N * N;
+
+    return 2 * atan2(sqrt(A), sqrt(1 - A));
 }
 
 // *Note*: this is the main function we export to users, and use throughout
 // the library.
 double H3_EXPORT(pointDistRads)(GeoCoord a, GeoCoord b) {
     // return _pointDist_lawOfCosines(a, b);
-    return _pointDist_mystery(a, b);
+    // return _pointDist_mystery(a, b);
+    return _pointDist_haversine(a, b);
 }
 
 double H3_EXPORT(pointDistKm)(GeoCoord a, GeoCoord b) {
