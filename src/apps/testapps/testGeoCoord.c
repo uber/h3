@@ -219,7 +219,16 @@ SUITE(geoCoord) {
         // fails at eps = 10. (numerical improvements possible?)
 
         // Numerics:
+
         //_pointDist_lawOfCosines
+        // passes at tol = 1e-6;
+        // fails at tol = 1e-7;
+
+        //_pointDist_mystery
+        // passes at tol = 1e-6;
+        // fails at tol = 1e-7;
+
+        //_pointDist_haversine
         // passes at tol = 1e-6;
         // fails at tol = 1e-7;
 
