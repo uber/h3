@@ -216,7 +216,6 @@ SUITE(geoCoord) {
         free(cells);
 
         double earth_area_km2 = 4 * M_PI * EARTH_RADIUS_KM * EARTH_RADIUS_KM;
-        // fails at eps = 10. (numerical improvements possible?)
 
         // Numerics:
 
