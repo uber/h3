@@ -47,7 +47,7 @@ double _posAngleRads(double rads) {
  * @return Whether or not the two coordinates are within the threshold distance
  *         of each other.
  */
-bool geoAlmostEqualThreshold(const GeoCoord* p1, const GeoCoord* p2,
+bool geoAlmostEqualThreshold(const GeoCoord *p1, const GeoCoord *p2,
                              double threshold) {
     return fabs(p1->lat - p2->lat) < threshold &&
            fabs(p1->lon - p2->lon) < threshold;
@@ -62,7 +62,7 @@ bool geoAlmostEqualThreshold(const GeoCoord* p1, const GeoCoord* p2,
  * @return Whether or not the two coordinates are within the epsilon distance
  *         of each other.
  */
-bool geoAlmostEqual(const GeoCoord* p1, const GeoCoord* p2) {
+bool geoAlmostEqual(const GeoCoord *p1, const GeoCoord *p2) {
     return geoAlmostEqualThreshold(p1, p2, EPSILON_RAD);
 }
 
@@ -73,7 +73,7 @@ bool geoAlmostEqual(const GeoCoord* p1, const GeoCoord* p2) {
  * @param latDegs The desired latitidue in decimal degrees.
  * @param lonDegs The desired longitude in decimal degrees.
  */
-void setGeoDegs(GeoCoord* p, double latDegs, double lonDegs) {
+void setGeoDegs(GeoCoord *p, double latDegs, double lonDegs) {
     _setGeoRads(p, H3_EXPORT(degsToRads)(latDegs),
                 H3_EXPORT(degsToRads)(lonDegs));
 }
@@ -85,7 +85,7 @@ void setGeoDegs(GeoCoord* p, double latDegs, double lonDegs) {
  * @param latRads The desired latitidue in decimal radians.
  * @param lonRads The desired longitude in decimal radians.
  */
-void _setGeoRads(GeoCoord* p, double latRads, double lonRads) {
+void _setGeoRads(GeoCoord *p, double latRads, double lonRads) {
     p->lat = latRads;
     p->lon = lonRads;
 }
@@ -148,22 +148,22 @@ double constrainLng(double lng) {
 // Law of cosines shouldn't be as numerically stable as haversine.
 // However, this is what H3 has been using, and stability might not matter
 // (for our uses) when using 64-bit floats.
-double _pointDist_lawOfCosines(GeoCoord a, GeoCoord b) {
+double _pointDist_lawOfCosines(const GeoCoord *a, const GeoCoord *b) {
     // use spherical triangle with `a` at A, `b` at B, and north pole at C
-    double bigC = fabs(b.lon - a.lon);
+    double bigC = fabs(b->lon - a->lon);
     if (bigC > M_PI)  // assume we want the complement
     {
         // note that in this case they can't both be negative
-        double lon1 = a.lon;
+        double lon1 = a->lon;
         if (lon1 < 0.0L) lon1 += 2.0L * M_PI;
-        double lon2 = b.lon;
+        double lon2 = b->lon;
         if (lon2 < 0.0L) lon2 += 2.0L * M_PI;
 
         bigC = fabs(lon2 - lon1);
     }
 
-    double y = M_PI_2 - a.lat;
-    double x = M_PI_2 - b.lat;
+    double y = M_PI_2 - a->lat;
+    double x = M_PI_2 - b->lat;
 
     // use law of cosines to find c
     double cosc = cos(x) * cos(y) + sin(x) * sin(y) * cos(bigC);
@@ -175,43 +175,43 @@ double _pointDist_lawOfCosines(GeoCoord a, GeoCoord b) {
 
 // I'm not sure where this formula came from, but it exists in
 // `./examples/distance.c`.
-double _pointDist_mystery(GeoCoord a, GeoCoord b) {
+double _pointDist_mystery(const GeoCoord *a, const GeoCoord *b) {
     // Great circle distance between two points.
     // Input/output: both in radians
 
-    double x, y, z;
+    double x, y, z, dlon;
 
-    a.lon -= b.lon;
+    dlon = a->lon - b->lon;
 
-    x = cos(a.lon) * cos(a.lat) - cos(b.lat);
-    y = sin(a.lon) * cos(a.lat);
-    z = sin(a.lat) - sin(b.lat);
+    x = cos(a->lon) * cos(a->lat) - cos(b->lat);
+    y = sin(a->lon) * cos(a->lat);
+    z = sin(a->lat) - sin(b->lat);
 
     return 2 * asin(0.5 * sqrt(x * x + y * y + z * z));
 }
 
-double _pointDist_haversine(GeoCoord a, GeoCoord b) {
-    double T = sin((b.lat - a.lat) / 2);
-    double N = sin((b.lon - a.lon) / 2);
+double _pointDist_haversine(const GeoCoord *a, const GeoCoord *b) {
+    double T = sin((b->lat - a->lat) / 2);
+    double N = sin((b->lon - a->lon) / 2);
 
-    double A = T * T + cos(a.lat) * cos(b.lat) * N * N;
+    double A = T * T + cos(a->lat) * cos(b->lat) * N * N;
 
     return 2 * atan2(sqrt(A), sqrt(1 - A));
 }
 
 // *Note*: this is the main function we export to users, and use throughout
 // the library.
-double H3_EXPORT(pointDistRads)(GeoCoord a, GeoCoord b) {
+double H3_EXPORT(pointDistRads)(const GeoCoord *a, const GeoCoord *b) {
     // return _pointDist_lawOfCosines(a, b);
     // return _pointDist_mystery(a, b);
     return _pointDist_haversine(a, b);
 }
 
-double H3_EXPORT(pointDistKm)(GeoCoord a, GeoCoord b) {
+double H3_EXPORT(pointDistKm)(const GeoCoord *a, const GeoCoord *b) {
     return H3_EXPORT(pointDistRads)(a, b) * EARTH_RADIUS_KM;
 }
 
-double H3_EXPORT(pointDistM)(GeoCoord a, GeoCoord b) {
+double H3_EXPORT(pointDistM)(const GeoCoord *a, const GeoCoord *b) {
     double R = EARTH_RADIUS_KM * 1000.0;
     return H3_EXPORT(pointDistRads)(a, b) * R;
 }
@@ -223,15 +223,11 @@ double H3_EXPORT(pointDistM)(GeoCoord a, GeoCoord b) {
  * @param p2 The second spherical coordinates.
  * @return The great circle distance in radians between p1 and p2.
  */
-double _geoDistRads(const GeoCoord* p1, const GeoCoord* p2) {
-    GeoCoord a, b;
-    a = *p1;
-    b = *p2;
-
+double _geoDistRads(const GeoCoord *p1, const GeoCoord *p2) {
     // I kept this function because i didn't want to have to change all the
     // tests. Temporary pointer manipulation until we converge on the right
     // signature.
-    return H3_EXPORT(pointDistRads)(a, b);
+    return H3_EXPORT(pointDistRads)(p1, p2);
 }
 
 /**
@@ -242,7 +238,7 @@ double _geoDistRads(const GeoCoord* p1, const GeoCoord* p2) {
  * @param p2 The second spherical coordinates.
  * @return The distance in kilometers between p1 and p2.
  */
-double _geoDistKm(const GeoCoord* p1, const GeoCoord* p2) {
+double _geoDistKm(const GeoCoord *p1, const GeoCoord *p2) {
     // todo: consider this function in light of user-exposed functions
     return EARTH_RADIUS_KM * _geoDistRads(p1, p2);
 }
@@ -254,7 +250,7 @@ double _geoDistKm(const GeoCoord* p1, const GeoCoord* p2) {
  * @param p2 The second spherical coordinates.
  * @return The azimuth in radians from p1 to p2.
  */
-double _geoAzimuthRads(const GeoCoord* p1, const GeoCoord* p2) {
+double _geoAzimuthRads(const GeoCoord *p1, const GeoCoord *p2) {
     return atan2(cos(p2->lat) * sin(p2->lon - p1->lon),
                  cos(p1->lat) * sin(p2->lat) -
                      sin(p1->lat) * cos(p2->lat) * cos(p2->lon - p1->lon));
@@ -270,8 +266,8 @@ double _geoAzimuthRads(const GeoCoord* p1, const GeoCoord* p2) {
  * @param p2 The spherical coordinates at the desired azimuth and distance from
  * p1.
  */
-void _geoAzDistanceRads(const GeoCoord* p1, double az, double distance,
-                        GeoCoord* p2) {
+void _geoAzDistanceRads(const GeoCoord *p1, double az, double distance,
+                        GeoCoord *p2) {
     if (distance < EPSILON) {
         *p2 = *p1;
         return;
@@ -401,7 +397,7 @@ int64_t H3_EXPORT(numHexagons)(int res) {
     return nums[res];
 }
 
-double area_triangle(GeoCoord a, GeoCoord b, GeoCoord c) {
+double area_triangle(const GeoCoord *a, const GeoCoord *b, const GeoCoord *c) {
     // Surface area of a spherical triangle given by three lat/lng points
     // input: radians
     // ouput: unit sphere area
@@ -439,7 +435,7 @@ double H3_EXPORT(cellAreaRads2)(H3Index h) {
 
     for (i = 0; i < N; i++) {
         j = (i + 1) % N;
-        A += area_triangle(gb.verts[i], gb.verts[j], c);
+        A += area_triangle(&gb.verts[i], &gb.verts[j], &c);
     }
 
     return A;
