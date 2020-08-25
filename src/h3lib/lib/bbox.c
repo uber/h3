@@ -97,22 +97,18 @@ double _hexRadiusKm(H3Index h3Index) {
  * @param res the resolution of the H3 hexagons to fill the bounding box
  * @return the estimated number of hexagons to fill the bounding box
  */
-// todo
 int bboxHexEstimate(const BBox* bbox, int res) {
     // Get the area of the pentagon as the maximally-distorted area possible
     H3Index pentagons[12] = {0};
     H3_EXPORT(getPentagonIndexes)(res, pentagons);
-    // todo: should we have this algorithm in radians instead?
     double pentagonRadiusKm = _hexRadiusKm(pentagons[0]);
     // Area of a regular hexagon is 3/2*sqrt(3) * r * r
     // The pentagon has the most distortion (smallest edges) and shares its
     // edges with hexagons, so the most-distorted hexagons have this area,
     // shrunk by 20% off chance that the bounding box perfectly bounds a
     // pentagon.
-    // todo
     double pentagonAreaKm2 =
         0.8 * (2.59807621135 * pentagonRadiusKm * pentagonRadiusKm);
-    // todo
 
     // Then get the area of the bounding box of the geofence in question
     GeoCoord p1, p2;

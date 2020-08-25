@@ -379,7 +379,7 @@ int64_t H3_EXPORT(numHexagons)(int res) {
 }
 
 double triangleEdgeLengthsToArea(double a, double b, double c) {
-    // Surface area of a spherical triangle with edge lengths A,B,C
+    // Surface area of a spherical triangle with edge lengths a, b, c
     // input: radians
     // ouput: unit sphere area (radians^2)
 
