@@ -378,28 +378,31 @@ int64_t H3_EXPORT(numHexagons)(int res) {
     return nums[res];
 }
 
-double area_triangle(const GeoCoord *a, const GeoCoord *b, const GeoCoord *c) {
+double triangleEdgeLengthsToArea(double a, double b, double c) {
+    // Surface area of a spherical triangle with edge lengths A,B,C
+    // input: radians
+    // ouput: unit sphere area (radians^2)
+
+    double s = (a + b + c) / 2;
+
+    a = (s - a) / 2;
+    b = (s - b) / 2;
+    c = (s - c) / 2;
+    s = s / 2;
+
+    double t = sqrt(tan(s) * tan(a) * tan(b) * tan(c));
+
+    return 4 * atan(t);
+}
+
+double triangleArea(const GeoCoord *a, const GeoCoord *b, const GeoCoord *c) {
     // Surface area of a spherical triangle given by three lat/lng points
     // input: radians
     // ouput: unit sphere area
 
-    double A, B, C, S, T, E;
-
-    A = H3_EXPORT(pointDistRads)(b, c);
-    B = H3_EXPORT(pointDistRads)(c, a);
-    C = H3_EXPORT(pointDistRads)(a, b);
-
-    S = (A + B + C) / 2;
-
-    A = (S - A) / 2;
-    B = (S - B) / 2;
-    C = (S - C) / 2;
-    S = S / 2;
-
-    T = sqrt(tan(S) * tan(A) * tan(B) * tan(C));
-    E = 4 * atan(T);
-
-    return E;
+    return triangleEdgeLengthsToArea(H3_EXPORT(pointDistRads)(a, b),
+                                     H3_EXPORT(pointDistRads)(b, c),
+                                     H3_EXPORT(pointDistRads)(c, a));
 }
 
 double H3_EXPORT(cellAreaRads2)(H3Index h) {
@@ -416,7 +419,7 @@ double H3_EXPORT(cellAreaRads2)(H3Index h) {
 
     for (i = 0; i < N; i++) {
         j = (i + 1) % N;
-        A += area_triangle(&gb.verts[i], &gb.verts[j], &c);
+        A += triangleArea(&gb.verts[i], &gb.verts[j], &c);
     }
 
     return A;
