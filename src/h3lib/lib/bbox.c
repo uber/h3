@@ -86,7 +86,7 @@ double _hexRadiusKm(H3Index h3Index) {
     GeoBoundary h3Boundary;
     H3_EXPORT(h3ToGeo)(h3Index, &h3Center);
     H3_EXPORT(h3ToGeoBoundary)(h3Index, &h3Boundary);
-    return _geoDistKm(&h3Center, h3Boundary.verts);
+    return H3_EXPORT(pointDistKm)(&h3Center, h3Boundary.verts);
 }
 
 /**
@@ -101,6 +101,7 @@ int bboxHexEstimate(const BBox* bbox, int res) {
     // Get the area of the pentagon as the maximally-distorted area possible
     H3Index pentagons[12] = {0};
     H3_EXPORT(getPentagonIndexes)(res, pentagons);
+    // todo: should we have this algorithm in radians instead?
     double pentagonRadiusKm = _hexRadiusKm(pentagons[0]);
     // Area of a regular hexagon is 3/2*sqrt(3) * r * r
     // The pentagon has the most distortion (smallest edges) and shares its
@@ -116,7 +117,7 @@ int bboxHexEstimate(const BBox* bbox, int res) {
     p1.lon = bbox->east;
     p2.lat = bbox->south;
     p2.lon = bbox->west;
-    double d = _geoDistKm(&p1, &p2);
+    double d = H3_EXPORT(pointDistKm)(&p1, &p2);
     // Derived constant based on: https://math.stackexchange.com/a/1921940
     // Clamped to 3 as higher values tend to rapidly drag the estimate to zero.
     double a = d * d / fmin(3.0, fabs((p1.lon - p2.lon) / (p1.lat - p2.lat)));
@@ -143,7 +144,7 @@ int lineHexEstimate(const GeoCoord* origin, const GeoCoord* destination,
     H3_EXPORT(getPentagonIndexes)(res, pentagons);
     double pentagonRadiusKm = _hexRadiusKm(pentagons[0]);
 
-    double dist = _geoDistKm(origin, destination);
+    double dist = H3_EXPORT(pointDistKm)(origin, destination);
     int estimate = (int)ceil(dist / (2 * pentagonRadiusKm));
     if (estimate == 0) estimate = 1;
     return estimate;

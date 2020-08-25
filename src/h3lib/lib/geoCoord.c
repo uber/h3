@@ -199,12 +199,20 @@ double _pointDist_haversine(const GeoCoord *a, const GeoCoord *b) {
     return 2 * atan2(sqrt(A), sqrt(1 - A));
 }
 
+/**
+ * Find the great circle distance in radians between two spherical coordinates.
+ *
+ * @param p1 The first spherical coordinates.
+ * @param p2 The second spherical coordinates.
+ * @return The great circle distance in radians between p1 and p2.
+ */
+
 // *Note*: this is the main function we export to users, and use throughout
 // the library.
 double H3_EXPORT(pointDistRads)(const GeoCoord *a, const GeoCoord *b) {
     // return _pointDist_lawOfCosines(a, b);
-    return _pointDist_mystery(a, b);
-    // return _pointDist_haversine(a, b);
+    // return _pointDist_mystery(a, b);
+    return _pointDist_haversine(a, b);
 }
 
 double H3_EXPORT(pointDistKm)(const GeoCoord *a, const GeoCoord *b) {
@@ -214,33 +222,6 @@ double H3_EXPORT(pointDistKm)(const GeoCoord *a, const GeoCoord *b) {
 double H3_EXPORT(pointDistM)(const GeoCoord *a, const GeoCoord *b) {
     double R = EARTH_RADIUS_KM * 1000.0;
     return H3_EXPORT(pointDistRads)(a, b) * R;
-}
-
-/**
- * Find the great circle distance in radians between two spherical coordinates.
- *
- * @param p1 The first spherical coordinates.
- * @param p2 The second spherical coordinates.
- * @return The great circle distance in radians between p1 and p2.
- */
-double _geoDistRads(const GeoCoord *p1, const GeoCoord *p2) {
-    // I kept this function because i didn't want to have to change all the
-    // tests. Temporary pointer manipulation until we converge on the right
-    // signature.
-    return H3_EXPORT(pointDistRads)(p1, p2);
-}
-
-/**
- * Find the great circle distance in kilometers between two spherical
- * coordinates.
- *
- * @param p1 The first spherical coordinates.
- * @param p2 The second spherical coordinates.
- * @return The distance in kilometers between p1 and p2.
- */
-double _geoDistKm(const GeoCoord *p1, const GeoCoord *p2) {
-    // todo: consider this function in light of user-exposed functions
-    return EARTH_RADIUS_KM * _geoDistRads(p1, p2);
 }
 
 /**
