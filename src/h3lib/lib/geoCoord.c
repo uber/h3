@@ -69,8 +69,8 @@ bool geoAlmostEqual(const GeoCoord *p1, const GeoCoord *p2) {
 /**
  * Set the components of spherical coordinates in decimal degrees.
  *
- * @param p The spherical coodinates.
- * @param latDegs The desired latitidue in decimal degrees.
+ * @param p The spherical coordinates.
+ * @param latDegs The desired latitude in decimal degrees.
  * @param lonDegs The desired longitude in decimal degrees.
  */
 void setGeoDegs(GeoCoord *p, double latDegs, double lonDegs) {
@@ -81,8 +81,8 @@ void setGeoDegs(GeoCoord *p, double latDegs, double lonDegs) {
 /**
  * Set the components of spherical coordinates in radians.
  *
- * @param p The spherical coodinates.
- * @param latRads The desired latitidue in decimal radians.
+ * @param p The spherical coordinates.
+ * @param latRads The desired latitude in decimal radians.
  * @param lonRads The desired longitude in decimal radians.
  */
 void _setGeoRads(GeoCoord *p, double latRads, double lonRads) {
