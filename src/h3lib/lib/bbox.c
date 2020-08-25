@@ -109,6 +109,7 @@ int bboxHexEstimate(const BBox* bbox, int res) {
     // edges with hexagons, so the most-distorted hexagons have this area,
     // shrunk by 20% off chance that the bounding box perfectly bounds a
     // pentagon.
+    // todo
     double pentagonAreaKm2 =
         0.8 * (2.59807621135 * pentagonRadiusKm * pentagonRadiusKm);
     // todo
