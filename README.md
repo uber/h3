@@ -2,8 +2,10 @@
 
 # H3: A Hexagonal Hierarchical Geospatial Indexing System
 
-[![Build Status](https://travis-ci.com/uber/h3.svg?branch=master)](https://travis-ci.com/uber/h3)
-[![Build status](https://ci.appveyor.com/api/projects/status/61431y4sc5w0tsuk/branch/master?svg=true)](https://ci.appveyor.com/project/Uber/h3/branch/master)
+[![test-linux](https://github.com/uber/h3/workflows/test-linux/badge.svg)](https://github.com/uber/h3/actions)
+[![test-macos](https://github.com/uber/h3/workflows/test-macos/badge.svg)](https://github.com/uber/h3/actions)
+[![test-windows](https://github.com/uber/h3/workflows/test-windows/badge.svg)](https://github.com/uber/h3/actions)
+[![test-website](https://github.com/uber/h3/workflows/test-website/badge.svg)](https://github.com/uber/h3/actions)
 [![Coverage Status](https://coveralls.io/repos/github/uber/h3/badge.svg?branch=master)](https://coveralls.io/github/uber/h3?branch=master)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
