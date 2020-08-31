@@ -109,6 +109,7 @@ set(LIB_SOURCE_FILES
     src/h3lib/lib/h3Index.c
     src/h3lib/lib/vec2d.c
     src/h3lib/lib/vec3d.c
+    src/h3lib/lib/vertex.c
     src/h3lib/lib/linkedGeo.c
     src/h3lib/lib/localij.c
     src/h3lib/lib/geoCoord.c

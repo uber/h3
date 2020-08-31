@@ -21,12 +21,11 @@
 #include <stdbool.h>
 
 #include "algos.h"
-#include "baseCells.h"
 #include "constants.h"
 #include "coordijk.h"
-#include "faceijk.h"
 #include "geoCoord.h"
 #include "h3Index.h"
+#include "vertex.h"
 
 /**
  * Returns whether or not the provided H3Indexes are neighbors.
@@ -225,18 +224,6 @@ void H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(H3Index origin,
     }
 }
 
-/** @brief Hexagon direction to vertex number relationships (same face).
- *         Note that we don't use direction 0 (center), so the indexes here
- *         wrap around, with direction 6 in the 0 position.
- */
-static const int directionToVertexHex[NUM_HEX_VERTS] = {0, 3, 1, 2, 5, 4};
-
-/** @brief Pentagon direction to vertex number relationships (same face).
- *         Note that we don't use directions 0 (center) or 1 (deleted K axis),
- *         so the indexes here wrap around, with direction 5 in the 0 position.
- */
-static const int directionToVertexPent[NUM_PENT_VERTS] = {3, 0, 1, 2, 4};
-
 /**
  * Provides the coordinates defining the unidirectional edge.
  * @param edge The unidirectional edge H3Index
@@ -247,27 +234,18 @@ void H3_EXPORT(getH3UnidirectionalEdgeBoundary)(H3Index edge, GeoBoundary* gb) {
     Direction direction = H3_GET_RESERVED_BITS(edge);
     H3Index origin = H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(edge);
 
-    // Get the face and other info for the origin
-    FaceIJK fijk;
-    _h3ToFaceIjk(origin, &fijk);
-    int res = H3_GET_RESOLUTION(origin);
-    int isPentagon = H3_EXPORT(h3IsPentagon)(origin);
-    int baseCell = H3_EXPORT(h3GetBaseCell)(origin);
-
-    // Determine the vertex number for the neighbor. If the origin and the base
-    // cell are on the same face, we can use the constant relationships above;
-    // if they are on different faces, we need to apply a rotation
-    int rotations = _faceBaseCellCCWrot60(fijk.face, baseCell);
-    // TODO: Handle error if rotations < 0? Should be unreachable
-    int startVertex =
-        isPentagon
-            ? directionToVertexPent[(direction + rotations) % NUM_PENT_VERTS]
-            : directionToVertexHex[(direction + rotations) % NUM_HEX_VERTS];
+    // Get the start vertex for the edge
+    int startVertex = vertexNumForDirection(origin, direction);
 
     // Get the geo boundary for the appropriate vertexes of the origin. Note
     // that while there are always 2 topological vertexes per edge, the
     // resulting edge boundary may have an additional distortion vertex if it
     // crosses an edge of the icosahedron.
+    FaceIJK fijk;
+    _h3ToFaceIjk(origin, &fijk);
+    int res = H3_GET_RESOLUTION(origin);
+    int isPentagon = H3_EXPORT(h3IsPentagon)(origin);
+
     if (isPentagon) {
         _faceIjkPentToGeoBoundary(&fijk, res, startVertex, 2, gb);
     } else {

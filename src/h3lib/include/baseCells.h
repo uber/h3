@@ -50,7 +50,6 @@ int _isBaseCellPentagon(int baseCell);
 bool _isBaseCellPolarPentagon(int baseCell);
 int _faceIjkToBaseCell(const FaceIJK* h);
 int _faceIjkToBaseCellCCWrot60(const FaceIJK* h);
-int _faceBaseCellCCWrot60(int face, int baseCell);
 void _baseCellToFaceIjk(int baseCell, FaceIJK* h);
 bool _baseCellIsCwOffset(int baseCell, int testFace);
 int _getBaseCellNeighbor(int baseCell, Direction dir);
