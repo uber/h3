@@ -162,8 +162,8 @@ static const BaseCellRotation
 /**
  * Get the number of CW rotations of the cell's vertex numbers
  * compared to the directional layout of its neighbors.
- * @return Number of CCW rotations for the base cell, or -1 if the base cell
- *         was not found on this face
+ * @return Number of CCW rotations for the base cell, or INVALID_ROTATIONS
+ *         if the base cell was not found on this face
  */
 int vertexRotations(H3Index cell) {
     // Get the face and other info for the origin
@@ -188,20 +188,20 @@ int vertexRotations(H3Index cell) {
         }
     }
     // Failure case, should not be reachable
-    return -1;
+    return INVALID_ROTATIONS;
 }
 
 /** @brief Hexagon direction to vertex number relationships (same face).
  *         Note that we don't use direction 0 (center).
  */
-static const int directionToVertexHex[NUM_HEX_VERTS + 1] = {-1, 3, 1, 2,
-                                                            5,  4, 0};
+static const int directionToVertexNumHex[NUM_DIGITS] = {
+    INVALID_DIGIT, 3, 1, 2, 5, 4, 0};
 
 /** @brief Pentagon direction to vertex number relationships (same face).
  *         Note that we don't use directions 0 (center) or 1 (deleted K axis).
  */
-static const int directionToVertexPent[NUM_PENT_VERTS + 2] = {-1, -1, 1, 2,
-                                                              4,  3,  0};
+static const int directionToVertexNumPent[NUM_DIGITS] = {
+    INVALID_DIGIT, INVALID_DIGIT, 1, 2, 4, 3, 0};
 
 /**
  * Get the first vertex number for a given direction. The neighbor in this
@@ -212,13 +212,15 @@ int vertexNumForDirection(const H3Index origin, const Direction direction) {
     // Determine the vertex number for the direction. If the origin and the base
     // cell are on the same face, we can use the constant relationships above;
     // if they are on different faces, we need to apply a rotation
-    // TODO: Handle error if rotations < 0? Should be unreachable
     int rotations = vertexRotations(origin);
+    // Should be unreachable
+    if (rotations == = INVALID_ROTATIONS) return INVALID_VERTEX_NUM;
     // Find the appropriate vertex, rotating CCW if necessary
     return H3_EXPORT(h3IsPentagon)(origin)
-               ? (directionToVertexPent[direction] + NUM_PENT_VERTS -
+               ? (directionToVertexNumPent[direction] + NUM_PENT_VERTS -
                   rotations) %
                      NUM_PENT_VERTS
-               : (directionToVertexHex[direction] + NUM_HEX_VERTS - rotations) %
+               : (directionToVertexNumHex[direction] + NUM_HEX_VERTS -
+                  rotations) %
                      NUM_HEX_VERTS;
 }

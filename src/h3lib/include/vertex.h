@@ -32,6 +32,11 @@ typedef struct {
                    ///  relative to base cell home face
 } BaseCellRotation;
 
+/** Invalid vertex number */
+#define INVALID_VERTEX_NUM -1
+/** Invalid number of rotations */
+#define INVALID_ROTATIONS -1
+
 int vertexRotations(H3Index cell);
 int vertexNumForDirection(const H3Index origin, const Direction direction);
 
