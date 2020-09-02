@@ -111,8 +111,9 @@ SUITE(h3UniEdge) {
         iterateAllIndexesAtRes(1, h3UniEdge_boundary_assertions);
         iterateAllIndexesAtRes(2, h3UniEdge_boundary_assertions);
         iterateAllIndexesAtRes(3, h3UniEdge_boundary_assertions);
-        // Don't iterate all of res 4, to save time
-        // iterateAllIndexesAtRes(4, h3UniEdge_boundary_assertions);
-        iterateAllIndexesAtResPartial(5, h3UniEdge_boundary_assertions, 5);
+        iterateAllIndexesAtRes(4, h3UniEdge_boundary_assertions);
+        iterateBaseCellIndexesAtRes(5, h3UniEdge_boundary_assertions, 4);
+        iterateBaseCellIndexesAtRes(5, h3UniEdge_boundary_assertions, 14);
+        iterateBaseCellIndexesAtRes(5, h3UniEdge_boundary_assertions, 117);
     }
 }

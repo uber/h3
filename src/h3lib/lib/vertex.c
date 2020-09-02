@@ -176,11 +176,14 @@ int vertexRotations(H3Index cell) {
 
     FaceIJK baseFijk;
     _baseCellToFaceIjk(baseCell, &baseFijk);
+    // TODO: This covers overage across both the deleted subseq and in the
+    // other direction, should only consider the cross-K-axis face
     int hasPentCwRot = mayCrossDeletedSubsequence && fijk.face != baseFijk.face;
+
     for (int i = 0; i < MAX_BASE_CELL_FACES; i++) {
-        BaseCellRotation rot = baseCellVertexRotations[baseCell][i];
-        if (rot.face == fijk.face) {
-            int ccwRot60 = rot.ccwRot60;
+        BaseCellRotation rotation = baseCellVertexRotations[baseCell][i];
+        if (rotation.face == fijk.face) {
+            int ccwRot60 = rotation.ccwRot60;
             if (hasPentCwRot) {
                 return ccwRot60 == 0 ? 5 : ccwRot60 - 1;
             }
@@ -214,7 +217,7 @@ int vertexNumForDirection(const H3Index origin, const Direction direction) {
     // if they are on different faces, we need to apply a rotation
     int rotations = vertexRotations(origin);
     // Should be unreachable
-    if (rotations == = INVALID_ROTATIONS) return INVALID_VERTEX_NUM;
+    if (rotations == INVALID_ROTATIONS) return INVALID_VERTEX_NUM;
     // Find the appropriate vertex, rotating CCW if necessary
     return H3_EXPORT(h3IsPentagon)(origin)
                ? (directionToVertexNumPent[direction] + NUM_PENT_VERTS -
