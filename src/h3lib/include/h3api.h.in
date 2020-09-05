@@ -268,6 +268,11 @@ double H3_EXPORT(pointDistRads)(const GeoCoord *a, const GeoCoord *b);
 double H3_EXPORT(pointDistKm)(const GeoCoord *a, const GeoCoord *b);
 double H3_EXPORT(pointDistM)(const GeoCoord *a, const GeoCoord *b);
 
+/** @brief exact length for a specific unidirectional edge */
+double H3_EXPORT(exactEdgeLengthRads)(H3Index edge);
+double H3_EXPORT(exactEdgeLengthKm)(H3Index edge);
+double H3_EXPORT(exactEdgeLengthM)(H3Index edge);
+
 /** @brief exact area for a specific cell (hexagon or pentagon) */
 double H3_EXPORT(cellAreaRads2)(H3Index h);
 double H3_EXPORT(cellAreaKm2)(H3Index h);
