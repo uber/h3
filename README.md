@@ -92,7 +92,22 @@ rm -rf build
 
 #### Testing
 
-After making the project, you can test with `make test`, and if `lcov` is installed you can `make coverage` to generate a code coverage report.
+After making the project, you can test with `make test`.
+
+#### Coverage
+
+You can generate a code coverage report if `lcov` is installed, and if the project was built with the `CMAKE_BUILD_TYPE=Debug` option.
+For example, from a clean repository, you could run:
+
+```
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Debug ..
+make
+make coverage
+```
+
+You can then view a detailed HTML coverage report by opening `coverage/index.html` in your browser.
 
 #### Documentation
 
