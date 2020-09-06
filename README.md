@@ -94,6 +94,16 @@ rm -rf build
 
 After making the project, you can test with `make test`, and if `lcov` is installed you can `make coverage` to generate a code coverage report.
 
+#### Coverage
+
+```
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Debug ..
+make
+make coverage
+```
+
 #### Documentation
 
 You can build developer documentation with `make docs` if Doxygen was installed when CMake was run. Index of the documentation will be `dev-docs/_build/html/index.html`.
