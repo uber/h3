@@ -38,7 +38,8 @@ option(BUILD_FILTERS "Build filter applications." ON)
 option(BUILD_GENERATORS "Build code generation applications." ON)
 
 if(WIN32)
-    set(SHELL PowerShell -Command)
+    # Use bash (usually from Git for Windows) for piping results
+    set(SHELL bash -c)
 
     set(EXECUTABLE_OUTPUT_PATH bin)
     set(LIBRARY_OUTPUT_PATH bin)
@@ -171,6 +172,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testVec2d.c
     src/apps/testapps/testVec3d.c
     src/apps/testapps/testH3UniEdge.c
+    src/apps/testapps/testH3UniEdgeExhaustive.c
     src/apps/testapps/testLinkedGeo.c
     src/apps/testapps/mkRandGeo.c
     src/apps/testapps/testH3Api.c
@@ -195,6 +197,7 @@ set(OTHER_SOURCE_FILES
     src/apps/benchmarks/benchmarkH3SetToLinkedGeo.c
     src/apps/benchmarks/benchmarkKRing.c
     src/apps/benchmarks/benchmarkH3Line.c
+    src/apps/benchmarks/benchmarkH3UniEdge.c
     src/apps/benchmarks/benchmarkH3Api.c)
 
 set(ALL_SOURCE_FILES
@@ -222,11 +225,20 @@ function(add_h3_library name h3_alloc_prefix_override)
     endif()
 
     target_compile_definitions(${name} PUBLIC H3_PREFIX=${H3_PREFIX})
+    set(has_alloc_prefix NO)
     if(h3_alloc_prefix_override)
+        set(has_alloc_prefix YES)
         target_compile_definitions(${name} PUBLIC H3_ALLOC_PREFIX=${h3_alloc_prefix_override})
     elseif(H3_ALLOC_PREFIX)
+        set(has_alloc_prefix YES)
         target_compile_definitions(${name} PUBLIC H3_ALLOC_PREFIX=${H3_ALLOC_PREFIX})
     endif()
+    # Mac OSX defaults to not looking up undefined symbols dynamically,
+    # so enable that explicitly.
+    if(has_alloc_prefix AND APPLE)
+        target_link_libraries(${name} PRIVATE "-undefined dynamic_lookup")
+    endif()
+
     if(have_alloca)
         target_compile_definitions(${name} PUBLIC H3_HAVE_ALLOCA)
     endif()
@@ -473,11 +485,7 @@ if(BUILD_TESTING)
     macro(add_h3_test_with_file name srcfile argfile)
         add_h3_test_common(${name} ${srcfile})
         # add a special command (so we don't need to read the test file from the test program)
-        if(WIN32)
-            set(dump_command "Get-Content")
-        else()
-            set(dump_command "cat")
-        endif()
+        set(dump_command "cat")
 
         add_test(NAME ${name}_test${test_number}
                  COMMAND ${SHELL} "${dump_command} ${argfile} | ${TEST_WRAPPER_STR} $<TARGET_FILE:${name}>")
@@ -575,6 +583,7 @@ if(BUILD_TESTING)
 
     # The "Exhaustive" part of the test name is used by the test-fast to exclude these files.
     # test-fast exists so that Travis CI can run Valgrind on tests without taking a very long time.
+    add_h3_test(testH3UniEdgeExhaustive src/apps/testapps/testH3UniEdgeExhaustive.c)
     add_h3_test(testH3ToLocalIjExhaustive src/apps/testapps/testH3ToLocalIjExhaustive.c)
     add_h3_test(testH3LineExhaustive src/apps/testapps/testH3LineExhaustive.c)
     add_h3_test(testH3DistanceExhaustive src/apps/testapps/testH3DistanceExhaustive.c)
@@ -597,6 +606,7 @@ if(BUILD_BENCHMARKS)
     add_h3_benchmark(benchmarkH3Api src/apps/benchmarks/benchmarkH3Api.c)
     add_h3_benchmark(benchmarkKRing src/apps/benchmarks/benchmarkKRing.c)
     add_h3_benchmark(benchmarkH3Line src/apps/benchmarks/benchmarkH3Line.c)
+    add_h3_benchmark(benchmarkH3UniEdge src/apps/benchmarks/benchmarkH3UniEdge.c)
     add_h3_benchmark(benchmarkH3SetToLinkedGeo src/apps/benchmarks/benchmarkH3SetToLinkedGeo.c)
     add_h3_benchmark(benchmarkPolyfill src/apps/benchmarks/benchmarkPolyfill.c)
     add_h3_benchmark(benchmarkPolygon src/apps/benchmarks/benchmarkPolygon.c)
@@ -658,9 +668,11 @@ install(
 install(
     TARGETS h3
     EXPORT "${TARGETS_EXPORT_NAME}"
+    COMPONENT libh3
     LIBRARY DESTINATION "lib"
     ARCHIVE DESTINATION "lib"
-    COMPONENT libh3
+    RUNTIME DESTINATION "bin"
+    INCLUDES DESTINATION "${include_install_dir}"
 )
 
 # Headers:

@@ -1,6 +1,10 @@
-# Tutorials
+# Learning Resources
 
 This page lists further learning materials and code walkthroughs for the H3 library and bindings. Contributions to this list are welcome, please feel free to open a [pull request](https://github.com/uber/h3/tree/master/docs/community/tutorials.md).
+
+## Community
+
+- [H3 Slack workspace](https://join.slack.com/t/h3-core/shared_invite/zt-g6u5r1hf-W_~uVJmfeiWtMQuBGc1NNg)
 
 ## Videos
 
@@ -24,6 +28,6 @@ This page lists further learning materials and code walkthroughs for the H3 libr
 
 ## Python
 
-- [Usage (IPython Notebook)](https://github.com/uber/h3-py-notebooks/blob/master/Usage.ipynb)
-- [Unified Data Layers (IPython Notebook)](https://github.com/uber/h3-py-notebooks/blob/master/UnifiedDataLayers.ipynb)
-- [H3 API examples on Urban Analytics(IPython Notebook)](https://github.com/uber/h3-py-notebooks/blob/master/H3%20API%20examples%20on%20Urban%20Analytics.ipynb)
+- [Usage (IPython Notebook)](https://github.com/uber/h3-py-notebooks/blob/master/notebooks/usage.ipynb)
+- [Unified Data Layers (IPython Notebook)](https://github.com/uber/h3-py-notebooks/blob/master/notebooks/unified_data_layers.ipynb)
+- [H3 API examples on Urban Analytics(IPython Notebook)](https://github.com/uber/h3-py-notebooks/blob/master/notebooks/urban_analytics.ipynb)
