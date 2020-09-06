@@ -109,6 +109,18 @@ make coverage
 
 You can then view a detailed HTML coverage report by opening `coverage/index.html` in your browser.
 
+#### Benchmarks
+
+You can run timing benchmarks by building with the `CMAKE_BUILD_TYPE=Release`, and running `make benchmarks`:
+
+```
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release ..
+make
+make benchmarks
+```
+
 #### Documentation
 
 You can build developer documentation with `make docs` if Doxygen was installed when CMake was run. Index of the documentation will be `dev-docs/_build/html/index.html`.
