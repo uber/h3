@@ -63,7 +63,6 @@ static void h3UniEdge_boundary_assertions(H3Index h3) {
     GeoBoundary edgeBoundary;
     GeoBoundary revEdgeBoundary;
 
-    int failures = 0;
     for (int i = 0; i < 6; i++) {
         if (edges[i] == H3_NULL) continue;
         H3_EXPORT(getH3UnidirectionalEdgeBoundary)(edges[i], &edgeBoundary);
@@ -72,30 +71,17 @@ static void h3UniEdge_boundary_assertions(H3Index h3) {
         revEdge = H3_EXPORT(getH3UnidirectionalEdge)(destination, h3);
         H3_EXPORT(getH3UnidirectionalEdgeBoundary)(revEdge, &revEdgeBoundary);
 
-        // t_assert(edgeBoundary.numVerts == revEdgeBoundary.numVerts,
-        //          "numVerts is equal for edge and reverse");
+        t_assert(edgeBoundary.numVerts == revEdgeBoundary.numVerts,
+                 "numVerts is equal for edge and reverse");
 
         for (int j = 0; j < edgeBoundary.numVerts; j++) {
             int almostEqual = geoAlmostEqualThreshold(
                 &edgeBoundary.verts[j],
                 &revEdgeBoundary.verts[revEdgeBoundary.numVerts - 1 - j],
                 0.000001);
-            if (!almostEqual) {
-                failures++;
-                break;
-                // geoBoundaryPrintln(&edgeBoundary);
-                // geoBoundaryPrintln(&revEdgeBoundary);
-            }
-            // t_assert(almostEqual, "Got expected vertex");
+            t_assert(almostEqual, "Got expected vertex");
         }
     }
-    if (failures == 6) {
-        h3Println(h3);
-        FaceIJK fijk;
-        _h3ToFaceIjk(h3, &fijk);
-        printf("%d\n", fijk.face);
-    }
-    // t_assert(failures < 6, "didn't fail on all edges");
 }
 
 SUITE(h3UniEdge) {
@@ -104,6 +90,7 @@ SUITE(h3UniEdge) {
         iterateAllIndexesAtRes(1, h3UniEdge_correctness_assertions);
         iterateAllIndexesAtRes(2, h3UniEdge_correctness_assertions);
         iterateAllIndexesAtRes(3, h3UniEdge_correctness_assertions);
+        iterateAllIndexesAtRes(4, h3UniEdge_correctness_assertions);
     }
 
     TEST(h3UniEdge_boundary) {
@@ -112,8 +99,13 @@ SUITE(h3UniEdge) {
         iterateAllIndexesAtRes(2, h3UniEdge_boundary_assertions);
         iterateAllIndexesAtRes(3, h3UniEdge_boundary_assertions);
         iterateAllIndexesAtRes(4, h3UniEdge_boundary_assertions);
-        iterateBaseCellIndexesAtRes(5, h3UniEdge_boundary_assertions, 4);
+        // Res 5: normal base cell
+        iterateBaseCellIndexesAtRes(5, h3UniEdge_boundary_assertions, 0);
+        // Res 5: pentagon base cell
         iterateBaseCellIndexesAtRes(5, h3UniEdge_boundary_assertions, 14);
+        // Res 5: polar pentagon base cell
         iterateBaseCellIndexesAtRes(5, h3UniEdge_boundary_assertions, 117);
+        // Res 6: Test one pentagon just to check for new edge cases
+        iterateBaseCellIndexesAtRes(6, h3UniEdge_boundary_assertions, 14);
     }
 }

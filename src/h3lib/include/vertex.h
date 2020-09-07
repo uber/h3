@@ -24,7 +24,7 @@
 #include "faceijk.h"
 
 /** @struct BaseCellRotation
- *  @brief base cell at a given ijk and required rotations into its system
+ *  @brief  The CCW rotations for some base cell on a given face
  */
 typedef struct {
     int face;      ///< face number
@@ -36,6 +36,9 @@ typedef struct {
 #define INVALID_VERTEX_NUM -1
 /** Invalid number of rotations */
 #define INVALID_ROTATIONS -1
+
+/** Max number of faces a base cell's descendants may appear on */
+#define MAX_BASE_CELL_FACES 5
 
 int vertexRotations(H3Index cell);
 int vertexNumForDirection(const H3Index origin, const Direction direction);
