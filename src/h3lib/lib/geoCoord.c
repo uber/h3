@@ -136,70 +136,6 @@ double constrainLng(double lng) {
 }
 
 /**
- * define several `_pointDist_*` functions to compare/evaluate.
- * Whatever choice is made, the same function should be used throughout the
- * library, and should be exposed to users.
- *
- * TODO: better to pass-by-value, or pass-by-reference for these functions?
- * TODO: determine if one of these is numerically better.
- * TODO: determine if one of these is faster.
- */
-
-// Law of cosines shouldn't be as numerically stable as haversine.
-// However, this is what H3 has been using, and stability might not matter
-// (for our uses) when using 64-bit floats.
-double _pointDist_lawOfCosines(const GeoCoord *a, const GeoCoord *b) {
-    // use spherical triangle with `a` at A, `b` at B, and north pole at C
-    double bigC = fabs(b->lon - a->lon);
-    if (bigC > M_PI)  // assume we want the complement
-    {
-        // note that in this case they can't both be negative
-        double lon1 = a->lon;
-        if (lon1 < 0.0L) lon1 += 2.0L * M_PI;
-        double lon2 = b->lon;
-        if (lon2 < 0.0L) lon2 += 2.0L * M_PI;
-
-        bigC = fabs(lon2 - lon1);
-    }
-
-    double y = M_PI_2 - a->lat;
-    double x = M_PI_2 - b->lat;
-
-    // use law of cosines to find c
-    double cosc = cos(x) * cos(y) + sin(x) * sin(y) * cos(bigC);
-    if (cosc > 1.0L) cosc = 1.0L;
-    if (cosc < -1.0L) cosc = -1.0L;
-
-    return acos(cosc);
-}
-
-// I'm not sure where this formula came from, but it exists in
-// `./examples/distance.c`.
-double _pointDist_mystery(const GeoCoord *a, const GeoCoord *b) {
-    // Great circle distance between two points.
-    // Input/output: both in radians
-
-    double x, y, z, dlon;
-
-    dlon = a->lon - b->lon;
-
-    x = cos(dlon) * cos(a->lat) - cos(b->lat);
-    y = sin(dlon) * cos(a->lat);
-    z = sin(a->lat) - sin(b->lat);
-
-    return 2 * asin(0.5 * sqrt(x * x + y * y + z * z));
-}
-
-double _pointDist_haversine(const GeoCoord *a, const GeoCoord *b) {
-    double T = sin((b->lat - a->lat) / 2);
-    double N = sin((b->lon - a->lon) / 2);
-
-    double A = T * T + cos(a->lat) * cos(b->lat) * N * N;
-
-    return 2 * atan2(sqrt(A), sqrt(1 - A));
-}
-
-/**
  * Find the great circle distance in radians between two spherical coordinates.
  *
  * @param p1 The first spherical coordinates.
@@ -210,9 +146,12 @@ double _pointDist_haversine(const GeoCoord *a, const GeoCoord *b) {
 // *Note*: this is the main function we export to users, and use throughout
 // the library.
 double H3_EXPORT(pointDistRads)(const GeoCoord *a, const GeoCoord *b) {
-    // return _pointDist_lawOfCosines(a, b);
-    // return _pointDist_mystery(a, b);
-    return _pointDist_haversine(a, b);
+    double T = sin((b->lat - a->lat) / 2);
+    double N = sin((b->lon - a->lon) / 2);
+
+    double A = T * T + cos(a->lat) * cos(b->lat) * N * N;
+
+    return 2 * atan2(sqrt(A), sqrt(1 - A));
 }
 
 double H3_EXPORT(pointDistKm)(const GeoCoord *a, const GeoCoord *b) {
