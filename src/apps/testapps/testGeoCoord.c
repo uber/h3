@@ -66,6 +66,22 @@ SUITE(geoCoord) {
                  "distance along longitude as expected");
     }
 
+    TEST(constrainLatLng) {
+        t_assert(constrainLat(0) == 0, "lat 0");
+        t_assert(constrainLat(1) == 1, "lat 1");
+        t_assert(constrainLat(M_PI_2) == M_PI_2, "lat pi/2");
+        t_assert(constrainLat(M_PI) == 0, "lat pi");
+        t_assert(constrainLat(M_PI + 1) == 1, "lat pi+1");
+        t_assert(constrainLat(2 * M_PI + 1) == 1, "lat 2pi+1");
+
+        t_assert(constrainLng(0) == 0, "lng 0");
+        t_assert(constrainLng(1) == 1, "lng 1");
+        t_assert(constrainLng(M_PI) == M_PI, "lng pi");
+        t_assert(constrainLng(2 * M_PI) == 0, "lng 2pi");
+        t_assert(constrainLng(3 * M_PI) == M_PI, "lng 2pi");
+        t_assert(constrainLng(4 * M_PI) == 0, "lng 4pi");
+    }
+
     TEST(_geoAzDistanceRads_noop) {
         GeoCoord start = {15, 10};
         GeoCoord out;

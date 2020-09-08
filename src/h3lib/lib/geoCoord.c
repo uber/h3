@@ -107,6 +107,35 @@ double H3_EXPORT(degsToRads)(double degrees) { return degrees * M_PI_180; }
 double H3_EXPORT(radsToDegs)(double radians) { return radians * M_180_PI; }
 
 /**
+ * constrainLat makes sure latitudes are in the proper bounds
+ *
+ * @param lat The original lat value
+ * @return The corrected lat value
+ */
+double constrainLat(double lat) {
+    while (lat > M_PI_2) {
+        lat = lat - M_PI;
+    }
+    return lat;
+}
+
+/**
+ * constrainLng makes sure longitudes are in the proper bounds
+ *
+ * @param lng The origin lng value
+ * @return The corrected lng value
+ */
+double constrainLng(double lng) {
+    while (lng > M_PI) {
+        lng = lng - (2 * M_PI);
+    }
+    while (lng < -M_PI) {
+        lng = lng + (2 * M_PI);
+    }
+    return lng;
+}
+
+/**
  * Find the great circle distance in radians between two spherical coordinates.
  *
  * @param p1 The first spherical coordinates.
