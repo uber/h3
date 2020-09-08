@@ -204,9 +204,6 @@ SUITE(geoCoord) {
     }
 
     TEST(cellArea_m2) {
-        // function or macro to compute area of all cells at a given resolution
-        // and sum them up, takes a function pointer for the different funcs?
-
         int N = H3_EXPORT(res0IndexCount)();
         H3Index* cells = malloc(N * sizeof(H3Index));
         H3_EXPORT(getRes0Indexes)(cells);
@@ -226,8 +223,23 @@ SUITE(geoCoord) {
         double tol = 1e0;
         t_assert(fabs(A - earth_area_m2) < tol,
                  "sum of res 0 cells should give earth area");
+    }
 
-        // todo: do area calculation with radians^2 function, convert to Km^2
-        // at the last step, see if that helps
+    TEST(exactEdgeLength_m) {
+        H3Index edges[6];
+        int N = H3_EXPORT(res0IndexCount)();
+        H3Index* cells = malloc(N * sizeof(H3Index));
+        H3_EXPORT(getRes0Indexes)(cells);
+
+        for (int i = 0; i < N; i++) {
+            H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(cells[i], &edges);
+
+            for (int j = 0; H3_EXPORT(h3UnidirectionalEdgeIsValid)(edges[j]);
+                 j++) {
+                double len = H3_EXPORT(exactEdgeLengthM)(edges[j]);
+                t_assert(len > 0, "edge has positive length");
+            }
+        }
+        free(cells);
     }
 }
