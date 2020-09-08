@@ -159,8 +159,7 @@ double H3_EXPORT(pointDistKm)(const GeoCoord *a, const GeoCoord *b) {
 }
 
 double H3_EXPORT(pointDistM)(const GeoCoord *a, const GeoCoord *b) {
-    double R = EARTH_RADIUS_KM * 1000.0;
-    return H3_EXPORT(pointDistRads)(a, b) * R;
+    return H3_EXPORT(pointDistKm)(a, b) * 1000;
 }
 
 /**
@@ -369,8 +368,7 @@ double H3_EXPORT(cellAreaKm2)(H3Index h) {
 }
 
 double H3_EXPORT(cellAreaM2)(H3Index h) {
-    double R = EARTH_RADIUS_KM * 1000.0;
-    return H3_EXPORT(cellAreaRads2)(h) * R * R;
+    return H3_EXPORT(cellAreaKm2)(h) * 1000 * 1000;
 }
 
 double H3_EXPORT(exactEdgeLengthRads)(H3Index edge) {
@@ -391,5 +389,5 @@ double H3_EXPORT(exactEdgeLengthKm)(H3Index edge) {
 }
 
 double H3_EXPORT(exactEdgeLengthM)(H3Index edge) {
-    return H3_EXPORT(exactEdgeLengthRads)(edge) * EARTH_RADIUS_KM * 1000.0;
+    return H3_EXPORT(exactEdgeLengthKm)(edge) * 1000;
 }
