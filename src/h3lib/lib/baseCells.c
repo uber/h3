@@ -854,6 +854,15 @@ void _baseCellToFaceIjk(int baseCell, FaceIJK* h) {
     *h = baseCellData[baseCell].homeFijk;
 }
 
+int _baseCellToCCWrot60(int baseCell, int face) {
+    for (int i = 0; i < 3; i++)
+        for (int j = 0; j < 3; j++)
+            for (int k = 0; k < 3; k++)
+                if (faceIjkBaseCells[face][i][j][k].baseCell == baseCell)
+                    return faceIjkBaseCells[face][i][j][k].ccwRot60;
+    return -1;
+}
+
 /** @brief Return whether or not the tested face is a cw offset face.
  */
 bool _baseCellIsCwOffset(int baseCell, int testFace) {

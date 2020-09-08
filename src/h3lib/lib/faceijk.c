@@ -576,7 +576,7 @@ void _faceIjkPentToGeoBoundary(const FaceIJK* h, int res, int start, int length,
                     edge0 = &v1;
                     edge1 = &v2;
                     break;
-                // case KI:
+                case KI:
                 default:
                     assert(adjacentFaceDir[tmpFijk.face][fijk.face] == KI);
                     edge0 = &v2;
