@@ -236,8 +236,7 @@ SUITE(geoCoord) {
         for (int i = 0; i < N; i++) {
             H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(cells[i], edges);
 
-            for (int j = 0; H3_EXPORT(h3UnidirectionalEdgeIsValid)(edges[j]);
-                 j++) {
+            for (int j = 0; j < 5; j++) {
                 double len = H3_EXPORT(exactEdgeLengthM)(edges[j]);
                 t_assert(len > 0, "edge has positive length");
             }
