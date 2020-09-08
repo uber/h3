@@ -32,11 +32,8 @@ typedef struct {
                                 ///  in order, starting with J
 } PentagonDirectionFaces;
 
-
 /** Invalid vertex number */
 #define INVALID_VERTEX_NUM -1
-/** Invalid number of rotations */
-#define INVALID_ROTATIONS -1
 
 /** Max number of faces a base cell's descendants may appear on */
 #define MAX_BASE_CELL_FACES 5

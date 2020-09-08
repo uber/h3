@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Uber Technologies, Inc.
+ * Copyright 2017-2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 
 #include <stdlib.h>
+#include "baseCells.h"
 #include "h3api.h"
 #include "test.h"
 
@@ -26,5 +27,17 @@ SUITE(baseCells) {
         t_assert(indexes[0] == 0x8001fffffffffff, "correct first basecell");
         t_assert(indexes[121] == 0x80f3fffffffffff, "correct last basecell");
         free(indexes);
+    }
+
+    TEST(baseCellToCCWrot60) {
+        // a few random spot-checks
+        t_assert(_baseCellToCCWrot60(16, 0) == 0, "got expected rotation");
+        t_assert(_baseCellToCCWrot60(32, 0) == 3, "got expected rotation");
+        t_assert(_baseCellToCCWrot60(7, 3) == 1, "got expected rotation");
+    }
+
+    TEST(baseCellToCCWrot60_invalid) {
+        t_assert(_baseCellToCCWrot60(16, 42) == INVALID_ROTATIONS, "should return invalid rotation for invalid face");
+        t_assert(_baseCellToCCWrot60(1, 0) == INVALID_ROTATIONS, "should return invalid rotation for base cell not appearing on face");
     }
 }

@@ -864,12 +864,13 @@ void _baseCellToFaceIjk(int baseCell, FaceIJK* h) {
 }
 
 int _baseCellToCCWrot60(int baseCell, int face) {
+    if (face > NUM_ICOSA_FACES) return INVALID_ROTATIONS;
     for (int i = 0; i < 3; i++)
         for (int j = 0; j < 3; j++)
             for (int k = 0; k < 3; k++)
                 if (faceIjkBaseCells[face][i][j][k].baseCell == baseCell)
                     return faceIjkBaseCells[face][i][j][k].ccwRot60;
-    return -1;
+    return INVALID_ROTATIONS;
 }
 
 /** @brief Return whether or not the tested face is a cw offset face.

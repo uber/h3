@@ -45,6 +45,9 @@ extern const BaseCellData baseCellData[NUM_BASE_CELLS];
 /** Maximum input for any component to face-to-base-cell lookup functions */
 #define MAX_FACE_COORD 2
 
+/** Invalid number of rotations */
+#define INVALID_ROTATIONS -1
+
 // Internal functions
 int _isBaseCellPentagon(int baseCell);
 bool _isBaseCellPolarPentagon(int baseCell);

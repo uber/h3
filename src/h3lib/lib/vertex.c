@@ -56,6 +56,7 @@ int vertexRotations(H3Index cell) {
     _baseCellToFaceIjk(baseCell, &baseFijk);
 
     int ccwRot60 = _baseCellToCCWrot60(baseCell, fijk.face);
+
     if (_isBaseCellPentagon(baseCell)) {
         // Find the appropriate direction-to-face mapping
         PentagonDirectionFaces dirFaces;
