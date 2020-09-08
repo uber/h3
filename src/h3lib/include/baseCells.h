@@ -35,19 +35,9 @@ typedef struct {
                           /// faces?
 } BaseCellData;
 
-/** @struct BaseCellOrient
- *  @brief base cell at a given ijk and required rotations into its system
- */
-typedef struct {
-    int baseCell;  ///< base cell number
-    int ccwRot60;  ///< number of ccw 60 degree rotations relative to current
-                   /// face
-} BaseCellOrient;
-
 #define INVALID_BASE_CELL 127
 extern const int baseCellNeighbors[NUM_BASE_CELLS][7];
 extern const int baseCellNeighbor60CCWRots[NUM_BASE_CELLS][7];
-extern const BaseCellOrient faceIjkBaseCells[NUM_ICOSA_FACES][3][3][3];
 
 // resolution 0 base cell data lookup-table (global)
 extern const BaseCellData baseCellData[NUM_BASE_CELLS];

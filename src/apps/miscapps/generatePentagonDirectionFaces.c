@@ -23,9 +23,7 @@
 
 #include "algos.h"
 #include "baseCells.h"
-#include "faceijk.h"
 #include "h3Index.h"
-#include "vertex.h"
 
 static void generate() {
     H3Index pentagons[NUM_PENTAGONS] = {0};
