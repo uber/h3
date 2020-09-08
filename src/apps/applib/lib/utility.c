@@ -177,6 +177,24 @@ int readBoundary(FILE* f, GeoBoundary* b) {
     return 0;
 }
 
+// todo: actually give you larger resolutions
+void iterateAllUnidirectionalEdgesAtRes(int res, void (*callback)(H3Index)) {
+    int N = H3_EXPORT(res0IndexCount)();
+    H3Index* cells = calloc(N, sizeof(H3Index));
+    H3_EXPORT(getRes0Indexes)(cells);
+
+    for (int i = 0; i < N; i++) {
+        H3Index edges[6] = {H3_NULL};
+        int isPentagon = H3_EXPORT(h3IsPentagon)(cells[i]);
+        H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(cells[i], edges);
+
+        for (int j = 0; j < 6; j++) {
+            if (isPentagon && j == 0) continue;
+            (*callback)(edges[j]);
+        }
+    }
+}
+
 /**
  * Call the callback for every index at the given resolution.
  */
