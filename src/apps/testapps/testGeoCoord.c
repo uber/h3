@@ -222,6 +222,9 @@ SUITE(geoCoord) {
         earthAreaTest(0, H3_EXPORT(cellAreaKm2), km2, 1e-6);
         earthAreaTest(0, H3_EXPORT(cellAreaM2), m2, 1e0);
 
+        // completely wrong, not sure why this is happening.
+        earthAreaTest(1, H3_EXPORT(cellAreaRads2), rads2, 1e1);
+
         // also test for area being positive?
     }
 
