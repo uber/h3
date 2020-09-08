@@ -41,8 +41,7 @@ static const PentagonDirectionFaces pentagonDirectionFaces[NUM_PENTAGONS] = {
 /**
  * Get the number of CCW rotations of the cell's vertex numbers
  * compared to the directional layout of its neighbors.
- * @return Number of CCW rotations for the cell, or INVALID_ROTATIONS
- *         if the cell's base cell was not found on this face
+ * @return Number of CCW rotations for the cell
  */
 int vertexRotations(H3Index cell) {
     // Get the face and other info for the origin
@@ -113,13 +112,12 @@ int vertexNumForDirection(const H3Index origin, const Direction direction) {
     if (direction == CENTER_DIGIT || direction >= INVALID_DIGIT ||
         (isPentagon && direction == K_AXES_DIGIT))
         return INVALID_VERTEX_NUM;
+
     // Determine the vertex number for the direction. If the origin and the base
     // cell are on the same face, we can use the constant relationships above;
     // if they are on different faces, we need to apply a rotation
     int rotations = vertexRotations(origin);
-    // Handle bad rotation calculation: should be unreachable
-    if (rotations == INVALID_ROTATIONS)
-        return INVALID_VERTEX_NUM;  // LCOV_EXCL_LINE
+
     // Find the appropriate vertex, rotating CCW if necessary
     return isPentagon ? (directionToVertexNumPent[direction] + NUM_PENT_VERTS -
                          rotations) %

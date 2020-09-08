@@ -118,10 +118,10 @@ H3Index H3_EXPORT(getH3UnidirectionalEdge)(H3Index origin,
     // would be this index.
     H3Index neighbor;
     // Excluding from branch coverage as we never hit the end condition
-    // LCOV_EXCLUDE_BR_START
+    // LCOV_EXCL_BR_START
     for (Direction direction = isPentagon ? J_AXES_DIGIT : K_AXES_DIGIT;
          direction < NUM_DIGITS; direction++) {
-        // LCOV_EXCLUDE_BR_STOP
+        // LCOV_EXCL_BR_STOP
         int rotations = 0;
         neighbor = h3NeighborRotations(origin, direction, &rotations);
         if (neighbor == destination) {
