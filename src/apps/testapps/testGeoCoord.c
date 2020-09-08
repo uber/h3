@@ -225,24 +225,5 @@ SUITE(geoCoord) {
                  "sum of res 0 cells should give earth area");
     }
 
-    TEST(exactEdgeLength_m) {
-        // maybe test that edge length is the same in both directions?
-
-        H3Index edges[6] = {0};
-        int N = H3_EXPORT(res0IndexCount)();
-        H3Index* cells = malloc(N * sizeof(H3Index));
-        H3_EXPORT(getRes0Indexes)(cells);
-
-        for (int i = 0; i < N; i++) {
-            H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(cells[i], edges);
-
-            for (int j = 1; j < 6; j++) {
-                double len = H3_EXPORT(exactEdgeLengthM)(edges[j]);
-                t_assert(len > 0, "edge has positive length");
-            }
-        }
-        free(cells);
-    }
-
     // compute the length between neighboring cells
 }
