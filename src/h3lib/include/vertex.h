@@ -23,15 +23,6 @@
 #include "h3Index.h"
 #include "faceijk.h"
 
-/** @struct BaseCellRotation
- *  @brief  The CCW rotations for some base cell on a given face
- */
-typedef struct {
-    int face;      ///< face number
-    int ccwRot60;  ///< number of ccw 60 degree rotations for vertices
-                   ///  relative to base cell home face
-} BaseCellRotation;
-
 /** @struct PentagonDirectionFaces
  *  @brief  The faces in each axial direction of a given pentagon base cell
  */
