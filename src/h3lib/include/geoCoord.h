@@ -33,8 +33,6 @@
 #define EPSILON_RAD (EPSILON_DEG * M_PI_180)
 
 void setGeoDegs(GeoCoord* p, double latDegs, double lonDegs);
-double constrainLat(double lat);
-double constrainLng(double lng);
 
 bool geoAlmostEqual(const GeoCoord* p1, const GeoCoord* p2);
 bool geoAlmostEqualThreshold(const GeoCoord* p1, const GeoCoord* p2,
