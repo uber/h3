@@ -174,7 +174,9 @@ int vertexRotations(H3Index cell) {
     int baseCell = H3_EXPORT(h3GetBaseCell)(cell);
     int cellLeadingDigit = _h3LeadingNonZeroDigit(cell);
 
-    for (int i = 0; i < MAX_BASE_CELL_FACES; i++) {
+    // Excluding the next line from branch coverage because we never reach
+    // the loop ending condition, we always return first
+    for (int i = 0; i < MAX_BASE_CELL_FACES; i++) { // LCOV_EXCL_BR_LINE
         BaseCellRotation rotation = baseCellVertexRotations[baseCell][i];
         if (rotation.face == fijk.face) {
             int ccwRot60 = rotation.ccwRot60;
@@ -185,7 +187,7 @@ int vertexRotations(H3Index cell) {
                         baseCellVertexRotations[baseCell][IK_AXES_DIGIT - 2]
                             .face) {
                     // Crosses from JK to IK: Rotate CW
-                    return ccwRot60 == 0 ? 5 : ccwRot60 - 1;
+                    return (ccwRot60 + 5) % 6;
                 }
                 if (cellLeadingDigit == IK_AXES_DIGIT &&
                     fijk.face ==
