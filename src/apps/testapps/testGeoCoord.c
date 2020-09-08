@@ -228,7 +228,7 @@ SUITE(geoCoord) {
     TEST(exactEdgeLength_m) {
         // maybe test that edge length is the same in both directions?
 
-        H3Index edges[6];
+        H3Index edges[6] = {0};
         int N = H3_EXPORT(res0IndexCount)();
         H3Index* cells = malloc(N * sizeof(H3Index));
         H3_EXPORT(getRes0Indexes)(cells);
@@ -244,4 +244,6 @@ SUITE(geoCoord) {
         }
         free(cells);
     }
+
+    // compute the length between neighboring cells
 }
