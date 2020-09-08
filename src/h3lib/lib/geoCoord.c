@@ -138,9 +138,9 @@ double constrainLng(double lng) {
 /**
  * Find the great circle distance in radians between two spherical coordinates.
  *
- * @param p1 The first spherical coordinates.
- * @param p2 The second spherical coordinates.
- * @return The great circle distance in radians between p1 and p2.
+ * @param a The first spherical coordinates.
+ * @param b The second spherical coordinates.
+ * @return The great circle distance in radians between a and b.
  */
 
 // *Note*: this is the main function we export to users, and use throughout
