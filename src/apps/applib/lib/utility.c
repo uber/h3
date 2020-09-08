@@ -177,22 +177,31 @@ int readBoundary(FILE* f, GeoBoundary* b) {
     return 0;
 }
 
-// todo: actually give you larger resolutions
+/**
+ * Call the callback for every unidirectional edge at the given resolution.
+ */
 void iterateAllUnidirectionalEdgesAtRes(int res, void (*callback)(H3Index)) {
-    int N = H3_EXPORT(res0IndexCount)();
-    H3Index* cells = calloc(N, sizeof(H3Index));
-    H3_EXPORT(getRes0Indexes)(cells);
+    int num0 = H3_EXPORT(res0IndexCount)();
+    H3Index* cells0 = calloc(num0, sizeof(H3Index));
+    H3_EXPORT(getRes0Indexes)(cells0);
 
-    for (int i = 0; i < N; i++) {
+    int numRes = H3_EXPORT(maxUncompactSize)(cells0, num0, res);
+
+    H3Index* cellsRes = calloc(numRes, sizeof(H3Index));
+    H3_EXPORT(uncompact)(cells0, num0, cellsRes, numRes, res);
+
+    for (int i = 0; i < numRes; i++) {
         H3Index edges[6] = {H3_NULL};
-        int isPentagon = H3_EXPORT(h3IsPentagon)(cells[i]);
-        H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(cells[i], edges);
+        int isPentagon = H3_EXPORT(h3IsPentagon)(cellsRes[i]);
+        H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(cellsRes[i], edges);
 
         for (int j = 0; j < 6; j++) {
             if (isPentagon && j == 0) continue;
             (*callback)(edges[j]);
         }
     }
+    free(cells0);
+    free(cellsRes);
 }
 
 /**
