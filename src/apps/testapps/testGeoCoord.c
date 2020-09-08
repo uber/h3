@@ -25,6 +25,7 @@
 #include "geoCoord.h"
 #include "h3api.h"
 #include "test.h"
+#include "utility.h"
 
 /**
  * Test a function for all resolutions, where the value should be decreasing as
@@ -41,6 +42,14 @@ void testDecreasingFunction(double (*function)(int), const char* message) {
         t_assert(next > last, message);
         last = next;
     }
+}
+
+static void earthAreaTest(int res, double (*callback)(H3Index), double target,
+                          double tol) {
+    double area = mapSumAllCells_double(res, callback);
+
+    t_assert(fabs(area - target) < tol,
+             "sum of all cells should give earth area");
 }
 
 SUITE(geoCoord) {
@@ -203,26 +212,15 @@ SUITE(geoCoord) {
         }
     }
 
-    TEST(cellArea_m2) {
-        int N = H3_EXPORT(res0IndexCount)();
-        H3Index* cells = malloc(N * sizeof(H3Index));
-        H3_EXPORT(getRes0Indexes)(cells);
+    TEST(cellArea_all) {
+        // earth area in different units
+        double rads2 = 4 * M_PI;
+        double km2 = rads2 * EARTH_RADIUS_KM * EARTH_RADIUS_KM;
+        double m2 = km2 * 1000 * 1000;
 
-        double a, A = 0.0;
+        earthAreaTest(0, H3_EXPORT(cellAreaRads2), rads2, 1e-14);
 
-        for (int i = 0; i < N; i++) {
-            a = H3_EXPORT(cellAreaM2)(cells[i]);
-            t_assert(a > 0, "cell has positive area");
-            A += a;
-        }
-        free(cells);
-
-        double earth_area_km2 = 4 * M_PI * EARTH_RADIUS_KM * EARTH_RADIUS_KM;
-        double earth_area_m2 = earth_area_km2 * 1000 * 1000;
-
-        double tol = 1e0;
-        t_assert(fabs(A - earth_area_m2) < tol,
-                 "sum of res 0 cells should give earth area");
+        // also test for area being positive?
     }
 
     // compute the length between neighboring cells
