@@ -177,10 +177,7 @@ int readBoundary(FILE* f, GeoBoundary* b) {
     return 0;
 }
 
-/**
- * Call the callback for every unidirectional edge at the given resolution.
- */
-void iterateAllUnidirectionalEdgesAtRes(int res, void (*callback)(H3Index)) {
+H3Index* getCellsAtRes(int res) {
     int num0 = H3_EXPORT(res0IndexCount)();
     H3Index* cells0 = calloc(num0, sizeof(H3Index));
     H3_EXPORT(getRes0Indexes)(cells0);
@@ -190,18 +187,45 @@ void iterateAllUnidirectionalEdgesAtRes(int res, void (*callback)(H3Index)) {
     H3Index* cellsRes = calloc(numRes, sizeof(H3Index));
     H3_EXPORT(uncompact)(cells0, num0, cellsRes, numRes, res);
 
-    for (int i = 0; i < numRes; i++) {
+    free(cells0);
+
+    return cellsRes;
+}
+
+/**
+ * Apply callback to every cell for a given resolution, and sum the results.
+ */
+double mapSumAllCells_double(int res, double (*callback)(H3Index)) {
+    H3Index* cells = getCellsAtRes(res);
+    int N = H3_EXPORT(numHexagons)(res);
+
+    double total = 0.0;
+    for (int i = 0; i < N; i++) {
+        total += (*callback)(cells[i]);
+    }
+    free(cells);
+
+    return total;
+}
+
+/**
+ * Call the callback for every unidirectional edge at the given resolution.
+ */
+void iterateAllUnidirectionalEdgesAtRes(int res, void (*callback)(H3Index)) {
+    H3Index* cells = getCellsAtRes(res);
+    int N = H3_EXPORT(numHexagons)(res);
+
+    for (int i = 0; i < N; i++) {
         H3Index edges[6] = {H3_NULL};
-        int isPentagon = H3_EXPORT(h3IsPentagon)(cellsRes[i]);
-        H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(cellsRes[i], edges);
+        int isPentagon = H3_EXPORT(h3IsPentagon)(cells[i]);
+        H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(cells[i], edges);
 
         for (int j = 0; j < 6; j++) {
             if (isPentagon && j == 0) continue;
             (*callback)(edges[j]);
         }
     }
-    free(cells0);
-    free(cellsRes);
+    free(cells);
 }
 
 /**
