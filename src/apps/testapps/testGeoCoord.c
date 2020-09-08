@@ -19,6 +19,7 @@
  * usage: `testGeoCoord`
  */
 
+#include <float.h>
 #include <math.h>
 
 #include "constants.h"
@@ -64,6 +65,27 @@ SUITE(geoCoord) {
         t_assert(fabs(_geoDistRads(&p1, &p2) - H3_EXPORT(degsToRads)(10)) <
                      EPSILON_RAD * 1000,
                  "distance along longitude as expected");
+    }
+
+    TEST(geoAlmostEqualThreshold) {
+        GeoCoord a = {15, 10};
+        GeoCoord b = {15, 10};
+        t_assert(geoAlmostEqualThreshold(&a, &b, DBL_EPSILON), "same point");
+
+        b.lat = 15.00001;
+        b.lon = 10.00002;
+        t_assert(geoAlmostEqualThreshold(&a, &b, 0.0001),
+                 "differences under threshold");
+
+        b.lat = 15.00001;
+        b.lon = 10;
+        t_assert(!geoAlmostEqualThreshold(&a, &b, 0.000001),
+                 "lat over threshold");
+
+        b.lat = 15;
+        b.lon = 10.00001;
+        t_assert(!geoAlmostEqualThreshold(&a, &b, 0.000001),
+                 "lon over threshold");
     }
 
     TEST(constrainLatLng) {
