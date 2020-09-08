@@ -31,7 +31,7 @@
 #include "utility.h"
 
 static void h3UniEdge_correctness_assertions(H3Index h3) {
-    H3Index edges[6] = {0};
+    H3Index edges[6] = {H3_NULL};
     int isPentagon = H3_EXPORT(h3IsPentagon)(h3);
     H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(h3, edges);
     H3Index destination;
@@ -55,7 +55,7 @@ static void h3UniEdge_correctness_assertions(H3Index h3) {
 }
 
 static void h3UniEdge_boundary_assertions(H3Index h3) {
-    H3Index edges[6] = {0};
+    H3Index edges[6] = {H3_NULL};
     H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(h3, edges);
     H3Index destination;
     H3Index revEdge;
@@ -84,6 +84,22 @@ static void h3UniEdge_boundary_assertions(H3Index h3) {
     }
 }
 
+static void h3UniEdge_length_assertions(H3Index h3) {
+    H3Index edges[6] = {H3_NULL};
+    int isPentagon = H3_EXPORT(h3IsPentagon)(h3);
+    H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(h3, edges);
+    H3Index destination;
+
+    for (int i = 0; i < 6; i++) {
+        if (isPentagon && i == 0) {
+            t_assert(edges[i] == H3_NULL, "last pentagon edge is empty");
+            continue;
+        }
+        double len = H3_EXPORT(exactEdgeLengthM)(edges[i]);
+        t_assert(len > 0, "edge has positive length");
+    }
+}
+
 SUITE(h3UniEdge) {
     TEST(h3UniEdge_correctness) {
         iterateAllIndexesAtRes(0, h3UniEdge_correctness_assertions);
@@ -97,5 +113,12 @@ SUITE(h3UniEdge) {
         iterateAllIndexesAtRes(1, h3UniEdge_boundary_assertions);
         iterateAllIndexesAtRes(2, h3UniEdge_boundary_assertions);
         iterateAllIndexesAtRes(3, h3UniEdge_boundary_assertions);
+    }
+
+    TEST(h3UniEdge_length) {
+        iterateAllIndexesAtRes(0, h3UniEdge_length_assertions);
+        iterateAllIndexesAtRes(1, h3UniEdge_length_assertions);
+        iterateAllIndexesAtRes(2, h3UniEdge_length_assertions);
+        iterateAllIndexesAtRes(3, h3UniEdge_length_assertions);
     }
 }
