@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** @file generateFaceCenterPoint.c
+/** @file generateBaseCellVertexRotations.c
  * @brief Generates the faceCenterPoint table
  *
- *  usage: `generateFaceCenterPoint`
+ *  usage: `generateBaseCellVertexRotations`
  */
 
 #include <stdlib.h>
