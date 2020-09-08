@@ -88,7 +88,6 @@ static void h3UniEdge_length_assertions(H3Index h3) {
     H3Index edges[6] = {H3_NULL};
     int isPentagon = H3_EXPORT(h3IsPentagon)(h3);
     H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(h3, edges);
-    H3Index destination;
 
     for (int i = 0; i < 6; i++) {
         if (isPentagon && i == 0) {
