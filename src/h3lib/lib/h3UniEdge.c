@@ -117,8 +117,9 @@ H3Index H3_EXPORT(getH3UnidirectionalEdge)(H3Index origin,
     // destination neighbor is located. Skips CENTER_DIGIT since that
     // would be this index.
     H3Index neighbor;
+    // Excluding from branch coverage as we never hit the end condition
     for (Direction direction = isPentagon ? J_AXES_DIGIT : K_AXES_DIGIT;
-         direction < NUM_DIGITS; direction++) {
+         direction < NUM_DIGITS; direction++) {  // LCOV_EXCLUDE_BR_LINE
         int rotations = 0;
         neighbor = h3NeighborRotations(origin, direction, &rotations);
         if (neighbor == destination) {
