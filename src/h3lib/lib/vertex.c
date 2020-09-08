@@ -176,7 +176,7 @@ int vertexRotations(H3Index cell) {
 
     // Excluding the next line from branch coverage because we never reach
     // the loop ending condition, we always return first
-    for (int i = 0; i < MAX_BASE_CELL_FACES; i++) { // LCOV_EXCL_BR_LINE
+    for (int i = 0; i < MAX_BASE_CELL_FACES; i++) {  // LCOV_EXCL_BR_LINE
         BaseCellRotation rotation = baseCellVertexRotations[baseCell][i];
         if (rotation.face == fijk.face) {
             int ccwRot60 = rotation.ccwRot60;
