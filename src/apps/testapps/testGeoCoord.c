@@ -44,6 +44,14 @@ void testDecreasingFunction(double (*function)(int), const char* message) {
     }
 }
 
+static void cell_area_assertions(H3Index cell) {
+    char msg[] = "cell has positive length";
+
+    t_assert(H3_EXPORT(cellAreaRads2)(cell) > 0, msg);
+    t_assert(H3_EXPORT(cellAreaKm2)(cell) > 0, msg);
+    t_assert(H3_EXPORT(cellAreaM2)(cell) > 0, msg);
+}
+
 static void earthAreaTest(int res, double (*callback)(H3Index), double target,
                           double tol) {
     double area = mapSumAllCells_double(res, callback);
@@ -212,7 +220,7 @@ SUITE(geoCoord) {
         }
     }
 
-    TEST(cellArea_all) {
+    TEST(cellAreaEarth) {
         // earth area in different units
         double rads2 = 4 * M_PI;
         double km2 = rads2 * EARTH_RADIUS_KM * EARTH_RADIUS_KM;
@@ -222,10 +230,15 @@ SUITE(geoCoord) {
         earthAreaTest(0, H3_EXPORT(cellAreaKm2), km2, 1e-6);
         earthAreaTest(0, H3_EXPORT(cellAreaM2), m2, 1e0);
 
-        // completely wrong, not sure why this is happening.
+        // todo: completely wrong, not sure why this is happening.
         earthAreaTest(1, H3_EXPORT(cellAreaRads2), rads2, 1e1);
+    }
 
-        // also test for area being positive?
+    TEST(cellAreaPositive) {
+        iterateAllIndexesAtRes(0, cell_area_assertions);
+        iterateAllIndexesAtRes(1, cell_area_assertions);
+        iterateAllIndexesAtRes(2, cell_area_assertions);
+        iterateAllIndexesAtRes(3, cell_area_assertions);
     }
 
     // compute the length between neighboring cells
