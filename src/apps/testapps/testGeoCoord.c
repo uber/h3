@@ -203,34 +203,6 @@ SUITE(geoCoord) {
         }
     }
 
-    // TEST(cellArea_km2) {
-    //     // function or macro to compute area of all cells at a given resolution
-    //     // and sum them up, takes a function pointer for the different funcs?
-
-    //     int N = H3_EXPORT(res0IndexCount)();
-    //     H3Index* cells = malloc(N * sizeof(H3Index));
-    //     H3_EXPORT(getRes0Indexes)(cells);
-
-    //     double a, A = 0.0;
-
-    //     for (int i = 0; i < N; i++) {
-    //         a = H3_EXPORT(cellAreaKm2)(cells[i]);
-    //         t_assert(a > 0, "cell has positive area");
-    //         A += a;
-    //     }
-    //     free(cells);
-
-    //     double earth_area_km2 = 4 * M_PI * EARTH_RADIUS_KM * EARTH_RADIUS_KM;
-    //     // double earth_area_m2 = earth_area_km2 * 1000 * 1000;
-
-    //     double tol = 1e-6;
-    //     t_assert(fabs(A - earth_area_km2) < tol,
-    //              "sum of res 0 cells should give earth area");
-
-    //     // todo: do area calculation with radians^2 function, convert to Km^2
-    //     // at the last step, see if that helps
-    // }
-
     TEST(cellArea_m2) {
         // function or macro to compute area of all cells at a given resolution
         // and sum them up, takes a function pointer for the different funcs?
