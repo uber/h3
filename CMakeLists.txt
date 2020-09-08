@@ -165,6 +165,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testHexRing.c
     src/apps/testapps/testH3SetToVertexGraph.c
     src/apps/testapps/testBBox.c
+    src/apps/testapps/testVertex.c
     src/apps/testapps/testPolygon.c
     src/apps/testapps/testVec2d.c
     src/apps/testapps/testVec3d.c
@@ -565,6 +566,7 @@ if(BUILD_TESTING)
     add_h3_test(testH3UniEdge src/apps/testapps/testH3UniEdge.c)
     add_h3_test(testGeoCoord src/apps/testapps/testGeoCoord.c)
     add_h3_test(testBBox src/apps/testapps/testBBox.c)
+    add_h3_test(testVertex src/apps/testapps/testVertex.c)
     add_h3_test(testPolygon src/apps/testapps/testPolygon.c)
     add_h3_test(testVec2d src/apps/testapps/testVec2d.c)
     add_h3_test(testVec3d src/apps/testapps/testVec3d.c)

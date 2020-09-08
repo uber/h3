@@ -30,7 +30,7 @@
  * the vertexes on a given face to the orientation of the base
  * cell's home face. Note that while faces are not ordered for
  * non-pentagon cells, pentagons have their faces in directional
- * order, starting at J_AXES_DIGIT
+ * order, starting at J_AXES_DIGIT.
  */
 static const BaseCellRotation
     baseCellVertexRotations[NUM_BASE_CELLS][MAX_BASE_CELL_FACES] = {
@@ -159,9 +159,9 @@ static const BaseCellRotation
 };
 
 /**
- * Get the number of CW rotations of the cell's vertex numbers
+ * Get the number of CCW rotations of the cell's vertex numbers
  * compared to the directional layout of its neighbors.
- * @return Number of CW rotations for the cell, or INVALID_ROTATIONS
+ * @return Number of CCW rotations for the cell, or INVALID_ROTATIONS
  *         if the cell's base cell was not found on this face
  */
 int vertexRotations(H3Index cell) {
@@ -181,14 +181,14 @@ int vertexRotations(H3Index cell) {
                     fijk.face ==
                         baseCellVertexRotations[baseCell][IK_AXES_DIGIT - 2]
                             .face) {
-                    // Crosses from JK to IK: Rotate CCW
+                    // Crosses from JK to IK: Rotate CW
                     return ccwRot60 == 0 ? 5 : ccwRot60 - 1;
                 }
                 if (cellLeadingDigit == IK_AXES_DIGIT &&
                     fijk.face ==
                         baseCellVertexRotations[baseCell][JK_AXES_DIGIT - 2]
                             .face) {
-                    // Crosses from IK to J: Rotate CW
+                    // Crosses from IK to J: Rotate CCW
                     return (ccwRot60 + 1) % 6;
                 }
             }
@@ -196,7 +196,7 @@ int vertexRotations(H3Index cell) {
         }
     }
     // Failure case, should not be reachable
-    return INVALID_ROTATIONS;
+    return INVALID_ROTATIONS;  // LCOV_EXCL_LINE
 }
 
 /** @brief Hexagon direction to vertex number relationships (same face).
@@ -215,20 +215,28 @@ static const int directionToVertexNumPent[NUM_DIGITS] = {
  * Get the first vertex number for a given direction. The neighbor in this
  * direction is located between this vertex number and the next number in
  * sequence.
+ * @returns The number for the first topological vertex, or INVALID_VERTEX_NUM
+ *          if the direction is not valid for this cell
  */
 int vertexNumForDirection(const H3Index origin, const Direction direction) {
+    int isPentagon = H3_EXPORT(h3IsPentagon)(origin);
+    // Check for invalid directions
+    if (direction == CENTER_DIGIT || direction >= INVALID_DIGIT ||
+        (isPentagon && direction == K_AXES_DIGIT))
+        return INVALID_VERTEX_NUM;
     // Determine the vertex number for the direction. If the origin and the base
     // cell are on the same face, we can use the constant relationships above;
     // if they are on different faces, we need to apply a rotation
     int rotations = vertexRotations(origin);
-    // Should be unreachable
+    // Handle bad rotation calculation: should be unreachable
+    // LCOV_EXCL_START
     if (rotations == INVALID_ROTATIONS) return INVALID_VERTEX_NUM;
+    // LCOV_EXCL_STOP
     // Find the appropriate vertex, rotating CCW if necessary
-    return H3_EXPORT(h3IsPentagon)(origin)
-               ? (directionToVertexNumPent[direction] + NUM_PENT_VERTS -
-                  rotations) %
-                     NUM_PENT_VERTS
-               : (directionToVertexNumHex[direction] + NUM_HEX_VERTS -
-                  rotations) %
-                     NUM_HEX_VERTS;
+    return isPentagon ? (directionToVertexNumPent[direction] + NUM_PENT_VERTS -
+                         rotations) %
+                            NUM_PENT_VERTS
+                      : (directionToVertexNumHex[direction] + NUM_HEX_VERTS -
+                         rotations) %
+                            NUM_HEX_VERTS;
 }

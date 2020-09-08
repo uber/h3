@@ -38,12 +38,6 @@
  *         - If face isn't base cell home face, rotate -1
  *     - Non-polar pentagon:
  *         - If face is in IK direction, rotate -1
- *
- *  Then, to check for additional rotation:
- *     - If pentagon and
- *         (cellLeadingDigit === JK && face === IK) or
- *         (cellLeadingDigit === IK && face === JK):
- *             Rotate -1 (TODO: Check whether IK to JK is the other direction)
  */
 static void generate() {
     BaseCellRotation rotations[NUM_BASE_CELLS][MAX_BASE_CELL_FACES] = {0};
