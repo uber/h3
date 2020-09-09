@@ -230,8 +230,13 @@ SUITE(geoCoord) {
         earthAreaTest(0, H3_EXPORT(cellAreaKm2), km2, 1e-6);
         earthAreaTest(0, H3_EXPORT(cellAreaM2), m2, 1e0);
 
-        // todo: completely wrong, not sure why this is happening.
-        earthAreaTest(1, H3_EXPORT(cellAreaRads2), rads2, 1e1);
+        earthAreaTest(1, H3_EXPORT(cellAreaRads2), rads2, 1e-9);
+        earthAreaTest(1, H3_EXPORT(cellAreaKm2), km2, 1e-1);
+        earthAreaTest(1, H3_EXPORT(cellAreaM2), m2, 1e5);
+
+        earthAreaTest(2, H3_EXPORT(cellAreaRads2), rads2, 1e-12);
+        earthAreaTest(2, H3_EXPORT(cellAreaKm2), km2, 1e-5);
+        earthAreaTest(2, H3_EXPORT(cellAreaM2), m2, 1e0);
     }
 
     TEST(cellAreaPositive) {
