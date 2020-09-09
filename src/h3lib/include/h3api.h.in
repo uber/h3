@@ -263,7 +263,6 @@ double H3_EXPORT(hexAreaM2)(int res);
 /** @} */
 
 /** @brief "great circle distance" between pairs of GeoCoord points */
-// todo: do we want pass-by-reference or by value?
 double H3_EXPORT(pointDistRads)(const GeoCoord *a, const GeoCoord *b);
 double H3_EXPORT(pointDistKm)(const GeoCoord *a, const GeoCoord *b);
 double H3_EXPORT(pointDistM)(const GeoCoord *a, const GeoCoord *b);
