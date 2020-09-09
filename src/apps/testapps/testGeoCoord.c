@@ -62,20 +62,31 @@ static void earthAreaTest(int res, double (*callback)(H3Index), double target,
 }
 
 static void commutative_distance_assertions(H3Index edge) {
-    H3Index origin = H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(edge);
-    H3Index destination =
-        H3_EXPORT(getDestinationH3IndexFromUnidirectionalEdge)(edge);
-
     GeoCoord a, b;
+    double ab, ba;
 
-    H3_EXPORT(h3ToGeo)(origin, &a);
-    H3_EXPORT(h3ToGeo)(destination, &b);
+    H3_EXPORT(h3ToGeo)
+    (H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(edge), &a);
+    H3_EXPORT(h3ToGeo)
+    (H3_EXPORT(getDestinationH3IndexFromUnidirectionalEdge)(edge), &b);
 
-    double ab = H3_EXPORT(pointDistM)(&a, &b);
-    double ba = H3_EXPORT(pointDistM)(&b, &a);
+    char pos[] = "distance between cell centers should be positive";
+    char comm[] = "pairwise cell distances should be commutative";
 
-    t_assert(ab > 0, "distance between cell centers is positive");
-    t_assert(ab == ba, "pairwise cell distances should be commutative");
+    ab = H3_EXPORT(pointDistRads)(&a, &b);
+    ba = H3_EXPORT(pointDistRads)(&b, &a);
+    t_assert(ab > 0, pos);
+    t_assert(ab == ba, comm);
+
+    ab = H3_EXPORT(pointDistKm)(&a, &b);
+    ba = H3_EXPORT(pointDistKm)(&b, &a);
+    t_assert(ab > 0, pos);
+    t_assert(ab == ba, comm);
+
+    ab = H3_EXPORT(pointDistM)(&a, &b);
+    ba = H3_EXPORT(pointDistM)(&b, &a);
+    t_assert(ab > 0, pos);
+    t_assert(ab == ba, comm);
 }
 
 SUITE(geoCoord) {
@@ -278,5 +289,8 @@ SUITE(geoCoord) {
 
     TEST(commutative_distances) {
         iterateAllUnidirectionalEdgesAtRes(0, commutative_distance_assertions);
+        iterateAllUnidirectionalEdgesAtRes(1, commutative_distance_assertions);
+        iterateAllUnidirectionalEdgesAtRes(2, commutative_distance_assertions);
+        iterateAllUnidirectionalEdgesAtRes(3, commutative_distance_assertions);
     }
 }
