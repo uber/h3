@@ -60,4 +60,6 @@ double mapSumAllCells_double(int res, double (*callback)(H3Index));
 
 int countActualHexagons(H3Index* hexagons, int numHexagons);
 
+size_t packNonzeros(H3Index* a, size_t n);
+
 #endif

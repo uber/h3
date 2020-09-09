@@ -177,36 +177,50 @@ int readBoundary(FILE* f, GeoBoundary* b) {
     return 0;
 }
 
-size_t move_nonzeros(H3Index* a, size_t n) {
-    // Move nonzero elements to front of array `a` of length `n`.
-    // Return the number of nonzero elements.
-    // Loop invariant: Everything *before* `i` or *after* `j` is "done".
-    // Move `i` and `j` inwards until they equal, and exit.
-    // You can move `i` forward until there's a zero in front of it.
-    // You can move `j` backward until there's a nonzero to the left of it.
-    // Anything to the right of `j` is "junk" that can be reallocated.
-    // | a | b | 0 | c | d | ... |
-    //         ^           ^
-    //         i           j
-    // | a | b | d | c | d | ... |
-    //         ^       ^
-    //         i       j
-
+/**
+ * Move nonzero elements to the front of array `a` of length `n`.
+ *
+ * Loop invariant: Everything *before* `i` or *after* `j` is "done".
+ * Move `i` and `j` inwards until they equal, and exit.
+ * You can move `i` forward until there's a zero in front of it.
+ * You can move `j` backward until there's a nonzero to the left of it.
+ * Anything to the right of `j` is "junk" that can be reallocated.
+ *
+ * Before:
+ *   | a | b | 0 | c | d | ... |
+ *           ^           ^
+ *           i           j
+ * After:
+ *   | a | b | d | c | d | ... |
+ *           ^       ^
+ *           i       j
+ *
+ * todo: should this function be in the public API?
+ * todo: add tests for this function
+ *
+ * @param   a  H3Index array to whose elements will be moved
+ * @param   n  length of the input array
+ * @return     number of nonzero elements (length of new array); can reallocate
+ *             memory after this point
+ */
+size_t packNonzeros(H3Index* a, size_t n) {
     size_t i = 0;
     size_t j = n;
 
     while (i < j) {
+        // move j to the left until the first nonzero
         if (a[j - 1] == 0) {
             j -= 1;
             continue;
         }
 
+        // move i to the right until the first zero
         if (a[i] != 0) {
             i += 1;
             continue;
         }
 
-        // if we're here, we know:
+        // if we get to this point, we know:
         // a[i] == 0
         // a[j-1] != 0
         // i < j
@@ -230,8 +244,8 @@ H3Index* getCellsAtRes(int res) {
 
     free(cells0);
 
-    move_nonzeros(cellsRes, numRes);
-    // could also reallocate the space at the tail of cellsRes
+    numRes = packNonzeros(cellsRes, numRes);
+    cellsRes = realloc(cellsRes, numRes * sizeof(H3Index));
 
     return cellsRes;
 }
@@ -253,7 +267,7 @@ double mapSumAllCells_double(int res, double (*callback)(H3Index)) {
 }
 
 /**
- * Call the callback for every unidirectional edge at the given resolution.
+ * Apply callback for every unidirectional edge at the given resolution.
  */
 void iterateAllUnidirectionalEdgesAtRes(int res, void (*callback)(H3Index)) {
     H3Index* cells = getCellsAtRes(res);
