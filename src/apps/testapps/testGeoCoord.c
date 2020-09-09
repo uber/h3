@@ -226,6 +226,10 @@ SUITE(geoCoord) {
         double km2 = rads2 * EARTH_RADIUS_KM * EARTH_RADIUS_KM;
         double m2 = km2 * 1000 * 1000;
 
+        // Notice the drop in accuracy at resolution 1.
+        // I think this has something to do with Class II vs Class III
+        // resolutions.
+
         earthAreaTest(0, H3_EXPORT(cellAreaRads2), rads2, 1e-14);
         earthAreaTest(0, H3_EXPORT(cellAreaKm2), km2, 1e-6);
         earthAreaTest(0, H3_EXPORT(cellAreaM2), m2, 1e0);
@@ -237,6 +241,14 @@ SUITE(geoCoord) {
         earthAreaTest(2, H3_EXPORT(cellAreaRads2), rads2, 1e-12);
         earthAreaTest(2, H3_EXPORT(cellAreaKm2), km2, 1e-5);
         earthAreaTest(2, H3_EXPORT(cellAreaM2), m2, 1e0);
+
+        earthAreaTest(3, H3_EXPORT(cellAreaRads2), rads2, 1e-11);
+        earthAreaTest(3, H3_EXPORT(cellAreaKm2), km2, 1e-3);
+        earthAreaTest(3, H3_EXPORT(cellAreaM2), m2, 1e3);
+
+        earthAreaTest(4, H3_EXPORT(cellAreaRads2), rads2, 1e-11);
+        earthAreaTest(4, H3_EXPORT(cellAreaKm2), km2, 1e-3);
+        earthAreaTest(4, H3_EXPORT(cellAreaM2), m2, 1e2);
     }
 
     TEST(cellAreaPositive) {
