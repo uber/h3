@@ -177,6 +177,47 @@ int readBoundary(FILE* f, GeoBoundary* b) {
     return 0;
 }
 
+size_t move_nonzeros(H3Index* a, size_t n) {
+    // Move nonzero elements to front of array `a` of length `n`.
+    // Return the number of nonzero elements.
+    // Loop invariant: Everything *before* `i` or *after* `j` is "done".
+    // Move `i` and `j` inwards until they equal, and exit.
+    // You can move `i` forward until there's a zero in front of it.
+    // You can move `j` backward until there's a nonzero to the left of it.
+    // Anything to the right of `j` is "junk" that can be reallocated.
+    // | a | b | 0 | c | d | ... |
+    //         ^           ^
+    //         i           j
+    // | a | b | d | c | d | ... |
+    //         ^       ^
+    //         i       j
+
+    size_t i = 0;
+    size_t j = n;
+
+    while (i < j) {
+        if (a[j - 1] == 0) {
+            j -= 1;
+            continue;
+        }
+
+        if (a[i] != 0) {
+            i += 1;
+            continue;
+        }
+
+        // if we're here, we know:
+        // a[i] == 0
+        // a[j-1] != 0
+        // i < j
+        // so we can swap! (actually, move a[j-1] -> a[i])
+        a[i] = a[j - 1];
+        j -= 1;
+    }
+
+    return i;
+}
+
 H3Index* getCellsAtRes(int res) {
     int num0 = H3_EXPORT(res0IndexCount)();
     H3Index* cells0 = calloc(num0, sizeof(H3Index));
@@ -188,6 +229,9 @@ H3Index* getCellsAtRes(int res) {
     H3_EXPORT(uncompact)(cells0, num0, cellsRes, numRes, res);
 
     free(cells0);
+
+    move_nonzeros(cellsRes, numRes);
+    // could also reallocate the space at the tail of cellsRes
 
     return cellsRes;
 }
@@ -260,7 +304,7 @@ void iterateBaseCellIndexesAtRes(int res, void (*callback)(H3Index),
     H3_EXPORT(uncompact)(&bc, 1, children, childrenSz, res);
 
     for (int j = 0; j < childrenSz; j++) {
-        if (children[j] == 0) {
+        if (children[j] == H3_NULL) {
             continue;
         }
 
