@@ -34,7 +34,8 @@
  * @param function
  * @param message
  */
-void testDecreasingFunction(double (*function)(int), const char* message) {
+static void testDecreasingFunction(double (*function)(int),
+                                   const char* message) {
     double last = 0;
     double next;
     for (int i = MAX_H3_RES; i >= 0; i--) {
@@ -58,6 +59,23 @@ static void earthAreaTest(int res, double (*callback)(H3Index), double target,
 
     t_assert(fabs(area - target) < tol,
              "sum of all cells should give earth area");
+}
+
+static void commutative_distance_assertions(H3Index edge) {
+    H3Index origin = H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(edge);
+    H3Index destination =
+        H3_EXPORT(getDestinationH3IndexFromUnidirectionalEdge)(edge);
+
+    GeoCoord a, b;
+
+    H3_EXPORT(h3ToGeo)(origin, &a);
+    H3_EXPORT(h3ToGeo)(destination, &b);
+
+    double ab = H3_EXPORT(pointDistM)(&a, &b);
+    double ba = H3_EXPORT(pointDistM)(&b, &a);
+
+    t_assert(ab > 0, "distance between cell centers is positive");
+    t_assert(ab == ba, "pairwise cell distances should be commutative");
 }
 
 SUITE(geoCoord) {
@@ -220,6 +238,13 @@ SUITE(geoCoord) {
         }
     }
 
+    TEST(cellAreaPositive) {
+        iterateAllIndexesAtRes(0, cell_area_assertions);
+        iterateAllIndexesAtRes(1, cell_area_assertions);
+        iterateAllIndexesAtRes(2, cell_area_assertions);
+        iterateAllIndexesAtRes(3, cell_area_assertions);
+    }
+
     TEST(cellAreaEarth) {
         // earth area in different units
         double rads2 = 4 * M_PI;
@@ -251,12 +276,7 @@ SUITE(geoCoord) {
         earthAreaTest(4, H3_EXPORT(cellAreaM2), m2, 1e2);
     }
 
-    TEST(cellAreaPositive) {
-        iterateAllIndexesAtRes(0, cell_area_assertions);
-        iterateAllIndexesAtRes(1, cell_area_assertions);
-        iterateAllIndexesAtRes(2, cell_area_assertions);
-        iterateAllIndexesAtRes(3, cell_area_assertions);
+    TEST(commutative_distances) {
+        iterateAllUnidirectionalEdgesAtRes(0, commutative_distance_assertions);
     }
-
-    // compute the length between neighboring cells
 }
