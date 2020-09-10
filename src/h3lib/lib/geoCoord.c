@@ -143,10 +143,10 @@ double constrainLng(double lng) {
  *     https://en.wikipedia.org/wiki/Haversine_formula
  *     https://www.movable-type.co.uk/scripts/latlong.html
  *
- * @param  a  The first lat/lng pair (in radians).
- * @param  b  The second lat/lng pair (in radians).
+ * @param  a  the first lat/lng pair (in radians)
+ * @param  b  the second lat/lng pair (in radians)
  *
- * @return  The great circle distance in radians between a and b.
+ * @return    the great circle distance in radians between a and b
  */
 double H3_EXPORT(pointDistRads)(const GeoCoord *a, const GeoCoord *b) {
     double sinLat = sin((b->lat - a->lat) / 2);
@@ -348,44 +348,72 @@ double triangleEdgeLengthsToArea(double a, double b, double c) {
     return 4 * atan(sqrt(tan(s) * tan(a) * tan(b) * tan(c)));
 }
 
+/**
+ * Compute area in radians^2 of a spherical triangle, given its vertices.
+ *
+ * @param   a  vertex lat/lng in radians
+ * @param   b  vertex lat/lng in radians
+ * @param   c  vertex lat/lng in radians
+ *
+ * @return     area of triangle on unit sphere, in radians^2
+ */
 double triangleArea(const GeoCoord *a, const GeoCoord *b, const GeoCoord *c) {
-    // Surface area of a spherical triangle given by three lat/lng points
-    // input: radians
-    // ouput: unit sphere area
-
     return triangleEdgeLengthsToArea(H3_EXPORT(pointDistRads)(a, b),
                                      H3_EXPORT(pointDistRads)(b, c),
                                      H3_EXPORT(pointDistRads)(c, a));
 }
 
-double H3_EXPORT(cellAreaRads2)(H3Index h) {
+/**
+ * Area of H3 cell in radians^2.
+ *
+ * The area is calculated by breaking the cell into spherical triangles and
+ * summing up their areas. Note that some H3 cells (hexagons and pentagons)
+ * are irregular, and have more than 6 or 5 sides.
+ *
+ * todo: optimize the computation by re-using the edges shared between triangles
+ *
+ * @param   cell  H3 cell
+ *
+ * @return        cell area in radians^2
+ */
+double H3_EXPORT(cellAreaRads2)(H3Index cell) {
     GeoCoord c;
     GeoBoundary gb;
-    double A = 0.0;
+    H3_EXPORT(h3ToGeo)(cell, &c);
+    H3_EXPORT(h3ToGeoBoundary)(cell, &gb);
 
-    H3_EXPORT(h3ToGeo)(h, &c);
-    H3_EXPORT(h3ToGeoBoundary)(h, &gb);
-
-    // can probably optimize this by re-using the shared edges
     int N = gb.numVerts;
     int i, j;
-
+    double area = 0.0;
     for (i = 0; i < N; i++) {
         j = (i + 1) % N;
-        A += triangleArea(&gb.verts[i], &gb.verts[j], &c);
+        area += triangleArea(&gb.verts[i], &gb.verts[j], &c);
     }
 
-    return A;
+    return area;
 }
 
+/**
+ * Area of H3 cell in kilometers^2.
+ */
 double H3_EXPORT(cellAreaKm2)(H3Index h) {
     return H3_EXPORT(cellAreaRads2)(h) * EARTH_RADIUS_KM * EARTH_RADIUS_KM;
 }
 
+/**
+ * Area of H3 cell in meters^2.
+ */
 double H3_EXPORT(cellAreaM2)(H3Index h) {
     return H3_EXPORT(cellAreaKm2)(h) * 1000 * 1000;
 }
 
+/**
+ * Length of a unidirectional edge in radians.
+ *
+ * @param   edge  H3 unidirectional edge
+ *
+ * @return        length in radians
+ */
 double H3_EXPORT(exactEdgeLengthRads)(H3Index edge) {
     GeoBoundary gb;
 
@@ -399,10 +427,16 @@ double H3_EXPORT(exactEdgeLengthRads)(H3Index edge) {
     return length;
 }
 
+/**
+ * Length of a unidirectional edge in kilometers.
+ */
 double H3_EXPORT(exactEdgeLengthKm)(H3Index edge) {
     return H3_EXPORT(exactEdgeLengthRads)(edge) * EARTH_RADIUS_KM;
 }
 
+/**
+ * Length of a unidirectional edge in meters.
+ */
 double H3_EXPORT(exactEdgeLengthM)(H3Index edge) {
     return H3_EXPORT(exactEdgeLengthKm)(edge) * 1000;
 }
