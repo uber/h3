@@ -6,6 +6,17 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+### Added
+- area and haversine distance functions:
+    - cellAreaRads2
+    - cellAreaKm2
+    - cellAreaM2
+    - pointDistRads
+    - pointDistKm
+    - pointDistM
+    - exactEdgeLengthRads
+    - exactEdgeLengthKm
+    - exactEdgeLengthM
 ### Fixed
 - Fixed building the library with custom memory allocation functions on Mac OSX. (#362)
 - The installed H3 CMake target should have include directories specified. (#381)
