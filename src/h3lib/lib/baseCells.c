@@ -21,14 +21,14 @@
 
 #include "h3Index.h"
 
-/** @struct BaseCellOrient
+/** @struct BaseCellRotation
  *  @brief base cell at a given ijk and required rotations into its system
  */
 typedef struct {
     int baseCell;  ///< base cell number
     int ccwRot60;  ///< number of ccw 60 degree rotations relative to current
                    /// face
-} BaseCellOrient;
+} BaseCellRotation;
 
 /** @brief Neighboring base cell ID in each IJK direction.
  *
@@ -305,7 +305,7 @@ const int baseCellNeighbor60CCWRots[NUM_BASE_CELLS][7] = {
  * This table can be accessed using the functions `_faceIjkToBaseCell` and
  * `_faceIjkToBaseCellCCWrot60`
  */
-static const BaseCellOrient faceIjkBaseCells[NUM_ICOSA_FACES][3][3][3] = {
+static const BaseCellRotation faceIjkBaseCells[NUM_ICOSA_FACES][3][3][3] = {
     {// face 0
      {
          // i 0
