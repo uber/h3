@@ -232,6 +232,13 @@ size_t packNonzeros(H3Index* a, size_t n) {
     return i;
 }
 
+/**
+ * Array of all cells at a given resolution.
+ *
+ * @param   res  resolution
+ *
+ * @return       array of H3 cells at resolution res
+ */
 H3Index* getCellsAtRes(int res) {
     int num0 = H3_EXPORT(res0IndexCount)();
     H3Index* cells0 = calloc(num0, sizeof(H3Index));
