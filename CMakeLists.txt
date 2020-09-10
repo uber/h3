@@ -179,6 +179,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testH3DistanceExhaustive.c
     src/apps/testapps/testH3Line.c
     src/apps/testapps/testH3LineExhaustive.c
+    src/apps/testapps/testH3CellAreaExhaustive.c
     src/apps/testapps/testCoordIj.c
     src/apps/testapps/testCoordIjk.c
     src/apps/testapps/testH3Memory.c
@@ -583,6 +584,7 @@ if(BUILD_TESTING)
     add_h3_test(testH3ToLocalIjExhaustive src/apps/testapps/testH3ToLocalIjExhaustive.c)
     add_h3_test(testH3LineExhaustive src/apps/testapps/testH3LineExhaustive.c)
     add_h3_test(testH3DistanceExhaustive src/apps/testapps/testH3DistanceExhaustive.c)
+    add_h3_test(testH3CellAreaExhaustive src/apps/testapps/testH3CellAreaExhaustive.c)
 
     add_h3_memory_test(testH3Memory src/apps/testapps/testH3Memory.c)
 

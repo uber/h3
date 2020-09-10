@@ -84,14 +84,6 @@ static void h3UniEdge_boundary_assertions(H3Index h3) {
     }
 }
 
-static void h3UniEdge_length_assertions(H3Index edge) {
-    char msg[] = "edge has positive length";
-
-    t_assert(H3_EXPORT(exactEdgeLengthRads)(edge) > 0, msg);
-    t_assert(H3_EXPORT(exactEdgeLengthKm)(edge) > 0, msg);
-    t_assert(H3_EXPORT(exactEdgeLengthM)(edge) > 0, msg);
-}
-
 SUITE(h3UniEdge) {
     TEST(h3UniEdge_correctness) {
         iterateAllIndexesAtRes(0, h3UniEdge_correctness_assertions);
@@ -105,12 +97,5 @@ SUITE(h3UniEdge) {
         iterateAllIndexesAtRes(1, h3UniEdge_boundary_assertions);
         iterateAllIndexesAtRes(2, h3UniEdge_boundary_assertions);
         iterateAllIndexesAtRes(3, h3UniEdge_boundary_assertions);
-    }
-
-    TEST(h3UniEdge_length) {
-        iterateAllUnidirectionalEdgesAtRes(0, h3UniEdge_length_assertions);
-        iterateAllUnidirectionalEdgesAtRes(1, h3UniEdge_length_assertions);
-        iterateAllUnidirectionalEdgesAtRes(2, h3UniEdge_length_assertions);
-        iterateAllUnidirectionalEdgesAtRes(3, h3UniEdge_length_assertions);
     }
 }
