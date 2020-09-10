@@ -93,6 +93,7 @@ rm -rf build
 #### Testing
 
 After making the project, you can test with `make test`.
+You can run a faster test suite that excludes the most expensive tests with `make test-fast`.
 
 #### Coverage
 
