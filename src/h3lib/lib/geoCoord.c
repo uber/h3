@@ -136,28 +136,37 @@ double constrainLng(double lng) {
 }
 
 /**
- * Find the great circle distance in radians between two spherical coordinates.
+ * The great circle distance in radians between two spherical coordinates.
  *
- * @param a The first spherical coordinates.
- * @param b The second spherical coordinates.
- * @return The great circle distance in radians between a and b.
+ * This function uses the Haversine formula.
+ * For math details, see:
+ *     https://en.wikipedia.org/wiki/Haversine_formula
+ *     https://www.movable-type.co.uk/scripts/latlong.html
+ *
+ * @param  a  The first lat/lng pair (in radians).
+ * @param  b  The second lat/lng pair (in radians).
+ *
+ * @return  The great circle distance in radians between a and b.
  */
-
-// *Note*: this is the main function we export to users, and use throughout
-// the library.
 double H3_EXPORT(pointDistRads)(const GeoCoord *a, const GeoCoord *b) {
-    double T = sin((b->lat - a->lat) / 2);
-    double N = sin((b->lon - a->lon) / 2);
+    double sinLat = sin((b->lat - a->lat) / 2);
+    double sinLng = sin((b->lon - a->lon) / 2);
 
-    double A = T * T + cos(a->lat) * cos(b->lat) * N * N;
+    double A = sinLat * sinLat + cos(a->lat) * cos(b->lat) * sinLng * sinLng;
 
     return 2 * atan2(sqrt(A), sqrt(1 - A));
 }
 
+/**
+ * The great circle distance in kilometers between two spherical coordinates.
+ */
 double H3_EXPORT(pointDistKm)(const GeoCoord *a, const GeoCoord *b) {
     return H3_EXPORT(pointDistRads)(a, b) * EARTH_RADIUS_KM;
 }
 
+/**
+ * The great circle distance in meters between two spherical coordinates.
+ */
 double H3_EXPORT(pointDistM)(const GeoCoord *a, const GeoCoord *b) {
     return H3_EXPORT(pointDistKm)(a, b) * 1000;
 }
@@ -316,11 +325,19 @@ int64_t H3_EXPORT(numHexagons)(int res) {
     return nums[res];
 }
 
+/**
+ * Surface area in radians^2 of spherical triangle on unit sphere.
+ *
+ * For the math, see:
+ * https://en.wikipedia.org/wiki/Spherical_trigonometry#Area_and_spherical_excess
+ *
+ * @param   a  length of triangle side A in radians
+ * @param   b  length of triangle side B in radians
+ * @param   c  length of triangle side C in radians
+ *
+ * @return     area in radians^2 of triangle on unit sphere
+ */
 double triangleEdgeLengthsToArea(double a, double b, double c) {
-    // Surface area of a spherical triangle with edge lengths a, b, c
-    // input: radians
-    // ouput: unit sphere area (radians^2)
-
     double s = (a + b + c) / 2;
 
     a = (s - a) / 2;
@@ -328,9 +345,7 @@ double triangleEdgeLengthsToArea(double a, double b, double c) {
     c = (s - c) / 2;
     s = s / 2;
 
-    double t = sqrt(tan(s) * tan(a) * tan(b) * tan(c));
-
-    return 4 * atan(t);
+    return 4 * atan(sqrt(tan(s) * tan(a) * tan(b) * tan(c)));
 }
 
 double triangleArea(const GeoCoord *a, const GeoCoord *b, const GeoCoord *c) {
