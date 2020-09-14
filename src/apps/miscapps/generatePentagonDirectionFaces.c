@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /** @file generatePentagonDirectionFaces.c
- * @brief Generates the faceCenterPoint table
+ * @brief Generates the pentagonDirectionFaces table
  *
  *  usage: `generatePentagonDirectionFaces`
  */

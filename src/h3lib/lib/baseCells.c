@@ -863,13 +863,24 @@ void _baseCellToFaceIjk(int baseCell, FaceIJK* h) {
     *h = baseCellData[baseCell].homeFijk;
 }
 
+/**
+ * @brief Given a base cell and the face it appears on, return
+ *        the number of 60' ccw rotations for that base cell's
+ *        coordinate system.
+ * @returns The number of rotations, or INVALID_ROTATIONS if the base
+ *          cell is not found on the given face
+ */
 int _baseCellToCCWrot60(int baseCell, int face) {
-    if (face > NUM_ICOSA_FACES) return INVALID_ROTATIONS;
-    for (int i = 0; i < 3; i++)
-        for (int j = 0; j < 3; j++)
-            for (int k = 0; k < 3; k++)
-                if (faceIjkBaseCells[face][i][j][k].baseCell == baseCell)
+    if (face < 0 || face > NUM_ICOSA_FACES) return INVALID_ROTATIONS;
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            for (int k = 0; k < 3; k++) {
+                if (faceIjkBaseCells[face][i][j][k].baseCell == baseCell) {
                     return faceIjkBaseCells[face][i][j][k].ccwRot60;
+                }
+            }
+        }
+    }
     return INVALID_ROTATIONS;
 }
 

@@ -24,6 +24,8 @@
 #include "geoCoord.h"
 #include "h3Index.h"
 
+#define DIRECTION_INDEX_OFFSET 2
+
 /** @brief Table of direction-to-face mapping for each pentagon
  *
  * Note that faces are in directional order, starting at J_AXES_DIGIT.
@@ -62,24 +64,27 @@ int vertexRotations(H3Index cell) {
         for (int p = 0; p < NUM_PENTAGONS; p++) {
             if (pentagonDirectionFaces[p].baseCell == baseCell) {
                 dirFaces = pentagonDirectionFaces[p];
+                break;
             }
         }
 
         // additional CCW rotation for polar neighbors or IK neighbors
         if (fijk.face != baseFijk.face &&
             (_isBaseCellPolarPentagon(baseCell) ||
-             fijk.face == dirFaces.faces[IK_AXES_DIGIT - 2])) {
+             fijk.face ==
+                 dirFaces.faces[IK_AXES_DIGIT - DIRECTION_INDEX_OFFSET])) {
             ccwRot60 = (ccwRot60 + 1) % 6;
         }
 
         // Check whether the cell crosses a deleted pentagon subsequence
         if (cellLeadingDigit == JK_AXES_DIGIT &&
-            fijk.face == dirFaces.faces[IK_AXES_DIGIT - 2]) {
+            fijk.face ==
+                dirFaces.faces[IK_AXES_DIGIT - DIRECTION_INDEX_OFFSET]) {
             // Crosses from JK to IK: Rotate CW
             ccwRot60 = (ccwRot60 + 5) % 6;
-        }
-        if (cellLeadingDigit == IK_AXES_DIGIT &&
-            fijk.face == dirFaces.faces[JK_AXES_DIGIT - 2]) {
+        } else if (cellLeadingDigit == IK_AXES_DIGIT &&
+                   fijk.face ==
+                       dirFaces.faces[JK_AXES_DIGIT - DIRECTION_INDEX_OFFSET]) {
             // Crosses from IK to JK: Rotate CCW
             ccwRot60 = (ccwRot60 + 1) % 6;
         }
@@ -113,16 +118,17 @@ int vertexNumForDirection(const H3Index origin, const Direction direction) {
         (isPentagon && direction == K_AXES_DIGIT))
         return INVALID_VERTEX_NUM;
 
-    // Determine the vertex number for the direction. If the origin and the base
-    // cell are on the same face, we can use the constant relationships above;
-    // if they are on different faces, we need to apply a rotation
+    // Determine the vertex rotations for this cell
     int rotations = vertexRotations(origin);
 
     // Find the appropriate vertex, rotating CCW if necessary
-    return isPentagon ? (directionToVertexNumPent[direction] + NUM_PENT_VERTS -
-                         rotations) %
-                            NUM_PENT_VERTS
-                      : (directionToVertexNumHex[direction] + NUM_HEX_VERTS -
-                         rotations) %
-                            NUM_HEX_VERTS;
+    if (isPentagon) {
+        return (directionToVertexNumPent[direction] + NUM_PENT_VERTS -
+                rotations) %
+               NUM_PENT_VERTS;
+    } else {
+        return (directionToVertexNumHex[direction] + NUM_HEX_VERTS -
+                rotations) %
+               NUM_HEX_VERTS;
+    }
 }
