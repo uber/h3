@@ -40,5 +40,8 @@ typedef struct {
 
 int vertexRotations(H3Index cell);
 int vertexNumForDirection(const H3Index origin, const Direction direction);
+Direction directionForVertexNum(const H3Index origin, const int vertexNum);
+H3Index getCellVertex(H3Index origin, int vertexNum);
+void vertexToPoint(H3Index vertex, GeoCoord* coord);
 
 #endif

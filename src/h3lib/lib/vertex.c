@@ -19,6 +19,7 @@
 
 #include "vertex.h"
 
+#include "algos.h"
 #include "baseCells.h"
 #include "faceijk.h"
 #include "geoCoord.h"
@@ -131,4 +132,125 @@ int vertexNumForDirection(const H3Index origin, const Direction direction) {
                 rotations) %
                NUM_HEX_VERTS;
     }
+}
+
+/** @brief Vertex number to hexagon direction relationships (same face).
+ */
+static const Direction vertexNumToDirectionHex[NUM_HEX_VERTS] = {
+    IJ_AXES_DIGIT, J_AXES_DIGIT,  JK_AXES_DIGIT,
+    K_AXES_DIGIT,  IK_AXES_DIGIT, I_AXES_DIGIT};
+
+/** @brief Vertex number to pentagon direction relationships (same face).
+ */
+static const Direction vertexNumToDirectionPent[NUM_PENT_VERTS] = {
+    IJ_AXES_DIGIT, J_AXES_DIGIT, JK_AXES_DIGIT, IK_AXES_DIGIT, I_AXES_DIGIT};
+
+/**
+ * Get the direction for a given vertex number. This returns the direction for
+ * the neighbor between the given vertex number and the next number in sequence.
+ * @returns The direction for this vertex, or INVALID_DIGIT if the vertex
+ * number is invalid.
+ */
+Direction directionForVertexNum(const H3Index origin, const int vertexNum) {
+    int isPentagon = H3_EXPORT(h3IsPentagon)(origin);
+    // Check for invalid vertexes
+    if (vertexNum < 0 ||
+        vertexNum > (isPentagon ? NUM_PENT_VERTS : NUM_HEX_VERTS) - 1)
+        return INVALID_DIGIT;
+
+    // Determine the vertex rotations for this cell
+    int rotations = vertexRotations(origin);
+
+    // Find the appropriate direction, rotating CW if necessary
+    return isPentagon ? vertexNumToDirectionPent[(vertexNum + rotations) %
+                                                 NUM_PENT_VERTS]
+                      : vertexNumToDirectionHex[(vertexNum + rotations) %
+                                                NUM_HEX_VERTS];
+}
+
+/**
+ * Get a single vertex for a given cell, as an H3 index, or
+ * H3_NULL if the vertex is invalid
+ */
+H3Index getCellVertex(H3Index origin, int vertexNum) {
+    // Get the right neighbor of the vertex, with its rotations
+    Direction right = directionForVertexNum(origin, vertexNum);
+    if (right == INVALID_DIGIT) return H3_NULL;
+    int rRotations = 0;
+    H3Index rightNeighbor = h3NeighborRotations(origin, right, &rRotations);
+
+    // Get the left neighbor of the vertex, with its rotations
+    Direction left = directionForVertexNum(origin, vertexNum);
+    if (left == INVALID_DIGIT) return H3_NULL;
+    int lRotations = 0;
+    H3Index leftNeighbor = h3NeighborRotations(origin, left, &lRotations);
+
+    // Determine the owner. By convention, this is the cell with the
+    // lowest numerical index.
+    H3Index owner = origin;
+    if (rightNeighbor < owner) owner = rightNeighbor;
+    if (leftNeighbor < owner) owner = leftNeighbor;
+
+    // Determine the number of the vertex on the owner cell. Unless the owner
+    // is the origin, there are several moving parts here:
+    // - The neighbor may have a different orientation of its axial
+    //   directions than the origin, if it's on a different face
+    // - The neighbor may have a different orientation of its vertexes
+    //   w/r/t its axial directions than the origin
+    // - Left and right neighbors share a diffent vertex with the origin
+    int rotations = vertexRotations(origin);
+    int ownerIsPentagon = H3_EXPORT(h3IsPentagon)(owner);
+    int originIsPentagon = H3_EXPORT(h3IsPentagon)(origin);
+    if (owner == rightNeighbor) {
+        int vRotations = originIsPentagon ? 5 : ownerIsPentagon ? 3 : 4;
+        rotations = rotations + rRotations + vRotations -
+                    vertexRotations(rightNeighbor);
+        printf("right (%d): %d + %d - %d = %d\n", vertexNum, rRotations,
+               vRotations, vertexRotations(rightNeighbor), rotations);
+    } else if (owner == leftNeighbor) {
+        int vRotations = originIsPentagon ? 4 : ownerIsPentagon ? 1 : 3;
+        rotations =
+            rotations + lRotations + vRotations - vertexRotations(leftNeighbor);
+        printf("left: %d + %d - %d = %d\n", lRotations, vRotations,
+               vertexRotations(leftNeighbor), rotations);
+    }
+    int ownerVertexNum =
+        ownerIsPentagon
+            ? (vertexNum + rotations + NUM_PENT_VERTS) % NUM_PENT_VERTS
+            : (vertexNum + rotations + NUM_HEX_VERTS) % NUM_HEX_VERTS;
+
+    // Create the vertex index
+    H3Index vertex = owner;
+    H3_SET_MODE(vertex, H3_VERTEX_MODE);
+    H3_SET_RESERVED_BITS(vertex, ownerVertexNum);
+
+    return vertex;
+}
+
+/**
+ * Get the geocoordinates of an H3 vertex
+ * @param vertex H3 index describing a vertex
+ * @param coord  Output geo coordinate
+ */
+void vertexToPoint(H3Index vertex, GeoCoord* coord) {
+    // Get the vertex number and owner from the vertex
+    int vertexNum = H3_GET_RESERVED_BITS(vertex);
+    H3Index owner = vertex;
+    H3_SET_MODE(owner, H3_HEXAGON_MODE);
+    H3_SET_RESERVED_BITS(owner, 0);
+
+    // Get the single vertex from the boundary
+    GeoBoundary gb;
+    FaceIJK fijk;
+    _h3ToFaceIjk(owner, &fijk);
+    int res = H3_GET_RESOLUTION(owner);
+
+    if (H3_EXPORT(h3IsPentagon)(owner)) {
+        _faceIjkPentToGeoBoundary(&fijk, res, vertexNum, 1, &gb);
+    } else {
+        _faceIjkToGeoBoundary(&fijk, res, vertexNum, 1, &gb);
+    }
+
+    // Copy from boundary to output coord
+    *coord = gb.verts[0];
 }

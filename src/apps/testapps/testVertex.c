@@ -23,6 +23,41 @@
 #include "utility.h"
 #include "vertex.h"
 
+static void directionForVertexNum_symmetry_assertions(H3Index h3) {
+    int numVerts = H3_EXPORT(h3IsPentagon)(h3) ? NUM_PENT_VERTS : NUM_HEX_VERTS;
+    for (int i = 0; i < numVerts; i++) {
+        Direction dir = directionForVertexNum(h3, i);
+        int vertexNum = vertexNumForDirection(h3, dir);
+        t_assert(
+            vertexNum == i,
+            "directionForVertexNum and vertexNumForDirection are symmetrical");
+    }
+}
+
+static void getCellVertex_point_assertions(H3Index h3) {
+    h3Println(h3);
+    GeoBoundary gb;
+    H3_EXPORT(h3ToGeoBoundary)(h3, &gb);
+    int numVerts = H3_EXPORT(h3IsPentagon)(h3) ? NUM_PENT_VERTS : NUM_HEX_VERTS;
+
+    // This test won't work if there are distortion vertexes in the boundary
+    if (numVerts < gb.numVerts) return;
+
+    GeoCoord coord;
+    for (int i = 0; i < numVerts; i++) {
+        H3Index vertex = getCellVertex(h3, i);
+        vertexToPoint(vertex, &coord);
+        int almostEqual =
+            geoAlmostEqualThreshold(&gb.verts[i], &coord, 0.000001);
+        if (!almostEqual) {
+            printf("vertex %d of %d\n", i, numVerts);
+            geoPrintln(&coord);
+            geoBoundaryPrintln(&gb);
+        }
+        t_assert(almostEqual, "Vertex coordinates match boundary vertex");
+    }
+}
+
 SUITE(Vertex) {
     TEST(vertexNumForDirection_hex) {
         H3Index origin = 0x823d6ffffffffff;
@@ -62,5 +97,17 @@ SUITE(Vertex) {
         t_assert(
             vertexNumForDirection(pentagon, K_AXES_DIGIT) == INVALID_VERTEX_NUM,
             "K direction on pentagon should return invalid vertex");
+    }
+
+    // TODO: Move to exhaustive suite
+    TEST(directionForVertexNum_symmetry) {
+        iterateAllIndexesAtRes(0, directionForVertexNum_symmetry_assertions);
+        iterateAllIndexesAtRes(1, directionForVertexNum_symmetry_assertions);
+        iterateAllIndexesAtRes(2, directionForVertexNum_symmetry_assertions);
+    }
+
+    // TODO: Move to exhaustive suite
+    TEST(getCellVertex_point) {
+        iterateAllIndexesAtRes(0, getCellVertex_point_assertions);
     }
 }
