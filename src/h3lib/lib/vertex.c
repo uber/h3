@@ -19,6 +19,9 @@
 
 #include "vertex.h"
 
+#include <assert.h>
+#include <stdbool.h>
+
 #include "algos.h"
 #include "baseCells.h"
 #include "faceijk.h"
@@ -46,7 +49,7 @@ static const PentagonDirectionFaces pentagonDirectionFaces[NUM_PENTAGONS] = {
  * compared to the directional layout of its neighbors.
  * @return Number of CCW rotations for the cell
  */
-int vertexRotations(H3Index cell) {
+static int vertexRotations(H3Index cell, bool correctForPentagon) {
     // Get the face and other info for the origin
     FaceIJK fijk;
     _h3ToFaceIjk(cell, &fijk);
@@ -59,7 +62,7 @@ int vertexRotations(H3Index cell) {
 
     int ccwRot60 = _baseCellToCCWrot60(baseCell, fijk.face);
 
-    if (_isBaseCellPentagon(baseCell)) {
+    if (correctForPentagon && _isBaseCellPentagon(baseCell)) {
         // Find the appropriate direction-to-face mapping
         PentagonDirectionFaces dirFaces;
         for (int p = 0; p < NUM_PENTAGONS; p++) {
@@ -120,7 +123,7 @@ int vertexNumForDirection(const H3Index origin, const Direction direction) {
         return INVALID_VERTEX_NUM;
 
     // Determine the vertex rotations for this cell
-    int rotations = vertexRotations(origin);
+    int rotations = vertexRotations(origin, true);
 
     // Find the appropriate vertex, rotating CCW if necessary
     if (isPentagon) {
@@ -159,7 +162,7 @@ Direction directionForVertexNum(const H3Index origin, const int vertexNum) {
         return INVALID_DIGIT;
 
     // Determine the vertex rotations for this cell
-    int rotations = vertexRotations(origin);
+    int rotations = vertexRotations(origin, true);
 
     // Find the appropriate direction, rotating CW if necessary
     return isPentagon ? vertexNumToDirectionPent[(vertexNum + rotations) %
@@ -198,21 +201,31 @@ H3Index getCellVertex(H3Index origin, int vertexNum) {
     // - The neighbor may have a different orientation of its vertexes
     //   w/r/t its axial directions than the origin
     // - Left and right neighbors share a diffent vertex with the origin
-    int rotations = vertexRotations(origin);
+    int rotations = 0;
+    int res = H3_GET_RESOLUTION(origin);
     int ownerIsPentagon = H3_EXPORT(h3IsPentagon)(owner);
     int originIsPentagon = H3_EXPORT(h3IsPentagon)(origin);
+    // For... reasons, we don't need to apply pentagon corrections on Class II
+    // resolutions when we're rotating onto a pentagon. TODO: Determine reasons.
+    bool correctForPentagon = isResClassIII(res) || !ownerIsPentagon;
+
+    // TODO: Use baseCellNeighbor60CCWRots for res 0 rotation onto pentagon
+
     if (owner == rightNeighbor) {
         int vRotations = originIsPentagon ? 5 : ownerIsPentagon ? 3 : 4;
-        rotations = rotations + rRotations + vRotations -
-                    vertexRotations(rightNeighbor);
-        printf("right (%d): %d + %d - %d = %d\n", vertexNum, rRotations,
-               vRotations, vertexRotations(rightNeighbor), rotations);
+        rotations = vertexRotations(origin, correctForPentagon) + rRotations +
+                    vRotations -
+                    vertexRotations(rightNeighbor, correctForPentagon);
+        // printf("right (%d): %d + %d + %d - %d = %d\n", vertexNum,
+        //        vertexRotations(origin), rRotations, vRotations,
+        //        vertexRotations(rightNeighbor), rotations);
     } else if (owner == leftNeighbor) {
         int vRotations = originIsPentagon ? 4 : ownerIsPentagon ? 1 : 3;
-        rotations =
-            rotations + lRotations + vRotations - vertexRotations(leftNeighbor);
-        printf("left: %d + %d - %d = %d\n", lRotations, vRotations,
-               vertexRotations(leftNeighbor), rotations);
+        rotations = vertexRotations(origin, correctForPentagon) + lRotations +
+                    vRotations -
+                    vertexRotations(leftNeighbor, correctForPentagon);
+        // printf("left: %d + %d - %d = %d\n", lRotations, vRotations,
+        //        vertexRotations(leftNeighbor), rotations);
     }
     int ownerVertexNum =
         ownerIsPentagon

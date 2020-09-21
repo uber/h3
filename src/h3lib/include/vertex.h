@@ -38,7 +38,6 @@ typedef struct {
 /** Max number of faces a base cell's descendants may appear on */
 #define MAX_BASE_CELL_FACES 5
 
-int vertexRotations(H3Index cell);
 int vertexNumForDirection(const H3Index origin, const Direction direction);
 Direction directionForVertexNum(const H3Index origin, const int vertexNum);
 H3Index getCellVertex(H3Index origin, int vertexNum);
