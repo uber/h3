@@ -382,11 +382,9 @@ double H3_EXPORT(cellAreaRads2)(H3Index cell) {
     H3_EXPORT(h3ToGeo)(cell, &c);
     H3_EXPORT(h3ToGeoBoundary)(cell, &gb);
 
-    int N = gb.numVerts;
-    int i, j;
     double area = 0.0;
-    for (i = 0; i < N; i++) {
-        j = (i + 1) % N;
+    for (int i = 0; i < gb.numVerts; i++) {
+        int j = (i + 1) % gb.numVerts;
         area += triangleArea(&gb.verts[i], &gb.verts[j], &c);
     }
 
