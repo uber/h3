@@ -101,7 +101,7 @@ static void edge_length_assert(H3Index edge) {
  * @param  cell  cell to compute the area of
  */
 static void cell_area_assert(H3Index cell) {
-    char msg[] = "cell has positive length";
+    char msg[] = "cell has positive area";
 
     t_assert(H3_EXPORT(cellAreaRads2)(cell) > 0, msg);
     t_assert(H3_EXPORT(cellAreaKm2)(cell) > 0, msg);
