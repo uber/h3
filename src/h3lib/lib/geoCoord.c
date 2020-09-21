@@ -149,8 +149,8 @@ double constrainLng(double lng) {
  * @return    the great circle distance in radians between a and b
  */
 double H3_EXPORT(pointDistRads)(const GeoCoord *a, const GeoCoord *b) {
-    double sinLat = sin((b->lat - a->lat) / 2);
-    double sinLng = sin((b->lon - a->lon) / 2);
+    double sinLat = sin((b->lat - a->lat) / 2.0);
+    double sinLng = sin((b->lon - a->lon) / 2.0);
 
     double A = sinLat * sinLat + cos(a->lat) * cos(b->lat) * sinLng * sinLng;
 
