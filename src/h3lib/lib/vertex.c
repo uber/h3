@@ -49,7 +49,7 @@ static const PentagonDirectionFaces pentagonDirectionFaces[NUM_PENTAGONS] = {
  * compared to the directional layout of its neighbors.
  * @return Number of CCW rotations for the cell
  */
-static int vertexRotations(H3Index cell, bool correctForPentagon) {
+static int vertexRotations(H3Index cell, bool adjustForPentagon) {
     // Get the face and other info for the origin
     FaceIJK fijk;
     _h3ToFaceIjk(cell, &fijk);
@@ -62,7 +62,7 @@ static int vertexRotations(H3Index cell, bool correctForPentagon) {
 
     int ccwRot60 = _baseCellToCCWrot60(baseCell, fijk.face);
 
-    if (correctForPentagon && _isBaseCellPentagon(baseCell)) {
+    if (adjustForPentagon && _isBaseCellPentagon(baseCell)) {
         // Find the appropriate direction-to-face mapping
         PentagonDirectionFaces dirFaces;
         for (int p = 0; p < NUM_PENTAGONS; p++) {
@@ -207,25 +207,32 @@ H3Index getCellVertex(H3Index origin, int vertexNum) {
     int originIsPentagon = H3_EXPORT(h3IsPentagon)(origin);
     // For... reasons, we don't need to apply pentagon corrections on Class II
     // resolutions when we're rotating onto a pentagon. TODO: Determine reasons.
-    bool correctForPentagon = isResClassIII(res) || !ownerIsPentagon;
-
-    // TODO: Use baseCellNeighbor60CCWRots for res 0 rotation onto pentagon
+    bool adjustForPentagon = isResClassIII(res) || !ownerIsPentagon;
 
     if (owner == rightNeighbor) {
         int vRotations = originIsPentagon ? 5 : ownerIsPentagon ? 3 : 4;
-        rotations = vertexRotations(origin, correctForPentagon) + rRotations +
-                    vRotations -
-                    vertexRotations(rightNeighbor, correctForPentagon);
-        // printf("right (%d): %d + %d + %d - %d = %d\n", vertexNum,
-        //        vertexRotations(origin), rRotations, vRotations,
-        //        vertexRotations(rightNeighbor), rotations);
+        if (res == 0) {
+            rotations = rRotations + vRotations;
+            // Correct for rotation off of pentagon
+            if (originIsPentagon && vertexNum <= 2) rotations--;
+            // Correct for rotation onto pentagon. TBH, the rationale here is
+            // unclear, though I assume it's due to the correction above on the
+            // pentagon side. However, as there are only three indexes with this
+            // issue, enumeration is simpler and faster, if unsatisfying.
+            if (ownerIsPentagon &&
+                (origin == 0x8019fffffffffffL || origin == 0x801ffffffffffffL ||
+                 origin == 0x80f3fffffffffffL))
+                rotations--;
+        } else {
+            rotations = vertexRotations(origin, adjustForPentagon) -
+                        vertexRotations(rightNeighbor, adjustForPentagon) +
+                        rRotations + vRotations;
+        }
     } else if (owner == leftNeighbor) {
         int vRotations = originIsPentagon ? 4 : ownerIsPentagon ? 1 : 3;
-        rotations = vertexRotations(origin, correctForPentagon) + lRotations +
-                    vRotations -
-                    vertexRotations(leftNeighbor, correctForPentagon);
-        // printf("left: %d + %d - %d = %d\n", lRotations, vRotations,
-        //        vertexRotations(leftNeighbor), rotations);
+        rotations = vertexRotations(origin, adjustForPentagon) -
+                    vertexRotations(leftNeighbor, adjustForPentagon) +
+                    lRotations + vRotations;
     }
     int ownerVertexNum =
         ownerIsPentagon
