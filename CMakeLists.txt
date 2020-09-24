@@ -109,6 +109,7 @@ set(LIB_SOURCE_FILES
     src/h3lib/lib/h3Index.c
     src/h3lib/lib/vec2d.c
     src/h3lib/lib/vec3d.c
+    src/h3lib/lib/vertex.c
     src/h3lib/lib/linkedGeo.c
     src/h3lib/lib/localij.c
     src/h3lib/lib/geoCoord.c
@@ -164,6 +165,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testHexRing.c
     src/apps/testapps/testH3SetToVertexGraph.c
     src/apps/testapps/testBBox.c
+    src/apps/testapps/testVertex.c
     src/apps/testapps/testPolygon.c
     src/apps/testapps/testVec2d.c
     src/apps/testapps/testVec3d.c
@@ -185,6 +187,7 @@ set(OTHER_SOURCE_FILES
     src/apps/miscapps/h3ToGeoBoundaryHier.c
     src/apps/miscapps/h3ToGeoHier.c
     src/apps/miscapps/generateBaseCellNeighbors.c
+    src/apps/miscapps/generatePentagonDirectionFaces.c
     src/apps/miscapps/generateNumHexagons.c
     src/apps/miscapps/generateFaceCenterPoint.c
     src/apps/miscapps/h3ToHier.c
@@ -390,6 +393,7 @@ endif()
 if(BUILD_GENERATORS)
     # Code generation
     add_h3_executable(generateBaseCellNeighbors src/apps/miscapps/generateBaseCellNeighbors.c ${APP_SOURCE_FILES})
+    add_h3_executable(generatePentagonDirectionFaces src/apps/miscapps/generatePentagonDirectionFaces.c ${APP_SOURCE_FILES})
     add_h3_executable(generateNumHexagons src/apps/miscapps/generateNumHexagons.c ${APP_SOURCE_FILES})
     add_h3_executable(generateFaceCenterPoint src/apps/miscapps/generateFaceCenterPoint.c ${APP_SOURCE_FILES})
 
@@ -562,6 +566,7 @@ if(BUILD_TESTING)
     add_h3_test(testH3UniEdge src/apps/testapps/testH3UniEdge.c)
     add_h3_test(testGeoCoord src/apps/testapps/testGeoCoord.c)
     add_h3_test(testBBox src/apps/testapps/testBBox.c)
+    add_h3_test(testVertex src/apps/testapps/testVertex.c)
     add_h3_test(testPolygon src/apps/testapps/testPolygon.c)
     add_h3_test(testVec2d src/apps/testapps/testVec2d.c)
     add_h3_test(testVec3d src/apps/testapps/testVec3d.c)

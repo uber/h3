@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "baseCells.h"
 #include "constants.h"
 #include "geoCoord.h"
 #include "h3Index.h"
@@ -74,12 +75,11 @@ static void h3UniEdge_boundary_assertions(H3Index h3) {
                  "numVerts is equal for edge and reverse");
 
         for (int j = 0; j < edgeBoundary.numVerts; j++) {
-            t_assert(
-                geoAlmostEqualThreshold(
-                    &edgeBoundary.verts[j],
-                    &revEdgeBoundary.verts[revEdgeBoundary.numVerts - 1 - j],
-                    0.000001),
-                "Got expected vertex");
+            int almostEqual = geoAlmostEqualThreshold(
+                &edgeBoundary.verts[j],
+                &revEdgeBoundary.verts[revEdgeBoundary.numVerts - 1 - j],
+                0.000001);
+            t_assert(almostEqual, "Got expected vertex");
         }
     }
 }
@@ -90,6 +90,7 @@ SUITE(h3UniEdge) {
         iterateAllIndexesAtRes(1, h3UniEdge_correctness_assertions);
         iterateAllIndexesAtRes(2, h3UniEdge_correctness_assertions);
         iterateAllIndexesAtRes(3, h3UniEdge_correctness_assertions);
+        iterateAllIndexesAtRes(4, h3UniEdge_correctness_assertions);
     }
 
     TEST(h3UniEdge_boundary) {
@@ -97,5 +98,14 @@ SUITE(h3UniEdge) {
         iterateAllIndexesAtRes(1, h3UniEdge_boundary_assertions);
         iterateAllIndexesAtRes(2, h3UniEdge_boundary_assertions);
         iterateAllIndexesAtRes(3, h3UniEdge_boundary_assertions);
+        iterateAllIndexesAtRes(4, h3UniEdge_boundary_assertions);
+        // Res 5: normal base cell
+        iterateBaseCellIndexesAtRes(5, h3UniEdge_boundary_assertions, 0);
+        // Res 5: pentagon base cell
+        iterateBaseCellIndexesAtRes(5, h3UniEdge_boundary_assertions, 14);
+        // Res 5: polar pentagon base cell
+        iterateBaseCellIndexesAtRes(5, h3UniEdge_boundary_assertions, 117);
+        // Res 6: Test one pentagon just to check for new edge cases
+        iterateBaseCellIndexesAtRes(6, h3UniEdge_boundary_assertions, 14);
     }
 }
