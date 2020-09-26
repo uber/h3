@@ -179,6 +179,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testH3DistanceExhaustive.c
     src/apps/testapps/testH3Line.c
     src/apps/testapps/testH3LineExhaustive.c
+    src/apps/testapps/testH3CellArea.c
     src/apps/testapps/testH3CellAreaExhaustive.c
     src/apps/testapps/testCoordIj.c
     src/apps/testapps/testCoordIjk.c

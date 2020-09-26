@@ -125,7 +125,7 @@ static void earth_area_test(int res, double (*cell_area)(H3Index),
              "sum of all cells should give earth area");
 }
 
-SUITE(h3CellArea) {
+SUITE(h3CellAreaExhaustive) {
     TEST(haversine_distances) {
         iterateAllUnidirectionalEdgesAtRes(0, haversine_assert);
         iterateAllUnidirectionalEdgesAtRes(1, haversine_assert);
