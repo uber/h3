@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 Uber Technologies, Inc.
+ * Copyright 2016-2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ double _posAngleRads(double rads) {
  * @return Whether or not the two coordinates are within the threshold distance
  *         of each other.
  */
-bool geoAlmostEqualThreshold(const GeoCoord* p1, const GeoCoord* p2,
+bool geoAlmostEqualThreshold(const GeoCoord *p1, const GeoCoord *p2,
                              double threshold) {
     return fabs(p1->lat - p2->lat) < threshold &&
            fabs(p1->lon - p2->lon) < threshold;
@@ -62,18 +62,18 @@ bool geoAlmostEqualThreshold(const GeoCoord* p1, const GeoCoord* p2,
  * @return Whether or not the two coordinates are within the epsilon distance
  *         of each other.
  */
-bool geoAlmostEqual(const GeoCoord* p1, const GeoCoord* p2) {
+bool geoAlmostEqual(const GeoCoord *p1, const GeoCoord *p2) {
     return geoAlmostEqualThreshold(p1, p2, EPSILON_RAD);
 }
 
 /**
  * Set the components of spherical coordinates in decimal degrees.
  *
- * @param p The spherical coodinates.
- * @param latDegs The desired latitidue in decimal degrees.
+ * @param p The spherical coordinates.
+ * @param latDegs The desired latitude in decimal degrees.
  * @param lonDegs The desired longitude in decimal degrees.
  */
-void setGeoDegs(GeoCoord* p, double latDegs, double lonDegs) {
+void setGeoDegs(GeoCoord *p, double latDegs, double lonDegs) {
     _setGeoRads(p, H3_EXPORT(degsToRads)(latDegs),
                 H3_EXPORT(degsToRads)(lonDegs));
 }
@@ -81,11 +81,11 @@ void setGeoDegs(GeoCoord* p, double latDegs, double lonDegs) {
 /**
  * Set the components of spherical coordinates in radians.
  *
- * @param p The spherical coodinates.
- * @param latRads The desired latitidue in decimal radians.
+ * @param p The spherical coordinates.
+ * @param latRads The desired latitude in decimal radians.
  * @param lonRads The desired longitude in decimal radians.
  */
-void _setGeoRads(GeoCoord* p, double latRads, double lonRads) {
+void _setGeoRads(GeoCoord *p, double latRads, double lonRads) {
     p->lat = latRads;
     p->lon = lonRads;
 }
@@ -136,47 +136,39 @@ double constrainLng(double lng) {
 }
 
 /**
- * Find the great circle distance in radians between two spherical coordinates.
+ * The great circle distance in radians between two spherical coordinates.
  *
- * @param p1 The first spherical coordinates.
- * @param p2 The second spherical coordinates.
- * @return The great circle distance in radians between p1 and p2.
+ * This function uses the Haversine formula.
+ * For math details, see:
+ *     https://en.wikipedia.org/wiki/Haversine_formula
+ *     https://www.movable-type.co.uk/scripts/latlong.html
+ *
+ * @param  a  the first lat/lng pair (in radians)
+ * @param  b  the second lat/lng pair (in radians)
+ *
+ * @return    the great circle distance in radians between a and b
  */
-double _geoDistRads(const GeoCoord* p1, const GeoCoord* p2) {
-    // use spherical triangle with p1 at A, p2 at B, and north pole at C
-    double bigC = fabs(p2->lon - p1->lon);
-    if (bigC > M_PI)  // assume we want the complement
-    {
-        // note that in this case they can't both be negative
-        double lon1 = p1->lon;
-        if (lon1 < 0.0L) lon1 += 2.0L * M_PI;
-        double lon2 = p2->lon;
-        if (lon2 < 0.0L) lon2 += 2.0L * M_PI;
+double H3_EXPORT(pointDistRads)(const GeoCoord *a, const GeoCoord *b) {
+    double sinLat = sin((b->lat - a->lat) / 2.0);
+    double sinLng = sin((b->lon - a->lon) / 2.0);
 
-        bigC = fabs(lon2 - lon1);
-    }
+    double A = sinLat * sinLat + cos(a->lat) * cos(b->lat) * sinLng * sinLng;
 
-    double b = M_PI_2 - p1->lat;
-    double a = M_PI_2 - p2->lat;
-
-    // use law of cosines to find c
-    double cosc = cos(a) * cos(b) + sin(a) * sin(b) * cos(bigC);
-    if (cosc > 1.0L) cosc = 1.0L;
-    if (cosc < -1.0L) cosc = -1.0L;
-
-    return acos(cosc);
+    return 2 * atan2(sqrt(A), sqrt(1 - A));
 }
 
 /**
- * Find the great circle distance in kilometers between two spherical
- * coordinates.
- *
- * @param p1 The first spherical coordinates.
- * @param p2 The second spherical coordinates.
- * @return The distance in kilometers between p1 and p2.
+ * The great circle distance in kilometers between two spherical coordinates.
  */
-double _geoDistKm(const GeoCoord* p1, const GeoCoord* p2) {
-    return EARTH_RADIUS_KM * _geoDistRads(p1, p2);
+double H3_EXPORT(pointDistKm)(const GeoCoord *a, const GeoCoord *b) {
+    return H3_EXPORT(pointDistRads)(a, b) * EARTH_RADIUS_KM;
+}
+
+/**
+ * The great circle distance in meters between two spherical coordinates.
+ */
+double H3_EXPORT(pointDistM)(const GeoCoord *a, const GeoCoord *b) {
+    return H3_EXPORT(pointDistKm)(a, b) * 1000;
 }
 
 /**
@@ -186,7 +178,7 @@ double _geoDistKm(const GeoCoord* p1, const GeoCoord* p2) {
  * @param p2 The second spherical coordinates.
  * @return The azimuth in radians from p1 to p2.
  */
-double _geoAzimuthRads(const GeoCoord* p1, const GeoCoord* p2) {
+double _geoAzimuthRads(const GeoCoord *p1, const GeoCoord *p2) {
     return atan2(cos(p2->lat) * sin(p2->lon - p1->lon),
                  cos(p1->lat) * sin(p2->lat) -
                      sin(p1->lat) * cos(p2->lat) * cos(p2->lon - p1->lon));
@@ -202,8 +194,8 @@ double _geoAzimuthRads(const GeoCoord* p1, const GeoCoord* p2) {
  * @param p2 The spherical coordinates at the desired azimuth and distance from
  * p1.
  */
-void _geoAzDistanceRads(const GeoCoord* p1, double az, double distance,
-                        GeoCoord* p2) {
+void _geoAzDistanceRads(const GeoCoord *p1, double az, double distance,
+                        GeoCoord *p2) {
     if (distance < EPSILON) {
         *p2 = *p1;
         return;
@@ -331,4 +323,118 @@ int64_t H3_EXPORT(numHexagons)(int res) {
                                    81386768741882L,
                                    569707381193162L};
     return nums[res];
+}
+
+/**
+ * Surface area in radians^2 of spherical triangle on unit sphere.
+ *
+ * For the math, see:
+ * https://en.wikipedia.org/wiki/Spherical_trigonometry#Area_and_spherical_excess
+ *
+ * @param   a  length of triangle side A in radians
+ * @param   b  length of triangle side B in radians
+ * @param   c  length of triangle side C in radians
+ *
+ * @return     area in radians^2 of triangle on unit sphere
+ */
+double triangleEdgeLengthsToArea(double a, double b, double c) {
+    double s = (a + b + c) / 2;
+
+    a = (s - a) / 2;
+    b = (s - b) / 2;
+    c = (s - c) / 2;
+    s = s / 2;
+
+    return 4 * atan(sqrt(tan(s) * tan(a) * tan(b) * tan(c)));
+}
+
+/**
+ * Compute area in radians^2 of a spherical triangle, given its vertices.
+ *
+ * @param   a  vertex lat/lng in radians
+ * @param   b  vertex lat/lng in radians
+ * @param   c  vertex lat/lng in radians
+ *
+ * @return     area of triangle on unit sphere, in radians^2
+ */
+double triangleArea(const GeoCoord *a, const GeoCoord *b, const GeoCoord *c) {
+    return triangleEdgeLengthsToArea(H3_EXPORT(pointDistRads)(a, b),
+                                     H3_EXPORT(pointDistRads)(b, c),
+                                     H3_EXPORT(pointDistRads)(c, a));
+}
+
+/**
+ * Area of H3 cell in radians^2.
+ *
+ * The area is calculated by breaking the cell into spherical triangles and
+ * summing up their areas. Note that some H3 cells (hexagons and pentagons)
+ * are irregular, and have more than 6 or 5 sides.
+ *
+ * todo: optimize the computation by re-using the edges shared between triangles
+ *
+ * @param   cell  H3 cell
+ *
+ * @return        cell area in radians^2
+ */
+double H3_EXPORT(cellAreaRads2)(H3Index cell) {
+    GeoCoord c;
+    GeoBoundary gb;
+    H3_EXPORT(h3ToGeo)(cell, &c);
+    H3_EXPORT(h3ToGeoBoundary)(cell, &gb);
+
+    double area = 0.0;
+    for (int i = 0; i < gb.numVerts; i++) {
+        int j = (i + 1) % gb.numVerts;
+        area += triangleArea(&gb.verts[i], &gb.verts[j], &c);
+    }
+
+    return area;
+}
+
+/**
+ * Area of H3 cell in kilometers^2.
+ */
+double H3_EXPORT(cellAreaKm2)(H3Index h) {
+    return H3_EXPORT(cellAreaRads2)(h) * EARTH_RADIUS_KM * EARTH_RADIUS_KM;
+}
+
+/**
+ * Area of H3 cell in meters^2.
+ */
+double H3_EXPORT(cellAreaM2)(H3Index h) {
+    return H3_EXPORT(cellAreaKm2)(h) * 1000 * 1000;
+}
+
+/**
+ * Length of a unidirectional edge in radians.
+ *
+ * @param   edge  H3 unidirectional edge
+ *
+ * @return        length in radians
+ */
+double H3_EXPORT(exactEdgeLengthRads)(H3Index edge) {
+    GeoBoundary gb;
+
+    H3_EXPORT(getH3UnidirectionalEdgeBoundary)(edge, &gb);
+
+    double length = 0.0;
+    for (int i = 0; i < gb.numVerts - 1; i++) {
+        length += H3_EXPORT(pointDistRads)(&gb.verts[i], &gb.verts[i + 1]);
+    }
+
+    return length;
+}
+
+/**
+ * Length of a unidirectional edge in kilometers.
+ */
+double H3_EXPORT(exactEdgeLengthKm)(H3Index edge) {
+    return H3_EXPORT(exactEdgeLengthRads)(edge) * EARTH_RADIUS_KM;
+}
+
+/**
+ * Length of a unidirectional edge in meters.
+ */
+double H3_EXPORT(exactEdgeLengthM)(H3Index edge) {
+    return H3_EXPORT(exactEdgeLengthKm)(edge) * 1000;
 }

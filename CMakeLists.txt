@@ -1,4 +1,4 @@
-# Copyright 2017-2019 Uber Technologies, Inc.
+# Copyright 2017-2020 Uber Technologies, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -181,6 +181,8 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testH3DistanceExhaustive.c
     src/apps/testapps/testH3Line.c
     src/apps/testapps/testH3LineExhaustive.c
+    src/apps/testapps/testH3CellArea.c
+    src/apps/testapps/testH3CellAreaExhaustive.c
     src/apps/testapps/testCoordIj.c
     src/apps/testapps/testCoordIjk.c
     src/apps/testapps/testH3Memory.c
@@ -573,6 +575,7 @@ if(BUILD_TESTING)
     add_h3_test(testH3ToLocalIj src/apps/testapps/testH3ToLocalIj.c)
     add_h3_test(testH3Distance src/apps/testapps/testH3Distance.c)
     add_h3_test(testH3Line src/apps/testapps/testH3Line.c)
+    add_h3_test(testH3CellArea src/apps/testapps/testH3CellArea.c)
     add_h3_test(testCoordIj src/apps/testapps/testCoordIj.c)
     add_h3_test(testCoordIjk src/apps/testapps/testCoordIjk.c)
     add_h3_test(testBaseCells src/apps/testapps/testBaseCells.c)
@@ -588,6 +591,7 @@ if(BUILD_TESTING)
     add_h3_test(testH3ToLocalIjExhaustive src/apps/testapps/testH3ToLocalIjExhaustive.c)
     add_h3_test(testH3LineExhaustive src/apps/testapps/testH3LineExhaustive.c)
     add_h3_test(testH3DistanceExhaustive src/apps/testapps/testH3DistanceExhaustive.c)
+    add_h3_test(testH3CellAreaExhaustive src/apps/testapps/testH3CellAreaExhaustive.c)
 
     add_h3_memory_test(testH3Memory src/apps/testapps/testH3Memory.c)
 

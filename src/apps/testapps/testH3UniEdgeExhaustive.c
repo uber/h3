@@ -32,7 +32,7 @@
 #include "utility.h"
 
 static void h3UniEdge_correctness_assertions(H3Index h3) {
-    H3Index edges[6] = {0};
+    H3Index edges[6] = {H3_NULL};
     int isPentagon = H3_EXPORT(h3IsPentagon)(h3);
     H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(h3, edges);
     H3Index destination;
@@ -56,7 +56,7 @@ static void h3UniEdge_correctness_assertions(H3Index h3) {
 }
 
 static void h3UniEdge_boundary_assertions(H3Index h3) {
-    H3Index edges[6] = {0};
+    H3Index edges[6] = {H3_NULL};
     H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(h3, edges);
     H3Index destination;
     H3Index revEdge;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 Uber Technologies, Inc.
+ * Copyright 2016-2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,8 +44,6 @@ bool geoAlmostEqualThreshold(const GeoCoord* p1, const GeoCoord* p2,
 
 double _posAngleRads(double rads);
 void _setGeoRads(GeoCoord* p, double latRads, double lonRads);
-double _geoDistRads(const GeoCoord* p1, const GeoCoord* p2);
-double _geoDistKm(const GeoCoord* p1, const GeoCoord* p2);
 double _geoAzimuthRads(const GeoCoord* p1, const GeoCoord* p2);
 void _geoAzDistanceRads(const GeoCoord* p1, double az, double distance,
                         GeoCoord* p2);

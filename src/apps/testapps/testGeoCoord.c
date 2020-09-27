@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Uber Technologies, Inc.
+ * Copyright 2017-2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@
 #include "geoCoord.h"
 #include "h3api.h"
 #include "test.h"
+#include "utility.h"
 
 /**
  * Test a function for all resolutions, where the value should be decreasing as
@@ -34,7 +35,8 @@
  * @param function
  * @param message
  */
-void testDecreasingFunction(double (*function)(int), const char* message) {
+static void testDecreasingFunction(double (*function)(int),
+                                   const char* message) {
     double last = 0;
     double next;
     for (int i = MAX_H3_RES; i >= 0; i--) {
@@ -53,17 +55,17 @@ SUITE(geoCoord) {
                  "radsToDegs/degsToRads invertible");
     }
 
-    TEST(_geoDistRads) {
+    TEST(pointDistRads) {
         GeoCoord p1;
         setGeoDegs(&p1, 10, 10);
         GeoCoord p2;
         setGeoDegs(&p2, 0, 10);
 
         // TODO: Epsilon is relatively large
-        t_assert(_geoDistRads(&p1, &p1) < EPSILON_RAD * 1000,
+        t_assert(H3_EXPORT(pointDistRads)(&p1, &p1) < EPSILON_RAD * 1000,
                  "0 distance as expected");
-        t_assert(fabs(_geoDistRads(&p1, &p2) - H3_EXPORT(degsToRads)(10)) <
-                     EPSILON_RAD * 1000,
+        t_assert(fabs(H3_EXPORT(pointDistRads)(&p1, &p2) -
+                      H3_EXPORT(degsToRads)(10)) < EPSILON_RAD * 1000,
                  "distance along longitude as expected");
     }
 
@@ -182,24 +184,26 @@ SUITE(geoCoord) {
         double distance = H3_EXPORT(degsToRads)(15);
 
         _geoAzDistanceRads(&start, azimuth, distance, &out);
-        t_assert(fabs(_geoDistRads(&start, &out) - distance) < EPSILON_RAD,
+        t_assert(fabs(H3_EXPORT(pointDistRads)(&start, &out) - distance) <
+                     EPSILON_RAD,
                  "moved distance is as expected");
 
         GeoCoord start2 = out;
         _geoAzDistanceRads(&start2, azimuth + degrees180, distance, &out);
         // TODO: Epsilon is relatively large
-        t_assert(_geoDistRads(&start, &out) < 0.01, "moved back to origin");
+        t_assert(H3_EXPORT(pointDistRads)(&start, &out) < 0.01,
+                 "moved back to origin");
     }
 
-    TEST(_geoDistRads_wrappedLongitude) {
+    TEST(pointDistRads_wrappedLongitude) {
         const GeoCoord negativeLongitude = {.lat = 0, .lon = -(M_PI + M_PI_2)};
         const GeoCoord zero = {.lat = 0, .lon = 0};
 
-        t_assert(fabs(M_PI_2 - _geoDistRads(&negativeLongitude, &zero)) <
-                     EPSILON_RAD,
+        t_assert(fabs(M_PI_2 - H3_EXPORT(pointDistRads)(&negativeLongitude,
+                                                        &zero)) < EPSILON_RAD,
                  "Distance with wrapped longitude");
-        t_assert(fabs(M_PI_2 - _geoDistRads(&zero, &negativeLongitude)) <
-                     EPSILON_RAD,
+        t_assert(fabs(M_PI_2 - H3_EXPORT(pointDistRads)(
+                                   &zero, &negativeLongitude)) < EPSILON_RAD,
                  "Distance with wrapped longitude and swapped arguments");
     }
 
