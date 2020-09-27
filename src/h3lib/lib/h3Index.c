@@ -849,8 +849,13 @@ void H3_EXPORT(h3ToGeo)(H3Index h3, GeoCoord* g) {
 void H3_EXPORT(h3ToGeoBoundary)(H3Index h3, GeoBoundary* gb) {
     FaceIJK fijk;
     _h3ToFaceIjk(h3, &fijk);
-    _faceIjkToGeoBoundary(&fijk, H3_GET_RESOLUTION(h3),
-                          H3_EXPORT(h3IsPentagon)(h3), gb);
+    if (H3_EXPORT(h3IsPentagon)(h3)) {
+        _faceIjkPentToGeoBoundary(&fijk, H3_GET_RESOLUTION(h3), 0,
+                                  NUM_PENT_VERTS, gb);
+    } else {
+        _faceIjkToGeoBoundary(&fijk, H3_GET_RESOLUTION(h3), 0, NUM_HEX_VERTS,
+                              gb);
+    }
 }
 
 /**

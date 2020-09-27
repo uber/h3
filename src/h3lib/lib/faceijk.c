@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2019 Uber Technologies, Inc.
+ * Copyright 2016-2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -501,20 +501,28 @@ void _faceIjkToGeo(const FaceIJK* h, int res, GeoCoord* g) {
  *
  * @param h The FaceIJK address of the pentagonal cell.
  * @param res The H3 resolution of the cell.
+ * @param start The first topological vertex to return.
+ * @param length The number of topological vertexes to return.
  * @param g The spherical coordinates of the cell boundary.
  */
-void _faceIjkPentToGeoBoundary(const FaceIJK* h, int res, GeoBoundary* g) {
+void _faceIjkPentToGeoBoundary(const FaceIJK* h, int res, int start, int length,
+                               GeoBoundary* g) {
     int adjRes = res;
     FaceIJK centerIJK = *h;
     FaceIJK fijkVerts[NUM_PENT_VERTS];
     _faceIjkPentToVerts(&centerIJK, &adjRes, fijkVerts);
+
+    // If we're returning the entire loop, we need one more iteration in case
+    // of a distortion vertex on the last edge
+    int additionalIteration = length == NUM_PENT_VERTS ? 1 : 0;
 
     // convert each vertex to lat/lon
     // adjust the face of each vertex as appropriate and introduce
     // edge-crossing vertices as needed
     g->numVerts = 0;
     FaceIJK lastFijk;
-    for (int vert = 0; vert < NUM_PENT_VERTS + 1; vert++) {
+    for (int vert = start; vert < start + length + additionalIteration;
+         vert++) {
         int v = vert % NUM_PENT_VERTS;
 
         FaceIJK fijk = fijkVerts[v];
@@ -524,7 +532,7 @@ void _faceIjkPentToGeoBoundary(const FaceIJK* h, int res, GeoBoundary* g) {
         // all Class III pentagon edges cross icosa edges
         // note that Class II pentagons have vertices on the edge,
         // not edge intersections
-        if (isResClassIII(res) && vert > 0) {
+        if (isResClassIII(res) && vert > start) {
             // find hex2d of the two vertexes on the last face
 
             FaceIJK tmpFijk = fijk;
@@ -585,9 +593,9 @@ void _faceIjkPentToGeoBoundary(const FaceIJK* h, int res, GeoBoundary* g) {
         }
 
         // convert vertex to lat/lon and add to the result
-        // vert == NUM_PENT_VERTS is only used to test for possible intersection
-        // on last edge
-        if (vert < NUM_PENT_VERTS) {
+        // vert == start + NUM_PENT_VERTS is only used to test for possible
+        // intersection on last edge
+        if (vert < start + NUM_PENT_VERTS) {
             Vec2d vec;
             _ijkToHex2d(&fijk.coord, &vec);
             _hex2dToGeo(&vec, fijk.face, adjRes, 1, &g->verts[g->numVerts]);
@@ -666,20 +674,20 @@ void _faceIjkPentToVerts(FaceIJK* fijk, int* res, FaceIJK* fijkVerts) {
  *
  * @param h The FaceIJK address of the cell.
  * @param res The H3 resolution of the cell.
- * @param isPentagon Whether or not the cell is a pentagon.
+ * @param start The first topological vertex to return.
+ * @param length The number of topological vertexes to return.
  * @param g The spherical coordinates of the cell boundary.
  */
-void _faceIjkToGeoBoundary(const FaceIJK* h, int res, int isPentagon,
+void _faceIjkToGeoBoundary(const FaceIJK* h, int res, int start, int length,
                            GeoBoundary* g) {
-    if (isPentagon) {
-        _faceIjkPentToGeoBoundary(h, res, g);
-        return;
-    }
-
     int adjRes = res;
     FaceIJK centerIJK = *h;
     FaceIJK fijkVerts[NUM_HEX_VERTS];
     _faceIjkToVerts(&centerIJK, &adjRes, fijkVerts);
+
+    // If we're returning the entire loop, we need one more iteration in case
+    // of a distortion vertex on the last edge
+    int additionalIteration = length == NUM_HEX_VERTS ? 1 : 0;
 
     // convert each vertex to lat/lon
     // adjust the face of each vertex as appropriate and introduce
@@ -687,12 +695,13 @@ void _faceIjkToGeoBoundary(const FaceIJK* h, int res, int isPentagon,
     g->numVerts = 0;
     int lastFace = -1;
     Overage lastOverage = NO_OVERAGE;
-    for (int vert = 0; vert < NUM_HEX_VERTS + 1; vert++) {
+    for (int vert = start; vert < start + length + additionalIteration;
+         vert++) {
         int v = vert % NUM_HEX_VERTS;
 
         FaceIJK fijk = fijkVerts[v];
 
-        int pentLeading4 = 0;
+        const int pentLeading4 = 0;
         Overage overage = _adjustOverageClassII(&fijk, adjRes, pentLeading4, 1);
 
         /*
@@ -704,7 +713,7 @@ void _faceIjkToGeoBoundary(const FaceIJK* h, int res, int isPentagon,
         projection. Note that Class II cell edges have vertices on the face
         edge, with no edge line intersections.
         */
-        if (isResClassIII(res) && vert > 0 && fijk.face != lastFace &&
+        if (isResClassIII(res) && vert > start && fijk.face != lastFace &&
             lastOverage != FACE_EDGE) {
             // find hex2d of the two vertexes on original face
             int lastV = (v + 5) % NUM_HEX_VERTS;
@@ -732,7 +741,7 @@ void _faceIjkToGeoBoundary(const FaceIJK* h, int res, int isPentagon,
                     edge0 = &v1;
                     edge1 = &v2;
                     break;
-                case KI:
+                // case KI:
                 default:
                     assert(adjacentFaceDir[centerIJK.face][face2] == KI);
                     edge0 = &v2;
@@ -758,9 +767,9 @@ void _faceIjkToGeoBoundary(const FaceIJK* h, int res, int isPentagon,
         }
 
         // convert vertex to lat/lon and add to the result
-        // vert == NUM_HEX_VERTS is only used to test for possible intersection
-        // on last edge
-        if (vert < NUM_HEX_VERTS) {
+        // vert == start + NUM_HEX_VERTS is only used to test for possible
+        // intersection on last edge
+        if (vert < start + NUM_HEX_VERTS) {
             Vec2d vec;
             _ijkToHex2d(&fijk.coord, &vec);
             _hex2dToGeo(&vec, fijk.face, adjRes, 1, &g->verts[g->numVerts]);
