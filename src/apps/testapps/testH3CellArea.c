@@ -40,7 +40,7 @@ SUITE(h3CellArea) {
             H3Index cell = H3_EXPORT(geoToH3)(&gc, res);
             double area = H3_EXPORT(cellAreaKm2)(cell);
 
-            t_assert(fabs(area - areasKm2[res]) < 1e-9,
+            t_assert(fabs(area - areasKm2[res]) < 1e-8,
                      "cell area should match expectation");
         }
     }
