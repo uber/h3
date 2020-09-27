@@ -24,28 +24,23 @@
 
 #include "h3Index.h"
 #include "test.h"
-#include "utility.h"
 
-static const double areas_km[] = {
-    2562182.1629554955,     447684.2018179411,    65961.62242711056,
-    9228.87291900259,       1318.6944907971103,   187.95935122812978,
-    26.87164354763186,      3.8408488470606383,   0.5486939641329893,
-    0.07838600808637444,    0.011198342219893902, 0.001599777169186614,
-    0.00022853909314233801, 3.26485023209178e-05, 4.664070326136774e-06,
+static const double areasKm2[] = {
+    2.562182162955496e+06, 4.476842018179411e+05, 6.596162242711056e+04,
+    9.228872919002590e+03, 1.318694490797110e+03, 1.879593512281298e+02,
+    2.687164354763186e+01, 3.840848847060638e+00, 5.486939641329893e-01,
+    7.838600808637444e-02, 1.119834221989390e-02, 1.599777169186614e-03,
+    2.285390931423380e-04, 3.264850232091780e-05, 4.664070326136774e-06,
     6.662957615868888e-07};
 
-SUITE(h3CellAreaSmall) {
-    TEST(haversine_distances) {
+SUITE(h3CellArea) {
+    TEST(specific_cell_area) {
+        GeoCoord gc = {0.0, 0.0};
         for (int res = 0; res <= MAX_H3_RES - 1; res++) {
-            GeoCoord gc;
-            gc.lat = 0.0;
-            gc.lng = 0.0;
-
             H3Index cell = H3_EXPORT(geoToH3)(&gc, res);
-            double area = H3_EXPORT(cellAreaKm2)(cell) > 0;
+            double area = H3_EXPORT(cellAreaKm2)(cell);
 
-            // expecting this to fail
-            t_assert(fabs(area - areas_km[res]) < 0,
+            t_assert(fabs(area - areasKm2[res]) < 1e-9,
                      "cell area should match expectation");
         }
     }
