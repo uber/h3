@@ -9,19 +9,19 @@ The public API of this library consists of the functions declared in file
 
 ## [3.7.0] - 2020-09-28
 ### Added
-- area and haversine distance functions (#377):
-    - cellAreaRads2
-    - cellAreaKm2
-    - cellAreaM2
-    - pointDistRads
-    - pointDistKm
-    - pointDistM
-    - exactEdgeLengthRads
-    - exactEdgeLengthKm
-    - exactEdgeLengthM
-- refactor `getH3UnidirectionalEdgeBoundary` for accuracy at small resolutions (#391)
-    - speeds up `getH3UnidirectionalEdgeBoundary` by about 3x
-    - implement core logic for future vertex mode
+- Area and haversine distance functions (#377):
+    - `cellAreaRads2`
+    - `cellAreaKm2`
+    - `cellAreaM2`
+    - `pointDistRads`
+    - `pointDistKm`
+    - `pointDistM`
+    - `exactEdgeLengthRads`
+    - `exactEdgeLengthKm`
+    - `exactEdgeLengthM`
+- Refactor `getH3UnidirectionalEdgeBoundary` for accuracy at small resolutions. (#391)
+    - Speeds up `getH3UnidirectionalEdgeBoundary` by about 3x.
+    - Implement core logic for future vertex mode.
 ### Fixed
 - Fixed building the library with custom memory allocation functions on Mac OSX. (#362)
 - The installed H3 CMake target should have include directories specified. (#381)
