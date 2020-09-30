@@ -33,7 +33,7 @@ Still here? To build the H3 C library, you'll need a C compiler (tested with `gc
 
 #### Install build-time dependencies
 
-* Alpine 
+* Alpine
 ```
 # Installing the bare build requirements
 apk add cmake make gcc libtool musl-dev
@@ -62,6 +62,13 @@ brew install clang-format lcov doxygen
 * Windows (Visual Studio)
 
 You will need to install CMake and Visual Studio, including the Visual C++ compiler. For building on Windows, please follow the [Windows build instructions](dev-docs/build_windows.md).
+
+* FreeBSD
+
+ ```
+# Installing the build requirements
+sudo pkg install bash cmake gmake doxygen lcov
+```
 
 #### Compilation
 
