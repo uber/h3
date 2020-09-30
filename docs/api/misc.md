@@ -34,6 +34,30 @@ double hexAreaM2(int res);
 
 Average hexagon area in square meters at the given resolution.
 
+## cellAreaKm2
+
+```
+double cellAreaKm2(H3Index h);
+```
+
+Exact area of specific cell in square kilometers.
+
+## cellAreaM2
+
+```
+double cellAreaM2(H3Index h);
+```
+
+Exact area of specific cell in square meters.
+
+## cellAreaRads2
+
+```
+double cellAreaRads2(H3Index h);
+```
+
+Exact area of specific cell in square radians.
+
 ## edgeLengthKm
 
 ```
@@ -49,6 +73,31 @@ double edgeLengthM(int res);
 ```
 
 Average hexagon edge length in meters at the given resolution.
+
+
+## exactEdgeLengthKm
+
+```
+double exactEdgeLengthKm(H3Index edge);
+```
+
+Exact edge length of specific unidirectional edge in kilometers.
+
+## exactEdgeLengthM
+
+```
+double exactEdgeLengthM(H3Index edge);
+```
+
+Exact edge length of specific unidirectional edge in meters.
+
+## exactEdgeLengthRads
+
+```
+double exactEdgeLengthRads(H3Index edge);
+```
+
+Exact edge length of specific unidirectional edge in radians.
 
 ## numHexagons
 
@@ -91,3 +140,30 @@ int pentagonIndexCount();
 ```
 
 Number of pentagon **H3** indexes per resolution. This is always 12, but provided as a convenience.
+
+## pointDistKm
+
+```
+double pointDistKm(const GeoCoord *a, const GeoCoord *b);
+```
+
+Gives the "great circle" or "haversine" distance between pairs of
+GeoCoord points (lat/lng pairs) in kilometers.
+
+## pointDistM
+
+```
+double pointDistM(const GeoCoord *a, const GeoCoord *b);
+```
+
+Gives the "great circle" or "haversine" distance between pairs of
+GeoCoord points (lat/lng pairs) in meters.
+
+## pointDistRads
+
+```
+double pointDistRads(const GeoCoord *a, const GeoCoord *b);
+```
+
+Gives the "great circle" or "haversine" distance between pairs of
+GeoCoord points (lat/lng pairs) in radians.

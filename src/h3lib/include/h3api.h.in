@@ -301,7 +301,12 @@ double H3_EXPORT(edgeLengthKm)(int res);
 
 /** @brief average hexagon edge length in meters (excludes pentagons) */
 double H3_EXPORT(edgeLengthM)(int res);
+/** @} */
 
+/** @defgroup exactEdgeLength exactEdgeLength
+ * Functions for exactEdgeLength
+ * @{
+ */
 /** @brief exact length for a specific unidirectional edge in radians*/
 double H3_EXPORT(exactEdgeLengthRads)(H3Index edge);
 
