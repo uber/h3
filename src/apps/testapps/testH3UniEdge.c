@@ -342,4 +342,12 @@ SUITE(h3UniEdge) {
                      "Only one edge was deleted for the pentagon");
         }
     }
+
+    TEST(exactEdgeLength_invalid) {
+        // Test that invalid inputs do not cause crashes.
+        H3_EXPORT(exactEdgeLengthRads)(0);
+        GeoCoord zero = {0, 0};
+        H3Index h3 = H3_EXPORT(geoToH3)(&zero, 0);
+        H3_EXPORT(exactEdgeLengthRads)(h3);
+    }
 }
