@@ -6,6 +6,8 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+### Fixed
+- Finding invalid edge boundaries should not crash. (#399)
 
 ## [3.7.0] - 2020-09-28
 ### Added

@@ -239,6 +239,12 @@ void H3_EXPORT(getH3UnidirectionalEdgeBoundary)(H3Index edge, GeoBoundary* gb) {
 
     // Get the start vertex for the edge
     int startVertex = vertexNumForDirection(origin, direction);
+    if (startVertex == INVALID_VERTEX_NUM) {
+        // This is not actually an edge (i.e. no valid direction),
+        // so return no vertices.
+        gb->numVerts = 0;
+        return;
+    }
 
     // Get the geo boundary for the appropriate vertexes of the origin. Note
     // that while there are always 2 topological vertexes per edge, the
