@@ -342,4 +342,14 @@ SUITE(h3UniEdge) {
                      "Only one edge was deleted for the pentagon");
         }
     }
+
+    TEST(exactEdgeLength_invalid) {
+        // Test that invalid inputs do not cause crashes.
+        t_assert(H3_EXPORT(exactEdgeLengthRads)(0) == 0,
+                 "Invalid edge has zero length");
+        GeoCoord zero = {0, 0};
+        H3Index h3 = H3_EXPORT(geoToH3)(&zero, 0);
+        t_assert(H3_EXPORT(exactEdgeLengthRads)(h3) == 0,
+                 "Non-edge (cell) has zero edge length");
+    }
 }
