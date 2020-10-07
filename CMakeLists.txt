@@ -58,6 +58,11 @@ set(H3_SOVERSION 1)
 
 project(h3 LANGUAGES C VERSION ${H3_VERSION})
 
+# Detect if someone else is including the package
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    set(H3_IS_ROOT_PROJECT ON)
+endif()
+
 set(H3_COMPILE_FLAGS "")
 set(H3_LINK_FLAGS "")
 if(NOT WIN32)
@@ -82,7 +87,9 @@ endif()
 
 include(CMakeDependentOption)
 include(CheckIncludeFile)
-include(CTest)
+if(H3_IS_ROOT_PROJECT)
+    include(CTest)
+endif()
 
 set(LIB_SOURCE_FILES
     src/h3lib/include/bbox.h
@@ -404,7 +411,7 @@ if(BUILD_GENERATORS)
     add_h3_executable(mkRandGeoBoundary src/apps/testapps/mkRandGeoBoundary.c ${APP_SOURCE_FILES})
 endif()
 
-if(BUILD_TESTING)
+if(H3_IS_ROOT_PROJECT AND BUILD_TESTING)
     option(PRINT_TEST_FILES "Print which test files correspond to which tests" OFF)
 
     include(TestWrapValgrind)
