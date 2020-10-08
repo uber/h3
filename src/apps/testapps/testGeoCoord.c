@@ -221,8 +221,8 @@ SUITE(geoCoord) {
         int64_t last = 0;
         int64_t next;
         for (int i = 0; i <= MAX_H3_RES; i++) {
-            next = H3_EXPORT(numHexagons)(i);
-            t_assert(next > last, "numHexagons ordering");
+            next = H3_EXPORT(getNumCells)(i);
+            t_assert(next > last, "getNumCells ordering");
             last = next;
         }
     }

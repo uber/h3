@@ -57,7 +57,7 @@ SUITE(polyfill_reported) {
                 countActualHexagons(polyfillOut2, polyfillSize2);
 
             t_assert(actualNumHexagons + actualNumHexagons2 ==
-                         H3_EXPORT(numHexagons)(res),
+                         H3_EXPORT(getNumCells)(res),
                      "got expected polyfill size (entire world)");
 
             // Sets should be disjoint

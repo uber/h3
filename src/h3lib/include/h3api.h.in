@@ -331,8 +331,8 @@ double H3_EXPORT(exactEdgeLengthKm)(H3Index edge);
 double H3_EXPORT(exactEdgeLengthM)(H3Index edge);
 /** @} */
 
-/** @defgroup numHexagons numHexagons
- * Functions for numHexagons
+/** @defgroup getNumCells getNumCells
+ * Functions for getNumCells
  * @{
  */
 /** @brief number of cells (hexagons and pentagons) for a given resolution
@@ -377,7 +377,7 @@ double H3_EXPORT(exactEdgeLengthM)(H3Index edge);
  *
  * @return       number of cells at resolution `res`
  */
-DECLSPEC int64_t H3_EXPORT(numHexagons)(int res);
+DECLSPEC int64_t H3_EXPORT(getNumCells)(int res);
 /** @} */
 
 /** @defgroup getRes0Indexes getRes0Indexes
