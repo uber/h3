@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Uber Technologies, Inc.
+ * Copyright 2019-2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,7 +92,7 @@ static void h3Line_kRing_assertions(H3Index h3) {
         if (neighbors[i] == 0) {
             continue;
         }
-        int distance = H3_EXPORT(h3Distance)(h3, neighbors[i]);
+        int distance = H3_EXPORT(gridDistance)(h3, neighbors[i]);
         if (distance >= 0) {
             h3Line_assertions(h3, neighbors[i]);
         } else {

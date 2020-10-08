@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 Uber Technologies, Inc.
+ * Copyright 2018-2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -543,7 +543,7 @@ int H3_EXPORT(experimentalLocalIjToH3)(H3Index origin, const CoordIJ* ij,
  * @return The distance, or a negative number if the library could not
  * compute the distance.
  */
-int H3_EXPORT(h3Distance)(H3Index origin, H3Index h3) {
+int H3_EXPORT(gridDistance)(H3Index origin, H3Index h3) {
     CoordIJK originIjk, h3Ijk;
     if (h3ToLocalIjk(origin, origin, &originIjk)) {
         // Currently there are no tests that would cause getting the coordinates
@@ -568,7 +568,7 @@ int H3_EXPORT(h3Distance)(H3Index origin, H3Index h3) {
  * be computed.
  */
 int H3_EXPORT(h3LineSize)(H3Index start, H3Index end) {
-    int distance = H3_EXPORT(h3Distance)(start, end);
+    int distance = H3_EXPORT(gridDistance)(start, end);
     return distance >= 0 ? distance + 1 : distance;
 }
 
@@ -614,7 +614,7 @@ static void cubeRound(double i, double j, double k, CoordIJK* ijk) {
  *
  *  - The specific output of this function should not be considered stable
  *    across library versions. The only guarantees the library provides are
- *    that the line length will be `h3Distance(start, end) + 1` and that
+ *    that the line length will be `gridDistance(start, end) + 1` and that
  *    every index in the line will be a neighbor of the preceding index.
  *  - Lines are drawn in grid space, and may not correspond exactly to either
  *    Cartesian lines or great arcs.
@@ -625,7 +625,7 @@ static void cubeRound(double i, double j, double k, CoordIJK* ijk) {
  * @return 0 on success, or another value on failure.
  */
 int H3_EXPORT(h3Line)(H3Index start, H3Index end, H3Index* out) {
-    int distance = H3_EXPORT(h3Distance)(start, end);
+    int distance = H3_EXPORT(gridDistance)(start, end);
     // Early exit if we can't calculate the line
     if (distance < 0) {
         return distance;
