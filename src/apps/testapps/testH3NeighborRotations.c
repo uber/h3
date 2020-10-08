@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 Uber Technologies, Inc.
+ * Copyright 2016-2017, 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /** @file
- * @brief tests hexRange vs. _kRingInternal.
+ * @brief tests hexRange vs. gridDiskDistancesSafe.
  *
  *  usage: `testH3NeighborRotations resolution [maxK]`
  *
@@ -55,8 +55,8 @@ void doCell(H3Index h, int maxK, TestOutput* testOutput) {
         H3Index* hexRangeOutput = calloc(sizeof(H3Index), maxSz);
         int* kRingInternalDistances = calloc(sizeof(int), maxSz);
 
-        _kRingInternal(h, k, kRingInternalOutput, kRingInternalDistances, maxSz,
-                       0);
+        H3_EXPORT(gridDiskDistancesSafe)
+        (h, k, kRingInternalOutput, kRingInternalDistances, maxSz, 0);
         int hexRangeFailed = H3_EXPORT(hexRange)(h, k, hexRangeOutput);
 
         if (hexRangeFailed == 2) {
