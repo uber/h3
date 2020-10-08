@@ -34,7 +34,7 @@ SUITE(h3UniEdge) {
     TEST(areNeighborCells) {
         H3Index sf = H3_EXPORT(pointToCell)(&sfGeo, 9);
         H3Index ring[7] = {0};
-        H3_EXPORT(hexRing)(sf, 1, ring);
+        H3_EXPORT(gridRingUnsafe)(sf, 1, ring);
 
         t_assert(H3_EXPORT(areNeighborCells)(sf, sf) == 0,
                  "an index does not neighbor itself");
@@ -49,7 +49,7 @@ SUITE(h3UniEdge) {
                  "got the expected number of neighbors from a k-ring of 1");
 
         H3Index largerRing[19] = {0};
-        H3_EXPORT(hexRing)(sf, 2, largerRing);
+        H3_EXPORT(gridRingUnsafe)(sf, 2, largerRing);
 
         neighbors = 0;
         for (int i = 0; i < H3_EXPORT(maxKringSize)(2); i++) {
@@ -79,7 +79,7 @@ SUITE(h3UniEdge) {
     TEST(getH3UnidirectionalEdgeAndFriends) {
         H3Index sf = H3_EXPORT(pointToCell)(&sfGeo, 9);
         H3Index ring[7] = {0};
-        H3_EXPORT(hexRing)(sf, 1, ring);
+        H3_EXPORT(gridRingUnsafe)(sf, 1, ring);
         H3Index sf2 = ring[0];
 
         H3Index edge = H3_EXPORT(getH3UnidirectionalEdge)(sf, sf2);
@@ -97,7 +97,7 @@ SUITE(h3UniEdge) {
                  "got the destination last in the pair request");
 
         H3Index largerRing[19] = {0};
-        H3_EXPORT(hexRing)(sf, 2, largerRing);
+        H3_EXPORT(gridRingUnsafe)(sf, 2, largerRing);
         H3Index sf3 = largerRing[0];
 
         H3Index notEdge = H3_EXPORT(getH3UnidirectionalEdge)(sf, sf3);
@@ -155,7 +155,7 @@ SUITE(h3UniEdge) {
     TEST(isValidDirectedEdge) {
         H3Index sf = H3_EXPORT(pointToCell)(&sfGeo, 9);
         H3Index ring[7] = {0};
-        H3_EXPORT(hexRing)(sf, 1, ring);
+        H3_EXPORT(gridRingUnsafe)(sf, 1, ring);
         H3Index sf2 = ring[0];
 
         H3Index edge = H3_EXPORT(getH3UnidirectionalEdge)(sf, sf2);

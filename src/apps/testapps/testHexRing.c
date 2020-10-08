@@ -21,7 +21,7 @@
 #include "h3Index.h"
 #include "test.h"
 
-SUITE(hexRing) {
+SUITE(gridRingUnsafe) {
     GeoCoord sf = {0.659966917655, 2 * 3.14159 - 2.1364398519396};
     H3Index sfHex = H3_EXPORT(pointToCell)(&sf, 9);
 
@@ -29,9 +29,9 @@ SUITE(hexRing) {
         int err;
 
         H3Index k0[] = {0};
-        err = H3_EXPORT(hexRing)(sfHex, 0, k0);
+        err = H3_EXPORT(gridRingUnsafe)(sfHex, 0, k0);
 
-        t_assert(err == 0, "No error on hexRing");
+        t_assert(err == 0, "No error on gridRingUnsafe");
         t_assert(k0[0] == sfHex, "generated identity k-ring");
     }
 
@@ -42,9 +42,9 @@ SUITE(hexRing) {
         H3Index expectedK1[] = {0x89283080ddbffff, 0x89283080c37ffff,
                                 0x89283080c27ffff, 0x89283080d53ffff,
                                 0x89283080dcfffff, 0x89283080dc3ffff};
-        err = H3_EXPORT(hexRing)(sfHex, 1, k1);
+        err = H3_EXPORT(gridRingUnsafe)(sfHex, 1, k1);
 
-        t_assert(err == 0, "No error on hexRing");
+        t_assert(err == 0, "No error on gridRingUnsafe");
 
         for (int i = 0; i < 6; i++) {
             t_assert(k1[i] != 0, "index is populated");
@@ -67,9 +67,9 @@ SUITE(hexRing) {
             0x89283080c23ffff, 0x89283080c2fffff, 0x89283080d5bffff,
             0x89283080d43ffff, 0x89283080d57ffff, 0x89283080d1bffff,
             0x89283080dc7ffff, 0x89283080dd7ffff, 0x89283080dd3ffff};
-        err = H3_EXPORT(hexRing)(sfHex, 2, k2);
+        err = H3_EXPORT(gridRingUnsafe)(sfHex, 2, k2);
 
-        t_assert(err == 0, "No error on hexRing");
+        t_assert(err == 0, "No error on gridRingUnsafe");
 
         for (int i = 0; i < 12; i++) {
             t_assert(k2[i] != 0, "index is populated");
@@ -88,7 +88,7 @@ SUITE(hexRing) {
 
         H3Index nearPentagon = 0x837405fffffffff;
         H3Index kp1[] = {0, 0, 0, 0, 0, 0};
-        err = H3_EXPORT(hexRing)(nearPentagon, 1, kp1);
+        err = H3_EXPORT(gridRingUnsafe)(nearPentagon, 1, kp1);
 
         t_assert(err != 0, "Should return an error when hitting a pentagon");
     }
@@ -98,7 +98,7 @@ SUITE(hexRing) {
 
         H3Index nearPentagon = 0x837405fffffffff;
         H3Index kp2[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-        err = H3_EXPORT(hexRing)(nearPentagon, 2, kp2);
+        err = H3_EXPORT(gridRingUnsafe)(nearPentagon, 2, kp2);
 
         t_assert(err != 0, "Should return an error when hitting a pentagon");
     }
@@ -109,13 +109,13 @@ SUITE(hexRing) {
         H3Index nearPentagon;
         setH3Index(&nearPentagon, 0, 4, 0);
         H3Index kp2[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-        err = H3_EXPORT(hexRing)(nearPentagon, 2, kp2);
+        err = H3_EXPORT(gridRingUnsafe)(nearPentagon, 2, kp2);
 
         t_assert(err != 0,
                  "Should return an error when starting at a pentagon");
     }
 
-    TEST(hexRing_matches_gridDiskDistancesSafe) {
+    TEST(gridRingUnsafe_matches_gridDiskDistancesSafe) {
         for (int res = 0; res < 2; res++) {
             for (int i = 0; i < NUM_BASE_CELLS; i++) {
                 H3Index bc;
@@ -134,7 +134,8 @@ SUITE(hexRing) {
                         int kSz = H3_EXPORT(maxKringSize)(k);
 
                         H3Index *ring = calloc(ringSz, sizeof(H3Index));
-                        int failed = H3_EXPORT(hexRing)(children[j], k, ring);
+                        int failed =
+                            H3_EXPORT(gridRingUnsafe)(children[j], k, ring);
 
                         if (!failed) {
                             H3Index *internalNeighbors =
