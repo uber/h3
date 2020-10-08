@@ -56,8 +56,8 @@ int H3_EXPORT(areNeighborCells)(H3Index origin, H3Index destination) {
     // of origin and destination parents and then a lookup table of the children
     // is a super-cheap way to possibly determine they are neighbors.
     int parentRes = H3_GET_RESOLUTION(origin) - 1;
-    if (parentRes > 0 && (H3_EXPORT(h3ToParent)(origin, parentRes) ==
-                          H3_EXPORT(h3ToParent)(destination, parentRes))) {
+    if (parentRes > 0 && (H3_EXPORT(cellToParent)(origin, parentRes) ==
+                          H3_EXPORT(cellToParent)(destination, parentRes))) {
         Direction originResDigit = H3_GET_INDEX_DIGIT(origin, parentRes + 1);
         Direction destinationResDigit =
             H3_GET_INDEX_DIGIT(destination, parentRes + 1);

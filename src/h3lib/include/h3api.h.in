@@ -448,13 +448,13 @@ DECLSPEC void H3_EXPORT(h3ToString)(H3Index h, char *str, size_t sz);
 DECLSPEC int H3_EXPORT(isValidCell)(H3Index h);
 /** @} */
 
-/** @defgroup h3ToParent h3ToParent
- * Functions for h3ToParent
+/** @defgroup cellToParent cellToParent
+ * Functions for cellToParent
  * @{
  */
-/** @brief returns the parent (or grandparent, etc) hexagon of the given hexagon
+/** @brief returns the parent (or grandparent, etc) cell of the given cell
  */
-DECLSPEC H3Index H3_EXPORT(h3ToParent)(H3Index h, int parentRes);
+DECLSPEC H3Index H3_EXPORT(cellToParent)(H3Index h, int parentRes);
 /** @} */
 
 /** @defgroup h3ToChildren h3ToChildren
