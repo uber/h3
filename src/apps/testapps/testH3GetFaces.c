@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /** @file
- * @brief tests the h3GetFaces function
+ * @brief tests the getIcosahedronFaces function
  */
 
 #include <stdio.h>
@@ -31,7 +31,7 @@ static int countFaces(H3Index h3, int expectedMax) {
     t_assert(sz == expectedMax, "got expected max face count");
     int *faces = calloc(sz, sizeof(int));
 
-    H3_EXPORT(h3GetFaces)(h3, faces);
+    H3_EXPORT(getIcosahedronFaces)(h3, faces);
 
     int validCount = 0;
     for (int i = 0; i < sz; i++) {
@@ -58,7 +58,7 @@ static void assertPentagonFaces(H3Index h3) {
     t_assert(validCount == 5, "got 5 valid faces for a pentagon");
 }
 
-SUITE(h3GetFaces) {
+SUITE(getIcosahedronFaces) {
     TEST(singleFaceHexes) {
         // base cell 16 is at the center of an icosahedron face,
         // so all children should have the same face

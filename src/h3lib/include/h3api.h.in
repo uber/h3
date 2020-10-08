@@ -518,15 +518,15 @@ DECLSPEC int H3_EXPORT(isResClassIII)(H3Index h);
 DECLSPEC int H3_EXPORT(isPentagon)(H3Index h);
 /** @} */
 
-/** @defgroup h3GetFaces h3GetFaces
- * Functions for h3GetFaces
+/** @defgroup getIcosahedronFaces getIcosahedronFaces
+ * Functions for getIcosahedronFaces
  * @{
  */
 /** @brief Max number of icosahedron faces intersected by an index */
 DECLSPEC int H3_EXPORT(maxFaceCount)(H3Index h3);
 
 /** @brief Find all icosahedron faces intersected by a given H3 index */
-DECLSPEC void H3_EXPORT(h3GetFaces)(H3Index h3, int *out);
+DECLSPEC void H3_EXPORT(getIcosahedronFaces)(H3Index h3, int *out);
 /** @} */
 
 /** @defgroup areNeighborCells areNeighborCells

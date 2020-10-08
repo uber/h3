@@ -893,7 +893,7 @@ int H3_EXPORT(maxFaceCount)(H3Index h3) {
  * @param h3 The H3 index
  * @param out Output array. Must be of size maxFaceCount(h3).
  */
-void H3_EXPORT(h3GetFaces)(H3Index h3, int* out) {
+void H3_EXPORT(getIcosahedronFaces)(H3Index h3, int* out) {
     int res = H3_GET_RESOLUTION(h3);
     int pentagon = H3_EXPORT(isPentagon)(h3);
 
@@ -904,7 +904,7 @@ void H3_EXPORT(h3GetFaces)(H3Index h3, int* out) {
         // Note that this would not work for res 15, but this is only run on
         // Class II pentagons, it should never be invoked for a res 15 index.
         H3Index childPentagon = makeDirectChild(h3, 0);
-        H3_EXPORT(h3GetFaces)(childPentagon, out);
+        H3_EXPORT(getIcosahedronFaces)(childPentagon, out);
         return;
     }
 
