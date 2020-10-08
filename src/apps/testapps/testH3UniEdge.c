@@ -90,7 +90,7 @@ SUITE(h3UniEdge) {
             "can retrieve the destination from the edge");
 
         H3Index originDestination[2] = {0};
-        H3_EXPORT(getH3IndexesFromUnidirectionalEdge)(edge, originDestination);
+        H3_EXPORT(directedEdgeToCells)(edge, originDestination);
         t_assert(originDestination[0] == sf,
                  "got the origin first in the pair request");
         t_assert(originDestination[1] == sf2,

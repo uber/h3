@@ -178,8 +178,7 @@ int H3_EXPORT(isValidDirectedEdge)(H3Index edge) {
  * @param originDestination Pointer to memory to store origin and destination
  * IDs
  */
-void H3_EXPORT(getH3IndexesFromUnidirectionalEdge)(H3Index edge,
-                                                   H3Index* originDestination) {
+void H3_EXPORT(directedEdgeToCells)(H3Index edge, H3Index* originDestination) {
     originDestination[0] =
         H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(edge);
     originDestination[1] =
