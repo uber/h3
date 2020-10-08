@@ -204,7 +204,7 @@ H3Index* getCellsAtRes(int res) {
  */
 double mapSumAllCells_double(int res, double (*callback)(H3Index)) {
     H3Index* cells = getCellsAtRes(res);
-    int N = H3_EXPORT(numHexagons)(res);
+    int N = H3_EXPORT(getNumCells)(res);
 
     double total = 0.0;
     for (int i = 0; i < N; i++) {
@@ -220,7 +220,7 @@ double mapSumAllCells_double(int res, double (*callback)(H3Index)) {
  */
 void iterateAllUnidirectionalEdgesAtRes(int res, void (*callback)(H3Index)) {
     H3Index* cells = getCellsAtRes(res);
-    int N = H3_EXPORT(numHexagons)(res);
+    int N = H3_EXPORT(getNumCells)(res);
 
     for (int i = 0; i < N; i++) {
         H3Index edges[6] = {H3_NULL};
@@ -299,9 +299,9 @@ void randomGeo(GeoCoord* g) {
 /**
  * Returns the number of non-invalid indexes in the array.
  */
-int countActualHexagons(H3Index* hexagons, int numHexagons) {
+int countActualHexagons(H3Index* hexagons, int numCells) {
     int actualNumHexagons = 0;
-    for (int i = 0; i < numHexagons; i++) {
+    for (int i = 0; i < numCells; i++) {
         if (hexagons[i] != H3_NULL) {
             actualNumHexagons++;
         }
