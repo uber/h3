@@ -380,15 +380,15 @@ double H3_EXPORT(exactEdgeLengthM)(H3Index edge);
 DECLSPEC int64_t H3_EXPORT(getNumCells)(int res);
 /** @} */
 
-/** @defgroup getRes0Indexes getRes0Indexes
- * Functions for getRes0Indexes
+/** @defgroup getRes0Cells getRes0Cells
+ * Functions for getRes0Cells
  * @{
  */
 /** @brief returns the number of resolution 0 cells (hexagons and pentagons) */
-DECLSPEC int H3_EXPORT(res0IndexCount)();
+DECLSPEC int H3_EXPORT(res0CellCount)();
 
 /** @brief provides all base cells in H3Index format*/
-DECLSPEC void H3_EXPORT(getRes0Indexes)(H3Index *out);
+DECLSPEC void H3_EXPORT(getRes0Cells)(H3Index *out);
 /** @} */
 
 /** @defgroup getPentagonIndexes getPentagonIndexes

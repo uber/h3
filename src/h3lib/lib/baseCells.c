@@ -915,19 +915,19 @@ Direction _getBaseCellDirection(int originBaseCell, int neighboringBaseCell) {
 }
 
 /**
- * res0IndexCount returns the number of resolution 0 indexes
+ * res0CellCount returns the number of resolution 0 cells
  *
- * @return int count of resolution 0 indexes
+ * @return int count of resolution 0 cells
  */
-int H3_EXPORT(res0IndexCount)() { return NUM_BASE_CELLS; }
+int H3_EXPORT(res0CellCount)() { return NUM_BASE_CELLS; }
 
 /**
- * getRes0Indexes generates all base cells storing them into the provided
+ * getRes0Cells generates all base cells storing them into the provided
  * memory pointer. Buffer must be of size NUM_BASE_CELLS * sizeof(H3Index).
  *
  * @param out H3Index* the memory to store the resulting base cells in
  */
-void H3_EXPORT(getRes0Indexes)(H3Index* out) {
+void H3_EXPORT(getRes0Cells)(H3Index* out) {
     for (int bc = 0; bc < NUM_BASE_CELLS; bc++) {
         H3Index baseCell = H3_INIT;
         H3_SET_MODE(baseCell, H3_HEXAGON_MODE);
