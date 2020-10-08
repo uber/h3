@@ -19,7 +19,7 @@
 #include "algos.h"
 #include "test.h"
 
-SUITE(hexRanges) {
+SUITE(gridDisksUnsafe) {
     GeoCoord sf = {0.659966917655, 2 * 3.14159 - 2.1364398519396};
     H3Index sfHex = H3_EXPORT(pointToCell)(&sf, 9);
     H3Index* sfHexPtr = &sfHex;
@@ -32,9 +32,9 @@ SUITE(hexRanges) {
         int err;
 
         H3Index k0[] = {0};
-        err = H3_EXPORT(hexRanges)(sfHexPtr, 1, 0, k0);
+        err = H3_EXPORT(gridDisksUnsafe)(sfHexPtr, 1, 0, k0);
 
-        t_assert(err == 0, "No error on hexRanges");
+        t_assert(err == 0, "No error on gridDisksUnsafe");
         t_assert(k0[0] == sfHex, "generated identity k-ring");
     }
 
@@ -44,9 +44,9 @@ SUITE(hexRanges) {
                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-        err = H3_EXPORT(hexRanges)(k1, 6, 1, allKrings);
+        err = H3_EXPORT(gridDisksUnsafe)(k1, 6, 1, allKrings);
 
-        t_assert(err == 0, "No error on hexRanges");
+        t_assert(err == 0, "No error on gridDisksUnsafe");
 
         for (int i = 0; i < 42; i++) {
             t_assert(allKrings[i] != 0, "index is populated");
@@ -61,9 +61,9 @@ SUITE(hexRanges) {
     TEST(ring2of1) {
         int err;
         H3Index* allKrings2 = calloc(6 * (1 + 6 + 12), sizeof(H3Index));
-        err = H3_EXPORT(hexRanges)(k1, 6, 2, allKrings2);
+        err = H3_EXPORT(gridDisksUnsafe)(k1, 6, 2, allKrings2);
 
-        t_assert(err == 0, "No error on hexRanges");
+        t_assert(err == 0, "No error on gridDisksUnsafe");
 
         for (int i = 0; i < (6 * (1 + 6 + 12)); i++) {
             t_assert(allKrings2[i] != 0, "index is populated");
@@ -80,9 +80,9 @@ SUITE(hexRanges) {
     TEST(failed) {
         int err;
         H3Index* allKrings = calloc(2 * (1 + 6), sizeof(H3Index));
-        err = H3_EXPORT(hexRanges)(withPentagon, 2, 1, allKrings);
+        err = H3_EXPORT(gridDisksUnsafe)(withPentagon, 2, 1, allKrings);
 
-        t_assert(err != 0, "Expected error on hexRanges");
+        t_assert(err != 0, "Expected error on gridDisksUnsafe");
         free(allKrings);
     }
 }

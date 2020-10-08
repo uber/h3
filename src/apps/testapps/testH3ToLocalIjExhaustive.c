@@ -36,8 +36,8 @@
 
 static const int MAX_DISTANCES[] = {1, 2, 5, 12, 19, 26};
 
-// The same traversal constants from algos.c (for hexRange) here reused as local
-// IJ vectors.
+// The same traversal constants from algos.c (for gridDiskUnsafe) here reused as
+// local IJ vectors.
 static const CoordIJ DIRECTIONS[6] = {{0, 1},  {-1, 0}, {-1, -1},
                                       {0, -1}, {1, 0},  {1, 1}};
 

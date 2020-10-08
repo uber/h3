@@ -190,7 +190,7 @@ DECLSPEC void H3_EXPORT(h3ToGeoBoundary)(H3Index h3, GeoBoundary *gp);
 DECLSPEC int H3_EXPORT(maxKringSize)(int k);
 
 /** @brief hexagons neighbors in all directions, assuming no pentagons */
-DECLSPEC int H3_EXPORT(hexRange)(H3Index origin, int k, H3Index *out);
+DECLSPEC int H3_EXPORT(gridDiskUnsafe)(H3Index origin, int k, H3Index *out);
 /** @} */
 
 /** @brief hexagons neighbors in all directions, assuming no pentagons,
@@ -204,8 +204,7 @@ DECLSPEC void H3_EXPORT(gridDiskDistancesSafe)(H3Index origin, int k, H3Index *o
                                       int *distances, int maxIdx, int curK);
 
 /** @brief collection of hex rings sorted by ring for all given hexagons */
-DECLSPEC int H3_EXPORT(hexRanges)(H3Index *h3Set, int length, int k,
-                                  H3Index *out);
+DECLSPEC int H3_EXPORT(gridDisksUnsafe)(H3Index *h3Set, int length, int k, H3Index *out);
 
 /** @brief hexagon neighbors in all directions */
 DECLSPEC void H3_EXPORT(kRing)(H3Index origin, int k, H3Index *out);
