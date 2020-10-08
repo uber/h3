@@ -640,12 +640,12 @@ DECLSPEC void H3_EXPORT(vertexToPoint)(H3Index vertex, GeoCoord *coord);
 DECLSPEC int H3_EXPORT(isValidVertex)(H3Index vertex);
 /** @} */
 
-/** @defgroup h3Distance h3Distance
- * Functions for h3Distance
+/** @defgroup gridDistance gridDistance
+ * Functions for gridDistance
  * @{
  */
 /** @brief Returns grid distance between two indexes */
-DECLSPEC int H3_EXPORT(h3Distance)(H3Index origin, H3Index h3);
+DECLSPEC int H3_EXPORT(gridDistance)(H3Index origin, H3Index h3);
 /** @} */
 
 /** @defgroup h3Line h3Line

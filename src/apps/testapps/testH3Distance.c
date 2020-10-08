@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 Uber Technologies, Inc.
+ * Copyright 2018-2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@
 #include "test.h"
 #include "utility.h"
 
-SUITE(h3Distance) {
+SUITE(gridDistance) {
     // Some indexes that represent base cells. Base cells
     // are hexagons except for `pent1`.
     H3Index bc1 = H3_INIT;
@@ -63,14 +63,15 @@ SUITE(h3Distance) {
         H3Index p6;
         setH3Index(&p6, 1, 14, 6);
 
-        t_assert(H3_EXPORT(h3Distance)(bc, p) == 3, "distance onto pentagon");
-        t_assert(H3_EXPORT(h3Distance)(bc, p2) == 2, "distance onto p2");
-        t_assert(H3_EXPORT(h3Distance)(bc, p3) == 3, "distance onto p3");
+        t_assert(H3_EXPORT(gridDistance)(bc, p) == 3, "distance onto pentagon");
+        t_assert(H3_EXPORT(gridDistance)(bc, p2) == 2, "distance onto p2");
+        t_assert(H3_EXPORT(gridDistance)(bc, p3) == 3, "distance onto p3");
         // TODO works correctly but is rejected due to possible pentagon
         // distortion.
-        //    t_assert(H3_EXPORT(h3Distance)(bc, p4) == 3, "distance onto p4");
-        //    t_assert(H3_EXPORT(h3Distance)(bc, p5) == 4, "distance onto p5");
-        t_assert(H3_EXPORT(h3Distance)(bc, p6) == 2, "distance onto p6");
+        //    t_assert(H3_EXPORT(gridDistance)(bc, p4) == 3, "distance onto
+        //    p4"); t_assert(H3_EXPORT(gridDistance)(bc, p5) == 4, "distance
+        //    onto p5");
+        t_assert(H3_EXPORT(gridDistance)(bc, p6) == 2, "distance onto p6");
     }
 
     TEST(testIndexDistance2) {
@@ -79,20 +80,20 @@ SUITE(h3Distance) {
         H3Index destination = 0x821ce7fffffffffL;
 
         // TODO doesn't work because of pentagon distortion. Both should be 5.
-        t_assert(H3_EXPORT(h3Distance)(destination, origin) == -1,
+        t_assert(H3_EXPORT(gridDistance)(destination, origin) == -1,
                  "distance in res 2 across pentagon");
-        t_assert(H3_EXPORT(h3Distance)(origin, destination) == -1,
+        t_assert(H3_EXPORT(gridDistance)(origin, destination) == -1,
                  "distance in res 2 across pentagon (reversed)");
     }
 
-    TEST(h3DistanceBaseCells) {
-        t_assert(H3_EXPORT(h3Distance)(bc1, pent1) == 1,
+    TEST(gridDistanceBaseCells) {
+        t_assert(H3_EXPORT(gridDistance)(bc1, pent1) == 1,
                  "distance to neighbor is 1 (15, 4)");
-        t_assert(H3_EXPORT(h3Distance)(bc1, bc2) == 1,
+        t_assert(H3_EXPORT(gridDistance)(bc1, bc2) == 1,
                  "distance to neighbor is 1 (15, 8)");
-        t_assert(H3_EXPORT(h3Distance)(bc1, bc3) == 1,
+        t_assert(H3_EXPORT(gridDistance)(bc1, bc3) == 1,
                  "distance to neighbor is 1 (15, 31)");
-        t_assert(H3_EXPORT(h3Distance)(pent1, bc3) == -1,
+        t_assert(H3_EXPORT(gridDistance)(pent1, bc3) == -1,
                  "distance to neighbor is invalid");
     }
 
@@ -117,26 +118,26 @@ SUITE(h3Distance) {
         t_assert(ijkDistance(&ij, &ik) == 2, "1,0,1 to 1,1,0");
     }
 
-    TEST(h3DistanceResolutionMismatch) {
-        t_assert(
-            H3_EXPORT(h3Distance)(0x832830fffffffffL, 0x822837fffffffffL) == -1,
-            "cannot compare at different resolutions");
+    TEST(gridDistanceResolutionMismatch) {
+        t_assert(H3_EXPORT(gridDistance)(0x832830fffffffffL,
+                                         0x822837fffffffffL) == -1,
+                 "cannot compare at different resolutions");
     }
 
-    TEST(h3DistanceEdge) {
+    TEST(gridDistanceEdge) {
         H3Index origin = 0x832830fffffffffL;
         H3Index dest = 0x832834fffffffffL;
         H3Index edge = H3_EXPORT(getH3UnidirectionalEdge(origin, dest));
 
         t_assert(0 != edge, "test edge is valid");
-        t_assert(H3_EXPORT(h3Distance)(edge, origin) == 0,
+        t_assert(H3_EXPORT(gridDistance)(edge, origin) == 0,
                  "edge has zero distance to origin");
-        t_assert(H3_EXPORT(h3Distance)(origin, edge) == 0,
+        t_assert(H3_EXPORT(gridDistance)(origin, edge) == 0,
                  "origin has zero distance to edge");
 
-        t_assert(H3_EXPORT(h3Distance)(edge, dest) == 1,
+        t_assert(H3_EXPORT(gridDistance)(edge, dest) == 1,
                  "edge has distance to destination");
-        t_assert(H3_EXPORT(h3Distance)(dest, edge) == 1,
+        t_assert(H3_EXPORT(gridDistance)(dest, edge) == 1,
                  "destination has distance to edge");
     }
 }

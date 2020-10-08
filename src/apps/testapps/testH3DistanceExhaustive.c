@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Uber Technologies, Inc.
+ * Copyright 2019-2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,11 +34,11 @@
 
 static const int MAX_DISTANCES[] = {1, 2, 5, 12, 19, 26};
 
-static void h3Distance_identity_assertions(H3Index h3) {
-    t_assert(H3_EXPORT(h3Distance)(h3, h3) == 0, "distance to self is 0");
+static void gridDistance_identity_assertions(H3Index h3) {
+    t_assert(H3_EXPORT(gridDistance)(h3, h3) == 0, "distance to self is 0");
 }
 
-static void h3Distance_kRing_assertions(H3Index h3) {
+static void gridDistance_kRing_assertions(H3Index h3) {
     int r = H3_GET_RESOLUTION(h3);
     t_assert(r <= 5, "resolution supported by test function (kRing)");
     int maxK = MAX_DISTANCES[r];
@@ -54,31 +54,31 @@ static void h3Distance_kRing_assertions(H3Index h3) {
             continue;
         }
 
-        int calculatedDistance = H3_EXPORT(h3Distance)(h3, neighbors[i]);
+        int calculatedDistance = H3_EXPORT(gridDistance)(h3, neighbors[i]);
 
-        // Don't consider indexes where h3Distance reports failure to
+        // Don't consider indexes where gridDistance reports failure to
         // generate
         t_assert(calculatedDistance == distances[i] || calculatedDistance == -1,
-                 "kRingDistances matches h3Distance");
+                 "kRingDistances matches gridDistance");
     }
 
     free(distances);
     free(neighbors);
 }
 
-SUITE(h3Distance) {
-    TEST(h3Distance_identity) {
-        iterateAllIndexesAtRes(0, h3Distance_identity_assertions);
-        iterateAllIndexesAtRes(1, h3Distance_identity_assertions);
-        iterateAllIndexesAtRes(2, h3Distance_identity_assertions);
+SUITE(gridDistance) {
+    TEST(gridDistance_identity) {
+        iterateAllIndexesAtRes(0, gridDistance_identity_assertions);
+        iterateAllIndexesAtRes(1, gridDistance_identity_assertions);
+        iterateAllIndexesAtRes(2, gridDistance_identity_assertions);
     }
 
-    TEST(h3Distance_kRing) {
-        iterateAllIndexesAtRes(0, h3Distance_kRing_assertions);
-        iterateAllIndexesAtRes(1, h3Distance_kRing_assertions);
-        iterateAllIndexesAtRes(2, h3Distance_kRing_assertions);
+    TEST(gridDistance_kRing) {
+        iterateAllIndexesAtRes(0, gridDistance_kRing_assertions);
+        iterateAllIndexesAtRes(1, gridDistance_kRing_assertions);
+        iterateAllIndexesAtRes(2, gridDistance_kRing_assertions);
         // Don't iterate all of res 3, to save time
-        iterateAllIndexesAtResPartial(3, h3Distance_kRing_assertions, 27);
+        iterateAllIndexesAtResPartial(3, gridDistance_kRing_assertions, 27);
         // Further resolutions aren't tested to save time.
     }
 }
