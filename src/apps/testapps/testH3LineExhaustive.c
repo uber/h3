@@ -32,14 +32,14 @@
 static const int MAX_DISTANCES[] = {1, 2, 5, 12, 19, 26};
 
 /**
- * Property-based testing of h3Line output
+ * Property-based testing of gridPathCells output
  */
-static void h3Line_assertions(H3Index start, H3Index end) {
-    int sz = H3_EXPORT(h3LineSize)(start, end);
+static void gridPathCells_assertions(H3Index start, H3Index end) {
+    int sz = H3_EXPORT(gridPathCellsSize)(start, end);
     t_assert(sz > 0, "got valid size");
     H3Index *line = calloc(sz, sizeof(H3Index));
 
-    int err = H3_EXPORT(h3Line)(start, end, line);
+    int err = H3_EXPORT(gridPathCells)(start, end, line);
 
     t_assert(err == 0, "no error on line");
     t_assert(line[0] == start, "line starts with start index");
@@ -60,21 +60,21 @@ static void h3Line_assertions(H3Index start, H3Index end) {
 }
 
 /**
- * Tests for invalid h3Line input
+ * Tests for invalid gridPathCells input
  */
-static void h3Line_invalid_assertions(H3Index start, H3Index end) {
-    int sz = H3_EXPORT(h3LineSize)(start, end);
+static void gridPathCells_invalid_assertions(H3Index start, H3Index end) {
+    int sz = H3_EXPORT(gridPathCellsSize)(start, end);
     t_assert(sz < 0, "line size marked as invalid");
 
     H3Index *line = {0};
-    int err = H3_EXPORT(h3Line)(start, end, line);
+    int err = H3_EXPORT(gridPathCells)(start, end, line);
     t_assert(err != 0, "line marked as invalid");
 }
 
 /**
  * Test for lines from an index to all neighbors within a kRing
  */
-static void h3Line_kRing_assertions(H3Index h3) {
+static void gridPathCells_kRing_assertions(H3Index h3) {
     int r = H3_GET_RESOLUTION(h3);
     t_assert(r <= 5, "resolution supported by test function (kRing)");
     int maxK = MAX_DISTANCES[r];
@@ -94,22 +94,22 @@ static void h3Line_kRing_assertions(H3Index h3) {
         }
         int distance = H3_EXPORT(gridDistance)(h3, neighbors[i]);
         if (distance >= 0) {
-            h3Line_assertions(h3, neighbors[i]);
+            gridPathCells_assertions(h3, neighbors[i]);
         } else {
-            h3Line_invalid_assertions(h3, neighbors[i]);
+            gridPathCells_invalid_assertions(h3, neighbors[i]);
         }
     }
 
     free(neighbors);
 }
 
-SUITE(h3Line) {
-    TEST(h3Line_kRing) {
-        iterateAllIndexesAtRes(0, h3Line_kRing_assertions);
-        iterateAllIndexesAtRes(1, h3Line_kRing_assertions);
-        iterateAllIndexesAtRes(2, h3Line_kRing_assertions);
+SUITE(gridPathCells) {
+    TEST(gridPathCells_kRing) {
+        iterateAllIndexesAtRes(0, gridPathCells_kRing_assertions);
+        iterateAllIndexesAtRes(1, gridPathCells_kRing_assertions);
+        iterateAllIndexesAtRes(2, gridPathCells_kRing_assertions);
         // Don't iterate all of res 3, to save time
-        iterateAllIndexesAtResPartial(3, h3Line_kRing_assertions, 6);
+        iterateAllIndexesAtResPartial(3, gridPathCells_kRing_assertions, 6);
         // Further resolutions aren't tested to save time.
     }
 }

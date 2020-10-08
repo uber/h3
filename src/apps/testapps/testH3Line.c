@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 Uber Technologies, Inc.
+ * Copyright 2018-2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 /** @file
- * @brief tests H3 distance function.
+ * @brief tests H3 grid path function.
  *
- *  usage: `testH3Distance`
+ *  usage: `testGridPathCells`
  */
 
 #include <stdio.h>
@@ -29,12 +29,12 @@
 #include "test.h"
 #include "utility.h"
 
-SUITE(h3Line) {
-    TEST(h3Line_acrossMultipleFaces) {
+SUITE(gridPathCells) {
+    TEST(gridPathCells_acrossMultipleFaces) {
         H3Index start = 0x85285aa7fffffff;
         H3Index end = 0x851d9b1bfffffff;
 
-        int lineSz = H3_EXPORT(h3LineSize)(start, end);
+        int lineSz = H3_EXPORT(gridPathCellsSize)(start, end);
         t_assert(lineSz < 0, "Line not computable across multiple icosa faces");
     }
 }

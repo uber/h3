@@ -648,15 +648,15 @@ DECLSPEC int H3_EXPORT(isValidVertex)(H3Index vertex);
 DECLSPEC int H3_EXPORT(gridDistance)(H3Index origin, H3Index h3);
 /** @} */
 
-/** @defgroup h3Line h3Line
- * Functions for h3Line
+/** @defgroup gridPathCells gridPathCells
+ * Functions for gridPathCells
  * @{
  */
 /** @brief Number of indexes in a line connecting two indexes */
-DECLSPEC int H3_EXPORT(h3LineSize)(H3Index start, H3Index end);
+DECLSPEC int H3_EXPORT(gridPathCellsSize)(H3Index start, H3Index end);
 
 /** @brief Line of h3 indexes connecting two indexes */
-DECLSPEC int H3_EXPORT(h3Line)(H3Index start, H3Index end, H3Index *out);
+DECLSPEC int H3_EXPORT(gridPathCells)(H3Index start, H3Index end, H3Index *out);
 /** @} */
 
 /** @defgroup experimentalH3ToLocalIj experimentalH3ToLocalIj

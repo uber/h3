@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Uber Technologies, Inc.
+ * Copyright 2018, 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,14 @@ H3Index endFar = 0x8929a5653c3ffff;
 BEGIN_BENCHMARKS();
 
 H3Index* out =
-    calloc(H3_EXPORT(h3LineSize)(startIndex, endFar), sizeof(H3Index));
+    calloc(H3_EXPORT(gridPathCellsSize)(startIndex, endFar), sizeof(H3Index));
 
-BENCHMARK(h3LineNear, 10000, { H3_EXPORT(h3Line)(startIndex, endNear, out); });
-BENCHMARK(h3LineFar, 1000, { H3_EXPORT(h3Line)(startIndex, endFar, out); });
+BENCHMARK(gridPathCellsNear, 10000, {
+    H3_EXPORT(gridPathCells)(startIndex, endNear, out);
+});
+BENCHMARK(gridPathCellsFar, 1000, {
+    H3_EXPORT(gridPathCells)(startIndex, endFar, out);
+});
 
 free(out);
 
