@@ -530,13 +530,12 @@ DECLSPEC int H3_EXPORT(maxFaceCount)(H3Index h3);
 DECLSPEC void H3_EXPORT(h3GetFaces)(H3Index h3, int *out);
 /** @} */
 
-/** @defgroup h3IndexesAreNeighbors h3IndexesAreNeighbors
- * Functions for h3IndexesAreNeighbors
+/** @defgroup areNeighborCells areNeighborCells
+ * Functions for areNeighborCells
  * @{
  */
 /** @brief returns whether or not the provided hexagons border */
-DECLSPEC int H3_EXPORT(h3IndexesAreNeighbors)(H3Index origin,
-                                              H3Index destination);
+DECLSPEC int H3_EXPORT(areNeighborCells)(H3Index origin, H3Index destination);
 /** @} */
 
 /** @defgroup getH3UnidirectionalEdge getH3UnidirectionalEdge

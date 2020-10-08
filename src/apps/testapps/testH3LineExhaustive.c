@@ -47,11 +47,11 @@ static void h3Line_assertions(H3Index start, H3Index end) {
 
     for (int i = 1; i < sz; i++) {
         t_assert(H3_EXPORT(isValidCell)(line[i]), "index is valid");
-        t_assert(H3_EXPORT(h3IndexesAreNeighbors)(line[i], line[i - 1]),
+        t_assert(H3_EXPORT(areNeighborCells)(line[i], line[i - 1]),
                  "index is a neighbor of the previous index");
         if (i > 1) {
             t_assert(
-                !H3_EXPORT(h3IndexesAreNeighbors)(line[i], line[i - 2]),
+                !H3_EXPORT(areNeighborCells)(line[i], line[i - 2]),
                 "index is not a neighbor of the index before the previous");
         }
     }

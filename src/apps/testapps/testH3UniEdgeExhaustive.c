@@ -50,7 +50,7 @@ static void h3UniEdge_correctness_assertions(H3Index h3) {
 
         destination =
             H3_EXPORT(getDestinationH3IndexFromUnidirectionalEdge)(edges[i]);
-        t_assert(H3_EXPORT(h3IndexesAreNeighbors)(h3, destination),
+        t_assert(H3_EXPORT(areNeighborCells)(h3, destination),
                  "destination is a neighbor");
     }
 }

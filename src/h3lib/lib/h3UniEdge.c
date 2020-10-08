@@ -33,7 +33,7 @@
  * @param destination The destination H3 index.
  * @return 1 if the indexes are neighbors, 0 otherwise;
  */
-int H3_EXPORT(h3IndexesAreNeighbors)(H3Index origin, H3Index destination) {
+int H3_EXPORT(areNeighborCells)(H3Index origin, H3Index destination) {
     // Make sure they're hexagon indexes
     if (H3_GET_MODE(origin) != H3_HEXAGON_MODE ||
         H3_GET_MODE(destination) != H3_HEXAGON_MODE) {
