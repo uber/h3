@@ -180,7 +180,7 @@ static bool _isValidChildRes(int parentRes, int childRes) {
 }
 
 /**
- * maxH3ToChildrenSize returns the maximum number of children possible for a
+ * maxCellToChildrenSize returns the maximum number of children possible for a
  * given child level.
  *
  * @param h H3Index to find the number of children of
@@ -189,7 +189,7 @@ static bool _isValidChildRes(int parentRes, int childRes) {
  * @return int count of maximum number of children (equal for hexagons, less for
  * pentagons
  */
-int64_t H3_EXPORT(maxH3ToChildrenSize)(H3Index h, int childRes) {
+int64_t H3_EXPORT(maxCellToChildrenSize)(H3Index h, int childRes) {
     int parentRes = H3_GET_RESOLUTION(h);
     if (!_isValidChildRes(parentRes, childRes)) {
         return 0;
@@ -215,15 +215,15 @@ H3Index makeDirectChild(H3Index h, int cellNumber) {
 }
 
 /**
- * h3ToChildren takes the given hexagon id and generates all of the children
+ * cellToChildren takes the given hexagon id and generates all of the children
  * at the specified resolution storing them into the provided memory pointer.
- * It's assumed that maxH3ToChildrenSize was used to determine the allocation.
+ * It's assumed that maxCellToChildrenSize was used to determine the allocation.
  *
  * @param h H3Index to find the children of
  * @param childRes int the child level to produce
  * @param children H3Index* the memory to store the resulting addresses in
  */
-void H3_EXPORT(h3ToChildren)(H3Index h, int childRes, H3Index* children) {
+void H3_EXPORT(cellToChildren)(H3Index h, int childRes, H3Index* children) {
     int parentRes = H3_GET_RESOLUTION(h);
     if (!_isValidChildRes(parentRes, childRes)) {
         return;
@@ -231,7 +231,7 @@ void H3_EXPORT(h3ToChildren)(H3Index h, int childRes, H3Index* children) {
         *children = h;
         return;
     }
-    int bufferSize = H3_EXPORT(maxH3ToChildrenSize)(h, childRes);
+    int bufferSize = H3_EXPORT(maxCellToChildrenSize)(h, childRes);
     int bufferChildStep = (bufferSize / 7);
     int isAPentagon = H3_EXPORT(isPentagon)(h);
     for (int i = 0; i < 7; i++) {
@@ -242,7 +242,8 @@ void H3_EXPORT(h3ToChildren)(H3Index h, int childRes, H3Index* children) {
                 children++;
             }
         } else {
-            H3_EXPORT(h3ToChildren)(makeDirectChild(h, i), childRes, children);
+            H3_EXPORT(cellToChildren)
+            (makeDirectChild(h, i), childRes, children);
             children += bufferChildStep;
         }
     }
@@ -485,12 +486,12 @@ int H3_EXPORT(uncompact)(const H3Index* compactedSet, const int numHexes,
         } else {
             // Bigger hexagon to reduce in size
             int numHexesToGen =
-                H3_EXPORT(maxH3ToChildrenSize)(compactedSet[i], res);
+                H3_EXPORT(maxCellToChildrenSize)(compactedSet[i], res);
             if (outOffset + numHexesToGen > maxHexes) {
                 // We're about to go too far, abort!
                 return -1;
             }
-            H3_EXPORT(h3ToChildren)(compactedSet[i], res, h3Set + outOffset);
+            H3_EXPORT(cellToChildren)(compactedSet[i], res, h3Set + outOffset);
             outOffset += numHexesToGen;
         }
     }
@@ -521,7 +522,7 @@ int H3_EXPORT(maxUncompactSize)(const H3Index* compactedSet, const int numHexes,
         } else {
             // Bigger hexagon to reduce in size
             int numHexesToGen =
-                H3_EXPORT(maxH3ToChildrenSize)(compactedSet[i], res);
+                H3_EXPORT(maxCellToChildrenSize)(compactedSet[i], res);
             maxNumHexagons += numHexesToGen;
         }
     }

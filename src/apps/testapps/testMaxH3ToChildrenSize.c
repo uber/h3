@@ -19,19 +19,19 @@
 #include "h3Index.h"
 #include "test.h"
 
-SUITE(maxH3ToChildrenSize) {
+SUITE(maxCellToChildrenSize) {
     GeoCoord sf = {0.659966917655, 2 * 3.14159 - 2.1364398519396};
 
-    TEST(maxH3ToChildrenSize) {
+    TEST(maxCellToChildrenSize) {
         H3Index parent = H3_EXPORT(geoToH3)(&sf, 7);
 
-        t_assert(H3_EXPORT(maxH3ToChildrenSize)(parent, 3) == 0,
+        t_assert(H3_EXPORT(maxCellToChildrenSize)(parent, 3) == 0,
                  "got expected size for coarser res");
-        t_assert(H3_EXPORT(maxH3ToChildrenSize)(parent, 7) == 1,
+        t_assert(H3_EXPORT(maxCellToChildrenSize)(parent, 7) == 1,
                  "got expected size for same res");
-        t_assert(H3_EXPORT(maxH3ToChildrenSize)(parent, 8) == 7,
+        t_assert(H3_EXPORT(maxCellToChildrenSize)(parent, 8) == 7,
                  "got expected size for child res");
-        t_assert(H3_EXPORT(maxH3ToChildrenSize)(parent, 9) == 7 * 7,
+        t_assert(H3_EXPORT(maxCellToChildrenSize)(parent, 9) == 7 * 7,
                  "got expected size for grandchild res");
     }
 

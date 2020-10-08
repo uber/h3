@@ -457,17 +457,16 @@ DECLSPEC int H3_EXPORT(isValidCell)(H3Index h);
 DECLSPEC H3Index H3_EXPORT(cellToParent)(H3Index h, int parentRes);
 /** @} */
 
-/** @defgroup h3ToChildren h3ToChildren
- * Functions for h3ToChildren
+/** @defgroup cellToChildren cellToChildren
+ * Functions for cellToChildren
  * @{
  */
 /** @brief determines the maximum number of children (or grandchildren, etc)
- * that could be returned for the given hexagon */
-DECLSPEC int64_t H3_EXPORT(maxH3ToChildrenSize)(H3Index h, int childRes);
+ * that could be returned for the given cell */
+DECLSPEC int64_t H3_EXPORT(maxCellToChildrenSize)(H3Index h, int childRes);
 
-/** @brief provides the children (or grandchildren, etc) of the given hexagon */
-DECLSPEC void H3_EXPORT(h3ToChildren)(H3Index h, int childRes,
-                                      H3Index *children);
+/** @brief provides the children (or grandchildren, etc) of the given cell */
+DECLSPEC void H3_EXPORT(cellToChildren)(H3Index h, int childRes, H3Index *children);
 /** @} */
 
 /** @defgroup cellToCenterChild cellToCenterChild
