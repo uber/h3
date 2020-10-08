@@ -81,14 +81,14 @@ static void fillIndex_assertions(H3Index h) {
 
         int polyfillCount = countActualHexagons(polyfillOut, polyfillSize);
 
-        int childrenSize = H3_EXPORT(maxH3ToChildrenSize)(h, nextRes);
+        int childrenSize = H3_EXPORT(maxCellToChildrenSize)(h, nextRes);
         H3Index* children = calloc(childrenSize, sizeof(H3Index));
-        H3_EXPORT(h3ToChildren)(h, nextRes, children);
+        H3_EXPORT(cellToChildren)(h, nextRes, children);
 
-        int h3ToChildrenCount = countActualHexagons(children, childrenSize);
+        int cellToChildrenCount = countActualHexagons(children, childrenSize);
 
-        t_assert(polyfillCount == h3ToChildrenCount,
-                 "Polyfill count matches h3ToChildren count");
+        t_assert(polyfillCount == cellToChildrenCount,
+                 "Polyfill count matches cellToChildren count");
 
         for (int i = 0; i < childrenSize; i++) {
             bool found = false;
@@ -100,7 +100,7 @@ static void fillIndex_assertions(H3Index h) {
                 }
             }
             t_assert(found,
-                     "All indexes match between polyfill and h3ToChildren");
+                     "All indexes match between polyfill and cellToChildren");
         }
 
         free(polyfillOut);

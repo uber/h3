@@ -42,7 +42,7 @@ static void verifyCountAndUniqueness(H3Index* children, int paddedCount,
     t_assert(numFound == expectedCount, "got expected number of children");
 }
 
-SUITE(h3ToChildren) {
+SUITE(cellToChildren) {
     GeoCoord sf = {0.659966917655, 2 * 3.14159 - 2.1364398519396};
     H3Index sfHex8 = H3_EXPORT(geoToH3)(&sf, 8);
 
@@ -51,7 +51,7 @@ SUITE(h3ToChildren) {
         const int paddedCount = 10;
 
         H3Index sfHex9s[PADDED_COUNT] = {0};
-        H3_EXPORT(h3ToChildren)(sfHex8, 9, sfHex9s);
+        H3_EXPORT(cellToChildren)(sfHex8, 9, sfHex9s);
 
         GeoCoord center;
         H3_EXPORT(h3ToGeo)(sfHex8, &center);
@@ -93,7 +93,7 @@ SUITE(h3ToChildren) {
         const int paddedCount = 60;
 
         H3Index* children = calloc(paddedCount, sizeof(H3Index));
-        H3_EXPORT(h3ToChildren)(sfHex8, 10, children);
+        H3_EXPORT(cellToChildren)(sfHex8, 10, children);
 
         verifyCountAndUniqueness(children, paddedCount, expectedCount);
         free(children);
@@ -104,7 +104,7 @@ SUITE(h3ToChildren) {
         const int paddedCount = 7;
 
         H3Index* children = calloc(paddedCount, sizeof(H3Index));
-        H3_EXPORT(h3ToChildren)(sfHex8, 8, children);
+        H3_EXPORT(cellToChildren)(sfHex8, 8, children);
 
         verifyCountAndUniqueness(children, paddedCount, expectedCount);
         free(children);
@@ -115,7 +115,7 @@ SUITE(h3ToChildren) {
         const int paddedCount = 7;
 
         H3Index* children = calloc(paddedCount, sizeof(H3Index));
-        H3_EXPORT(h3ToChildren)(sfHex8, 7, children);
+        H3_EXPORT(cellToChildren)(sfHex8, 7, children);
 
         verifyCountAndUniqueness(children, paddedCount, expectedCount);
         free(children);
@@ -127,7 +127,7 @@ SUITE(h3ToChildren) {
         H3Index sfHexMax = H3_EXPORT(geoToH3)(&sf, MAX_H3_RES);
 
         H3Index* children = calloc(paddedCount, sizeof(H3Index));
-        H3_EXPORT(h3ToChildren)(sfHexMax, MAX_H3_RES + 1, children);
+        H3_EXPORT(cellToChildren)(sfHexMax, MAX_H3_RES + 1, children);
 
         verifyCountAndUniqueness(children, paddedCount, expectedCount);
         free(children);
@@ -138,11 +138,11 @@ SUITE(h3ToChildren) {
         setH3Index(&pentagon, 1, 4, 0);
 
         const int expectedCount = (5 * 7) + 6;
-        const int paddedCount = H3_EXPORT(maxH3ToChildrenSize)(pentagon, 3);
+        const int paddedCount = H3_EXPORT(maxCellToChildrenSize)(pentagon, 3);
 
         H3Index* children = calloc(paddedCount, sizeof(H3Index));
-        H3_EXPORT(h3ToChildren)(sfHex8, 10, children);
-        H3_EXPORT(h3ToChildren)(pentagon, 3, children);
+        H3_EXPORT(cellToChildren)(sfHex8, 10, children);
+        H3_EXPORT(cellToChildren)(pentagon, 3, children);
 
         verifyCountAndUniqueness(children, paddedCount, expectedCount);
         free(children);
