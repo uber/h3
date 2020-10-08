@@ -20,10 +20,10 @@
 #include "test.h"
 
 SUITE(baseCells) {
-    TEST(getRes0Indexes) {
-        int count = H3_EXPORT(res0IndexCount)();
+    TEST(getRes0Cells) {
+        int count = H3_EXPORT(res0CellCount)();
         H3Index* indexes = malloc(count * sizeof(H3Index));
-        H3_EXPORT(getRes0Indexes)(indexes);
+        H3_EXPORT(getRes0Cells)(indexes);
         t_assert(indexes[0] == 0x8001fffffffffff, "correct first basecell");
         t_assert(indexes[121] == 0x80f3fffffffffff, "correct last basecell");
         free(indexes);

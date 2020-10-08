@@ -182,9 +182,9 @@ size_t packNonzeros(H3Index* a, size_t n) {
  * @return       array of H3 cells at resolution res
  */
 H3Index* getCellsAtRes(int res) {
-    int num0 = H3_EXPORT(res0IndexCount)();
+    int num0 = H3_EXPORT(res0CellCount)();
     H3Index* cells0 = calloc(num0, sizeof(H3Index));
-    H3_EXPORT(getRes0Indexes)(cells0);
+    H3_EXPORT(getRes0Cells)(cells0);
 
     int numRes = H3_EXPORT(maxUncompactSize)(cells0, num0, res);
 
