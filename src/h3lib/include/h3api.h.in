@@ -470,13 +470,13 @@ DECLSPEC void H3_EXPORT(h3ToChildren)(H3Index h, int childRes,
                                       H3Index *children);
 /** @} */
 
-/** @defgroup h3ToCenterChild h3ToCenterChild
- * Functions for h3ToCenterChild
+/** @defgroup cellToCenterChild cellToCenterChild
+ * Functions for cellToCenterChild
  * @{
  */
-/** @brief returns the center child of the given hexagon at the specified
+/** @brief returns the center child of the given cell at the specified
  * resolution */
-DECLSPEC H3Index H3_EXPORT(h3ToCenterChild)(H3Index h, int childRes);
+DECLSPEC H3Index H3_EXPORT(cellToCenterChild)(H3Index h, int childRes);
 /** @} */
 
 /** @defgroup compact compact

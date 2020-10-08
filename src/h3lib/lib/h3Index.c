@@ -249,7 +249,7 @@ void H3_EXPORT(h3ToChildren)(H3Index h, int childRes, H3Index* children) {
 }
 
 /**
- * h3ToCenterChild produces the center child index for a given H3 index at
+ * cellToCenterChild produces the center child index for a given H3 index at
  * the specified resolution
  *
  * @param h H3Index to find center child of
@@ -258,7 +258,7 @@ void H3_EXPORT(h3ToChildren)(H3Index h, int childRes, H3Index* children) {
  * @return H3Index of the center child, or H3_NULL if you actually asked for a
  * parent
  */
-H3Index H3_EXPORT(h3ToCenterChild)(H3Index h, int childRes) {
+H3Index H3_EXPORT(cellToCenterChild)(H3Index h, int childRes) {
     int parentRes = H3_GET_RESOLUTION(h);
     if (!_isValidChildRes(parentRes, childRes)) {
         return H3_NULL;

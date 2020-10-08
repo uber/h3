@@ -189,7 +189,7 @@ SUITE(compact) {
 
         H3_EXPORT(h3ToChildren)(h3, res + 1, children);
         // duplicate one index
-        children[arrSize - 1] = H3_EXPORT(h3ToCenterChild)(h3, res + 1);
+        children[arrSize - 1] = H3_EXPORT(cellToCenterChild)(h3, res + 1);
 
         H3Index* output = calloc(arrSize, sizeof(H3Index));
 
