@@ -38,7 +38,7 @@
 #include "vertexGraph.h"
 
 /*
- * Return codes from hexRange and related functions.
+ * Return codes from gridDiskUnsafe and related functions.
  */
 
 #define HEX_RANGE_SUCCESS 0
@@ -198,7 +198,7 @@ void H3_EXPORT(kRing)(H3Index origin, int k, H3Index* out) {
  */
 void H3_EXPORT(gridDiskDistances)(H3Index origin, int k, H3Index* out,
                                   int* distances) {
-    // Optimistically try the faster hexRange algorithm first
+    // Optimistically try the faster gridDiskUnsafe algorithm first
     const bool failed =
         H3_EXPORT(gridDiskDistancesUnsafe)(origin, k, out, distances);
     if (failed) {
@@ -446,7 +446,7 @@ Direction directionForNeighbor(H3Index origin, H3Index destination) {
 }
 
 /**
- * hexRange produces indexes within k distance of the origin index.
+ * gridDiskUnsafe produces indexes within k distance of the origin index.
  * Output behavior is undefined when one of the indexes returned by this
  * function is a pentagon or is in the pentagon distortion area.
  *
@@ -461,12 +461,12 @@ Direction directionForNeighbor(H3Index origin, H3Index destination) {
  * @param out Array which must be of size maxKringSize(k).
  * @return 0 if no pentagon or pentagonal distortion area was encountered.
  */
-int H3_EXPORT(hexRange)(H3Index origin, int k, H3Index* out) {
+int H3_EXPORT(gridDiskUnsafe)(H3Index origin, int k, H3Index* out) {
     return H3_EXPORT(gridDiskDistancesUnsafe)(origin, k, out, NULL);
 }
 
 /**
- * hexRange produces indexes within k distance of the origin index.
+ * gridDiskUnsafe produces indexes within k distance of the origin index.
  * Output behavior is undefined when one of the indexes returned by this
  * function is a pentagon or is in the pentagon distortion area.
  *
@@ -566,8 +566,8 @@ int H3_EXPORT(gridDiskDistancesUnsafe)(H3Index origin, int k, H3Index* out,
 }
 
 /**
- * hexRanges takes an array of input hex IDs and a max k-ring and returns an
- * array of hexagon IDs sorted first by the original hex IDs and then by the
+ * gridDisksUnsafe takes an array of input hex IDs and a max k-ring and returns
+ * an array of hexagon IDs sorted first by the original hex IDs and then by the
  * k-ring (0 to max), with no guaranteed sorting within each k-ring group.
  *
  * @param h3Set A pointer to an array of H3Indexes
@@ -577,14 +577,15 @@ int H3_EXPORT(gridDiskDistancesUnsafe)(H3Index origin, int k, H3Index* out,
  *            The memory block should be equal to maxKringSize(k) * length
  * @return 0 if no pentagon is encountered. Cannot trust output otherwise
  */
-int H3_EXPORT(hexRanges)(H3Index* h3Set, int length, int k, H3Index* out) {
+int H3_EXPORT(gridDisksUnsafe)(H3Index* h3Set, int length, int k,
+                               H3Index* out) {
     int success = 0;
     H3Index* segment;
     int segmentSize = H3_EXPORT(maxKringSize)(k);
     for (int i = 0; i < length; i++) {
         // Determine the appropriate segment of the output array to operate on
         segment = out + i * segmentSize;
-        success = H3_EXPORT(hexRange)(h3Set[i], k, segment);
+        success = H3_EXPORT(gridDiskUnsafe)(h3Set[i], k, segment);
         if (success != 0) return success;
     }
     return 0;
