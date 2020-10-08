@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Uber Technologies, Inc.
+ * Copyright 2017-2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,9 @@
 #include "test.h"
 #include "utility.h"
 
-// Tests for specific polyfill examples
+// Tests for specific polygonToCells examples
 
-SUITE(polyfill_reported) {
+SUITE(polygonToCells_reported) {
     // https://github.com/uber/h3-js/issues/76#issuecomment-561204505
     TEST(entireWorld) {
         // TODO: Fails for a single worldwide polygon
@@ -40,44 +40,48 @@ SUITE(polyfill_reported) {
                                        .numHoles = 0};
 
         for (int res = 0; res < 3; res++) {
-            int polyfillSize =
-                H3_EXPORT(maxPolyfillSize)(&worldGeoPolygon, res);
-            H3Index* polyfillOut = calloc(polyfillSize, sizeof(H3Index));
+            int polygonToCellsSize =
+                H3_EXPORT(maxPolygonToCellsSize)(&worldGeoPolygon, res);
+            H3Index* polygonToCellsOut =
+                calloc(polygonToCellsSize, sizeof(H3Index));
 
-            H3_EXPORT(polyfill)(&worldGeoPolygon, res, polyfillOut);
+            H3_EXPORT(polygonToCells)(&worldGeoPolygon, res, polygonToCellsOut);
             int actualNumHexagons =
-                countActualHexagons(polyfillOut, polyfillSize);
+                countActualHexagons(polygonToCellsOut, polygonToCellsSize);
 
-            int polyfillSize2 =
-                H3_EXPORT(maxPolyfillSize)(&worldGeoPolygon2, res);
-            H3Index* polyfillOut2 = calloc(polyfillSize2, sizeof(H3Index));
+            int polygonToCellsSize2 =
+                H3_EXPORT(maxPolygonToCellsSize)(&worldGeoPolygon2, res);
+            H3Index* polygonToCellsOut2 =
+                calloc(polygonToCellsSize2, sizeof(H3Index));
 
-            H3_EXPORT(polyfill)(&worldGeoPolygon2, res, polyfillOut2);
+            H3_EXPORT(polygonToCells)
+            (&worldGeoPolygon2, res, polygonToCellsOut2);
             int actualNumHexagons2 =
-                countActualHexagons(polyfillOut2, polyfillSize2);
+                countActualHexagons(polygonToCellsOut2, polygonToCellsSize2);
 
             t_assert(actualNumHexagons + actualNumHexagons2 ==
                          H3_EXPORT(getNumCells)(res),
-                     "got expected polyfill size (entire world)");
+                     "got expected polygonToCells size (entire world)");
 
             // Sets should be disjoint
-            for (int i = 0; i < polyfillSize; i++) {
-                if (polyfillOut[i] == 0) continue;
+            for (int i = 0; i < polygonToCellsSize; i++) {
+                if (polygonToCellsOut[i] == 0) continue;
 
                 bool found = false;
-                for (int j = 0; j < polyfillSize2; j++) {
-                    if (polyfillOut[i] == polyfillOut2[j]) {
+                for (int j = 0; j < polygonToCellsSize2; j++) {
+                    if (polygonToCellsOut[i] == polygonToCellsOut2[j]) {
                         found = true;
                         break;
                     }
                 }
-                t_assert(!found,
-                         "Index found more than once when polyfilling the "
-                         "entire world");
+                t_assert(
+                    !found,
+                    "Index found more than once when polygonToCellsing the "
+                    "entire world");
             }
 
-            free(polyfillOut);
-            free(polyfillOut2);
+            free(polygonToCellsOut);
+            free(polygonToCellsOut2);
         }
     }
 
@@ -96,14 +100,14 @@ SUITE(polyfill_reported) {
         testPolygon.numHoles = 0;
 
         int res = 7;
-        int numHexagons = H3_EXPORT(maxPolyfillSize)(&testPolygon, res);
+        int numHexagons = H3_EXPORT(maxPolygonToCellsSize)(&testPolygon, res);
         H3Index* hexagons = calloc(numHexagons, sizeof(H3Index));
 
-        H3_EXPORT(polyfill)(&testPolygon, res, hexagons);
+        H3_EXPORT(polygonToCells)(&testPolygon, res, hexagons);
         int actualNumHexagons = countActualHexagons(hexagons, numHexagons);
 
         t_assert(actualNumHexagons == 4499,
-                 "got expected polyfill size (h3-js#67)");
+                 "got expected polygonToCells size (h3-js#67)");
         free(hexagons);
     }
 
@@ -122,14 +126,14 @@ SUITE(polyfill_reported) {
         testPolygon.numHoles = 0;
 
         int res = 7;
-        int numHexagons = H3_EXPORT(maxPolyfillSize)(&testPolygon, res);
+        int numHexagons = H3_EXPORT(maxPolygonToCellsSize)(&testPolygon, res);
         H3Index* hexagons = calloc(numHexagons, sizeof(H3Index));
 
-        H3_EXPORT(polyfill)(&testPolygon, res, hexagons);
+        H3_EXPORT(polygonToCells)(&testPolygon, res, hexagons);
         int actualNumHexagons = countActualHexagons(hexagons, numHexagons);
 
         t_assert(actualNumHexagons == 4609,
-                 "got expected polyfill size (h3-js#67, 2nd case)");
+                 "got expected polygonToCells size (h3-js#67, 2nd case)");
         free(hexagons);
     }
 
@@ -145,13 +149,13 @@ SUITE(polyfill_reported) {
         testPolygon.numHoles = 0;
 
         int res = 13;
-        int numHexagons = H3_EXPORT(maxPolyfillSize)(&testPolygon, res);
+        int numHexagons = H3_EXPORT(maxPolygonToCellsSize)(&testPolygon, res);
         H3Index* hexagons = calloc(numHexagons, sizeof(H3Index));
 
-        H3_EXPORT(polyfill)(&testPolygon, res, hexagons);
+        H3_EXPORT(polygonToCells)(&testPolygon, res, hexagons);
         int actualNumHexagons = countActualHexagons(hexagons, numHexagons);
 
-        t_assert(actualNumHexagons == 4353, "got expected polyfill size");
+        t_assert(actualNumHexagons == 4353, "got expected polygonToCells size");
         free(hexagons);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2019 Uber Technologies, Inc.
+ * Copyright 2016-2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -668,8 +668,8 @@ int H3_EXPORT(hexRing)(H3Index origin, int k, H3Index* out) {
 }
 
 /**
- * maxPolyfillSize returns the number of hexagons to allocate space for when
- * performing a polyfill on the given GeoJSON-like data structure.
+ * maxPolygonToCellsSize returns the number of hexagons to allocate space for
+ * when performing a polygonToCells on the given GeoJSON-like data structure.
  *
  * The size is the maximum of either the number of points in the geofence or the
  * number of hexagons in the bounding box of the geofence.
@@ -678,7 +678,7 @@ int H3_EXPORT(hexRing)(H3Index origin, int k, H3Index* out) {
  * @param res Hexagon resolution (0-15)
  * @return number of hexagons to allocate for
  */
-int H3_EXPORT(maxPolyfillSize)(const GeoPolygon* geoPolygon, int res) {
+int H3_EXPORT(maxPolygonToCellsSize)(const GeoPolygon* geoPolygon, int res) {
     // Get the bounding box for the GeoJSON-like struct
     BBox bbox;
     const Geofence geofence = geoPolygon->geofence;
@@ -701,7 +701,7 @@ int H3_EXPORT(maxPolyfillSize)(const GeoPolygon* geoPolygon, int res) {
 }
 
 /**
- * polyfill takes a given GeoJSON-like data structure and preallocated,
+ * polygonToCells takes a given GeoJSON-like data structure and preallocated,
  * zeroed memory, and fills it with the hexagons that are contained by
  * the GeoJSON-like data structure.
  *
@@ -714,15 +714,16 @@ int H3_EXPORT(maxPolyfillSize)(const GeoPolygon* geoPolygon, int res) {
  * @param res The Hexagon resolution (0-15)
  * @param out The slab of zeroed memory to write to. Assumed to be big enough.
  */
-void H3_EXPORT(polyfill)(const GeoPolygon* geoPolygon, int res, H3Index* out) {
+void H3_EXPORT(polygonToCells)(const GeoPolygon* geoPolygon, int res,
+                               H3Index* out) {
     // TODO: Eliminate this wrapper with the H3 4.0.0 release
-    int failure = _polyfillInternal(geoPolygon, res, out);
-    // The polyfill algorithm can theoretically fail if the allocated memory is
-    // not large enough for the polygon, but this should be impossible given the
-    // conservative overestimation of the number of hexagons possible.
+    int failure = _polygonToCellsInternal(geoPolygon, res, out);
+    // The polygonToCells algorithm can theoretically fail if the allocated
+    // memory is not large enough for the polygon, but this should be impossible
+    // given the conservative overestimation of the number of hexagons possible.
     // LCOV_EXCL_START
     if (failure) {
-        int numHexagons = H3_EXPORT(maxPolyfillSize)(geoPolygon, res);
+        int numHexagons = H3_EXPORT(maxPolygonToCellsSize)(geoPolygon, res);
         for (int i = 0; i < numHexagons; i++) out[i] = H3_NULL;
     }
     // LCOV_EXCL_STOP
@@ -732,7 +733,7 @@ void H3_EXPORT(polyfill)(const GeoPolygon* geoPolygon, int res, H3Index* out) {
  * _getEdgeHexagons takes a given geofence ring (either the main geofence or
  * one of the holes) and traces it with hexagons and updates the search and
  * found memory blocks. This is used for determining the initial hexagon set
- * for the polyfill algorithm to execute on.
+ * for the polygonToCells algorithm to execute on.
  *
  * @param geofence The geofence (or hole) to be traced
  * @param numHexagons The maximum number of hexagons possible for the geofence
@@ -792,13 +793,13 @@ int _getEdgeHexagons(const Geofence* geofence, int numHexagons, int res,
 }
 
 /**
- * _polyfillInternal traces the provided geoPolygon data structure with hexagons
- * and then iteratively searches through these hexagons and their immediate
- * neighbors to see if they are contained within the polygon or not. Those that
- * are found are added to the out array as well as the found array. Once all
- * hexagons to search are checked, the found hexagons become the new search
- * array and the found array is wiped and the process repeats until no new
- * hexagons can be found.
+ * _polygonToCellsInternal traces the provided geoPolygon data structure with
+ * hexagons and then iteratively searches through these hexagons and their
+ * immediate neighbors to see if they are contained within the polygon or not.
+ * Those that are found are added to the out array as well as the found array.
+ * Once all hexagons to search are checked, the found hexagons become the new
+ * search array and the found array is wiped and the process repeats until no
+ * new hexagons can be found.
  *
  * @param geoPolygon The geofence and holes defining the relevant area
  * @param res The Hexagon resolution (0-15)
@@ -807,23 +808,24 @@ int _getEdgeHexagons(const Geofence* geofence, int numHexagons, int res,
  * @return An error code if any of the hash operations fails to insert a hexagon
  *         into an array of memory.
  */
-int _polyfillInternal(const GeoPolygon* geoPolygon, int res, H3Index* out) {
-    // One of the goals of the polyfill algorithm is that two adjacent polygons
-    // with zero overlap have zero overlapping hexagons. That the hexagons are
-    // uniquely assigned. There are a few approaches to take here, such as
-    // deciding based on which polygon has the greatest overlapping area of the
-    // hexagon, or the most number of contained points on the hexagon (using the
-    // center point as a tiebreaker).
+int _polygonToCellsInternal(const GeoPolygon* geoPolygon, int res,
+                            H3Index* out) {
+    // One of the goals of the polygonToCells algorithm is that two adjacent
+    // polygons with zero overlap have zero overlapping hexagons. That the
+    // hexagons are uniquely assigned. There are a few approaches to take here,
+    // such as deciding based on which polygon has the greatest overlapping area
+    // of the hexagon, or the most number of contained points on the hexagon
+    // (using the center point as a tiebreaker).
     //
     // But if the polygons are convex, both of these more complex algorithms can
     // be reduced down to checking whether or not the center of the hexagon is
-    // contained in the polygon, and so this is the approach that this polyfill
-    // algorithm will follow, as it's simpler, faster, and the error for concave
-    // polygons is still minimal (only affecting concave shapes on the order of
-    // magnitude of the hexagon size or smaller, not impacting larger concave
-    // shapes)
+    // contained in the polygon, and so this is the approach that this
+    // polygonToCells algorithm will follow, as it's simpler, faster, and the
+    // error for concave polygons is still minimal (only affecting concave
+    // shapes on the order of magnitude of the hexagon size or smaller, not
+    // impacting larger concave shapes)
     //
-    // This first part is identical to the maxPolyfillSize above.
+    // This first part is identical to the maxPolygonToCellsSize above.
 
     // Get the bounding boxes for the polygon and any holes
     BBox* bboxes = H3_MEMORY(malloc)((geoPolygon->numHoles + 1) * sizeof(BBox));
@@ -832,7 +834,7 @@ int _polyfillInternal(const GeoPolygon* geoPolygon, int res, H3Index* out) {
 
     // Get the estimated number of hexagons and allocate some temporary memory
     // for the hexagons
-    int numHexagons = H3_EXPORT(maxPolyfillSize)(geoPolygon, res);
+    int numHexagons = H3_EXPORT(maxPolygonToCellsSize)(geoPolygon, res);
     H3Index* search = H3_MEMORY(calloc)(numHexagons, sizeof(H3Index));
     H3Index* found = H3_MEMORY(calloc)(numHexagons, sizeof(H3Index));
 

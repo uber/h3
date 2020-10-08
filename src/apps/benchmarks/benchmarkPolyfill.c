@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Uber Technologies, Inc.
+ * Copyright 2017, 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -121,24 +121,24 @@ southernGeoPolygon.geofence = southernGeofence;
 int numHexagons;
 H3Index* hexagons;
 
-BENCHMARK(polyfillSF, 500, {
-    numHexagons = H3_EXPORT(maxPolyfillSize)(&sfGeoPolygon, 9);
+BENCHMARK(polygonToCellsSF, 500, {
+    numHexagons = H3_EXPORT(maxPolygonToCellsSize)(&sfGeoPolygon, 9);
     hexagons = calloc(numHexagons, sizeof(H3Index));
-    H3_EXPORT(polyfill)(&sfGeoPolygon, 9, hexagons);
+    H3_EXPORT(polygonToCells)(&sfGeoPolygon, 9, hexagons);
     free(hexagons);
 });
 
-BENCHMARK(polyfillAlameda, 500, {
-    numHexagons = H3_EXPORT(maxPolyfillSize)(&alamedaGeoPolygon, 9);
+BENCHMARK(polygonToCellsAlameda, 500, {
+    numHexagons = H3_EXPORT(maxPolygonToCellsSize)(&alamedaGeoPolygon, 9);
     hexagons = calloc(numHexagons, sizeof(H3Index));
-    H3_EXPORT(polyfill)(&alamedaGeoPolygon, 9, hexagons);
+    H3_EXPORT(polygonToCells)(&alamedaGeoPolygon, 9, hexagons);
     free(hexagons);
 });
 
-BENCHMARK(polyfillSouthernExpansion, 10, {
-    numHexagons = H3_EXPORT(maxPolyfillSize)(&southernGeoPolygon, 9);
+BENCHMARK(polygonToCellsSouthernExpansion, 10, {
+    numHexagons = H3_EXPORT(maxPolygonToCellsSize)(&southernGeoPolygon, 9);
     hexagons = calloc(numHexagons, sizeof(H3Index));
-    H3_EXPORT(polyfill)(&southernGeoPolygon, 9, hexagons);
+    H3_EXPORT(polygonToCells)(&southernGeoPolygon, 9, hexagons);
     free(hexagons);
 });
 
