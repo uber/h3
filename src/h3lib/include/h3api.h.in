@@ -478,28 +478,28 @@ DECLSPEC void H3_EXPORT(cellToChildren)(H3Index h, int childRes, H3Index *childr
 DECLSPEC H3Index H3_EXPORT(cellToCenterChild)(H3Index h, int childRes);
 /** @} */
 
-/** @defgroup compact compact
- * Functions for compact
+/** @defgroup compactCells compactCells
+ * Functions for compactCells
  * @{
  */
 /** @brief compacts the given set of hexagons as best as possible */
-DECLSPEC int H3_EXPORT(compact)(const H3Index *h3Set, H3Index *compactedSet,
-                                const int numHexes);
+DECLSPEC int H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
+                            const int numHexes);
 /** @} */
 
-/** @defgroup uncompact uncompact
- * Functions for uncompact
+/** @defgroup uncompactCells uncompactCells
+ * Functions for uncompactCells
  * @{
  */
 /** @brief determines the maximum number of hexagons that could be uncompacted
  * from the compacted set */
-DECLSPEC int H3_EXPORT(maxUncompactSize)(const H3Index *compactedSet,
-                                         const int numHexes, const int res);
+DECLSPEC int H3_EXPORT(maxUncompactCellsSize)(const H3Index *compactedSet,
+                                     const int numHexes, const int res);
 
-/** @brief uncompacts the compacted hexagon set */
-DECLSPEC int H3_EXPORT(uncompact)(const H3Index *compactedSet,
-                                  const int numHexes, H3Index *h3Set,
-                                  const int maxHexes, const int res);
+/** @brief uncompacts the compacted cell set */
+DECLSPEC int H3_EXPORT(uncompactCells)(const H3Index *compactedSet, const int numHexes,
+                              H3Index *h3Set, const int maxHexes,
+                              const int res);
 /** @} */
 
 /** @defgroup isResClassIII isResClassIII
