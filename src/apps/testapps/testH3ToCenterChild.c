@@ -41,7 +41,7 @@ SUITE(cellToCenterChild) {
                     centerChild == geoChild,
                     "center child should be same as indexed centroid at child "
                     "resolution");
-                t_assert(H3_EXPORT(h3GetResolution)(centerChild) == childRes,
+                t_assert(H3_EXPORT(getResolution)(centerChild) == childRes,
                          "center child should have correct resolution");
                 t_assert(
                     H3_EXPORT(cellToParent)(centerChild, res) == h3Index,
@@ -51,13 +51,13 @@ SUITE(cellToCenterChild) {
     }
 
     TEST(sameRes) {
-        int res = H3_EXPORT(h3GetResolution)(baseHex);
+        int res = H3_EXPORT(getResolution)(baseHex);
         t_assert(H3_EXPORT(cellToCenterChild)(baseHex, res) == baseHex,
                  "center child at same resolution should return self");
     }
 
     TEST(invalidInputs) {
-        int res = H3_EXPORT(h3GetResolution)(baseHex);
+        int res = H3_EXPORT(getResolution)(baseHex);
         t_assert(H3_EXPORT(cellToCenterChild)(baseHex, res - 1) == 0,
                  "should fail at coarser resolution");
         t_assert(H3_EXPORT(cellToCenterChild)(baseHex, -1) == 0,

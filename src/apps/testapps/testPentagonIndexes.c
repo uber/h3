@@ -39,7 +39,7 @@ SUITE(getPentagons) {
                              "index should be valid");
                     t_assert(H3_EXPORT(isPentagon(h3Index)),
                              "index should be pentagon");
-                    t_assert(H3_EXPORT(h3GetResolution(h3Index)) == res,
+                    t_assert(H3_EXPORT(getResolution(h3Index)) == res,
                              "index should have correct resolution");
 
                     // verify uniqueness

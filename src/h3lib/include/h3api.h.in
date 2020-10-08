@@ -402,13 +402,13 @@ DECLSPEC int H3_EXPORT(pentagonCount)();
 DECLSPEC void H3_EXPORT(getPentagons)(int res, H3Index *out);
 /** @} */
 
-/** @defgroup h3GetResolution h3GetResolution
- * Functions for h3GetResolution
+/** @defgroup getResolution getResolution
+ * Functions for getResolution
  * @{
  */
 /** @brief returns the resolution of the provided H3 index
  * Works on both cells and unidirectional edges. */
-DECLSPEC int H3_EXPORT(h3GetResolution)(H3Index h);
+DECLSPEC int H3_EXPORT(getResolution)(H3Index h);
 /** @} */
 
 /** @defgroup getBaseCellNumber getBaseCellNumber
