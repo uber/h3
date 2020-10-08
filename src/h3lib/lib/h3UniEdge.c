@@ -82,7 +82,7 @@ int H3_EXPORT(areNeighborCells)(H3Index origin, H3Index destination) {
 
     // Otherwise, we have to determine the neighbor relationship the "hard" way.
     H3Index neighborRing[7] = {0};
-    H3_EXPORT(kRing)(origin, 1, neighborRing);
+    H3_EXPORT(gridDisk)(origin, 1, neighborRing);
     for (int i = 0; i < 7; i++) {
         if (neighborRing[i] == destination) {
             return 1;

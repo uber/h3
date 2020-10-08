@@ -17,7 +17,7 @@
  * @brief stdin/stdout filter that converts from integer H3 indexes to
  * k-rings
  *
- *  See `kRing --help` for usage.
+ *  See `gridDisk --help` for usage.
  *
  *  The program reads H3 indexes from stdin until EOF and outputs
  *  the H3 indexes within k-ring `k` to stdout.

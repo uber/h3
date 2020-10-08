@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Uber Technologies, Inc.
+ * Copyright 2018, 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,15 +25,15 @@ BEGIN_BENCHMARKS();
 
 H3Index* out = malloc(H3_EXPORT(maxKringSize)(40) * sizeof(H3Index));
 
-BENCHMARK(kRing10, 10000, { H3_EXPORT(kRing)(hex, 10, out); });
-BENCHMARK(kRing20, 10000, { H3_EXPORT(kRing)(hex, 20, out); });
-BENCHMARK(kRing30, 10000, { H3_EXPORT(kRing)(hex, 30, out); });
-BENCHMARK(kRing40, 10000, { H3_EXPORT(kRing)(hex, 40, out); });
+BENCHMARK(gridDisk10, 10000, { H3_EXPORT(gridDisk)(hex, 10, out); });
+BENCHMARK(gridDisk20, 10000, { H3_EXPORT(gridDisk)(hex, 20, out); });
+BENCHMARK(gridDisk30, 10000, { H3_EXPORT(gridDisk)(hex, 30, out); });
+BENCHMARK(gridDisk40, 10000, { H3_EXPORT(gridDisk)(hex, 40, out); });
 
-BENCHMARK(kRingPentagon10, 500, { H3_EXPORT(kRing)(pentagon, 10, out); });
-BENCHMARK(kRingPentagon20, 500, { H3_EXPORT(kRing)(pentagon, 20, out); });
-BENCHMARK(kRingPentagon30, 50, { H3_EXPORT(kRing)(pentagon, 30, out); });
-BENCHMARK(kRingPentagon40, 10, { H3_EXPORT(kRing)(pentagon, 40, out); });
+BENCHMARK(gridDiskPentagon10, 500, { H3_EXPORT(gridDisk)(pentagon, 10, out); });
+BENCHMARK(gridDiskPentagon20, 500, { H3_EXPORT(gridDisk)(pentagon, 20, out); });
+BENCHMARK(gridDiskPentagon30, 50, { H3_EXPORT(gridDisk)(pentagon, 30, out); });
+BENCHMARK(gridDiskPentagon40, 10, { H3_EXPORT(gridDisk)(pentagon, 40, out); });
 
 free(out);
 

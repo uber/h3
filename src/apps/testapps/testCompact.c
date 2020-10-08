@@ -35,7 +35,7 @@ SUITE(compactCells) {
 
         // Generate a set of hexagons to compactCells
         H3Index* sunnyvaleExpanded = calloc(hexCount, sizeof(H3Index));
-        H3_EXPORT(kRing)(sunnyvale, k, sunnyvaleExpanded);
+        H3_EXPORT(gridDisk)(sunnyvale, k, sunnyvaleExpanded);
 
         H3Index* compressed = calloc(hexCount, sizeof(H3Index));
         int err =

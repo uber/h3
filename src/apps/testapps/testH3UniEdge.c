@@ -134,7 +134,7 @@ SUITE(h3UniEdge) {
             H3_EXPORT(getPentagons)(res, pentagons);
             for (int p = 0; p < NUM_PENTAGONS; p++) {
                 pentagon = pentagons[p];
-                H3_EXPORT(kRing)(pentagon, 1, ring);
+                H3_EXPORT(gridDisk)(pentagon, 1, ring);
 
                 for (int i = 0; i < 7; i++) {
                     H3Index neighbor = ring[i];

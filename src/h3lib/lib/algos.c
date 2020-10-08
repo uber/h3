@@ -156,8 +156,8 @@ static const Direction NEW_ADJUSTMENT_III[7][7] = {
      CENTER_DIGIT, IJ_AXES_DIGIT}};
 
 /**
- * Maximum number of cells that result from the kRing algorithm with the given
- * k. Formula source and proof: https://oeis.org/A003215
+ * Maximum number of cells that result from the gridDisk algorithm with the
+ * given k. Formula source and proof: https://oeis.org/A003215
  *
  * @param  k   k value, k >= 0.
  */
@@ -176,7 +176,7 @@ int H3_EXPORT(maxKringSize)(int k) { return 3 * k * (k + 1) + 1; }
  * @param  k        k >= 0
  * @param  out      zero-filled array which must be of size maxKringSize(k)
  */
-void H3_EXPORT(kRing)(H3Index origin, int k, H3Index* out) {
+void H3_EXPORT(gridDisk)(H3Index origin, int k, H3Index* out) {
     H3_EXPORT(gridDiskDistances)(origin, k, out, NULL);
 }
 
@@ -900,7 +900,7 @@ int _polygonToCellsInternal(const GeoPolygon* geoPolygon, int res,
         while (currentSearchNum < numSearchHexes) {
             H3Index ring[MAX_ONE_RING_SIZE] = {0};
             H3Index searchHex = search[i];
-            H3_EXPORT(kRing)(searchHex, 1, ring);
+            H3_EXPORT(gridDisk)(searchHex, 1, ring);
             for (int j = 0; j < MAX_ONE_RING_SIZE; j++) {
                 if (ring[j] == H3_NULL) {
                     continue;  // Skip if this was a pentagon and only had 5

@@ -72,11 +72,11 @@ static void gridPathCells_invalid_assertions(H3Index start, H3Index end) {
 }
 
 /**
- * Test for lines from an index to all neighbors within a kRing
+ * Test for lines from an index to all neighbors within a gridDisk
  */
-static void gridPathCells_kRing_assertions(H3Index h3) {
+static void gridPathCells_gridDisk_assertions(H3Index h3) {
     int r = H3_GET_RESOLUTION(h3);
-    t_assert(r <= 5, "resolution supported by test function (kRing)");
+    t_assert(r <= 5, "resolution supported by test function (gridDisk)");
     int maxK = MAX_DISTANCES[r];
 
     int sz = H3_EXPORT(maxKringSize)(maxK);
@@ -86,7 +86,7 @@ static void gridPathCells_kRing_assertions(H3Index h3) {
     }
 
     H3Index *neighbors = calloc(sz, sizeof(H3Index));
-    H3_EXPORT(kRing)(h3, maxK, neighbors);
+    H3_EXPORT(gridDisk)(h3, maxK, neighbors);
 
     for (int i = 0; i < sz; i++) {
         if (neighbors[i] == 0) {
@@ -104,12 +104,12 @@ static void gridPathCells_kRing_assertions(H3Index h3) {
 }
 
 SUITE(gridPathCells) {
-    TEST(gridPathCells_kRing) {
-        iterateAllIndexesAtRes(0, gridPathCells_kRing_assertions);
-        iterateAllIndexesAtRes(1, gridPathCells_kRing_assertions);
-        iterateAllIndexesAtRes(2, gridPathCells_kRing_assertions);
+    TEST(gridPathCells_gridDisk) {
+        iterateAllIndexesAtRes(0, gridPathCells_gridDisk_assertions);
+        iterateAllIndexesAtRes(1, gridPathCells_gridDisk_assertions);
+        iterateAllIndexesAtRes(2, gridPathCells_gridDisk_assertions);
         // Don't iterate all of res 3, to save time
-        iterateAllIndexesAtResPartial(3, gridPathCells_kRing_assertions, 6);
+        iterateAllIndexesAtResPartial(3, gridPathCells_gridDisk_assertions, 6);
         // Further resolutions aren't tested to save time.
     }
 }
