@@ -68,7 +68,7 @@ static void h3UniEdge_boundary_assertions(H3Index h3) {
         H3_EXPORT(getH3UnidirectionalEdgeBoundary)(edges[i], &edgeBoundary);
         destination =
             H3_EXPORT(getDestinationH3IndexFromUnidirectionalEdge)(edges[i]);
-        revEdge = H3_EXPORT(getH3UnidirectionalEdge)(destination, h3);
+        revEdge = H3_EXPORT(cellsToDirectedEdge)(destination, h3);
         H3_EXPORT(getH3UnidirectionalEdgeBoundary)(revEdge, &revEdgeBoundary);
 
         t_assert(edgeBoundary.numVerts == revEdgeBoundary.numVerts,

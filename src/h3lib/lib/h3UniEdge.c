@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Uber Technologies, Inc.
+ * Copyright 2017-2018, 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -100,8 +100,7 @@ int H3_EXPORT(areNeighborCells)(H3Index origin, H3Index destination) {
  * @param destination The destination H3 hexagon index
  * @return The unidirectional edge H3Index, or H3_NULL on failure.
  */
-H3Index H3_EXPORT(getH3UnidirectionalEdge)(H3Index origin,
-                                           H3Index destination) {
+H3Index H3_EXPORT(cellsToDirectedEdge)(H3Index origin, H3Index destination) {
     // Determine the IJK direction from the origin to the destination
     Direction direction = directionForNeighbor(origin, destination);
 
