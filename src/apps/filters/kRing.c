@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017, 2019 Uber Technologies, Inc.
+ * Copyright 2016-2017, 2019-2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ void doCell(H3Index h, int k, int printDistances) {
     int maxSize = H3_EXPORT(maxKringSize)(k);
     H3Index* rings = calloc(maxSize, sizeof(H3Index));
     int* distances = calloc(maxSize, sizeof(int));
-    H3_EXPORT(kRingDistances)(h, k, rings, distances);
+    H3_EXPORT(gridDiskDistances)(h, k, rings, distances);
 
     for (int i = 0; i < maxSize; i++) {
         if (rings[i] != 0) {
