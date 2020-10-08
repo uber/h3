@@ -86,34 +86,34 @@ H3Index sunnyvale = 0x89283470c27ffff;
 H3Index pentagon = 0x89080000003ffff;
 
 SUITE(h3Memory) {
-    TEST(kRing) {
+    TEST(gridDisk) {
         int k = 2;
         int hexCount = H3_EXPORT(maxKringSize)(k);
-        H3Index* kRingOutput = calloc(hexCount, sizeof(H3Index));
+        H3Index* gridDiskOutput = calloc(hexCount, sizeof(H3Index));
 
         resetMemoryCounters(0);
-        H3_EXPORT(kRing)(sunnyvale, k, kRingOutput);
-        t_assert(actualAllocCalls == 0, "kRing did not call alloc");
-        t_assert(actualFreeCalls == 0, "kRing did not call free");
+        H3_EXPORT(gridDisk)(sunnyvale, k, gridDiskOutput);
+        t_assert(actualAllocCalls == 0, "gridDisk did not call alloc");
+        t_assert(actualFreeCalls == 0, "gridDisk did not call free");
 
         resetMemoryCounters(0);
-        H3_EXPORT(kRing)(pentagon, k, kRingOutput);
-        t_assert(actualAllocCalls == 1, "kRing called alloc");
-        t_assert(actualFreeCalls == 1, "kRing called free");
+        H3_EXPORT(gridDisk)(pentagon, k, gridDiskOutput);
+        t_assert(actualAllocCalls == 1, "gridDisk called alloc");
+        t_assert(actualFreeCalls == 1, "gridDisk called free");
 
         resetMemoryCounters(0);
         failAlloc = true;
-        memset(kRingOutput, 0, hexCount * sizeof(H3Index));
-        H3_EXPORT(kRing)(pentagon, k, kRingOutput);
-        t_assert(actualAllocCalls == 1, "kRing called alloc");
-        t_assert(actualFreeCalls == 0, "kRing did not call free");
+        memset(gridDiskOutput, 0, hexCount * sizeof(H3Index));
+        H3_EXPORT(gridDisk)(pentagon, k, gridDiskOutput);
+        t_assert(actualAllocCalls == 1, "gridDisk called alloc");
+        t_assert(actualFreeCalls == 0, "gridDisk did not call free");
 
         for (int i = 0; i < hexCount; i++) {
-            t_assert(!kRingOutput[i],
-                     "kRing did not produce output without alloc");
+            t_assert(!gridDiskOutput[i],
+                     "gridDisk did not produce output without alloc");
         }
 
-        free(kRingOutput);
+        free(gridDiskOutput);
     }
 
     TEST(compactCells) {
@@ -124,9 +124,9 @@ SUITE(h3Memory) {
         // Generate a set of hexagons to compactCells
         H3Index* sunnyvaleExpanded = calloc(hexCount, sizeof(H3Index));
         resetMemoryCounters(0);
-        H3_EXPORT(kRing)(sunnyvale, k, sunnyvaleExpanded);
-        t_assert(actualAllocCalls == 0, "kRing did not call alloc");
-        t_assert(actualFreeCalls == 0, "kRing did not call free");
+        H3_EXPORT(gridDisk)(sunnyvale, k, sunnyvaleExpanded);
+        t_assert(actualAllocCalls == 0, "gridDisk did not call alloc");
+        t_assert(actualFreeCalls == 0, "gridDisk did not call free");
 
         H3Index* compressed = calloc(hexCount, sizeof(H3Index));
 

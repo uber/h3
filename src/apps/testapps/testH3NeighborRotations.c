@@ -18,7 +18,7 @@
  *
  *  usage: `testH3NeighborRotations resolution [maxK]`
  *
- *  All indexes at `resolution` will be tested. For each index, kRing
+ *  All indexes at `resolution` will be tested. For each index, gridDisk
  *  of `k` up to `maxK` (default 5) will be run. Standard out will show
  *  the number of cases that returned each return code from gridDiskUnsafe.
  *
@@ -51,12 +51,12 @@ typedef struct {
 void doCell(H3Index h, int maxK, TestOutput* testOutput) {
     for (int k = 0; k < maxK; k++) {
         int maxSz = H3_EXPORT(maxKringSize)(k);
-        H3Index* kRingInternalOutput = calloc(sizeof(H3Index), maxSz);
+        H3Index* gridDiskInternalOutput = calloc(sizeof(H3Index), maxSz);
         H3Index* gridDiskUnsafeOutput = calloc(sizeof(H3Index), maxSz);
-        int* kRingInternalDistances = calloc(sizeof(int), maxSz);
+        int* gridDiskInternalDistances = calloc(sizeof(int), maxSz);
 
         H3_EXPORT(gridDiskDistancesSafe)
-        (h, k, kRingInternalOutput, kRingInternalDistances, maxSz, 0);
+        (h, k, gridDiskInternalOutput, gridDiskInternalDistances, maxSz, 0);
         int gridDiskUnsafeFailed =
             H3_EXPORT(gridDiskUnsafe)(h, k, gridDiskUnsafeOutput);
 
@@ -77,8 +77,8 @@ void doCell(H3Index h, int maxK, TestOutput* testOutput) {
                     int found = 0;
 
                     for (int iii = 0; iii < maxSz; iii++) {
-                        if (kRingInternalOutput[iii] == h2 &&
-                            kRingInternalDistances[iii] == i) {
+                        if (gridDiskInternalOutput[iii] == h2 &&
+                            gridDiskInternalDistances[iii] == i) {
                             found = 1;
                             break;
                         }
@@ -99,7 +99,7 @@ void doCell(H3Index h, int maxK, TestOutput* testOutput) {
             testOutput->ret1++;
             int foundPent = 0;
             for (int i = 0; i < maxSz; i++) {
-                if (H3_EXPORT(isPentagon)(kRingInternalOutput[i])) {
+                if (H3_EXPORT(isPentagon)(gridDiskInternalOutput[i])) {
                     foundPent = 1;
                     break;
                 }
@@ -114,9 +114,9 @@ void doCell(H3Index h, int maxK, TestOutput* testOutput) {
             }
         }
 
-        free(kRingInternalOutput);
+        free(gridDiskInternalOutput);
         free(gridDiskUnsafeOutput);
-        free(kRingInternalDistances);
+        free(gridDiskInternalDistances);
     }
 }
 

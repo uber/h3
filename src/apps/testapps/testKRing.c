@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /** @file
- * @brief tests H3 function `kRing` and `gridDiskDistances`
+ * @brief tests H3 function `gridDisk` and `gridDiskDistances`
  *
  *  usage: `testKRing`
  */
@@ -27,7 +27,7 @@
 #include "test.h"
 #include "utility.h"
 
-static void kRing_equals_gridDiskDistancesSafe_assertions(H3Index h3) {
+static void gridDisk_equals_gridDiskDistancesSafe_assertions(H3Index h3) {
     for (int k = 0; k < 3; k++) {
         int kSz = H3_EXPORT(maxKringSize)(k);
 
@@ -73,8 +73,8 @@ static void kRing_equals_gridDiskDistancesSafe_assertions(H3Index h3) {
     }
 }
 
-SUITE(kRing) {
-    TEST(kRing0) {
+SUITE(gridDisk) {
+    TEST(gridDisk0) {
         GeoCoord sf = {0.659966917655, 2 * 3.14159 - 2.1364398519396};
         H3Index sfHex0 = H3_EXPORT(pointToCell)(&sf, 0);
 
@@ -100,7 +100,7 @@ SUITE(kRing) {
         }
     }
 
-    TEST(kRing0_PolarPentagon) {
+    TEST(gridDisk0_PolarPentagon) {
         H3Index polar;
         setH3Index(&polar, 0, 4, 0);
         H3Index k2[] = {0, 0, 0, 0, 0, 0, 0};
@@ -132,7 +132,7 @@ SUITE(kRing) {
         t_assert(k2present == 6, "pentagon has 5 neighbors");
     }
 
-    TEST(kRing1_PolarPentagon) {
+    TEST(gridDisk1_PolarPentagon) {
         H3Index polar;
         setH3Index(&polar, 1, 4, 0);
         H3Index k2[] = {0, 0, 0, 0, 0, 0, 0};
@@ -164,7 +164,7 @@ SUITE(kRing) {
         t_assert(k2present == 6, "pentagon has 5 neighbors");
     }
 
-    TEST(kRing1_PolarPentagon_k3) {
+    TEST(gridDisk1_PolarPentagon_k3) {
         H3Index polar;
         setH3Index(&polar, 1, 4, 0);
         H3Index k2[37] = {0};
@@ -229,7 +229,7 @@ SUITE(kRing) {
         t_assert(k2present == 31, "pentagon has 30 neighbors");
     }
 
-    TEST(kRing1_Pentagon_k4) {
+    TEST(gridDisk1_Pentagon_k4) {
         H3Index pent;
         setH3Index(&pent, 1, 14, 0);
         H3Index k2[61] = {0};
@@ -305,14 +305,14 @@ SUITE(kRing) {
         t_assert(k2present == 51, "pentagon has 50 neighbors");
     }
 
-    TEST(kRing_equals_gridDiskDistancesSafe) {
+    TEST(gridDisk_equals_gridDiskDistancesSafe) {
         // Check that gridDiskDistances output matches gridDiskDistancesSafe,
         // since gridDiskDistances will sometimes use a different
         // implementation.
 
         for (int res = 0; res < 2; res++) {
             iterateAllIndexesAtRes(
-                res, kRing_equals_gridDiskDistancesSafe_assertions);
+                res, gridDisk_equals_gridDiskDistancesSafe_assertions);
         }
     }
 

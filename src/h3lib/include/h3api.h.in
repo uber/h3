@@ -182,8 +182,8 @@ DECLSPEC void H3_EXPORT(cellToPoint)(H3Index h3, GeoCoord *g);
 DECLSPEC void H3_EXPORT(h3ToGeoBoundary)(H3Index h3, GeoBoundary *gp);
 /** @} */
 
-/** @defgroup kRing kRing
- * Functions for kRing
+/** @defgroup gridDisk gridDisk
+ * Functions for gridDisk
  * @{
  */
 /** @brief maximum number of hexagons in k-ring */
@@ -207,7 +207,7 @@ DECLSPEC void H3_EXPORT(gridDiskDistancesSafe)(H3Index origin, int k, H3Index *o
 DECLSPEC int H3_EXPORT(gridDisksUnsafe)(H3Index *h3Set, int length, int k, H3Index *out);
 
 /** @brief hexagon neighbors in all directions */
-DECLSPEC void H3_EXPORT(kRing)(H3Index origin, int k, H3Index *out);
+DECLSPEC void H3_EXPORT(gridDisk)(H3Index origin, int k, H3Index *out);
 /** @} */
 
 /** @defgroup gridDiskDistances gridDiskDistances

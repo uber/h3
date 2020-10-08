@@ -126,9 +126,9 @@ void h3ToLocalIj_neighbors_assertions(H3Index h3) {
  * Test that the neighbors (k-ring), if they can be found in the local IJ
  * coordinate space, can be converted back to indexes.
  */
-void localIjToH3_kRing_assertions(H3Index h3) {
+void localIjToH3_gridDisk_assertions(H3Index h3) {
     int r = H3_GET_RESOLUTION(h3);
-    t_assert(r <= 5, "resolution supported by test function (kRing)");
+    t_assert(r <= 5, "resolution supported by test function (gridDisk)");
     int maxK = MAX_DISTANCES[r];
 
     int sz = H3_EXPORT(maxKringSize)(maxK);
@@ -245,12 +245,12 @@ SUITE(h3ToLocalIj) {
         iterateAllIndexesAtRes(2, h3ToLocalIj_neighbors_assertions);
     }
 
-    TEST(localIjToH3_kRing) {
-        iterateAllIndexesAtRes(0, localIjToH3_kRing_assertions);
-        iterateAllIndexesAtRes(1, localIjToH3_kRing_assertions);
-        iterateAllIndexesAtRes(2, localIjToH3_kRing_assertions);
+    TEST(localIjToH3_gridDisk) {
+        iterateAllIndexesAtRes(0, localIjToH3_gridDisk_assertions);
+        iterateAllIndexesAtRes(1, localIjToH3_gridDisk_assertions);
+        iterateAllIndexesAtRes(2, localIjToH3_gridDisk_assertions);
         // Don't iterate all of res 3, to save time
-        iterateAllIndexesAtResPartial(3, localIjToH3_kRing_assertions, 27);
+        iterateAllIndexesAtResPartial(3, localIjToH3_gridDisk_assertions, 27);
         // Further resolutions aren't tested to save time.
     }
 
