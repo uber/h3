@@ -391,15 +391,15 @@ DECLSPEC int H3_EXPORT(res0CellCount)();
 DECLSPEC void H3_EXPORT(getRes0Cells)(H3Index *out);
 /** @} */
 
-/** @defgroup getPentagonIndexes getPentagonIndexes
- * Functions for getPentagonIndexes
+/** @defgroup getPentagons getPentagons
+ * Functions for getPentagons
  * @{
  */
 /** @brief returns the number of pentagons per resolution */
-DECLSPEC int H3_EXPORT(pentagonIndexCount)();
+DECLSPEC int H3_EXPORT(pentagonCount)();
 
 /** @brief generates all pentagons at the specified resolution */
-DECLSPEC void H3_EXPORT(getPentagonIndexes)(int res, H3Index *out);
+DECLSPEC void H3_EXPORT(getPentagons)(int res, H3Index *out);
 /** @} */
 
 /** @defgroup h3GetResolution h3GetResolution

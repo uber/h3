@@ -955,19 +955,19 @@ void H3_EXPORT(h3GetFaces)(H3Index h3, int* out) {
 }
 
 /**
- * pentagonIndexCount returns the number of pentagons (same at any resolution)
+ * pentagonCount returns the number of pentagons (same at any resolution)
  *
  * @return int count of pentagon indexes
  */
-int H3_EXPORT(pentagonIndexCount)() { return NUM_PENTAGONS; }
+int H3_EXPORT(pentagonCount)() { return NUM_PENTAGONS; }
 
 /**
  * Generates all pentagons at the specified resolution
  *
  * @param res The resolution to produce pentagons at.
- * @param out Output array. Must be of size pentagonIndexCount().
+ * @param out Output array. Must be of size pentagonCount().
  */
-void H3_EXPORT(getPentagonIndexes)(int res, H3Index* out) {
+void H3_EXPORT(getPentagons)(int res, H3Index* out) {
     int i = 0;
     for (int bc = 0; bc < NUM_BASE_CELLS; bc++) {
         if (_isBaseCellPentagon(bc)) {
