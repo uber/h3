@@ -43,7 +43,7 @@ void assertExpected(H3Index h1, const GeoCoord* g1) {
              "got expected h3ToGeo output");
 
     // Convert back to H3 to verify
-    int res = H3_EXPORT(h3GetResolution)(h1);
+    int res = H3_EXPORT(getResolution)(h1);
     H3Index h2 = H3_EXPORT(geoToH3)(&g2, res);
     t_assert(h1 == h2, "got expected geoToH3 output");
 }

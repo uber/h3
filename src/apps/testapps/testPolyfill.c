@@ -65,7 +65,7 @@ static void fillIndex_assertions(H3Index h) {
         return;
     }
 
-    int currentRes = H3_EXPORT(h3GetResolution)(h);
+    int currentRes = H3_EXPORT(getResolution)(h);
     // TODO: Not testing more than one depth because the assertions fail.
     for (int nextRes = currentRes; nextRes <= currentRes + 1; nextRes++) {
         GeoBoundary bndry;

@@ -35,7 +35,7 @@
  * @param h The H3 index.
  * @return The resolution of the H3 index argument.
  */
-int H3_EXPORT(h3GetResolution)(H3Index h) { return H3_GET_RESOLUTION(h); }
+int H3_EXPORT(getResolution)(H3Index h) { return H3_GET_RESOLUTION(h); }
 
 /**
  * Returns the H3 base cell "number" of an H3 cell (hexagon or pentagon).
