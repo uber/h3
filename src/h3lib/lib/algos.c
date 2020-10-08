@@ -177,7 +177,7 @@ int H3_EXPORT(maxKringSize)(int k) { return 3 * k * (k + 1) + 1; }
  * @param  out      zero-filled array which must be of size maxKringSize(k)
  */
 void H3_EXPORT(kRing)(H3Index origin, int k, H3Index* out) {
-    H3_EXPORT(kRingDistances)(origin, k, out, NULL);
+    H3_EXPORT(gridDiskDistances)(origin, k, out, NULL);
 }
 
 /**
@@ -196,8 +196,8 @@ void H3_EXPORT(kRing)(H3Index origin, int k, H3Index* out) {
  * @param  distances   NULL or a zero-filled array which must be of size
  *                     maxKringSize(k)
  */
-void H3_EXPORT(kRingDistances)(H3Index origin, int k, H3Index* out,
-                               int* distances) {
+void H3_EXPORT(gridDiskDistances)(H3Index origin, int k, H3Index* out,
+                                  int* distances) {
     // Optimistically try the faster hexRange algorithm first
     const bool failed =
         H3_EXPORT(gridDiskDistancesUnsafe)(origin, k, out, distances);
@@ -225,7 +225,7 @@ void H3_EXPORT(kRingDistances)(H3Index origin, int k, H3Index* out,
 }
 
 /**
- * Internal helper function called recursively for kRingDistances.
+ * Safe but slow version of gridDiskDistances (also called by it when needed).
  *
  * Adds the origin cell to the output set (treating it as a hash set)
  * and recurses to its neighbors, if needed.

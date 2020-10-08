@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /** @file
- * @brief tests H3 function `kRing` and `kRingDistances`
+ * @brief tests H3 function `kRing` and `gridDiskDistances`
  *
  *  usage: `testKRing`
  */
@@ -33,7 +33,7 @@ static void kRing_equals_gridDiskDistancesSafe_assertions(H3Index h3) {
 
         H3Index *neighbors = calloc(kSz, sizeof(H3Index));
         int *distances = calloc(kSz, sizeof(int));
-        H3_EXPORT(kRingDistances)(h3, k, neighbors, distances);
+        H3_EXPORT(gridDiskDistances)(h3, k, neighbors, distances);
 
         H3Index *internalNeighbors = calloc(kSz, sizeof(H3Index));
         int *internalDistances = calloc(kSz, sizeof(int));
@@ -84,7 +84,7 @@ SUITE(kRing) {
                                 0x8013fffffffffff, 0x8027fffffffffff,
                                 0x8049fffffffffff, 0x8051fffffffffff,
                                 0x8037fffffffffff};
-        H3_EXPORT(kRingDistances)(sfHex0, 1, k1, k1Dist);
+        H3_EXPORT(gridDiskDistances)(sfHex0, 1, k1, k1Dist);
 
         for (int i = 0; i < 7; i++) {
             t_assert(k1[i] != 0, "index is populated");
@@ -112,7 +112,7 @@ SUITE(kRing) {
                                 0x801ffffffffffff,
                                 0x8019fffffffffff,
                                 0};
-        H3_EXPORT(kRingDistances)(polar, 1, k2, k2Dist);
+        H3_EXPORT(gridDiskDistances)(polar, 1, k2, k2Dist);
 
         int k2present = 0;
         for (int i = 0; i < 7; i++) {
@@ -144,7 +144,7 @@ SUITE(kRing) {
                                 0x8108bffffffffff,
                                 0x8109bffffffffff,
                                 0};
-        H3_EXPORT(kRingDistances)(polar, 1, k2, k2Dist);
+        H3_EXPORT(gridDiskDistances)(polar, 1, k2, k2Dist);
 
         int k2present = 0;
         for (int i = 0; i < 7; i++) {
@@ -209,7 +209,7 @@ SUITE(kRing) {
         int expectedK2Dist[37] = {2, 3, 2, 1, 3, 3, 3, 2, 2, 3, 1, 3, 0,
                                   2, 3, 3, 2, 2, 3, 1, 3, 3, 2, 2, 3, 1,
                                   2, 3, 1, 3, 3, 0, 0, 0, 0, 0, 0};
-        H3_EXPORT(kRingDistances)(polar, 3, k2, k2Dist);
+        H3_EXPORT(gridDiskDistances)(polar, 3, k2, k2Dist);
 
         int k2present = 0;
         for (int i = 0; i < 37; i++) {
@@ -287,7 +287,7 @@ SUITE(kRing) {
                                   0x81137ffffffffff,
                                   0,
                                   0};
-        H3_EXPORT(kRingDistances)(pent, 4, k2, k2Dist);
+        H3_EXPORT(gridDiskDistances)(pent, 4, k2, k2Dist);
 
         int k2present = 0;
         for (int i = 0; i < 61; i++) {
@@ -306,8 +306,9 @@ SUITE(kRing) {
     }
 
     TEST(kRing_equals_gridDiskDistancesSafe) {
-        // Check that kRingDistances output matches gridDiskDistancesSafe,
-        // since kRingDistances will sometimes use a different implementation.
+        // Check that gridDiskDistances output matches gridDiskDistancesSafe,
+        // since gridDiskDistances will sometimes use a different
+        // implementation.
 
         for (int res = 0; res < 2; res++) {
             iterateAllIndexesAtRes(

@@ -47,7 +47,7 @@ static void gridDistance_kRing_assertions(H3Index h3) {
     H3Index *neighbors = calloc(sz, sizeof(H3Index));
     int *distances = calloc(sz, sizeof(int));
 
-    H3_EXPORT(kRingDistances)(h3, maxK, neighbors, distances);
+    H3_EXPORT(gridDiskDistances)(h3, maxK, neighbors, distances);
 
     for (int i = 0; i < sz; i++) {
         if (neighbors[i] == 0) {
@@ -59,7 +59,7 @@ static void gridDistance_kRing_assertions(H3Index h3) {
         // Don't consider indexes where gridDistance reports failure to
         // generate
         t_assert(calculatedDistance == distances[i] || calculatedDistance == -1,
-                 "kRingDistances matches gridDistance");
+                 "gridDiskDistances matches gridDistance");
     }
 
     free(distances);

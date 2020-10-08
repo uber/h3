@@ -211,14 +211,14 @@ DECLSPEC int H3_EXPORT(hexRanges)(H3Index *h3Set, int length, int k,
 DECLSPEC void H3_EXPORT(kRing)(H3Index origin, int k, H3Index *out);
 /** @} */
 
-/** @defgroup kRingDistances kRingDistances
- * Functions for kRingDistances
+/** @defgroup gridDiskDistances gridDiskDistances
+ * Functions for gridDiskDistances
  * @{
  */
 /** @brief hexagon neighbors in all directions, reporting distance from origin
  */
-DECLSPEC void H3_EXPORT(kRingDistances)(H3Index origin, int k, H3Index *out,
-                                        int *distances);
+DECLSPEC void H3_EXPORT(gridDiskDistances)(H3Index origin, int k, H3Index *out,
+                                  int *distances);
 /** @} */
 
 /** @defgroup hexRing hexRing
