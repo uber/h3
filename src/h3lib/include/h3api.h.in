@@ -166,12 +166,12 @@ typedef struct {
 DECLSPEC H3Index H3_EXPORT(pointToCell)(const GeoCoord *g, int res);
 /** @} */
 
-/** @defgroup h3ToGeo h3ToGeo
- * Functions for h3ToGeo
+/** @defgroup cellToPoint cellToPoint
+ * Functions for cellToPoint
  * @{
  */
 /** @brief find the lat/lon center point g of the cell h3 */
-DECLSPEC void H3_EXPORT(h3ToGeo)(H3Index h3, GeoCoord *g);
+DECLSPEC void H3_EXPORT(cellToPoint)(H3Index h3, GeoCoord *g);
 /** @} */
 
 /** @defgroup h3ToGeoBoundary h3ToGeoBoundary

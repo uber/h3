@@ -24,14 +24,14 @@ SUITE(cellToCenterChild) {
     H3Index baseHex;
     GeoCoord baseCentroid;
     setH3Index(&baseHex, 8, 4, 2);
-    H3_EXPORT(h3ToGeo)(baseHex, &baseCentroid);
+    H3_EXPORT(cellToPoint)(baseHex, &baseCentroid);
 
     TEST(propertyTests) {
         for (int res = 0; res <= MAX_H3_RES - 1; res++) {
             for (int childRes = res + 1; childRes <= MAX_H3_RES; childRes++) {
                 GeoCoord centroid;
                 H3Index h3Index = H3_EXPORT(pointToCell)(&baseCentroid, res);
-                H3_EXPORT(h3ToGeo)(h3Index, &centroid);
+                H3_EXPORT(cellToPoint)(h3Index, &centroid);
 
                 H3Index geoChild = H3_EXPORT(pointToCell)(&centroid, childRes);
                 H3Index centerChild =

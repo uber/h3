@@ -929,7 +929,7 @@ int _polyfillInternal(const GeoPolygon* geoPolygon, int res, H3Index* out) {
 
                 // Check if the hexagon is in the polygon or not
                 GeoCoord hexCenter;
-                H3_EXPORT(h3ToGeo)(hex, &hexCenter);
+                H3_EXPORT(cellToPoint)(hex, &hexCenter);
 
                 // If not, skip
                 if (!pointInsidePolygon(geoPolygon, bboxes, &hexCenter)) {

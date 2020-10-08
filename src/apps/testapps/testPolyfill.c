@@ -306,7 +306,7 @@ SUITE(polyfill) {
         H3Index pentagon;
         setH3Index(&pentagon, 9, 24, 0);
         GeoCoord coord;
-        H3_EXPORT(h3ToGeo)(pentagon, &coord);
+        H3_EXPORT(cellToPoint)(pentagon, &coord);
 
         // Length of half an edge of the polygon, in radians
         double edgeLength2 = H3_EXPORT(degsToRads)(0.001);
