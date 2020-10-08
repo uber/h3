@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Uber Technologies, Inc.
+ * Copyright 2017-2018, 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ SUITE(maxCellToChildrenSize) {
     GeoCoord sf = {0.659966917655, 2 * 3.14159 - 2.1364398519396};
 
     TEST(maxCellToChildrenSize) {
-        H3Index parent = H3_EXPORT(geoToH3)(&sf, 7);
+        H3Index parent = H3_EXPORT(pointToCell)(&sf, 7);
 
         t_assert(H3_EXPORT(maxCellToChildrenSize)(parent, 3) == 0,
                  "got expected size for coarser res");

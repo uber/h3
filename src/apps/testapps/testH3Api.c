@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Uber Technologies, Inc.
+ * Copyright 2017-2018, 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,25 +27,25 @@
 #include "utility.h"
 
 SUITE(h3Api) {
-    TEST(geoToH3_res) {
+    TEST(pointToCell_res) {
         GeoCoord anywhere = {0, 0};
 
-        t_assert(H3_EXPORT(geoToH3)(&anywhere, -1) == 0,
+        t_assert(H3_EXPORT(pointToCell)(&anywhere, -1) == 0,
                  "resolution below 0 is invalid");
-        t_assert(H3_EXPORT(geoToH3)(&anywhere, 16) == 0,
+        t_assert(H3_EXPORT(pointToCell)(&anywhere, 16) == 0,
                  "resolution above 15 is invalid");
     }
 
-    TEST(geoToH3_coord) {
+    TEST(pointToCell_coord) {
         GeoCoord invalidLat = {NAN, 0};
         GeoCoord invalidLon = {0, NAN};
         GeoCoord invalidLatLon = {INFINITY, -INFINITY};
 
-        t_assert(H3_EXPORT(geoToH3)(&invalidLat, 1) == 0,
+        t_assert(H3_EXPORT(pointToCell)(&invalidLat, 1) == 0,
                  "invalid latitude is rejected");
-        t_assert(H3_EXPORT(geoToH3)(&invalidLon, 1) == 0,
+        t_assert(H3_EXPORT(pointToCell)(&invalidLon, 1) == 0,
                  "invalid longitude is rejected");
-        t_assert(H3_EXPORT(geoToH3)(&invalidLatLon, 1) == 0,
+        t_assert(H3_EXPORT(pointToCell)(&invalidLatLon, 1) == 0,
                  "coordinates with infinity are rejected");
     }
 

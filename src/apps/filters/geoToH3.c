@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017, 2019 Uber Technologies, Inc.
+ * Copyright 2016-2017, 2019-2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
  * @brief stdin/stdout filter that converts from lat/lon coordinates to integer
  * H3 indexes
  *
- *  See `geoToH3 --help` for usage.
+ *  See `pointToCell --help` for usage.
  *
  *  The program reads lat/lon pairs from stdin until EOF is encountered. For
  *  each lat/lon the program outputs to stdout the integer H3 index of the
@@ -47,7 +47,7 @@ void doCoords(double lat, double lon, int res) {
     GeoCoord g = {.lat = H3_EXPORT(degsToRads)(lat),
                   .lon = H3_EXPORT(degsToRads)(lon)};
 
-    H3Index h = H3_EXPORT(geoToH3)(&g, res);
+    H3Index h = H3_EXPORT(pointToCell)(&g, res);
 
     h3Println(h);
 }

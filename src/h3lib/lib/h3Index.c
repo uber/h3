@@ -740,7 +740,7 @@ H3Index _faceIjkToH3(const FaceIJK* fijk, int res) {
  * @param res The desired H3 resolution for the encoding.
  * @return The encoded H3Index (or H3_NULL on failure).
  */
-H3Index H3_EXPORT(geoToH3)(const GeoCoord* g, int res) {
+H3Index H3_EXPORT(pointToCell)(const GeoCoord* g, int res) {
     if (res < 0 || res > MAX_H3_RES) {
         return H3_NULL;
     }

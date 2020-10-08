@@ -165,8 +165,9 @@
              << ((MAX_H3_RES - (res)) * H3_PER_DIGIT_OFFSET)))
 
 /**
- * Invalid index used to indicate an error from geoToH3 and related functions
- * or missing data in arrays of h3 indices. Analogous to NaN in floating point.
+ * Invalid index used to indicate an error from pointToCell and related
+ * functions or missing data in arrays of h3 indices. Analogous to NaN in
+ * floating point.
  */
 #define H3_NULL 0
 

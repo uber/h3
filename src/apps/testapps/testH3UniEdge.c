@@ -32,7 +32,7 @@ static GeoCoord sfGeo = {0.659966917655, -2.1364398519396};
 
 SUITE(h3UniEdge) {
     TEST(areNeighborCells) {
-        H3Index sf = H3_EXPORT(geoToH3)(&sfGeo, 9);
+        H3Index sf = H3_EXPORT(pointToCell)(&sfGeo, 9);
         H3Index ring[7] = {0};
         H3_EXPORT(hexRing)(sf, 1, ring);
 
@@ -68,7 +68,7 @@ SUITE(h3UniEdge) {
         t_assert(H3_EXPORT(areNeighborCells)(sfBroken, sf) == 0,
                  "broken H3Indexes can't be neighbors (reversed)");
 
-        H3Index sfBigger = H3_EXPORT(geoToH3)(&sfGeo, 7);
+        H3Index sfBigger = H3_EXPORT(pointToCell)(&sfGeo, 7);
         t_assert(H3_EXPORT(areNeighborCells)(sf, sfBigger) == 0,
                  "hexagons of different resolution can't be neighbors");
 
@@ -77,7 +77,7 @@ SUITE(h3UniEdge) {
     }
 
     TEST(getH3UnidirectionalEdgeAndFriends) {
-        H3Index sf = H3_EXPORT(geoToH3)(&sfGeo, 9);
+        H3Index sf = H3_EXPORT(pointToCell)(&sfGeo, 9);
         H3Index ring[7] = {0};
         H3_EXPORT(hexRing)(sf, 1, ring);
         H3Index sf2 = ring[0];
@@ -153,7 +153,7 @@ SUITE(h3UniEdge) {
     }
 
     TEST(isValidDirectedEdge) {
-        H3Index sf = H3_EXPORT(geoToH3)(&sfGeo, 9);
+        H3Index sf = H3_EXPORT(pointToCell)(&sfGeo, 9);
         H3Index ring[7] = {0};
         H3_EXPORT(hexRing)(sf, 1, ring);
         H3Index sf2 = ring[0];
@@ -193,7 +193,7 @@ SUITE(h3UniEdge) {
     }
 
     TEST(getH3UnidirectionalEdgesFromHexagon) {
-        H3Index sf = H3_EXPORT(geoToH3)(&sfGeo, 9);
+        H3Index sf = H3_EXPORT(pointToCell)(&sfGeo, 9);
         H3Index edges[6] = {0};
         H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(sf, edges);
 
@@ -247,7 +247,7 @@ SUITE(h3UniEdge) {
                                            {5, 0}, {4, 5}, {0, 1}};
 
         for (int res = 0; res < MAX_H3_RES; res++) {
-            sf = H3_EXPORT(geoToH3)(&sfGeo, res);
+            sf = H3_EXPORT(pointToCell)(&sfGeo, res);
             H3_EXPORT(h3ToGeoBoundary)(sf, &boundary);
             H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(sf, edges);
 
@@ -347,7 +347,7 @@ SUITE(h3UniEdge) {
         t_assert(H3_EXPORT(exactEdgeLengthRads)(0) == 0,
                  "Invalid edge has zero length");
         GeoCoord zero = {0, 0};
-        H3Index h3 = H3_EXPORT(geoToH3)(&zero, 0);
+        H3Index h3 = H3_EXPORT(pointToCell)(&zero, 0);
         t_assert(H3_EXPORT(exactEdgeLengthRads)(h3) == 0,
                  "Non-edge (cell) has zero edge length");
     }

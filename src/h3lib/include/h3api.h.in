@@ -157,13 +157,13 @@ typedef struct {
     int j;  ///< j component
 } CoordIJ;
 
-/** @defgroup geoToH3 geoToH3
- * Functions for geoToH3
+/** @defgroup pointToCell pointToCell
+ * Functions for pointToCell
  * @{
  */
 /** @brief find the H3 index of the resolution res cell containing the lat/lng
  */
-DECLSPEC H3Index H3_EXPORT(geoToH3)(const GeoCoord *g, int res);
+DECLSPEC H3Index H3_EXPORT(pointToCell)(const GeoCoord *g, int res);
 /** @} */
 
 /** @defgroup h3ToGeo h3ToGeo

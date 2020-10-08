@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017, 2019 Uber Technologies, Inc.
+ * Copyright 2016-2017, 2019-2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,7 +67,7 @@ int main(int argc, char* argv[]) {
         GeoCoord g;
         randomGeo(&g);
 
-        H3Index h = H3_EXPORT(geoToH3)(&g, res);
+        H3Index h = H3_EXPORT(pointToCell)(&g, res);
         GeoBoundary b;
         H3_EXPORT(h3ToGeoBoundary)(h, &b);
 

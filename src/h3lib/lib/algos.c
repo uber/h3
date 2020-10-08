@@ -763,7 +763,7 @@ int _getEdgeHexagons(const Geofence* geofence, int numHexagons, int res,
             interpolate.lon =
                 (origin.lon * (numHexesEstimate - j) / numHexesEstimate) +
                 (destination.lon * j / numHexesEstimate);
-            H3Index pointHex = H3_EXPORT(geoToH3)(&interpolate, res);
+            H3Index pointHex = H3_EXPORT(pointToCell)(&interpolate, res);
             // A simple hash to store the hexagon, or move to another place if
             // needed
             int loc = (int)(pointHex % numHexagons);

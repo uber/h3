@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Uber Technologies, Inc.
+ * Copyright 2017-2018, 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,9 +29,9 @@ SUITE(cellToParent) {
 
         for (int res = 1; res < 15; res++) {
             for (int step = 0; step < res; step++) {
-                child = H3_EXPORT(geoToH3)(&sf, res);
+                child = H3_EXPORT(pointToCell)(&sf, res);
                 parent = H3_EXPORT(cellToParent)(child, res - step);
-                comparisonParent = H3_EXPORT(geoToH3)(&sf, res - step);
+                comparisonParent = H3_EXPORT(pointToCell)(&sf, res - step);
 
                 t_assert(parent == comparisonParent, "Got expected parent");
             }
@@ -39,7 +39,7 @@ SUITE(cellToParent) {
     }
 
     TEST(invalidInputs) {
-        H3Index child = H3_EXPORT(geoToH3)(&sf, 5);
+        H3Index child = H3_EXPORT(pointToCell)(&sf, 5);
 
         t_assert(H3_EXPORT(cellToParent)(child, 6) == 0,
                  "Higher resolution fails");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Uber Technologies, Inc.
+ * Copyright 2017-2018, 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@
 
 SUITE(hexRing) {
     GeoCoord sf = {0.659966917655, 2 * 3.14159 - 2.1364398519396};
-    H3Index sfHex = H3_EXPORT(geoToH3)(&sf, 9);
+    H3Index sfHex = H3_EXPORT(pointToCell)(&sf, 9);
 
     TEST(identityKRing) {
         int err;
