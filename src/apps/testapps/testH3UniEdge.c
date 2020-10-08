@@ -76,13 +76,13 @@ SUITE(h3UniEdge) {
                  "hexagons in a ring are neighbors");
     }
 
-    TEST(getH3UnidirectionalEdgeAndFriends) {
+    TEST(cellsToDirectedEdgeAndFriends) {
         H3Index sf = H3_EXPORT(pointToCell)(&sfGeo, 9);
         H3Index ring[7] = {0};
         H3_EXPORT(gridRingUnsafe)(sf, 1, ring);
         H3Index sf2 = ring[0];
 
-        H3Index edge = H3_EXPORT(getH3UnidirectionalEdge)(sf, sf2);
+        H3Index edge = H3_EXPORT(cellsToDirectedEdge)(sf, sf2);
         t_assert(sf == H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(edge),
                  "can retrieve the origin from the edge");
         t_assert(
@@ -100,7 +100,7 @@ SUITE(h3UniEdge) {
         H3_EXPORT(gridRingUnsafe)(sf, 2, largerRing);
         H3Index sf3 = largerRing[0];
 
-        H3Index notEdge = H3_EXPORT(getH3UnidirectionalEdge)(sf, sf3);
+        H3Index notEdge = H3_EXPORT(cellsToDirectedEdge)(sf, sf3);
         t_assert(notEdge == 0, "Non-neighbors can't have edges");
     }
 
@@ -124,7 +124,7 @@ SUITE(h3UniEdge) {
                  "getting the destination from a null index returns 0");
     }
 
-    TEST(getH3UnidirectionalEdgeFromPentagon) {
+    TEST(cellsToDirectedEdgeFromPentagon) {
         H3Index pentagons[NUM_PENTAGONS] = {0};
         H3Index ring[7] = {0};
         H3Index pentagon;
@@ -139,12 +139,10 @@ SUITE(h3UniEdge) {
                 for (int i = 0; i < 7; i++) {
                     H3Index neighbor = ring[i];
                     if (neighbor == pentagon || neighbor == H3_NULL) continue;
-                    edge =
-                        H3_EXPORT(getH3UnidirectionalEdge)(pentagon, neighbor);
+                    edge = H3_EXPORT(cellsToDirectedEdge)(pentagon, neighbor);
                     t_assert(H3_EXPORT(isValidDirectedEdge)(edge),
                              "pentagon-to-neighbor is a valid edge");
-                    edge =
-                        H3_EXPORT(getH3UnidirectionalEdge)(neighbor, pentagon);
+                    edge = H3_EXPORT(cellsToDirectedEdge)(neighbor, pentagon);
                     t_assert(H3_EXPORT(isValidDirectedEdge)(edge),
                              "neighbor-to-pentagon is a valid edge");
                 }
@@ -158,7 +156,7 @@ SUITE(h3UniEdge) {
         H3_EXPORT(gridRingUnsafe)(sf, 1, ring);
         H3Index sf2 = ring[0];
 
-        H3Index edge = H3_EXPORT(getH3UnidirectionalEdge)(sf, sf2);
+        H3Index edge = H3_EXPORT(cellsToDirectedEdge)(sf, sf2);
         t_assert(H3_EXPORT(isValidDirectedEdge)(edge) == 1,
                  "edges validate correctly");
         t_assert(H3_EXPORT(isValidDirectedEdge)(sf) == 0,

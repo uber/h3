@@ -541,14 +541,13 @@ DECLSPEC void H3_EXPORT(getIcosahedronFaces)(H3Index h3, int *out);
 DECLSPEC int H3_EXPORT(areNeighborCells)(H3Index origin, H3Index destination);
 /** @} */
 
-/** @defgroup getH3UnidirectionalEdge getH3UnidirectionalEdge
- * Functions for getH3UnidirectionalEdge
+/** @defgroup cellsToDirectedEdge cellsToDirectedEdge
+ * Functions for cellsToDirectedEdge
  * @{
  */
 /** @brief returns the unidirectional edge H3Index for the specified origin and
  * destination */
-DECLSPEC H3Index H3_EXPORT(getH3UnidirectionalEdge)(H3Index origin,
-                                                    H3Index destination);
+DECLSPEC H3Index H3_EXPORT(cellsToDirectedEdge)(H3Index origin, H3Index destination);
 /** @} */
 
 /** @defgroup isValidDirectedEdge isValidDirectedEdge
