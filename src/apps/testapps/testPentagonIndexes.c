@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Uber Technologies, Inc.
+ * Copyright 2019-2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,13 +21,13 @@
 
 #define PADDED_COUNT 16
 
-SUITE(getPentagonIndexes) {
+SUITE(getPentagons) {
     TEST(propertyTests) {
-        int expectedCount = H3_EXPORT(pentagonIndexCount)();
+        int expectedCount = H3_EXPORT(pentagonCount)();
 
         for (int res = 0; res <= 15; res++) {
             H3Index h3Indexes[PADDED_COUNT] = {0};
-            H3_EXPORT(getPentagonIndexes)(res, h3Indexes);
+            H3_EXPORT(getPentagons)(res, h3Indexes);
 
             int numFound = 0;
 

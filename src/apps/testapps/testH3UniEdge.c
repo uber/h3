@@ -131,7 +131,7 @@ SUITE(h3UniEdge) {
         H3Index edge;
 
         for (int res = 0; res < MAX_H3_RES; res++) {
-            H3_EXPORT(getPentagonIndexes)(res, pentagons);
+            H3_EXPORT(getPentagons)(res, pentagons);
             for (int p = 0; p < NUM_PENTAGONS; p++) {
                 pentagon = pentagons[p];
                 H3_EXPORT(kRing)(pentagon, 1, ring);

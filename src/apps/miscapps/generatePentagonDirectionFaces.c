@@ -29,7 +29,7 @@ static void generate() {
     H3Index pentagons[NUM_PENTAGONS] = {0};
     // Get the res 2 pentagons, whose neighbors have the same base cell
     // and are unambiguously on the correct faces
-    H3_EXPORT(getPentagonIndexes)(2, pentagons);
+    H3_EXPORT(getPentagons)(2, pentagons);
 
     printf(
         "static const PentagonDirectionFaces "

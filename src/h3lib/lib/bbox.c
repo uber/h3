@@ -100,7 +100,7 @@ double _hexRadiusKm(H3Index h3Index) {
 int bboxHexEstimate(const BBox* bbox, int res) {
     // Get the area of the pentagon as the maximally-distorted area possible
     H3Index pentagons[12] = {0};
-    H3_EXPORT(getPentagonIndexes)(res, pentagons);
+    H3_EXPORT(getPentagons)(res, pentagons);
     double pentagonRadiusKm = _hexRadiusKm(pentagons[0]);
     // Area of a regular hexagon is 3/2*sqrt(3) * r * r
     // The pentagon has the most distortion (smallest edges) and shares its
@@ -140,7 +140,7 @@ int lineHexEstimate(const GeoCoord* origin, const GeoCoord* destination,
                     int res) {
     // Get the area of the pentagon as the maximally-distorted area possible
     H3Index pentagons[12] = {0};
-    H3_EXPORT(getPentagonIndexes)(res, pentagons);
+    H3_EXPORT(getPentagons)(res, pentagons);
     double pentagonRadiusKm = _hexRadiusKm(pentagons[0]);
 
     double dist = H3_EXPORT(pointDistKm)(origin, destination);
