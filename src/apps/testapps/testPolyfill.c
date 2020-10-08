@@ -75,11 +75,14 @@ static void fillIndex_assertions(H3Index h) {
             .numHoles = 0,
             .holes = 0};
 
-        int polyfillSize = H3_EXPORT(maxPolyfillSize)(&polygon, nextRes);
-        H3Index* polyfillOut = calloc(polyfillSize, sizeof(H3Index));
-        H3_EXPORT(polyfill)(&polygon, nextRes, polyfillOut);
+        int polygonToCellsSize =
+            H3_EXPORT(maxPolygonToCellsSize)(&polygon, nextRes);
+        H3Index* polygonToCellsOut =
+            calloc(polygonToCellsSize, sizeof(H3Index));
+        H3_EXPORT(polygonToCells)(&polygon, nextRes, polygonToCellsOut);
 
-        int polyfillCount = countActualHexagons(polyfillOut, polyfillSize);
+        int polygonToCellsCount =
+            countActualHexagons(polygonToCellsOut, polygonToCellsSize);
 
         int childrenSize = H3_EXPORT(maxCellToChildrenSize)(h, nextRes);
         H3Index* children = calloc(childrenSize, sizeof(H3Index));
@@ -87,28 +90,29 @@ static void fillIndex_assertions(H3Index h) {
 
         int cellToChildrenCount = countActualHexagons(children, childrenSize);
 
-        t_assert(polyfillCount == cellToChildrenCount,
+        t_assert(polygonToCellsCount == cellToChildrenCount,
                  "Polyfill count matches cellToChildren count");
 
         for (int i = 0; i < childrenSize; i++) {
             bool found = false;
             if (children[i] == H3_NULL) continue;
-            for (int j = 0; j < polyfillSize; j++) {
-                if (polyfillOut[j] == children[i]) {
+            for (int j = 0; j < polygonToCellsSize; j++) {
+                if (polygonToCellsOut[j] == children[i]) {
                     found = true;
                     break;
                 }
             }
-            t_assert(found,
-                     "All indexes match between polyfill and cellToChildren");
+            t_assert(
+                found,
+                "All indexes match between polygonToCells and cellToChildren");
         }
 
-        free(polyfillOut);
+        free(polygonToCellsOut);
         free(children);
     }
 }
 
-SUITE(polyfill) {
+SUITE(polygonToCells) {
     sfGeoPolygon.geofence = sfGeofence;
     sfGeoPolygon.numHoles = 0;
 
@@ -119,52 +123,55 @@ SUITE(polyfill) {
     emptyGeoPolygon.geofence = emptyGeofence;
     emptyGeoPolygon.numHoles = 0;
 
-    TEST(maxPolyfillSize) {
-        int numHexagons = H3_EXPORT(maxPolyfillSize)(&sfGeoPolygon, 9);
-        t_assert(numHexagons == 5613, "got expected max polyfill size");
+    TEST(maxPolygonToCellsSize) {
+        int numHexagons = H3_EXPORT(maxPolygonToCellsSize)(&sfGeoPolygon, 9);
+        t_assert(numHexagons == 5613, "got expected max polygonToCells size");
 
-        numHexagons = H3_EXPORT(maxPolyfillSize)(&holeGeoPolygon, 9);
-        t_assert(numHexagons == 5613, "got expected max polyfill size (hole)");
+        numHexagons = H3_EXPORT(maxPolygonToCellsSize)(&holeGeoPolygon, 9);
+        t_assert(numHexagons == 5613,
+                 "got expected max polygonToCells size (hole)");
 
-        numHexagons = H3_EXPORT(maxPolyfillSize)(&emptyGeoPolygon, 9);
-        t_assert(numHexagons == 15, "got expected max polyfill size (empty)");
+        numHexagons = H3_EXPORT(maxPolygonToCellsSize)(&emptyGeoPolygon, 9);
+        t_assert(numHexagons == 15,
+                 "got expected max polygonToCells size (empty)");
     }
 
-    TEST(polyfill) {
-        int numHexagons = H3_EXPORT(maxPolyfillSize)(&sfGeoPolygon, 9);
+    TEST(polygonToCells) {
+        int numHexagons = H3_EXPORT(maxPolygonToCellsSize)(&sfGeoPolygon, 9);
         H3Index* hexagons = calloc(numHexagons, sizeof(H3Index));
 
-        H3_EXPORT(polyfill)(&sfGeoPolygon, 9, hexagons);
+        H3_EXPORT(polygonToCells)(&sfGeoPolygon, 9, hexagons);
         int actualNumHexagons = countActualHexagons(hexagons, numHexagons);
 
-        t_assert(actualNumHexagons == 1253, "got expected polyfill size");
+        t_assert(actualNumHexagons == 1253, "got expected polygonToCells size");
         free(hexagons);
     }
 
-    TEST(polyfillHole) {
-        int numHexagons = H3_EXPORT(maxPolyfillSize)(&holeGeoPolygon, 9);
+    TEST(polygonToCellsHole) {
+        int numHexagons = H3_EXPORT(maxPolygonToCellsSize)(&holeGeoPolygon, 9);
         H3Index* hexagons = calloc(numHexagons, sizeof(H3Index));
 
-        H3_EXPORT(polyfill)(&holeGeoPolygon, 9, hexagons);
+        H3_EXPORT(polygonToCells)(&holeGeoPolygon, 9, hexagons);
         int actualNumHexagons = countActualHexagons(hexagons, numHexagons);
 
         t_assert(actualNumHexagons == 1214,
-                 "got expected polyfill size (hole)");
+                 "got expected polygonToCells size (hole)");
         free(hexagons);
     }
 
-    TEST(polyfillEmpty) {
-        int numHexagons = H3_EXPORT(maxPolyfillSize)(&emptyGeoPolygon, 9);
+    TEST(polygonToCellsEmpty) {
+        int numHexagons = H3_EXPORT(maxPolygonToCellsSize)(&emptyGeoPolygon, 9);
         H3Index* hexagons = calloc(numHexagons, sizeof(H3Index));
 
-        H3_EXPORT(polyfill)(&emptyGeoPolygon, 9, hexagons);
+        H3_EXPORT(polygonToCells)(&emptyGeoPolygon, 9, hexagons);
         int actualNumHexagons = countActualHexagons(hexagons, numHexagons);
 
-        t_assert(actualNumHexagons == 0, "got expected polyfill size (empty)");
+        t_assert(actualNumHexagons == 0,
+                 "got expected polygonToCells size (empty)");
         free(hexagons);
     }
 
-    TEST(polyfillExact) {
+    TEST(polygonToCellsExact) {
         GeoCoord somewhere = {1, 2};
         H3Index origin = H3_EXPORT(pointToCell)(&somewhere, 9);
         GeoBoundary boundary;
@@ -183,18 +190,19 @@ SUITE(polyfill) {
         someHexagon.geofence = someGeofence;
         someHexagon.numHoles = 0;
 
-        int numHexagons = H3_EXPORT(maxPolyfillSize)(&someHexagon, 9);
+        int numHexagons = H3_EXPORT(maxPolygonToCellsSize)(&someHexagon, 9);
         H3Index* hexagons = calloc(numHexagons, sizeof(H3Index));
 
-        H3_EXPORT(polyfill)(&someHexagon, 9, hexagons);
+        H3_EXPORT(polygonToCells)(&someHexagon, 9, hexagons);
         int actualNumHexagons = countActualHexagons(hexagons, numHexagons);
 
-        t_assert(actualNumHexagons == 1, "got expected polyfill size (1)");
+        t_assert(actualNumHexagons == 1,
+                 "got expected polygonToCells size (1)");
         free(hexagons);
         free(verts);
     }
 
-    TEST(polyfillTransmeridian) {
+    TEST(polygonToCellsTransmeridian) {
         GeoCoord primeMeridianVerts[] = {
             {0.01, 0.01}, {0.01, -0.01}, {-0.01, -0.01}, {-0.01, 0.01}};
         Geofence primeMeridianGeofence = {.numVerts = 4,
@@ -229,49 +237,50 @@ SUITE(polyfill) {
         // Prime meridian case
         expectedSize = 4228;
         int numHexagons =
-            H3_EXPORT(maxPolyfillSize)(&primeMeridianGeoPolygon, 7);
+            H3_EXPORT(maxPolygonToCellsSize)(&primeMeridianGeoPolygon, 7);
         H3Index* hexagons = calloc(numHexagons, sizeof(H3Index));
 
-        H3_EXPORT(polyfill)(&primeMeridianGeoPolygon, 7, hexagons);
+        H3_EXPORT(polygonToCells)(&primeMeridianGeoPolygon, 7, hexagons);
         int actualNumHexagons = countActualHexagons(hexagons, numHexagons);
 
         t_assert(actualNumHexagons == expectedSize,
-                 "got expected polyfill size (prime meridian)");
+                 "got expected polygonToCells size (prime meridian)");
 
         // Transmeridian case
         // This doesn't exactly match the prime meridian count because of slight
         // differences in hex size and grid offset between the two cases
         expectedSize = 4238;
-        numHexagons = H3_EXPORT(maxPolyfillSize)(&transMeridianGeoPolygon, 7);
+        numHexagons =
+            H3_EXPORT(maxPolygonToCellsSize)(&transMeridianGeoPolygon, 7);
         H3Index* hexagonsTM = calloc(numHexagons, sizeof(H3Index));
 
-        H3_EXPORT(polyfill)(&transMeridianGeoPolygon, 7, hexagonsTM);
+        H3_EXPORT(polygonToCells)(&transMeridianGeoPolygon, 7, hexagonsTM);
         actualNumHexagons = countActualHexagons(hexagonsTM, numHexagons);
 
         t_assert(actualNumHexagons == expectedSize,
-                 "got expected polyfill size (transmeridian)");
+                 "got expected polygonToCells size (transmeridian)");
 
         // Transmeridian filled hole case -- only needed for calculating hole
         // size
-        numHexagons =
-            H3_EXPORT(maxPolyfillSize)(&transMeridianFilledHoleGeoPolygon, 7);
+        numHexagons = H3_EXPORT(maxPolygonToCellsSize)(
+            &transMeridianFilledHoleGeoPolygon, 7);
         H3Index* hexagonsTMFH = calloc(numHexagons, sizeof(H3Index));
 
-        H3_EXPORT(polyfill)
+        H3_EXPORT(polygonToCells)
         (&transMeridianFilledHoleGeoPolygon, 7, hexagonsTMFH);
         int actualNumHoleHexagons =
             countActualHexagons(hexagonsTMFH, numHexagons);
 
         // Transmeridian hole case
         numHexagons =
-            H3_EXPORT(maxPolyfillSize)(&transMeridianHoleGeoPolygon, 7);
+            H3_EXPORT(maxPolygonToCellsSize)(&transMeridianHoleGeoPolygon, 7);
         H3Index* hexagonsTMH = calloc(numHexagons, sizeof(H3Index));
 
-        H3_EXPORT(polyfill)(&transMeridianHoleGeoPolygon, 7, hexagonsTMH);
+        H3_EXPORT(polygonToCells)(&transMeridianHoleGeoPolygon, 7, hexagonsTMH);
         actualNumHexagons = countActualHexagons(hexagonsTMH, numHexagons);
 
         t_assert(actualNumHexagons == expectedSize - actualNumHoleHexagons,
-                 "got expected polyfill size (transmeridian hole)");
+                 "got expected polygonToCells size (transmeridian hole)");
 
         free(hexagons);
         free(hexagonsTM);
@@ -279,7 +288,7 @@ SUITE(polyfill) {
         free(hexagonsTMH);
     }
 
-    TEST(polyfillTransmeridianComplex) {
+    TEST(polygonToCellsTransmeridianComplex) {
         // This polygon is "complex" in that it has > 4 vertices - this
         // tests for a bug that was taking the max and min longitude as
         // the bounds for transmeridian polygons
@@ -289,20 +298,20 @@ SUITE(polyfill) {
         Geofence geofence = {.numVerts = 6, .verts = verts};
         GeoPolygon polygon = {.geofence = geofence, .numHoles = 0};
 
-        int numHexagons = H3_EXPORT(maxPolyfillSize)(&polygon, 4);
+        int numHexagons = H3_EXPORT(maxPolygonToCellsSize)(&polygon, 4);
 
         H3Index* hexagons = calloc(numHexagons, sizeof(H3Index));
-        H3_EXPORT(polyfill)(&polygon, 4, hexagons);
+        H3_EXPORT(polygonToCells)(&polygon, 4, hexagons);
 
         int actualNumHexagons = countActualHexagons(hexagons, numHexagons);
 
         t_assert(actualNumHexagons == 1204,
-                 "got expected polyfill size (complex transmeridian)");
+                 "got expected polygonToCells size (complex transmeridian)");
 
         free(hexagons);
     }
 
-    TEST(polyfillPentagon) {
+    TEST(polygonToCellsPentagon) {
         H3Index pentagon;
         setH3Index(&pentagon, 9, 24, 0);
         GeoCoord coord;
@@ -338,10 +347,10 @@ SUITE(polyfill) {
         polygon.geofence = geofence;
         polygon.numHoles = 0;
 
-        int numHexagons = H3_EXPORT(maxPolyfillSize)(&polygon, 9);
+        int numHexagons = H3_EXPORT(maxPolygonToCellsSize)(&polygon, 9);
         H3Index* hexagons = calloc(numHexagons, sizeof(H3Index));
 
-        H3_EXPORT(polyfill)(&polygon, 9, hexagons);
+        H3_EXPORT(polygonToCells)(&polygon, 9, hexagons);
 
         int found = 0;
         int numPentagons = 0;

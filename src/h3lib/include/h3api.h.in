@@ -224,16 +224,16 @@ DECLSPEC void H3_EXPORT(kRingDistances)(H3Index origin, int k, H3Index *out,
 DECLSPEC int H3_EXPORT(hexRing)(H3Index origin, int k, H3Index *out);
 /** @} */
 
-/** @defgroup polyfill polyfill
- * Functions for polyfill
+/** @defgroup polygonToCells polygonToCells
+ * Functions for polygonToCells
  * @{
  */
-/** @brief maximum number of hexagons in the geofence */
-DECLSPEC int H3_EXPORT(maxPolyfillSize)(const GeoPolygon *geoPolygon, int res);
+/** @brief maximum number of hexagons that could be in the geofence */
+DECLSPEC int H3_EXPORT(maxPolygonToCellsSize)(const GeoPolygon *geoPolygon, int res);
 
 /** @brief hexagons within the given geofence */
-DECLSPEC void H3_EXPORT(polyfill)(const GeoPolygon *geoPolygon, int res,
-                                  H3Index *out);
+DECLSPEC void H3_EXPORT(polygonToCells)(const GeoPolygon *geoPolygon, int res,
+                               H3Index *out);
 /** @} */
 
 /** @defgroup h3SetToMultiPolygon h3SetToMultiPolygon
