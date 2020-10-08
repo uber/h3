@@ -31,17 +31,17 @@
 static GeoCoord sfGeo = {0.659966917655, -2.1364398519396};
 
 SUITE(h3UniEdge) {
-    TEST(h3IndexesAreNeighbors) {
+    TEST(areNeighborCells) {
         H3Index sf = H3_EXPORT(geoToH3)(&sfGeo, 9);
         H3Index ring[7] = {0};
         H3_EXPORT(hexRing)(sf, 1, ring);
 
-        t_assert(H3_EXPORT(h3IndexesAreNeighbors)(sf, sf) == 0,
+        t_assert(H3_EXPORT(areNeighborCells)(sf, sf) == 0,
                  "an index does not neighbor itself");
 
         int neighbors = 0;
         for (int i = 0; i < H3_EXPORT(maxKringSize)(1); i++) {
-            if (ring[i] != 0 && H3_EXPORT(h3IndexesAreNeighbors)(sf, ring[i])) {
+            if (ring[i] != 0 && H3_EXPORT(areNeighborCells)(sf, ring[i])) {
                 neighbors++;
             }
         }
@@ -54,7 +54,7 @@ SUITE(h3UniEdge) {
         neighbors = 0;
         for (int i = 0; i < H3_EXPORT(maxKringSize)(2); i++) {
             if (largerRing[i] != 0 &&
-                H3_EXPORT(h3IndexesAreNeighbors)(sf, largerRing[i])) {
+                H3_EXPORT(areNeighborCells)(sf, largerRing[i])) {
                 neighbors++;
             }
         }
@@ -63,16 +63,16 @@ SUITE(h3UniEdge) {
 
         H3Index sfBroken = sf;
         H3_SET_MODE(sfBroken, H3_UNIEDGE_MODE);
-        t_assert(H3_EXPORT(h3IndexesAreNeighbors)(sf, sfBroken) == 0,
+        t_assert(H3_EXPORT(areNeighborCells)(sf, sfBroken) == 0,
                  "broken H3Indexes can't be neighbors");
-        t_assert(H3_EXPORT(h3IndexesAreNeighbors)(sfBroken, sf) == 0,
+        t_assert(H3_EXPORT(areNeighborCells)(sfBroken, sf) == 0,
                  "broken H3Indexes can't be neighbors (reversed)");
 
         H3Index sfBigger = H3_EXPORT(geoToH3)(&sfGeo, 7);
-        t_assert(H3_EXPORT(h3IndexesAreNeighbors)(sf, sfBigger) == 0,
+        t_assert(H3_EXPORT(areNeighborCells)(sf, sfBigger) == 0,
                  "hexagons of different resolution can't be neighbors");
 
-        t_assert(H3_EXPORT(h3IndexesAreNeighbors)(ring[2], ring[1]) == 1,
+        t_assert(H3_EXPORT(areNeighborCells)(ring[2], ring[1]) == 1,
                  "hexagons in a ring are neighbors");
     }
 
