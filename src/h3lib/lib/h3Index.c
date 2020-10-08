@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2019 Uber Technologies, Inc.
+ * Copyright 2016-2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -274,24 +274,24 @@ H3Index H3_EXPORT(cellToCenterChild)(H3Index h, int childRes) {
 }
 
 /**
- * compact takes a set of hexagons all at the same resolution and compresses
- * them by pruning full child branches to the parent level. This is also done
- * for all parents recursively to get the minimum number of hex addresses that
- * perfectly cover the defined space.
+ * compactCells takes a set of hexagons all at the same resolution and
+ * compresses them by pruning full child branches to the parent level. This is
+ * also done for all parents recursively to get the minimum number of hex
+ * addresses that perfectly cover the defined space.
  * @param h3Set Set of hexagons
  * @param compactedSet The output array of compressed hexagons (preallocated)
  * @param numHexes The size of the input and output arrays (possible that no
  * contiguous regions exist in the set at all and no compression possible)
  * @return an error code on bad input data
  */
-int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
-                       const int numHexes) {
+int H3_EXPORT(compactCells)(const H3Index* h3Set, H3Index* compactedSet,
+                            const int numHexes) {
     if (numHexes == 0) {
         return COMPACT_SUCCESS;
     }
     int res = H3_GET_RESOLUTION(h3Set[0]);
     if (res == 0) {
-        // No compaction possible, just copy the set to output
+        // No compactCellsion possible, just copy the set to output
         for (int i = 0; i < numHexes; i++) {
             compactedSet[i] = h3Set[i];
         }
@@ -362,8 +362,8 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
             }
         }
         // Determine which parent hexagons have a complete set
-        // of children and put them in the compactableHexes array
-        int compactableCount = 0;
+        // of children and put them in the compactCellsableHexes array
+        int compactCellsableCount = 0;
         int maxCompactableCount =
             numRemainingHexes / 6;  // Somehow all pentagons; conservative
         if (maxCompactableCount == 0) {
@@ -371,9 +371,9 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
                    numRemainingHexes * sizeof(remainingHexes[0]));
             break;
         }
-        H3Index* compactableHexes =
+        H3Index* compactCellsableHexes =
             H3_MEMORY(calloc)(maxCompactableCount, sizeof(H3Index));
-        if (!compactableHexes) {
+        if (!compactCellsableHexes) {
             H3_MEMORY(free)(remainingHexes);
             H3_MEMORY(free)(hashSetArray);
             return COMPACT_ALLOC_FAILED;
@@ -393,30 +393,30 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
             }
             if (count == 7) {
                 // Bingo! Full set!
-                compactableHexes[compactableCount] =
+                compactCellsableHexes[compactCellsableCount] =
                     hashSetArray[i] & H3_RESERVED_MASK_NEGATIVE;
-                compactableCount++;
+                compactCellsableCount++;
             }
         }
-        // Uncompactable hexes are immediately copied into the
+        // UncompactCellsable hexes are immediately copied into the
         // output compactedSetOffset
-        int uncompactableCount = 0;
+        int uncompactCellsableCount = 0;
         for (int i = 0; i < numRemainingHexes; i++) {
             H3Index currIndex = remainingHexes[i];
             if (currIndex != H3_NULL) {
                 H3Index parent = H3_EXPORT(cellToParent)(currIndex, parentRes);
                 // Modulus hash the parent into the temp array
                 // to determine if this index was included in
-                // the compactableHexes array
+                // the compactCellsableHexes array
                 int loc = (int)(parent % numRemainingHexes);
                 int loopCount = 0;
-                bool isUncompactable = true;
+                bool isUncompactCellsable = true;
                 do {
                     if (loopCount > numRemainingHexes) {  // LCOV_EXCL_BR_LINE
                         // LCOV_EXCL_START
                         // This case should not be possible because at most one
                         // index is placed into hashSetArray per input hexagon.
-                        H3_MEMORY(free)(compactableHexes);
+                        H3_MEMORY(free)(compactCellsableHexes);
                         H3_MEMORY(free)(remainingHexes);
                         H3_MEMORY(free)(hashSetArray);
                         return COMPACT_LOOP_EXCEEDED;
@@ -427,7 +427,7 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
                     if (tempIndex == parent) {
                         int count = H3_GET_RESERVED_BITS(hashSetArray[loc]) + 1;
                         if (count == 7) {
-                            isUncompactable = false;
+                            isUncompactCellsable = false;
                         }
                         break;
                     } else {
@@ -435,19 +435,20 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
                     }
                     loopCount++;
                 } while (hashSetArray[loc] != parent);
-                if (isUncompactable) {
-                    compactedSetOffset[uncompactableCount] = remainingHexes[i];
-                    uncompactableCount++;
+                if (isUncompactCellsable) {
+                    compactedSetOffset[uncompactCellsableCount] =
+                        remainingHexes[i];
+                    uncompactCellsableCount++;
                 }
             }
         }
         // Set up for the next loop
         memset(hashSetArray, 0, numHexes * sizeof(H3Index));
-        compactedSetOffset += uncompactableCount;
-        memcpy(remainingHexes, compactableHexes,
-               compactableCount * sizeof(H3Index));
-        numRemainingHexes = compactableCount;
-        H3_MEMORY(free)(compactableHexes);
+        compactedSetOffset += uncompactCellsableCount;
+        memcpy(remainingHexes, compactCellsableHexes,
+               compactCellsableCount * sizeof(H3Index));
+        numRemainingHexes = compactCellsableCount;
+        H3_MEMORY(free)(compactCellsableHexes);
     }
     H3_MEMORY(free)(remainingHexes);
     H3_MEMORY(free)(hashSetArray);
@@ -455,7 +456,7 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
 }
 
 /**
- * uncompact takes a compressed set of hexagons and expands back to the
+ * uncompactCells takes a compressed set of hexagons and expands back to the
  * original set of hexagons.
  * @param compactedSet Set of hexagons
  * @param numHexes The number of hexes in the input set
@@ -465,8 +466,9 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
  * @return An error code if output array is too small or any hexagon is
  * smaller than the output resolution.
  */
-int H3_EXPORT(uncompact)(const H3Index* compactedSet, const int numHexes,
-                         H3Index* h3Set, const int maxHexes, const int res) {
+int H3_EXPORT(uncompactCells)(const H3Index* compactedSet, const int numHexes,
+                              H3Index* h3Set, const int maxHexes,
+                              const int res) {
     int outOffset = 0;
     for (int i = 0; i < numHexes; i++) {
         if (compactedSet[i] == 0) continue;
@@ -499,16 +501,16 @@ int H3_EXPORT(uncompact)(const H3Index* compactedSet, const int numHexes,
 }
 
 /**
- * maxUncompactSize takes a compacted set of hexagons are provides an
- * upper-bound estimate of the size of the uncompacted set of hexagons.
+ * maxUncompactCellsSize takes a compactCellsed set of hexagons are provides an
+ * upper-bound estimate of the size of the uncompactCellsed set of hexagons.
  * @param compactedSet Set of hexagons
  * @param numHexes The number of hexes in the input set
  * @param res The hexagon resolution to decompress to
  * @return The number of hexagons to allocate memory for, or a negative
  * number if an error occurs.
  */
-int H3_EXPORT(maxUncompactSize)(const H3Index* compactedSet, const int numHexes,
-                                const int res) {
+int H3_EXPORT(maxUncompactCellsSize)(const H3Index* compactedSet,
+                                     const int numHexes, const int res) {
     int maxNumHexagons = 0;
     for (int i = 0; i < numHexes; i++) {
         if (compactedSet[i] == 0) continue;
