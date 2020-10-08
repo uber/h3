@@ -54,7 +54,7 @@ SUITE(cellToChildren) {
         H3_EXPORT(cellToChildren)(sfHex8, 9, sfHex9s);
 
         GeoCoord center;
-        H3_EXPORT(h3ToGeo)(sfHex8, &center);
+        H3_EXPORT(cellToPoint)(sfHex8, &center);
         H3Index sfHex9_0 = H3_EXPORT(pointToCell)(&center, 9);
 
         int numFound = 0;

@@ -28,7 +28,7 @@ GeoBoundary outBoundary;
 
 BENCHMARK(pointToCell, 10000, { H3_EXPORT(pointToCell)(&coord, 9); });
 
-BENCHMARK(h3ToGeo, 10000, { H3_EXPORT(h3ToGeo)(hex, &outCoord); });
+BENCHMARK(cellToPoint, 10000, { H3_EXPORT(cellToPoint)(hex, &outCoord); });
 
 BENCHMARK(h3ToGeoBoundary, 10000, {
     H3_EXPORT(h3ToGeoBoundary)(hex, &outBoundary);
