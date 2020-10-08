@@ -220,12 +220,12 @@ DECLSPEC void H3_EXPORT(gridDiskDistances)(H3Index origin, int k, H3Index *out,
                                   int *distances);
 /** @} */
 
-/** @defgroup hexRing hexRing
- * Functions for hexRing
+/** @defgroup gridRingUnsafe gridRingUnsafe
+ * Functions for gridRingUnsafe
  * @{
  */
 /** @brief hollow hexagon ring at some origin */
-DECLSPEC int H3_EXPORT(hexRing)(H3Index origin, int k, H3Index *out);
+DECLSPEC int H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index *out);
 /** @} */
 
 /** @defgroup polygonToCells polygonToCells

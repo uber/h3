@@ -604,7 +604,7 @@ int H3_EXPORT(gridDisksUnsafe)(H3Index* h3Set, int length, int k,
  * @param out Array which must be of size 6 * k (or 1 if k == 0)
  * @return 0 if successful; nonzero otherwise.
  */
-int H3_EXPORT(hexRing)(H3Index origin, int k, H3Index* out) {
+int H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index* out) {
     // Short-circuit on 'identity' ring
     if (k == 0) {
         out[0] = origin;
