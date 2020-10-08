@@ -322,7 +322,7 @@ H3Index h3NeighborRotations(H3Index origin, Direction dir, int* rotations) {
         } else {
             Direction oldDigit = H3_GET_INDEX_DIGIT(out, r + 1);
             Direction nextDir;
-            if (isResClassIII(r + 1)) {
+            if (isResDigitClassIII(r + 1)) {
                 H3_SET_INDEX_DIGIT(out, r + 1, NEW_DIGIT_II[oldDigit][dir]);
                 nextDir = NEW_ADJUSTMENT_II[oldDigit][dir];
             } else {
@@ -496,7 +496,7 @@ int H3_EXPORT(hexRangeDistances)(H3Index origin, int k, H3Index* out,
     }
     idx++;
 
-    if (H3_EXPORT(h3IsPentagon)(origin)) {
+    if (H3_EXPORT(isPentagon)(origin)) {
         // Pentagon was encountered; bail out as user doesn't want this.
         return HEX_RANGE_PENTAGON;
     }
@@ -523,7 +523,7 @@ int H3_EXPORT(hexRangeDistances)(H3Index origin, int k, H3Index* out,
                 return HEX_RANGE_K_SUBSEQUENCE;  // LCOV_EXCL_LINE
             }
 
-            if (H3_EXPORT(h3IsPentagon)(origin)) {
+            if (H3_EXPORT(isPentagon)(origin)) {
                 // Pentagon was encountered; bail out as user doesn't want this.
                 return HEX_RANGE_PENTAGON;
             }
@@ -553,7 +553,7 @@ int H3_EXPORT(hexRangeDistances)(H3Index origin, int k, H3Index* out,
             }
         }
 
-        if (H3_EXPORT(h3IsPentagon)(origin)) {
+        if (H3_EXPORT(isPentagon)(origin)) {
             // Pentagon was encountered; bail out as user doesn't want this.
             return HEX_RANGE_PENTAGON;
         }
@@ -610,7 +610,7 @@ int H3_EXPORT(hexRing)(H3Index origin, int k, H3Index* out) {
     // which faces have been crossed.)
     int rotations = 0;
     // Scratch structure for checking for pentagons
-    if (H3_EXPORT(h3IsPentagon)(origin)) {
+    if (H3_EXPORT(isPentagon)(origin)) {
         // Pentagon was encountered; bail out as user doesn't want this.
         return HEX_RANGE_PENTAGON;
     }
@@ -623,7 +623,7 @@ int H3_EXPORT(hexRing)(H3Index origin, int k, H3Index* out) {
             return HEX_RANGE_K_SUBSEQUENCE;  // LCOV_EXCL_LINE
         }
 
-        if (H3_EXPORT(h3IsPentagon)(origin)) {
+        if (H3_EXPORT(isPentagon)(origin)) {
             return HEX_RANGE_PENTAGON;
         }
     }
@@ -650,7 +650,7 @@ int H3_EXPORT(hexRing)(H3Index origin, int k, H3Index* out) {
                 out[idx] = origin;
                 idx++;
 
-                if (H3_EXPORT(h3IsPentagon)(origin)) {
+                if (H3_EXPORT(isPentagon)(origin)) {
                     return HEX_RANGE_PENTAGON;
                 }
             }

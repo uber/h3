@@ -230,7 +230,7 @@ int h3ToLocalIjk(H3Index origin, H3Index h3, CoordIJK* out) {
         _neighbor(&offset, dir);
         // Scale offset based on resolution
         for (int r = res - 1; r >= 0; r--) {
-            if (isResClassIII(r + 1)) {
+            if (isResDigitClassIII(r + 1)) {
                 // rotate ccw
                 _downAp7(&offset);
             } else {
@@ -331,7 +331,7 @@ int localIjkToH3(H3Index origin, const CoordIJK* ijk, H3Index* out) {
     for (int r = res - 1; r >= 0; r--) {
         CoordIJK lastIJK = ijkCopy;
         CoordIJK lastCenter;
-        if (isResClassIII(r + 1)) {
+        if (isResDigitClassIII(r + 1)) {
             // rotate ccw
             _upAp7(&ijkCopy);
             lastCenter = ijkCopy;

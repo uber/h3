@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    if (parentArg.found && !H3_EXPORT(h3IsValid)(parentIndex)) {
+    if (parentArg.found && !H3_EXPORT(isValidCell)(parentIndex)) {
         printHelp(stderr, argv[0], helpText, numArgs, args,
                   "Parent index is invalid.", NULL);
         return 1;

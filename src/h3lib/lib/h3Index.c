@@ -82,7 +82,7 @@ void H3_EXPORT(h3ToString)(H3Index h, char* str, size_t sz) {
  * @param h The H3 index to validate.
  * @return 1 if the H3 index if valid, and 0 if it is not.
  */
-int H3_EXPORT(h3IsValid)(H3Index h) {
+int H3_EXPORT(isValidCell)(H3Index h) {
     if (H3_GET_HIGH_BIT(h) != 0) return 0;
 
     if (H3_GET_MODE(h) != H3_HEXAGON_MODE) return 0;
@@ -233,7 +233,7 @@ void H3_EXPORT(h3ToChildren)(H3Index h, int childRes, H3Index* children) {
     }
     int bufferSize = H3_EXPORT(maxH3ToChildrenSize)(h, childRes);
     int bufferChildStep = (bufferSize / 7);
-    int isAPentagon = H3_EXPORT(h3IsPentagon)(h);
+    int isAPentagon = H3_EXPORT(isPentagon)(h);
     for (int i = 0; i < 7; i++) {
         if (isAPentagon && i == K_AXES_DIGIT) {
             H3Index* nextChild = children + bufferChildStep;
@@ -337,8 +337,8 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
                     if (tempIndex == parent) {
                         int count = H3_GET_RESERVED_BITS(hashSetArray[loc]) + 1;
                         int limitCount = 7;
-                        if (H3_EXPORT(h3IsPentagon)(
-                                tempIndex & H3_RESERVED_MASK_NEGATIVE)) {
+                        if (H3_EXPORT(isPentagon)(tempIndex &
+                                                  H3_RESERVED_MASK_NEGATIVE)) {
                             limitCount--;
                         }
                         // One is added to count for this check to match one
@@ -381,8 +381,8 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
             if (hashSetArray[i] == 0) continue;
             int count = H3_GET_RESERVED_BITS(hashSetArray[i]) + 1;
             // Include the deleted direction for pentagons as implicitly "there"
-            if (H3_EXPORT(h3IsPentagon)(hashSetArray[i] &
-                                        H3_RESERVED_MASK_NEGATIVE)) {
+            if (H3_EXPORT(isPentagon)(hashSetArray[i] &
+                                      H3_RESERVED_MASK_NEGATIVE)) {
                 // We need this later on, no need to recalculate
                 H3_SET_RESERVED_BITS(hashSetArray[i], count);
                 // Increment count after setting the reserved bits,
@@ -529,22 +529,21 @@ int H3_EXPORT(maxUncompactSize)(const H3Index* compactedSet, const int numHexes,
 }
 
 /**
- * h3IsResClassIII takes a hexagon ID and determines if it is in a
+ * isResClassIII takes a hexagon ID and determines if it is in a
  * Class III resolution (rotated versus the icosahedron and subject
  * to shape distortion adding extra points on icosahedron edges, making
  * them not true hexagons).
  * @param h The H3Index to check.
  * @return Returns 1 if the hexagon is class III, otherwise 0.
  */
-int H3_EXPORT(h3IsResClassIII)(H3Index h) { return H3_GET_RESOLUTION(h) % 2; }
+int H3_EXPORT(isResClassIII)(H3Index h) { return H3_GET_RESOLUTION(h) % 2; }
 
 /**
- * h3IsPentagon takes an H3Index and determines if it is actually a
- * pentagon.
+ * isPentagon takes an H3Index and determines if it is actually a pentagon.
  * @param h The H3Index to check.
  * @return Returns 1 if it is a pentagon, otherwise 0.
  */
-int H3_EXPORT(h3IsPentagon)(H3Index h) {
+int H3_EXPORT(isPentagon)(H3Index h) {
     return _isBaseCellPentagon(H3_GET_BASE_CELL(h)) &&
            !_h3LeadingNonZeroDigit(h);
 }
@@ -674,7 +673,7 @@ H3Index _faceIjkToH3(const FaceIJK* fijk, int res) {
     for (int r = res - 1; r >= 0; r--) {
         CoordIJK lastIJK = *ijk;
         CoordIJK lastCenter;
-        if (isResClassIII(r + 1)) {
+        if (isResDigitClassIII(r + 1)) {
             // rotate ccw
             _upAp7(ijk);
             lastCenter = *ijk;
@@ -772,7 +771,7 @@ int _h3ToFaceIjkWithInitializedFijk(H3Index h, FaceIJK* fijk) {
         possibleOverage = 0;
 
     for (int r = 1; r <= res; r++) {
-        if (isResClassIII(r)) {
+        if (isResDigitClassIII(r)) {
             // Class III == rotate ccw
             _downAp7(ijk);
         } else {
@@ -818,7 +817,7 @@ void _h3ToFaceIjk(H3Index h, FaceIJK* fijk) {
 
     // if we're in Class III, drop into the next finer Class II grid
     int res = H3_GET_RESOLUTION(h);
-    if (isResClassIII(res)) {
+    if (isResDigitClassIII(res)) {
         // Class III
         _downAp7r(&fijk->coord);
         res++;
@@ -863,7 +862,7 @@ void H3_EXPORT(h3ToGeo)(H3Index h3, GeoCoord* g) {
 void H3_EXPORT(h3ToGeoBoundary)(H3Index h3, GeoBoundary* gb) {
     FaceIJK fijk;
     _h3ToFaceIjk(h3, &fijk);
-    if (H3_EXPORT(h3IsPentagon)(h3)) {
+    if (H3_EXPORT(isPentagon)(h3)) {
         _faceIjkPentToGeoBoundary(&fijk, H3_GET_RESOLUTION(h3), 0,
                                   NUM_PENT_VERTS, gb);
     } else {
@@ -881,7 +880,7 @@ void H3_EXPORT(h3ToGeoBoundary)(H3Index h3, GeoBoundary* gb) {
 int H3_EXPORT(maxFaceCount)(H3Index h3) {
     // a pentagon always intersects 5 faces, a hexagon never intersects more
     // than 2 (but may only intersect 1)
-    return H3_EXPORT(h3IsPentagon)(h3) ? 5 : 2;
+    return H3_EXPORT(isPentagon)(h3) ? 5 : 2;
 }
 
 /**
@@ -895,12 +894,12 @@ int H3_EXPORT(maxFaceCount)(H3Index h3) {
  */
 void H3_EXPORT(h3GetFaces)(H3Index h3, int* out) {
     int res = H3_GET_RESOLUTION(h3);
-    int isPentagon = H3_EXPORT(h3IsPentagon)(h3);
+    int pentagon = H3_EXPORT(isPentagon)(h3);
 
     // We can't use the vertex-based approach here for class II pentagons,
     // because all their vertices are on the icosahedron edges. Their
     // direct child pentagons cross the same faces, so use those instead.
-    if (isPentagon && !isResClassIII(res)) {
+    if (pentagon && !isResDigitClassIII(res)) {
         // Note that this would not work for res 15, but this is only run on
         // Class II pentagons, it should never be invoked for a res 15 index.
         H3Index childPentagon = makeDirectChild(h3, 0);
@@ -917,7 +916,7 @@ void H3_EXPORT(h3GetFaces)(H3Index h3, int* out) {
     FaceIJK fijkVerts[NUM_HEX_VERTS];
     int vertexCount;
 
-    if (isPentagon) {
+    if (pentagon) {
         vertexCount = NUM_PENT_VERTS;
         _faceIjkPentToVerts(&fijk, &res, fijkVerts);
     } else {
@@ -938,7 +937,7 @@ void H3_EXPORT(h3GetFaces)(H3Index h3, int* out) {
 
         // Adjust overage, determining whether this vertex is
         // on another face
-        if (isPentagon) {
+        if (pentagon) {
             _adjustPentVertOverage(vert, res);
         } else {
             _adjustOverageClassII(vert, res, 0, 1);
@@ -985,4 +984,4 @@ void H3_EXPORT(getPentagonIndexes)(int res, H3Index* out) {
  * @return 1 if the resolution is a Class III grid, and 0 if the resolution is
  *         a Class II grid.
  */
-int isResClassIII(int res) { return res % 2; }
+int isResDigitClassIII(int res) { return res % 2; }

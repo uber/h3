@@ -53,7 +53,7 @@ static void assertMultipleHexFaces(H3Index h3) {
 }
 
 static void assertPentagonFaces(H3Index h3) {
-    t_assert(H3_EXPORT(h3IsPentagon)(h3), "got a pentagon");
+    t_assert(H3_EXPORT(isPentagon)(h3), "got a pentagon");
     int validCount = countFaces(h3, 5);
     t_assert(validCount == 5, "got 5 valid faces for a pentagon");
 }

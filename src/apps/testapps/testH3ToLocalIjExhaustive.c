@@ -98,7 +98,7 @@ void h3ToLocalIj_neighbors_assertions(H3Index h3) {
     ijToIjk(&origin, &originIjk);
 
     for (Direction d = K_AXES_DIGIT; d < INVALID_DIGIT; d++) {
-        if (d == K_AXES_DIGIT && H3_EXPORT(h3IsPentagon)(h3)) {
+        if (d == K_AXES_DIGIT && H3_EXPORT(isPentagon)(h3)) {
             continue;
         }
 
@@ -188,7 +188,7 @@ void localIjToH3_traverse_assertions(H3Index h3) {
 
         int failed = H3_EXPORT(experimentalLocalIjToH3)(h3, &ij, &testH3);
         if (!failed) {
-            t_assert(H3_EXPORT(h3IsValid)(testH3),
+            t_assert(H3_EXPORT(isValidCell)(testH3),
                      "test coordinates result in valid index");
 
             CoordIJ expectedIj;

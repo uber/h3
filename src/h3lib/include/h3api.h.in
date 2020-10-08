@@ -438,14 +438,14 @@ DECLSPEC H3Index H3_EXPORT(stringToH3)(const char *str);
 DECLSPEC void H3_EXPORT(h3ToString)(H3Index h, char *str, size_t sz);
 /** @} */
 
-/** @defgroup h3IsValid h3IsValid
- * Functions for h3IsValid
+/** @defgroup isValidCell isValidCell
+ * Functions for isValidCell
  * @{
  */
 /** @brief confirms if an H3Index is a valid cell (hexagon or pentagon)
  * In particular, returns 0 (False) for H3 unidirectional edges or invalid data
  */
-DECLSPEC int H3_EXPORT(h3IsValid)(H3Index h);
+DECLSPEC int H3_EXPORT(isValidCell)(H3Index h);
 /** @} */
 
 /** @defgroup h3ToParent h3ToParent
@@ -503,20 +503,20 @@ DECLSPEC int H3_EXPORT(uncompact)(const H3Index *compactedSet,
                                   const int maxHexes, const int res);
 /** @} */
 
-/** @defgroup h3IsResClassIII h3IsResClassIII
- * Functions for h3IsResClassIII
+/** @defgroup isResClassIII isResClassIII
+ * Functions for isResClassIII
  * @{
  */
 /** @brief determines if a hexagon is Class III (or Class II) */
-DECLSPEC int H3_EXPORT(h3IsResClassIII)(H3Index h);
+DECLSPEC int H3_EXPORT(isResClassIII)(H3Index h);
 /** @} */
 
-/** @defgroup h3IsPentagon h3IsPentagon
- * Functions for h3IsPentagon
+/** @defgroup isPentagon isPentagon
+ * Functions for isPentagon
  * @{
  */
 /** @brief determines if an H3 cell is a pentagon */
-DECLSPEC int H3_EXPORT(h3IsPentagon)(H3Index h);
+DECLSPEC int H3_EXPORT(isPentagon)(H3Index h);
 /** @} */
 
 /** @defgroup h3GetFaces h3GetFaces
@@ -549,12 +549,12 @@ DECLSPEC H3Index H3_EXPORT(getH3UnidirectionalEdge)(H3Index origin,
                                                     H3Index destination);
 /** @} */
 
-/** @defgroup h3UnidirectionalEdgeIsValid h3UnidirectionalEdgeIsValid
- * Functions for h3UnidirectionalEdgeIsValid
+/** @defgroup isValidDirectedEdge isValidDirectedEdge
+ * Functions for isValidDirectedEdge
  * @{
  */
-/** @brief returns whether the H3Index is a valid unidirectional edge */
-DECLSPEC int H3_EXPORT(h3UnidirectionalEdgeIsValid)(H3Index edge);
+/** @brief returns whether the H3Index is a valid directed edge */
+DECLSPEC int H3_EXPORT(isValidDirectedEdge)(H3Index edge);
 /** @} */
 
 /** @defgroup getOriginH3IndexFromUnidirectionalEdge \

@@ -65,84 +65,84 @@ SUITE(h3Index) {
         t_assert(_faceIjkToH3(&fijk2K, 2) == 0, "k out of bounds at res 2");
     }
 
-    TEST(h3IsValidAtResolution) {
+    TEST(isValidCellAtResolution) {
         for (int i = 0; i <= MAX_H3_RES; i++) {
             GeoCoord geoCoord = {0, 0};
             H3Index h3 = H3_EXPORT(geoToH3)(&geoCoord, i);
             char failureMessage[BUFF_SIZE];
-            sprintf(failureMessage, "h3IsValid failed on resolution %d", i);
-            t_assert(H3_EXPORT(h3IsValid)(h3), failureMessage);
+            sprintf(failureMessage, "isValidCell failed on resolution %d", i);
+            t_assert(H3_EXPORT(isValidCell)(h3), failureMessage);
         }
     }
 
-    TEST(h3IsValidDigits) {
+    TEST(isValidCellDigits) {
         GeoCoord geoCoord = {0, 0};
         H3Index h3 = H3_EXPORT(geoToH3)(&geoCoord, 1);
         // Set a bit for an unused digit to something else.
         h3 ^= 1;
-        t_assert(!H3_EXPORT(h3IsValid)(h3),
-                 "h3IsValid failed on invalid unused digits");
+        t_assert(!H3_EXPORT(isValidCell)(h3),
+                 "isValidCell failed on invalid unused digits");
     }
 
-    TEST(h3IsValidBaseCell) {
+    TEST(isValidCellBaseCell) {
         for (int i = 0; i < NUM_BASE_CELLS; i++) {
             H3Index h = H3_INIT;
             H3_SET_MODE(h, H3_HEXAGON_MODE);
             H3_SET_BASE_CELL(h, i);
             char failureMessage[BUFF_SIZE];
-            sprintf(failureMessage, "h3IsValid failed on base cell %d", i);
-            t_assert(H3_EXPORT(h3IsValid)(h), failureMessage);
+            sprintf(failureMessage, "isValidCell failed on base cell %d", i);
+            t_assert(H3_EXPORT(isValidCell)(h), failureMessage);
 
             t_assert(H3_EXPORT(h3GetBaseCell)(h) == i,
                      "failed to recover base cell");
         }
     }
 
-    TEST(h3IsValidBaseCellInvalid) {
+    TEST(isValidCellBaseCellInvalid) {
         H3Index hWrongBaseCell = H3_INIT;
         H3_SET_MODE(hWrongBaseCell, H3_HEXAGON_MODE);
         H3_SET_BASE_CELL(hWrongBaseCell, NUM_BASE_CELLS);
-        t_assert(!H3_EXPORT(h3IsValid)(hWrongBaseCell),
-                 "h3IsValid failed on invalid base cell");
+        t_assert(!H3_EXPORT(isValidCell)(hWrongBaseCell),
+                 "isValidCell failed on invalid base cell");
     }
 
-    TEST(h3IsValidWithMode) {
+    TEST(isValidCellWithMode) {
         for (int i = 0; i <= 0xf; i++) {
             H3Index h = H3_INIT;
             H3_SET_MODE(h, i);
             if (i == H3_HEXAGON_MODE) {
-                t_assert(H3_EXPORT(h3IsValid)(h),
-                         "h3IsValid succeeds on valid mode");
+                t_assert(H3_EXPORT(isValidCell)(h),
+                         "isValidCell succeeds on valid mode");
             } else {
                 char failureMessage[BUFF_SIZE];
-                sprintf(failureMessage, "h3IsValid failed on mode %d", i);
-                t_assert(!H3_EXPORT(h3IsValid)(h), failureMessage);
+                sprintf(failureMessage, "isValidCell failed on mode %d", i);
+                t_assert(!H3_EXPORT(isValidCell)(h), failureMessage);
             }
         }
     }
 
-    TEST(h3IsValidReservedBits) {
+    TEST(isValidCellReservedBits) {
         for (int i = 0; i < 8; i++) {
             H3Index h = H3_INIT;
             H3_SET_MODE(h, H3_HEXAGON_MODE);
             H3_SET_RESERVED_BITS(h, i);
             if (i == 0) {
-                t_assert(H3_EXPORT(h3IsValid)(h),
-                         "h3IsValid succeeds on valid reserved bits");
+                t_assert(H3_EXPORT(isValidCell)(h),
+                         "isValidCell succeeds on valid reserved bits");
             } else {
                 char failureMessage[BUFF_SIZE];
-                sprintf(failureMessage, "h3IsValid failed on reserved bits %d",
-                        i);
-                t_assert(!H3_EXPORT(h3IsValid)(h), failureMessage);
+                sprintf(failureMessage,
+                        "isValidCell failed on reserved bits %d", i);
+                t_assert(!H3_EXPORT(isValidCell)(h), failureMessage);
             }
         }
     }
 
-    TEST(h3IsValidHighBit) {
+    TEST(isValidCellHighBit) {
         H3Index h = H3_INIT;
         H3_SET_MODE(h, H3_HEXAGON_MODE);
         H3_SET_HIGH_BIT(h, 1);
-        t_assert(!H3_EXPORT(h3IsValid)(h), "h3IsValid failed on high bit");
+        t_assert(!H3_EXPORT(isValidCell)(h), "isValidCell failed on high bit");
     }
 
     TEST(h3BadDigitInvalid) {
@@ -150,16 +150,16 @@ SUITE(h3Index) {
         // By default the first index digit is out of range.
         H3_SET_MODE(h, H3_HEXAGON_MODE);
         H3_SET_RESOLUTION(h, 1);
-        t_assert(!H3_EXPORT(h3IsValid)(h),
-                 "h3IsValid failed on too large digit");
+        t_assert(!H3_EXPORT(isValidCell)(h),
+                 "isValidCell failed on too large digit");
     }
 
     TEST(h3DeletedSubsequenceInvalid) {
         H3Index h;
         // Create an index located in a deleted subsequence of a pentagon.
         setH3Index(&h, 1, 4, K_AXES_DIGIT);
-        t_assert(!H3_EXPORT(h3IsValid)(h),
-                 "h3IsValid failed on deleted subsequence");
+        t_assert(!H3_EXPORT(isValidCell)(h),
+                 "isValidCell failed on deleted subsequence");
     }
 
     TEST(h3ToString) {
@@ -201,11 +201,11 @@ SUITE(h3Index) {
         t_assert(h == 0x85184927fffffffL, "index matches expected");
     }
 
-    TEST(h3IsResClassIII) {
+    TEST(isResClassIII) {
         GeoCoord coord = {0, 0};
         for (int i = 0; i <= MAX_H3_RES; i++) {
             H3Index h = H3_EXPORT(geoToH3)(&coord, i);
-            t_assert(H3_EXPORT(h3IsResClassIII)(h) == isResClassIII(i),
+            t_assert(H3_EXPORT(isResClassIII)(h) == isResDigitClassIII(i),
                      "matches existing definition");
         }
     }

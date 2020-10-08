@@ -151,11 +151,11 @@ H3Index H3_EXPORT(getDestinationH3IndexFromUnidirectionalEdge)(H3Index edge) {
 }
 
 /**
- * Determines if the provided H3Index is a valid unidirectional edge index
- * @param edge The unidirectional edge H3Index
- * @return 1 if it is a unidirectional edge H3Index, otherwise 0.
+ * Determines if the provided H3Index is a valid directed edge index
+ * @param edge The directed edge H3Index
+ * @return 1 if it is a directed edge H3Index, otherwise 0.
  */
-int H3_EXPORT(h3UnidirectionalEdgeIsValid)(H3Index edge) {
+int H3_EXPORT(isValidDirectedEdge)(H3Index edge) {
     if (H3_GET_MODE(edge) != H3_UNIEDGE_MODE) {
         return 0;
     }
@@ -166,11 +166,11 @@ int H3_EXPORT(h3UnidirectionalEdgeIsValid)(H3Index edge) {
     }
 
     H3Index origin = H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(edge);
-    if (H3_EXPORT(h3IsPentagon)(origin) && neighborDirection == K_AXES_DIGIT) {
+    if (H3_EXPORT(isPentagon)(origin) && neighborDirection == K_AXES_DIGIT) {
         return 0;
     }
 
-    return H3_EXPORT(h3IsValid)(origin);
+    return H3_EXPORT(isValidCell)(origin);
 }
 
 /**
@@ -195,13 +195,13 @@ void H3_EXPORT(getH3IndexesFromUnidirectionalEdge)(H3Index edge,
 void H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(H3Index origin,
                                                     H3Index* edges) {
     // Determine if the origin is a pentagon and special treatment needed.
-    int isPentagon = H3_EXPORT(h3IsPentagon)(origin);
+    int pentagon = H3_EXPORT(isPentagon)(origin);
 
     // This is actually quite simple. Just modify the bits of the origin
     // slightly for each direction, except the 'k' direction in pentagons,
     // which is zeroed.
     for (int i = 0; i < 6; i++) {
-        if (isPentagon && i == 0) {
+        if (pentagon && i == 0) {
             edges[i] = H3_NULL;
         } else {
             edges[i] = origin;
@@ -237,9 +237,9 @@ void H3_EXPORT(getH3UnidirectionalEdgeBoundary)(H3Index edge, GeoBoundary* gb) {
     FaceIJK fijk;
     _h3ToFaceIjk(origin, &fijk);
     int res = H3_GET_RESOLUTION(origin);
-    int isPentagon = H3_EXPORT(h3IsPentagon)(origin);
+    int pentagon = H3_EXPORT(isPentagon)(origin);
 
-    if (isPentagon) {
+    if (pentagon) {
         _faceIjkPentToGeoBoundary(&fijk, res, startVertex, 2, gb);
     } else {
         _faceIjkToGeoBoundary(&fijk, res, startVertex, 2, gb);

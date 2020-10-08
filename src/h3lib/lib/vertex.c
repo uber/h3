@@ -117,17 +117,17 @@ static const int directionToVertexNumPent[NUM_DIGITS] = {
  *          if the direction is not valid for this cell
  */
 int vertexNumForDirection(const H3Index origin, const Direction direction) {
-    int isPentagon = H3_EXPORT(h3IsPentagon)(origin);
+    int pentagon = H3_EXPORT(isPentagon)(origin);
     // Check for invalid directions
     if (direction == CENTER_DIGIT || direction >= INVALID_DIGIT ||
-        (isPentagon && direction == K_AXES_DIGIT))
+        (pentagon && direction == K_AXES_DIGIT))
         return INVALID_VERTEX_NUM;
 
     // Determine the vertex rotations for this cell
     int rotations = vertexRotations(origin);
 
     // Find the appropriate vertex, rotating CCW if necessary
-    if (isPentagon) {
+    if (pentagon) {
         return (directionToVertexNumPent[direction] + NUM_PENT_VERTS -
                 rotations) %
                NUM_PENT_VERTS;

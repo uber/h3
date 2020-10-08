@@ -132,7 +132,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    if (!H3_EXPORT(h3IsValid)(parentIndex)) {
+    if (!H3_EXPORT(isValidCell)(parentIndex)) {
         printHelp(stderr, argv[0], helpText, numArgs, args,
                   "Parent index is invalid.", NULL);
         return 1;
