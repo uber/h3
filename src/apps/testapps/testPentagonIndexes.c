@@ -35,9 +35,9 @@ SUITE(getPentagonIndexes) {
                 H3Index h3Index = h3Indexes[i];
                 if (h3Index) {
                     numFound++;
-                    t_assert(H3_EXPORT(h3IsValid(h3Index)),
+                    t_assert(H3_EXPORT(isValidCell(h3Index)),
                              "index should be valid");
-                    t_assert(H3_EXPORT(h3IsPentagon(h3Index)),
+                    t_assert(H3_EXPORT(isPentagon(h3Index)),
                              "index should be pentagon");
                     t_assert(H3_EXPORT(h3GetResolution(h3Index)) == res,
                              "index should have correct resolution");

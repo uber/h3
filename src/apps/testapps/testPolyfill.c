@@ -349,7 +349,7 @@ SUITE(polyfill) {
             if (hexagons[i] != 0) {
                 found++;
             }
-            if (H3_EXPORT(h3IsPentagon)(hexagons[i])) {
+            if (H3_EXPORT(isPentagon)(hexagons[i])) {
                 numPentagons++;
             }
         }

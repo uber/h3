@@ -141,55 +141,54 @@ SUITE(h3UniEdge) {
                     if (neighbor == pentagon || neighbor == H3_NULL) continue;
                     edge =
                         H3_EXPORT(getH3UnidirectionalEdge)(pentagon, neighbor);
-                    t_assert(H3_EXPORT(h3UnidirectionalEdgeIsValid)(edge),
+                    t_assert(H3_EXPORT(isValidDirectedEdge)(edge),
                              "pentagon-to-neighbor is a valid edge");
                     edge =
                         H3_EXPORT(getH3UnidirectionalEdge)(neighbor, pentagon);
-                    t_assert(H3_EXPORT(h3UnidirectionalEdgeIsValid)(edge),
+                    t_assert(H3_EXPORT(isValidDirectedEdge)(edge),
                              "neighbor-to-pentagon is a valid edge");
                 }
             }
         }
     }
 
-    TEST(h3UnidirectionalEdgeIsValid) {
+    TEST(isValidDirectedEdge) {
         H3Index sf = H3_EXPORT(geoToH3)(&sfGeo, 9);
         H3Index ring[7] = {0};
         H3_EXPORT(hexRing)(sf, 1, ring);
         H3Index sf2 = ring[0];
 
         H3Index edge = H3_EXPORT(getH3UnidirectionalEdge)(sf, sf2);
-        t_assert(H3_EXPORT(h3UnidirectionalEdgeIsValid)(edge) == 1,
+        t_assert(H3_EXPORT(isValidDirectedEdge)(edge) == 1,
                  "edges validate correctly");
-        t_assert(H3_EXPORT(h3UnidirectionalEdgeIsValid)(sf) == 0,
+        t_assert(H3_EXPORT(isValidDirectedEdge)(sf) == 0,
                  "hexagons do not validate");
 
         H3Index fakeEdge = sf;
         H3_SET_MODE(fakeEdge, H3_UNIEDGE_MODE);
-        t_assert(H3_EXPORT(h3UnidirectionalEdgeIsValid)(fakeEdge) == 0,
+        t_assert(H3_EXPORT(isValidDirectedEdge)(fakeEdge) == 0,
                  "edges without an edge specified don't work");
         H3Index invalidEdge = sf;
         H3_SET_MODE(invalidEdge, H3_UNIEDGE_MODE);
         H3_SET_RESERVED_BITS(invalidEdge, INVALID_DIGIT);
-        t_assert(H3_EXPORT(h3UnidirectionalEdgeIsValid)(invalidEdge) == 0,
+        t_assert(H3_EXPORT(isValidDirectedEdge)(invalidEdge) == 0,
                  "edges with an invalid edge specified don't work");
 
         H3Index pentagon = 0x821c07fffffffff;
         H3Index goodPentagonalEdge = pentagon;
         H3_SET_MODE(goodPentagonalEdge, H3_UNIEDGE_MODE);
         H3_SET_RESERVED_BITS(goodPentagonalEdge, 2);
-        t_assert(
-            H3_EXPORT(h3UnidirectionalEdgeIsValid)(goodPentagonalEdge) == 1,
-            "pentagonal edge validates");
+        t_assert(H3_EXPORT(isValidDirectedEdge)(goodPentagonalEdge) == 1,
+                 "pentagonal edge validates");
 
         H3Index badPentagonalEdge = goodPentagonalEdge;
         H3_SET_RESERVED_BITS(badPentagonalEdge, 1);
-        t_assert(H3_EXPORT(h3UnidirectionalEdgeIsValid)(badPentagonalEdge) == 0,
+        t_assert(H3_EXPORT(isValidDirectedEdge)(badPentagonalEdge) == 0,
                  "missing pentagonal edge does not validate");
 
         H3Index highBitEdge = edge;
         H3_SET_HIGH_BIT(highBitEdge, 1);
-        t_assert(H3_EXPORT(h3UnidirectionalEdgeIsValid)(highBitEdge) == 0,
+        t_assert(H3_EXPORT(isValidDirectedEdge)(highBitEdge) == 0,
                  "high bit set edge does not validate");
     }
 
@@ -199,7 +198,7 @@ SUITE(h3UniEdge) {
         H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(sf, edges);
 
         for (int i = 0; i < 6; i++) {
-            t_assert(H3_EXPORT(h3UnidirectionalEdgeIsValid)(edges[i]) == 1,
+            t_assert(H3_EXPORT(isValidDirectedEdge)(edges[i]) == 1,
                      "edge is an edge");
             t_assert(sf == H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(
                                edges[i]),
@@ -221,7 +220,7 @@ SUITE(h3UniEdge) {
             if (edges[i] == 0) {
                 missingEdgeCount++;
             } else {
-                t_assert(H3_EXPORT(h3UnidirectionalEdgeIsValid)(edges[i]) == 1,
+                t_assert(H3_EXPORT(isValidDirectedEdge)(edges[i]) == 1,
                          "edge is an edge");
                 t_assert(pentagon ==
                              H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(

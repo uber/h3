@@ -46,7 +46,7 @@ static void h3Line_assertions(H3Index start, H3Index end) {
     t_assert(line[sz - 1] == end, "line ends with end index");
 
     for (int i = 1; i < sz; i++) {
-        t_assert(H3_EXPORT(h3IsValid)(line[i]), "index is valid");
+        t_assert(H3_EXPORT(isValidCell)(line[i]), "index is valid");
         t_assert(H3_EXPORT(h3IndexesAreNeighbors)(line[i], line[i - 1]),
                  "index is a neighbor of the previous index");
         if (i > 1) {
@@ -81,7 +81,7 @@ static void h3Line_kRing_assertions(H3Index h3) {
 
     int sz = H3_EXPORT(maxKringSize)(maxK);
 
-    if (H3_EXPORT(h3IsPentagon)(h3)) {
+    if (H3_EXPORT(isPentagon)(h3)) {
         return;
     }
 
