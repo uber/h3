@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Uber Technologies, Inc.
+ * Copyright 2017, 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
     location.lat = degsToRads(40.689167);
     location.lon = degsToRads(-74.044444);
     int resolution = 10;
-    H3Index indexed = geoToH3(&location, resolution);
+    H3Index indexed = pointToCell(&location, resolution);
     printf("The index is: %" PRIx64 "\n", indexed);
 
     // Get the vertices of the H3 index.
@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
 
     // Get the center coordinates.
     GeoCoord center;
-    h3ToGeo(indexed, &center);
+    cellToPoint(indexed, &center);
     printf("Center coordinates: %lf, %lf\n", radsToDegs(center.lat),
            radsToDegs(center.lon));
 }

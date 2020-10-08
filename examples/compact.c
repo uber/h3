@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Uber Technologies, Inc.
+ * Copyright 2018, 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
     printf("Starting with %d indexes.\n", inputSize);
 
     H3Index* compacted = calloc(inputSize, sizeof(H3Index));
-    int err = compact(input, compacted, inputSize);
+    int err = compactCells(input, compacted, inputSize);
     // An error case can occur on e.g. duplicate input.
     assert(err == 0);
 
@@ -50,10 +50,11 @@ int main(int argc, char* argv[]) {
     printf("Compacted to %d indexes.\n", compactedCount);
 
     int uncompactRes = 10;
-    int uncompactedSize = maxUncompactSize(compacted, inputSize, uncompactRes);
+    int uncompactedSize =
+        maxUncompactCellsSize(compacted, inputSize, uncompactRes);
     H3Index* uncompacted = calloc(uncompactedSize, sizeof(H3Index));
-    int err2 = uncompact(compacted, compactedCount, uncompacted,
-                         uncompactedSize, uncompactRes);
+    int err2 = uncompactCells(compacted, compactedCount, uncompacted,
+                              uncompactedSize, uncompactRes);
     // An error case could happen if the output array is too small, or indexes
     // have a higher resolution than uncompactRes.
     assert(err2 == 0);
