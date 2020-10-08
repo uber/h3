@@ -140,14 +140,14 @@ void setH3Index(H3Index* hp, int res, int baseCell, Direction initDigit) {
 }
 
 /**
- * h3ToParent produces the parent index for a given H3 index
+ * cellToParent produces the parent index for a given H3 index
  *
  * @param h H3Index to find parent of
  * @param parentRes The resolution to switch to (parent, grandparent, etc)
  *
  * @return H3Index of the parent, or H3_NULL if you actually asked for a child
  */
-H3Index H3_EXPORT(h3ToParent)(H3Index h, int parentRes) {
+H3Index H3_EXPORT(cellToParent)(H3Index h, int parentRes) {
     int childRes = H3_GET_RESOLUTION(h);
     if (parentRes < 0 || parentRes > MAX_H3_RES) {
         return H3_NULL;
@@ -317,7 +317,7 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
         for (int i = 0; i < numRemainingHexes; i++) {
             H3Index currIndex = remainingHexes[i];
             if (currIndex != 0) {
-                H3Index parent = H3_EXPORT(h3ToParent)(currIndex, parentRes);
+                H3Index parent = H3_EXPORT(cellToParent)(currIndex, parentRes);
                 // Modulus hash the parent into the temp array
                 int loc = (int)(parent % numRemainingHexes);
                 int loopCount = 0;
@@ -403,7 +403,7 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
         for (int i = 0; i < numRemainingHexes; i++) {
             H3Index currIndex = remainingHexes[i];
             if (currIndex != H3_NULL) {
-                H3Index parent = H3_EXPORT(h3ToParent)(currIndex, parentRes);
+                H3Index parent = H3_EXPORT(cellToParent)(currIndex, parentRes);
                 // Modulus hash the parent into the temp array
                 // to determine if this index was included in
                 // the compactableHexes array
