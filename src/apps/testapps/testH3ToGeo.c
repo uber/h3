@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 Uber Technologies, Inc.
+ * Copyright 2016-2017, 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,8 +44,8 @@ void assertExpected(H3Index h1, const GeoCoord* g1) {
 
     // Convert back to H3 to verify
     int res = H3_EXPORT(getResolution)(h1);
-    H3Index h2 = H3_EXPORT(geoToH3)(&g2, res);
-    t_assert(h1 == h2, "got expected geoToH3 output");
+    H3Index h2 = H3_EXPORT(pointToCell)(&g2, res);
+    t_assert(h1 == h2, "got expected pointToCell output");
 }
 
 int main(int argc, char* argv[]) {

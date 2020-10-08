@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Uber Technologies, Inc.
+ * Copyright 2017-2018, 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,17 +29,17 @@
 #include "utility.h"
 
 SUITE(h3Index) {
-    TEST(geoToH3ExtremeCoordinates) {
+    TEST(pointToCellExtremeCoordinates) {
         // Check that none of these cause crashes.
         GeoCoord g = {0, 1E45};
-        H3_EXPORT(geoToH3)(&g, 14);
+        H3_EXPORT(pointToCell)(&g, 14);
 
         GeoCoord g2 = {1E46, 1E45};
-        H3_EXPORT(geoToH3)(&g2, 15);
+        H3_EXPORT(pointToCell)(&g2, 15);
 
         GeoCoord g4;
         setGeoDegs(&g4, 2, -3E39);
-        H3_EXPORT(geoToH3)(&g4, 0);
+        H3_EXPORT(pointToCell)(&g4, 0);
     }
 
     TEST(faceIjkToH3ExtremeCoordinates) {
@@ -68,7 +68,7 @@ SUITE(h3Index) {
     TEST(isValidCellAtResolution) {
         for (int i = 0; i <= MAX_H3_RES; i++) {
             GeoCoord geoCoord = {0, 0};
-            H3Index h3 = H3_EXPORT(geoToH3)(&geoCoord, i);
+            H3Index h3 = H3_EXPORT(pointToCell)(&geoCoord, i);
             char failureMessage[BUFF_SIZE];
             sprintf(failureMessage, "isValidCell failed on resolution %d", i);
             t_assert(H3_EXPORT(isValidCell)(h3), failureMessage);
@@ -77,7 +77,7 @@ SUITE(h3Index) {
 
     TEST(isValidCellDigits) {
         GeoCoord geoCoord = {0, 0};
-        H3Index h3 = H3_EXPORT(geoToH3)(&geoCoord, 1);
+        H3Index h3 = H3_EXPORT(pointToCell)(&geoCoord, 1);
         // Set a bit for an unused digit to something else.
         h3 ^= 1;
         t_assert(!H3_EXPORT(isValidCell)(h3),
@@ -204,7 +204,7 @@ SUITE(h3Index) {
     TEST(isResClassIII) {
         GeoCoord coord = {0, 0};
         for (int i = 0; i <= MAX_H3_RES; i++) {
-            H3Index h = H3_EXPORT(geoToH3)(&coord, i);
+            H3Index h = H3_EXPORT(pointToCell)(&coord, i);
             t_assert(H3_EXPORT(isResClassIII)(h) == isResDigitClassIII(i),
                      "matches existing definition");
         }

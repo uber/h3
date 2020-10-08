@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Uber Technologies, Inc.
+ * Copyright 2017-2018, 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -166,7 +166,7 @@ SUITE(polyfill) {
 
     TEST(polyfillExact) {
         GeoCoord somewhere = {1, 2};
-        H3Index origin = H3_EXPORT(geoToH3)(&somewhere, 9);
+        H3Index origin = H3_EXPORT(pointToCell)(&somewhere, 9);
         GeoBoundary boundary;
         H3_EXPORT(h3ToGeoBoundary)(origin, &boundary);
 

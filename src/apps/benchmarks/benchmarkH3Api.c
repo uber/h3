@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Uber Technologies, Inc.
+ * Copyright 2017, 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ BEGIN_BENCHMARKS();
 GeoCoord outCoord;
 GeoBoundary outBoundary;
 
-BENCHMARK(geoToH3, 10000, { H3_EXPORT(geoToH3)(&coord, 9); });
+BENCHMARK(pointToCell, 10000, { H3_EXPORT(pointToCell)(&coord, 9); });
 
 BENCHMARK(h3ToGeo, 10000, { H3_EXPORT(h3ToGeo)(hex, &outCoord); });
 

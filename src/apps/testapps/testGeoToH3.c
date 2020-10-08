@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2018 Uber Technologies, Inc.
+ * Copyright 2016-2018, 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 /** @file
- * @brief tests H3 function `geoToH3`
+ * @brief tests H3 function `pointToCell`
  *
  *  usage: `testGeoToH3`
  *
  *  The program reads lines containing H3 indexes and lat/lon  pairs from
- *  stdin until EOF is encountered. For each input line, it calls `geoToH3`
+ *  stdin until EOF is encountered. For each input line, it calls `pointToCell`
  *  to convert the input lat/lon to an H3 index, and then validates the
  *  index against the original input index.
  */
@@ -35,8 +35,8 @@
 static void assertExpected(H3Index h1, const GeoCoord* g1) {
     // convert lat/lon to H3 and verify
     int res = H3_EXPORT(getResolution)(h1);
-    H3Index h2 = H3_EXPORT(geoToH3)(g1, res);
-    t_assert(h1 == h2, "got expected geoToH3 output");
+    H3Index h2 = H3_EXPORT(pointToCell)(g1, res);
+    t_assert(h1 == h2, "got expected pointToCell output");
 }
 
 int main(int argc, char* argv[]) {

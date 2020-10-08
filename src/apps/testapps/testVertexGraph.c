@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Uber Technologies, Inc.
+ * Copyright 2017-2018, 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +56,7 @@ SUITE(vertexGraph) {
         int numBuckets = 1000;
 
         for (int res = 0; res < 11; res++) {
-            centerIndex = H3_EXPORT(geoToH3)(&center, res);
+            centerIndex = H3_EXPORT(pointToCell)(&center, res);
             H3_EXPORT(h3ToGeoBoundary)(centerIndex, &outline);
             for (int i = 0; i < outline.numVerts; i++) {
                 hash1 = _hashVertex(&outline.verts[i], res, numBuckets);
