@@ -411,15 +411,15 @@ DECLSPEC void H3_EXPORT(getPentagons)(int res, H3Index *out);
 DECLSPEC int H3_EXPORT(h3GetResolution)(H3Index h);
 /** @} */
 
-/** @defgroup h3GetBaseCell h3GetBaseCell
- * Functions for h3GetBaseCell
+/** @defgroup getBaseCellNumber getBaseCellNumber
+ * Functions for getBaseCellNumber
  * @{
  */
 /** @brief returns the base cell "number" (0 to 121) of the provided H3 cell
  *
  * Note: Technically works on H3 edges, but will return base cell of the
  * origin cell. */
-DECLSPEC int H3_EXPORT(h3GetBaseCell)(H3Index h);
+DECLSPEC int H3_EXPORT(getBaseCellNumber)(H3Index h);
 /** @} */
 
 /** @defgroup stringToH3 stringToH3
