@@ -27,7 +27,7 @@
 #include "test.h"
 #include "utility.h"
 
-static void kRing_equals_kRingInternal_assertions(H3Index h3) {
+static void kRing_equals_gridDiskDistancesSafe_assertions(H3Index h3) {
     for (int k = 0; k < 3; k++) {
         int kSz = H3_EXPORT(maxKringSize)(k);
 
@@ -37,7 +37,8 @@ static void kRing_equals_kRingInternal_assertions(H3Index h3) {
 
         H3Index *internalNeighbors = calloc(kSz, sizeof(H3Index));
         int *internalDistances = calloc(kSz, sizeof(int));
-        _kRingInternal(h3, k, internalNeighbors, internalDistances, kSz, 0);
+        H3_EXPORT(gridDiskDistancesSafe)
+        (h3, k, internalNeighbors, internalDistances, kSz, 0);
 
         int found = 0;
         int internalFound = 0;
@@ -304,12 +305,13 @@ SUITE(kRing) {
         t_assert(k2present == 51, "pentagon has 50 neighbors");
     }
 
-    TEST(kRing_equals_kRingInternal) {
-        // Check that kRingDistances output matches _kRingInternal,
+    TEST(kRing_equals_gridDiskDistancesSafe) {
+        // Check that kRingDistances output matches gridDiskDistancesSafe,
         // since kRingDistances will sometimes use a different implementation.
 
         for (int res = 0; res < 2; res++) {
-            iterateAllIndexesAtRes(res, kRing_equals_kRingInternal_assertions);
+            iterateAllIndexesAtRes(
+                res, kRing_equals_gridDiskDistancesSafe_assertions);
         }
     }
 

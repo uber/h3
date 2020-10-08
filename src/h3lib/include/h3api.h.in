@@ -195,8 +195,13 @@ DECLSPEC int H3_EXPORT(hexRange)(H3Index origin, int k, H3Index *out);
 
 /** @brief hexagons neighbors in all directions, assuming no pentagons,
  * reporting distance from origin */
-DECLSPEC int H3_EXPORT(hexRangeDistances)(H3Index origin, int k, H3Index *out,
-                                          int *distances);
+DECLSPEC int H3_EXPORT(gridDiskDistancesUnsafe)(H3Index origin, int k, H3Index *out,
+                                       int *distances);
+
+/** @brief hexagons neighbors in all directions reporting distance from origin
+ */
+DECLSPEC void H3_EXPORT(gridDiskDistancesSafe)(H3Index origin, int k, H3Index *out,
+                                      int *distances, int maxIdx, int curK);
 
 /** @brief collection of hex rings sorted by ring for all given hexagons */
 DECLSPEC int H3_EXPORT(hexRanges)(H3Index *h3Set, int length, int k,

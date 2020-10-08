@@ -115,7 +115,7 @@ SUITE(hexRing) {
                  "Should return an error when starting at a pentagon");
     }
 
-    TEST(hexRing_matches_kRingInternal) {
+    TEST(hexRing_matches_gridDiskDistancesSafe) {
         for (int res = 0; res < 2; res++) {
             for (int i = 0; i < NUM_BASE_CELLS; i++) {
                 H3Index bc;
@@ -140,8 +140,9 @@ SUITE(hexRing) {
                             H3Index *internalNeighbors =
                                 calloc(kSz, sizeof(H3Index));
                             int *internalDistances = calloc(kSz, sizeof(int));
-                            _kRingInternal(children[j], k, internalNeighbors,
-                                           internalDistances, kSz, 0);
+                            H3_EXPORT(gridDiskDistancesSafe)
+                            (children[j], k, internalNeighbors,
+                             internalDistances, kSz, 0);
 
                             int found = 0;
                             int internalFound = 0;

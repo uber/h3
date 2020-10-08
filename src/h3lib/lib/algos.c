@@ -199,7 +199,8 @@ void H3_EXPORT(kRing)(H3Index origin, int k, H3Index* out) {
 void H3_EXPORT(kRingDistances)(H3Index origin, int k, H3Index* out,
                                int* distances) {
     // Optimistically try the faster hexRange algorithm first
-    const bool failed = H3_EXPORT(hexRangeDistances)(origin, k, out, distances);
+    const bool failed =
+        H3_EXPORT(gridDiskDistancesUnsafe)(origin, k, out, distances);
     if (failed) {
         const int maxIdx = H3_EXPORT(maxKringSize)(k);
         // Fast algo failed, fall back to slower, correct algo
@@ -212,11 +213,13 @@ void H3_EXPORT(kRingDistances)(H3Index origin, int k, H3Index* out,
                 // TODO: Return an error code when this is not void
                 return;
             }
-            _kRingInternal(origin, k, out, distances, maxIdx, 0);
+            H3_EXPORT(gridDiskDistancesSafe)
+            (origin, k, out, distances, maxIdx, 0);
             H3_MEMORY(free)(distances);
         } else {
             memset(distances, 0, maxIdx * sizeof(int));
-            _kRingInternal(origin, k, out, distances, maxIdx, 0);
+            H3_EXPORT(gridDiskDistancesSafe)
+            (origin, k, out, distances, maxIdx, 0);
         }
     }
 }
@@ -237,8 +240,8 @@ void H3_EXPORT(kRingDistances)(H3Index origin, int k, H3Index* out,
  * @param  maxIdx      Size of out and scratch arrays (must be maxKringSize(k))
  * @param  curK        Current distance from the origin
  */
-void _kRingInternal(H3Index origin, int k, H3Index* out, int* distances,
-                    int maxIdx, int curK) {
+void H3_EXPORT(gridDiskDistancesSafe)(H3Index origin, int k, H3Index* out,
+                                      int* distances, int maxIdx, int curK) {
     if (origin == 0) return;
 
     // Put origin in the output array. out is used as a hash set.
@@ -261,8 +264,9 @@ void _kRingInternal(H3Index origin, int k, H3Index* out, int* distances,
     // Recurse to all neighbors in no particular order.
     for (int i = 0; i < 6; i++) {
         int rotations = 0;
-        _kRingInternal(h3NeighborRotations(origin, DIRECTIONS[i], &rotations),
-                       k, out, distances, maxIdx, curK + 1);
+        H3_EXPORT(gridDiskDistancesSafe)
+        (h3NeighborRotations(origin, DIRECTIONS[i], &rotations), k, out,
+         distances, maxIdx, curK + 1);
     }
 }
 
@@ -458,7 +462,7 @@ Direction directionForNeighbor(H3Index origin, H3Index destination) {
  * @return 0 if no pentagon or pentagonal distortion area was encountered.
  */
 int H3_EXPORT(hexRange)(H3Index origin, int k, H3Index* out) {
-    return H3_EXPORT(hexRangeDistances)(origin, k, out, NULL);
+    return H3_EXPORT(gridDiskDistancesUnsafe)(origin, k, out, NULL);
 }
 
 /**
@@ -479,8 +483,8 @@ int H3_EXPORT(hexRange)(H3Index origin, int k, H3Index* out) {
  * @param distances Null or array which must be of size maxKringSize(k).
  * @return 0 if no pentagon or pentagonal distortion area was encountered.
  */
-int H3_EXPORT(hexRangeDistances)(H3Index origin, int k, H3Index* out,
-                                 int* distances) {
+int H3_EXPORT(gridDiskDistancesUnsafe)(H3Index origin, int k, H3Index* out,
+                                       int* distances) {
     // Return codes:
     // 1 Pentagon was encountered
     // 2 Pentagon distortion (deleted k subsequence) was encountered

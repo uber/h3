@@ -167,7 +167,7 @@ void localIjToH3_traverse_assertions(H3Index h3) {
     t_assert(H3_EXPORT(experimentalH3ToLocalIj)(h3, h3, &ij) == 0,
              "Got origin coordinates");
 
-    // This logic is from hexRangeDistances.
+    // This logic is from gridDiskDistancesUnsafe.
     // 0 < ring <= k, current ring
     int ring = 1;
     // 0 <= direction < 6, current side of the ring
