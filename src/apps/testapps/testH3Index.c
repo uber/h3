@@ -93,7 +93,7 @@ SUITE(h3Index) {
             sprintf(failureMessage, "isValidCell failed on base cell %d", i);
             t_assert(H3_EXPORT(isValidCell)(h), failureMessage);
 
-            t_assert(H3_EXPORT(h3GetBaseCell)(h) == i,
+            t_assert(H3_EXPORT(getBaseCellNumber)(h) == i,
                      "failed to recover base cell");
         }
     }

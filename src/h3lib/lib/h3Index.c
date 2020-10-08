@@ -46,7 +46,7 @@ int H3_EXPORT(h3GetResolution)(H3Index h) { return H3_GET_RESOLUTION(h); }
  * @param h The H3 cell.
  * @return The base cell "number" of the H3 cell argument.
  */
-int H3_EXPORT(h3GetBaseCell)(H3Index h) { return H3_GET_BASE_CELL(h); }
+int H3_EXPORT(getBaseCellNumber)(H3Index h) { return H3_GET_BASE_CELL(h); }
 
 /**
  * Converts a string representation of an H3 index into an H3 index.

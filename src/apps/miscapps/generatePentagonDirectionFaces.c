@@ -38,7 +38,7 @@ static void generate() {
 
     for (int i = 0; i < NUM_PENTAGONS; i++) {
         H3Index pentagon = pentagons[i];
-        int baseCell = H3_EXPORT(h3GetBaseCell)(pentagon);
+        int baseCell = H3_EXPORT(getBaseCellNumber)(pentagon);
         printf("    {%d, {", baseCell);
         // Get the neighbors in each direction, in order
         FaceIJK fijk;

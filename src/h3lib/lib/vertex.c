@@ -53,7 +53,7 @@ static int vertexRotations(H3Index cell) {
     // Get the face and other info for the origin
     FaceIJK fijk;
     _h3ToFaceIjk(cell, &fijk);
-    int baseCell = H3_EXPORT(h3GetBaseCell)(cell);
+    int baseCell = H3_EXPORT(getBaseCellNumber)(cell);
     int cellLeadingDigit = _h3LeadingNonZeroDigit(cell);
 
     // get the base cell face
