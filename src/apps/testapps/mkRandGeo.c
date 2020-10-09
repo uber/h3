@@ -65,7 +65,7 @@ int main(int argc, char* argv[]) {
     }
 
     for (int i = 0; i < numPoints; i++) {
-        GeoCoord g;
+        GeoPoint g;
         randomGeo(&g);
 
         H3Index h = H3_EXPORT(pointToCell)(&g, res);

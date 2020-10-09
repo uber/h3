@@ -43,7 +43,7 @@ static void verifyCountAndUniqueness(H3Index* children, int paddedCount,
 }
 
 SUITE(cellToChildren) {
-    GeoCoord sf = {0.659966917655, 2 * 3.14159 - 2.1364398519396};
+    GeoPoint sf = {0.659966917655, 2 * 3.14159 - 2.1364398519396};
     H3Index sfHex8 = H3_EXPORT(pointToCell)(&sf, 8);
 
     TEST(oneResStep) {
@@ -53,7 +53,7 @@ SUITE(cellToChildren) {
         H3Index sfHex9s[PADDED_COUNT] = {0};
         H3_EXPORT(cellToChildren)(sfHex8, 9, sfHex9s);
 
-        GeoCoord center;
+        GeoPoint center;
         H3_EXPORT(cellToPoint)(sfHex8, &center);
         H3Index sfHex9_0 = H3_EXPORT(pointToCell)(&center, 9);
 
@@ -73,7 +73,7 @@ SUITE(cellToChildren) {
         CellBoundary outside;
         H3_EXPORT(cellToBoundary)(sfHex8, &outside);
         for (int i = 0; i < outside.numVerts; i++) {
-            GeoCoord avg = {0};
+            GeoPoint avg = {0};
             avg.lat = (outside.verts[i].lat + center.lat) / 2;
             avg.lon = (outside.verts[i].lon + center.lon) / 2;
             H3Index avgHex9 = H3_EXPORT(pointToCell)(&avg, 9);

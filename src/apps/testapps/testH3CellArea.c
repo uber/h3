@@ -35,7 +35,7 @@ static const double areasKm2[] = {
 
 SUITE(h3CellArea) {
     TEST(specific_cell_area) {
-        GeoCoord gc = {0.0, 0.0};
+        GeoPoint gc = {0.0, 0.0};
         for (int res = 0; res <= MAX_H3_RES - 1; res++) {
             H3Index cell = H3_EXPORT(pointToCell)(&gc, res);
             double area = H3_EXPORT(cellAreaKm2)(cell);

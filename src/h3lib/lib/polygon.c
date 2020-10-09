@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 Uber Technologies, Inc.
+ * Copyright 2018-2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ void bboxesFromGeoPolygon(const GeoPolygon* polygon, BBox* bboxes) {
  * @return           Whether the point is contained
  */
 bool pointInsidePolygon(const GeoPolygon* geoPolygon, const BBox* bboxes,
-                        const GeoCoord* coord) {
+                        const GeoPoint* coord) {
     // Start with contains state of primary geofence
     bool contains =
         pointInsideGeofence(&(geoPolygon->geofence), &bboxes[0], coord);

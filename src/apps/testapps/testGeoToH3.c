@@ -32,7 +32,7 @@
 #include "test.h"
 #include "utility.h"
 
-static void assertExpected(H3Index h1, const GeoCoord* g1) {
+static void assertExpected(H3Index h1, const GeoPoint* g1) {
     // convert lat/lon to H3 and verify
     int res = H3_EXPORT(getResolution)(h1);
     H3Index h2 = H3_EXPORT(pointToCell)(g1, res);
@@ -65,7 +65,7 @@ int main(int argc, char* argv[]) {
         H3Index h3;
         h3 = H3_EXPORT(stringToH3)(h3Str);
 
-        GeoCoord coord;
+        GeoPoint coord;
         setGeoDegs(&coord, latDegs, lonDegs);
 
         assertExpected(h3, &coord);

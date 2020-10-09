@@ -48,7 +48,7 @@ double _posAngleRads(double rads) {
  * @return Whether or not the two coordinates are within the threshold distance
  *         of each other.
  */
-bool geoAlmostEqualThreshold(const GeoCoord *p1, const GeoCoord *p2,
+bool geoAlmostEqualThreshold(const GeoPoint *p1, const GeoPoint *p2,
                              double threshold) {
     return fabs(p1->lat - p2->lat) < threshold &&
            fabs(p1->lon - p2->lon) < threshold;
@@ -63,7 +63,7 @@ bool geoAlmostEqualThreshold(const GeoCoord *p1, const GeoCoord *p2,
  * @return Whether or not the two coordinates are within the epsilon distance
  *         of each other.
  */
-bool geoAlmostEqual(const GeoCoord *p1, const GeoCoord *p2) {
+bool geoAlmostEqual(const GeoPoint *p1, const GeoPoint *p2) {
     return geoAlmostEqualThreshold(p1, p2, EPSILON_RAD);
 }
 
@@ -74,7 +74,7 @@ bool geoAlmostEqual(const GeoCoord *p1, const GeoCoord *p2) {
  * @param latDegs The desired latitude in decimal degrees.
  * @param lonDegs The desired longitude in decimal degrees.
  */
-void setGeoDegs(GeoCoord *p, double latDegs, double lonDegs) {
+void setGeoDegs(GeoPoint *p, double latDegs, double lonDegs) {
     _setGeoRads(p, H3_EXPORT(degsToRads)(latDegs),
                 H3_EXPORT(degsToRads)(lonDegs));
 }
@@ -86,7 +86,7 @@ void setGeoDegs(GeoCoord *p, double latDegs, double lonDegs) {
  * @param latRads The desired latitude in decimal radians.
  * @param lonRads The desired longitude in decimal radians.
  */
-void _setGeoRads(GeoCoord *p, double latRads, double lonRads) {
+void _setGeoRads(GeoPoint *p, double latRads, double lonRads) {
     p->lat = latRads;
     p->lon = lonRads;
 }
@@ -149,7 +149,7 @@ double constrainLng(double lng) {
  *
  * @return    the great circle distance in radians between a and b
  */
-double H3_EXPORT(pointDistRads)(const GeoCoord *a, const GeoCoord *b) {
+double H3_EXPORT(pointDistRads)(const GeoPoint *a, const GeoPoint *b) {
     double sinLat = sin((b->lat - a->lat) / 2.0);
     double sinLng = sin((b->lon - a->lon) / 2.0);
 
@@ -161,14 +161,14 @@ double H3_EXPORT(pointDistRads)(const GeoCoord *a, const GeoCoord *b) {
 /**
  * The great circle distance in kilometers between two spherical coordinates.
  */
-double H3_EXPORT(pointDistKm)(const GeoCoord *a, const GeoCoord *b) {
+double H3_EXPORT(pointDistKm)(const GeoPoint *a, const GeoPoint *b) {
     return H3_EXPORT(pointDistRads)(a, b) * EARTH_RADIUS_KM;
 }
 
 /**
  * The great circle distance in meters between two spherical coordinates.
  */
-double H3_EXPORT(pointDistM)(const GeoCoord *a, const GeoCoord *b) {
+double H3_EXPORT(pointDistM)(const GeoPoint *a, const GeoPoint *b) {
     return H3_EXPORT(pointDistKm)(a, b) * 1000;
 }
 
@@ -179,7 +179,7 @@ double H3_EXPORT(pointDistM)(const GeoCoord *a, const GeoCoord *b) {
  * @param p2 The second spherical coordinates.
  * @return The azimuth in radians from p1 to p2.
  */
-double _geoAzimuthRads(const GeoCoord *p1, const GeoCoord *p2) {
+double _geoAzimuthRads(const GeoPoint *p1, const GeoPoint *p2) {
     return atan2(cos(p2->lat) * sin(p2->lon - p1->lon),
                  cos(p1->lat) * sin(p2->lat) -
                      sin(p1->lat) * cos(p2->lat) * cos(p2->lon - p1->lon));
@@ -195,8 +195,8 @@ double _geoAzimuthRads(const GeoCoord *p1, const GeoCoord *p2) {
  * @param p2 The spherical coordinates at the desired azimuth and distance from
  * p1.
  */
-void _geoAzDistanceRads(const GeoCoord *p1, double az, double distance,
-                        GeoCoord *p2) {
+void _geoAzDistanceRads(const GeoPoint *p1, double az, double distance,
+                        GeoPoint *p2) {
     if (distance < EPSILON) {
         *p2 = *p1;
         return;
@@ -329,7 +329,7 @@ double triangleEdgeLengthsToArea(double a, double b, double c) {
  *
  * @return     area of triangle on unit sphere, in radians^2
  */
-double triangleArea(const GeoCoord *a, const GeoCoord *b, const GeoCoord *c) {
+double triangleArea(const GeoPoint *a, const GeoPoint *b, const GeoPoint *c) {
     return triangleEdgeLengthsToArea(H3_EXPORT(pointDistRads)(a, b),
                                      H3_EXPORT(pointDistRads)(b, c),
                                      H3_EXPORT(pointDistRads)(c, a));
@@ -349,7 +349,7 @@ double triangleArea(const GeoCoord *a, const GeoCoord *b, const GeoCoord *c) {
  * @return        cell area in radians^2
  */
 double H3_EXPORT(cellAreaRads2)(H3Index cell) {
-    GeoCoord c;
+    GeoPoint c;
     CellBoundary gb;
     H3_EXPORT(cellToPoint)(cell, &c);
     H3_EXPORT(cellToBoundary)(cell, &gb);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Uber Technologies, Inc.
+ * Copyright 2018, 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ typedef struct {
     double z;  ///< z component
 } Vec3d;
 
-void _geoToVec3d(const GeoCoord* geo, Vec3d* point);
+void _geoToVec3d(const GeoPoint* geo, Vec3d* point);
 double _pointSquareDist(const Vec3d* p1, const Vec3d* p2);
 
 #endif

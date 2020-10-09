@@ -32,20 +32,20 @@
 /** epsilon of ~0.1mm in radians */
 #define EPSILON_RAD (EPSILON_DEG * M_PI_180)
 
-void setGeoDegs(GeoCoord* p, double latDegs, double lonDegs);
+void setGeoDegs(GeoPoint* p, double latDegs, double lonDegs);
 double constrainLat(double lat);
 double constrainLng(double lng);
 
-bool geoAlmostEqual(const GeoCoord* p1, const GeoCoord* p2);
-bool geoAlmostEqualThreshold(const GeoCoord* p1, const GeoCoord* p2,
+bool geoAlmostEqual(const GeoPoint* p1, const GeoPoint* p2);
+bool geoAlmostEqualThreshold(const GeoPoint* p1, const GeoPoint* p2,
                              double threshold);
 
 // Internal functions
 
 double _posAngleRads(double rads);
-void _setGeoRads(GeoCoord* p, double latRads, double lonRads);
-double _geoAzimuthRads(const GeoCoord* p1, const GeoCoord* p2);
-void _geoAzDistanceRads(const GeoCoord* p1, double az, double distance,
-                        GeoCoord* p2);
+void _setGeoRads(GeoPoint* p, double latRads, double lonRads);
+double _geoAzimuthRads(const GeoPoint* p1, const GeoPoint* p2);
+void _geoAzDistanceRads(const GeoPoint* p1, double az, double distance,
+                        GeoPoint* p2);
 
 #endif

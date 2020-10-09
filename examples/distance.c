@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
     // 555 Market St @ resolution 15
     H3Index h3HQ2 = stringToH3("8f283082a30e623");
 
-    GeoCoord geoHQ1, geoHQ2;
+    GeoPoint geoHQ1, geoHQ2;
     cellToPoint(h3HQ1, &geoHQ1);
     cellToPoint(h3HQ2, &geoHQ2);
 

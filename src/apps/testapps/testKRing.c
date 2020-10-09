@@ -75,7 +75,7 @@ static void gridDisk_equals_gridDiskDistancesSafe_assertions(H3Index h3) {
 
 SUITE(gridDisk) {
     TEST(gridDisk0) {
-        GeoCoord sf = {0.659966917655, 2 * 3.14159 - 2.1364398519396};
+        GeoPoint sf = {0.659966917655, 2 * 3.14159 - 2.1364398519396};
         H3Index sfHex0 = H3_EXPORT(pointToCell)(&sf, 0);
 
         H3Index k1[] = {0, 0, 0, 0, 0, 0, 0};

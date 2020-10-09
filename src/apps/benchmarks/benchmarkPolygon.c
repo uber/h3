@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Uber Technologies, Inc.
+ * Copyright 2018, 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@
 #include "polygon.h"
 
 // Fixtures
-GeoCoord coord = {0.6593020122281105, -2.136646587644049};
+GeoPoint coord = {0.6593020122281105, -2.136646587644049};
 
-GeoCoord smallVerts[] = {{0.6593216174404631, -2.136686544190228},
+GeoPoint smallVerts[] = {{0.6593216174404631, -2.136686544190228},
                          {0.6592922488566673, -2.1367052400423},
                          {0.6592659902057862, -2.136683255590617},
                          {0.6592690997315311, -2.136642575268508},
@@ -31,7 +31,7 @@ GeoCoord smallVerts[] = {{0.6593216174404631, -2.136686544190228},
 Geofence smallGeofence;
 BBox smallBBox;
 
-GeoCoord largeVerts[] = {{0.659094230575688, -2.1371021015485354},
+GeoPoint largeVerts[] = {{0.659094230575688, -2.1371021015485354},
                          {0.6590648582999955, -2.137120785446624},
                          {0.6590386025000088, -2.1370988011284138},
                          {0.6590417185683777, -2.1370581328924323},

@@ -757,14 +757,14 @@ void H3_EXPORT(polygonToCells)(const GeoPolygon* geoPolygon, int res,
 int _getEdgeHexagons(const Geofence* geofence, int numHexagons, int res,
                      int* numSearchHexes, H3Index* search, H3Index* found) {
     for (int i = 0; i < geofence->numVerts; i++) {
-        GeoCoord origin = geofence->verts[i];
-        GeoCoord destination = i == geofence->numVerts - 1
+        GeoPoint origin = geofence->verts[i];
+        GeoPoint destination = i == geofence->numVerts - 1
                                    ? geofence->verts[0]
                                    : geofence->verts[i + 1];
         const int numHexesEstimate =
             lineHexEstimate(&origin, &destination, res);
         for (int j = 0; j < numHexesEstimate; j++) {
-            GeoCoord interpolate;
+            GeoPoint interpolate;
             interpolate.lat =
                 (origin.lat * (numHexesEstimate - j) / numHexesEstimate) +
                 (destination.lat * j / numHexesEstimate);
@@ -937,7 +937,7 @@ int _polygonToCellsInternal(const GeoPolygon* geoPolygon, int res,
                 }
 
                 // Check if the hexagon is in the polygon or not
-                GeoCoord hexCenter;
+                GeoPoint hexCenter;
                 H3_EXPORT(cellToPoint)(hex, &hexCenter);
 
                 // If not, skip
@@ -985,8 +985,8 @@ int _polygonToCellsInternal(const GeoPolygon* geoPolygon, int res,
 void h3SetToVertexGraph(const H3Index* h3Set, const int numHexes,
                         VertexGraph* graph) {
     CellBoundary vertices;
-    GeoCoord* fromVtx;
-    GeoCoord* toVtx;
+    GeoPoint* fromVtx;
+    GeoPoint* toVtx;
     VertexNode* edge;
     if (numHexes < 1) {
         // We still need to init the graph, or calls to destroyVertexGraph will
@@ -1032,7 +1032,7 @@ void _vertexGraphToLinkedGeo(VertexGraph* graph, LinkedGeoPolygon* out) {
     *out = (LinkedGeoPolygon){0};
     LinkedGeoLoop* loop;
     VertexNode* edge;
-    GeoCoord nextVtx;
+    GeoPoint nextVtx;
     // Find the next unused entry point
     while ((edge = firstVertexNode(graph)) != NULL) {
         loop = addNewLinkedLoop(out);

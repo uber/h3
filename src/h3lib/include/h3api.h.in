@@ -77,20 +77,20 @@ typedef uint64_t H3Index;
  */
 #define MAX_CELL_BNDRY_VERTS 10
 
-/** @struct GeoCoord
+/** @struct GeoPoint
     @brief latitude/longitude in radians
 */
 typedef struct {
     double lat;  ///< latitude in radians
     double lon;  ///< longitude in radians
-} GeoCoord;
+} GeoPoint;
 
 /** @struct CellBoundary
     @brief cell boundary in latitude/longitude
 */
 typedef struct {
     int numVerts;                          ///< number of vertices
-    GeoCoord verts[MAX_CELL_BNDRY_VERTS];  ///< vertices in ccw order
+    GeoPoint verts[MAX_CELL_BNDRY_VERTS];  ///< vertices in ccw order
 } CellBoundary;
 
 /** @struct Geofence
@@ -98,7 +98,7 @@ typedef struct {
  */
 typedef struct {
     int numVerts;
-    GeoCoord *verts;
+    GeoPoint *verts;
 } Geofence;
 
 /** @struct GeoPolygon
@@ -118,13 +118,13 @@ typedef struct {
     GeoPolygon *polygons;
 } GeoMultiPolygon;
 
-/** @struct LinkedGeoCoord
+/** @struct LinkedGeoPoint
  *  @brief A coordinate node in a linked geo structure, part of a linked list
  */
-typedef struct LinkedGeoCoord LinkedGeoCoord;
-struct LinkedGeoCoord {
-    GeoCoord vertex;
-    LinkedGeoCoord *next;
+typedef struct LinkedGeoPoint LinkedGeoPoint;
+struct LinkedGeoPoint {
+    GeoPoint vertex;
+    LinkedGeoPoint *next;
 };
 
 /** @struct LinkedGeoLoop
@@ -132,8 +132,8 @@ struct LinkedGeoCoord {
  */
 typedef struct LinkedGeoLoop LinkedGeoLoop;
 struct LinkedGeoLoop {
-    LinkedGeoCoord *first;
-    LinkedGeoCoord *last;
+    LinkedGeoPoint *first;
+    LinkedGeoPoint *last;
     LinkedGeoLoop *next;
 };
 
@@ -163,7 +163,7 @@ typedef struct {
  */
 /** @brief find the H3 index of the resolution res cell containing the lat/lng
  */
-DECLSPEC H3Index H3_EXPORT(pointToCell)(const GeoCoord *g, int res);
+DECLSPEC H3Index H3_EXPORT(pointToCell)(const GeoPoint *g, int res);
 /** @} */
 
 /** @defgroup cellToPoint cellToPoint
@@ -171,7 +171,7 @@ DECLSPEC H3Index H3_EXPORT(pointToCell)(const GeoCoord *g, int res);
  * @{
  */
 /** @brief find the lat/lon center point g of the cell h3 */
-DECLSPEC void H3_EXPORT(cellToPoint)(H3Index h3, GeoCoord *g);
+DECLSPEC void H3_EXPORT(cellToPoint)(H3Index h3, GeoPoint *g);
 /** @} */
 
 /** @defgroup cellToBoundary cellToBoundary
@@ -273,15 +273,15 @@ DECLSPEC double H3_EXPORT(radsToDegs)(double radians);
  * Functions for pointDist
  * @{
  */
-/** @brief "great circle distance" between pairs of GeoCoord points in radians*/
-double H3_EXPORT(pointDistRads)(const GeoCoord *a, const GeoCoord *b);
+/** @brief "great circle distance" between pairs of GeoPoint points in radians*/
+double H3_EXPORT(pointDistRads)(const GeoPoint *a, const GeoPoint *b);
 
-/** @brief "great circle distance" between pairs of GeoCoord points in
+/** @brief "great circle distance" between pairs of GeoPoint points in
  * kilometers*/
-double H3_EXPORT(pointDistKm)(const GeoCoord *a, const GeoCoord *b);
+double H3_EXPORT(pointDistKm)(const GeoPoint *a, const GeoPoint *b);
 
-/** @brief "great circle distance" between pairs of GeoCoord points in meters*/
-double H3_EXPORT(pointDistM)(const GeoCoord *a, const GeoCoord *b);
+/** @brief "great circle distance" between pairs of GeoPoint points in meters*/
+double H3_EXPORT(pointDistM)(const GeoPoint *a, const GeoPoint *b);
 /** @} */
 
 /** @defgroup getHexagonAreaAvg getHexagonAreaAvg

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Uber Technologies, Inc.
+ * Copyright 2018, 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@
 // Defined directly in polygon.c:
 void bboxesFromGeoPolygon(const GeoPolygon* polygon, BBox* bboxes);
 bool pointInsidePolygon(const GeoPolygon* geoPolygon, const BBox* bboxes,
-                        const GeoCoord* coord);
+                        const GeoPoint* coord);
 
 // The following functions are created via macro in polygonAlgos.h,
 // so their signatures are documented here:
@@ -64,7 +64,7 @@ void bboxFromGeofence(const Geofence* loop, BBox* bbox);
  * @return              Whether the point is contained
  */
 bool pointInsideGeofence(const Geofence* loop, const BBox* bbox,
-                         const GeoCoord* coord);
+                         const GeoPoint* coord);
 
 /**
  * Whether the winding order of a given Geofence is clockwise
