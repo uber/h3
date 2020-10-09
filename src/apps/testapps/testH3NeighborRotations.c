@@ -50,7 +50,7 @@ typedef struct {
 
 void doCell(H3Index h, int maxK, TestOutput* testOutput) {
     for (int k = 0; k < maxK; k++) {
-        int maxSz = H3_EXPORT(maxKringSize)(k);
+        int maxSz = H3_EXPORT(maxGridDiskSize)(k);
         H3Index* gridDiskInternalOutput = calloc(sizeof(H3Index), maxSz);
         H3Index* gridDiskUnsafeOutput = calloc(sizeof(H3Index), maxSz);
         int* gridDiskInternalDistances = calloc(sizeof(int), maxSz);

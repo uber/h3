@@ -131,7 +131,7 @@ SUITE(gridRingUnsafe) {
 
                     for (int k = 0; k < 3; k++) {
                         int ringSz = k != 0 ? 6 * k : 1;
-                        int kSz = H3_EXPORT(maxKringSize)(k);
+                        int kSz = H3_EXPORT(maxGridDiskSize)(k);
 
                         H3Index *ring = calloc(ringSz, sizeof(H3Index));
                         int failed =

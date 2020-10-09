@@ -36,7 +36,7 @@
 #include "utility.h"
 
 void doCell(H3Index h, int k, int printDistances) {
-    int maxSize = H3_EXPORT(maxKringSize)(k);
+    int maxSize = H3_EXPORT(maxGridDiskSize)(k);
     H3Index* rings = calloc(maxSize, sizeof(H3Index));
     int* distances = calloc(maxSize, sizeof(int));
     H3_EXPORT(gridDiskDistances)(h, k, rings, distances);

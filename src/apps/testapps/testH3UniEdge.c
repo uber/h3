@@ -40,7 +40,7 @@ SUITE(h3UniEdge) {
                  "an index does not neighbor itself");
 
         int neighbors = 0;
-        for (int i = 0; i < H3_EXPORT(maxKringSize)(1); i++) {
+        for (int i = 0; i < H3_EXPORT(maxGridDiskSize)(1); i++) {
             if (ring[i] != 0 && H3_EXPORT(areNeighborCells)(sf, ring[i])) {
                 neighbors++;
             }
@@ -52,7 +52,7 @@ SUITE(h3UniEdge) {
         H3_EXPORT(gridRingUnsafe)(sf, 2, largerRing);
 
         neighbors = 0;
-        for (int i = 0; i < H3_EXPORT(maxKringSize)(2); i++) {
+        for (int i = 0; i < H3_EXPORT(maxGridDiskSize)(2); i++) {
             if (largerRing[i] != 0 &&
                 H3_EXPORT(areNeighborCells)(sf, largerRing[i])) {
                 neighbors++;

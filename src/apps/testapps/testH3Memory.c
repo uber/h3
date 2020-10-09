@@ -88,7 +88,7 @@ H3Index pentagon = 0x89080000003ffff;
 SUITE(h3Memory) {
     TEST(gridDisk) {
         int k = 2;
-        int hexCount = H3_EXPORT(maxKringSize)(k);
+        int hexCount = H3_EXPORT(maxGridDiskSize)(k);
         H3Index* gridDiskOutput = calloc(hexCount, sizeof(H3Index));
 
         resetMemoryCounters(0);
@@ -118,7 +118,7 @@ SUITE(h3Memory) {
 
     TEST(compactCells) {
         int k = 9;
-        int hexCount = H3_EXPORT(maxKringSize)(k);
+        int hexCount = H3_EXPORT(maxGridDiskSize)(k);
         int expectedCompactCount = 73;
 
         // Generate a set of hexagons to compactCells

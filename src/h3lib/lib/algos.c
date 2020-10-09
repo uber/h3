@@ -161,7 +161,7 @@ static const Direction NEW_ADJUSTMENT_III[7][7] = {
  *
  * @param  k   k value, k >= 0.
  */
-int H3_EXPORT(maxKringSize)(int k) { return 3 * k * (k + 1) + 1; }
+int H3_EXPORT(maxGridDiskSize)(int k) { return 3 * k * (k + 1) + 1; }
 
 /**
  * Produce cells within grid distance k of the origin cell.
@@ -174,7 +174,7 @@ int H3_EXPORT(maxKringSize)(int k) { return 3 * k * (k + 1) + 1; }
  *
  * @param  origin   origin cell
  * @param  k        k >= 0
- * @param  out      zero-filled array which must be of size maxKringSize(k)
+ * @param  out      zero-filled array which must be of size maxGridDiskSize(k)
  */
 void H3_EXPORT(gridDisk)(H3Index origin, int k, H3Index* out) {
     H3_EXPORT(gridDiskDistances)(origin, k, out, NULL);
@@ -192,9 +192,10 @@ void H3_EXPORT(gridDisk)(H3Index origin, int k, H3Index* out) {
  *
  * @param  origin      origin cell
  * @param  k           k >= 0
- * @param  out         zero-filled array which must be of size maxKringSize(k)
+ * @param  out         zero-filled array which must be of size
+ * maxGridDiskSize(k)
  * @param  distances   NULL or a zero-filled array which must be of size
- *                     maxKringSize(k)
+ *                     maxGridDiskSize(k)
  */
 void H3_EXPORT(gridDiskDistances)(H3Index origin, int k, H3Index* out,
                                   int* distances) {
@@ -202,7 +203,7 @@ void H3_EXPORT(gridDiskDistances)(H3Index origin, int k, H3Index* out,
     const bool failed =
         H3_EXPORT(gridDiskDistancesUnsafe)(origin, k, out, distances);
     if (failed) {
-        const int maxIdx = H3_EXPORT(maxKringSize)(k);
+        const int maxIdx = H3_EXPORT(maxGridDiskSize)(k);
         // Fast algo failed, fall back to slower, correct algo
         // and also wipe out array because contents untrustworthy
         memset(out, 0, maxIdx * sizeof(H3Index));
@@ -237,7 +238,8 @@ void H3_EXPORT(gridDiskDistances)(H3Index origin, int k, H3Index* out,
  * @param  distances   Scratch area, with elements paralleling the out array.
  *                     Elements indicate ijk distance from the origin cell to
  *                     the output cell
- * @param  maxIdx      Size of out and scratch arrays (must be maxKringSize(k))
+ * @param  maxIdx      Size of out and scratch arrays (must be
+ * maxGridDiskSize(k))
  * @param  curK        Current distance from the origin
  */
 void H3_EXPORT(gridDiskDistancesSafe)(H3Index origin, int k, H3Index* out,
@@ -458,7 +460,7 @@ Direction directionForNeighbor(H3Index origin, H3Index destination) {
  *
  * @param origin Origin location.
  * @param k k >= 0
- * @param out Array which must be of size maxKringSize(k).
+ * @param out Array which must be of size maxGridDiskSize(k).
  * @return 0 if no pentagon or pentagonal distortion area was encountered.
  */
 int H3_EXPORT(gridDiskUnsafe)(H3Index origin, int k, H3Index* out) {
@@ -479,8 +481,8 @@ int H3_EXPORT(gridDiskUnsafe)(H3Index origin, int k, H3Index* out) {
  *
  * @param origin Origin location.
  * @param k k >= 0
- * @param out Array which must be of size maxKringSize(k).
- * @param distances Null or array which must be of size maxKringSize(k).
+ * @param out Array which must be of size maxGridDiskSize(k).
+ * @param distances Null or array which must be of size maxGridDiskSize(k).
  * @return 0 if no pentagon or pentagonal distortion area was encountered.
  */
 int H3_EXPORT(gridDiskDistancesUnsafe)(H3Index origin, int k, H3Index* out,
@@ -574,14 +576,14 @@ int H3_EXPORT(gridDiskDistancesUnsafe)(H3Index origin, int k, H3Index* out,
  * @param length The total number of H3Indexes in h3Set
  * @param k The number of rings to generate
  * @param out A pointer to the output memory to dump the new set of H3Indexes to
- *            The memory block should be equal to maxKringSize(k) * length
+ *            The memory block should be equal to maxGridDiskSize(k) * length
  * @return 0 if no pentagon is encountered. Cannot trust output otherwise
  */
 int H3_EXPORT(gridDisksUnsafe)(H3Index* h3Set, int length, int k,
                                H3Index* out) {
     int success = 0;
     H3Index* segment;
-    int segmentSize = H3_EXPORT(maxKringSize)(k);
+    int segmentSize = H3_EXPORT(maxGridDiskSize)(k);
     for (int i = 0; i < length; i++) {
         // Determine the appropriate segment of the output array to operate on
         segment = out + i * segmentSize;

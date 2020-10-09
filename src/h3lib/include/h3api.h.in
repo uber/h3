@@ -187,7 +187,7 @@ DELCSPEC void H3_EXPORT(cellToBoundary)(H3Index h3, GeoBoundary *gp);
  * @{
  */
 /** @brief maximum number of hexagons in k-ring */
-DECLSPEC int H3_EXPORT(maxKringSize)(int k);
+DECLSPEC int H3_EXPORT(maxGridDiskSize)(int k);
 
 /** @brief hexagons neighbors in all directions, assuming no pentagons */
 DECLSPEC int H3_EXPORT(gridDiskUnsafe)(H3Index origin, int k, H3Index *out);
