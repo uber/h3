@@ -40,31 +40,31 @@ static void createLinkedLoop(LinkedGeoLoop* loop, GeoPoint* verts,
 }
 
 SUITE(polygon) {
-    TEST(pointInsideGeofence) {
-        Geofence geofence = {.numVerts = 6, .verts = sfVerts};
+    TEST(pointInsideGeoLoop) {
+        GeoLoop geofence = {.numVerts = 6, .verts = sfVerts};
 
         GeoPoint inside = {0.659, -2.136};
         GeoPoint somewhere = {1, 2};
 
         BBox bbox;
-        bboxFromGeofence(&geofence, &bbox);
+        bboxFromGeoLoop(&geofence, &bbox);
 
-        t_assert(!pointInsideGeofence(&geofence, &bbox, &sfVerts[0]),
+        t_assert(!pointInsideGeoLoop(&geofence, &bbox, &sfVerts[0]),
                  "contains exact");
-        t_assert(pointInsideGeofence(&geofence, &bbox, &sfVerts[4]),
+        t_assert(pointInsideGeoLoop(&geofence, &bbox, &sfVerts[4]),
                  "contains exact 4");
-        t_assert(pointInsideGeofence(&geofence, &bbox, &inside),
+        t_assert(pointInsideGeoLoop(&geofence, &bbox, &inside),
                  "contains point inside");
-        t_assert(!pointInsideGeofence(&geofence, &bbox, &somewhere),
+        t_assert(!pointInsideGeoLoop(&geofence, &bbox, &somewhere),
                  "contains somewhere else");
     }
 
-    TEST(pointInsideGeofenceTransmeridian) {
+    TEST(pointInsideGeoLoopTransmeridian) {
         GeoPoint verts[] = {{0.01, -M_PI + 0.01},
                             {0.01, M_PI - 0.01},
                             {-0.01, M_PI - 0.01},
                             {-0.01, -M_PI + 0.01}};
-        Geofence transMeridianGeofence = {.numVerts = 4, .verts = verts};
+        GeoLoop transMeridianGeoLoop = {.numVerts = 4, .verts = verts};
 
         GeoPoint eastPoint = {0.001, -M_PI + 0.001};
         GeoPoint eastPointOutside = {0.001, -M_PI + 0.1};
@@ -72,19 +72,19 @@ SUITE(polygon) {
         GeoPoint westPointOutside = {0.001, M_PI - 0.1};
 
         BBox bbox;
-        bboxFromGeofence(&transMeridianGeofence, &bbox);
+        bboxFromGeoLoop(&transMeridianGeoLoop, &bbox);
 
-        t_assert(pointInsideGeofence(&transMeridianGeofence, &bbox, &westPoint),
+        t_assert(pointInsideGeoLoop(&transMeridianGeoLoop, &bbox, &westPoint),
                  "contains point to the west of the antimeridian");
-        t_assert(pointInsideGeofence(&transMeridianGeofence, &bbox, &eastPoint),
+        t_assert(pointInsideGeoLoop(&transMeridianGeoLoop, &bbox, &eastPoint),
                  "contains point to the east of the antimeridian");
         t_assert(
-            !pointInsideGeofence(&transMeridianGeofence, &bbox,
-                                 &westPointOutside),
+            !pointInsideGeoLoop(&transMeridianGeoLoop, &bbox,
+                                &westPointOutside),
             "does not contain outside point to the west of the antimeridian");
         t_assert(
-            !pointInsideGeofence(&transMeridianGeofence, &bbox,
-                                 &eastPointOutside),
+            !pointInsideGeoLoop(&transMeridianGeoLoop, &bbox,
+                                &eastPointOutside),
             "does not contain outside point to the east of the antimeridian");
     }
 
@@ -106,47 +106,47 @@ SUITE(polygon) {
         destroyLinkedGeoLoop(&loop);
     }
 
-    TEST(bboxFromGeofence) {
+    TEST(bboxFromGeoLoop) {
         GeoPoint verts[] = {{0.8, 0.3}, {0.7, 0.6}, {1.1, 0.7}, {1.0, 0.2}};
-        Geofence geofence = {.numVerts = 4, .verts = verts};
+        GeoLoop geofence = {.numVerts = 4, .verts = verts};
 
         const BBox expected = {1.1, 0.7, 0.7, 0.2};
 
         BBox result;
-        bboxFromGeofence(&geofence, &result);
+        bboxFromGeoLoop(&geofence, &result);
         t_assert(bboxEquals(&result, &expected), "Got expected bbox");
     }
 
-    TEST(bboxFromGeofenceTransmeridian) {
+    TEST(bboxFromGeoLoopTransmeridian) {
         GeoPoint verts[] = {{0.1, -M_PI + 0.1},  {0.1, M_PI - 0.1},
                             {0.05, M_PI - 0.2},  {-0.1, M_PI - 0.1},
                             {-0.1, -M_PI + 0.1}, {-0.05, -M_PI + 0.2}};
-        Geofence geofence = {.numVerts = 6, .verts = verts};
+        GeoLoop geofence = {.numVerts = 6, .verts = verts};
 
         const BBox expected = {0.1, -0.1, -M_PI + 0.2, M_PI - 0.2};
 
         BBox result;
-        bboxFromGeofence(&geofence, &result);
+        bboxFromGeoLoop(&geofence, &result);
         t_assert(bboxEquals(&result, &expected),
                  "Got expected transmeridian bbox");
     }
 
-    TEST(bboxFromGeofenceNoVertices) {
-        Geofence geofence;
+    TEST(bboxFromGeoLoopNoVertices) {
+        GeoLoop geofence;
         geofence.verts = NULL;
         geofence.numVerts = 0;
 
         const BBox expected = {0.0, 0.0, 0.0, 0.0};
 
         BBox result;
-        bboxFromGeofence(&geofence, &result);
+        bboxFromGeoLoop(&geofence, &result);
 
         t_assert(bboxEquals(&result, &expected), "Got expected bbox");
     }
 
     TEST(bboxesFromGeoPolygon) {
         GeoPoint verts[] = {{0.8, 0.3}, {0.7, 0.6}, {1.1, 0.7}, {1.0, 0.2}};
-        Geofence geofence = {.numVerts = 4, .verts = verts};
+        GeoLoop geofence = {.numVerts = 4, .verts = verts};
         GeoPolygon polygon = {.geofence = geofence, .numHoles = 0};
 
         const BBox expected = {1.1, 0.7, 0.7, 0.2};
@@ -160,14 +160,14 @@ SUITE(polygon) {
 
     TEST(bboxesFromGeoPolygonHole) {
         GeoPoint verts[] = {{0.8, 0.3}, {0.7, 0.6}, {1.1, 0.7}, {1.0, 0.2}};
-        Geofence geofence = {.numVerts = 4, .verts = verts};
+        GeoLoop geofence = {.numVerts = 4, .verts = verts};
 
         // not a real hole, but doesn't matter for the test
         GeoPoint holeVerts[] = {{0.9, 0.3}, {0.9, 0.5}, {1.0, 0.7}, {0.9, 0.3}};
-        Geofence holeGeofence = {.numVerts = 4, .verts = holeVerts};
+        GeoLoop holeGeoLoop = {.numVerts = 4, .verts = holeVerts};
 
         GeoPolygon polygon = {
-            .geofence = geofence, .numHoles = 1, .holes = &holeGeofence};
+            .geofence = geofence, .numHoles = 1, .holes = &holeGeoLoop};
 
         const BBox expected = {1.1, 0.7, 0.7, 0.2};
         const BBox expectedHole = {1.0, 0.9, 0.7, 0.3};
@@ -209,11 +209,11 @@ SUITE(polygon) {
         destroyLinkedGeoLoop(&loop);
     }
 
-    TEST(isClockwiseGeofence) {
+    TEST(isClockwiseGeoLoop) {
         GeoPoint verts[] = {{0, 0}, {0.1, 0.1}, {0, 0.1}};
-        Geofence geofence = {.numVerts = 3, .verts = verts};
+        GeoLoop geofence = {.numVerts = 3, .verts = verts};
 
-        t_assert(isClockwiseGeofence(&geofence),
+        t_assert(isClockwiseGeoLoop(&geofence),
                  "Got true for clockwise geofence");
     }
 
@@ -239,14 +239,14 @@ SUITE(polygon) {
         destroyLinkedGeoLoop(&loop);
     }
 
-    TEST(isClockwiseGeofenceTransmeridian) {
+    TEST(isClockwiseGeoLoopTransmeridian) {
         GeoPoint verts[] = {{0.4, M_PI - 0.1},
                             {0.4, -M_PI + 0.1},
                             {-0.4, -M_PI + 0.1},
                             {-0.4, M_PI - 0.1}};
-        Geofence geofence = {.numVerts = 4, .verts = verts};
+        GeoLoop geofence = {.numVerts = 4, .verts = verts};
 
-        t_assert(isClockwiseGeofence(&geofence),
+        t_assert(isClockwiseGeoLoop(&geofence),
                  "Got true for clockwise geofence");
     }
 

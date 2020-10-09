@@ -31,12 +31,12 @@ SUITE(polygonToCells_reported) {
         // TODO: Fails for a single worldwide polygon
         GeoPoint worldVerts[] = {
             {-M_PI_2, -M_PI}, {M_PI_2, -M_PI}, {M_PI_2, 0}, {-M_PI_2, 0}};
-        Geofence worldGeofence = {.numVerts = 4, .verts = worldVerts};
-        GeoPolygon worldGeoPolygon = {.geofence = worldGeofence, .numHoles = 0};
+        GeoLoop worldGeoLoop = {.numVerts = 4, .verts = worldVerts};
+        GeoPolygon worldGeoPolygon = {.geofence = worldGeoLoop, .numHoles = 0};
         GeoPoint worldVerts2[] = {
             {-M_PI_2, 0}, {M_PI_2, 0}, {M_PI_2, M_PI}, {-M_PI_2, M_PI}};
-        Geofence worldGeofence2 = {.numVerts = 4, .verts = worldVerts2};
-        GeoPolygon worldGeoPolygon2 = {.geofence = worldGeofence2,
+        GeoLoop worldGeoLoop2 = {.numVerts = 4, .verts = worldVerts2};
+        GeoPolygon worldGeoPolygon2 = {.geofence = worldGeoLoop2,
                                        .numHoles = 0};
 
         for (int res = 0; res < 3; res++) {
@@ -94,9 +94,9 @@ SUITE(polygonToCells_reported) {
 
         GeoPoint testVerts[] = {
             {north, east}, {south, east}, {south, west}, {north, west}};
-        Geofence testGeofence = {.numVerts = 4, .verts = testVerts};
+        GeoLoop testGeoLoop = {.numVerts = 4, .verts = testVerts};
         GeoPolygon testPolygon;
-        testPolygon.geofence = testGeofence;
+        testPolygon.geofence = testGeoLoop;
         testPolygon.numHoles = 0;
 
         int res = 7;
@@ -120,9 +120,9 @@ SUITE(polygonToCells_reported) {
 
         GeoPoint testVerts[] = {
             {north, east}, {south, east}, {south, west}, {north, west}};
-        Geofence testGeofence = {.numVerts = 4, .verts = testVerts};
+        GeoLoop testGeoLoop = {.numVerts = 4, .verts = testVerts};
         GeoPolygon testPolygon;
-        testPolygon.geofence = testGeofence;
+        testPolygon.geofence = testGeoLoop;
         testPolygon.numHoles = 0;
 
         int res = 7;
@@ -143,9 +143,9 @@ SUITE(polygonToCells_reported) {
                                 {0.10032914690616246, 0.8915914753447348},
                                 {0.10033349237998787, 0.8915860128746426},
                                 {0.10069496685903621, 0.8920742194546231}};
-        Geofence testGeofence = {.numVerts = 4, .verts = testVerts};
+        GeoLoop testGeoLoop = {.numVerts = 4, .verts = testVerts};
         GeoPolygon testPolygon;
-        testPolygon.geofence = testGeofence;
+        testPolygon.geofence = testGeoLoop;
         testPolygon.numHoles = 0;
 
         int res = 13;

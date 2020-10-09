@@ -28,16 +28,16 @@
 #include "linkedGeo.h"
 
 // Macros for use with polygonAlgos.h
-/** Macro: Init iteration vars for Geofence */
+/** Macro: Init iteration vars for GeoLoop */
 #define INIT_ITERATION_GEOFENCE int loopIndex = -1
 
-/** Macro: Increment Geofence loop iteration, or break if done. */
+/** Macro: Increment GeoLoop loop iteration, or break if done. */
 #define ITERATE_GEOFENCE(geofence, vertexA, vertexB) \
     if (++loopIndex >= geofence->numVerts) break;    \
     vertexA = geofence->verts[loopIndex];            \
     vertexB = geofence->verts[(loopIndex + 1) % geofence->numVerts]
 
-/** Macro: Whether a Geofence is empty */
+/** Macro: Whether a GeoLoop is empty */
 #define IS_EMPTY_GEOFENCE(geofence) geofence->numVerts == 0
 
 // Defined directly in polygon.c:
@@ -49,28 +49,28 @@ bool pointInsidePolygon(const GeoPolygon* geoPolygon, const BBox* bboxes,
 // so their signatures are documented here:
 
 /**
- * Create a bounding box from a Geofence
- * @param geofence Input Geofence
+ * Create a bounding box from a GeoLoop
+ * @param geofence Input GeoLoop
  * @param bbox     Output bbox
  */
-void bboxFromGeofence(const Geofence* loop, BBox* bbox);
+void bboxFromGeoLoop(const GeoLoop* loop, BBox* bbox);
 
 /**
- * Take a given Geofence data structure and check if it
+ * Take a given GeoLoop data structure and check if it
  * contains a given geo coordinate.
  * @param loop          The geofence
  * @param bbox          The bbox for the loop
  * @param coord         The coordinate to check
  * @return              Whether the point is contained
  */
-bool pointInsideGeofence(const Geofence* loop, const BBox* bbox,
-                         const GeoPoint* coord);
+bool pointInsideGeoLoop(const GeoLoop* loop, const BBox* bbox,
+                        const GeoPoint* coord);
 
 /**
- * Whether the winding order of a given Geofence is clockwise
+ * Whether the winding order of a given GeoLoop is clockwise
  * @param loop  The loop to check
  * @return      Whether the loop is clockwise
  */
-bool isClockwiseGeofence(const Geofence* geofence);
+bool isClockwiseGeoLoop(const GeoLoop* geofence);
 
 #endif

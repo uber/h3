@@ -45,7 +45,7 @@ void _vertexGraphToLinkedGeo(VertexGraph* graph, LinkedGeoPolygon* out);
 
 // Internal function for polygonToCells that traces a geofence with hexagons of
 // a specific size
-int _getEdgeHexagons(const Geofence* geofence, int numHexagons, int res,
+int _getEdgeHexagons(const GeoLoop* geofence, int numHexagons, int res,
                      int* numSearchHexes, H3Index* search, H3Index* found);
 
 // The polygonToCells algorithm. Separated out because it can theoretically fail
