@@ -999,7 +999,7 @@ void h3SetToVertexGraph(const H3Index* h3Set, const int numHexes,
     initVertexGraph(graph, numBuckets, res);
     // Iterate through every hexagon
     for (int i = 0; i < numHexes; i++) {
-        H3_EXPORT(h3ToGeoBoundary)(h3Set[i], &vertices);
+        H3_EXPORT(cellToBoundary)(h3Set[i], &vertices);
         // iterate through every edge
         for (int j = 0; j < vertices.numVerts; j++) {
             fromVtx = &vertices.verts[j];

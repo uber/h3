@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
 
     // Get the vertices of the H3 index.
     GeoBoundary boundary;
-    h3ToGeoBoundary(indexed, &boundary);
+    cellToBoundary(indexed, &boundary);
     // Indexes can have different number of vertices under some cases,
     // which is why boundary.numVerts is needed.
     for (int v = 0; v < boundary.numVerts; v++) {

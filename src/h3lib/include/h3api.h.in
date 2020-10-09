@@ -174,12 +174,12 @@ DECLSPEC H3Index H3_EXPORT(pointToCell)(const GeoCoord *g, int res);
 DECLSPEC void H3_EXPORT(cellToPoint)(H3Index h3, GeoCoord *g);
 /** @} */
 
-/** @defgroup h3ToGeoBoundary h3ToGeoBoundary
- * Functions for h3ToGeoBoundary
+/** @defgroup cellToBoundary cellToBoundary
+ * Functions for cellToBoundary
  * @{
  */
 /** @brief give the cell boundary in lat/lon coordinates for the cell h3 */
-DECLSPEC void H3_EXPORT(h3ToGeoBoundary)(H3Index h3, GeoBoundary *gp);
+DELCSPEC void H3_EXPORT(cellToBoundary)(H3Index h3, GeoBoundary *gp);
 /** @} */
 
 /** @defgroup gridDisk gridDisk
