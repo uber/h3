@@ -378,9 +378,9 @@ double H3_EXPORT(cellAreaM2)(H3Index h) {
 }
 
 /**
- * Length of a unidirectional edge in radians.
+ * Length of a directed edge in radians.
  *
- * @param   edge  H3 unidirectional edge
+ * @param   edge  H3 directed edge
  *
  * @return        length in radians
  */
@@ -398,14 +398,14 @@ double H3_EXPORT(exactEdgeLengthRads)(H3Index edge) {
 }
 
 /**
- * Length of a unidirectional edge in kilometers.
+ * Length of a directed edge in kilometers.
  */
 double H3_EXPORT(exactEdgeLengthKm)(H3Index edge) {
     return H3_EXPORT(exactEdgeLengthRads)(edge) * EARTH_RADIUS_KM;
 }
 
 /**
- * Length of a unidirectional edge in meters.
+ * Length of a directed edge in meters.
  */
 double H3_EXPORT(exactEdgeLengthM)(H3Index edge) {
     return H3_EXPORT(exactEdgeLengthKm)(edge) * 1000;

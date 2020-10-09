@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /** @file
- * @brief tests H3 unidirectional edge functions using tests over a large number
+ * @brief tests H3 directed edge functions using tests over a large number
  *        of indexes.
  *
  *  usage: `testH3UniEdgeExhaustive`

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /** @file  h3UniEdge.c
- * @brief H3UniEdge functions for manipulating unidirectional edge indexes.
+ * @brief H3UniEdge functions for manipulating directed edge indexes.
  */
 
 #include <inttypes.h>
@@ -94,11 +94,11 @@ int H3_EXPORT(areNeighborCells)(H3Index origin, H3Index destination) {
 }
 
 /**
- * Returns a unidirectional edge H3 index based on the provided origin and
+ * Returns a directed edge H3 index based on the provided origin and
  * destination
  * @param origin The origin H3 hexagon index
  * @param destination The destination H3 hexagon index
- * @return The unidirectional edge H3Index, or H3_NULL on failure.
+ * @return The directed edge H3Index, or H3_NULL on failure.
  */
 H3Index H3_EXPORT(cellsToDirectedEdge)(H3Index origin, H3Index destination) {
     // Determine the IJK direction from the origin to the destination
@@ -118,7 +118,7 @@ H3Index H3_EXPORT(cellsToDirectedEdge)(H3Index origin, H3Index destination) {
 }
 
 /**
- * Returns the origin hexagon from the unidirectional edge H3Index
+ * Returns the origin hexagon from the directed edge H3Index
  * @param edge The edge H3 index
  * @return The origin H3 hexagon index, or H3_NULL on failure
  */
@@ -133,7 +133,7 @@ H3Index H3_EXPORT(getDirectedEdgeOrigin)(H3Index edge) {
 }
 
 /**
- * Returns the destination hexagon from the unidirectional edge H3Index
+ * Returns the destination hexagon from the directed edge H3Index
  * @param edge The edge H3 index
  * @return The destination H3 hexagon index, or H3_NULL on failure
  */
@@ -173,7 +173,7 @@ int H3_EXPORT(isValidDirectedEdge)(H3Index edge) {
 
 /**
  * Returns the origin, destination pair of hexagon IDs for the given edge ID
- * @param edge The unidirectional edge H3Index
+ * @param edge The directed edge H3Index
  * @param originDestination Pointer to memory to store origin and destination
  * IDs
  */
@@ -183,7 +183,7 @@ void H3_EXPORT(directedEdgeToCells)(H3Index edge, H3Index* originDestination) {
 }
 
 /**
- * Provides all of the unidirectional edges from the current H3Index.
+ * Provides all of the directed edges from the current H3Index.
  * @param origin The origin hexagon H3Index to find edges for.
  * @param edges The memory to store all of the edges inside.
  */
@@ -206,8 +206,8 @@ void H3_EXPORT(originToDirectedEdges)(H3Index origin, H3Index* edges) {
 }
 
 /**
- * Provides the coordinates defining the unidirectional edge.
- * @param edge The unidirectional edge H3Index
+ * Provides the coordinates defining the directed edge.
+ * @param edge The directed edge H3Index
  * @param gb The geoboundary object to store the edge coordinates.
  */
 void H3_EXPORT(directedEdgeToBoundary)(H3Index edge, GeoBoundary* gb) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017, 2019 Uber Technologies, Inc.
+ * Copyright 2016-2017, 2019-2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,22 +49,22 @@ void doCell(H3Index h, bool verboseMode) {
     int h3BaseCell = H3_GET_BASE_CELL(h);
     if (verboseMode) {
         const char* modes[] = {
-            "RESERVED",             // 0
-            "Hexagon",              // 1
-            "Unidirectional Edge",  // 2
-            "INVALID",              // 3
-            "INVALID",              // 4
-            "INVALID",              // 5
-            "INVALID",              // 6
-            "INVALID",              // 7
-            "INVALID",              // 8
-            "INVALID",              // 9
-            "INVALID",              // 10
-            "INVALID",              // 11
-            "INVALID",              // 12
-            "INVALID",              // 13
-            "INVALID",              // 14
-            "INVALID",              // 15
+            "RESERVED",       // 0
+            "Hexagon",        // 1
+            "Directed Edge",  // 2
+            "INVALID",        // 3
+            "INVALID",        // 4
+            "INVALID",        // 5
+            "INVALID",        // 6
+            "INVALID",        // 7
+            "INVALID",        // 8
+            "INVALID",        // 9
+            "INVALID",        // 10
+            "INVALID",        // 11
+            "INVALID",        // 12
+            "INVALID",        // 13
+            "INVALID",        // 14
+            "INVALID",        // 15
         };
         printf("╔════════════╗\n");
         char hStr[BUFF_SIZE];
