@@ -16,7 +16,7 @@
 /** @file
  * @brief tests H3 distance function using tests over a large number of indexes.
  *
- *  usage: `testH3DistanceExhaustive`
+ *  usage: `testGridDistanceExhaustive`
  */
 
 #include <stdio.h>

@@ -16,7 +16,7 @@
 /** @file
  * @brief tests H3 distance function.
  *
- *  usage: `testH3Distance`
+ *  usage: `testGridDistance`
  */
 
 #include <stdio.h>

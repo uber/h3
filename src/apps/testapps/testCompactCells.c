@@ -110,7 +110,7 @@ SUITE(compactCells) {
         free(decompressed);
     }
 
-    TEST(uncompactCellsable) {
+    TEST(uncompactable) {
         int hexCount = 3;
         int expectedCompactCount = 3;
 

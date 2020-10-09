@@ -161,25 +161,25 @@ set(OTHER_SOURCE_FILES
     src/apps/filters/kRing.c
     src/apps/filters/hexRange.c
     src/apps/testapps/testVertexGraph.c
-    src/apps/testapps/testCompact.c
-    src/apps/testapps/testPolyfill.c
-    src/apps/testapps/testPolyfillReported.c
+    src/apps/testapps/testCompactCells.c
+    src/apps/testapps/testPolygonToCells.c
+    src/apps/testapps/testPolygonToCellsReported.c
     src/apps/testapps/testPentagonIndexes.c
-    src/apps/testapps/testKRing.c
-    src/apps/testapps/testH3ToGeoBoundary.c
-    src/apps/testapps/testH3ToParent.c
+    src/apps/testapps/testGridDisk.c
+    src/apps/testapps/testCellToBoundary.c
+    src/apps/testapps/testCellToParent.c
     src/apps/testapps/testH3Index.c
     src/apps/testapps/mkRandGeoBoundary.c
-    src/apps/testapps/testGeoToH3.c
+    src/apps/testapps/testPointToCell.c
     src/apps/testapps/testH3NeighborRotations.c
-    src/apps/testapps/testMaxH3ToChildrenSize.c
-    src/apps/testapps/testHexRanges.c
-    src/apps/testapps/testH3ToGeo.c
-    src/apps/testapps/testH3ToCenterChild.c
-    src/apps/testapps/testH3ToChildren.c
-    src/apps/testapps/testH3GetFaces.c
-    src/apps/testapps/testGeoCoord.c
-    src/apps/testapps/testHexRing.c
+    src/apps/testapps/testMaxCellToChildrenSize.c
+    src/apps/testapps/testGridDisksUnsafe.c
+    src/apps/testapps/testCellToPoint.c
+    src/apps/testapps/testCellToCenterChild.c
+    src/apps/testapps/testCellToChildren.c
+    src/apps/testapps/testGetIcosahedronFaces.c
+    src/apps/testapps/testGeoPoint.c
+    src/apps/testapps/testGridRingUnsafe.c
     src/apps/testapps/testH3SetToVertexGraph.c
     src/apps/testapps/testBBox.c
     src/apps/testapps/testVertex.c
@@ -187,18 +187,18 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testPolygon.c
     src/apps/testapps/testVec2d.c
     src/apps/testapps/testVec3d.c
-    src/apps/testapps/testH3UniEdge.c
-    src/apps/testapps/testH3UniEdgeExhaustive.c
+    src/apps/testapps/testDirectedEdge.c
+    src/apps/testapps/testDirectedEdgeExhaustive.c
     src/apps/testapps/testLinkedGeo.c
     src/apps/testapps/mkRandGeo.c
     src/apps/testapps/testH3Api.c
     src/apps/testapps/testH3SetToLinkedGeo.c
     src/apps/testapps/testH3ToLocalIj.c
     src/apps/testapps/testH3ToLocalIjExhaustive.c
-    src/apps/testapps/testH3Distance.c
-    src/apps/testapps/testH3DistanceExhaustive.c
-    src/apps/testapps/testH3Line.c
-    src/apps/testapps/testH3LineExhaustive.c
+    src/apps/testapps/testGridDistance.c
+    src/apps/testapps/testGridDistanceExhaustive.c
+    src/apps/testapps/testGridPathCells.c
+    src/apps/testapps/testGridPathCellsExhaustive.c
     src/apps/testapps/testH3CellArea.c
     src/apps/testapps/testH3CellAreaExhaustive.c
     src/apps/testapps/testCoordIj.c
@@ -553,51 +553,51 @@ if(H3_IS_ROOT_PROJECT AND BUILD_TESTING)
     # Add each individual test
     file(GLOB all_centers tests/inputfiles/bc*centers.txt)
     foreach(file ${all_centers})
-        add_h3_test_with_file(testH3ToGeo src/apps/testapps/testH3ToGeo.c ${file})
+        add_h3_test_with_file(testPointToCell src/apps/testapps/testPointToCell.c ${file})
     endforeach()
 
     file(GLOB all_ic_files tests/inputfiles/res*ic.txt)
     foreach(file ${all_ic_files})
-        add_h3_test_with_file(testH3ToGeo src/apps/testapps/testH3ToGeo.c ${file})
+        add_h3_test_with_file(testCellToPoint src/apps/testapps/testCellToPoint.c ${file})
     endforeach()
 
     file(GLOB all_centers tests/inputfiles/rand*centers.txt)
     foreach(file ${all_centers})
-        add_h3_test_with_file(testGeoToH3 src/apps/testapps/testGeoToH3.c ${file})
+        add_h3_test_with_file(testPointToCell src/apps/testapps/testPointToCell.c ${file})
     endforeach()
 
     file(GLOB all_cells tests/inputfiles/*cells.txt)
     foreach(file ${all_cells})
-        add_h3_test_with_file(testH3ToGeoBoundary src/apps/testapps/testH3ToGeoBoundary.c ${file})
+        add_h3_test_with_file(testCellToBoundary src/apps/testapps/testCellToBoundary.c ${file})
     endforeach()
 
-    add_h3_test(testCompact src/apps/testapps/testCompact.c)
-    add_h3_test(testKRing src/apps/testapps/testKRing.c)
-    add_h3_test(testHexRing src/apps/testapps/testHexRing.c)
-    add_h3_test(testHexRanges src/apps/testapps/testHexRanges.c)
-    add_h3_test(testH3ToParent src/apps/testapps/testH3ToParent.c)
-    add_h3_test(testH3ToCenterChild src/apps/testapps/testH3ToCenterChild.c)
-    add_h3_test(testH3ToChildren src/apps/testapps/testH3ToChildren.c)
-    add_h3_test(testH3GetFaces src/apps/testapps/testH3GetFaces.c)
-    add_h3_test(testMaxH3ToChildrenSize src/apps/testapps/testMaxH3ToChildrenSize.c)
+    add_h3_test(testCompactCells src/apps/testapps/testCompactCells.c)
+    add_h3_test(testGridDisk src/apps/testapps/testGridDisk.c)
+    add_h3_test(testGridRingUnsafe src/apps/testapps/testGridRingUnsafe.c)
+    add_h3_test(testGridDisksUnsafe src/apps/testapps/testGridDisksUnsafe.c)
+    add_h3_test(testCellToParent src/apps/testapps/testCellToParent.c)
+    add_h3_test(testCellToCenterChild src/apps/testapps/testCellToCenterChild.c)
+    add_h3_test(testCellToChildren src/apps/testapps/testCellToChildren.c)
+    add_h3_test(testGetIcosahedronFaces src/apps/testapps/testGetIcosahedronFaces.c)
+    add_h3_test(testMaxCellToChildrenSize src/apps/testapps/testMaxCellToChildrenSize.c)
     add_h3_test(testH3Index src/apps/testapps/testH3Index.c)
     add_h3_test(testH3Api src/apps/testapps/testH3Api.c)
     add_h3_test(testH3SetToLinkedGeo src/apps/testapps/testH3SetToLinkedGeo.c)
     add_h3_test(testH3SetToVertexGraph src/apps/testapps/testH3SetToVertexGraph.c)
     add_h3_test(testLinkedGeo src/apps/testapps/testLinkedGeo.c)
-    add_h3_test(testPolyfill src/apps/testapps/testPolyfill.c)
-    add_h3_test(testPolyfillReported src/apps/testapps/testPolyfillReported.c)
+    add_h3_test(testPolygonToCells src/apps/testapps/testPolygonToCells.c)
+    add_h3_test(testPolygonToCellsReported src/apps/testapps/testPolygonToCellsReported.c)
     add_h3_test(testVertexGraph src/apps/testapps/testVertexGraph.c)
-    add_h3_test(testH3UniEdge src/apps/testapps/testH3UniEdge.c)
-    add_h3_test(testGeoCoord src/apps/testapps/testGeoCoord.c)
+    add_h3_test(testDirectedEdge src/apps/testapps/testDirectedEdge.c)
+    add_h3_test(testGeoPoint src/apps/testapps/testGeoPoint.c)
     add_h3_test(testBBox src/apps/testapps/testBBox.c)
     add_h3_test(testVertex src/apps/testapps/testVertex.c)
     add_h3_test(testPolygon src/apps/testapps/testPolygon.c)
     add_h3_test(testVec2d src/apps/testapps/testVec2d.c)
     add_h3_test(testVec3d src/apps/testapps/testVec3d.c)
     add_h3_test(testH3ToLocalIj src/apps/testapps/testH3ToLocalIj.c)
-    add_h3_test(testH3Distance src/apps/testapps/testH3Distance.c)
-    add_h3_test(testH3Line src/apps/testapps/testH3Line.c)
+    add_h3_test(testGridDistance src/apps/testapps/testGridDistance.c)
+    add_h3_test(testGridPathCells src/apps/testapps/testGridPathCells.c)
     add_h3_test(testH3CellArea src/apps/testapps/testH3CellArea.c)
     add_h3_test(testCoordIj src/apps/testapps/testCoordIj.c)
     add_h3_test(testCoordIjk src/apps/testapps/testCoordIjk.c)
@@ -610,11 +610,11 @@ if(H3_IS_ROOT_PROJECT AND BUILD_TESTING)
 
     # The "Exhaustive" part of the test name is used by the test-fast to exclude these files.
     # test-fast exists so that Travis CI can run Valgrind on tests without taking a very long time.
-    add_h3_test(testH3UniEdgeExhaustive src/apps/testapps/testH3UniEdgeExhaustive.c)
+    add_h3_test(testDirectedEdgeExhaustive src/apps/testapps/testDirectedEdgeExhaustive.c)
     add_h3_test(testVertexExhaustive src/apps/testapps/testVertexExhaustive.c)
     add_h3_test(testH3ToLocalIjExhaustive src/apps/testapps/testH3ToLocalIjExhaustive.c)
-    add_h3_test(testH3LineExhaustive src/apps/testapps/testH3LineExhaustive.c)
-    add_h3_test(testH3DistanceExhaustive src/apps/testapps/testH3DistanceExhaustive.c)
+    add_h3_test(testGridPathCellsExhaustive src/apps/testapps/testGridPathCellsExhaustive.c)
+    add_h3_test(testGridDistanceExhaustive src/apps/testapps/testGridDistanceExhaustive.c)
     add_h3_test(testH3CellAreaExhaustive src/apps/testapps/testH3CellAreaExhaustive.c)
 
     if(BUILD_ALLOC_TESTS)

@@ -16,7 +16,7 @@
 /** @file
  * @brief tests H3 function `cellToBoundary`
  *
- *  usage: `testH3ToCellBoundary`
+ *  usage: `testCellToBoundary`
  *
  *  The program reads H3 indexes and associated cell boundaries from
  *  stdin until EOF is encountered. For each input cell, the program
