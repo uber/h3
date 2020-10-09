@@ -209,8 +209,10 @@ SUITE(geoCoord) {
 
     TEST(doubleConstants) {
         // Simple checks for ordering of values
-        testDecreasingFunction(H3_EXPORT(hexAreaKm2), "hexAreaKm2 ordering");
-        testDecreasingFunction(H3_EXPORT(hexAreaM2), "hexAreaM2 ordering");
+        testDecreasingFunction(H3_EXPORT(getHexagonAreaAvgKm2),
+                               "getHexagonAreaAvgKm2 ordering");
+        testDecreasingFunction(H3_EXPORT(getHexagonAreaAvgM2),
+                               "getHexagonAreaAvgM2 ordering");
         testDecreasingFunction(H3_EXPORT(edgeLengthKm),
                                "edgeLengthKm ordering");
         testDecreasingFunction(H3_EXPORT(edgeLengthM), "edgeLengthM ordering");
