@@ -105,9 +105,9 @@ typedef struct {
  *  @brief Simplified core of GeoJSON Polygon coordinates definition
  */
 typedef struct {
-    GeoLoop geofence;  ///< exterior boundary of the polygon
-    int numHoles;      ///< number of elements in the array pointed to by holes
-    GeoLoop *holes;    ///< interior boundaries (holes) in the polygon
+    GeoLoop geoloop;  ///< exterior boundary of the polygon
+    int numHoles;     ///< number of elements in the array pointed to by holes
+    GeoLoop *holes;   ///< interior boundaries (holes) in the polygon
 } GeoPolygon;
 
 /** @struct GeoMultiPolygon
@@ -232,10 +232,10 @@ DECLSPEC int H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index *out);
  * Functions for polygonToCells
  * @{
  */
-/** @brief maximum number of hexagons that could be in the geofence */
+/** @brief maximum number of hexagons that could be in the geoloop */
 DECLSPEC int H3_EXPORT(maxPolygonToCellsSize)(const GeoPolygon *geoPolygon, int res);
 
-/** @brief hexagons within the given geofence */
+/** @brief hexagons within the given geopolygon */
 DECLSPEC void H3_EXPORT(polygonToCells)(const GeoPolygon *geoPolygon, int res,
                                H3Index *out);
 /** @} */

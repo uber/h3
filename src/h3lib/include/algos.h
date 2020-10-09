@@ -43,9 +43,9 @@ void h3SetToVertexGraph(const H3Index* h3Set, const int numHexes,
 // Create a LinkedGeoPolygon from a vertex graph
 void _vertexGraphToLinkedGeo(VertexGraph* graph, LinkedGeoPolygon* out);
 
-// Internal function for polygonToCells that traces a geofence with hexagons of
+// Internal function for polygonToCells that traces a geoloop with hexagons of
 // a specific size
-int _getEdgeHexagons(const GeoLoop* geofence, int numHexagons, int res,
+int _getEdgeHexagons(const GeoLoop* geoloop, int numHexagons, int res,
                      int* numSearchHexes, H3Index* search, H3Index* found);
 
 // The polygonToCells algorithm. Separated out because it can theoretically fail

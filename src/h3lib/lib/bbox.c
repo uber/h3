@@ -110,7 +110,7 @@ int bboxHexEstimate(const BBox* bbox, int res) {
     double pentagonAreaKm2 =
         0.8 * (2.59807621135 * pentagonRadiusKm * pentagonRadiusKm);
 
-    // Then get the area of the bounding box of the geofence in question
+    // Then get the area of the bounding box of the geoloop in question
     GeoPoint p1, p2;
     p1.lat = bbox->north;
     p1.lon = bbox->east;
