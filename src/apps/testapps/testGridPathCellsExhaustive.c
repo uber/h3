@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 /** @file
- * @brief tests H3 line function using tests over a large number of indexes.
+ * @brief tests grid path cells function using tests over a large number of
+ * indexes.
  *
- *  usage: `testH3Line`
+ *  usage: `testGridPathCellsExhaustive`
  */
 
 #include <stdio.h>

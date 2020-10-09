@@ -91,7 +91,7 @@ static void fillIndex_assertions(H3Index h) {
         int cellToChildrenCount = countActualHexagons(children, childrenSize);
 
         t_assert(polygonToCellsCount == cellToChildrenCount,
-                 "Polyfill count matches cellToChildren count");
+                 "PolygonToCells count matches cellToChildren count");
 
         for (int i = 0; i < childrenSize; i++) {
             bool found = false;

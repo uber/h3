@@ -363,7 +363,7 @@ H3Index h3NeighborRotations(H3Index origin, Direction dir, int* rotations) {
                         newBaseCell, baseCellData[oldBaseCell].homeFijk.face)) {
                     out = _h3Rotate60cw(out);
                 } else {
-                    // See cwOffsetPent in testKRing.c for why this is
+                    // See cwOffsetPent in testGridDisk.c for why this is
                     // unreachable.
                     out = _h3Rotate60ccw(out);  // LCOV_EXCL_LINE
                 }

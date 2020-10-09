@@ -46,7 +46,7 @@ static void testDecreasingFunction(double (*function)(int),
     }
 }
 
-SUITE(geoCoord) {
+SUITE(geoPoint) {
     TEST(radsToDegs) {
         double originalRads = 1;
         double degs = H3_EXPORT(radsToDegs)(originalRads);

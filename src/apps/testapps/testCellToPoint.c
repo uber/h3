@@ -16,7 +16,7 @@
 /** @file
  * @brief tests H3 function `cellToPoint`
  *
- *  usage: `testH3ToGeo`
+ *  usage: `testCellToPoint`
  *
  *  The program reads lines containing H3 indexes and lat/lon center
  *  point pairs from stdin until EOF is encountered. For each input line,

@@ -16,7 +16,7 @@
 /** @file
  * @brief tests H3 function `gridDisk` and `gridDiskDistances`
  *
- *  usage: `testGridDiskCells`
+ *  usage: `testGridDisk`
  */
 
 #include <stdlib.h>

@@ -17,7 +17,7 @@
  * @brief tests H3 directed edge functions using tests over a large number
  *        of indexes.
  *
- *  usage: `testH3UniEdgeExhaustive`
+ *  usage: `testDirectedEdgeExhaustive`
  */
 
 #include <stdio.h>
@@ -31,7 +31,7 @@
 #include "test.h"
 #include "utility.h"
 
-static void h3UniEdge_correctness_assertions(H3Index h3) {
+static void directedEdge_correctness_assertions(H3Index h3) {
     H3Index edges[6] = {H3_NULL};
     int pentagon = H3_EXPORT(isPentagon)(h3);
     H3_EXPORT(originToDirectedEdges)(h3, edges);
@@ -53,7 +53,7 @@ static void h3UniEdge_correctness_assertions(H3Index h3) {
     }
 }
 
-static void h3UniEdge_boundary_assertions(H3Index h3) {
+static void directedEdge_boundary_assertions(H3Index h3) {
     H3Index edges[6] = {H3_NULL};
     H3_EXPORT(originToDirectedEdges)(h3, edges);
     H3Index destination;
@@ -81,28 +81,28 @@ static void h3UniEdge_boundary_assertions(H3Index h3) {
     }
 }
 
-SUITE(h3UniEdge) {
-    TEST(h3UniEdge_correctness) {
-        iterateAllIndexesAtRes(0, h3UniEdge_correctness_assertions);
-        iterateAllIndexesAtRes(1, h3UniEdge_correctness_assertions);
-        iterateAllIndexesAtRes(2, h3UniEdge_correctness_assertions);
-        iterateAllIndexesAtRes(3, h3UniEdge_correctness_assertions);
-        iterateAllIndexesAtRes(4, h3UniEdge_correctness_assertions);
+SUITE(directedEdge) {
+    TEST(directedEdge_correctness) {
+        iterateAllIndexesAtRes(0, directedEdge_correctness_assertions);
+        iterateAllIndexesAtRes(1, directedEdge_correctness_assertions);
+        iterateAllIndexesAtRes(2, directedEdge_correctness_assertions);
+        iterateAllIndexesAtRes(3, directedEdge_correctness_assertions);
+        iterateAllIndexesAtRes(4, directedEdge_correctness_assertions);
     }
 
-    TEST(h3UniEdge_boundary) {
-        iterateAllIndexesAtRes(0, h3UniEdge_boundary_assertions);
-        iterateAllIndexesAtRes(1, h3UniEdge_boundary_assertions);
-        iterateAllIndexesAtRes(2, h3UniEdge_boundary_assertions);
-        iterateAllIndexesAtRes(3, h3UniEdge_boundary_assertions);
-        iterateAllIndexesAtRes(4, h3UniEdge_boundary_assertions);
+    TEST(directedEdge_boundary) {
+        iterateAllIndexesAtRes(0, directedEdge_boundary_assertions);
+        iterateAllIndexesAtRes(1, directedEdge_boundary_assertions);
+        iterateAllIndexesAtRes(2, directedEdge_boundary_assertions);
+        iterateAllIndexesAtRes(3, directedEdge_boundary_assertions);
+        iterateAllIndexesAtRes(4, directedEdge_boundary_assertions);
         // Res 5: normal base cell
-        iterateBaseCellIndexesAtRes(5, h3UniEdge_boundary_assertions, 0);
+        iterateBaseCellIndexesAtRes(5, directedEdge_boundary_assertions, 0);
         // Res 5: pentagon base cell
-        iterateBaseCellIndexesAtRes(5, h3UniEdge_boundary_assertions, 14);
+        iterateBaseCellIndexesAtRes(5, directedEdge_boundary_assertions, 14);
         // Res 5: polar pentagon base cell
-        iterateBaseCellIndexesAtRes(5, h3UniEdge_boundary_assertions, 117);
+        iterateBaseCellIndexesAtRes(5, directedEdge_boundary_assertions, 117);
         // Res 6: Test one pentagon just to check for new edge cases
-        iterateBaseCellIndexesAtRes(6, h3UniEdge_boundary_assertions, 14);
+        iterateBaseCellIndexesAtRes(6, directedEdge_boundary_assertions, 14);
     }
 }

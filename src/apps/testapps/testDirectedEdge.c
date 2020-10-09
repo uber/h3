@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** @file testH3UniEdge.c
+/** @file testDirectedEdge.c
  * @brief Tests functions for manipulating directed edge H3Indexes
  *
- * usage: `testH3UniEdge`
+ * usage: `testDirectedEdge`
  */
 
 #include <stdlib.h>
@@ -30,7 +30,7 @@
 // Fixtures
 static GeoPoint sfGeo = {0.659966917655, -2.1364398519396};
 
-SUITE(h3UniEdge) {
+SUITE(directedEdge) {
     TEST(areNeighborCells) {
         H3Index sf = H3_EXPORT(pointToCell)(&sfGeo, 9);
         H3Index ring[7] = {0};
