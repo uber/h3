@@ -325,13 +325,13 @@ DECLSPEC double H3_EXPORT(getHexagonEdgeLengthAvgM)(int res);
  * Functions for exactEdgeLength
  * @{
  */
-/** @brief exact length for a specific unidirectional edge in radians*/
+/** @brief exact length for a specific directed edge in radians*/
 double H3_EXPORT(exactEdgeLengthRads)(H3Index edge);
 
-/** @brief exact length for a specific unidirectional edge in kilometers*/
+/** @brief exact length for a specific directed edge in kilometers*/
 double H3_EXPORT(exactEdgeLengthKm)(H3Index edge);
 
-/** @brief exact length for a specific unidirectional edge in meters*/
+/** @brief exact length for a specific directed edge in meters*/
 double H3_EXPORT(exactEdgeLengthM)(H3Index edge);
 /** @} */
 
@@ -411,7 +411,7 @@ DECLSPEC void H3_EXPORT(getPentagons)(int res, H3Index *out);
  * @{
  */
 /** @brief returns the resolution of the provided H3 index
- * Works on both cells and unidirectional edges. */
+ * Works on both cells and directed edges. */
 DECLSPEC int H3_EXPORT(getResolution)(H3Index h);
 /** @} */
 
@@ -447,7 +447,7 @@ DECLSPEC void H3_EXPORT(h3ToString)(H3Index h, char *str, size_t sz);
  * @{
  */
 /** @brief confirms if an H3Index is a valid cell (hexagon or pentagon)
- * In particular, returns 0 (False) for H3 unidirectional edges or invalid data
+ * In particular, returns 0 (False) for H3 directed edges or invalid data
  */
 DECLSPEC int H3_EXPORT(isValidCell)(H3Index h);
 /** @} */
@@ -545,7 +545,7 @@ DECLSPEC int H3_EXPORT(areNeighborCells)(H3Index origin, H3Index destination);
  * Functions for cellsToDirectedEdge
  * @{
  */
-/** @brief returns the unidirectional edge H3Index for the specified origin and
+/** @brief returns the directed edge H3Index for the specified origin and
  * destination */
 DECLSPEC H3Index H3_EXPORT(cellsToDirectedEdge)(H3Index origin, H3Index destination);
 /** @} */

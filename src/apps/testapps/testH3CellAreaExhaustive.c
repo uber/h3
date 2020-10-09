@@ -36,7 +36,7 @@
  *     pointDistKm
  *     pointDistM
  *
- * @param  edge  H3 unidirectional edge denoting neighboring cells
+ * @param  edge  H3 directed edge denoting neighboring cells
  */
 static void haversine_assert(H3Index edge) {
     GeoCoord a, b;
@@ -127,17 +127,17 @@ static void earth_area_test(int res, double (*cell_area)(H3Index),
 
 SUITE(h3CellAreaExhaustive) {
     TEST(haversine_distances) {
-        iterateAllUnidirectionalEdgesAtRes(0, haversine_assert);
-        iterateAllUnidirectionalEdgesAtRes(1, haversine_assert);
-        iterateAllUnidirectionalEdgesAtRes(2, haversine_assert);
-        iterateAllUnidirectionalEdgesAtRes(3, haversine_assert);
+        iterateAllDirectedEdgesAtRes(0, haversine_assert);
+        iterateAllDirectedEdgesAtRes(1, haversine_assert);
+        iterateAllDirectedEdgesAtRes(2, haversine_assert);
+        iterateAllDirectedEdgesAtRes(3, haversine_assert);
     }
 
     TEST(edge_length) {
-        iterateAllUnidirectionalEdgesAtRes(0, edge_length_assert);
-        iterateAllUnidirectionalEdgesAtRes(1, edge_length_assert);
-        iterateAllUnidirectionalEdgesAtRes(2, edge_length_assert);
-        iterateAllUnidirectionalEdgesAtRes(3, edge_length_assert);
+        iterateAllDirectedEdgesAtRes(0, edge_length_assert);
+        iterateAllDirectedEdgesAtRes(1, edge_length_assert);
+        iterateAllDirectedEdgesAtRes(2, edge_length_assert);
+        iterateAllDirectedEdgesAtRes(3, edge_length_assert);
     }
 
     TEST(cell_area_positive) {

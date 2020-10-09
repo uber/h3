@@ -55,7 +55,7 @@ void iterateAllIndexesAtResPartial(int res, void (*callback)(H3Index),
                                    int maxBaseCell);
 void iterateBaseCellIndexesAtRes(int res, void (*callback)(H3Index),
                                  int baseCell);
-void iterateAllUnidirectionalEdgesAtRes(int res, void (*callback)(H3Index));
+void iterateAllDirectedEdgesAtRes(int res, void (*callback)(H3Index));
 double mapSumAllCells_double(int res, double (*callback)(H3Index));
 size_t packNonzeros(H3Index* a, size_t n);
 

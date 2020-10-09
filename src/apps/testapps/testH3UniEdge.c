@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /** @file testH3UniEdge.c
- * @brief Tests functions for manipulating unidirectional edge H3Indexes
+ * @brief Tests functions for manipulating directed edge H3Indexes
  *
  * usage: `testH3UniEdge`
  */
@@ -202,7 +202,7 @@ SUITE(h3UniEdge) {
         }
     }
 
-    TEST(getH3UnidirectionalEdgesFromPentagon) {
+    TEST(getH3DirectedEdgesFromPentagon) {
         H3Index pentagon = 0x821c07fffffffff;
         H3Index edges[6] = {0};
         H3_EXPORT(originToDirectedEdges)(pentagon, edges);

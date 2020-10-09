@@ -216,9 +216,9 @@ double mapSumAllCells_double(int res, double (*callback)(H3Index)) {
 }
 
 /**
- * Apply callback for every unidirectional edge at the given resolution.
+ * Apply callback for every directed edge at the given resolution.
  */
-void iterateAllUnidirectionalEdgesAtRes(int res, void (*callback)(H3Index)) {
+void iterateAllDirectedEdgesAtRes(int res, void (*callback)(H3Index)) {
     H3Index* cells = getCellsAtRes(res);
     int N = H3_EXPORT(getNumCells)(res);
 
