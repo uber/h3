@@ -30,7 +30,7 @@ H3Index uncompactCellsableWithZero[] = {0x89283470803ffff, 0x8928347081bffff, 0,
 SUITE(compactCells) {
     TEST(roundtrip) {
         int k = 9;
-        int hexCount = H3_EXPORT(maxKringSize)(k);
+        int hexCount = H3_EXPORT(maxGridDiskSize)(k);
         int expectedCompactCount = 73;
 
         // Generate a set of hexagons to compactCells

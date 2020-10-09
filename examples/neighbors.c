@@ -27,7 +27,7 @@ int main(int argc, char* argv[]) {
     // Distance away from the origin to find:
     int k = 2;
 
-    int maxNeighboring = maxKringSize(k);
+    int maxNeighboring = maxGridDiskSize(k);
     H3Index* neighboring = calloc(maxNeighboring, sizeof(H3Index));
     gridDisk(indexed, k, neighboring);
 

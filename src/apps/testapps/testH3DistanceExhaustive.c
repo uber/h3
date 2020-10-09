@@ -43,7 +43,7 @@ static void gridDistance_gridDisk_assertions(H3Index h3) {
     t_assert(r <= 5, "resolution supported by test function (gridDisk)");
     int maxK = MAX_DISTANCES[r];
 
-    int sz = H3_EXPORT(maxKringSize)(maxK);
+    int sz = H3_EXPORT(maxGridDiskSize)(maxK);
     H3Index *neighbors = calloc(sz, sizeof(H3Index));
     int *distances = calloc(sz, sizeof(int));
 

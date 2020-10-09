@@ -29,7 +29,7 @@
 
 static void gridDisk_equals_gridDiskDistancesSafe_assertions(H3Index h3) {
     for (int k = 0; k < 3; k++) {
-        int kSz = H3_EXPORT(maxKringSize)(k);
+        int kSz = H3_EXPORT(maxGridDiskSize)(k);
 
         H3Index *neighbors = calloc(kSz, sizeof(H3Index));
         int *distances = calloc(kSz, sizeof(int));

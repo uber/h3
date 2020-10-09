@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 /** @file
- * @brief tests H3 distance function using tests over a large number of indexes.
+ * @brief tests H3 line function using tests over a large number of indexes.
  *
- *  usage: `testH3Distance`
+ *  usage: `testH3Line`
  */
 
 #include <stdio.h>
@@ -79,7 +79,7 @@ static void gridPathCells_gridDisk_assertions(H3Index h3) {
     t_assert(r <= 5, "resolution supported by test function (gridDisk)");
     int maxK = MAX_DISTANCES[r];
 
-    int sz = H3_EXPORT(maxKringSize)(maxK);
+    int sz = H3_EXPORT(maxGridDiskSize)(maxK);
 
     if (H3_EXPORT(isPentagon)(h3)) {
         return;

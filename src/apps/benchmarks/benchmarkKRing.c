@@ -23,7 +23,7 @@ H3Index pentagon = 0x89080000003ffff;
 
 BEGIN_BENCHMARKS();
 
-H3Index* out = malloc(H3_EXPORT(maxKringSize)(40) * sizeof(H3Index));
+H3Index* out = malloc(H3_EXPORT(maxGridDiskSize)(40) * sizeof(H3Index));
 
 BENCHMARK(gridDisk10, 10000, { H3_EXPORT(gridDisk)(hex, 10, out); });
 BENCHMARK(gridDisk20, 10000, { H3_EXPORT(gridDisk)(hex, 20, out); });
