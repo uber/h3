@@ -590,15 +590,14 @@ DECLSPEC H3Index
 DECLSPEC void H3_EXPORT(directedEdgeToCells)(H3Index edge, H3Index *originDestination);
 /** @} */
 
-/** @defgroup getH3UnidirectionalEdgesFromHexagon \
- * getH3UnidirectionalEdgesFromHexagon
- * Functions for getH3UnidirectionalEdgesFromHexagon
+/** @defgroup originToDirectedEdges \
+ * originToDirectedEdges
+ * Functions for originToDirectedEdges
  * @{
  */
 /** @brief Returns the 6 (or 5 for pentagons) edges associated with the H3Index
  */
-DECLSPEC void H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(H3Index origin,
-                                                             H3Index *edges);
+DECLSPEC void H3_EXPORT(originToDirectedEdges)(H3Index origin, H3Index *edges);
 /** @} */
 
 /** @defgroup getH3UnidirectionalEdgeBoundary getH3UnidirectionalEdgeBoundary

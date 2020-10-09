@@ -190,8 +190,7 @@ void H3_EXPORT(directedEdgeToCells)(H3Index edge, H3Index* originDestination) {
  * @param origin The origin hexagon H3Index to find edges for.
  * @param edges The memory to store all of the edges inside.
  */
-void H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(H3Index origin,
-                                                    H3Index* edges) {
+void H3_EXPORT(originToDirectedEdges)(H3Index origin, H3Index* edges) {
     // Determine if the origin is a pentagon and special treatment needed.
     int pentagon = H3_EXPORT(isPentagon)(origin);
 
