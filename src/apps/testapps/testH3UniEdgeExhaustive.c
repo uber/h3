@@ -34,7 +34,7 @@
 static void h3UniEdge_correctness_assertions(H3Index h3) {
     H3Index edges[6] = {H3_NULL};
     int pentagon = H3_EXPORT(isPentagon)(h3);
-    H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(h3, edges);
+    H3_EXPORT(originToDirectedEdges)(h3, edges);
     H3Index destination;
 
     for (int i = 0; i < 6; i++) {
@@ -57,7 +57,7 @@ static void h3UniEdge_correctness_assertions(H3Index h3) {
 
 static void h3UniEdge_boundary_assertions(H3Index h3) {
     H3Index edges[6] = {H3_NULL};
-    H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(h3, edges);
+    H3_EXPORT(originToDirectedEdges)(h3, edges);
     H3Index destination;
     H3Index revEdge;
     GeoBoundary edgeBoundary;

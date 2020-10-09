@@ -225,7 +225,7 @@ void iterateAllUnidirectionalEdgesAtRes(int res, void (*callback)(H3Index)) {
     for (int i = 0; i < N; i++) {
         H3Index edges[6] = {H3_NULL};
         int pentagon = H3_EXPORT(isPentagon)(cells[i]);
-        H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(cells[i], edges);
+        H3_EXPORT(originToDirectedEdges)(cells[i], edges);
 
         for (int j = 0; j < 6; j++) {
             if (pentagon && j == 0) continue;

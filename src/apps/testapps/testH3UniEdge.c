@@ -190,10 +190,10 @@ SUITE(h3UniEdge) {
                  "high bit set edge does not validate");
     }
 
-    TEST(getH3UnidirectionalEdgesFromHexagon) {
+    TEST(originToDirectedEdges) {
         H3Index sf = H3_EXPORT(pointToCell)(&sfGeo, 9);
         H3Index edges[6] = {0};
-        H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(sf, edges);
+        H3_EXPORT(originToDirectedEdges)(sf, edges);
 
         for (int i = 0; i < 6; i++) {
             t_assert(H3_EXPORT(isValidDirectedEdge)(edges[i]) == 1,
@@ -211,7 +211,7 @@ SUITE(h3UniEdge) {
     TEST(getH3UnidirectionalEdgesFromPentagon) {
         H3Index pentagon = 0x821c07fffffffff;
         H3Index edges[6] = {0};
-        H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(pentagon, edges);
+        H3_EXPORT(originToDirectedEdges)(pentagon, edges);
 
         int missingEdgeCount = 0;
         for (int i = 0; i < 6; i++) {
@@ -247,7 +247,7 @@ SUITE(h3UniEdge) {
         for (int res = 0; res < MAX_H3_RES; res++) {
             sf = H3_EXPORT(pointToCell)(&sfGeo, res);
             H3_EXPORT(h3ToGeoBoundary)(sf, &boundary);
-            H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(sf, edges);
+            H3_EXPORT(originToDirectedEdges)(sf, edges);
 
             for (int i = 0; i < 6; i++) {
                 H3_EXPORT(getH3UnidirectionalEdgeBoundary)
@@ -276,7 +276,7 @@ SUITE(h3UniEdge) {
         for (int res = 1; res < MAX_H3_RES; res += 2) {
             setH3Index(&pentagon, res, 24, 0);
             H3_EXPORT(h3ToGeoBoundary)(pentagon, &boundary);
-            H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(pentagon, edges);
+            H3_EXPORT(originToDirectedEdges)(pentagon, edges);
 
             int missingEdgeCount = 0;
             for (int i = 0; i < 6; i++) {
@@ -314,7 +314,7 @@ SUITE(h3UniEdge) {
         for (int res = 0; res < MAX_H3_RES; res += 2) {
             setH3Index(&pentagon, res, 24, 0);
             H3_EXPORT(h3ToGeoBoundary)(pentagon, &boundary);
-            H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(pentagon, edges);
+            H3_EXPORT(originToDirectedEdges)(pentagon, edges);
 
             int missingEdgeCount = 0;
             for (int i = 0; i < 6; i++) {

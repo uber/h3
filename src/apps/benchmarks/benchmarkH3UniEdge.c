@@ -24,7 +24,7 @@ H3Index hex = 0x89283080ddbffff;
 BEGIN_BENCHMARKS();
 
 GeoBoundary outBoundary;
-H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(hex, edges);
+H3_EXPORT(originToDirectedEdges)(hex, edges);
 
 BENCHMARK(getH3UnidirectionalEdgeBoundary, 10000, {
     for (int i = 0; i < 6; i++) {
