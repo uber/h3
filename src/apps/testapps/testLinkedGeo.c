@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Uber Technologies, Inc.
+ * Copyright 2017-2018, 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,10 @@
 #include "test.h"
 
 // Fixtures
-static GeoCoord vertex1;
-static GeoCoord vertex2;
-static GeoCoord vertex3;
-static GeoCoord vertex4;
+static GeoPoint vertex1;
+static GeoPoint vertex2;
+static GeoPoint vertex3;
+static GeoPoint vertex4;
 
 SUITE(linkedGeo) {
     setGeoDegs(&vertex1, 87.372002166, 166.160981117);
@@ -37,7 +37,7 @@ SUITE(linkedGeo) {
     TEST(createLinkedGeo) {
         LinkedGeoPolygon* polygon = calloc(1, sizeof(LinkedGeoPolygon));
         LinkedGeoLoop* loop;
-        LinkedGeoCoord* coord;
+        LinkedGeoPoint* coord;
 
         loop = addNewLinkedLoop(polygon);
         t_assert(loop != NULL, "Loop created");

@@ -23,13 +23,13 @@
 #include "vertexGraph.h"
 
 // Fixtures
-static GeoCoord center;
-static GeoCoord vertex1;
-static GeoCoord vertex2;
-static GeoCoord vertex3;
-static GeoCoord vertex4;
-static GeoCoord vertex5;
-static GeoCoord vertex6;
+static GeoPoint center;
+static GeoPoint vertex1;
+static GeoPoint vertex2;
+static GeoPoint vertex3;
+static GeoPoint vertex4;
+static GeoPoint vertex5;
+static GeoPoint vertex6;
 
 SUITE(vertexGraph) {
     setGeoDegs(&center, 37.77362016769341, -122.41673772517154);

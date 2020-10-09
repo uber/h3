@@ -24,20 +24,20 @@
 #include "utility.h"
 
 // Fixtures
-static GeoCoord sfVerts[] = {
+static GeoPoint sfVerts[] = {
     {0.659966917655, -2.1364398519396},  {0.6595011102219, -2.1359434279405},
     {0.6583348114025, -2.1354884206045}, {0.6581220034068, -2.1382437718946},
     {0.6594479998527, -2.1384597563896}, {0.6599990002976, -2.1376771158464}};
 static Geofence sfGeofence = {.numVerts = 6, .verts = sfVerts};
 static GeoPolygon sfGeoPolygon;
 
-static GeoCoord holeVerts[] = {{0.6595072188743, -2.1371053983433},
+static GeoPoint holeVerts[] = {{0.6595072188743, -2.1371053983433},
                                {0.6591482046471, -2.1373141048153},
                                {0.6592295020837, -2.1365222838402}};
 static Geofence holeGeofence = {.numVerts = 3, .verts = holeVerts};
 static GeoPolygon holeGeoPolygon;
 
-static GeoCoord emptyVerts[] = {{0.659966917655, -2.1364398519394},
+static GeoPoint emptyVerts[] = {{0.659966917655, -2.1364398519394},
                                 {0.659966917655, -2.1364398519395},
                                 {0.659966917655, -2.1364398519396}};
 static Geofence emptyGeofence = {.numVerts = 3, .verts = emptyVerts};
@@ -172,12 +172,12 @@ SUITE(polygonToCells) {
     }
 
     TEST(polygonToCellsExact) {
-        GeoCoord somewhere = {1, 2};
+        GeoPoint somewhere = {1, 2};
         H3Index origin = H3_EXPORT(pointToCell)(&somewhere, 9);
         CellBoundary boundary;
         H3_EXPORT(cellToBoundary)(origin, &boundary);
 
-        GeoCoord* verts = calloc(boundary.numVerts + 1, sizeof(GeoCoord));
+        GeoPoint* verts = calloc(boundary.numVerts + 1, sizeof(GeoPoint));
         for (int i = 0; i < boundary.numVerts; i++) {
             verts[i] = boundary.verts[i];
         }
@@ -203,14 +203,14 @@ SUITE(polygonToCells) {
     }
 
     TEST(polygonToCellsTransmeridian) {
-        GeoCoord primeMeridianVerts[] = {
+        GeoPoint primeMeridianVerts[] = {
             {0.01, 0.01}, {0.01, -0.01}, {-0.01, -0.01}, {-0.01, 0.01}};
         Geofence primeMeridianGeofence = {.numVerts = 4,
                                           .verts = primeMeridianVerts};
         GeoPolygon primeMeridianGeoPolygon = {.geofence = primeMeridianGeofence,
                                               .numHoles = 0};
 
-        GeoCoord transMeridianVerts[] = {{0.01, -M_PI + 0.01},
+        GeoPoint transMeridianVerts[] = {{0.01, -M_PI + 0.01},
                                          {0.01, M_PI - 0.01},
                                          {-0.01, M_PI - 0.01},
                                          {-0.01, -M_PI + 0.01}};
@@ -219,7 +219,7 @@ SUITE(polygonToCells) {
         GeoPolygon transMeridianGeoPolygon = {.geofence = transMeridianGeofence,
                                               .numHoles = 0};
 
-        GeoCoord transMeridianHoleVerts[] = {{0.005, -M_PI + 0.005},
+        GeoPoint transMeridianHoleVerts[] = {{0.005, -M_PI + 0.005},
                                              {0.005, M_PI - 0.005},
                                              {-0.005, M_PI - 0.005},
                                              {-0.005, -M_PI + 0.005}};
@@ -292,7 +292,7 @@ SUITE(polygonToCells) {
         // This polygon is "complex" in that it has > 4 vertices - this
         // tests for a bug that was taking the max and min longitude as
         // the bounds for transmeridian polygons
-        GeoCoord verts[] = {{0.1, -M_PI + 0.00001},  {0.1, M_PI - 0.00001},
+        GeoPoint verts[] = {{0.1, -M_PI + 0.00001},  {0.1, M_PI - 0.00001},
                             {0.05, M_PI - 0.2},      {-0.1, M_PI - 0.00001},
                             {-0.1, -M_PI + 0.00001}, {-0.05, -M_PI + 0.2}};
         Geofence geofence = {.numVerts = 6, .verts = verts};
@@ -314,29 +314,29 @@ SUITE(polygonToCells) {
     TEST(polygonToCellsPentagon) {
         H3Index pentagon;
         setH3Index(&pentagon, 9, 24, 0);
-        GeoCoord coord;
+        GeoPoint coord;
         H3_EXPORT(cellToPoint)(pentagon, &coord);
 
         // Length of half an edge of the polygon, in radians
         double edgeLength2 = H3_EXPORT(degsToRads)(0.001);
 
-        GeoCoord boundingTopRigt = coord;
+        GeoPoint boundingTopRigt = coord;
         boundingTopRigt.lat += edgeLength2;
         boundingTopRigt.lon += edgeLength2;
 
-        GeoCoord boundingTopLeft = coord;
+        GeoPoint boundingTopLeft = coord;
         boundingTopLeft.lat += edgeLength2;
         boundingTopLeft.lon -= edgeLength2;
 
-        GeoCoord boundingBottomRight = coord;
+        GeoPoint boundingBottomRight = coord;
         boundingBottomRight.lat -= edgeLength2;
         boundingBottomRight.lon += edgeLength2;
 
-        GeoCoord boundingBottomLeft = coord;
+        GeoPoint boundingBottomLeft = coord;
         boundingBottomLeft.lat -= edgeLength2;
         boundingBottomLeft.lon -= edgeLength2;
 
-        GeoCoord verts[] = {boundingBottomLeft, boundingTopLeft,
+        GeoPoint verts[] = {boundingBottomLeft, boundingTopLeft,
                             boundingTopRigt, boundingBottomRight};
 
         Geofence geofence;

@@ -31,13 +31,13 @@
 SUITE(h3Index) {
     TEST(pointToCellExtremeCoordinates) {
         // Check that none of these cause crashes.
-        GeoCoord g = {0, 1E45};
+        GeoPoint g = {0, 1E45};
         H3_EXPORT(pointToCell)(&g, 14);
 
-        GeoCoord g2 = {1E46, 1E45};
+        GeoPoint g2 = {1E46, 1E45};
         H3_EXPORT(pointToCell)(&g2, 15);
 
-        GeoCoord g4;
+        GeoPoint g4;
         setGeoDegs(&g4, 2, -3E39);
         H3_EXPORT(pointToCell)(&g4, 0);
     }
@@ -67,7 +67,7 @@ SUITE(h3Index) {
 
     TEST(isValidCellAtResolution) {
         for (int i = 0; i <= MAX_H3_RES; i++) {
-            GeoCoord geoCoord = {0, 0};
+            GeoPoint geoCoord = {0, 0};
             H3Index h3 = H3_EXPORT(pointToCell)(&geoCoord, i);
             char failureMessage[BUFF_SIZE];
             sprintf(failureMessage, "isValidCell failed on resolution %d", i);
@@ -76,7 +76,7 @@ SUITE(h3Index) {
     }
 
     TEST(isValidCellDigits) {
-        GeoCoord geoCoord = {0, 0};
+        GeoPoint geoCoord = {0, 0};
         H3Index h3 = H3_EXPORT(pointToCell)(&geoCoord, 1);
         // Set a bit for an unused digit to something else.
         h3 ^= 1;
@@ -202,7 +202,7 @@ SUITE(h3Index) {
     }
 
     TEST(isResClassIII) {
-        GeoCoord coord = {0, 0};
+        GeoPoint coord = {0, 0};
         for (int i = 0; i <= MAX_H3_RES; i++) {
             H3Index h = H3_EXPORT(pointToCell)(&coord, i);
             t_assert(H3_EXPORT(isResClassIII)(h) == isResDigitClassIII(i),

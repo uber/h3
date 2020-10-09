@@ -24,7 +24,7 @@
 
 int main(int argc, char *argv[]) {
     // Get the H3 index of some location and print it.
-    GeoCoord location;
+    GeoPoint location;
     location.lat = degsToRads(40.689167);
     location.lon = degsToRads(-74.044444);
     int resolution = 10;
@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Get the center coordinates.
-    GeoCoord center;
+    GeoPoint center;
     cellToPoint(indexed, &center);
     printf("Center coordinates: %lf, %lf\n", radsToDegs(center.lat),
            radsToDegs(center.lon));

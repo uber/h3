@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** @file testGeoCoord.c
+/** @file testGeoPoint.c
  * @brief Tests geographic coordinate functions
  *
- * usage: `testGeoCoord`
+ * usage: `testGeoPoint`
  */
 
 #include <float.h>
@@ -56,9 +56,9 @@ SUITE(geoCoord) {
     }
 
     TEST(pointDistRads) {
-        GeoCoord p1;
+        GeoPoint p1;
         setGeoDegs(&p1, 10, 10);
-        GeoCoord p2;
+        GeoPoint p2;
         setGeoDegs(&p2, 0, 10);
 
         // TODO: Epsilon is relatively large
@@ -70,8 +70,8 @@ SUITE(geoCoord) {
     }
 
     TEST(geoAlmostEqualThreshold) {
-        GeoCoord a = {15, 10};
-        GeoCoord b = {15, 10};
+        GeoPoint a = {15, 10};
+        GeoPoint b = {15, 10};
         t_assert(geoAlmostEqualThreshold(&a, &b, DBL_EPSILON), "same point");
 
         b.lat = 15.00001;
@@ -107,9 +107,9 @@ SUITE(geoCoord) {
     }
 
     TEST(_geoAzDistanceRads_noop) {
-        GeoCoord start = {15, 10};
-        GeoCoord out;
-        GeoCoord expected = {15, 10};
+        GeoPoint start = {15, 10};
+        GeoPoint out;
+        GeoPoint expected = {15, 10};
 
         _geoAzDistanceRads(&start, 0, 0, &out);
         t_assert(geoAlmostEqual(&expected, &out),
@@ -117,9 +117,9 @@ SUITE(geoCoord) {
     }
 
     TEST(_geoAzDistanceRads_dueNorthSouth) {
-        GeoCoord start;
-        GeoCoord out;
-        GeoCoord expected;
+        GeoPoint start;
+        GeoPoint out;
+        GeoPoint expected;
 
         // Due north to north pole
         setGeoDegs(&start, 45, 1);
@@ -152,9 +152,9 @@ SUITE(geoCoord) {
     }
 
     TEST(_geoAzDistanceRads_poleToPole) {
-        GeoCoord start;
-        GeoCoord out;
-        GeoCoord expected;
+        GeoPoint start;
+        GeoPoint out;
+        GeoPoint expected;
 
         // Azimuth doesn't really matter in this case. Any azimuth from the
         // north pole is south, any azimuth from the south pole is north.
@@ -175,9 +175,9 @@ SUITE(geoCoord) {
     }
 
     TEST(_geoAzDistanceRads_invertible) {
-        GeoCoord start;
+        GeoPoint start;
         setGeoDegs(&start, 15, 10);
-        GeoCoord out;
+        GeoPoint out;
 
         double azimuth = H3_EXPORT(degsToRads)(20);
         double degrees180 = H3_EXPORT(degsToRads)(180);
@@ -188,7 +188,7 @@ SUITE(geoCoord) {
                      EPSILON_RAD,
                  "moved distance is as expected");
 
-        GeoCoord start2 = out;
+        GeoPoint start2 = out;
         _geoAzDistanceRads(&start2, azimuth + degrees180, distance, &out);
         // TODO: Epsilon is relatively large
         t_assert(H3_EXPORT(pointDistRads)(&start, &out) < 0.01,
@@ -196,8 +196,8 @@ SUITE(geoCoord) {
     }
 
     TEST(pointDistRads_wrappedLongitude) {
-        const GeoCoord negativeLongitude = {.lat = 0, .lon = -(M_PI + M_PI_2)};
-        const GeoCoord zero = {.lat = 0, .lon = 0};
+        const GeoPoint negativeLongitude = {.lat = 0, .lon = -(M_PI + M_PI_2)};
+        const GeoPoint zero = {.lat = 0, .lon = 0};
 
         t_assert(fabs(M_PI_2 - H3_EXPORT(pointDistRads)(&negativeLongitude,
                                                         &zero)) < EPSILON_RAD,

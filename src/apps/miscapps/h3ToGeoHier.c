@@ -61,7 +61,7 @@
 #include "utility.h"
 
 void doCell(H3Index h, int isKmlOut) {
-    GeoCoord g;
+    GeoPoint g;
     H3_EXPORT(cellToPoint)(h, &g);
 
     char label[BUFF_SIZE];

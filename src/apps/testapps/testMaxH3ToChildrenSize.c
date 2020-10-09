@@ -20,7 +20,7 @@
 #include "test.h"
 
 SUITE(maxCellToChildrenSize) {
-    GeoCoord sf = {0.659966917655, 2 * 3.14159 - 2.1364398519396};
+    GeoPoint sf = {0.659966917655, 2 * 3.14159 - 2.1364398519396};
 
     TEST(maxCellToChildrenSize) {
         H3Index parent = H3_EXPORT(pointToCell)(&sf, 7);
