@@ -310,15 +310,15 @@ double H3_EXPORT(cellAreaKm2)(H3Index h);
 double H3_EXPORT(cellAreaM2)(H3Index h);
 /** @} */
 
-/** @defgroup edgeLength edgeLength
- * Functions for edgeLength
+/** @defgroup getHexagonEdgeLengthAvg getHexagonEdgeLengthAvg
+ * Functions for getHexagonEdgeLengthAvg
  * @{
  */
 /** @brief average hexagon edge length in kilometers (excludes pentagons) */
-DECLSPEC double H3_EXPORT(edgeLengthKm)(int res);
+DECLSPEC double H3_EXPORT(getHexagonEdgeLengthAvgKm)(int res);
 
 /** @brief average hexagon edge length in meters (excludes pentagons) */
-DECLSPEC double H3_EXPORT(edgeLengthM)(int res);
+DECLSPEC double H3_EXPORT(getHexagonEdgeLengthAvgM)(int res);
 /** @} */
 
 /** @defgroup exactEdgeLength exactEdgeLength

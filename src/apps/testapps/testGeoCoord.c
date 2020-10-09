@@ -213,9 +213,10 @@ SUITE(geoCoord) {
                                "getHexagonAreaAvgKm2 ordering");
         testDecreasingFunction(H3_EXPORT(getHexagonAreaAvgM2),
                                "getHexagonAreaAvgM2 ordering");
-        testDecreasingFunction(H3_EXPORT(edgeLengthKm),
-                               "edgeLengthKm ordering");
-        testDecreasingFunction(H3_EXPORT(edgeLengthM), "edgeLengthM ordering");
+        testDecreasingFunction(H3_EXPORT(getHexagonEdgeLengthAvgKm),
+                               "getHexagonEdgeLengthAvgKm ordering");
+        testDecreasingFunction(H3_EXPORT(getHexagonEdgeLengthAvgM),
+                               "getHexagonEdgeLengthAvgM ordering");
     }
 
     TEST(intConstants) {
