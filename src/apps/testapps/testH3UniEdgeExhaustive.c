@@ -44,9 +44,8 @@ static void h3UniEdge_correctness_assertions(H3Index h3) {
         }
         t_assert(H3_EXPORT(isValidDirectedEdge)(edges[i]) == 1,
                  "edge is an edge");
-        t_assert(
-            H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(edges[i]) == h3,
-            "origin matches input origin");
+        t_assert(H3_EXPORT(getDirectedEdgeOrigin)(edges[i]) == h3,
+                 "origin matches input origin");
 
         destination =
             H3_EXPORT(getDestinationH3IndexFromUnidirectionalEdge)(edges[i]);

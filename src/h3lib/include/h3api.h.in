@@ -558,15 +558,14 @@ DECLSPEC H3Index H3_EXPORT(cellsToDirectedEdge)(H3Index origin, H3Index destinat
 DECLSPEC int H3_EXPORT(isValidDirectedEdge)(H3Index edge);
 /** @} */
 
-/** @defgroup getOriginH3IndexFromUnidirectionalEdge \
- * getOriginH3IndexFromUnidirectionalEdge
- * Functions for getOriginH3IndexFromUnidirectionalEdge
+/** @defgroup getDirectedEdgeOrigin \
+ * getDirectedEdgeOrigin
+ * Functions for getDirectedEdgeOrigin
  * @{
  */
-/** @brief Returns the origin hexagon H3Index from the unidirectional edge
+/** @brief Returns the origin hexagon H3Index from the directed edge
  * H3Index */
-DECLSPEC H3Index
-    H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(H3Index edge);
+DECLSPEC H3Index H3_EXPORT(getDirectedEdgeOrigin)(H3Index edge);
 /** @} */
 
 /** @defgroup getDestinationH3IndexFromUnidirectionalEdge \
@@ -574,7 +573,7 @@ DECLSPEC H3Index
  * Functions for getDestinationH3IndexFromUnidirectionalEdge
  * @{
  */
-/** @brief Returns the destination hexagon H3Index from the unidirectional edge
+/** @brief Returns the destination hexagon H3Index from the directed edge
  * H3Index */
 DECLSPEC H3Index
     H3_EXPORT(getDestinationH3IndexFromUnidirectionalEdge)(H3Index edge);
@@ -585,7 +584,7 @@ DECLSPEC H3Index
  * Functions for directedEdgeToCells
  * @{
  */
-/** @brief Returns the origin and destination hexagons from the unidirectional
+/** @brief Returns the origin and destination hexagons from the directed
  * edge H3Index */
 DECLSPEC void H3_EXPORT(directedEdgeToCells)(H3Index edge, H3Index *originDestination);
 /** @} */

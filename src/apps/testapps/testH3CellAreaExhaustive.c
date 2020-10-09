@@ -42,7 +42,7 @@ static void haversine_assert(H3Index edge) {
     GeoCoord a, b;
     H3Index origin, destination;
 
-    origin = H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(edge);
+    origin = H3_EXPORT(getDirectedEdgeOrigin)(edge);
     H3_EXPORT(cellToPoint)(origin, &a);
 
     destination = H3_EXPORT(getDestinationH3IndexFromUnidirectionalEdge)(edge);
