@@ -152,14 +152,14 @@ set(EXAMPLE_SOURCE_FILES
     examples/compact.c
     examples/edge.c)
 set(OTHER_SOURCE_FILES
-    src/apps/filters/h3ToGeo.c
+    src/apps/filters/cellToPoint.c
     src/apps/filters/h3ToLocalIj.c
     src/apps/filters/localIjToH3.c
     src/apps/filters/h3ToComponents.c
-    src/apps/filters/geoToH3.c
-    src/apps/filters/h3ToGeoBoundary.c
-    src/apps/filters/kRing.c
-    src/apps/filters/hexRange.c
+    src/apps/filters/pointToCell.c
+    src/apps/filters/cellToBoundary.c
+    src/apps/filters/gridDisk.c
+    src/apps/filters/gridDiskUnsafe.c
     src/apps/testapps/testVertexGraph.c
     src/apps/testapps/testCompactCells.c
     src/apps/testapps/testPolygonToCells.c
@@ -381,14 +381,14 @@ if(BUILD_FILTERS)
         list(APPEND INSTALL_TARGETS ${name})
     endmacro()
 
-    add_h3_filter(geoToH3 src/apps/filters/geoToH3.c ${APP_SOURCE_FILES})
+    add_h3_filter(pointToCell src/apps/filters/pointToCell.c ${APP_SOURCE_FILES})
     add_h3_filter(h3ToComponents src/apps/filters/h3ToComponents.c ${APP_SOURCE_FILES})
-    add_h3_filter(h3ToGeo src/apps/filters/h3ToGeo.c ${APP_SOURCE_FILES})
+    add_h3_filter(cellToPoint src/apps/filters/cellToPoint.c ${APP_SOURCE_FILES})
     add_h3_filter(h3ToLocalIj src/apps/filters/h3ToLocalIj.c ${APP_SOURCE_FILES})
     add_h3_filter(localIjToH3 src/apps/filters/localIjToH3.c ${APP_SOURCE_FILES})
-    add_h3_filter(h3ToGeoBoundary src/apps/filters/h3ToGeoBoundary.c ${APP_SOURCE_FILES})
-    add_h3_filter(hexRange src/apps/filters/hexRange.c ${APP_SOURCE_FILES})
-    add_h3_filter(kRing src/apps/filters/kRing.c ${APP_SOURCE_FILES})
+    add_h3_filter(cellToBoundary src/apps/filters/cellToBoundary.c ${APP_SOURCE_FILES})
+    add_h3_filter(gridDiskUnsafe src/apps/filters/gridDiskUnsafe.c ${APP_SOURCE_FILES})
+    add_h3_filter(gridDisk src/apps/filters/gridDisk.c ${APP_SOURCE_FILES})
     add_h3_filter(h3ToGeoBoundaryHier src/apps/miscapps/h3ToGeoBoundaryHier.c ${APP_SOURCE_FILES})
     add_h3_filter(h3ToGeoHier src/apps/miscapps/h3ToGeoHier.c ${APP_SOURCE_FILES})
     add_h3_filter(h3ToHier src/apps/miscapps/h3ToHier.c ${APP_SOURCE_FILES})
@@ -404,11 +404,11 @@ if(BUILD_FILTERS)
         set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "KML/res${resolution}cells.kml")
         set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "KML/res${resolution}centers.kml")
         add_custom_target(kml_cells_${resolution}
-            COMMAND ${SHELL} "$<TARGET_FILE:h3ToHier> -r ${resolution} | $<TARGET_FILE:h3ToGeoBoundary> --kml --kml-name res${resolution}cells.kml --kml-description \"Res ${resolution} Cells\" > KML/res${resolution}cells.kml"
+            COMMAND ${SHELL} "$<TARGET_FILE:h3ToHier> -r ${resolution} | $<TARGET_FILE:cellToBoundary> --kml --kml-name res${resolution}cells.kml --kml-description \"Res ${resolution} Cells\" > KML/res${resolution}cells.kml"
             VERBATIM
             DEPENDS create-kml-dir)
         add_custom_target(kml_centers_${resolution}
-            COMMAND ${SHELL} "$<TARGET_FILE:h3ToHier> -r ${resolution} | $<TARGET_FILE:h3ToGeo> --kml --kml-name res${resolution}centers.kml --kml-description \"Res ${resolution} Centers\" > KML/res${resolution}centers.kml"
+            COMMAND ${SHELL} "$<TARGET_FILE:h3ToHier> -r ${resolution} | $<TARGET_FILE:cellToPoint> --kml --kml-name res${resolution}centers.kml --kml-description \"Res ${resolution} Centers\" > KML/res${resolution}centers.kml"
             VERBATIM
             DEPENDS create-kml-dir)
         add_dependencies(kml
