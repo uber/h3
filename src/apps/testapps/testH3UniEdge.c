@@ -85,9 +85,8 @@ SUITE(h3UniEdge) {
         H3Index edge = H3_EXPORT(cellsToDirectedEdge)(sf, sf2);
         t_assert(sf == H3_EXPORT(getDirectedEdgeOrigin)(edge),
                  "can retrieve the origin from the edge");
-        t_assert(
-            sf2 == H3_EXPORT(getDestinationH3IndexFromUnidirectionalEdge)(edge),
-            "can retrieve the destination from the edge");
+        t_assert(sf2 == H3_EXPORT(getDirectedEdgeDestination)(edge),
+                 "can retrieve the destination from the edge");
 
         H3Index originDestination[2] = {0};
         H3_EXPORT(directedEdgeToCells)(edge, originDestination);
@@ -113,13 +112,12 @@ SUITE(h3UniEdge) {
                  "getting the origin from a null index returns 0");
     }
 
-    TEST(getDestinationH3IndexFromUnidirectionalEdge) {
+    TEST(getDirectedEdgeDestination) {
         H3Index hexagon = 0x891ea6d6533ffff;
 
-        t_assert(H3_EXPORT(getDestinationH3IndexFromUnidirectionalEdge)(
-                     hexagon) == 0,
+        t_assert(H3_EXPORT(getDirectedEdgeDestination)(hexagon) == 0,
                  "getting the destination from a hexagon index returns 0");
-        t_assert(H3_EXPORT(getDestinationH3IndexFromUnidirectionalEdge)(0) == 0,
+        t_assert(H3_EXPORT(getDirectedEdgeDestination)(0) == 0,
                  "getting the destination from a null index returns 0");
     }
 
@@ -199,10 +197,8 @@ SUITE(h3UniEdge) {
                      "edge is an edge");
             t_assert(sf == H3_EXPORT(getDirectedEdgeOrigin)(edges[i]),
                      "origin is correct");
-            t_assert(
-                sf != H3_EXPORT(getDestinationH3IndexFromUnidirectionalEdge)(
-                          edges[i]),
-                "destination is not origin");
+            t_assert(sf != H3_EXPORT(getDirectedEdgeDestination)(edges[i]),
+                     "destination is not origin");
         }
     }
 
@@ -221,9 +217,7 @@ SUITE(h3UniEdge) {
                 t_assert(pentagon == H3_EXPORT(getDirectedEdgeOrigin)(edges[i]),
                          "origin is correct");
                 t_assert(
-                    pentagon !=
-                        H3_EXPORT(getDestinationH3IndexFromUnidirectionalEdge)(
-                            edges[i]),
+                    pentagon != H3_EXPORT(getDirectedEdgeDestination)(edges[i]),
                     "destination is not origin");
             }
         }
