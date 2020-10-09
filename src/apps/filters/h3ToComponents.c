@@ -73,7 +73,7 @@ void doCell(H3Index h, bool verboseMode) {
         printf("╠════════════╣\n");
         printf("║ Mode       ║ %s (%i)\n", modes[h3Mode], h3Mode);
         printf("║ Resolution ║ %i\n", h3Res);
-        if (h3Mode == H3_UNIEDGE_MODE) {
+        if (h3Mode == H3_DIRECTEDEDGE_MODE) {
             printf("║ Edge       ║ %i\n", H3_GET_RESERVED_BITS(h));
         }
         printf("║ Base Cell  ║ %i\n", h3BaseCell);
@@ -89,7 +89,7 @@ void doCell(H3Index h, bool verboseMode) {
                 printf("%c", resDigitToChar(H3_GET_INDEX_DIGIT(h, i)));
             }
             printf("\n");
-        } else if (h3Mode == H3_UNIEDGE_MODE) {
+        } else if (h3Mode == H3_DIRECTEDEDGE_MODE) {
             printf("%d:%d:%d:%d:", h3Mode, H3_GET_RESERVED_BITS(h), h3Res,
                    h3BaseCell);
             for (int i = 1; i <= h3Res; i++) {
