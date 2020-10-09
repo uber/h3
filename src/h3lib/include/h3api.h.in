@@ -600,13 +600,12 @@ DECLSPEC void H3_EXPORT(directedEdgeToCells)(H3Index edge, H3Index *originDestin
 DECLSPEC void H3_EXPORT(originToDirectedEdges)(H3Index origin, H3Index *edges);
 /** @} */
 
-/** @defgroup getH3UnidirectionalEdgeBoundary getH3UnidirectionalEdgeBoundary
- * Functions for getH3UnidirectionalEdgeBoundary
+/** @defgroup directedEdgeToBoundary directedEdgeToBoundary
+ * Functions for directedEdgeToBoundary
  * @{
  */
 /** @brief Returns the GeoBoundary containing the coordinates of the edge */
-DECLSPEC void H3_EXPORT(getH3UnidirectionalEdgeBoundary)(H3Index edge,
-                                                         GeoBoundary *gb);
+DECLSPEC void H3_EXPORT(directedEdgeToBoundary)(H3Index edge, GeoBoundary *gb);
 /** @} */
 
 /** @defgroup cellToVertex cellToVertex

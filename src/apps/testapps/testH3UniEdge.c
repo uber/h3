@@ -235,7 +235,7 @@ SUITE(h3UniEdge) {
                  "Only one edge was deleted for the pentagon");
     }
 
-    TEST(getH3UnidirectionalEdgeBoundary) {
+    TEST(directedEdgeToBoundary) {
         H3Index sf;
         GeoBoundary boundary;
         GeoBoundary edgeBoundary;
@@ -250,7 +250,7 @@ SUITE(h3UniEdge) {
             H3_EXPORT(originToDirectedEdges)(sf, edges);
 
             for (int i = 0; i < 6; i++) {
-                H3_EXPORT(getH3UnidirectionalEdgeBoundary)
+                H3_EXPORT(directedEdgeToBoundary)
                 (edges[i], &edgeBoundary);
                 t_assert(edgeBoundary.numVerts == 2,
                          "Got the expected number of vertices back");
@@ -264,7 +264,7 @@ SUITE(h3UniEdge) {
         }
     }
 
-    TEST(getH3UnidirectionalEdgeBoundaryPentagonClassIII) {
+    TEST(directedEdgeToBoundaryPentagonClassIII) {
         H3Index pentagon;
         GeoBoundary boundary;
         GeoBoundary edgeBoundary;
@@ -283,7 +283,7 @@ SUITE(h3UniEdge) {
                 if (edges[i] == 0) {
                     missingEdgeCount++;
                 } else {
-                    H3_EXPORT(getH3UnidirectionalEdgeBoundary)
+                    H3_EXPORT(directedEdgeToBoundary)
                     (edges[i], &edgeBoundary);
                     t_assert(edgeBoundary.numVerts == 3,
                              "Got the expected number of vertices back for a "
@@ -302,7 +302,7 @@ SUITE(h3UniEdge) {
         }
     }
 
-    TEST(getH3UnidirectionalEdgeBoundaryPentagonClassII) {
+    TEST(directedEdgeToBoundaryPentagonClassII) {
         H3Index pentagon;
         GeoBoundary boundary;
         GeoBoundary edgeBoundary;
@@ -321,8 +321,7 @@ SUITE(h3UniEdge) {
                 if (edges[i] == 0) {
                     missingEdgeCount++;
                 } else {
-                    H3_EXPORT(getH3UnidirectionalEdgeBoundary)
-                    (edges[i], &edgeBoundary);
+                    H3_EXPORT(directedEdgeToBoundary)(edges[i], &edgeBoundary);
                     t_assert(edgeBoundary.numVerts == 2,
                              "Got the expected number of vertices back for a "
                              "Class II "

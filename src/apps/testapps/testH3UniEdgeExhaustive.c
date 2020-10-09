@@ -65,11 +65,11 @@ static void h3UniEdge_boundary_assertions(H3Index h3) {
 
     for (int i = 0; i < 6; i++) {
         if (edges[i] == H3_NULL) continue;
-        H3_EXPORT(getH3UnidirectionalEdgeBoundary)(edges[i], &edgeBoundary);
+        H3_EXPORT(directedEdgeToBoundary)(edges[i], &edgeBoundary);
         destination =
             H3_EXPORT(getDestinationH3IndexFromUnidirectionalEdge)(edges[i]);
         revEdge = H3_EXPORT(cellsToDirectedEdge)(destination, h3);
-        H3_EXPORT(getH3UnidirectionalEdgeBoundary)(revEdge, &revEdgeBoundary);
+        H3_EXPORT(directedEdgeToBoundary)(revEdge, &revEdgeBoundary);
 
         t_assert(edgeBoundary.numVerts == revEdgeBoundary.numVerts,
                  "numVerts is equal for edge and reverse");

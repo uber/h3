@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
     printf("The edge is %" PRIx64 "\n", edge);
 
     GeoBoundary boundary;
-    getH3UnidirectionalEdgeBoundary(edge, &boundary);
+    directedEdgeToBoundary(edge, &boundary);
     for (int v = 0; v < boundary.numVerts; v++) {
         printf("Edge vertex #%d: %lf, %lf\n", v,
                radsToDegs(boundary.verts[v].lat),
