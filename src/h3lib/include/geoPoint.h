@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** @file geoCoord.h
+/** @file geoPoint.h
  * @brief   Geodetic (lat/lon) functions.
  */
 
-#ifndef GEOCOORD_H
-#define GEOCOORD_H
+#ifndef GEOPOINT_H
+#define GEOPOINT_H
 
 #include <stdbool.h>
 #include <stdint.h>

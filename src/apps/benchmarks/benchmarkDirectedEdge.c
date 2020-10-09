@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 #include "benchmark.h"
-#include "geoCoord.h"
+#include "geoPoint.h"
 #include "h3api.h"
 
 // Fixtures (arbitrary res 9 hexagon)

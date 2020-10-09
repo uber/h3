@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2018 Uber Technologies, Inc.
+ * Copyright 2016-2018, 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@
 #ifndef COORDIJK_H
 #define COORDIJK_H
 
-#include "geoCoord.h"
+#include "geoPoint.h"
 #include "h3api.h"
 #include "vec2d.h"
 

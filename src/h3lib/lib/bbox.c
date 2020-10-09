@@ -24,7 +24,7 @@
 #include <stdbool.h>
 
 #include "constants.h"
-#include "geoCoord.h"
+#include "geoPoint.h"
 #include "h3Index.h"
 
 /**

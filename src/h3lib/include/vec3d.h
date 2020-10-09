@@ -20,7 +20,7 @@
 #ifndef VEC3D_H
 #define VEC3D_H
 
-#include "geoCoord.h"
+#include "geoPoint.h"
 
 /** @struct Vec3D
  *  @brief 3D floating point structure
