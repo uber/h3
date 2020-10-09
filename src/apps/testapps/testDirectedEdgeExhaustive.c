@@ -26,7 +26,7 @@
 
 #include "baseCells.h"
 #include "constants.h"
-#include "geoCoord.h"
+#include "geoPoint.h"
 #include "h3Index.h"
 #include "test.h"
 #include "utility.h"

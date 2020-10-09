@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** @file geoCoord.c
+/** @file geoPoint.c
  * @brief   Functions for working with lat/lon coordinates.
  */
 
-#include "geoCoord.h"
+#include "geoPoint.h"
 
 #include <math.h>
 #include <stdbool.h>

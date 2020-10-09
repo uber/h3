@@ -22,7 +22,7 @@
 
 #include <stdbool.h>
 
-#include "geoCoord.h"
+#include "geoPoint.h"
 
 /** @struct BBox
  *  @brief  Geographic bounding box with coordinates defined in radians

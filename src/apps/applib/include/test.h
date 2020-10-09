@@ -22,7 +22,7 @@
 
 #include <stdio.h>
 
-#include "geoCoord.h"
+#include "geoPoint.h"
 #include "h3api.h"
 
 extern int globalTestCount;

@@ -25,7 +25,7 @@
 #include "algos.h"
 #include "baseCells.h"
 #include "faceijk.h"
-#include "geoCoord.h"
+#include "geoPoint.h"
 #include "h3Index.h"
 
 #define DIRECTION_INDEX_OFFSET 2

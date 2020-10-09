@@ -28,7 +28,7 @@
 
 #include "constants.h"
 #include "coordijk.h"
-#include "geoCoord.h"
+#include "geoPoint.h"
 #include "h3Index.h"
 #include "vec3d.h"
 

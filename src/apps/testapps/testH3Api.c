@@ -21,7 +21,7 @@
 
 #include <math.h>
 
-#include "geoCoord.h"
+#include "geoPoint.h"
 #include "h3api.h"
 #include "test.h"
 #include "utility.h"
