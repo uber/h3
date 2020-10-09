@@ -24,7 +24,7 @@ H3Index hex = 0x89283080ddbffff;
 BEGIN_BENCHMARKS();
 
 GeoCoord outCoord;
-GeoBoundary outBoundary;
+CellBoundary outBoundary;
 
 BENCHMARK(pointToCell, 10000, { H3_EXPORT(pointToCell)(&coord, 9); });
 

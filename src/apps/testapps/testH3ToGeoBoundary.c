@@ -16,7 +16,7 @@
 /** @file
  * @brief tests H3 function `cellToBoundary`
  *
- *  usage: `testH3ToGeoBoundary`
+ *  usage: `testH3ToCellBoundary`
  *
  *  The program reads H3 indexes and associated cell boundaries from
  *  stdin until EOF is encountered. For each input cell, the program
@@ -112,7 +112,7 @@ int main(int argc, char* argv[]) {
 
         H3Index h3 = H3_EXPORT(stringToH3)(buff);
 
-        GeoBoundary b;
+        CellBoundary b;
         readBoundary(stdin, &b);
 
         t_assertBoundary(h3, &b);

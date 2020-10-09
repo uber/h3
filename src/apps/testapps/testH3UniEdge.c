@@ -227,8 +227,8 @@ SUITE(h3UniEdge) {
 
     TEST(directedEdgeToBoundary) {
         H3Index sf;
-        GeoBoundary boundary;
-        GeoBoundary edgeBoundary;
+        CellBoundary boundary;
+        CellBoundary edgeBoundary;
         H3Index edges[6] = {0};
 
         const int expectedVertices[][2] = {{3, 4}, {1, 2}, {2, 3},
@@ -256,8 +256,8 @@ SUITE(h3UniEdge) {
 
     TEST(directedEdgeToBoundaryPentagonClassIII) {
         H3Index pentagon;
-        GeoBoundary boundary;
-        GeoBoundary edgeBoundary;
+        CellBoundary boundary;
+        CellBoundary edgeBoundary;
         H3Index edges[6] = {0};
 
         const int expectedVertices[][3] = {{-1, -1, -1}, {2, 3, 4}, {4, 5, 6},
@@ -294,8 +294,8 @@ SUITE(h3UniEdge) {
 
     TEST(directedEdgeToBoundaryPentagonClassII) {
         H3Index pentagon;
-        GeoBoundary boundary;
-        GeoBoundary edgeBoundary;
+        CellBoundary boundary;
+        CellBoundary edgeBoundary;
         H3Index edges[6] = {0};
 
         const int expectedVertices[][3] = {{-1, -1}, {1, 2}, {2, 3},

@@ -57,7 +57,7 @@ SUITE(h3Api) {
             "894cc536537ffff", "894cc5acbabffff", "894cc536597ffff"};
         int numHexes = sizeof(hexes) / sizeof(hexes[0]);
         H3Index h3;
-        GeoBoundary b;
+        CellBoundary b;
         for (int i = 0; i < numHexes; i++) {
             h3 = H3_EXPORT(stringToH3)(hexes[i]);
             H3_EXPORT(cellToBoundary)(h3, &b);
@@ -68,7 +68,7 @@ SUITE(h3Api) {
     TEST(cellToBoundary_classIIIEdgeVertex_exact) {
         // Bug test for https://github.com/uber/h3/issues/45
         H3Index h3 = H3_EXPORT(stringToH3)("894cc536537ffff");
-        GeoBoundary boundary;
+        CellBoundary boundary;
         boundary.numVerts = 7;
         setGeoDegs(&boundary.verts[0], 18.043333154, -66.27836523500002);
         setGeoDegs(&boundary.verts[1], 18.042238363, -66.27929062800001);
@@ -83,7 +83,7 @@ SUITE(h3Api) {
     TEST(cellToBoundary_coslonConstrain) {
         // Bug test for https://github.com/uber/h3/issues/212
         H3Index h3 = 0x87dc6d364ffffffL;
-        GeoBoundary boundary;
+        CellBoundary boundary;
         boundary.numVerts = 6;
         setGeoDegs(&boundary.verts[0], -52.0130533678236091,
                    -34.6232931343713091);

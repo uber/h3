@@ -58,8 +58,8 @@ static void h3UniEdge_boundary_assertions(H3Index h3) {
     H3_EXPORT(originToDirectedEdges)(h3, edges);
     H3Index destination;
     H3Index revEdge;
-    GeoBoundary edgeBoundary;
-    GeoBoundary revEdgeBoundary;
+    CellBoundary edgeBoundary;
+    CellBoundary revEdgeBoundary;
 
     for (int i = 0; i < 6; i++) {
         if (edges[i] == H3_NULL) continue;

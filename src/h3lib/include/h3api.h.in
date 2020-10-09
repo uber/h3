@@ -85,16 +85,16 @@ typedef struct {
     double lon;  ///< longitude in radians
 } GeoCoord;
 
-/** @struct GeoBoundary
+/** @struct CellBoundary
     @brief cell boundary in latitude/longitude
 */
 typedef struct {
     int numVerts;                          ///< number of vertices
     GeoCoord verts[MAX_CELL_BNDRY_VERTS];  ///< vertices in ccw order
-} GeoBoundary;
+} CellBoundary;
 
 /** @struct Geofence
- *  @brief similar to GeoBoundary, but requires more alloc work
+ *  @brief similar to CellBoundary, but requires more alloc work
  */
 typedef struct {
     int numVerts;
@@ -179,7 +179,7 @@ DECLSPEC void H3_EXPORT(cellToPoint)(H3Index h3, GeoCoord *g);
  * @{
  */
 /** @brief give the cell boundary in lat/lon coordinates for the cell h3 */
-DELCSPEC void H3_EXPORT(cellToBoundary)(H3Index h3, GeoBoundary *gp);
+DECLSPEC void H3_EXPORT(cellToBoundary)(H3Index h3, CellBoundary *gp);
 /** @} */
 
 /** @defgroup gridDisk gridDisk
@@ -602,8 +602,8 @@ DECLSPEC void H3_EXPORT(originToDirectedEdges)(H3Index origin, H3Index *edges);
  * Functions for directedEdgeToBoundary
  * @{
  */
-/** @brief Returns the GeoBoundary containing the coordinates of the edge */
-DECLSPEC void H3_EXPORT(directedEdgeToBoundary)(H3Index edge, GeoBoundary *gb);
+/** @brief Returns the CellBoundary containing the coordinates of the edge */
+DECLSPEC void H3_EXPORT(directedEdgeToBoundary)(H3Index edge, CellBoundary *gb);
 /** @} */
 
 /** @defgroup cellToVertex cellToVertex

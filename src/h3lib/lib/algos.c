@@ -984,7 +984,7 @@ int _polygonToCellsInternal(const GeoPolygon* geoPolygon, int res,
  */
 void h3SetToVertexGraph(const H3Index* h3Set, const int numHexes,
                         VertexGraph* graph) {
-    GeoBoundary vertices;
+    CellBoundary vertices;
     GeoCoord* fromVtx;
     GeoCoord* toVtx;
     VertexNode* edge;

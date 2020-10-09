@@ -350,7 +350,7 @@ double triangleArea(const GeoCoord *a, const GeoCoord *b, const GeoCoord *c) {
  */
 double H3_EXPORT(cellAreaRads2)(H3Index cell) {
     GeoCoord c;
-    GeoBoundary gb;
+    CellBoundary gb;
     H3_EXPORT(cellToPoint)(cell, &c);
     H3_EXPORT(cellToBoundary)(cell, &gb);
 
@@ -385,7 +385,7 @@ double H3_EXPORT(cellAreaM2)(H3Index h) {
  * @return        length in radians
  */
 double H3_EXPORT(exactEdgeLengthRads)(H3Index edge) {
-    GeoBoundary gb;
+    CellBoundary gb;
 
     H3_EXPORT(directedEdgeToBoundary)(edge, &gb);
 

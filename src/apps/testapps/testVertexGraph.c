@@ -50,7 +50,7 @@ SUITE(vertexGraph) {
 
     TEST(vertexHash) {
         H3Index centerIndex;
-        GeoBoundary outline;
+        CellBoundary outline;
         uint32_t hash1;
         uint32_t hash2;
         int numBuckets = 1000;

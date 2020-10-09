@@ -862,15 +862,15 @@ void H3_EXPORT(cellToPoint)(H3Index h3, GeoCoord* g) {
  * @param h3 The H3 index.
  * @param gb The boundary of the H3 cell in spherical coordinates.
  */
-void H3_EXPORT(cellToBoundary)(H3Index h3, GeoBoundary* gb) {
+void H3_EXPORT(cellToBoundary)(H3Index h3, CellBoundary* gb) {
     FaceIJK fijk;
     _h3ToFaceIjk(h3, &fijk);
     if (H3_EXPORT(isPentagon)(h3)) {
-        _faceIjkPentToGeoBoundary(&fijk, H3_GET_RESOLUTION(h3), 0,
-                                  NUM_PENT_VERTS, gb);
+        _faceIjkPentToCellBoundary(&fijk, H3_GET_RESOLUTION(h3), 0,
+                                   NUM_PENT_VERTS, gb);
     } else {
-        _faceIjkToGeoBoundary(&fijk, H3_GET_RESOLUTION(h3), 0, NUM_HEX_VERTS,
-                              gb);
+        _faceIjkToCellBoundary(&fijk, H3_GET_RESOLUTION(h3), 0, NUM_HEX_VERTS,
+                               gb);
     }
 }
 

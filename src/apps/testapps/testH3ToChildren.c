@@ -70,7 +70,7 @@ SUITE(cellToChildren) {
         // Get the neighbor hexagons by averaging the center point and outer
         // points then query for those independently
 
-        GeoBoundary outside;
+        CellBoundary outside;
         H3_EXPORT(cellToBoundary)(sfHex8, &outside);
         for (int i = 0; i < outside.numVerts; i++) {
             GeoCoord avg = {0};

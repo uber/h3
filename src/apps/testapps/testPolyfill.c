@@ -47,7 +47,7 @@ static GeoPolygon emptyGeoPolygon;
  * Return true if the cell crosses the meridian.
  */
 static bool isTransmeridianCell(H3Index h) {
-    GeoBoundary bndry;
+    CellBoundary bndry;
     H3_EXPORT(cellToBoundary)(h, &bndry);
 
     double minLon = M_PI, maxLon = -M_PI;
@@ -68,7 +68,7 @@ static void fillIndex_assertions(H3Index h) {
     int currentRes = H3_EXPORT(getResolution)(h);
     // TODO: Not testing more than one depth because the assertions fail.
     for (int nextRes = currentRes; nextRes <= currentRes + 1; nextRes++) {
-        GeoBoundary bndry;
+        CellBoundary bndry;
         H3_EXPORT(cellToBoundary)(h, &bndry);
         GeoPolygon polygon = {
             .geofence = {.numVerts = bndry.numVerts, .verts = bndry.verts},
@@ -174,7 +174,7 @@ SUITE(polygonToCells) {
     TEST(polygonToCellsExact) {
         GeoCoord somewhere = {1, 2};
         H3Index origin = H3_EXPORT(pointToCell)(&somewhere, 9);
-        GeoBoundary boundary;
+        CellBoundary boundary;
         H3_EXPORT(cellToBoundary)(origin, &boundary);
 
         GeoCoord* verts = calloc(boundary.numVerts + 1, sizeof(GeoCoord));
