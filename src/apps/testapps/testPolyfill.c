@@ -71,7 +71,7 @@ static void fillIndex_assertions(H3Index h) {
         CellBoundary bndry;
         H3_EXPORT(cellToBoundary)(h, &bndry);
         GeoPolygon polygon = {
-            .geofence = {.numVerts = bndry.numVerts, .verts = bndry.verts},
+            .geoloop = {.numVerts = bndry.numVerts, .verts = bndry.verts},
             .numHoles = 0,
             .holes = 0};
 
@@ -113,14 +113,14 @@ static void fillIndex_assertions(H3Index h) {
 }
 
 SUITE(polygonToCells) {
-    sfGeoPolygon.geofence = sfGeoLoop;
+    sfGeoPolygon.geoloop = sfGeoLoop;
     sfGeoPolygon.numHoles = 0;
 
-    holeGeoPolygon.geofence = sfGeoLoop;
+    holeGeoPolygon.geoloop = sfGeoLoop;
     holeGeoPolygon.numHoles = 1;
     holeGeoPolygon.holes = &holeGeoLoop;
 
-    emptyGeoPolygon.geofence = emptyGeoLoop;
+    emptyGeoPolygon.geoloop = emptyGeoLoop;
     emptyGeoPolygon.numHoles = 0;
 
     TEST(maxPolygonToCellsSize) {
@@ -187,7 +187,7 @@ SUITE(polygonToCells) {
         someGeoLoop.numVerts = boundary.numVerts + 1;
         someGeoLoop.verts = verts;
         GeoPolygon someHexagon;
-        someHexagon.geofence = someGeoLoop;
+        someHexagon.geoloop = someGeoLoop;
         someHexagon.numHoles = 0;
 
         int numHexagons = H3_EXPORT(maxPolygonToCellsSize)(&someHexagon, 9);
@@ -207,7 +207,7 @@ SUITE(polygonToCells) {
             {0.01, 0.01}, {0.01, -0.01}, {-0.01, -0.01}, {-0.01, 0.01}};
         GeoLoop primeMeridianGeoLoop = {.numVerts = 4,
                                         .verts = primeMeridianVerts};
-        GeoPolygon primeMeridianGeoPolygon = {.geofence = primeMeridianGeoLoop,
+        GeoPolygon primeMeridianGeoPolygon = {.geoloop = primeMeridianGeoLoop,
                                               .numHoles = 0};
 
         GeoPoint transMeridianVerts[] = {{0.01, -M_PI + 0.01},
@@ -216,7 +216,7 @@ SUITE(polygonToCells) {
                                          {-0.01, -M_PI + 0.01}};
         GeoLoop transMeridianGeoLoop = {.numVerts = 4,
                                         .verts = transMeridianVerts};
-        GeoPolygon transMeridianGeoPolygon = {.geofence = transMeridianGeoLoop,
+        GeoPolygon transMeridianGeoPolygon = {.geoloop = transMeridianGeoLoop,
                                               .numHoles = 0};
 
         GeoPoint transMeridianHoleVerts[] = {{0.005, -M_PI + 0.005},
@@ -226,11 +226,11 @@ SUITE(polygonToCells) {
         GeoLoop transMeridianHoleGeoLoop = {.numVerts = 4,
                                             .verts = transMeridianHoleVerts};
         GeoPolygon transMeridianHoleGeoPolygon = {
-            .geofence = transMeridianGeoLoop,
+            .geoloop = transMeridianGeoLoop,
             .numHoles = 1,
             .holes = &transMeridianHoleGeoLoop};
         GeoPolygon transMeridianFilledHoleGeoPolygon = {
-            .geofence = transMeridianHoleGeoLoop, .numHoles = 0};
+            .geoloop = transMeridianHoleGeoLoop, .numHoles = 0};
 
         int expectedSize;
 
@@ -295,8 +295,8 @@ SUITE(polygonToCells) {
         GeoPoint verts[] = {{0.1, -M_PI + 0.00001},  {0.1, M_PI - 0.00001},
                             {0.05, M_PI - 0.2},      {-0.1, M_PI - 0.00001},
                             {-0.1, -M_PI + 0.00001}, {-0.05, -M_PI + 0.2}};
-        GeoLoop geofence = {.numVerts = 6, .verts = verts};
-        GeoPolygon polygon = {.geofence = geofence, .numHoles = 0};
+        GeoLoop geoloop = {.numVerts = 6, .verts = verts};
+        GeoPolygon polygon = {.geoloop = geoloop, .numHoles = 0};
 
         int numHexagons = H3_EXPORT(maxPolygonToCellsSize)(&polygon, 4);
 
@@ -339,12 +339,12 @@ SUITE(polygonToCells) {
         GeoPoint verts[] = {boundingBottomLeft, boundingTopLeft,
                             boundingTopRigt, boundingBottomRight};
 
-        GeoLoop geofence;
-        geofence.verts = verts;
-        geofence.numVerts = 4;
+        GeoLoop geoloop;
+        geoloop.verts = verts;
+        geoloop.numVerts = 4;
 
         GeoPolygon polygon;
-        polygon.geofence = geofence;
+        polygon.geoloop = geoloop;
         polygon.numHoles = 0;
 
         int numHexagons = H3_EXPORT(maxPolygonToCellsSize)(&polygon, 9);

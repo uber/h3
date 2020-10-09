@@ -32,12 +32,11 @@ SUITE(polygonToCells_reported) {
         GeoPoint worldVerts[] = {
             {-M_PI_2, -M_PI}, {M_PI_2, -M_PI}, {M_PI_2, 0}, {-M_PI_2, 0}};
         GeoLoop worldGeoLoop = {.numVerts = 4, .verts = worldVerts};
-        GeoPolygon worldGeoPolygon = {.geofence = worldGeoLoop, .numHoles = 0};
+        GeoPolygon worldGeoPolygon = {.geoloop = worldGeoLoop, .numHoles = 0};
         GeoPoint worldVerts2[] = {
             {-M_PI_2, 0}, {M_PI_2, 0}, {M_PI_2, M_PI}, {-M_PI_2, M_PI}};
         GeoLoop worldGeoLoop2 = {.numVerts = 4, .verts = worldVerts2};
-        GeoPolygon worldGeoPolygon2 = {.geofence = worldGeoLoop2,
-                                       .numHoles = 0};
+        GeoPolygon worldGeoPolygon2 = {.geoloop = worldGeoLoop2, .numHoles = 0};
 
         for (int res = 0; res < 3; res++) {
             int polygonToCellsSize =
@@ -96,7 +95,7 @@ SUITE(polygonToCells_reported) {
             {north, east}, {south, east}, {south, west}, {north, west}};
         GeoLoop testGeoLoop = {.numVerts = 4, .verts = testVerts};
         GeoPolygon testPolygon;
-        testPolygon.geofence = testGeoLoop;
+        testPolygon.geoloop = testGeoLoop;
         testPolygon.numHoles = 0;
 
         int res = 7;
@@ -122,7 +121,7 @@ SUITE(polygonToCells_reported) {
             {north, east}, {south, east}, {south, west}, {north, west}};
         GeoLoop testGeoLoop = {.numVerts = 4, .verts = testVerts};
         GeoPolygon testPolygon;
-        testPolygon.geofence = testGeoLoop;
+        testPolygon.geoloop = testGeoLoop;
         testPolygon.numHoles = 0;
 
         int res = 7;
@@ -145,7 +144,7 @@ SUITE(polygonToCells_reported) {
                                 {0.10069496685903621, 0.8920742194546231}};
         GeoLoop testGeoLoop = {.numVerts = 4, .verts = testVerts};
         GeoPolygon testPolygon;
-        testPolygon.geofence = testGeoLoop;
+        testPolygon.geoloop = testGeoLoop;
         testPolygon.numHoles = 0;
 
         int res = 13;

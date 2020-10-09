@@ -48,7 +48,7 @@
  * @param bboxes  Output bboxes, one for the outer loop and one for each hole
  */
 void bboxesFromGeoPolygon(const GeoPolygon* polygon, BBox* bboxes) {
-    bboxFromGeoLoop(&polygon->geofence, &bboxes[0]);
+    bboxFromGeoLoop(&polygon->geoloop, &bboxes[0]);
     for (int i = 0; i < polygon->numHoles; i++) {
         bboxFromGeoLoop(&polygon->holes[i], &bboxes[i + 1]);
     }
@@ -58,19 +58,19 @@ void bboxesFromGeoPolygon(const GeoPolygon* polygon, BBox* bboxes) {
  * pointInsidePolygon takes a given GeoPolygon data structure and
  * checks if it contains a given geo coordinate.
  *
- * @param geoPolygon The geofence and holes defining the relevant area
- * @param bboxes     The bboxes for the main geofence and each of its holes
+ * @param geoPolygon The geoloop and holes defining the relevant area
+ * @param bboxes     The bboxes for the main geoloop and each of its holes
  * @param coord      The coordinate to check
  * @return           Whether the point is contained
  */
 bool pointInsidePolygon(const GeoPolygon* geoPolygon, const BBox* bboxes,
                         const GeoPoint* coord) {
-    // Start with contains state of primary geofence
+    // Start with contains state of primary geoloop
     bool contains =
-        pointInsideGeoLoop(&(geoPolygon->geofence), &bboxes[0], coord);
+        pointInsideGeoLoop(&(geoPolygon->geoloop), &bboxes[0], coord);
 
-    // If the point is contained in the primary geofence, but there are holes in
-    // the geofence iterate through all holes and return false if the point is
+    // If the point is contained in the primary geoloop, but there are holes in
+    // the geoloop iterate through all holes and return false if the point is
     // contained in any hole
     if (contains && geoPolygon->numHoles > 0) {
         for (int i = 0; i < geoPolygon->numHoles; i++) {

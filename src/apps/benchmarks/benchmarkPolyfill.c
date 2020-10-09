@@ -108,15 +108,15 @@ BEGIN_BENCHMARKS();
 
 sfGeoLoop.numVerts = 6;
 sfGeoLoop.verts = sfVerts;
-sfGeoPolygon.geofence = sfGeoLoop;
+sfGeoPolygon.geoloop = sfGeoLoop;
 
 alamedaGeoLoop.numVerts = 50;
 alamedaGeoLoop.verts = alamedaVerts;
-alamedaGeoPolygon.geofence = alamedaGeoLoop;
+alamedaGeoPolygon.geoloop = alamedaGeoLoop;
 
 southernGeoLoop.numVerts = 23;
 southernGeoLoop.verts = southernVerts;
-southernGeoPolygon.geofence = southernGeoLoop;
+southernGeoPolygon.geoloop = southernGeoLoop;
 
 int numHexagons;
 H3Index* hexagons;

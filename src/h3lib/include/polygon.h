@@ -32,13 +32,13 @@
 #define INIT_ITERATION_GEOFENCE int loopIndex = -1
 
 /** Macro: Increment GeoLoop loop iteration, or break if done. */
-#define ITERATE_GEOFENCE(geofence, vertexA, vertexB) \
-    if (++loopIndex >= geofence->numVerts) break;    \
-    vertexA = geofence->verts[loopIndex];            \
-    vertexB = geofence->verts[(loopIndex + 1) % geofence->numVerts]
+#define ITERATE_GEOFENCE(geoloop, vertexA, vertexB) \
+    if (++loopIndex >= geoloop->numVerts) break;    \
+    vertexA = geoloop->verts[loopIndex];            \
+    vertexB = geoloop->verts[(loopIndex + 1) % geoloop->numVerts]
 
 /** Macro: Whether a GeoLoop is empty */
-#define IS_EMPTY_GEOFENCE(geofence) geofence->numVerts == 0
+#define IS_EMPTY_GEOFENCE(geoloop) geoloop->numVerts == 0
 
 // Defined directly in polygon.c:
 void bboxesFromGeoPolygon(const GeoPolygon* polygon, BBox* bboxes);
@@ -50,7 +50,7 @@ bool pointInsidePolygon(const GeoPolygon* geoPolygon, const BBox* bboxes,
 
 /**
  * Create a bounding box from a GeoLoop
- * @param geofence Input GeoLoop
+ * @param geoloop Input GeoLoop
  * @param bbox     Output bbox
  */
 void bboxFromGeoLoop(const GeoLoop* loop, BBox* bbox);
@@ -58,7 +58,7 @@ void bboxFromGeoLoop(const GeoLoop* loop, BBox* bbox);
 /**
  * Take a given GeoLoop data structure and check if it
  * contains a given geo coordinate.
- * @param loop          The geofence
+ * @param loop          The geoloop
  * @param bbox          The bbox for the loop
  * @param coord         The coordinate to check
  * @return              Whether the point is contained
@@ -71,6 +71,6 @@ bool pointInsideGeoLoop(const GeoLoop* loop, const BBox* bbox,
  * @param loop  The loop to check
  * @return      Whether the loop is clockwise
  */
-bool isClockwiseGeoLoop(const GeoLoop* geofence);
+bool isClockwiseGeoLoop(const GeoLoop* geoloop);
 
 #endif

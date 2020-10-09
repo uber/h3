@@ -23,11 +23,11 @@
 #include "polygon.h"
 #include "test.h"
 
-void assertBBox(const GeoLoop* geofence, const BBox* expected,
+void assertBBox(const GeoLoop* geoloop, const BBox* expected,
                 const GeoPoint* inside, const GeoPoint* outside) {
     BBox result;
 
-    bboxFromGeoLoop(geofence, &result);
+    bboxFromGeoLoop(geoloop, &result);
 
     t_assert(bboxEquals(&result, expected), "Got expected bbox");
     t_assert(bboxContains(&result, inside), "Contains expected inside point");
@@ -38,48 +38,48 @@ void assertBBox(const GeoLoop* geofence, const BBox* expected,
 SUITE(BBox) {
     TEST(posLatPosLon) {
         GeoPoint verts[] = {{0.8, 0.3}, {0.7, 0.6}, {1.1, 0.7}, {1.0, 0.2}};
-        const GeoLoop geofence = {.numVerts = 4, .verts = verts};
+        const GeoLoop geoloop = {.numVerts = 4, .verts = verts};
         const BBox expected = {1.1, 0.7, 0.7, 0.2};
         const GeoPoint inside = {0.9, 0.4};
         const GeoPoint outside = {0.0, 0.0};
-        assertBBox(&geofence, &expected, &inside, &outside);
+        assertBBox(&geoloop, &expected, &inside, &outside);
     }
 
     TEST(negLatPosLon) {
         GeoPoint verts[] = {{-0.3, 0.6}, {-0.4, 0.9}, {-0.2, 0.8}, {-0.1, 0.6}};
-        const GeoLoop geofence = {.numVerts = 4, .verts = verts};
+        const GeoLoop geoloop = {.numVerts = 4, .verts = verts};
         const BBox expected = {-0.1, -0.4, 0.9, 0.6};
         const GeoPoint inside = {-0.3, 0.8};
         const GeoPoint outside = {0.0, 0.0};
-        assertBBox(&geofence, &expected, &inside, &outside);
+        assertBBox(&geoloop, &expected, &inside, &outside);
     }
 
     TEST(posLatNegLon) {
         GeoPoint verts[] = {{0.7, -1.4}, {0.8, -0.9}, {1.0, -0.8}, {1.1, -1.3}};
-        const GeoLoop geofence = {.numVerts = 4, .verts = verts};
+        const GeoLoop geoloop = {.numVerts = 4, .verts = verts};
         const BBox expected = {1.1, 0.7, -0.8, -1.4};
         const GeoPoint inside = {0.9, -1.0};
         const GeoPoint outside = {0.0, 0.0};
-        assertBBox(&geofence, &expected, &inside, &outside);
+        assertBBox(&geoloop, &expected, &inside, &outside);
     }
 
     TEST(negLatNegLon) {
         GeoPoint verts[] = {
             {-0.4, -1.4}, {-0.3, -1.1}, {-0.1, -1.2}, {-0.2, -1.4}};
-        const GeoLoop geofence = {.numVerts = 4, .verts = verts};
+        const GeoLoop geoloop = {.numVerts = 4, .verts = verts};
         const BBox expected = {-0.1, -0.4, -1.1, -1.4};
         const GeoPoint inside = {-0.3, -1.2};
         const GeoPoint outside = {0.0, 0.0};
-        assertBBox(&geofence, &expected, &inside, &outside);
+        assertBBox(&geoloop, &expected, &inside, &outside);
     }
 
     TEST(aroundZeroZero) {
         GeoPoint verts[] = {{0.4, -0.4}, {0.4, 0.4}, {-0.4, 0.4}, {-0.4, -0.4}};
-        const GeoLoop geofence = {.numVerts = 4, .verts = verts};
+        const GeoLoop geoloop = {.numVerts = 4, .verts = verts};
         const BBox expected = {0.4, -0.4, 0.4, -0.4};
         const GeoPoint inside = {-0.1, -0.1};
         const GeoPoint outside = {1.0, -1.0};
-        assertBBox(&geofence, &expected, &inside, &outside);
+        assertBBox(&geoloop, &expected, &inside, &outside);
     }
 
     TEST(transmeridian) {
@@ -87,11 +87,11 @@ SUITE(BBox) {
                             {0.4, -M_PI + 0.1},
                             {-0.4, -M_PI + 0.1},
                             {-0.4, M_PI - 0.1}};
-        const GeoLoop geofence = {.numVerts = 4, .verts = verts};
+        const GeoLoop geoloop = {.numVerts = 4, .verts = verts};
         const BBox expected = {0.4, -0.4, -M_PI + 0.1, M_PI - 0.1};
         const GeoPoint insideOnMeridian = {-0.1, M_PI};
         const GeoPoint outside = {1.0, M_PI - 0.5};
-        assertBBox(&geofence, &expected, &insideOnMeridian, &outside);
+        assertBBox(&geoloop, &expected, &insideOnMeridian, &outside);
 
         const GeoPoint westInside = {0.1, M_PI - 0.05};
         t_assert(bboxContains(&expected, &westInside),
@@ -113,11 +113,11 @@ SUITE(BBox) {
                             {M_PI_2 - 0.1, 0.8},
                             {M_PI_2, 0.8},
                             {M_PI_2, 0.1}};
-        const GeoLoop geofence = {.numVerts = 4, .verts = verts};
+        const GeoLoop geoloop = {.numVerts = 4, .verts = verts};
         const BBox expected = {M_PI_2, M_PI_2 - 0.1, 0.8, 0.1};
         const GeoPoint inside = {M_PI_2 - 0.01, 0.4};
         const GeoPoint outside = {M_PI_2, 0.9};
-        assertBBox(&geofence, &expected, &inside, &outside);
+        assertBBox(&geoloop, &expected, &inside, &outside);
     }
 
     TEST(edgeOnSouthPole) {
@@ -125,11 +125,11 @@ SUITE(BBox) {
                             {-M_PI_2 + 0.1, 0.8},
                             {-M_PI_2, 0.8},
                             {-M_PI_2, 0.1}};
-        const GeoLoop geofence = {.numVerts = 4, .verts = verts};
+        const GeoLoop geoloop = {.numVerts = 4, .verts = verts};
         const BBox expected = {-M_PI_2 + 0.1, -M_PI_2, 0.8, 0.1};
         const GeoPoint inside = {-M_PI_2 + 0.01, 0.4};
         const GeoPoint outside = {-M_PI_2, 0.9};
-        assertBBox(&geofence, &expected, &inside, &outside);
+        assertBBox(&geoloop, &expected, &inside, &outside);
     }
 
     TEST(containsEdges) {

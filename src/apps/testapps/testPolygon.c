@@ -41,21 +41,21 @@ static void createLinkedLoop(LinkedGeoLoop* loop, GeoPoint* verts,
 
 SUITE(polygon) {
     TEST(pointInsideGeoLoop) {
-        GeoLoop geofence = {.numVerts = 6, .verts = sfVerts};
+        GeoLoop geoloop = {.numVerts = 6, .verts = sfVerts};
 
         GeoPoint inside = {0.659, -2.136};
         GeoPoint somewhere = {1, 2};
 
         BBox bbox;
-        bboxFromGeoLoop(&geofence, &bbox);
+        bboxFromGeoLoop(&geoloop, &bbox);
 
-        t_assert(!pointInsideGeoLoop(&geofence, &bbox, &sfVerts[0]),
+        t_assert(!pointInsideGeoLoop(&geoloop, &bbox, &sfVerts[0]),
                  "contains exact");
-        t_assert(pointInsideGeoLoop(&geofence, &bbox, &sfVerts[4]),
+        t_assert(pointInsideGeoLoop(&geoloop, &bbox, &sfVerts[4]),
                  "contains exact 4");
-        t_assert(pointInsideGeoLoop(&geofence, &bbox, &inside),
+        t_assert(pointInsideGeoLoop(&geoloop, &bbox, &inside),
                  "contains point inside");
-        t_assert(!pointInsideGeoLoop(&geofence, &bbox, &somewhere),
+        t_assert(!pointInsideGeoLoop(&geoloop, &bbox, &somewhere),
                  "contains somewhere else");
     }
 
@@ -108,12 +108,12 @@ SUITE(polygon) {
 
     TEST(bboxFromGeoLoop) {
         GeoPoint verts[] = {{0.8, 0.3}, {0.7, 0.6}, {1.1, 0.7}, {1.0, 0.2}};
-        GeoLoop geofence = {.numVerts = 4, .verts = verts};
+        GeoLoop geoloop = {.numVerts = 4, .verts = verts};
 
         const BBox expected = {1.1, 0.7, 0.7, 0.2};
 
         BBox result;
-        bboxFromGeoLoop(&geofence, &result);
+        bboxFromGeoLoop(&geoloop, &result);
         t_assert(bboxEquals(&result, &expected), "Got expected bbox");
     }
 
@@ -121,33 +121,33 @@ SUITE(polygon) {
         GeoPoint verts[] = {{0.1, -M_PI + 0.1},  {0.1, M_PI - 0.1},
                             {0.05, M_PI - 0.2},  {-0.1, M_PI - 0.1},
                             {-0.1, -M_PI + 0.1}, {-0.05, -M_PI + 0.2}};
-        GeoLoop geofence = {.numVerts = 6, .verts = verts};
+        GeoLoop geoloop = {.numVerts = 6, .verts = verts};
 
         const BBox expected = {0.1, -0.1, -M_PI + 0.2, M_PI - 0.2};
 
         BBox result;
-        bboxFromGeoLoop(&geofence, &result);
+        bboxFromGeoLoop(&geoloop, &result);
         t_assert(bboxEquals(&result, &expected),
                  "Got expected transmeridian bbox");
     }
 
     TEST(bboxFromGeoLoopNoVertices) {
-        GeoLoop geofence;
-        geofence.verts = NULL;
-        geofence.numVerts = 0;
+        GeoLoop geoloop;
+        geoloop.verts = NULL;
+        geoloop.numVerts = 0;
 
         const BBox expected = {0.0, 0.0, 0.0, 0.0};
 
         BBox result;
-        bboxFromGeoLoop(&geofence, &result);
+        bboxFromGeoLoop(&geoloop, &result);
 
         t_assert(bboxEquals(&result, &expected), "Got expected bbox");
     }
 
     TEST(bboxesFromGeoPolygon) {
         GeoPoint verts[] = {{0.8, 0.3}, {0.7, 0.6}, {1.1, 0.7}, {1.0, 0.2}};
-        GeoLoop geofence = {.numVerts = 4, .verts = verts};
-        GeoPolygon polygon = {.geofence = geofence, .numHoles = 0};
+        GeoLoop geoloop = {.numVerts = 4, .verts = verts};
+        GeoPolygon polygon = {.geoloop = geoloop, .numHoles = 0};
 
         const BBox expected = {1.1, 0.7, 0.7, 0.2};
 
@@ -160,14 +160,14 @@ SUITE(polygon) {
 
     TEST(bboxesFromGeoPolygonHole) {
         GeoPoint verts[] = {{0.8, 0.3}, {0.7, 0.6}, {1.1, 0.7}, {1.0, 0.2}};
-        GeoLoop geofence = {.numVerts = 4, .verts = verts};
+        GeoLoop geoloop = {.numVerts = 4, .verts = verts};
 
         // not a real hole, but doesn't matter for the test
         GeoPoint holeVerts[] = {{0.9, 0.3}, {0.9, 0.5}, {1.0, 0.7}, {0.9, 0.3}};
         GeoLoop holeGeoLoop = {.numVerts = 4, .verts = holeVerts};
 
         GeoPolygon polygon = {
-            .geofence = geofence, .numHoles = 1, .holes = &holeGeoLoop};
+            .geoloop = geoloop, .numHoles = 1, .holes = &holeGeoLoop};
 
         const BBox expected = {1.1, 0.7, 0.7, 0.2};
         const BBox expectedHole = {1.0, 0.9, 0.7, 0.3};
@@ -211,10 +211,10 @@ SUITE(polygon) {
 
     TEST(isClockwiseGeoLoop) {
         GeoPoint verts[] = {{0, 0}, {0.1, 0.1}, {0, 0.1}};
-        GeoLoop geofence = {.numVerts = 3, .verts = verts};
+        GeoLoop geoloop = {.numVerts = 3, .verts = verts};
 
-        t_assert(isClockwiseGeoLoop(&geofence),
-                 "Got true for clockwise geofence");
+        t_assert(isClockwiseGeoLoop(&geoloop),
+                 "Got true for clockwise geoloop");
     }
 
     TEST(isClockwiseLinkedGeoLoop) {
@@ -244,10 +244,10 @@ SUITE(polygon) {
                             {0.4, -M_PI + 0.1},
                             {-0.4, -M_PI + 0.1},
                             {-0.4, M_PI - 0.1}};
-        GeoLoop geofence = {.numVerts = 4, .verts = verts};
+        GeoLoop geoloop = {.numVerts = 4, .verts = verts};
 
-        t_assert(isClockwiseGeoLoop(&geofence),
-                 "Got true for clockwise geofence");
+        t_assert(isClockwiseGeoLoop(&geoloop),
+                 "Got true for clockwise geoloop");
     }
 
     TEST(isClockwiseLinkedGeoLoopTransmeridian) {

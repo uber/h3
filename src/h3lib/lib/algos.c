@@ -678,8 +678,8 @@ int H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index* out) {
  * maxPolygonToCellsSize returns the number of hexagons to allocate space for
  * when performing a polygonToCells on the given GeoJSON-like data structure.
  *
- * The size is the maximum of either the number of points in the geofence or the
- * number of hexagons in the bounding box of the geofence.
+ * The size is the maximum of either the number of points in the geoloop or the
+ * number of hexagons in the bounding box of the geoloop.
  *
  * @param geoPolygon A GeoJSON-like data structure indicating the poly to fill
  * @param res Hexagon resolution (0-15)
@@ -688,13 +688,13 @@ int H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index* out) {
 int H3_EXPORT(maxPolygonToCellsSize)(const GeoPolygon* geoPolygon, int res) {
     // Get the bounding box for the GeoJSON-like struct
     BBox bbox;
-    const GeoLoop geofence = geoPolygon->geofence;
-    bboxFromGeoLoop(&geofence, &bbox);
+    const GeoLoop geoloop = geoPolygon->geoloop;
+    bboxFromGeoLoop(&geoloop, &bbox);
     int numHexagons = bboxHexEstimate(&bbox, res);
     // This algorithm assumes that the number of vertices is usually less than
     // the number of hexagons, but when it's wrong, this will keep it from
     // failing
-    int totalVerts = geofence.numVerts;
+    int totalVerts = geoloop.numVerts;
     for (int i = 0; i < geoPolygon->numHoles; i++) {
         totalVerts += geoPolygon->holes[i].numVerts;
     }
@@ -712,12 +712,12 @@ int H3_EXPORT(maxPolygonToCellsSize)(const GeoPolygon* geoPolygon, int res) {
  * zeroed memory, and fills it with the hexagons that are contained by
  * the GeoJSON-like data structure.
  *
- * This implementation traces the GeoJSON geofence(s) in cartesian space with
- * hexagons, tests them and their neighbors to be contained by the geofence(s),
+ * This implementation traces the GeoJSON geoloop(s) in cartesian space with
+ * hexagons, tests them and their neighbors to be contained by the geoloop(s),
  * and then any newly found hexagons are used to test again until no new
  * hexagons are found.
  *
- * @param geoPolygon The geofence and holes defining the relevant area
+ * @param geoPolygon The geoloop and holes defining the relevant area
  * @param res The Hexagon resolution (0-15)
  * @param out The slab of zeroed memory to write to. Assumed to be big enough.
  */
@@ -737,13 +737,13 @@ void H3_EXPORT(polygonToCells)(const GeoPolygon* geoPolygon, int res,
 }
 
 /**
- * _getEdgeHexagons takes a given geofence ring (either the main geofence or
+ * _getEdgeHexagons takes a given geoloop ring (either the main geoloop or
  * one of the holes) and traces it with hexagons and updates the search and
  * found memory blocks. This is used for determining the initial hexagon set
  * for the polygonToCells algorithm to execute on.
  *
- * @param geofence The geofence (or hole) to be traced
- * @param numHexagons The maximum number of hexagons possible for the geofence
+ * @param geoloop The geoloop (or hole) to be traced
+ * @param numHexagons The maximum number of hexagons possible for the geoloop
  *                    (also the bounds of the search and found arrays)
  * @param res The hexagon resolution (0-15)
  * @param numSearchHexes The number of hexagons found so far to be searched
@@ -754,13 +754,13 @@ void H3_EXPORT(polygonToCells)(const GeoPolygon* geoPolygon, int res,
  * @return An error code if the hash function cannot insert a found hexagon
  *         into the found array.
  */
-int _getEdgeHexagons(const GeoLoop* geofence, int numHexagons, int res,
+int _getEdgeHexagons(const GeoLoop* geoloop, int numHexagons, int res,
                      int* numSearchHexes, H3Index* search, H3Index* found) {
-    for (int i = 0; i < geofence->numVerts; i++) {
-        GeoPoint origin = geofence->verts[i];
-        GeoPoint destination = i == geofence->numVerts - 1
-                                   ? geofence->verts[0]
-                                   : geofence->verts[i + 1];
+    for (int i = 0; i < geoloop->numVerts; i++) {
+        GeoPoint origin = geoloop->verts[i];
+        GeoPoint destination = i == geoloop->numVerts - 1
+                                   ? geoloop->verts[0]
+                                   : geoloop->verts[i + 1];
         const int numHexesEstimate =
             lineHexEstimate(&origin, &destination, res);
         for (int j = 0; j < numHexesEstimate; j++) {
@@ -782,7 +782,7 @@ int _getEdgeHexagons(const GeoLoop* geofence, int numHexagons, int res,
                 if (loopCount > numHexagons)
                     return HEX_HASH_OVERFLOW;  // LCOV_EXCL_LINE
                 if (found[loc] == pointHex)
-                    break;  // At least two points of the geofence index to the
+                    break;  // At least two points of the geoloop index to the
                             // same cell
                 loc = (loc + 1) % numHexagons;
                 loopCount++;
@@ -808,7 +808,7 @@ int _getEdgeHexagons(const GeoLoop* geofence, int numHexagons, int res,
  * search array and the found array is wiped and the process repeats until no
  * new hexagons can be found.
  *
- * @param geoPolygon The geofence and holes defining the relevant area
+ * @param geoPolygon The geoloop and holes defining the relevant area
  * @param res The Hexagon resolution (0-15)
  * @param out The slab of zeroed memory to write to. Assumed to be big enough.
  *
@@ -850,12 +850,12 @@ int _polygonToCellsInternal(const GeoPolygon* geoPolygon, int res,
     int numSearchHexes = 0;
     int numFoundHexes = 0;
 
-    // 1. Trace the hexagons along the polygon defining the outer geofence and
-    // add them to the search hash. The hexagon containing the geofence point
-    // may or may not be contained by the geofence (as the hexagon's center
+    // 1. Trace the hexagons along the polygon defining the outer geoloop and
+    // add them to the search hash. The hexagon containing the geoloop point
+    // may or may not be contained by the geoloop (as the hexagon's center
     // point may be outside of the boundary.)
-    const GeoLoop geofence = geoPolygon->geofence;
-    int failure = _getEdgeHexagons(&geofence, numHexagons, res, &numSearchHexes,
+    const GeoLoop geoloop = geoPolygon->geoloop;
+    int failure = _getEdgeHexagons(&geoloop, numHexagons, res, &numSearchHexes,
                                    search, found);
     // If this branch is reached, we have exceeded the maximum number of
     // hexagons possible and need to clean up the allocated memory.
