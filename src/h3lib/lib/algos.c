@@ -688,8 +688,8 @@ int H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index* out) {
 int H3_EXPORT(maxPolygonToCellsSize)(const GeoPolygon* geoPolygon, int res) {
     // Get the bounding box for the GeoJSON-like struct
     BBox bbox;
-    const Geofence geofence = geoPolygon->geofence;
-    bboxFromGeofence(&geofence, &bbox);
+    const GeoLoop geofence = geoPolygon->geofence;
+    bboxFromGeoLoop(&geofence, &bbox);
     int numHexagons = bboxHexEstimate(&bbox, res);
     // This algorithm assumes that the number of vertices is usually less than
     // the number of hexagons, but when it's wrong, this will keep it from
@@ -754,7 +754,7 @@ void H3_EXPORT(polygonToCells)(const GeoPolygon* geoPolygon, int res,
  * @return An error code if the hash function cannot insert a found hexagon
  *         into the found array.
  */
-int _getEdgeHexagons(const Geofence* geofence, int numHexagons, int res,
+int _getEdgeHexagons(const GeoLoop* geofence, int numHexagons, int res,
                      int* numSearchHexes, H3Index* search, H3Index* found) {
     for (int i = 0; i < geofence->numVerts; i++) {
         GeoPoint origin = geofence->verts[i];
@@ -854,7 +854,7 @@ int _polygonToCellsInternal(const GeoPolygon* geoPolygon, int res,
     // add them to the search hash. The hexagon containing the geofence point
     // may or may not be contained by the geofence (as the hexagon's center
     // point may be outside of the boundary.)
-    const Geofence geofence = geoPolygon->geofence;
+    const GeoLoop geofence = geoPolygon->geofence;
     int failure = _getEdgeHexagons(&geofence, numHexagons, res, &numSearchHexes,
                                    search, found);
     // If this branch is reached, we have exceeded the maximum number of
@@ -874,7 +874,7 @@ int _polygonToCellsInternal(const GeoPolygon* geoPolygon, int res,
     // we're done here, otherwise we'd have to scan the whole set on each insert
     // to make sure there's no duplicates, which is very inefficient.
     for (int i = 0; i < geoPolygon->numHoles; i++) {
-        Geofence* hole = &(geoPolygon->holes[i]);
+        GeoLoop* hole = &(geoPolygon->holes[i]);
         failure = _getEdgeHexagons(hole, numHexagons, res, &numSearchHexes,
                                    search, found);
         // If this branch is reached, we have exceeded the maximum number of

@@ -28,7 +28,7 @@ GeoPoint smallVerts[] = {{0.6593216174404631, -2.136686544190228},
                          {0.6592984683133152, -2.1366238782059224},
                          {0.6593247273713713, -2.136645862675915},
                          {0.6593216174404631, -2.136686544190228}};
-Geofence smallGeofence;
+GeoLoop smallGeoLoop;
 BBox smallBBox;
 
 GeoPoint largeVerts[] = {{0.659094230575688, -2.1371021015485354},
@@ -122,29 +122,29 @@ GeoPoint largeVerts[] = {{0.659094230575688, -2.1371021015485354},
                          {0.6591498571948209, -2.137105402167002},
                          {0.6591204854444472, -2.137124086561602},
                          {0.659094230575688, -2.1371021015485354}};
-Geofence largeGeofence;
+GeoLoop largeGeoLoop;
 BBox largeBBox;
 
 BEGIN_BENCHMARKS();
 
-smallGeofence.numVerts = 6;
-smallGeofence.verts = smallVerts;
-bboxFromGeofence(&smallGeofence, &smallBBox);
+smallGeoLoop.numVerts = 6;
+smallGeoLoop.verts = smallVerts;
+bboxFromGeoLoop(&smallGeoLoop, &smallBBox);
 
-largeGeofence.numVerts = 90;
-largeGeofence.verts = largeVerts;
-bboxFromGeofence(&largeGeofence, &largeBBox);
+largeGeoLoop.numVerts = 90;
+largeGeoLoop.verts = largeVerts;
+bboxFromGeoLoop(&largeGeoLoop, &largeBBox);
 
-BENCHMARK(pointInsideGeofenceSmall, 100000,
-          { pointInsideGeofence(&smallGeofence, &smallBBox, &coord); });
+BENCHMARK(pointInsideGeoLoopSmall, 100000,
+          { pointInsideGeoLoop(&smallGeoLoop, &smallBBox, &coord); });
 
-BENCHMARK(pointInsideGeofenceLarge, 100000,
-          { pointInsideGeofence(&largeGeofence, &largeBBox, &coord); });
+BENCHMARK(pointInsideGeoLoopLarge, 100000,
+          { pointInsideGeoLoop(&largeGeoLoop, &largeBBox, &coord); });
 
-BENCHMARK(bboxFromGeofenceSmall, 100000,
-          { bboxFromGeofence(&smallGeofence, &smallBBox); });
+BENCHMARK(bboxFromGeoLoopSmall, 100000,
+          { bboxFromGeoLoop(&smallGeoLoop, &smallBBox); });
 
-BENCHMARK(bboxFromGeofenceLarge, 100000,
-          { bboxFromGeofence(&largeGeofence, &largeBBox); });
+BENCHMARK(bboxFromGeoLoopLarge, 100000,
+          { bboxFromGeoLoop(&largeGeoLoop, &largeBBox); });
 
 END_BENCHMARKS();

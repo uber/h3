@@ -28,19 +28,19 @@ static GeoPoint sfVerts[] = {
     {0.659966917655, -2.1364398519396},  {0.6595011102219, -2.1359434279405},
     {0.6583348114025, -2.1354884206045}, {0.6581220034068, -2.1382437718946},
     {0.6594479998527, -2.1384597563896}, {0.6599990002976, -2.1376771158464}};
-static Geofence sfGeofence = {.numVerts = 6, .verts = sfVerts};
+static GeoLoop sfGeoLoop = {.numVerts = 6, .verts = sfVerts};
 static GeoPolygon sfGeoPolygon;
 
 static GeoPoint holeVerts[] = {{0.6595072188743, -2.1371053983433},
                                {0.6591482046471, -2.1373141048153},
                                {0.6592295020837, -2.1365222838402}};
-static Geofence holeGeofence = {.numVerts = 3, .verts = holeVerts};
+static GeoLoop holeGeoLoop = {.numVerts = 3, .verts = holeVerts};
 static GeoPolygon holeGeoPolygon;
 
 static GeoPoint emptyVerts[] = {{0.659966917655, -2.1364398519394},
                                 {0.659966917655, -2.1364398519395},
                                 {0.659966917655, -2.1364398519396}};
-static Geofence emptyGeofence = {.numVerts = 3, .verts = emptyVerts};
+static GeoLoop emptyGeoLoop = {.numVerts = 3, .verts = emptyVerts};
 static GeoPolygon emptyGeoPolygon;
 
 /**
@@ -113,14 +113,14 @@ static void fillIndex_assertions(H3Index h) {
 }
 
 SUITE(polygonToCells) {
-    sfGeoPolygon.geofence = sfGeofence;
+    sfGeoPolygon.geofence = sfGeoLoop;
     sfGeoPolygon.numHoles = 0;
 
-    holeGeoPolygon.geofence = sfGeofence;
+    holeGeoPolygon.geofence = sfGeoLoop;
     holeGeoPolygon.numHoles = 1;
-    holeGeoPolygon.holes = &holeGeofence;
+    holeGeoPolygon.holes = &holeGeoLoop;
 
-    emptyGeoPolygon.geofence = emptyGeofence;
+    emptyGeoPolygon.geofence = emptyGeoLoop;
     emptyGeoPolygon.numHoles = 0;
 
     TEST(maxPolygonToCellsSize) {
@@ -183,11 +183,11 @@ SUITE(polygonToCells) {
         }
         verts[boundary.numVerts] = boundary.verts[0];
 
-        Geofence someGeofence;
-        someGeofence.numVerts = boundary.numVerts + 1;
-        someGeofence.verts = verts;
+        GeoLoop someGeoLoop;
+        someGeoLoop.numVerts = boundary.numVerts + 1;
+        someGeoLoop.verts = verts;
         GeoPolygon someHexagon;
-        someHexagon.geofence = someGeofence;
+        someHexagon.geofence = someGeoLoop;
         someHexagon.numHoles = 0;
 
         int numHexagons = H3_EXPORT(maxPolygonToCellsSize)(&someHexagon, 9);
@@ -205,32 +205,32 @@ SUITE(polygonToCells) {
     TEST(polygonToCellsTransmeridian) {
         GeoPoint primeMeridianVerts[] = {
             {0.01, 0.01}, {0.01, -0.01}, {-0.01, -0.01}, {-0.01, 0.01}};
-        Geofence primeMeridianGeofence = {.numVerts = 4,
-                                          .verts = primeMeridianVerts};
-        GeoPolygon primeMeridianGeoPolygon = {.geofence = primeMeridianGeofence,
+        GeoLoop primeMeridianGeoLoop = {.numVerts = 4,
+                                        .verts = primeMeridianVerts};
+        GeoPolygon primeMeridianGeoPolygon = {.geofence = primeMeridianGeoLoop,
                                               .numHoles = 0};
 
         GeoPoint transMeridianVerts[] = {{0.01, -M_PI + 0.01},
                                          {0.01, M_PI - 0.01},
                                          {-0.01, M_PI - 0.01},
                                          {-0.01, -M_PI + 0.01}};
-        Geofence transMeridianGeofence = {.numVerts = 4,
-                                          .verts = transMeridianVerts};
-        GeoPolygon transMeridianGeoPolygon = {.geofence = transMeridianGeofence,
+        GeoLoop transMeridianGeoLoop = {.numVerts = 4,
+                                        .verts = transMeridianVerts};
+        GeoPolygon transMeridianGeoPolygon = {.geofence = transMeridianGeoLoop,
                                               .numHoles = 0};
 
         GeoPoint transMeridianHoleVerts[] = {{0.005, -M_PI + 0.005},
                                              {0.005, M_PI - 0.005},
                                              {-0.005, M_PI - 0.005},
                                              {-0.005, -M_PI + 0.005}};
-        Geofence transMeridianHoleGeofence = {.numVerts = 4,
-                                              .verts = transMeridianHoleVerts};
+        GeoLoop transMeridianHoleGeoLoop = {.numVerts = 4,
+                                            .verts = transMeridianHoleVerts};
         GeoPolygon transMeridianHoleGeoPolygon = {
-            .geofence = transMeridianGeofence,
+            .geofence = transMeridianGeoLoop,
             .numHoles = 1,
-            .holes = &transMeridianHoleGeofence};
+            .holes = &transMeridianHoleGeoLoop};
         GeoPolygon transMeridianFilledHoleGeoPolygon = {
-            .geofence = transMeridianHoleGeofence, .numHoles = 0};
+            .geofence = transMeridianHoleGeoLoop, .numHoles = 0};
 
         int expectedSize;
 
@@ -295,7 +295,7 @@ SUITE(polygonToCells) {
         GeoPoint verts[] = {{0.1, -M_PI + 0.00001},  {0.1, M_PI - 0.00001},
                             {0.05, M_PI - 0.2},      {-0.1, M_PI - 0.00001},
                             {-0.1, -M_PI + 0.00001}, {-0.05, -M_PI + 0.2}};
-        Geofence geofence = {.numVerts = 6, .verts = verts};
+        GeoLoop geofence = {.numVerts = 6, .verts = verts};
         GeoPolygon polygon = {.geofence = geofence, .numHoles = 0};
 
         int numHexagons = H3_EXPORT(maxPolygonToCellsSize)(&polygon, 4);
@@ -339,7 +339,7 @@ SUITE(polygonToCells) {
         GeoPoint verts[] = {boundingBottomLeft, boundingTopLeft,
                             boundingTopRigt, boundingBottomRight};
 
-        Geofence geofence;
+        GeoLoop geofence;
         geofence.verts = verts;
         geofence.numVerts = 4;
 

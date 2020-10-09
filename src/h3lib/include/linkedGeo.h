@@ -67,7 +67,7 @@ void destroyLinkedGeoLoop(LinkedGeoLoop* loop);
 
 /**
  * Create a bounding box from a LinkedGeoLoop
- * @param geofence Input Geofence
+ * @param geofence Input GeoLoop
  * @param bbox     Output bbox
  */
 void bboxFromLinkedGeoLoop(const LinkedGeoLoop* loop, BBox* bbox);

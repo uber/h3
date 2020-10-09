@@ -93,21 +93,21 @@ typedef struct {
     GeoPoint verts[MAX_CELL_BNDRY_VERTS];  ///< vertices in ccw order
 } CellBoundary;
 
-/** @struct Geofence
+/** @struct GeoLoop
  *  @brief similar to CellBoundary, but requires more alloc work
  */
 typedef struct {
     int numVerts;
     GeoPoint *verts;
-} Geofence;
+} GeoLoop;
 
 /** @struct GeoPolygon
  *  @brief Simplified core of GeoJSON Polygon coordinates definition
  */
 typedef struct {
-    Geofence geofence;  ///< exterior boundary of the polygon
-    int numHoles;       ///< number of elements in the array pointed to by holes
-    Geofence *holes;    ///< interior boundaries (holes) in the polygon
+    GeoLoop geofence;  ///< exterior boundary of the polygon
+    int numHoles;      ///< number of elements in the array pointed to by holes
+    GeoLoop *holes;    ///< interior boundaries (holes) in the polygon
 } GeoPolygon;
 
 /** @struct GeoMultiPolygon

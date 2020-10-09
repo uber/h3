@@ -22,7 +22,7 @@ GeoPoint sfVerts[] = {
     {0.659966917655, -2.1364398519396},  {0.6595011102219, -2.1359434279405},
     {0.6583348114025, -2.1354884206045}, {0.6581220034068, -2.1382437718946},
     {0.6594479998527, -2.1384597563896}, {0.6599990002976, -2.1376771158464}};
-Geofence sfGeofence;
+GeoLoop sfGeoLoop;
 GeoPolygon sfGeoPolygon;
 
 GeoPoint alamedaVerts[] = {{0.6597959342671712, -2.133241848488897},
@@ -75,7 +75,7 @@ GeoPoint alamedaVerts[] = {{0.6597959342671712, -2.133241848488897},
                            {0.6594897134102581, -2.1337104032834757},
                            {0.6597920983773051, -2.1332343063312775},
                            {0.6597959342671712, -2.133241848488897}};
-Geofence alamedaGeofence;
+GeoLoop alamedaGeoLoop;
 GeoPolygon alamedaGeoPolygon;
 
 GeoPoint southernVerts[] = {{0.6367481147484843, -2.1290865397798906},
@@ -101,22 +101,22 @@ GeoPoint southernVerts[] = {{0.6367481147484843, -2.1290865397798906},
                             {0.6323403882676475, -2.1266205835454053},
                             {0.6334397909415498, -2.1277211741619553},
                             {0.6367481147484843, -2.1290865397798906}};
-Geofence southernGeofence;
+GeoLoop southernGeoLoop;
 GeoPolygon southernGeoPolygon;
 
 BEGIN_BENCHMARKS();
 
-sfGeofence.numVerts = 6;
-sfGeofence.verts = sfVerts;
-sfGeoPolygon.geofence = sfGeofence;
+sfGeoLoop.numVerts = 6;
+sfGeoLoop.verts = sfVerts;
+sfGeoPolygon.geofence = sfGeoLoop;
 
-alamedaGeofence.numVerts = 50;
-alamedaGeofence.verts = alamedaVerts;
-alamedaGeoPolygon.geofence = alamedaGeofence;
+alamedaGeoLoop.numVerts = 50;
+alamedaGeoLoop.verts = alamedaVerts;
+alamedaGeoPolygon.geofence = alamedaGeoLoop;
 
-southernGeofence.numVerts = 23;
-southernGeofence.verts = southernVerts;
-southernGeoPolygon.geofence = southernGeofence;
+southernGeoLoop.numVerts = 23;
+southernGeoLoop.verts = southernVerts;
+southernGeoPolygon.geofence = southernGeoLoop;
 
 int numHexagons;
 H3Index* hexagons;
