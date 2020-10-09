@@ -57,7 +57,7 @@ SUITE(vertexGraph) {
 
         for (int res = 0; res < 11; res++) {
             centerIndex = H3_EXPORT(pointToCell)(&center, res);
-            H3_EXPORT(h3ToGeoBoundary)(centerIndex, &outline);
+            H3_EXPORT(cellToBoundary)(centerIndex, &outline);
             for (int i = 0; i < outline.numVerts; i++) {
                 hash1 = _hashVertex(&outline.verts[i], res, numBuckets);
                 hash2 = _hashVertex(&outline.verts[(i + 1) % outline.numVerts],

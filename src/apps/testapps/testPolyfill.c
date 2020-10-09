@@ -48,7 +48,7 @@ static GeoPolygon emptyGeoPolygon;
  */
 static bool isTransmeridianCell(H3Index h) {
     GeoBoundary bndry;
-    H3_EXPORT(h3ToGeoBoundary)(h, &bndry);
+    H3_EXPORT(cellToBoundary)(h, &bndry);
 
     double minLon = M_PI, maxLon = -M_PI;
     for (int i = 0; i < bndry.numVerts; i++) {
@@ -69,7 +69,7 @@ static void fillIndex_assertions(H3Index h) {
     // TODO: Not testing more than one depth because the assertions fail.
     for (int nextRes = currentRes; nextRes <= currentRes + 1; nextRes++) {
         GeoBoundary bndry;
-        H3_EXPORT(h3ToGeoBoundary)(h, &bndry);
+        H3_EXPORT(cellToBoundary)(h, &bndry);
         GeoPolygon polygon = {
             .geofence = {.numVerts = bndry.numVerts, .verts = bndry.verts},
             .numHoles = 0,
@@ -175,7 +175,7 @@ SUITE(polygonToCells) {
         GeoCoord somewhere = {1, 2};
         H3Index origin = H3_EXPORT(pointToCell)(&somewhere, 9);
         GeoBoundary boundary;
-        H3_EXPORT(h3ToGeoBoundary)(origin, &boundary);
+        H3_EXPORT(cellToBoundary)(origin, &boundary);
 
         GeoCoord* verts = calloc(boundary.numVerts + 1, sizeof(GeoCoord));
         for (int i = 0; i < boundary.numVerts; i++) {

@@ -49,7 +49,7 @@ SUITE(h3Api) {
                  "coordinates with infinity are rejected");
     }
 
-    TEST(h3ToGeoBoundary_classIIIEdgeVertex) {
+    TEST(cellToBoundary_classIIIEdgeVertex) {
         // Bug test for https://github.com/uber/h3/issues/45
         char* hexes[] = {
             "894cc5349b7ffff", "894cc534d97ffff", "894cc53682bffff",
@@ -60,12 +60,12 @@ SUITE(h3Api) {
         GeoBoundary b;
         for (int i = 0; i < numHexes; i++) {
             h3 = H3_EXPORT(stringToH3)(hexes[i]);
-            H3_EXPORT(h3ToGeoBoundary)(h3, &b);
+            H3_EXPORT(cellToBoundary)(h3, &b);
             t_assert(b.numVerts == 7, "got expected vertex count");
         }
     }
 
-    TEST(h3ToGeoBoundary_classIIIEdgeVertex_exact) {
+    TEST(cellToBoundary_classIIIEdgeVertex_exact) {
         // Bug test for https://github.com/uber/h3/issues/45
         H3Index h3 = H3_EXPORT(stringToH3)("894cc536537ffff");
         GeoBoundary boundary;
@@ -80,7 +80,7 @@ SUITE(h3Api) {
         t_assertBoundary(h3, &boundary);
     }
 
-    TEST(h3ToGeoBoundary_coslonConstrain) {
+    TEST(cellToBoundary_coslonConstrain) {
         // Bug test for https://github.com/uber/h3/issues/212
         H3Index h3 = 0x87dc6d364ffffffL;
         GeoBoundary boundary;

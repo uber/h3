@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Uber Technologies, Inc.
+ * Copyright 2017-2018, 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ const char* currentTestName = "";
 void t_assertBoundary(H3Index h3, const GeoBoundary* b1) {
     // Generate cell boundary for the h3 index
     GeoBoundary b2;
-    H3_EXPORT(h3ToGeoBoundary)(h3, &b2);
+    H3_EXPORT(cellToBoundary)(h3, &b2);
     t_assert(b1->numVerts == b2.numVerts, "expected cell boundary count");
     for (int v = 0; v < b1->numVerts; v++) {
         t_assert(geoAlmostEqual(&b1->verts[v], &b2.verts[v]),

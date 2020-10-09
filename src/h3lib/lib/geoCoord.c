@@ -352,7 +352,7 @@ double H3_EXPORT(cellAreaRads2)(H3Index cell) {
     GeoCoord c;
     GeoBoundary gb;
     H3_EXPORT(cellToPoint)(cell, &c);
-    H3_EXPORT(h3ToGeoBoundary)(cell, &gb);
+    H3_EXPORT(cellToBoundary)(cell, &gb);
 
     double area = 0.0;
     for (int i = 0; i < gb.numVerts; i++) {

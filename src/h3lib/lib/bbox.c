@@ -85,7 +85,7 @@ double _hexRadiusKm(H3Index h3Index) {
     GeoCoord h3Center;
     GeoBoundary h3Boundary;
     H3_EXPORT(cellToPoint)(h3Index, &h3Center);
-    H3_EXPORT(h3ToGeoBoundary)(h3Index, &h3Boundary);
+    H3_EXPORT(cellToBoundary)(h3Index, &h3Boundary);
     return H3_EXPORT(pointDistKm)(&h3Center, h3Boundary.verts);
 }
 

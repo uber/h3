@@ -236,7 +236,7 @@ SUITE(h3UniEdge) {
 
         for (int res = 0; res < MAX_H3_RES; res++) {
             sf = H3_EXPORT(pointToCell)(&sfGeo, res);
-            H3_EXPORT(h3ToGeoBoundary)(sf, &boundary);
+            H3_EXPORT(cellToBoundary)(sf, &boundary);
             H3_EXPORT(originToDirectedEdges)(sf, edges);
 
             for (int i = 0; i < 6; i++) {
@@ -265,7 +265,7 @@ SUITE(h3UniEdge) {
 
         for (int res = 1; res < MAX_H3_RES; res += 2) {
             setH3Index(&pentagon, res, 24, 0);
-            H3_EXPORT(h3ToGeoBoundary)(pentagon, &boundary);
+            H3_EXPORT(cellToBoundary)(pentagon, &boundary);
             H3_EXPORT(originToDirectedEdges)(pentagon, edges);
 
             int missingEdgeCount = 0;
@@ -303,7 +303,7 @@ SUITE(h3UniEdge) {
 
         for (int res = 0; res < MAX_H3_RES; res += 2) {
             setH3Index(&pentagon, res, 24, 0);
-            H3_EXPORT(h3ToGeoBoundary)(pentagon, &boundary);
+            H3_EXPORT(cellToBoundary)(pentagon, &boundary);
             H3_EXPORT(originToDirectedEdges)(pentagon, edges);
 
             int missingEdgeCount = 0;

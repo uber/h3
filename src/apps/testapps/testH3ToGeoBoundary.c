@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 Uber Technologies, Inc.
+ * Copyright 2016-2017, 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 /** @file
- * @brief tests H3 function `h3ToGeoBoundary`
+ * @brief tests H3 function `cellToBoundary`
  *
  *  usage: `testH3ToGeoBoundary`
  *
  *  The program reads H3 indexes and associated cell boundaries from
  *  stdin until EOF is encountered. For each input cell, the program
- *  uses `h3ToGeoBoundary` to generate the boundary and then compares that
+ *  uses `cellToBoundary` to generate the boundary and then compares that
  *  generated boundary to the original input boundary.
  */
 

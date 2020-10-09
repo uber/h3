@@ -69,7 +69,7 @@ int main(int argc, char* argv[]) {
 
         H3Index h = H3_EXPORT(pointToCell)(&g, res);
         GeoBoundary b;
-        H3_EXPORT(h3ToGeoBoundary)(h, &b);
+        H3_EXPORT(cellToBoundary)(h, &b);
 
         h3Println(h);
         geoBoundaryPrintln(&b);

@@ -71,7 +71,7 @@ SUITE(cellToChildren) {
         // points then query for those independently
 
         GeoBoundary outside;
-        H3_EXPORT(h3ToGeoBoundary)(sfHex8, &outside);
+        H3_EXPORT(cellToBoundary)(sfHex8, &outside);
         for (int i = 0; i < outside.numVerts; i++) {
             GeoCoord avg = {0};
             avg.lat = (outside.verts[i].lat + center.lat) / 2;

@@ -30,8 +30,8 @@ BENCHMARK(pointToCell, 10000, { H3_EXPORT(pointToCell)(&coord, 9); });
 
 BENCHMARK(cellToPoint, 10000, { H3_EXPORT(cellToPoint)(hex, &outCoord); });
 
-BENCHMARK(h3ToGeoBoundary, 10000, {
-    H3_EXPORT(h3ToGeoBoundary)(hex, &outBoundary);
+BENCHMARK(cellToBoundary, 10000, {
+    H3_EXPORT(cellToBoundary)(hex, &outBoundary);
 });
 
 END_BENCHMARKS();
