@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Uber Technologies, Inc.
+ * Copyright 2017-2018, 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ extern const char* currentTestName;
         printf(".");                                                       \
     } while (0)
 
-void t_assertBoundary(H3Index h3, const GeoBoundary* b1);
+void t_assertBoundary(H3Index h3, const CellBoundary* b1);
 
 #define SUITE(NAME)                                         \
     static void runTests(void);                             \

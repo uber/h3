@@ -210,7 +210,7 @@ void H3_EXPORT(originToDirectedEdges)(H3Index origin, H3Index* edges) {
  * @param edge The directed edge H3Index
  * @param gb The geoboundary object to store the edge coordinates.
  */
-void H3_EXPORT(directedEdgeToBoundary)(H3Index edge, GeoBoundary* gb) {
+void H3_EXPORT(directedEdgeToBoundary)(H3Index edge, CellBoundary* gb) {
     // Get the origin and neighbor direction from the edge
     Direction direction = H3_GET_RESERVED_BITS(edge);
     H3Index origin = H3_EXPORT(getDirectedEdgeOrigin)(edge);
@@ -234,8 +234,8 @@ void H3_EXPORT(directedEdgeToBoundary)(H3Index edge, GeoBoundary* gb) {
     int pentagon = H3_EXPORT(isPentagon)(origin);
 
     if (pentagon) {
-        _faceIjkPentToGeoBoundary(&fijk, res, startVertex, 2, gb);
+        _faceIjkPentToCellBoundary(&fijk, res, startVertex, 2, gb);
     } else {
-        _faceIjkToGeoBoundary(&fijk, res, startVertex, 2, gb);
+        _faceIjkToCellBoundary(&fijk, res, startVertex, 2, gb);
     }
 }

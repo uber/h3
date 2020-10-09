@@ -16,7 +16,7 @@
 /** @file
  * @brief generates random cell indexes and the corresponding cell boundaries
  *
- *  See `mkRandGeoBoundary --help` for usage.
+ *  See `mkRandCellBoundary --help` for usage.
  *
  *  The program generates `numPoints` random lat/lon coordinates and outputs
  *  them along with the corresponding H3Index at the specified `resolution`.
@@ -68,7 +68,7 @@ int main(int argc, char* argv[]) {
         randomGeo(&g);
 
         H3Index h = H3_EXPORT(pointToCell)(&g, res);
-        GeoBoundary b;
+        CellBoundary b;
         H3_EXPORT(cellToBoundary)(h, &b);
 
         h3Println(h);

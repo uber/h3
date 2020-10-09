@@ -28,9 +28,9 @@ int globalTestCount = 0;
 const char* currentSuiteName = "";
 const char* currentTestName = "";
 
-void t_assertBoundary(H3Index h3, const GeoBoundary* b1) {
+void t_assertBoundary(H3Index h3, const CellBoundary* b1) {
     // Generate cell boundary for the h3 index
-    GeoBoundary b2;
+    CellBoundary b2;
     H3_EXPORT(cellToBoundary)(h3, &b2);
     t_assert(b1->numVerts == b2.numVerts, "expected cell boundary count");
     for (int v = 0; v < b1->numVerts; v++) {

@@ -83,7 +83,7 @@ double _hexRadiusKm(H3Index h3Index) {
     // There is probably a cheaper way to determine the radius of a
     // hexagon, but this way is conceptually simple
     GeoCoord h3Center;
-    GeoBoundary h3Boundary;
+    CellBoundary h3Boundary;
     H3_EXPORT(cellToPoint)(h3Index, &h3Center);
     H3_EXPORT(cellToBoundary)(h3Index, &h3Boundary);
     return H3_EXPORT(pointDistKm)(&h3Center, h3Boundary.verts);

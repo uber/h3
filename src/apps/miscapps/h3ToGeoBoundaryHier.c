@@ -62,7 +62,7 @@
 #include "utility.h"
 
 void doCell(H3Index h, int isKmlOut) {
-    GeoBoundary b;
+    CellBoundary b;
     H3_EXPORT(cellToBoundary)(h, &b);
 
     char label[BUFF_SIZE];

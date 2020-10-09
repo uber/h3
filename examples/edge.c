@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
     H3Index edge = cellsToDirectedEdge(origin, destination);
     printf("The edge is %" PRIx64 "\n", edge);
 
-    GeoBoundary boundary;
+    CellBoundary boundary;
     directedEdgeToBoundary(edge, &boundary);
     for (int v = 0; v < boundary.numVerts; v++) {
         printf("Edge vertex #%d: %lf, %lf\n", v,

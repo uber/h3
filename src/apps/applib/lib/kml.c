@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 Uber Technologies, Inc.
+ * Copyright 2016-2017, 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -142,7 +142,7 @@ void outputTriKML(const GeoCoord* v1, const GeoCoord* v2, const GeoCoord* v3,
     printf("</Placemark>\n");
 }
 
-void outputBoundaryKML(const GeoBoundary* b, const char* name) {
+void outputBoundaryKML(const CellBoundary* b, const char* name) {
     const GeoCoord* v = (const GeoCoord*)&(b->verts);
     outputPolyKML(v, b->numVerts, name);
 }

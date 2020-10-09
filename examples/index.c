@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
     printf("The index is: %" PRIx64 "\n", indexed);
 
     // Get the vertices of the H3 index.
-    GeoBoundary boundary;
+    CellBoundary boundary;
     cellToBoundary(indexed, &boundary);
     // Indexes can have different number of vertices under some cases,
     // which is why boundary.numVerts is needed.
