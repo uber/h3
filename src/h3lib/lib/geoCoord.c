@@ -259,7 +259,7 @@ void _geoAzDistanceRads(const GeoCoord *p1, double az, double distance,
  * the future.
  */
 
-double H3_EXPORT(hexAreaKm2)(int res) {
+double H3_EXPORT(getHexagonAreaAvgKm2)(int res) {
     static const double areas[] = {
         4250546.848, 607220.9782, 86745.85403, 12392.26486,
         1770.323552, 252.9033645, 36.1290521,  5.1612932,
@@ -268,7 +268,7 @@ double H3_EXPORT(hexAreaKm2)(int res) {
     return areas[res];
 }
 
-double H3_EXPORT(hexAreaM2)(int res) {
+double H3_EXPORT(getHexagonAreaAvgM2)(int res) {
     static const double areas[] = {
         4.25055E+12, 6.07221E+11, 86745854035, 12392264862,
         1770323552,  252903364.5, 36129052.1,  5161293.2,

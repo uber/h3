@@ -284,15 +284,15 @@ double H3_EXPORT(pointDistKm)(const GeoCoord *a, const GeoCoord *b);
 double H3_EXPORT(pointDistM)(const GeoCoord *a, const GeoCoord *b);
 /** @} */
 
-/** @defgroup hexArea hexArea
- * Functions for hexArea
+/** @defgroup getHexagonAreaAvg getHexagonAreaAvg
+ * Functions for getHexagonAreaAvg
  * @{
  */
 /** @brief average hexagon area in square kilometers (excludes pentagons) */
-DECLSPEC double H3_EXPORT(hexAreaKm2)(int res);
+DECLSPEC double H3_EXPORT(getHexagonAreaAvgKm2)(int res);
 
 /** @brief average hexagon area in square meters (excludes pentagons) */
-DECLSPEC double H3_EXPORT(hexAreaM2)(int res);
+DECLSPEC double H3_EXPORT(getHexagonAreaAvgM2)(int res);
 /** @} */
 
 /** @defgroup cellArea cellArea
