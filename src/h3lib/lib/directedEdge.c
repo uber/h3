@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** @file  h3UniEdge.c
- * @brief H3UniEdge functions for manipulating directed edge indexes.
+/** @file  directedEdge.c
+ * @brief DirectedEdge functions for manipulating directed edge indexes.
  */
 
 #include <inttypes.h>
@@ -111,7 +111,7 @@ H3Index H3_EXPORT(cellsToDirectedEdge)(H3Index origin, H3Index destination) {
 
     // Create the edge index for the neighbor direction
     H3Index output = origin;
-    H3_SET_MODE(output, H3_UNIEDGE_MODE);
+    H3_SET_MODE(output, H3_DIRECTEDEDGE_MODE);
     H3_SET_RESERVED_BITS(output, direction);
 
     return output;
@@ -123,7 +123,7 @@ H3Index H3_EXPORT(cellsToDirectedEdge)(H3Index origin, H3Index destination) {
  * @return The origin H3 hexagon index, or H3_NULL on failure
  */
 H3Index H3_EXPORT(getDirectedEdgeOrigin)(H3Index edge) {
-    if (H3_GET_MODE(edge) != H3_UNIEDGE_MODE) {
+    if (H3_GET_MODE(edge) != H3_DIRECTEDEDGE_MODE) {
         return H3_NULL;
     }
     H3Index origin = edge;
@@ -138,7 +138,7 @@ H3Index H3_EXPORT(getDirectedEdgeOrigin)(H3Index edge) {
  * @return The destination H3 hexagon index, or H3_NULL on failure
  */
 H3Index H3_EXPORT(getDirectedEdgeDestination)(H3Index edge) {
-    if (H3_GET_MODE(edge) != H3_UNIEDGE_MODE) {
+    if (H3_GET_MODE(edge) != H3_DIRECTEDEDGE_MODE) {
         return H3_NULL;
     }
     Direction direction = H3_GET_RESERVED_BITS(edge);
@@ -154,7 +154,7 @@ H3Index H3_EXPORT(getDirectedEdgeDestination)(H3Index edge) {
  * @return 1 if it is a directed edge H3Index, otherwise 0.
  */
 int H3_EXPORT(isValidDirectedEdge)(H3Index edge) {
-    if (H3_GET_MODE(edge) != H3_UNIEDGE_MODE) {
+    if (H3_GET_MODE(edge) != H3_DIRECTEDEDGE_MODE) {
         return 0;
     }
 
@@ -199,7 +199,7 @@ void H3_EXPORT(originToDirectedEdges)(H3Index origin, H3Index* edges) {
             edges[i] = H3_NULL;
         } else {
             edges[i] = origin;
-            H3_SET_MODE(edges[i], H3_UNIEDGE_MODE);
+            H3_SET_MODE(edges[i], H3_DIRECTEDEDGE_MODE);
             H3_SET_RESERVED_BITS(edges[i], i + 1);
         }
     }

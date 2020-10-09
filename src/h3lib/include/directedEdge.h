@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** @file  h3UniEdge.h
- *  @brief H3UniEdge functions for manipulating directed edge indexes.
+/** @file  directedEdge.h
+ *  @brief DirectedEdge functions for manipulating directed edge indexes.
  */
 
-#ifndef H3UNIEDGE_H
-#define H3UNIEDGE_H
+#ifndef DIRECTEDEDGE_H
+#define DIRECTEDEDGE_H
 
 #include "algos.h"
 #include "h3Index.h"

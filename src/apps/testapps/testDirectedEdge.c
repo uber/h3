@@ -62,7 +62,7 @@ SUITE(directedEdge) {
                  "got no neighbors, as expected, from a k-ring of 2");
 
         H3Index sfBroken = sf;
-        H3_SET_MODE(sfBroken, H3_UNIEDGE_MODE);
+        H3_SET_MODE(sfBroken, H3_DIRECTEDEDGE_MODE);
         t_assert(H3_EXPORT(areNeighborCells)(sf, sfBroken) == 0,
                  "broken H3Indexes can't be neighbors");
         t_assert(H3_EXPORT(areNeighborCells)(sfBroken, sf) == 0,
@@ -160,18 +160,18 @@ SUITE(directedEdge) {
                  "hexagons do not validate");
 
         H3Index fakeEdge = sf;
-        H3_SET_MODE(fakeEdge, H3_UNIEDGE_MODE);
+        H3_SET_MODE(fakeEdge, H3_DIRECTEDEDGE_MODE);
         t_assert(H3_EXPORT(isValidDirectedEdge)(fakeEdge) == 0,
                  "edges without an edge specified don't work");
         H3Index invalidEdge = sf;
-        H3_SET_MODE(invalidEdge, H3_UNIEDGE_MODE);
+        H3_SET_MODE(invalidEdge, H3_DIRECTEDEDGE_MODE);
         H3_SET_RESERVED_BITS(invalidEdge, INVALID_DIGIT);
         t_assert(H3_EXPORT(isValidDirectedEdge)(invalidEdge) == 0,
                  "edges with an invalid edge specified don't work");
 
         H3Index pentagon = 0x821c07fffffffff;
         H3Index goodPentagonalEdge = pentagon;
-        H3_SET_MODE(goodPentagonalEdge, H3_UNIEDGE_MODE);
+        H3_SET_MODE(goodPentagonalEdge, H3_DIRECTEDEDGE_MODE);
         H3_SET_RESERVED_BITS(goodPentagonalEdge, 2);
         t_assert(H3_EXPORT(isValidDirectedEdge)(goodPentagonalEdge) == 1,
                  "pentagonal edge validates");
