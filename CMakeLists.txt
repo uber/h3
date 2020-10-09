@@ -213,12 +213,12 @@ set(OTHER_SOURCE_FILES
     src/apps/fuzzers/fuzzerGeoToH3.c
     src/apps/fuzzers/fuzzerH3ToGeo.c
     src/apps/fuzzers/fuzzerKRing.c
-    src/apps/benchmarks/benchmarkPolyfill.c
+    src/apps/benchmarks/benchmarkPolygonToCells.c
     src/apps/benchmarks/benchmarkPolygon.c
     src/apps/benchmarks/benchmarkH3SetToLinkedGeo.c
-    src/apps/benchmarks/benchmarkKRing.c
-    src/apps/benchmarks/benchmarkH3Line.c
-    src/apps/benchmarks/benchmarkH3UniEdge.c
+    src/apps/benchmarks/benchmarkGridDiskCells.c
+    src/apps/benchmarks/benchmarkGridPathCells.c
+    src/apps/benchmarks/benchmarkDirectedEdge.c
     src/apps/benchmarks/benchmarkVertex.c
     src/apps/benchmarks/benchmarkH3Api.c)
 
@@ -650,12 +650,12 @@ if(BUILD_BENCHMARKS)
     endmacro()
 
     add_h3_benchmark(benchmarkH3Api src/apps/benchmarks/benchmarkH3Api.c)
-    add_h3_benchmark(benchmarkKRing src/apps/benchmarks/benchmarkKRing.c)
-    add_h3_benchmark(benchmarkH3Line src/apps/benchmarks/benchmarkH3Line.c)
-    add_h3_benchmark(benchmarkH3UniEdge src/apps/benchmarks/benchmarkH3UniEdge.c)
+    add_h3_benchmark(benchmarkGridDiskCells src/apps/benchmarks/benchmarkGridDiskCells.c)
+    add_h3_benchmark(benchmarkGridPathCells src/apps/benchmarks/benchmarkGridPathCells.c)
+    add_h3_benchmark(benchmarkDirectedEdge src/apps/benchmarks/benchmarkDirectedEdge.c)
     add_h3_benchmark(benchmarkVertex src/apps/benchmarks/benchmarkVertex.c)
     add_h3_benchmark(benchmarkH3SetToLinkedGeo src/apps/benchmarks/benchmarkH3SetToLinkedGeo.c)
-    add_h3_benchmark(benchmarkPolyfill src/apps/benchmarks/benchmarkPolyfill.c)
+    add_h3_benchmark(benchmarkPolygonToCells src/apps/benchmarks/benchmarkPolygonToCells.c)
     if(ENABLE_REQUIRES_ALL_SYMBOLS)
         add_h3_benchmark(benchmarkPolygon src/apps/benchmarks/benchmarkPolygon.c)
     endif()
