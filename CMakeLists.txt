@@ -204,8 +204,8 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testCoordIj.c
     src/apps/testapps/testCoordIjk.c
     src/apps/testapps/testH3Memory.c
-    src/apps/miscapps/h3ToGeoBoundaryHier.c
-    src/apps/miscapps/h3ToGeoHier.c
+    src/apps/miscapps/cellToBoundaryHier.c
+    src/apps/miscapps/cellToPointHier.c
     src/apps/miscapps/generateBaseCellNeighbors.c
     src/apps/miscapps/generatePentagonDirectionFaces.c
     src/apps/miscapps/generateFaceCenterPoint.c
@@ -389,8 +389,8 @@ if(BUILD_FILTERS)
     add_h3_filter(cellToBoundary src/apps/filters/cellToBoundary.c ${APP_SOURCE_FILES})
     add_h3_filter(gridDiskUnsafe src/apps/filters/gridDiskUnsafe.c ${APP_SOURCE_FILES})
     add_h3_filter(gridDisk src/apps/filters/gridDisk.c ${APP_SOURCE_FILES})
-    add_h3_filter(h3ToGeoBoundaryHier src/apps/miscapps/h3ToGeoBoundaryHier.c ${APP_SOURCE_FILES})
-    add_h3_filter(h3ToGeoHier src/apps/miscapps/h3ToGeoHier.c ${APP_SOURCE_FILES})
+    add_h3_filter(cellToBoundaryHier src/apps/miscapps/cellToBoundaryHier.c ${APP_SOURCE_FILES})
+    add_h3_filter(cellToPointHier src/apps/miscapps/cellToPointHier.c ${APP_SOURCE_FILES})
     add_h3_filter(h3ToHier src/apps/miscapps/h3ToHier.c ${APP_SOURCE_FILES})
 
     # Generate KML files for visualizing the H3 grid
