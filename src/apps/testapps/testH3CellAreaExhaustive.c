@@ -45,7 +45,7 @@ static void haversine_assert(H3Index edge) {
     origin = H3_EXPORT(getDirectedEdgeOrigin)(edge);
     H3_EXPORT(cellToPoint)(origin, &a);
 
-    destination = H3_EXPORT(getDestinationH3IndexFromUnidirectionalEdge)(edge);
+    destination = H3_EXPORT(getDirectedEdgeDestination)(edge);
     H3_EXPORT(cellToPoint)(destination, &b);
 
     char pos[] = "distance between cell centers should be positive";

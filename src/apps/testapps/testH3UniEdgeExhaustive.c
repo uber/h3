@@ -47,8 +47,7 @@ static void h3UniEdge_correctness_assertions(H3Index h3) {
         t_assert(H3_EXPORT(getDirectedEdgeOrigin)(edges[i]) == h3,
                  "origin matches input origin");
 
-        destination =
-            H3_EXPORT(getDestinationH3IndexFromUnidirectionalEdge)(edges[i]);
+        destination = H3_EXPORT(getDirectedEdgeDestination)(edges[i]);
         t_assert(H3_EXPORT(areNeighborCells)(h3, destination),
                  "destination is a neighbor");
     }
@@ -65,8 +64,7 @@ static void h3UniEdge_boundary_assertions(H3Index h3) {
     for (int i = 0; i < 6; i++) {
         if (edges[i] == H3_NULL) continue;
         H3_EXPORT(directedEdgeToBoundary)(edges[i], &edgeBoundary);
-        destination =
-            H3_EXPORT(getDestinationH3IndexFromUnidirectionalEdge)(edges[i]);
+        destination = H3_EXPORT(getDirectedEdgeDestination)(edges[i]);
         revEdge = H3_EXPORT(cellsToDirectedEdge)(destination, h3);
         H3_EXPORT(directedEdgeToBoundary)(revEdge, &revEdgeBoundary);
 

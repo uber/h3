@@ -137,7 +137,7 @@ H3Index H3_EXPORT(getDirectedEdgeOrigin)(H3Index edge) {
  * @param edge The edge H3 index
  * @return The destination H3 hexagon index, or H3_NULL on failure
  */
-H3Index H3_EXPORT(getDestinationH3IndexFromUnidirectionalEdge)(H3Index edge) {
+H3Index H3_EXPORT(getDirectedEdgeDestination)(H3Index edge) {
     if (H3_GET_MODE(edge) != H3_UNIEDGE_MODE) {
         return H3_NULL;
     }
@@ -179,8 +179,7 @@ int H3_EXPORT(isValidDirectedEdge)(H3Index edge) {
  */
 void H3_EXPORT(directedEdgeToCells)(H3Index edge, H3Index* originDestination) {
     originDestination[0] = H3_EXPORT(getDirectedEdgeOrigin)(edge);
-    originDestination[1] =
-        H3_EXPORT(getDestinationH3IndexFromUnidirectionalEdge)(edge);
+    originDestination[1] = H3_EXPORT(getDirectedEdgeDestination)(edge);
 }
 
 /**
