@@ -277,7 +277,7 @@ double H3_EXPORT(getHexagonAreaAvgM2)(int res) {
     return areas[res];
 }
 
-double H3_EXPORT(edgeLengthKm)(int res) {
+double H3_EXPORT(getHexagonEdgeLengthAvgKm)(int res) {
     static const double lens[] = {
         1107.712591, 418.6760055, 158.2446558, 59.81085794,
         22.6063794,  8.544408276, 3.229482772, 1.220629759,
@@ -286,7 +286,7 @@ double H3_EXPORT(edgeLengthKm)(int res) {
     return lens[res];
 }
 
-double H3_EXPORT(edgeLengthM)(int res) {
+double H3_EXPORT(getHexagonEdgeLengthAvgM)(int res) {
     static const double lens[] = {
         1107712.591, 418676.0055, 158244.6558, 59810.85794,
         22606.3794,  8544.408276, 3229.482772, 1220.629759,
