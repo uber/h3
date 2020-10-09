@@ -122,7 +122,7 @@ H3Index H3_EXPORT(cellsToDirectedEdge)(H3Index origin, H3Index destination) {
  * @param edge The edge H3 index
  * @return The origin H3 hexagon index, or H3_NULL on failure
  */
-H3Index H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(H3Index edge) {
+H3Index H3_EXPORT(getDirectedEdgeOrigin)(H3Index edge) {
     if (H3_GET_MODE(edge) != H3_UNIEDGE_MODE) {
         return H3_NULL;
     }
@@ -144,8 +144,7 @@ H3Index H3_EXPORT(getDestinationH3IndexFromUnidirectionalEdge)(H3Index edge) {
     Direction direction = H3_GET_RESERVED_BITS(edge);
     int rotations = 0;
     H3Index destination = h3NeighborRotations(
-        H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(edge), direction,
-        &rotations);
+        H3_EXPORT(getDirectedEdgeOrigin)(edge), direction, &rotations);
     return destination;
 }
 
@@ -164,7 +163,7 @@ int H3_EXPORT(isValidDirectedEdge)(H3Index edge) {
         return 0;
     }
 
-    H3Index origin = H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(edge);
+    H3Index origin = H3_EXPORT(getDirectedEdgeOrigin)(edge);
     if (H3_EXPORT(isPentagon)(origin) && neighborDirection == K_AXES_DIGIT) {
         return 0;
     }
@@ -179,8 +178,7 @@ int H3_EXPORT(isValidDirectedEdge)(H3Index edge) {
  * IDs
  */
 void H3_EXPORT(directedEdgeToCells)(H3Index edge, H3Index* originDestination) {
-    originDestination[0] =
-        H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(edge);
+    originDestination[0] = H3_EXPORT(getDirectedEdgeOrigin)(edge);
     originDestination[1] =
         H3_EXPORT(getDestinationH3IndexFromUnidirectionalEdge)(edge);
 }
@@ -216,7 +214,7 @@ void H3_EXPORT(originToDirectedEdges)(H3Index origin, H3Index* edges) {
 void H3_EXPORT(directedEdgeToBoundary)(H3Index edge, GeoBoundary* gb) {
     // Get the origin and neighbor direction from the edge
     Direction direction = H3_GET_RESERVED_BITS(edge);
-    H3Index origin = H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(edge);
+    H3Index origin = H3_EXPORT(getDirectedEdgeOrigin)(edge);
 
     // Get the start vertex for the edge
     int startVertex = vertexNumForDirection(origin, direction);
