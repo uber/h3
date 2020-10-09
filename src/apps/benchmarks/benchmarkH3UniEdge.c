@@ -26,9 +26,9 @@ BEGIN_BENCHMARKS();
 GeoBoundary outBoundary;
 H3_EXPORT(originToDirectedEdges)(hex, edges);
 
-BENCHMARK(getH3UnidirectionalEdgeBoundary, 10000, {
+BENCHMARK(directedEdgeToBoundary, 10000, {
     for (int i = 0; i < 6; i++) {
-        H3_EXPORT(getH3UnidirectionalEdgeBoundary)(edges[i], &outBoundary);
+        H3_EXPORT(directedEdgeToBoundary)(edges[i], &outBoundary);
     }
 });
 

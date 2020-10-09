@@ -387,7 +387,7 @@ double H3_EXPORT(cellAreaM2)(H3Index h) {
 double H3_EXPORT(exactEdgeLengthRads)(H3Index edge) {
     GeoBoundary gb;
 
-    H3_EXPORT(getH3UnidirectionalEdgeBoundary)(edge, &gb);
+    H3_EXPORT(directedEdgeToBoundary)(edge, &gb);
 
     double length = 0.0;
     for (int i = 0; i < gb.numVerts - 1; i++) {

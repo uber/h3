@@ -213,7 +213,7 @@ void H3_EXPORT(originToDirectedEdges)(H3Index origin, H3Index* edges) {
  * @param edge The unidirectional edge H3Index
  * @param gb The geoboundary object to store the edge coordinates.
  */
-void H3_EXPORT(getH3UnidirectionalEdgeBoundary)(H3Index edge, GeoBoundary* gb) {
+void H3_EXPORT(directedEdgeToBoundary)(H3Index edge, GeoBoundary* gb) {
     // Get the origin and neighbor direction from the edge
     Direction direction = H3_GET_RESERVED_BITS(edge);
     H3Index origin = H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(edge);
