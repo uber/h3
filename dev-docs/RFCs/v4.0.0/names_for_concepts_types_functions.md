@@ -66,6 +66,10 @@ The following technical terms should be used in the documentation, the H3 codeba
     - may include more than 6 points in the case that a cell is not a geometric hexagon, such as when a hexagon crosses an icosahedron boundary
     - may also be used to describe the boundary between two geometric cells, as in the case of an edge
     - represented in the H3 codebase with the `CellBoundary` struct (previously `GeoBoundary` before v4.0)
+- `H3_NULL`;
+    - equivalent to `0` and guaranteed to never be a valid `H3Index` (even after any future H3 **modes** are added)
+    - returned by functions to denote an error, or to denote missing data in arrays of `H3Index`
+    - analogous to `NaN` in floating point
 
 
 ### Use of "hex", "hexagon", "cell", "pentagon", etc.

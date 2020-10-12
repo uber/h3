@@ -25,6 +25,7 @@
 #include "coordijk.h"
 #include "geoCoord.h"
 #include "h3Index.h"
+#include "vertex.h"
 
 /**
  * Returns whether or not the provided H3Indexes are neighbors.
@@ -97,25 +98,30 @@ int H3_EXPORT(h3IndexesAreNeighbors)(H3Index origin, H3Index destination) {
  * destination
  * @param origin The origin H3 hexagon index
  * @param destination The destination H3 hexagon index
- * @return The unidirectional edge H3Index, or 0 on failure.
+ * @return The unidirectional edge H3Index, or H3_NULL on failure.
  */
 H3Index H3_EXPORT(getH3UnidirectionalEdge)(H3Index origin,
                                            H3Index destination) {
     // Short-circuit and return an invalid index value if they are not neighbors
     if (H3_EXPORT(h3IndexesAreNeighbors)(origin, destination) == 0) {
-        return H3_INVALID_INDEX;
+        return H3_NULL;
     }
 
     // Otherwise, determine the IJK direction from the origin to the destination
     H3Index output = origin;
     H3_SET_MODE(output, H3_UNIEDGE_MODE);
 
+    bool isPentagon = H3_EXPORT(h3IsPentagon)(origin);
+
     // Checks each neighbor, in order, to determine which direction the
     // destination neighbor is located. Skips CENTER_DIGIT since that
     // would be this index.
     H3Index neighbor;
-    for (Direction direction = K_AXES_DIGIT; direction < NUM_DIGITS;
-         direction++) {
+    // Excluding from branch coverage as we never hit the end condition
+    // LCOV_EXCL_BR_START
+    for (Direction direction = isPentagon ? J_AXES_DIGIT : K_AXES_DIGIT;
+         direction < NUM_DIGITS; direction++) {
+        // LCOV_EXCL_BR_STOP
         int rotations = 0;
         neighbor = h3NeighborRotations(origin, direction, &rotations);
         if (neighbor == destination) {
@@ -124,18 +130,18 @@ H3Index H3_EXPORT(getH3UnidirectionalEdge)(H3Index origin,
         }
     }
 
-    // This should be impossible, return an invalid H3Index in this case;
-    return H3_INVALID_INDEX;  // LCOV_EXCL_LINE
+    // This should be impossible, return H3_NULL in this case;
+    return H3_NULL;  // LCOV_EXCL_LINE
 }
 
 /**
  * Returns the origin hexagon from the unidirectional edge H3Index
  * @param edge The edge H3 index
- * @return The origin H3 hexagon index
+ * @return The origin H3 hexagon index, or H3_NULL on failure
  */
 H3Index H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(H3Index edge) {
     if (H3_GET_MODE(edge) != H3_UNIEDGE_MODE) {
-        return H3_INVALID_INDEX;
+        return H3_NULL;
     }
     H3Index origin = edge;
     H3_SET_MODE(origin, H3_HEXAGON_MODE);
@@ -146,11 +152,11 @@ H3Index H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(H3Index edge) {
 /**
  * Returns the destination hexagon from the unidirectional edge H3Index
  * @param edge The edge H3 index
- * @return The destination H3 hexagon index
+ * @return The destination H3 hexagon index, or H3_NULL on failure
  */
 H3Index H3_EXPORT(getDestinationH3IndexFromUnidirectionalEdge)(H3Index edge) {
     if (H3_GET_MODE(edge) != H3_UNIEDGE_MODE) {
-        return H3_INVALID_INDEX;
+        return H3_NULL;
     }
     Direction direction = H3_GET_RESERVED_BITS(edge);
     int rotations = 0;
@@ -212,7 +218,7 @@ void H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(H3Index origin,
     // which is zeroed.
     for (int i = 0; i < 6; i++) {
         if (isPentagon && i == 0) {
-            edges[i] = H3_INVALID_INDEX;
+            edges[i] = H3_NULL;
         } else {
             edges[i] = origin;
             H3_SET_MODE(edges[i], H3_UNIEDGE_MODE);
@@ -222,58 +228,36 @@ void H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(H3Index origin,
 }
 
 /**
- * Whether the given coordinate has a matching vertex in the given geo boundary.
- * @param  vertex   Coordinate to check
- * @param  boundary Geo boundary to look in
- * @return          Whether a match was found
- */
-static bool _hasMatchingVertex(const GeoCoord* vertex,
-                               const GeoBoundary* boundary) {
-    for (int i = 0; i < boundary->numVerts; i++) {
-        if (geoAlmostEqualThreshold(vertex, &boundary->verts[i], 0.000001)) {
-            return true;
-        }
-    }
-    return false;
-}
-
-/**
  * Provides the coordinates defining the unidirectional edge.
  * @param edge The unidirectional edge H3Index
  * @param gb The geoboundary object to store the edge coordinates.
  */
 void H3_EXPORT(getH3UnidirectionalEdgeBoundary)(H3Index edge, GeoBoundary* gb) {
-    // TODO: More efficient solution :)
-    GeoBoundary origin = {0};
-    GeoBoundary destination = {0};
-    GeoCoord postponedVertex = {0};
-    bool hasPostponedVertex = false;
+    // Get the origin and neighbor direction from the edge
+    Direction direction = H3_GET_RESERVED_BITS(edge);
+    H3Index origin = H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(edge);
 
-    H3_EXPORT(h3ToGeoBoundary)
-    (H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(edge), &origin);
-    H3_EXPORT(h3ToGeoBoundary)
-    (H3_EXPORT(getDestinationH3IndexFromUnidirectionalEdge)(edge),
-     &destination);
+    // Get the start vertex for the edge
+    int startVertex = vertexNumForDirection(origin, direction);
+    if (startVertex == INVALID_VERTEX_NUM) {
+        // This is not actually an edge (i.e. no valid direction),
+        // so return no vertices.
+        gb->numVerts = 0;
+        return;
+    }
 
-    int k = 0;
-    for (int i = 0; i < origin.numVerts; i++) {
-        if (_hasMatchingVertex(&origin.verts[i], &destination)) {
-            // If we are on vertex 0, we need to handle the case where it's the
-            // end of the edge, not the beginning.
-            if (i == 0 &&
-                !_hasMatchingVertex(&origin.verts[i + 1], &destination)) {
-                postponedVertex = origin.verts[i];
-                hasPostponedVertex = true;
-            } else {
-                gb->verts[k] = origin.verts[i];
-                k++;
-            }
-        }
+    // Get the geo boundary for the appropriate vertexes of the origin. Note
+    // that while there are always 2 topological vertexes per edge, the
+    // resulting edge boundary may have an additional distortion vertex if it
+    // crosses an edge of the icosahedron.
+    FaceIJK fijk;
+    _h3ToFaceIjk(origin, &fijk);
+    int res = H3_GET_RESOLUTION(origin);
+    int isPentagon = H3_EXPORT(h3IsPentagon)(origin);
+
+    if (isPentagon) {
+        _faceIjkPentToGeoBoundary(&fijk, res, startVertex, 2, gb);
+    } else {
+        _faceIjkToGeoBoundary(&fijk, res, startVertex, 2, gb);
     }
-    // If we postponed adding the last vertex, add it now
-    if (hasPostponedVertex) {
-        gb->verts[k] = postponedVertex;
-        k++;
-    }
-    gb->numVerts = k;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2018 Uber Technologies, Inc.
+ * Copyright 2016-2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,14 +21,14 @@
 
 #include "h3Index.h"
 
-/** @struct BaseCellOrient
+/** @struct BaseCellRotation
  *  @brief base cell at a given ijk and required rotations into its system
  */
 typedef struct {
     int baseCell;  ///< base cell number
     int ccwRot60;  ///< number of ccw 60 degree rotations relative to current
                    /// face
-} BaseCellOrient;
+} BaseCellRotation;
 
 /** @brief Neighboring base cell ID in each IJK direction.
  *
@@ -305,7 +305,7 @@ const int baseCellNeighbor60CCWRots[NUM_BASE_CELLS][7] = {
  * This table can be accessed using the functions `_faceIjkToBaseCell` and
  * `_faceIjkToBaseCellCCWrot60`
  */
-static const BaseCellOrient faceIjkBaseCells[NUM_ICOSA_FACES][3][3][3] = {
+static const BaseCellRotation faceIjkBaseCells[NUM_ICOSA_FACES][3][3][3] = {
     {// face 0
      {
          // i 0
@@ -861,6 +861,27 @@ int _faceIjkToBaseCellCCWrot60(const FaceIJK* h) {
  */
 void _baseCellToFaceIjk(int baseCell, FaceIJK* h) {
     *h = baseCellData[baseCell].homeFijk;
+}
+
+/**
+ * @brief Given a base cell and the face it appears on, return
+ *        the number of 60' ccw rotations for that base cell's
+ *        coordinate system.
+ * @returns The number of rotations, or INVALID_ROTATIONS if the base
+ *          cell is not found on the given face
+ */
+int _baseCellToCCWrot60(int baseCell, int face) {
+    if (face < 0 || face > NUM_ICOSA_FACES) return INVALID_ROTATIONS;
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            for (int k = 0; k < 3; k++) {
+                if (faceIjkBaseCells[face][i][j][k].baseCell == baseCell) {
+                    return faceIjkBaseCells[face][i][j][k].ccwRot60;
+                }
+            }
+        }
+    }
+    return INVALID_ROTATIONS;
 }
 
 /** @brief Return whether or not the tested face is a cw offset face.

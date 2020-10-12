@@ -82,7 +82,11 @@
 /** 0's in the 7 base cell bits, 1's everywhere else. */
 #define H3_DIGIT_MASK_NEGATIVE (~H3_DIGIT_MASK)
 
-/** H3 index with mode 0, res 0, base cell 0, and 7 for all index digits. */
+/**
+ * H3 index with mode 0, res 0, base cell 0, and 7 for all index digits.
+ * Typically used to initialize the creation of an H3 cell index, which
+ * expects all direction digits to be 7 beyond the cell's resolution.
+ */
 #define H3_INIT (UINT64_C(35184372088831))
 
 /**
@@ -161,9 +165,10 @@
              << ((MAX_H3_RES - (res)) * H3_PER_DIGIT_OFFSET)))
 
 /**
- * Invalid index used to indicate an error from geoToH3 and related functions.
+ * Invalid index used to indicate an error from geoToH3 and related functions
+ * or missing data in arrays of h3 indices. Analogous to NaN in floating point.
  */
-#define H3_INVALID_INDEX 0
+#define H3_NULL 0
 
 /*
  * Return codes for compact
@@ -180,6 +185,7 @@ int isResClassIII(int res);
 // Internal functions
 
 int _h3ToFaceIjkWithInitializedFijk(H3Index h, FaceIJK* fijk);
+void _h3ToFaceIjk(H3Index h, FaceIJK* fijk);
 H3Index _faceIjkToH3(const FaceIJK* fijk, int res);
 Direction _h3LeadingNonZeroDigit(H3Index h);
 H3Index _h3RotatePent60ccw(H3Index h);

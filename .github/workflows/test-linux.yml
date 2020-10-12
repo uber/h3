@@ -1,0 +1,118 @@
+name: test-linux
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  tests:
+    name: Test Compile ${{ matrix.compiler }}
+    runs-on: ubuntu-latest
+    env:
+      CC: ${{ matrix.compiler }}
+
+    strategy:
+      matrix:
+        compiler: [clang, gcc]
+
+    steps:
+      - uses: actions/checkout@v2.1.1
+
+      - name: Install Doxygen
+        run: |
+          sudo apt update
+          sudo apt-get install doxygen graphviz
+
+      - name: Configure build
+        run: cmake -Bbuild -DWARNINGS_AS_ERRORS=ON .
+
+      - name: Formatting check
+        working-directory: build
+        run: |
+          clang-format-9 --version
+          make format
+          git diff --exit-code
+
+      - name: Build
+        working-directory: build
+        run: make
+
+      - name: binding-functions
+        working-directory: build
+        run: |
+          make binding-functions
+          test -s binding-functions
+
+      - name: Tests
+        working-directory: build
+        run: |
+          make test
+          sudo make install
+
+        # Note the packages aren't used to test the examples below
+      - name: Test packaging
+        working-directory: build
+        run: cpack -D CPACK_PACKAGE_CONTACT="Test build in CI"
+
+      - name: Examples
+        run: |
+          mkdir build/examples
+          cd build/examples
+          cmake ../../examples
+          make
+          make test
+
+  valgrind-tests:
+    name: Test Valgrind
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2.1.1
+
+      - name: Install Valgrind
+        run: |
+          sudo apt update
+          sudo apt-get install valgrind
+
+      - name: Configure build
+        run: cmake -Bbuild -DCMAKE_BUILD_TYPE=Debug -DWRAP_VALGRIND=ON .
+
+      - name: Build
+        working-directory: build
+        run: make
+
+      - name: Tests
+        working-directory: build
+        env:
+          CTEST_OUTPUT_ON_FAILURE: 1
+        run: make test-fast
+
+  coverage-tests:
+    name: Coverage
+    runs-on: ubuntu-latest
+    env:
+      CC: gcc
+
+    steps:
+      - uses: actions/checkout@v2.1.1
+
+      - name: Install lcov
+        run: |
+          sudo apt update
+          sudo apt-get install lcov
+
+      - name: Configure build
+        run: cmake -DCMAKE_BUILD_TYPE=Debug -DWARNINGS_AS_ERRORS=ON -DH3_PREFIX=testprefix_ .
+
+      - name: Build
+        run: make
+
+      - name: Tests
+        run: make coverage
+
+      - uses: coverallsapp/github-action@master
+        with:
+          path-to-lcov: ./coverage.cleaned.info
+          github-token: ${{ secrets.GITHUB_TOKEN }}

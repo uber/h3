@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Copyright 2019 Uber Technologies, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This script is used interactively as part of the H3 release process 
+# This script is used interactively as part of the H3 release process
 # (RELEASE.md) to update the version number in the VERSION file. Before
 # writing the new version to the file, changelog information is presented
 # for verification. It is invoked by the make target `update-version`.

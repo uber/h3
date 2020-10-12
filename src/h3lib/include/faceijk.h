@@ -75,9 +75,10 @@ typedef enum {
 void _geoToFaceIjk(const GeoCoord* g, int res, FaceIJK* h);
 void _geoToHex2d(const GeoCoord* g, int res, int* face, Vec2d* v);
 void _faceIjkToGeo(const FaceIJK* h, int res, GeoCoord* g);
-void _faceIjkToGeoBoundary(const FaceIJK* h, int res, int isPentagon,
+void _faceIjkToGeoBoundary(const FaceIJK* h, int res, int start, int length,
                            GeoBoundary* g);
-void _faceIjkPentToGeoBoundary(const FaceIJK* h, int res, GeoBoundary* g);
+void _faceIjkPentToGeoBoundary(const FaceIJK* h, int res, int start, int length,
+                               GeoBoundary* g);
 void _faceIjkToVerts(FaceIJK* fijk, int* res, FaceIJK* fijkVerts);
 void _faceIjkPentToVerts(FaceIJK* fijk, int* res, FaceIJK* fijkVerts);
 void _hex2dToGeo(const Vec2d* v, int face, int res, int substrate, GeoCoord* g);

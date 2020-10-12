@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2019 Uber Technologies, Inc.
+ * Copyright 2016-2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -265,6 +265,21 @@ DECLSPEC double H3_EXPORT(degsToRads)(double degrees);
 DECLSPEC double H3_EXPORT(radsToDegs)(double radians);
 /** @} */
 
+/** @defgroup pointDist pointDist
+ * Functions for pointDist
+ * @{
+ */
+/** @brief "great circle distance" between pairs of GeoCoord points in radians*/
+double H3_EXPORT(pointDistRads)(const GeoCoord *a, const GeoCoord *b);
+
+/** @brief "great circle distance" between pairs of GeoCoord points in
+ * kilometers*/
+double H3_EXPORT(pointDistKm)(const GeoCoord *a, const GeoCoord *b);
+
+/** @brief "great circle distance" between pairs of GeoCoord points in meters*/
+double H3_EXPORT(pointDistM)(const GeoCoord *a, const GeoCoord *b);
+/** @} */
+
 /** @defgroup hexArea hexArea
  * Functions for hexArea
  * @{
@@ -276,6 +291,21 @@ DECLSPEC double H3_EXPORT(hexAreaKm2)(int res);
 DECLSPEC double H3_EXPORT(hexAreaM2)(int res);
 /** @} */
 
+/** @defgroup cellArea cellArea
+ * Functions for cellArea
+ * @{
+ */
+/** @brief exact area for a specific cell (hexagon or pentagon) in radians^2 */
+double H3_EXPORT(cellAreaRads2)(H3Index h);
+
+/** @brief exact area for a specific cell (hexagon or pentagon) in kilometers^2
+ */
+double H3_EXPORT(cellAreaKm2)(H3Index h);
+
+/** @brief exact area for a specific cell (hexagon or pentagon) in meters^2 */
+double H3_EXPORT(cellAreaM2)(H3Index h);
+/** @} */
+
 /** @defgroup edgeLength edgeLength
  * Functions for edgeLength
  * @{
@@ -285,6 +315,20 @@ DECLSPEC double H3_EXPORT(edgeLengthKm)(int res);
 
 /** @brief average hexagon edge length in meters (excludes pentagons) */
 DECLSPEC double H3_EXPORT(edgeLengthM)(int res);
+/** @} */
+
+/** @defgroup exactEdgeLength exactEdgeLength
+ * Functions for exactEdgeLength
+ * @{
+ */
+/** @brief exact length for a specific unidirectional edge in radians*/
+double H3_EXPORT(exactEdgeLengthRads)(H3Index edge);
+
+/** @brief exact length for a specific unidirectional edge in kilometers*/
+double H3_EXPORT(exactEdgeLengthKm)(H3Index edge);
+
+/** @brief exact length for a specific unidirectional edge in meters*/
+double H3_EXPORT(exactEdgeLengthM)(H3Index edge);
 /** @} */
 
 /** @defgroup numHexagons numHexagons
@@ -358,7 +402,7 @@ DECLSPEC void H3_EXPORT(h3ToString)(H3Index h, char *str, size_t sz);
  * @{
  */
 /** @brief confirms if an H3Index is a valid cell (hexagon or pentagon)
- * In particular, returns 0 (False) for H3 undirectional edges or invalid data
+ * In particular, returns 0 (False) for H3 unidirectional edges or invalid data
  */
 DECLSPEC int H3_EXPORT(h3IsValid)(H3Index h);
 /** @} */

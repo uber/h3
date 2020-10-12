@@ -6,8 +6,32 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+
+## [3.7.1] - 2020-10-05
+### Fixed
+- Finding invalid edge boundaries should not crash. (#399)
+- Build fixes for FreeBSD. (#397)
+
+## [3.7.0] - 2020-09-28
+### Added
+- Area and haversine distance functions (#377):
+    - `cellAreaRads2`
+    - `cellAreaKm2`
+    - `cellAreaM2`
+    - `pointDistRads`
+    - `pointDistKm`
+    - `pointDistM`
+    - `exactEdgeLengthRads`
+    - `exactEdgeLengthKm`
+    - `exactEdgeLengthM`
+- Refactor `getH3UnidirectionalEdgeBoundary` for accuracy at small resolutions. (#391)
+    - Speeds up `getH3UnidirectionalEdgeBoundary` by about 3x.
+    - Implement core logic for future vertex mode.
 ### Fixed
 - Fixed building the library with custom memory allocation functions on Mac OSX. (#362)
+- The installed H3 CMake target should have include directories specified. (#381)
+### Changed
+- Tests now use `bash` on Windows. (#381)
 
 ## [3.6.4] - 2020-06-19
 ### Added
