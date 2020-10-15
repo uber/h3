@@ -12,15 +12,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2.1.1
+      - uses: actions/checkout@v2
 
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2
         with:
-          node-version: 10.x
-
-      - name: Install FOSSA
-        run: |
-          curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | sudo bash
+          node-version: 14.x
 
       - name: Test Website Build
         working-directory: website
@@ -28,5 +24,8 @@ jobs:
           yarn
           yarn build
 
-      - name: Submit FOSSA report
-        run: if [ -n "${{ secrets.FOSSA_API_KEY }}" ]; then fossa; fi
+      - name: Run and upload build analysis
+        uses: fossa-contrib/fossa-action@v1
+        with:
+          fossa-api-key: ${{ secrets.FOSSA_API_KEY }}
+          github-token: ${{ github.token }}
