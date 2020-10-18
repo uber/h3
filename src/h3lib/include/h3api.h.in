@@ -39,7 +39,7 @@
 #endif
 
 /* Windows DLL requires attributes indicating what to export */
-#if _WIN32
+#if _WIN32 && BUILD_SHARED_LIBS
 #if BUILDING_H3
 #define DECLSPEC __declspec(dllexport)
 #else

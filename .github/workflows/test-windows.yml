@@ -24,7 +24,7 @@ jobs:
 
       - name: Configure build
         shell: cmd
-        run: cmake -Bbuild -A ${{ matrix.arch }} -DWARNINGS_AS_ERRORS=ON -DBUILD_SHARED_LIBS=OFF .
+        run: cmake -Bbuild -A ${{ matrix.arch }} -DWARNINGS_AS_ERRORS=ON -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=ON .
 
       - name: Build
         working-directory: build
@@ -60,7 +60,7 @@ jobs:
 
       - name: Configure build
         shell: cmd
-        run: cmake -Bbuild -A ${{ matrix.arch }} -DWARNINGS_AS_ERRORS=ON -DBUILD_SHARED_LIBS=ON .
+        run: cmake -Bbuild -A ${{ matrix.arch }} -DWARNINGS_AS_ERRORS=ON -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF .
 
       - name: Build
         working-directory: build

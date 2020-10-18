@@ -31,7 +31,11 @@ set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cmake/toolchain.cmake"
 # because they require access to internal H3 functions. Build these
 # using either static libraries or an option to expose all
 # function symbols.
-set(ENABLE_REQUIRES_ALL_SYMBOLS !(WIN32 AND BUILD_SHARED_LIBS))
+if(NOT (WIN32 AND BUILD_SHARED_LIBS))
+    set(ENABLE_REQUIRES_ALL_SYMBOLS ON)
+else()
+    set(ENABLE_REQUIRES_ALL_SYMBOLS OFF)
+endif()
 
 option(ENABLE_COVERAGE "Enable compiling tests with coverage." ON)
 option(BUILD_BENCHMARKS "Build benchmarking applications." ON)
@@ -235,6 +239,7 @@ function(add_h3_library name h3_alloc_prefix_override)
 
     if(BUILD_SHARED_LIBS)
         set_target_properties(${name} PROPERTIES SOVERSION ${H3_SOVERSION})
+        target_compile_definitions(${name} PRIVATE BUILD_SHARED_LIBS=1)
     endif()
 
     target_compile_definitions(${name} PUBLIC H3_PREFIX=${H3_PREFIX})
@@ -407,15 +412,12 @@ if(BUILD_FILTERS)
     endforeach()
 endif()
 
-if(BUILD_GENERATORS)
+if(BUILD_GENERATORS AND ENABLE_REQUIRES_ALL_SYMBOLS)
     # Code generation
-    if(ENABLE_REQUIRES_ALL_SYMBOLS)
-        add_h3_executable(generateBaseCellNeighbors src/apps/miscapps/generateBaseCellNeighbors.c ${APP_SOURCE_FILES})
-        add_h3_executable(generateFaceCenterPoint src/apps/miscapps/generateFaceCenterPoint.c ${APP_SOURCE_FILES})
-        add_h3_executable(generatePentagonDirectionFaces src/apps/miscapps/generatePentagonDirectionFaces.c ${APP_SOURCE_FILES})
-    endif()
-
+    add_h3_executable(generateBaseCellNeighbors src/apps/miscapps/generateBaseCellNeighbors.c ${APP_SOURCE_FILES})
+    add_h3_executable(generateFaceCenterPoint src/apps/miscapps/generateFaceCenterPoint.c ${APP_SOURCE_FILES})
     add_h3_executable(generateNumHexagons src/apps/miscapps/generateNumHexagons.c ${APP_SOURCE_FILES})
+    add_h3_executable(generatePentagonDirectionFaces src/apps/miscapps/generatePentagonDirectionFaces.c ${APP_SOURCE_FILES})
 
     # Miscellaneous testing applications - generating random data
     add_h3_executable(mkRandGeo src/apps/testapps/mkRandGeo.c ${APP_SOURCE_FILES})
