@@ -14,6 +14,10 @@ As a C library, bindings can be made to call H3 functions from different program
 
 - [geoToH3 function, since version 19.11](https://github.com/yandex/ClickHouse/blob/master/dbms/src/Functions/geoToH3.cpp#L35)
 
+## Clojure 
+
+- [Factual/geo](https://github.com/Factual/geo)
+
 ## ECL
 
 - [hpcc-systems/HPCC-Platform](https://github.com/hpcc-systems/HPCC-Platform/tree/master/plugins/h3)
