@@ -261,6 +261,8 @@ void iterateAllIndexesAtResPartial(int res, void (*callback)(H3Index),
 void iterateBaseCellIndexesAtRes(int res, void (*callback)(H3Index),
                                  int baseCell) {
     H3Index bc = H3_INIT;
+    H3_SET_MODE(bc, H3_HEXAGON_MODE);
+    H3_SET_RESOLUTION(bc, 0);
     H3_SET_BASE_CELL(bc, baseCell);
     int childrenSz = H3_EXPORT(maxUncompactSize)(&bc, 1, res);
     H3Index* children = calloc(childrenSz, sizeof(H3Index));
