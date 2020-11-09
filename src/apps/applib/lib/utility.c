@@ -120,64 +120,6 @@ void geoBoundaryPrintln(const GeoBoundary* b) {
 }
 
 /**
- * Assumes `f` is open and ready for reading.
- * @return 0 on success, EOF on EOF
- */
-int readBoundary(FILE* f, GeoBoundary* b) {
-    char buff[BUFF_SIZE];
-
-    // get the first line, which should be a "{"
-    if (!fgets(buff, BUFF_SIZE, f)) {
-        if (feof(stdin)) {
-            return EOF;
-        } else {
-            printf("reading GeoBoundary from input");
-            return -1;
-        }
-    }
-
-    if (buff[0] != '{') {
-        printf("missing GeoBoundary {");
-        return -2;
-    }
-
-    // now read the verts
-
-    b->numVerts = 0;
-    while (1) {
-        if (!fgets(buff, BUFF_SIZE, f)) {
-            printf("reading GeoBoundary from input");
-            return -3;
-        }
-
-        if (buff[0] == '}') {
-            if (b->numVerts == 0) {
-                printf("reading empty cell boundary");
-                return -4;
-            } else {
-                break;
-            }
-        }
-
-        if (b->numVerts == MAX_CELL_BNDRY_VERTS) {
-            printf("too many vertices in GeoBoundary from input");
-            return -5;
-        }
-
-        double latDegs, lonDegs;
-        if (sscanf(buff, "%lf %lf", &latDegs, &lonDegs) != 2) {
-            printf("parsing GeoBoundary from input");
-            return -6;
-        }
-
-        setGeoDegs(&b->verts[b->numVerts], latDegs, lonDegs);
-        b->numVerts++;
-    }
-
-    return 0;
-}
-
-/**
  * Move nonzero elements to the front of array `a` of length `n`.
  *
  * Loop invariant: Everything *before* `i` or *after* `j` is "done".
@@ -318,8 +260,10 @@ void iterateAllIndexesAtResPartial(int res, void (*callback)(H3Index),
  */
 void iterateBaseCellIndexesAtRes(int res, void (*callback)(H3Index),
                                  int baseCell) {
-    H3Index bc;
-    setH3Index(&bc, 0, baseCell, 0);
+    H3Index bc = H3_INIT;
+    H3_SET_MODE(bc, H3_HEXAGON_MODE);
+    H3_SET_RESOLUTION(bc, 0);
+    H3_SET_BASE_CELL(bc, baseCell);
     int childrenSz = H3_EXPORT(maxUncompactSize)(&bc, 1, res);
     H3Index* children = calloc(childrenSz, sizeof(H3Index));
     H3_EXPORT(uncompact)(&bc, 1, children, childrenSz, res);

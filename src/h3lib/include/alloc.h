@@ -29,10 +29,19 @@
 #ifdef H3_ALLOC_PREFIX
 #define H3_MEMORY(name) TJOIN(H3_ALLOC_PREFIX, name)
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void* H3_MEMORY(malloc)(size_t size);
 void* H3_MEMORY(calloc)(size_t num, size_t size);
 void* H3_MEMORY(realloc)(void* ptr, size_t size);
 void H3_MEMORY(free)(void* ptr);
+
+#ifdef __cplusplus
+}
+#endif
+
 #else
 #define H3_MEMORY(name) name
 #endif

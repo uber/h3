@@ -21,3 +21,12 @@ Tests can be run by building the `RUN_TESTS` project. Tests require `bash` be av
 ```
 msbuild RUN_TESTS.vcxproj
 ```
+
+## Building shared libraries
+
+You can build H3 as a shared library (DLL), but the test suite does not support this configuration because the tests use functions internal to the DLL, and they are not exposed for testing.
+
+```
+cmake .. -DBUILD_TESTING=OFF -DBUILD_SHARED_LIBS=ON
+msbuild ALL_BUILD.vcxproj
+```

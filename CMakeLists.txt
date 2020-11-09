@@ -19,8 +19,6 @@ set(H3_ALLOC_PREFIX "" CACHE STRING "Prefix for allocation functions")
 
 # Needed due to CMP0042
 set(CMAKE_MACOSX_RPATH 1)
-# H3 doesn't export selected symbols right now
-set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 # YCM needs compilation database
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -28,6 +26,16 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cmake/toolchain.cmake"
     CACHE FILEPATH
     "Toolchain to use for building this project")
+
+# Some misc apps do not work with shared libraries on Windows
+# because they require access to internal H3 functions. Build these
+# using either static libraries or an option to expose all
+# function symbols.
+if(NOT (WIN32 AND BUILD_SHARED_LIBS))
+    set(ENABLE_REQUIRES_ALL_SYMBOLS ON)
+else()
+    set(ENABLE_REQUIRES_ALL_SYMBOLS OFF)
+endif()
 
 option(ENABLE_COVERAGE "Enable compiling tests with coverage." ON)
 option(BUILD_BENCHMARKS "Build benchmarking applications." ON)
@@ -126,15 +134,16 @@ set(LIB_SOURCE_FILES
     src/h3lib/lib/faceijk.c
     src/h3lib/lib/baseCells.c)
 set(APP_SOURCE_FILES
-    src/apps/applib/include/test.h
     src/apps/applib/include/kml.h
     src/apps/applib/include/benchmark.h
     src/apps/applib/include/utility.h
     src/apps/applib/include/args.h
-    src/apps/applib/lib/test.c
     src/apps/applib/lib/kml.c
     src/apps/applib/lib/utility.c
     src/apps/applib/lib/args.c)
+set(TEST_APP_SOURCE_FILES
+    src/apps/applib/include/test.h
+    src/apps/applib/lib/test.c)
 set(EXAMPLE_SOURCE_FILES
     examples/index.c
     examples/distance.c
@@ -209,7 +218,7 @@ set(OTHER_SOURCE_FILES
     src/apps/benchmarks/benchmarkH3Api.c)
 
 set(ALL_SOURCE_FILES
-    ${LIB_SOURCE_FILES} ${APP_SOURCE_FILES} ${OTHER_SOURCE_FILES})
+    ${LIB_SOURCE_FILES} ${APP_SOURCE_FILES} ${TEST_APP_SOURCE_FILES} ${OTHER_SOURCE_FILES})
 
 set(UNCONFIGURED_API_HEADER src/h3lib/include/h3api.h.in)
 set(CONFIGURED_API_HEADER src/h3lib/include/h3api.h)
@@ -230,9 +239,11 @@ function(add_h3_library name h3_alloc_prefix_override)
 
     if(BUILD_SHARED_LIBS)
         set_target_properties(${name} PROPERTIES SOVERSION ${H3_SOVERSION})
+        target_compile_definitions(${name} PRIVATE BUILD_SHARED_LIBS=1)
     endif()
 
     target_compile_definitions(${name} PUBLIC H3_PREFIX=${H3_PREFIX})
+    target_compile_definitions(${name} PRIVATE BUILDING_H3=1)
     set(has_alloc_prefix NO)
     if(h3_alloc_prefix_override)
         set(has_alloc_prefix YES)
@@ -242,9 +253,11 @@ function(add_h3_library name h3_alloc_prefix_override)
         target_compile_definitions(${name} PUBLIC H3_ALLOC_PREFIX=${H3_ALLOC_PREFIX})
     endif()
     # Mac OSX defaults to not looking up undefined symbols dynamically,
-    # so enable that explicitly.
+    # so enable that explicitly. Windows needs something similar.
     if(has_alloc_prefix AND APPLE)
         target_link_libraries(${name} PRIVATE "-undefined dynamic_lookup")
+    elseif(has_alloc_prefix AND MSVC)
+        set(TARGET ${name} PROPERTY APPEND LINK_FLAGS "/FORCE:UNRESOLVED")
     endif()
 
     if(have_alloca)
@@ -399,12 +412,12 @@ if(BUILD_FILTERS)
     endforeach()
 endif()
 
-if(BUILD_GENERATORS)
+if(BUILD_GENERATORS AND ENABLE_REQUIRES_ALL_SYMBOLS)
     # Code generation
     add_h3_executable(generateBaseCellNeighbors src/apps/miscapps/generateBaseCellNeighbors.c ${APP_SOURCE_FILES})
-    add_h3_executable(generatePentagonDirectionFaces src/apps/miscapps/generatePentagonDirectionFaces.c ${APP_SOURCE_FILES})
-    add_h3_executable(generateNumHexagons src/apps/miscapps/generateNumHexagons.c ${APP_SOURCE_FILES})
     add_h3_executable(generateFaceCenterPoint src/apps/miscapps/generateFaceCenterPoint.c ${APP_SOURCE_FILES})
+    add_h3_executable(generateNumHexagons src/apps/miscapps/generateNumHexagons.c ${APP_SOURCE_FILES})
+    add_h3_executable(generatePentagonDirectionFaces src/apps/miscapps/generatePentagonDirectionFaces.c ${APP_SOURCE_FILES})
 
     # Miscellaneous testing applications - generating random data
     add_h3_executable(mkRandGeo src/apps/testapps/mkRandGeo.c ${APP_SOURCE_FILES})
@@ -412,6 +425,7 @@ if(BUILD_GENERATORS)
 endif()
 
 if(H3_IS_ROOT_PROJECT AND BUILD_TESTING)
+    option(BUILD_ALLOC_TESTS "Build tests for custom allocation functions" ON)
     option(PRINT_TEST_FILES "Print which test files correspond to which tests" OFF)
 
     include(TestWrapValgrind)
@@ -436,13 +450,11 @@ if(H3_IS_ROOT_PROJECT AND BUILD_TESTING)
             )
     endif()
 
-    add_h3_library(h3WithTestAllocators test_prefix_)
-
     macro(add_h3_memory_test name srcfile)
         # Like other test code, but these need to be linked against
         # a different copy of the H3 library which has known intercepted
         # allocator functions.
-        add_executable(${ARGV} ${APP_SOURCE_FILES})
+        add_executable(${ARGV} ${APP_SOURCE_FILES} ${TEST_APP_SOURCE_FILES})
 
         if(TARGET ${name})
             target_link_libraries(${name} PUBLIC h3WithTestAllocators)
@@ -470,7 +482,7 @@ if(H3_IS_ROOT_PROJECT AND BUILD_TESTING)
     macro(add_h3_test_common name srcfile)
         # need to actually make the test target
         if(NOT TARGET ${name})
-            add_h3_executable(${name} ${srcfile} ${APP_SOURCE_FILES})
+            add_h3_executable(${name} ${srcfile} ${APP_SOURCE_FILES} ${TEST_APP_SOURCE_FILES})
         endif()
 
         math(EXPR test_number "${test_number}+1")
@@ -600,7 +612,11 @@ if(H3_IS_ROOT_PROJECT AND BUILD_TESTING)
     add_h3_test(testH3DistanceExhaustive src/apps/testapps/testH3DistanceExhaustive.c)
     add_h3_test(testH3CellAreaExhaustive src/apps/testapps/testH3CellAreaExhaustive.c)
 
-    add_h3_memory_test(testH3Memory src/apps/testapps/testH3Memory.c)
+    if(BUILD_ALLOC_TESTS)
+        add_h3_library(h3WithTestAllocators test_prefix_)
+
+        add_h3_memory_test(testH3Memory src/apps/testapps/testH3Memory.c)
+    endif()
 
     add_custom_target(test-fast COMMAND ctest -E Exhaustive)
 endif()
@@ -621,7 +637,9 @@ if(BUILD_BENCHMARKS)
     add_h3_benchmark(benchmarkH3UniEdge src/apps/benchmarks/benchmarkH3UniEdge.c)
     add_h3_benchmark(benchmarkH3SetToLinkedGeo src/apps/benchmarks/benchmarkH3SetToLinkedGeo.c)
     add_h3_benchmark(benchmarkPolyfill src/apps/benchmarks/benchmarkPolyfill.c)
-    add_h3_benchmark(benchmarkPolygon src/apps/benchmarks/benchmarkPolygon.c)
+    if(ENABLE_REQUIRES_ALL_SYMBOLS)
+        add_h3_benchmark(benchmarkPolygon src/apps/benchmarks/benchmarkPolygon.c)
+    endif()
 endif()
 
 # Installation (https://github.com/forexample/package-example)
