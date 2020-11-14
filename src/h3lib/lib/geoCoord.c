@@ -294,35 +294,62 @@ double H3_EXPORT(edgeLengthM)(int res) {
     return lens[res];
 }
 
-/** @brief Number of unique valid H3Indexes at given resolution. */
+/**
+ * Number of cells (hexagons and pentagons) for a given resolution,
+ * which works out to be `2 + 120*7^r` for resolution `r`
+ *
+ * # Mathematical notes
+ *
+ * Let h(n) be the number of children n levels below
+ * a single *hexagon*.
+ *
+ * Then h(n) = 7^n.
+ *
+ * Let p(n) be the number of children n levels below
+ * a single *pentagon*.
+ *
+ * Then p(0) = 1, and p(1) = 6, since each pentagon
+ * has 5 hexagonal immediate children and 1 pentagonal
+ * immediate child.
+ *
+ * In general, we have the recurrence relation
+ *
+ * p(n) = 5*h(n-1) + p(n-1)
+ *      = 5*7^(n-1) + p(n-1).
+ *
+ * Working through the recurrence, we get that
+ *
+ * p(n) = 1 + 5*\sum_{k=1}^n 7^{k-1}
+ *      = 1 + 5*(7^n - 1)/6,
+ *
+ * using the closed form for a geometric series.
+ *
+ * Using the closed forms for h(n) and p(n), we can
+ * get a closed form for the total number of cells
+ * at resolution r:
+ *
+ * c(r) = 12*p(r) + 110*h(r)
+ *      = 2 + 120*7^r.
+ *
+ *
+ * @param   res  H3 cell resolution
+ *
+ * @return       number of cells at resolution `res`
+ */
 int64_t H3_EXPORT(numHexagons)(int res) {
-    /**
-     * Note: this *actually* returns the number of *cells*
-     * (which includes the 12 pentagons) at each resolution.
-     *
-     * This table comes from the recurrence:
-     *
-     *  num_cells(0) = 122
-     *  num_cells(i+1) = (num_cells(i)-12)*7 + 12*6
-     *
-     */
-    static const int64_t nums[] = {122L,
-                                   842L,
-                                   5882L,
-                                   41162L,
-                                   288122L,
-                                   2016842L,
-                                   14117882L,
-                                   98825162L,
-                                   691776122L,
-                                   4842432842L,
-                                   33897029882L,
-                                   237279209162L,
-                                   1660954464122L,
-                                   11626681248842L,
-                                   81386768741882L,
-                                   569707381193162L};
-    return nums[res];
+    // Alternatively, we could define some `int64_t` function to
+    // do the power operation.
+    // There are fancy, faster ways to compute a power, but if
+    // we're only going up to res 16, I'm not sure it is worth
+    // the extra code/complexity.
+    // The `<math.h>` function `pow` seems inappropriate, as it
+    // operates on and returns floating point numbers.
+    int64_t exp = 1;
+    for (int i = 0; i < res; i++){
+        exp *= 7;
+    }
+
+    return 2 + 120*exp;
 }
 
 /**
