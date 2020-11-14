@@ -345,11 +345,11 @@ int64_t H3_EXPORT(numHexagons)(int res) {
     // The `<math.h>` function `pow` seems inappropriate, as it
     // operates on and returns floating point numbers.
     int64_t exp = 1;
-    for (int i = 0; i < res; i++){
+    for (int i = 0; i < res; i++) {
         exp *= 7;
     }
 
-    return 2 + 120*exp;
+    return 2 + 120 * exp;
 }
 
 /**
