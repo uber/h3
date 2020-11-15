@@ -294,48 +294,6 @@ double H3_EXPORT(edgeLengthM)(int res) {
     return lens[res];
 }
 
-/**
- * Number of cells (hexagons and pentagons) for a given resolution,
- * which works out to be `2 + 120*7^r` for resolution `r`
- *
- * # Mathematical notes
- *
- * Let h(n) be the number of children n levels below
- * a single *hexagon*.
- *
- * Then h(n) = 7^n.
- *
- * Let p(n) be the number of children n levels below
- * a single *pentagon*.
- *
- * Then p(0) = 1, and p(1) = 6, since each pentagon
- * has 5 hexagonal immediate children and 1 pentagonal
- * immediate child.
- *
- * In general, we have the recurrence relation
- *
- * p(n) = 5*h(n-1) + p(n-1)
- *      = 5*7^(n-1) + p(n-1).
- *
- * Working through the recurrence, we get that
- *
- * p(n) = 1 + 5*\sum_{k=1}^n 7^{k-1}
- *      = 1 + 5*(7^n - 1)/6,
- *
- * using the closed form for a geometric series.
- *
- * Using the closed forms for h(n) and p(n), we can
- * get a closed form for the total number of cells
- * at resolution r:
- *
- * c(r) = 12*p(r) + 110*h(r)
- *      = 2 + 120*7^r.
- *
- *
- * @param   res  H3 cell resolution
- *
- * @return       number of cells at resolution `res`
- */
 int64_t H3_EXPORT(numHexagons)(int res) {
     // Alternatively, we could define some `int64_t` function to
     // do the power operation.
