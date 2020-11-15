@@ -226,4 +226,29 @@ SUITE(geoCoord) {
             last = next;
         }
     }
+
+    TEST(numHexagons) {
+        // Test numHexagon counts of the number of *cells* at each resolution
+        static const int64_t expected[] = {122L,
+                                           842L,
+                                           5882L,
+                                           41162L,
+                                           288122L,
+                                           2016842L,
+                                           14117882L,
+                                           98825162L,
+                                           691776122L,
+                                           4842432842L,
+                                           33897029882L,
+                                           237279209162L,
+                                           1660954464122L,
+                                           11626681248842L,
+                                           81386768741882L,
+                                           569707381193162L};
+
+        for (int r = 0; r <= MAX_H3_RES; r++) {
+            int64_t num = H3_EXPORT(numHexagons)(r);
+            t_assert(num == expected[r], 'incorrect numHexagons count');
+        }
+    }
 }
