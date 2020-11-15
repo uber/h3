@@ -183,7 +183,7 @@ static bool _isValidChildRes(int parentRes, int childRes) {
  * @return int count of maximum number of children (equal for hexagons, less for
  * pentagons
  */
-int H3_EXPORT(maxH3ToChildrenSize)(H3Index h, int childRes) {
+uint64_t H3_EXPORT(maxH3ToChildrenSize)(H3Index h, unsigned int childRes) {
     int parentRes = H3_GET_RESOLUTION(h);
     if (!_isValidChildRes(parentRes, childRes)) {
         return 0;

@@ -24,6 +24,7 @@
 
 #include "constants.h"
 #include "h3api.h"
+#include "mathExtensions.h"
 
 /**
  * Normalizes radians to a value between 0.0 and two PI.
@@ -294,20 +295,8 @@ double H3_EXPORT(edgeLengthM)(int res) {
     return lens[res];
 }
 
-int64_t H3_EXPORT(numHexagons)(int res) {
-    // Alternatively, we could define some `int64_t` function to
-    // do the power operation.
-    // There are fancy, faster ways to compute a power, but if
-    // we're only going up to res 16, I'm not sure it is worth
-    // the extra code/complexity.
-    // The `<math.h>` function `pow` seems inappropriate, as it
-    // operates on and returns floating point numbers.
-    int64_t exp = 1;
-    for (int i = 0; i < res; i++) {
-        exp *= 7;
-    }
-
-    return 2 + 120 * exp;
+uint64_t H3_EXPORT(numHexagons)(int res) {
+    return 2 + 120 * _ipow(7, res);
 }
 
 /**

@@ -27,8 +27,8 @@
  *
  * @return the exponentiated value
  */
-int _ipow(int base, int exp) {
-    int result = 1;
+uint64_t _ipow(uint64_t base, uint64_t exp) {
+    uint64_t result = 1;
     while (exp) {
         if (exp & 1) result *= base;
         exp >>= 1;

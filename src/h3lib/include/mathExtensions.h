@@ -20,12 +20,14 @@
 #ifndef MATHEXTENSIONS_H
 #define MATHEXTENSIONS_H
 
+#include <stdint.h>
+
 /**
  * MAX returns the maximum of two values.
  */
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 
 // Internal functions
-int _ipow(int base, int exp);
+uint64_t _ipow(uint64_t base, uint64_t exp);
 
 #endif
