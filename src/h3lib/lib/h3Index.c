@@ -188,7 +188,13 @@ int64_t H3_EXPORT(maxH3ToChildrenSize)(H3Index h, int childRes) {
     if (!_isValidChildRes(parentRes, childRes)) {
         return 0;
     }
-    return _ipow(7, (childRes - parentRes));
+    int n = childRes - parentRes;
+
+    if (H3_EXPORT(h3IsPentagon)(h)) {
+        return 1 + 5 * (_ipow(7, n) - 1) / 6;
+    } else {
+        return _ipow(7, n);
+    }
 }
 
 /**
