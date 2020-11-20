@@ -34,4 +34,16 @@ SUITE(maxH3ToChildrenSize) {
         t_assert(H3_EXPORT(maxH3ToChildrenSize)(parent, 9) == 7 * 7,
                  "got expected size for grandchild res");
     }
+
+    TEST(maxH3ToChildrenSize_largest) {
+        // write out the types explicitly, to make sure errors don't go
+        // undetected to to type casting.
+
+        H3Index h = 0x806dfffffffffff;       // res 0 *hexagon*
+        uint64_t expected = 4747561509943L;  // 7^15
+        uint64_t out = H3_EXPORT(maxH3ToChildrenSize)(h, 15);
+
+        t_assert(out == expected,
+                 "got right size for hex children 15 levels below");
+    }
 }

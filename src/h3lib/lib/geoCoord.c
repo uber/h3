@@ -24,6 +24,7 @@
 
 #include "constants.h"
 #include "h3api.h"
+#include "mathExtensions.h"
 
 /**
  * Normalizes radians to a value between 0.0 and two PI.
@@ -294,36 +295,7 @@ double H3_EXPORT(edgeLengthM)(int res) {
     return lens[res];
 }
 
-/** @brief Number of unique valid H3Indexes at given resolution. */
-int64_t H3_EXPORT(numHexagons)(int res) {
-    /**
-     * Note: this *actually* returns the number of *cells*
-     * (which includes the 12 pentagons) at each resolution.
-     *
-     * This table comes from the recurrence:
-     *
-     *  num_cells(0) = 122
-     *  num_cells(i+1) = (num_cells(i)-12)*7 + 12*6
-     *
-     */
-    static const int64_t nums[] = {122L,
-                                   842L,
-                                   5882L,
-                                   41162L,
-                                   288122L,
-                                   2016842L,
-                                   14117882L,
-                                   98825162L,
-                                   691776122L,
-                                   4842432842L,
-                                   33897029882L,
-                                   237279209162L,
-                                   1660954464122L,
-                                   11626681248842L,
-                                   81386768741882L,
-                                   569707381193162L};
-    return nums[res];
-}
+int64_t H3_EXPORT(numHexagons)(int res) { return 2 + 120 * _ipow(7, res); }
 
 /**
  * Surface area in radians^2 of spherical triangle on unit sphere.

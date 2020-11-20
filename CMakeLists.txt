@@ -206,7 +206,6 @@ set(OTHER_SOURCE_FILES
     src/apps/miscapps/h3ToGeoHier.c
     src/apps/miscapps/generateBaseCellNeighbors.c
     src/apps/miscapps/generatePentagonDirectionFaces.c
-    src/apps/miscapps/generateNumHexagons.c
     src/apps/miscapps/generateFaceCenterPoint.c
     src/apps/miscapps/h3ToHier.c
     src/apps/benchmarks/benchmarkPolyfill.c
@@ -416,7 +415,6 @@ if(BUILD_GENERATORS AND ENABLE_REQUIRES_ALL_SYMBOLS)
     # Code generation
     add_h3_executable(generateBaseCellNeighbors src/apps/miscapps/generateBaseCellNeighbors.c ${APP_SOURCE_FILES})
     add_h3_executable(generateFaceCenterPoint src/apps/miscapps/generateFaceCenterPoint.c ${APP_SOURCE_FILES})
-    add_h3_executable(generateNumHexagons src/apps/miscapps/generateNumHexagons.c ${APP_SOURCE_FILES})
     add_h3_executable(generatePentagonDirectionFaces src/apps/miscapps/generatePentagonDirectionFaces.c ${APP_SOURCE_FILES})
 
     # Miscellaneous testing applications - generating random data

@@ -22,13 +22,13 @@
 /**
  * _ipow does integer exponentiation efficiently. Taken from StackOverflow.
  *
- * @param base the integer base
- * @param exp the integer exponent
+ * @param base the integer base (can be positive or negative)
+ * @param exp the integer exponent (should be nonnegative)
  *
  * @return the exponentiated value
  */
-int _ipow(int base, int exp) {
-    int result = 1;
+int64_t _ipow(int64_t base, int64_t exp) {
+    int64_t result = 1;
     while (exp) {
         if (exp & 1) result *= base;
         exp >>= 1;
