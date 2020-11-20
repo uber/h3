@@ -28,6 +28,6 @@
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 
 // Internal functions
-int64_t _ipow(uint64_t base, uint64_t exp);
+int64_t _ipow(int64_t base, int64_t exp);
 
 #endif

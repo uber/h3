@@ -10,8 +10,8 @@ The public API of this library consists of the functions declared in file
 ### Added
 - closed-form implementation of `numHexagons`
 
-### Fixed
-- `maxH3ToChildrenSize` to output `int64_t` instead of `int` (breaking change)
+### Breaking changes
+- `maxH3ToChildrenSize` to output `int64_t` instead of `int`
 
 ## [3.7.1] - 2020-10-05
 ### Fixed
