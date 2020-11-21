@@ -78,11 +78,14 @@ void step(ChildIter* CI) {
             return;
         }
 
+        if (i == CI->fnz && _get(CI, i) == 1) {
+            _inc(CI, i, 1);
+            CI->fnz -= 1;  // the skip 1 digit
+            return;
+        }
+
         if (_get(CI, i) == 7) {
             _inc(CI, i, 1);  // zeros out A[i] and increments A[i-1] by 1
-        } else if (i == CI->fnz && _get(CI, i) == 6) {
-            _inc(CI, i, 2);  // zeros out A[i] and increments A[i-1] by 1
-            CI->fnz -= 1;
         } else
             break;
     }
