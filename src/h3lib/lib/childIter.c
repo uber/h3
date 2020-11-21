@@ -19,7 +19,7 @@
 
 #include "childIter.h"
 
-H3Index _zero_out_workspace(H3Index h, int parentRes, int childRes) {
+static H3Index _zero_out_workspace(H3Index h, int parentRes, int childRes) {
     /* Zero out digits from parentRes + 1 to childRes
      **/
 
@@ -35,7 +35,7 @@ H3Index _zero_out_workspace(H3Index h, int parentRes, int childRes) {
     return h & m;
 }
 
-int _get(ChildIter* I, int res) {
+static int _get(ChildIter* I, int res) {
     int s = 3 * (15 - res);
     uint64_t m = 7;
 
@@ -44,7 +44,7 @@ int _get(ChildIter* I, int res) {
     return (I->h & m) >> s;
 }
 
-void _inc(ChildIter* I, int res) {
+static void _inc(ChildIter* I, int res) {
     uint64_t val = 1;
     val <<= 3 * (15 - res);
     I->h += val;
@@ -54,7 +54,7 @@ void setup(ChildIter* CI, H3Index h, int childRes) {
     CI->pr = H3_GET_RESOLUTION(h);
     CI->cr = childRes;
 
-    if (CI->cr < CI->pr || CI->cr > MAX_H3_RES) {
+    if (CI->cr < CI->pr || CI->cr > MAX_H3_RES || h == H3_NULL) {
         // make an empty iterator
         CI->h = H3_NULL;
         return;

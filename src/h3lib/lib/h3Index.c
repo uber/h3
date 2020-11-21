@@ -441,44 +441,34 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
 }
 
 /**
- * uncompact takes a compressed set of hexagons and expands back to the
- * original set of hexagons.
- * @param compactedSet Set of hexagons
- * @param numHexes The number of hexes in the input set
- * @param h3Set Output array of decompressed hexagons (preallocated)
- * @param maxHexes The size of the output array to bound check against
- * @param res The hexagon resolution to decompress to
- * @return An error code if output array is too small or any hexagon is
- * smaller than the output resolution.
+ * uncompact takes a compressed set of cells and expands back to the
+ * original set of cells.
+ *
+ * @param   compactSet  Set of compacted cells
+ * @param   numCompact  The number of cells in the input compacted set
+ * @param   outSet      Output array for decompressed cells (preallocated)
+ * @param   numOut      The size of the output array to bound check against
+ * @param   res         The H3 resolution to decompress to
+ * @return              An error code if output array is too small or any cell
+ *                      is smaller than the output resolution.
  */
-int H3_EXPORT(uncompact)(const H3Index* compactedSet, const int numHexes,
-                         H3Index* h3Set, const int maxHexes, const int res) {
-    int outOffset = 0;
-    for (int i = 0; i < numHexes; i++) {
-        if (compactedSet[i] == 0) continue;
-        if (outOffset >= maxHexes) {
-            // We went too far, abort!
-            return -1;
-        }
-        int currentRes = H3_GET_RESOLUTION(compactedSet[i]);
-        if (!_isValidChildRes(currentRes, res)) {
-            // Nonsensical. Abort.
-            return -2;
-        }
-        if (currentRes == res) {
-            // Just copy and move along
-            h3Set[outOffset] = compactedSet[i];
-            outOffset++;
-        } else {
-            // Bigger hexagon to reduce in size
-            int numHexesToGen =
-                H3_EXPORT(cellToChildrenSize)(compactedSet[i], res);
-            if (outOffset + numHexesToGen > maxHexes) {
-                // We're about to go too far, abort!
-                return -1;
-            }
-            H3_EXPORT(h3ToChildren)(compactedSet[i], res, h3Set + outOffset);
-            outOffset += numHexesToGen;
+int H3_EXPORT(uncompact)(const H3Index* compactedSet, const int numCompacted,
+                         H3Index* outSet, const int numOut, const int res) {
+    int i = 0;
+    ChildIter CI;
+
+    for (int j = 0; j < numCompacted; j++) {
+        // Check for valid child res
+        int currentRes = H3_GET_RESOLUTION(compactedSet[j]);
+        if (!_isValidChildRes(currentRes, res)) return -2;
+
+        setup(&CI, compactedSet[j], res);
+        while (CI.h) {
+            if (i >= numOut) return -1;  // went too far; abort!
+
+            outSet[i] = CI.h;
+            step(&CI);
+            i++;
         }
     }
     return 0;
@@ -493,6 +483,8 @@ int H3_EXPORT(uncompact)(const H3Index* compactedSet, const int numHexes,
  * @return The number of hexagons to allocate memory for, or a negative
  * number if an error occurs.
  */
+
+// todo
 int H3_EXPORT(maxUncompactSize)(const H3Index* compactedSet, const int numHexes,
                                 const int res) {
     int maxNumHexagons = 0;
