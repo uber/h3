@@ -27,6 +27,7 @@
 
 #include "alloc.h"
 #include "baseCells.h"
+#include "childIter.h"
 #include "faceijk.h"
 #include "mathExtensions.h"
 
@@ -218,27 +219,13 @@ H3Index makeDirectChild(H3Index h, int cellNumber) {
  * @param children H3Index* the memory to store the resulting addresses in
  */
 void H3_EXPORT(h3ToChildren)(H3Index h, int childRes, H3Index* children) {
-    int parentRes = H3_GET_RESOLUTION(h);
-    if (!_isValidChildRes(parentRes, childRes)) {
-        return;
-    } else if (parentRes == childRes) {
-        *children = h;
-        return;
-    }
-    int bufferSize = H3_EXPORT(maxH3ToChildrenSize)(h, childRes);
-    int bufferChildStep = (bufferSize / 7);
-    int isAPentagon = H3_EXPORT(h3IsPentagon)(h);
-    for (int i = 0; i < 7; i++) {
-        if (isAPentagon && i == K_AXES_DIGIT) {
-            H3Index* nextChild = children + bufferChildStep;
-            while (children < nextChild) {
-                *children = H3_NULL;
-                children++;
-            }
-        } else {
-            H3_EXPORT(h3ToChildren)(makeDirectChild(h, i), childRes, children);
-            children += bufferChildStep;
-        }
+    ChildIter CI;
+
+    setup(&CI, h, childRes);
+
+    for (int i = 0; CI.h; i++) {
+        children[i] = CI.h;
+        step(&CI);
     }
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Uber Technologies, Inc.
+ * Copyright 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@
 
 #include <stdint.h>
 
+#include "h3Index.h"
 #include "h3api.h"
 
 typedef struct {
@@ -29,7 +30,7 @@ typedef struct {
     int pr, cr, fnz;
 } ChildIter;
 
-void setup(ChildIter* I, H3Index h, int parentRes, int childRes, int is_pent);
+void setup(ChildIter* I, H3Index h, int childRes);
 void step(ChildIter* I);
 
 #endif

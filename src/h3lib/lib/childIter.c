@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Uber Technologies, Inc.
+ * Copyright 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,21 +33,24 @@ H3Index _zero_out_workspace(H3Index h, int parentRes, int childRes) {
     return h & m;
 }
 
-void setup(ChildIter* I, H3Index h, int parentRes, int childRes, int is_pent) {
-    if (childRes < parentRes) {
+void setup(ChildIter* CI, H3Index h, int childRes) {
+    CI->pr = H3_GET_RESOLUTION(h);
+    CI->cr = childRes;  // we can encode children in the h. eh, maybe too fancy
+
+    if (CI->cr < CI->pr || CI->cr > MAX_H3_RES) {
         // the iterator is empty
-        I->h = 0;
+        CI->h = 0;
         return;
     }
 
-    I->pr = parentRes;
-    I->cr = childRes;  // we can encode children in the h. eh, maybe too fancy
-    I->h = _zero_out_workspace(h, parentRes, childRes);
+    h = _zero_out_workspace(h, CI->pr, CI->cr);
+    H3_SET_RESOLUTION(h, CI->cr);
+    CI->h = h;
 
-    if (is_pent)
-        I->fnz = childRes;
+    if (H3_EXPORT(h3IsPentagon)(h))
+        CI->fnz = CI->cr;
     else
-        I->fnz = -1;
+        CI->fnz = -1;
 }
 
 int _get(ChildIter* I, int res) {
