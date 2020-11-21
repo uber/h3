@@ -141,7 +141,7 @@ SUITE(h3ToChildren) {
         const int paddedCount = H3_EXPORT(maxH3ToChildrenSize)(pentagon, 3);
 
         H3Index* children = calloc(paddedCount, sizeof(H3Index));
-        H3_EXPORT(h3ToChildren)(sfHex8, 10, children);
+        // H3_EXPORT(h3ToChildren)(sfHex8, 10, children);
         H3_EXPORT(h3ToChildren)(pentagon, 3, children);
 
         verifyCountAndUniqueness(children, paddedCount, expectedCount);

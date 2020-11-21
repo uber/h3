@@ -22,6 +22,8 @@
 H3Index _zero_out_workspace(H3Index h, int parentRes, int childRes) {
     /* Zero out digits from parentRes + 1 to childRes
      **/
+
+    // todo: slicker way to do this?
     uint64_t m = ~0;
 
     m <<= 19 + 3 * parentRes;
@@ -33,26 +35,6 @@ H3Index _zero_out_workspace(H3Index h, int parentRes, int childRes) {
     return h & m;
 }
 
-void setup(ChildIter* CI, H3Index h, int childRes) {
-    CI->pr = H3_GET_RESOLUTION(h);
-    CI->cr = childRes;  // we can encode children in the h. eh, maybe too fancy
-
-    if (CI->cr < CI->pr || CI->cr > MAX_H3_RES) {
-        // the iterator is empty
-        CI->h = 0;
-        return;
-    }
-
-    h = _zero_out_workspace(h, CI->pr, CI->cr);
-    H3_SET_RESOLUTION(h, CI->cr);
-    CI->h = h;
-
-    if (H3_EXPORT(h3IsPentagon)(h))
-        CI->fnz = CI->cr;
-    else
-        CI->fnz = -1;
-}
-
 int _get(ChildIter* I, int res) {
     int s = 3 * (15 - res);
     uint64_t m = 7;
@@ -62,30 +44,59 @@ int _get(ChildIter* I, int res) {
     return (I->h & m) >> s;
 }
 
-void _inc(ChildIter* I, int res, uint64_t val) {
+void _inc(ChildIter* I, int res) {
+    uint64_t val = 1;
     val <<= 3 * (15 - res);
     I->h += val;
 }
 
-void step(ChildIter* CI) {
-    if (CI->h == 0) return;
+void setup(ChildIter* CI, H3Index h, int childRes) {
+    CI->pr = H3_GET_RESOLUTION(h);
+    CI->cr = childRes;
 
-    _inc(CI, CI->cr, 1);
+    if (CI->cr < CI->pr || CI->cr > MAX_H3_RES) {
+        // make an empty iterator
+        CI->h = H3_NULL;
+        return;
+    }
+
+    h = _zero_out_workspace(h, CI->pr, CI->cr);
+    H3_SET_RESOLUTION(h, CI->cr);
+    CI->h = h;
+
+    if (H3_EXPORT(h3IsPentagon)(h))
+        // The first nonzero digit skips `1` for pentagons.
+        // The "fnz" moves to the left as we count up from the child resolution
+        // to the parent resolution.
+        CI->fnz = CI->cr;
+    else
+        // if not a pentagon, we can ignore "first nonzero digit" logic
+        CI->fnz = -1;
+}
+
+void step(ChildIter* CI) {
+    // once h == H3_NULL, the iterator returns an infinite sequence of H3_NULL
+    if (CI->h == H3_NULL) return;
+
+    _inc(CI, CI->cr);
 
     for (int i = CI->cr; i >= CI->pr; i--) {
         if (i == CI->pr) {
-            CI->h = 0;
+            // if we're modifying the parent resolution digit, then we're done
+            CI->h = H3_NULL;
             return;
         }
 
         if (i == CI->fnz && _get(CI, i) == 1) {
-            _inc(CI, i, 1);
-            CI->fnz -= 1;  // the skip 1 digit
+            // Do not pass `1`. Do not collect $200.
+            // I.e., skip the `1` in this digit
+            _inc(CI, i);
+            CI->fnz -= 1;
             return;
         }
 
         if (_get(CI, i) == 7) {
-            _inc(CI, i, 1);  // zeros out A[i] and increments A[i-1] by 1
+            _inc(CI, i);  // zeros out CI[i] and increments CI[i-1] by 1
         } else
             break;
     }

@@ -27,7 +27,9 @@
 
 typedef struct {
     H3Index h;
-    int pr, cr, fnz;
+    int pr;   // parent resolution
+    int cr;   // child resolution
+    int fnz;  // first nonzero digit (this digit skips `1` for pentagons)
 } ChildIter;
 
 void setup(ChildIter* I, H3Index h, int childRes);
