@@ -175,7 +175,7 @@ static bool _isValidChildRes(int parentRes, int childRes) {
 }
 
 /**
- * maxH3ToChildrenSize returns the maximum number of children possible for a
+ * cellToChildrenSize returns the maximum number of children possible for a
  * given child level.
  *
  * @param h H3Index to find the number of children of
@@ -184,12 +184,18 @@ static bool _isValidChildRes(int parentRes, int childRes) {
  * @return int count of maximum number of children (equal for hexagons, less for
  * pentagons
  */
-int64_t H3_EXPORT(maxH3ToChildrenSize)(H3Index h, int childRes) {
+int64_t H3_EXPORT(cellToChildrenSize)(H3Index h, int childRes) {
     int parentRes = H3_GET_RESOLUTION(h);
     if (!_isValidChildRes(parentRes, childRes)) {
         return 0;
     }
-    return _ipow(7, (childRes - parentRes));
+    int n = childRes - parentRes;
+
+    if (H3_EXPORT(h3IsPentagon)(h)) {
+        return 1 + 5 * (_ipow(7, n) - 1) / 6;
+    } else {
+        return _ipow(7, n);
+    }
 }
 
 /**
@@ -212,7 +218,7 @@ H3Index makeDirectChild(H3Index h, int cellNumber) {
 /**
  * h3ToChildren takes the given hexagon id and generates all of the children
  * at the specified resolution storing them into the provided memory pointer.
- * It's assumed that maxH3ToChildrenSize was used to determine the allocation.
+ * It's assumed that cellToChildrenSize was used to determine the allocation.
  *
  * @param h H3Index to find the children of
  * @param childRes int the child level to produce
@@ -466,7 +472,7 @@ int H3_EXPORT(uncompact)(const H3Index* compactedSet, const int numHexes,
         } else {
             // Bigger hexagon to reduce in size
             int numHexesToGen =
-                H3_EXPORT(maxH3ToChildrenSize)(compactedSet[i], res);
+                H3_EXPORT(cellToChildrenSize)(compactedSet[i], res);
             if (outOffset + numHexesToGen > maxHexes) {
                 // We're about to go too far, abort!
                 return -1;
@@ -502,7 +508,7 @@ int H3_EXPORT(maxUncompactSize)(const H3Index* compactedSet, const int numHexes,
         } else {
             // Bigger hexagon to reduce in size
             int numHexesToGen =
-                H3_EXPORT(maxH3ToChildrenSize)(compactedSet[i], res);
+                H3_EXPORT(cellToChildrenSize)(compactedSet[i], res);
             maxNumHexagons += numHexesToGen;
         }
     }

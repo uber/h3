@@ -160,7 +160,7 @@ SUITE(compact) {
         // Arbitrary index
         setH3Index(&h3, res, 0, 2);
 
-        int arrSize = H3_EXPORT(maxH3ToChildrenSize)(h3, res + 1) + 1;
+        int arrSize = H3_EXPORT(cellToChildrenSize)(h3, res + 1) + 1;
         H3Index* children = calloc(arrSize, sizeof(H3Index));
 
         H3_EXPORT(h3ToChildren)(h3, res + 1, children);
@@ -184,7 +184,7 @@ SUITE(compact) {
         // Arbitrary pentagon parent cell
         setH3Index(&h3, res, 4, 0);
 
-        int arrSize = H3_EXPORT(maxH3ToChildrenSize)(h3, res + 1) + 1;
+        int arrSize = H3_EXPORT(cellToChildrenSize)(h3, res + 1) + 1;
         H3Index* children = calloc(arrSize, sizeof(H3Index));
 
         H3_EXPORT(h3ToChildren)(h3, res + 1, children);
@@ -210,7 +210,7 @@ SUITE(compact) {
         // Arbitrary index
         setH3Index(&h3, res, 0, 2);
 
-        int arrSize = H3_EXPORT(maxH3ToChildrenSize)(h3, res + 1);
+        int arrSize = H3_EXPORT(cellToChildrenSize)(h3, res + 1);
         H3Index* children = calloc(arrSize, sizeof(H3Index));
 
         H3_EXPORT(h3ToChildren)(h3, res + 1, children);

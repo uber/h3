@@ -461,9 +461,9 @@ DECLSPEC H3Index H3_EXPORT(h3ToParent)(H3Index h, int parentRes);
  * Functions for h3ToChildren
  * @{
  */
-/** @brief determines the maximum number of children (or grandchildren, etc)
- * that could be returned for the given hexagon */
-DECLSPEC int64_t H3_EXPORT(maxH3ToChildrenSize)(H3Index h, int childRes);
+/** @brief determines the exact number of children (or grandchildren, etc)
+ * that would be returned for the given cell */
+DECLSPEC int64_t H3_EXPORT(cellToChildrenSize)(H3Index h, int childRes);
 
 /** @brief provides the children (or grandchildren, etc) of the given hexagon */
 DECLSPEC void H3_EXPORT(h3ToChildren)(H3Index h, int childRes,

@@ -16,12 +16,12 @@ Returns the parent (coarser) index containing `h`.
 void h3ToChildren(H3Index h, int childRes, H3Index *children);
 ```
 
-Populates `children` with the indexes contained by `h` at resolution `childRes`. `children` must be an array of at least size `maxH3ToChildrenSize(h, childRes)`.
+Populates `children` with the indexes contained by `h` at resolution `childRes`. `children` must be an array of at least size `cellToChildrenSize(h, childRes)`.
 
-### maxH3ToChildrenSize
+### cellToChildrenSize
 
 ```
-int maxH3ToChildrenSize(H3Index h, int childRes);
+int cellToChildrenSize(H3Index h, int childRes);
 ```
 
 Returns the size of the array needed by `h3ToChildren` for these inputs.

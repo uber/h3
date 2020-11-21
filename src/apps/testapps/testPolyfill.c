@@ -81,7 +81,7 @@ static void fillIndex_assertions(H3Index h) {
 
         int polyfillCount = countActualHexagons(polyfillOut, polyfillSize);
 
-        int childrenSize = H3_EXPORT(maxH3ToChildrenSize)(h, nextRes);
+        int childrenSize = H3_EXPORT(cellToChildrenSize)(h, nextRes);
         H3Index* children = calloc(childrenSize, sizeof(H3Index));
         H3_EXPORT(h3ToChildren)(h, nextRes, children);
 
