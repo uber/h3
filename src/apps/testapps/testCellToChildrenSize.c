@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Uber Technologies, Inc.
+ * Copyright 2017-2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ SUITE(cellToChildrenSize) {
 
     TEST(cellToChildrenSize_largest) {
         // write out the types explicitly, to make sure errors don't go
-        // undetected to to type casting.
+        // undetected due to type casting.
 
         H3Index h = 0x806dfffffffffff;       // res 0 *hexagon*
         uint64_t expected = 4747561509943L;  // 7^15

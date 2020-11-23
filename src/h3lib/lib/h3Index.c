@@ -174,6 +174,14 @@ static bool _isValidChildRes(int parentRes, int childRes) {
     return true;
 }
 
+static bool _hasChildAtRes(H3Index h, int childRes) {
+    int parentRes = H3_GET_RESOLUTION(h);
+    if (childRes < parentRes || childRes > MAX_H3_RES) {
+        return false;
+    }
+    return true;
+}
+
 /**
  * cellToChildrenSize returns the maximum number of children possible for a
  * given child level.
@@ -185,11 +193,9 @@ static bool _isValidChildRes(int parentRes, int childRes) {
  * pentagons
  */
 int64_t H3_EXPORT(cellToChildrenSize)(H3Index h, int childRes) {
-    int parentRes = H3_GET_RESOLUTION(h);
-    if (!_isValidChildRes(parentRes, childRes)) {
-        return 0;
-    }
-    int n = childRes - parentRes;
+    if (!_hasChildAtRes(h, childRes)) return 0;
+
+    int n = childRes - H3_GET_RESOLUTION(h);
 
     if (H3_EXPORT(h3IsPentagon)(h)) {
         return 1 + 5 * (_ipow(7, n) - 1) / 6;
@@ -246,17 +252,14 @@ void H3_EXPORT(h3ToChildren)(H3Index h, int childRes, H3Index* children) {
  * parent
  */
 H3Index H3_EXPORT(h3ToCenterChild)(H3Index h, int childRes) {
-    int parentRes = H3_GET_RESOLUTION(h);
-    if (!_isValidChildRes(parentRes, childRes)) {
-        return H3_NULL;
-    } else if (childRes == parentRes) {
-        return h;
+    if (!_hasChildAtRes(h, childRes)) return H3_NULL;
+
+    for (int i = H3_GET_RESOLUTION(h) + 1; i <= childRes; i++) {
+        H3_SET_INDEX_DIGIT(h, i, 0);
     }
-    H3Index child = H3_SET_RESOLUTION(h, childRes);
-    for (int i = parentRes + 1; i <= childRes; i++) {
-        H3_SET_INDEX_DIGIT(child, i, 0);
-    }
-    return child;
+    H3_SET_RESOLUTION(h, childRes);
+
+    return h;
 }
 
 /**
@@ -458,9 +461,7 @@ int H3_EXPORT(uncompact)(const H3Index* compactedSet, const int numCompacted,
     ChildIter CI;
 
     for (int j = 0; j < numCompacted; j++) {
-        // Check for valid child res
-        int currentRes = H3_GET_RESOLUTION(compactedSet[j]);
-        if (!_isValidChildRes(currentRes, res)) return -2;
+        if (!_hasChildAtRes(compactedSet[j], res)) return -2;
 
         setup(&CI, compactedSet[j], res);
         while (CI.h) {
