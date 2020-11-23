@@ -19,22 +19,6 @@
 
 #include "childIter.h"
 
-static H3Index _zero_out_workspace(H3Index h, int parentRes, int childRes) {
-    /* Zero out digits from parentRes + 1 to childRes
-     **/
-
-    // todo: slicker way to do this?
-    uint64_t m = ~0;
-
-    m <<= 19 + 3 * parentRes;
-    m >>= 19 + 3 * parentRes;
-    m >>= 3 * (15 - childRes);
-    m <<= 3 * (15 - childRes);
-    m = ~m;
-
-    return h & m;
-}
-
 static int _get(ChildIter* I, int res) {
     int s = 3 * (15 - res);
     uint64_t m = 7;
@@ -60,7 +44,7 @@ void setup(ChildIter* CI, H3Index h, int childRes) {
         return;
     }
 
-    h = _zero_out_workspace(h, CI->pr, CI->cr);
+    h = _zero_index_digits(h, CI->pr + 1, CI->cr);
     H3_SET_RESOLUTION(h, CI->cr);
     CI->h = h;
 

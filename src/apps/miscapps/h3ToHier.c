@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
         .scanFormat = "%" PRIx64,
         .valueName = "parent",
         .value = &parentIndex,
-        .helpText = "Print only indexes descendent from this index."};
+        .helpText = "Print only indexes descendant from this index."};
 
     Arg *args[] = {&helpArg, &resArg, &parentArg};
     const int numArgs = 3;

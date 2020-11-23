@@ -234,6 +234,21 @@ void H3_EXPORT(h3ToChildren)(H3Index h, int childRes, H3Index* children) {
     }
 }
 
+H3Index _zero_index_digits(H3Index h, int start, int end) {
+    /* Zero out digits from start to end, inclusive.
+     * No-op if start > end.
+     **/
+
+    uint64_t m = ~0;
+
+    m <<= 3 * (15 - end);
+    m <<= 19 + 3 * (start - 1);
+    m >>= 19 + 3 * (start - 1);
+    m = ~m;
+
+    return h & m;
+}
+
 /**
  * h3ToCenterChild produces the center child index for a given H3 index at
  * the specified resolution
@@ -247,9 +262,7 @@ void H3_EXPORT(h3ToChildren)(H3Index h, int childRes, H3Index* children) {
 H3Index H3_EXPORT(h3ToCenterChild)(H3Index h, int childRes) {
     if (!_hasChildAtRes(h, childRes)) return H3_NULL;
 
-    for (int i = H3_GET_RESOLUTION(h) + 1; i <= childRes; i++) {
-        H3_SET_INDEX_DIGIT(h, i, 0);
-    }
+    h = _zero_index_digits(h, H3_GET_RESOLUTION(h) + 1, childRes);
     H3_SET_RESOLUTION(h, childRes);
 
     return h;
