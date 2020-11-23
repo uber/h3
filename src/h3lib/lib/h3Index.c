@@ -159,21 +159,14 @@ H3Index H3_EXPORT(h3ToParent)(H3Index h, int parentRes) {
 }
 
 /**
- * Determines whether one resolution is a valid child resolution of another.
+ * Determines whether one resolution is a valid child resolution for a cell.
  * Each resolution is considered a valid child resolution of itself.
  *
- * @param parentRes int resolution of the parent
- * @param childRes int resolution of the child
+ * @param h         h3Index  parent cell
+ * @param childRes  int      resolution of the child
  *
  * @return The validity of the child resolution
  */
-static bool _isValidChildRes(int parentRes, int childRes) {
-    if (childRes < parentRes || childRes > MAX_H3_RES) {
-        return false;
-    }
-    return true;
-}
-
 static bool _hasChildAtRes(H3Index h, int childRes) {
     int parentRes = H3_GET_RESOLUTION(h);
     if (childRes < parentRes || childRes > MAX_H3_RES) {
@@ -476,36 +469,25 @@ int H3_EXPORT(uncompact)(const H3Index* compactedSet, const int numCompacted,
 }
 
 /**
- * maxUncompactSize takes a compacted set of hexagons are provides an
- * upper-bound estimate of the size of the uncompacted set of hexagons.
- * @param compactedSet Set of hexagons
- * @param numHexes The number of hexes in the input set
- * @param res The hexagon resolution to decompress to
- * @return The number of hexagons to allocate memory for, or a negative
- * number if an error occurs.
+ * maxUncompactSize takes a compacted set of hexagons and provides
+ * the exact size of the uncompacted set of hexagons.
+ *
+ * @param   compactedSet  Set of hexagons
+ * @param   numHexes      The number of hexes in the input set
+ * @param   res           The hexagon resolution to decompress to
+ * @return                The number of hexagons to allocate memory for, or a
+ *                        negative number if an error occurs.
  */
-
-// todo
-int H3_EXPORT(maxUncompactSize)(const H3Index* compactedSet, const int numHexes,
-                                const int res) {
-    int maxNumHexagons = 0;
-    for (int i = 0; i < numHexes; i++) {
+int H3_EXPORT(maxUncompactSize)(const H3Index* compactedSet,
+                                const int numCompacted, const int res) {
+    int numOut = 0;
+    for (int i = 0; i < numCompacted; i++) {
         if (compactedSet[i] == 0) continue;
-        int currentRes = H3_GET_RESOLUTION(compactedSet[i]);
-        if (!_isValidChildRes(currentRes, res)) {
-            // Nonsensical. Abort.
-            return -1;
-        }
-        if (currentRes == res) {
-            maxNumHexagons++;
-        } else {
-            // Bigger hexagon to reduce in size
-            int numHexesToGen =
-                H3_EXPORT(cellToChildrenSize)(compactedSet[i], res);
-            maxNumHexagons += numHexesToGen;
-        }
+        if (!_hasChildAtRes(compactedSet[i], res)) return -1;  // Abort
+
+        numOut += H3_EXPORT(cellToChildrenSize)(compactedSet[i], res);
     }
-    return maxNumHexagons;
+    return numOut;
 }
 
 /**
