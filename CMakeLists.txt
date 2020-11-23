@@ -173,7 +173,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/mkRandGeoBoundary.c
     src/apps/testapps/testGeoToH3.c
     src/apps/testapps/testH3NeighborRotations.c
-    src/apps/testapps/testcellToChildrenSize.c
+    src/apps/testapps/testCellToChildrenSize.c
     src/apps/testapps/testHexRanges.c
     src/apps/testapps/testH3ToGeo.c
     src/apps/testapps/testH3ToCenterChild.c
@@ -575,7 +575,7 @@ if(H3_IS_ROOT_PROJECT AND BUILD_TESTING)
     add_h3_test(testH3ToCenterChild src/apps/testapps/testH3ToCenterChild.c)
     add_h3_test(testH3ToChildren src/apps/testapps/testH3ToChildren.c)
     add_h3_test(testH3GetFaces src/apps/testapps/testH3GetFaces.c)
-    add_h3_test(testcellToChildrenSize src/apps/testapps/testcellToChildrenSize.c)
+    add_h3_test(testCellToChildrenSize src/apps/testapps/testCellToChildrenSize.c)
     add_h3_test(testH3Index src/apps/testapps/testH3Index.c)
     add_h3_test(testH3Api src/apps/testapps/testH3Api.c)
     add_h3_test(testH3SetToLinkedGeo src/apps/testapps/testH3SetToLinkedGeo.c)
