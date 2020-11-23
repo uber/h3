@@ -234,19 +234,19 @@ void H3_EXPORT(h3ToChildren)(H3Index h, int childRes, H3Index* children) {
     }
 }
 
+/* Zero out index digits from start to end, inclusive.
+ * No-op if start > end.
+ **/
 H3Index _zero_index_digits(H3Index h, int start, int end) {
-    /* Zero out digits from start to end, inclusive.
-     * No-op if start > end.
-     **/
+    if (start > end) return h;
 
-    uint64_t m = ~0;
+    uint64_t m = 1;
 
+    m <<= 3 * (end - start + 1);
+    m--;
     m <<= 3 * (15 - end);
-    m <<= 19 + 3 * (start - 1);
-    m >>= 19 + 3 * (start - 1);
-    m = ~m;
 
-    return h & m;
+    return h & ~m;
 }
 
 /**
