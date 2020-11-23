@@ -240,13 +240,14 @@ void H3_EXPORT(h3ToChildren)(H3Index h, int childRes, H3Index* children) {
 H3Index _zero_index_digits(H3Index h, int start, int end) {
     if (start > end) return h;
 
-    uint64_t m = 1;
+    uint64_t m = ~0;
 
     m <<= 3 * (end - start + 1);
-    m--;
+    m = ~m;
     m <<= 3 * (15 - end);
+    m = ~m;
 
-    return h & ~m;
+    return h & m;
 }
 
 /**
