@@ -190,6 +190,14 @@ There are two types of functions returning booleans in the library:
 
 ### H3Error type
 
+(Discussion: It may be nice to have an enum for this type.)
+
+This section will explicitly be part of the public API for semantic versioning of the H3 library.
+
+The proposal is to use the 32-bit option, below.
+
+#### 64-bit option
+
 The error type will be an integer, with the following properties:
 
 * `H3Error` will be an integer type of 64 bits, i.e. `uint64_t`.
@@ -205,9 +213,22 @@ The C definition of the type will be:
 typedef uint64_t H3Error;
 ```
 
-(Discussion: It may be nice to have an enum for this type.)
+#### 32-bit option
 
-This section will explicitly be part of the public API for semantic versioning of the H3 library.
+The error type will be an integer, with the following properties:
+
+* `H3Error` will be an integer type of 32 bits, i.e. `uint32_t`.
+* `H3Error` with value 0 indicates success (no error).
+* No `H3Error` value will set the most significant bit.
+* As a result of these properties, no `H3Error` value will set the bits that correspond with the **Mode** bit field in an `H3Index`.
+
+32 bit return codes with the high bit never set allows for mixing error codes and resulting indexes if desired by the application, after copying the error codes into the result buffer.
+
+The C definition of the type will be:
+
+```
+typedef uint32_t H3Error;
+```
 
 ### H3Error values
 
@@ -241,11 +262,12 @@ The H3 library may always add additional error messages. Error messages not reco
 ```
 geoToH3(lat=Infinity, lon=0, res=0, &out) => E_LATLON_DOMAIN
 geoToH3(lat=0, lat=0, res=-1, &out) => E_RES_DOMAIN
-h3ToGeo(index=0, &out) => E_INDEX_INVALID
-h3IsResClassIII(RES_0_INDEX, &out) => E_SUCCESS
-h3IsResClassIII(RES_1_INDEX, &out) => E_FAILED
+h3ToGeo(index=0, &out) => E_CELL_INVALID
+h3IsResClassIII(index=RES_0_INDEX, &out) => E_SUCCESS
+h3IsResClassIII(index=RES_1_INDEX, &out) => E_SUCCESS
+h3IsResClassIII(index=0, &out) => E_CELL_INVALID
 maxKringSize(k=-1) => E_DOMAIN
-hexRange(origin=0, k=0, &out) => E_INDEX_INVALID
+hexRange(origin=0, k=0, &out) => E_CELL_INVALID
 hexRange(origin=AN_INDEX, k=-1, &out) => E_DOMAIN
 hexRange(origin=PENTAGON_INDEX, k=1, &out) => E_PENTAGON
 # Failed to allocate internal buffer:
@@ -257,7 +279,7 @@ stringToH3(str="zzzz", &out) => E_FAILED
 # Output buffer is not large enough:
 h3ToString(index=AN_INDEX, &out, sizeof(out)) => E_FAILED
 h3IsValid(index=AN_INDEX) => E_SUCCESS
-h3IsValid(index=0) => E_INDEX_INVALID
+h3IsValid(index=0) => E_CELL_INVALID
 compact({AN_INDEX, AN_INDEX}, &out, numHexes) => E_DUPLICATE_INPUT
 getOriginH3IndexFromUnidirectionalEdge(edge=AN_INDEX, &out) => E_EDGE_INVALID
 h3Distance(AN_INDEX, AN_INDEX_FAR_AWAY, &out) => E_FAILED
