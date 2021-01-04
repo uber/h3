@@ -53,50 +53,46 @@ static void getCellVertex_point_assertions(H3Index h3) {
 }
 
 static void getCellVertex_uniqueness_assertions(H3Index h3) {
-    const int cellCount = 7;
-    const int maxVertexCount = NUM_HEX_VERTS * cellCount;
-    H3Index neighbors[cellCount] = {0};
-    H3Index vertexes[maxVertexCount] = {0};
-    H3_EXPORT(kRing)(h3, 1, neighbors);
+    H3Index originVerts[NUM_HEX_VERTS] = {0};
+    getCellVertexes(h3, originVerts);
 
-    int originIsPentagon = H3_EXPORT(h3IsPentagon)(h3);
-
-    H3Index vertex;
-    int hasPentagon = originIsPentagon;
-
-    for (int i = 0; i < cellCount; i++) {
-        H3Index cell = neighbors[i];
-        if (cell == H3_NULL) continue;
-        // track whether we've seen a pentagon
-        int isPentagon = H3_EXPORT(h3IsPentagon)(cell);
-        hasPentagon = hasPentagon || isPentagon;
-        int numVerts = isPentagon ? NUM_PENT_VERTS : NUM_HEX_VERTS;
-        for (int v = 0; v < numVerts; v++) {
-            vertex = getCellVertex(cell, v);
-            t_assert(vertex != H3_NULL, "Got a valid vertex");
-            for (int j = 0; j < maxVertexCount; j++) {
-                if (vertexes[j] == vertex) break;
-                if (vertexes[j] == H3_NULL) {
-                    vertexes[j] = vertex;
-                    break;
-                }
+    for (int v1 = 0; v1 < NUM_HEX_VERTS - 1; v1++) {
+        for (int v2 = v1 + 1; v2 < NUM_HEX_VERTS; v2++) {
+            if (originVerts[v1] == originVerts[v2]) {
+                t_assert(false, "vertex should be unique");
             }
         }
     }
-    // The expected count is: all vertexes for the center cell, plus 3
-    // for each outer cell (or two for pentagon)
-    int expectedCount =
-        originIsPentagon ? 5 + 3 * 5 : hasPentagon ? 6 + 3 * 5 + 2 : 6 + 3 * 6;
-    int count = 0;
-    for (int i = 0; i < maxVertexCount; i++) {
-        if (vertexes[i] != H3_NULL) {
-            count++;
+}
+
+static void getCellVertex_neighbor_assertions(H3Index h3) {
+    const int cellCount = 7;
+
+    H3Index neighbors[cellCount] = {0};
+    H3Index originVerts[NUM_HEX_VERTS] = {0};
+    H3Index neighborVerts[NUM_HEX_VERTS] = {0};
+
+    H3_EXPORT(kRing)(h3, 1, neighbors);
+    getCellVertexes(h3, originVerts);
+
+    for (int i = 0; i < cellCount; i++) {
+        H3Index neighbor = neighbors[i];
+        if (neighbor == H3_NULL || neighbor == h3) continue;
+        getCellVertexes(neighbor, neighborVerts);
+
+        // calculate the set intersection
+        int intersection = 0;
+        for (int v1 = 0; v1 < NUM_HEX_VERTS; v1++) {
+            for (int v2 = 0; v2 < NUM_HEX_VERTS; v2++) {
+                if (neighborVerts[v1] == originVerts[v2]) {
+                    intersection++;
+                }
+            }
         }
+
+        t_assert(intersection == 2,
+                 "Neigbor shares 2 unique vertexes with origin");
     }
-    if (count != expectedCount) {
-        printf("count: %d expected: %d\n", count, expectedCount);
-    }
-    t_assert(count == expectedCount, "Got expected number of unique vertexes");
 }
 
 SUITE(Vertex) {
@@ -165,10 +161,22 @@ SUITE(Vertex) {
     }
 
     // TODO: Move to exhaustive suite
+    TEST(getCellVertex_neighbors) {
+        printf("getCellVertex_neighbors\n");
+        iterateAllIndexesAtRes(0, getCellVertex_neighbor_assertions);
+        iterateAllIndexesAtRes(1, getCellVertex_neighbor_assertions);
+        iterateAllIndexesAtRes(2, getCellVertex_neighbor_assertions);
+        iterateAllIndexesAtRes(3, getCellVertex_neighbor_assertions);
+        iterateAllIndexesAtRes(4, getCellVertex_neighbor_assertions);
+    }
+
+    // TODO: Move to exhaustive suite
     TEST(getCellVertex_uniqueness) {
         printf("getCellVertex_uniqueness\n");
         iterateAllIndexesAtRes(0, getCellVertex_uniqueness_assertions);
         iterateAllIndexesAtRes(1, getCellVertex_uniqueness_assertions);
         iterateAllIndexesAtRes(2, getCellVertex_uniqueness_assertions);
+        iterateAllIndexesAtRes(3, getCellVertex_uniqueness_assertions);
+        iterateAllIndexesAtRes(4, getCellVertex_uniqueness_assertions);
     }
 }

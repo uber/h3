@@ -174,6 +174,8 @@ Direction directionForVertexNum(const H3Index origin, const int vertexNum) {
 /**
  * Get a single vertex for a given cell, as an H3 index, or
  * H3_NULL if the vertex is invalid
+ * @param origin    Cell to get the vertex for
+ * @param vertexNum Number (index) of the vertex to calculate
  */
 H3Index getCellVertex(H3Index origin, int vertexNum) {
     int originIsPentagon = H3_EXPORT(h3IsPentagon)(origin);
@@ -227,6 +229,19 @@ H3Index getCellVertex(H3Index origin, int vertexNum) {
     H3_SET_RESERVED_BITS(vertex, ownerVertexNum);
 
     return vertex;
+}
+
+/**
+ * Get all vertexes for the given cell
+ * @param origin    Cell to get the vertexes for
+ * @param vertexes  Array to hold vertex output. Must have length >= 6.
+ */
+void getCellVertexes(H3Index origin, H3Index* vertexes) {
+    // Get all vertexes. If the origin is a pentagon, will fill the final slot
+    // with H3_NULL.
+    for (int i = 0; i < NUM_HEX_VERTS; i++) {
+        vertexes[i] = getCellVertex(origin, i);
+    }
 }
 
 /**
