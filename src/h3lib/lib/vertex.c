@@ -171,6 +171,12 @@ Direction directionForVertexNum(const H3Index origin, const int vertexNum) {
                                                 NUM_HEX_VERTS];
 }
 
+/** @brief Lookup table from origin vertex to [leftVertex, rightVertex] (same
+ * orientation)
+ */
+static const int neighborVertexes[NUM_HEX_VERTS][2] = {{4, 2}, {5, 3}, {0, 4},
+                                                       {1, 5}, {2, 0}, {3, 1}};
+
 /**
  * Get a single vertex for a given cell, as an H3 index, or
  * H3_NULL if the vertex is invalid
@@ -181,46 +187,63 @@ H3Index getCellVertex(H3Index origin, int vertexNum) {
     int originIsPentagon = H3_EXPORT(h3IsPentagon)(origin);
     int originNumVerts = originIsPentagon ? NUM_PENT_VERTS : NUM_HEX_VERTS;
 
-    // Get the right neighbor of the vertex, with its rotations
-    Direction right = directionForVertexNum(origin, vertexNum);
-    if (right == INVALID_DIGIT) return H3_NULL;
-    int rRotations = 0;
-    H3Index rightNeighbor = h3NeighborRotations(origin, right, &rRotations);
-
     // Get the left neighbor of the vertex, with its rotations
-    Direction left = directionForVertexNum(
-        origin, (vertexNum - 1 + originNumVerts) % originNumVerts);
+    Direction left = directionForVertexNum(origin, vertexNum);
     if (left == INVALID_DIGIT) return H3_NULL;
+    int rRotations = 0;
+    H3Index leftNeighbor = h3NeighborRotations(origin, left, &rRotations);
+
+    // Get the right neighbor of the vertex, with its rotations
+    // (Note that vertex - 1 is the left neighbor, because vertex numbers are
+    // CCW)
+    Direction right = directionForVertexNum(
+        origin, (vertexNum - 1 + originNumVerts) % originNumVerts);
+    if (right == INVALID_DIGIT) return H3_NULL;
     int lRotations = 0;
-    H3Index leftNeighbor = h3NeighborRotations(origin, left, &lRotations);
+    H3Index rightNeighbor = h3NeighborRotations(origin, right, &lRotations);
 
     // Determine the owner. By convention, this is the cell with the
     // lowest numerical index.
     H3Index owner = origin;
-    if (rightNeighbor < owner) owner = rightNeighbor;
     if (leftNeighbor < owner) owner = leftNeighbor;
+    if (rightNeighbor < owner) owner = rightNeighbor;
 
-    // Determine the vertex number for the owner cell.
-    // TODO: We know the direction from the origin to the owner, and the number
-    // of rotations to the neighbor's coordinate system, so there ought to be
-    // a more complex but more efficient way to get the direction from the
-    // vertex owner to the origin.
-
+    // Determine the vertex number for the owner cell
     int ownerVertexNum = vertexNum;
 
-    if (owner == rightNeighbor) {
-        Direction dir = directionForNeighbor(owner, origin);
-        // For the right neighbor, we need the second vertex of the edge, which
-        // may involve looping around the vertex nums
-        ownerVertexNum = vertexNumForDirection(owner, dir) + 1;
-        if ((H3_EXPORT(h3IsPentagon)(owner) &&
-             ownerVertexNum == NUM_PENT_VERTS) ||
-            ownerVertexNum == NUM_HEX_VERTS) {
-            ownerVertexNum = 0;
+    if (owner != origin) {
+        // Test whether we can use the simpler, faster logic
+        // TODO: Benchmark whether this actually improves perf
+        bool ownerIsPentagon = H3_EXPORT(h3IsPentagon)(owner);
+        FaceIJK fijk;
+        _h3ToFaceIjk(origin, &fijk);
+        int originFace = fijk.face;
+        _h3ToFaceIjk(owner, &fijk);
+        int ownerFace = fijk.face;
+        bool isSimpleCase =
+            !ownerIsPentagon && !originIsPentagon && originFace == ownerFace;
+
+        if (owner == leftNeighbor) {
+            if (isSimpleCase) {
+                ownerVertexNum = neighborVertexes[vertexNum][0];
+            } else {
+                Direction dir = directionForNeighbor(owner, origin);
+                // For the left neighbor, we need the second vertex of the
+                // edge, which may involve looping around the vertex nums
+                ownerVertexNum = vertexNumForDirection(owner, dir) + 1;
+                if ((ownerIsPentagon && ownerVertexNum == NUM_PENT_VERTS) ||
+                    ownerVertexNum == NUM_HEX_VERTS) {
+                    ownerVertexNum = 0;
+                }
+            }
+        } else if (owner == rightNeighbor) {
+            if (isSimpleCase) {
+                ownerVertexNum = neighborVertexes[vertexNum][1];
+            } else {
+                Direction dir = directionForNeighbor(owner, origin);
+                ownerVertexNum = vertexNumForDirection(owner, dir);
+            }
         }
-    } else if (owner == leftNeighbor) {
-        Direction dir = directionForNeighbor(owner, origin);
-        ownerVertexNum = vertexNumForDirection(owner, dir);
     }
 
     // Create the vertex index
