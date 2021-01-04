@@ -48,13 +48,11 @@ static void getCellVertex_point_assertions(H3Index h3) {
         vertexToPoint(vertex, &coord);
         int almostEqual =
             geoAlmostEqualThreshold(&gb.verts[i], &coord, 0.000001);
-        if (!almostEqual) h3Println(h3);
-        // t_assert(almostEqual, "Vertex coordinates match boundary vertex");
+        t_assert(almostEqual, "Vertex coordinates match boundary vertex");
     }
 }
 
 static void getCellVertex_uniqueness_assertions(H3Index h3) {
-    h3Println(h3);
     const int cellCount = 7;
     const int maxVertexCount = NUM_HEX_VERTS * cellCount;
     H3Index neighbors[cellCount] = {0};
@@ -92,7 +90,6 @@ static void getCellVertex_uniqueness_assertions(H3Index h3) {
     int count = 0;
     for (int i = 0; i < maxVertexCount; i++) {
         if (vertexes[i] != H3_NULL) {
-            // h3Println(vertexes[i]);
             count++;
         }
     }
@@ -154,17 +151,17 @@ SUITE(Vertex) {
     TEST(getCellVertex_point) {
         printf("getCellVertex_point\n");
         iterateAllIndexesAtRes(0, getCellVertex_point_assertions);
-        // iterateAllIndexesAtRes(1, getCellVertex_point_assertions);
-        // iterateAllIndexesAtRes(2, getCellVertex_point_assertions);
-        // iterateAllIndexesAtRes(3, getCellVertex_point_assertions);
-        // iterateAllIndexesAtRes(4, getCellVertex_point_assertions);
+        iterateAllIndexesAtRes(1, getCellVertex_point_assertions);
+        iterateAllIndexesAtRes(2, getCellVertex_point_assertions);
+        iterateAllIndexesAtRes(3, getCellVertex_point_assertions);
+        iterateAllIndexesAtRes(4, getCellVertex_point_assertions);
 
-        // // Res 5: normal base cell
-        // iterateBaseCellIndexesAtRes(5, getCellVertex_point_assertions, 0);
-        // // Res 5: pentagon base cell
-        // iterateBaseCellIndexesAtRes(5, getCellVertex_point_assertions, 14);
-        // // Res 5: polar pentagon base cell
-        // iterateBaseCellIndexesAtRes(5, getCellVertex_point_assertions, 117);
+        // Res 5: normal base cell
+        iterateBaseCellIndexesAtRes(5, getCellVertex_point_assertions, 0);
+        // Res 5: pentagon base cell
+        iterateBaseCellIndexesAtRes(5, getCellVertex_point_assertions, 14);
+        // Res 5: polar pentagon base cell
+        iterateBaseCellIndexesAtRes(5, getCellVertex_point_assertions, 117);
     }
 
     // TODO: Move to exhaustive suite

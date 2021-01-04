@@ -176,7 +176,6 @@ Direction directionForVertexNum(const H3Index origin, const int vertexNum) {
  * H3_NULL if the vertex is invalid
  */
 H3Index getCellVertex(H3Index origin, int vertexNum) {
-    int res = H3_GET_RESOLUTION(origin);
     int originIsPentagon = H3_EXPORT(h3IsPentagon)(origin);
     int originNumVerts = originIsPentagon ? NUM_PENT_VERTS : NUM_HEX_VERTS;
 
@@ -199,62 +198,28 @@ H3Index getCellVertex(H3Index origin, int vertexNum) {
     if (rightNeighbor < owner) owner = rightNeighbor;
     if (leftNeighbor < owner) owner = leftNeighbor;
 
-    // Determine the number of the vertex on the owner cell. Unless the owner
-    // is the origin, there are several moving parts here:
-    // - The neighbor may have a different orientation of its axial
-    //   directions than the origin, if it's on a different face
-    // - The neighbor may have a different orientation of its vertexes
-    //   w/r/t its axial directions than the origin
-    // - Left and right neighbors share a diffent vertex with the origin
-    int rotations = 0;
-    int ownerIsPentagon = H3_EXPORT(h3IsPentagon)(owner);
-    // For... reasons, we don't need to apply pentagon corrections on Class II
-    // resolutions when we're rotating onto a pentagon. TODO: Determine reasons.
-    bool adjustForPentagon = isResClassIII(res) || !ownerIsPentagon;
+    // Determine the vertex number for the owner cell.
+    // TODO: We know the direction from the origin to the owner, and the number
+    // of rotations to the neighbor's coordinate system, so there ought to be
+    // a more complex but more efficient way to get the direction from the
+    // vertex owner to the origin.
+
+    int ownerVertexNum = vertexNum;
 
     if (owner == rightNeighbor) {
-        int vRotations = originIsPentagon ? 5 : ownerIsPentagon ? 3 : 4;
-        if (res == 0) {
-            rotations = rRotations + vRotations;
-            // Correct for rotation off of pentagon
-            if (originIsPentagon && vertexNum <= 2) rotations--;
-            // Correct for rotation onto pentagon. TBH, the rationale here is
-            // unclear, though I assume it's due to the correction above on the
-            // pentagon side. However, as there are only three indexes with this
-            // issue, enumeration is simpler and faster, if unsatisfying.
-            if (ownerIsPentagon &&
-                (origin == 0x8019fffffffffffL || origin == 0x801ffffffffffffL ||
-                 origin == 0x80f3fffffffffffL))
-                rotations--;
-        } else {
-            rotations = vertexRotations(origin, adjustForPentagon) -
-                        vertexRotations(rightNeighbor, adjustForPentagon) +
-                        rRotations + vRotations;
+        Direction dir = directionForNeighbor(owner, origin);
+        // For the right neighbor, we need the second vertex of the edge, which
+        // may involve looping around the vertex nums
+        ownerVertexNum = vertexNumForDirection(owner, dir) + 1;
+        if ((H3_EXPORT(h3IsPentagon)(owner) &&
+             ownerVertexNum == NUM_PENT_VERTS) ||
+            ownerVertexNum == NUM_HEX_VERTS) {
+            ownerVertexNum = 0;
         }
     } else if (owner == leftNeighbor) {
-        int vRotations = originIsPentagon ? 2 : ownerIsPentagon ? 1 : 2;
-        if (res == 0) {
-            rotations = rRotations + vRotations;
-            // Correct for rotation off of pentagon
-            if (originIsPentagon && vertexNum <= 2) rotations--;
-            // Correct for rotation onto pentagon. TBH, the rationale here is
-            // unclear, though I assume it's due to the correction above on the
-            // pentagon side. However, as there are only three indexes with this
-            // issue, enumeration is simpler and faster, if unsatisfying.
-            if (ownerIsPentagon &&
-                (origin == 0x8019fffffffffffL || origin == 0x801ffffffffffffL ||
-                 origin == 0x80f3fffffffffffL))
-                rotations--;
-        } else {
-            rotations = vertexRotations(origin, adjustForPentagon) -
-                        vertexRotations(leftNeighbor, adjustForPentagon) +
-                        lRotations + vRotations;
-        }
+        Direction dir = directionForNeighbor(owner, origin);
+        ownerVertexNum = vertexNumForDirection(owner, dir);
     }
-    int ownerVertexNum =
-        ownerIsPentagon
-            ? (vertexNum + rotations + NUM_PENT_VERTS) % NUM_PENT_VERTS
-            : (vertexNum + rotations + NUM_HEX_VERTS) % NUM_HEX_VERTS;
 
     // Create the vertex index
     H3Index vertex = owner;
