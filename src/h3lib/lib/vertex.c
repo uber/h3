@@ -177,7 +177,7 @@ Direction directionForVertexNum(const H3Index origin, const int vertexNum) {
  * @param origin    Cell to get the vertex for
  * @param vertexNum Number (index) of the vertex to calculate
  */
-H3Index getCellVertex(H3Index origin, int vertexNum) {
+H3Index H3_EXPORT(getCellVertex)(H3Index origin, int vertexNum) {
     int originIsPentagon = H3_EXPORT(h3IsPentagon)(origin);
     int originNumVerts = originIsPentagon ? NUM_PENT_VERTS : NUM_HEX_VERTS;
 
@@ -233,11 +233,11 @@ H3Index getCellVertex(H3Index origin, int vertexNum) {
  * @param origin    Cell to get the vertexes for
  * @param vertexes  Array to hold vertex output. Must have length >= 6.
  */
-void getCellVertexes(H3Index origin, H3Index* vertexes) {
+void H3_EXPORT(getCellVertexes)(H3Index origin, H3Index* vertexes) {
     // Get all vertexes. If the origin is a pentagon, will fill the final slot
     // with H3_NULL.
     for (int i = 0; i < NUM_HEX_VERTS; i++) {
-        vertexes[i] = getCellVertex(origin, i);
+        vertexes[i] = H3_EXPORT(getCellVertex)(origin, i);
     }
 }
 
@@ -246,7 +246,7 @@ void getCellVertexes(H3Index origin, H3Index* vertexes) {
  * @param vertex H3 index describing a vertex
  * @param coord  Output geo coordinate
  */
-void vertexToPoint(H3Index vertex, GeoCoord* coord) {
+void H3_EXPORT(vertexToPoint)(H3Index vertex, GeoCoord* coord) {
     // Get the vertex number and owner from the vertex
     int vertexNum = H3_GET_RESERVED_BITS(vertex);
     H3Index owner = vertex;
