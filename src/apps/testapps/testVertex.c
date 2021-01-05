@@ -63,4 +63,28 @@ SUITE(Vertex) {
             vertexNumForDirection(pentagon, K_AXES_DIGIT) == INVALID_VERTEX_NUM,
             "K direction on pentagon should return invalid vertex");
     }
+
+    TEST(directionForVertexNum_hex) {
+        H3Index origin = 0x823d6ffffffffff;
+        Direction dirs[NUM_DIGITS] = {0};
+        for (int vertexNum = 0; vertexNum < NUM_HEX_VERTS; vertexNum++) {
+            Direction dir = directionForVertexNum(origin, vertexNum);
+            t_assert(dir > 0 && dir < INVALID_DIGIT, "direction appears valid");
+            t_assert(!dirs[dir], "direction appears only once");
+            dirs[dir] = 1;
+        }
+    }
+
+    TEST(directionForVertexNum_badVerts) {
+        H3Index origin = 0x823d6ffffffffff;
+
+        t_assert(directionForVertexNum(origin, -1) == INVALID_DIGIT,
+                 "negative vertex should return invalid direction");
+        t_assert(directionForVertexNum(origin, 6) == INVALID_DIGIT,
+                 "invalid vertex should return invalid direction");
+
+        H3Index pentagon = 0x823007fffffffff;
+        t_assert(directionForVertexNum(pentagon, 5) == INVALID_DIGIT,
+                 "invalid pent vertex should return invalid direction");
+    }
 }

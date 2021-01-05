@@ -65,7 +65,8 @@ static int vertexRotations(H3Index cell, bool adjustForPentagon) {
     if (adjustForPentagon && _isBaseCellPentagon(baseCell)) {
         // Find the appropriate direction-to-face mapping
         PentagonDirectionFaces dirFaces;
-        for (int p = 0; p < NUM_PENTAGONS; p++) {
+        // Excluding from branch coverage as we never hit the end condition
+        for (int p = 0; p < NUM_PENTAGONS; p++) {  // LCOV_EXCL_BR_LINE
             if (pentagonDirectionFaces[p].baseCell == baseCell) {
                 dirFaces = pentagonDirectionFaces[p];
                 break;
@@ -191,7 +192,8 @@ H3Index H3_EXPORT(getCellVertex)(H3Index origin, int vertexNum) {
     // Note that vertex - 1 is the right side, as vertex numbers are CCW
     Direction right = directionForVertexNum(
         origin, (vertexNum - 1 + originNumVerts) % originNumVerts);
-    if (right == INVALID_DIGIT) return H3_NULL;
+    // This case should be unreachable; invalid verts  fail the left side first
+    if (right == INVALID_DIGIT) return H3_NULL;  // LCOV_EXCL_LINE
     int lRotations = 0;
     H3Index rightNeighbor = h3NeighborRotations(origin, right, &lRotations);
 
