@@ -66,16 +66,14 @@ static void cellToVertex_uniqueness_assertions(H3Index h3) {
 }
 
 static void cellToVertex_neighbor_assertions(H3Index h3) {
-    const int cellCount = 7;
-
-    H3Index neighbors[cellCount] = {0};
+    H3Index neighbors[7] = {0};
     H3Index originVerts[NUM_HEX_VERTS] = {0};
     H3Index neighborVerts[NUM_HEX_VERTS] = {0};
 
     H3_EXPORT(kRing)(h3, 1, neighbors);
     H3_EXPORT(cellToVertexes)(h3, originVerts);
 
-    for (int i = 0; i < cellCount; i++) {
+    for (int i = 0; i < 7; i++) {
         H3Index neighbor = neighbors[i];
         if (neighbor == H3_NULL || neighbor == h3) continue;
         H3_EXPORT(cellToVertexes)(neighbor, neighborVerts);
