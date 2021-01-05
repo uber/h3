@@ -214,6 +214,7 @@ set(OTHER_SOURCE_FILES
     src/apps/benchmarks/benchmarkKRing.c
     src/apps/benchmarks/benchmarkH3Line.c
     src/apps/benchmarks/benchmarkH3UniEdge.c
+    src/apps/benchmarks/benchmarkVertex.c
     src/apps/benchmarks/benchmarkH3Api.c)
 
 set(ALL_SOURCE_FILES
@@ -633,6 +634,7 @@ if(BUILD_BENCHMARKS)
     add_h3_benchmark(benchmarkKRing src/apps/benchmarks/benchmarkKRing.c)
     add_h3_benchmark(benchmarkH3Line src/apps/benchmarks/benchmarkH3Line.c)
     add_h3_benchmark(benchmarkH3UniEdge src/apps/benchmarks/benchmarkH3UniEdge.c)
+    add_h3_benchmark(benchmarkVertex src/apps/benchmarks/benchmarkVertex.c)
     add_h3_benchmark(benchmarkH3SetToLinkedGeo src/apps/benchmarks/benchmarkH3SetToLinkedGeo.c)
     add_h3_benchmark(benchmarkPolyfill src/apps/benchmarks/benchmarkPolyfill.c)
     if(ENABLE_REQUIRES_ALL_SYMBOLS)
