@@ -622,7 +622,7 @@ DECLSPEC H3Index H3_EXPORT(cellToVertex)(H3Index origin, int vertexNum);
  * Functions for cellToVertexes
  * @{
  */
-/** @brief Returns a single vertex for a given cell, as an H3 index */
+/** @brief Returns all vertexes for a given cell, as H3 indexes */
 DECLSPEC void H3_EXPORT(cellToVertexes)(H3Index origin, H3Index *vertexes);
 /** @} */
 
