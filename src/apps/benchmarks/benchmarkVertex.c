@@ -39,13 +39,15 @@ BEGIN_BENCHMARKS();
 H3Index* vertexes = calloc(6, sizeof(H3Index));
 
 BENCHMARK(cellToVertexes, 10000, {
-    for (int i = 0; i < ring2Count; i++)
+    for (int i = 0; i < ring2Count; i++) {
         H3_EXPORT(cellToVertexes)(ring2[i], vertexes);
+    }
 });
 
 BENCHMARK(cellToVertexesPent, 10000, {
-    for (int i = 0; i < ring2PentCount; i++)
+    for (int i = 0; i < ring2PentCount; i++) {
         H3_EXPORT(cellToVertexes)(ring2Pent[i], vertexes);
+    }
 });
 
 free(vertexes);

@@ -8,6 +8,10 @@ The public API of this library consists of the functions declared in file
 ## [Unreleased]
 
 ### Added
+- Vertex mode and associated functions:
+    - `cellToVertex(cell, vertexNum)`
+    - `cellToVertexes(cell, out)`
+    - `vertexToPoint(vertex, out)` 
 - closed-form implementation of `numHexagons`
 
 ### Breaking changes

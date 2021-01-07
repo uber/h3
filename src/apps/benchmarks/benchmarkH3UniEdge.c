@@ -27,8 +27,9 @@ GeoBoundary outBoundary;
 H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(hex, edges);
 
 BENCHMARK(getH3UnidirectionalEdgeBoundary, 10000, {
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < 6; i++) {
         H3_EXPORT(getH3UnidirectionalEdgeBoundary)(edges[i], &outBoundary);
+    }
 });
 
 END_BENCHMARKS();

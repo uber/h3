@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 /** @file
- * @brief tests H3 vertex functions.
- *
- *  usage: `testVertex`
+ * @brief tests H3 vertex functions, exhaustively checking all cells at res 0-4
  */
 
 #include "test.h"
@@ -99,6 +97,7 @@ SUITE(Vertex) {
         iterateAllIndexesAtRes(1, directionForVertexNum_symmetry_assertions);
         iterateAllIndexesAtRes(2, directionForVertexNum_symmetry_assertions);
         iterateAllIndexesAtRes(3, directionForVertexNum_symmetry_assertions);
+        iterateAllIndexesAtRes(4, directionForVertexNum_symmetry_assertions);
     }
 
     TEST(cellToVertex_point) {

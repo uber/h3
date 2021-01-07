@@ -15,8 +15,6 @@
  */
 /** @file
  * @brief tests H3 vertex functions.
- *
- *  usage: `testVertex`
  */
 
 #include "test.h"
@@ -66,12 +64,12 @@ SUITE(Vertex) {
 
     TEST(directionForVertexNum_hex) {
         H3Index origin = 0x823d6ffffffffff;
-        Direction dirs[NUM_DIGITS] = {0};
+        bool seenDirs[NUM_DIGITS] = {false};
         for (int vertexNum = 0; vertexNum < NUM_HEX_VERTS; vertexNum++) {
             Direction dir = directionForVertexNum(origin, vertexNum);
             t_assert(dir > 0 && dir < INVALID_DIGIT, "direction appears valid");
-            t_assert(!dirs[dir], "direction appears only once");
-            dirs[dir] = 1;
+            t_assert(!seenDirs[dir], "direction appears only once");
+            seenDirs[dir] = true;
         }
     }
 

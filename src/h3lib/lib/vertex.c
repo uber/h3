@@ -216,7 +216,6 @@ H3Index H3_EXPORT(cellToVertex)(H3Index cell, int vertexNum) {
              ownerVertexNum == NUM_PENT_VERTS)) {
             ownerVertexNum = 0;
         }
-        // }
     } else if (owner == rightNeighbor) {
         Direction dir = directionForNeighbor(owner, cell);
         ownerVertexNum = vertexNumForDirection(owner, dir);
