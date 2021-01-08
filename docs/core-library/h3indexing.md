@@ -89,7 +89,7 @@ The layout of an **H3Index** is shown below in table form. The interpretation of
   <th>0x30</th>
   <td>Reserved</td>
   <td colspan="4">Mode</td>
-  <td colspan="3">Reserved</td>
+  <td colspan="3">Mode-Dependent</td>
   <td colspan="4">Resolution</td>
   <td colspan="4">Base cell</td>
 </tr>
