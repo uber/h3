@@ -269,3 +269,26 @@ void H3_EXPORT(vertexToPoint)(H3Index vertex, GeoCoord* coord) {
     // Copy from boundary to output coord
     *coord = gb.verts[0];
 }
+
+/**
+ * Whether the input is a valid H3 vertex
+ * @param  vertex H3 index possibly describing a vertex
+ * @return        Whether the input is valid
+ */
+int H3_EXPORT(isValidVertex)(H3Index vertex) {
+    if (H3_GET_MODE(vertex) != H3_VERTEX_MODE) {
+        return 0;
+    }
+
+    int vertexNum = H3_GET_RESERVED_BITS(vertex);
+    H3Index owner = vertex;
+    H3_SET_MODE(owner, H3_HEXAGON_MODE);
+    H3_SET_RESERVED_BITS(owner, 0);
+
+    if (vertexNum >= NUM_HEX_VERTS ||
+        (H3_EXPORT(h3IsPentagon)(owner) && vertexNum >= NUM_PENT_VERTS)) {
+        return 0;
+    }
+
+    return H3_EXPORT(h3IsValid)(owner);
+}

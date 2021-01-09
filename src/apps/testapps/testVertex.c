@@ -85,4 +85,35 @@ SUITE(Vertex) {
         t_assert(directionForVertexNum(pentagon, 5) == INVALID_DIGIT,
                  "invalid pent vertex should return invalid direction");
     }
+
+    TEST(isValidVertex_hex) {
+        H3Index origin = 0x823d6ffffffffff;
+        H3Index vert;
+
+        for (int i = 0; i < NUM_HEX_VERTS; i++) {
+            vert = H3_EXPORT(cellToVertex)(origin, i);
+            t_assert(H3_EXPORT(isValidVertex)(vert), "vertex is valid");
+        }
+    }
+
+    TEST(isValidVertex_badVerts) {
+        H3Index origin = 0x823d6ffffffffff;
+        t_assert(H3_EXPORT(isValidVertex)(origin) == 0, "cell is not valid");
+
+        H3Index fakeEdge = origin;
+        H3_SET_MODE(fakeEdge, H3_UNIEDGE_MODE);
+        t_assert(H3_EXPORT(isValidVertex)(fakeEdge) == 0,
+                 "edge mode is not valid");
+
+        H3Index vert = H3_EXPORT(cellToVertex)(origin, 0);
+        H3_SET_RESERVED_BITS(vert, 6);
+        t_assert(H3_EXPORT(isValidVertex)(vert) == 0,
+                 "invalid vertexNum is not valid");
+
+        H3Index pentagon = 0x823007fffffffff;
+        H3Index vert2 = H3_EXPORT(cellToVertex)(pentagon, 0);
+        H3_SET_RESERVED_BITS(vert2, 5);
+        t_assert(H3_EXPORT(isValidVertex)(vert2) == 0,
+                 "invalid pentagon vertexNum is not valid");
+    }
 }

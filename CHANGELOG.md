@@ -12,6 +12,7 @@ The public API of this library consists of the functions declared in file
     - `cellToVertex(cell, vertexNum)`
     - `cellToVertexes(cell, out)`
     - `vertexToPoint(vertex, out)` 
+    - `isValidVertex(vertex)` 
 - closed-form implementation of `numHexagons`
 
 ### Breaking changes
