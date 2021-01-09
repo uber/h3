@@ -54,11 +54,11 @@ An H3 Undirectional Edge index (mode 2) represents a single directed edge betwee
 
 ### H3 Vertex Index
 
-An H3 Vertex index (mode 4) represents a single topological vertex in H3 grid system, shared by three cells. Note that this does not include the distortion vertexes occasionally present in a cell's geo boundary. An H3 Vertex is arbitrarily assigned one of the three neighboring cells as its "owner". The components of the H3 Vertex index are packed into a 64-bit integer in order, highest bit first, as follows:
+An H3 Vertex index (mode 4) represents a single topological vertex in H3 grid system, shared by three cells. Note that this does not include the distortion vertexes occasionally present in a cell's geo boundary. An H3 Vertex is arbitrarily assigned one of the three neighboring cells as its "owner", which is used to calculate the canonical index and geo coordinate for the vertex. The components of the H3 Vertex index are packed into a 64-bit integer in order, highest bit first, as follows:
 
 * 1 bit reserved and set to 0,
 * 4 bits to indicate the H3 Vertex index mode,
-* 3 bits to indicate the vertex (0-5) of the owner cell,
+* 3 bits to indicate the vertex number (0-5) of vertex on the owner cell,
 * Subsequent bits matching the index bits of the owner cell.
 
 ## Bit layout of H3Index
