@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Uber Technologies, Inc.
+ * Copyright 2020-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ typedef struct {
 /** Max number of faces a base cell's descendants may appear on */
 #define MAX_BASE_CELL_FACES 5
 
-int vertexRotations(H3Index cell);
 int vertexNumForDirection(const H3Index origin, const Direction direction);
+Direction directionForVertexNum(const H3Index origin, const int vertexNum);
 
 #endif

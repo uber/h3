@@ -102,36 +102,20 @@ int H3_EXPORT(h3IndexesAreNeighbors)(H3Index origin, H3Index destination) {
  */
 H3Index H3_EXPORT(getH3UnidirectionalEdge)(H3Index origin,
                                            H3Index destination) {
-    // Short-circuit and return an invalid index value if they are not neighbors
-    if (H3_EXPORT(h3IndexesAreNeighbors)(origin, destination) == 0) {
+    // Determine the IJK direction from the origin to the destination
+    Direction direction = directionForNeighbor(origin, destination);
+
+    // The direction will be invalid if the cells are not neighbors
+    if (direction == INVALID_DIGIT) {
         return H3_NULL;
     }
 
-    // Otherwise, determine the IJK direction from the origin to the destination
+    // Create the edge index for the neighbor direction
     H3Index output = origin;
     H3_SET_MODE(output, H3_UNIEDGE_MODE);
+    H3_SET_RESERVED_BITS(output, direction);
 
-    bool isPentagon = H3_EXPORT(h3IsPentagon)(origin);
-
-    // Checks each neighbor, in order, to determine which direction the
-    // destination neighbor is located. Skips CENTER_DIGIT since that
-    // would be this index.
-    H3Index neighbor;
-    // Excluding from branch coverage as we never hit the end condition
-    // LCOV_EXCL_BR_START
-    for (Direction direction = isPentagon ? J_AXES_DIGIT : K_AXES_DIGIT;
-         direction < NUM_DIGITS; direction++) {
-        // LCOV_EXCL_BR_STOP
-        int rotations = 0;
-        neighbor = h3NeighborRotations(origin, direction, &rotations);
-        if (neighbor == destination) {
-            H3_SET_RESERVED_BITS(output, direction);
-            return output;
-        }
-    }
-
-    // This should be impossible, return H3_NULL in this case;
-    return H3_NULL;  // LCOV_EXCL_LINE
+    return output;
 }
 
 /**

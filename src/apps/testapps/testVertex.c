@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Uber Technologies, Inc.
+ * Copyright 2020-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 /** @file
  * @brief tests H3 vertex functions.
- *
- *  usage: `testVertex`
  */
 
 #include "test.h"
@@ -62,5 +60,29 @@ SUITE(Vertex) {
         t_assert(
             vertexNumForDirection(pentagon, K_AXES_DIGIT) == INVALID_VERTEX_NUM,
             "K direction on pentagon should return invalid vertex");
+    }
+
+    TEST(directionForVertexNum_hex) {
+        H3Index origin = 0x823d6ffffffffff;
+        bool seenDirs[NUM_DIGITS] = {false};
+        for (int vertexNum = 0; vertexNum < NUM_HEX_VERTS; vertexNum++) {
+            Direction dir = directionForVertexNum(origin, vertexNum);
+            t_assert(dir > 0 && dir < INVALID_DIGIT, "direction appears valid");
+            t_assert(!seenDirs[dir], "direction appears only once");
+            seenDirs[dir] = true;
+        }
+    }
+
+    TEST(directionForVertexNum_badVerts) {
+        H3Index origin = 0x823d6ffffffffff;
+
+        t_assert(directionForVertexNum(origin, -1) == INVALID_DIGIT,
+                 "negative vertex should return invalid direction");
+        t_assert(directionForVertexNum(origin, 6) == INVALID_DIGIT,
+                 "invalid vertex should return invalid direction");
+
+        H3Index pentagon = 0x823007fffffffff;
+        t_assert(directionForVertexNum(pentagon, 5) == INVALID_DIGIT,
+                 "invalid pent vertex should return invalid direction");
     }
 }

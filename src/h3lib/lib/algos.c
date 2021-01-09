@@ -412,6 +412,31 @@ H3Index h3NeighborRotations(H3Index origin, Direction dir, int* rotations) {
 }
 
 /**
+ * Get the direction from the origin to a given neighbor. This is effectively
+ * the reverse operation for h3NeighborRotations. Returns INVALID_DIGIT if the
+ * cells are not neighbors.
+ *
+ * TODO: This is currently a brute-force algorithm, but as it's O(6) that's
+ * probably acceptible.
+ */
+Direction directionForNeighbor(H3Index origin, H3Index destination) {
+    bool isPentagon = H3_EXPORT(h3IsPentagon)(origin);
+    // Checks each neighbor, in order, to determine which direction the
+    // destination neighbor is located. Skips CENTER_DIGIT since that
+    // would be the origin; skips deleted K direction for pentagons.
+    H3Index neighbor;
+    for (Direction direction = isPentagon ? J_AXES_DIGIT : K_AXES_DIGIT;
+         direction < NUM_DIGITS; direction++) {
+        int rotations = 0;
+        neighbor = h3NeighborRotations(origin, direction, &rotations);
+        if (neighbor == destination) {
+            return direction;
+        }
+    }
+    return INVALID_DIGIT;
+}
+
+/**
  * hexRange produces indexes within k distance of the origin index.
  * Output behavior is undefined when one of the indexes returned by this
  * function is a pentagon or is in the pentagon distortion area.
