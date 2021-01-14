@@ -88,12 +88,34 @@ SUITE(Vertex) {
 
     TEST(isValidVertex_hex) {
         H3Index origin = 0x823d6ffffffffff;
-        H3Index vert;
+        H3Index vert = 0x2222597fffffffff;
+
+        t_assert(H3_EXPORT(isValidVertex)(vert), "known vertex is valid");
 
         for (int i = 0; i < NUM_HEX_VERTS; i++) {
             vert = H3_EXPORT(cellToVertex)(origin, i);
             t_assert(H3_EXPORT(isValidVertex)(vert), "vertex is valid");
         }
+    }
+
+    TEST(isValidVertex_badOwner) {
+        H3Index origin = 0x823d6ffffffffff;
+        int vertexNum = 0;
+        H3Index vert = H3_EXPORT(cellToVertex)(origin, vertexNum);
+
+        // Assert that origin does not own the vertex
+        H3Index owner = vert;
+        H3_SET_MODE(owner, H3_HEXAGON_MODE);
+        H3_SET_RESERVED_BITS(owner, 0);
+
+        t_assert(origin != owner, "origin does not own the canonical vertex");
+
+        H3Index nonCanonicalVertex = origin;
+        H3_SET_MODE(nonCanonicalVertex, H3_VERTEX_MODE);
+        H3_SET_RESERVED_BITS(nonCanonicalVertex, vertexNum);
+
+        t_assert(H3_EXPORT(isValidVertex)(nonCanonicalVertex) == 0,
+                 "vertex with incorrect owner is not valid");
     }
 
     TEST(isValidVertex_badVerts) {

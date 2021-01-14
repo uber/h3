@@ -192,7 +192,7 @@ H3Index H3_EXPORT(cellToVertex)(H3Index cell, int vertexNum) {
     // Note that vertex - 1 is the right side, as vertex numbers are CCW
     Direction right = directionForVertexNum(
         cell, (vertexNum - 1 + cellNumVerts) % cellNumVerts);
-    // This case should be unreachable; invalid verts  fail the left side first
+    // This case should be unreachable; invalid verts fail the left side first
     if (right == INVALID_DIGIT) return H3_NULL;  // LCOV_EXCL_LINE
     int lRotations = 0;
     H3Index rightNeighbor = h3NeighborRotations(cell, right, &lRotations);
@@ -285,8 +285,10 @@ int H3_EXPORT(isValidVertex)(H3Index vertex) {
     H3_SET_MODE(owner, H3_HEXAGON_MODE);
     H3_SET_RESERVED_BITS(owner, 0);
 
-    if (vertexNum >= NUM_HEX_VERTS ||
-        (H3_EXPORT(h3IsPentagon)(owner) && vertexNum >= NUM_PENT_VERTS)) {
+    // The easiest way to ensure that the owner + vertex number is valid,
+    // and that the vertex is canonical, is to recreate and compare.
+    H3Index canonical = H3_EXPORT(cellToVertex)(owner, vertexNum);
+    if (vertex != canonical) {
         return 0;
     }
 
