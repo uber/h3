@@ -285,12 +285,13 @@ int H3_EXPORT(isValidVertex)(H3Index vertex) {
     H3_SET_MODE(owner, H3_HEXAGON_MODE);
     H3_SET_RESERVED_BITS(owner, 0);
 
-    // The easiest way to ensure that the owner + vertex number is valid,
-    // and that the vertex is canonical, is to recreate and compare.
-    H3Index canonical = H3_EXPORT(cellToVertex)(owner, vertexNum);
-    if (vertex != canonical) {
+    if (!H3_EXPORT(h3IsValid)(owner)) {
         return 0;
     }
 
-    return H3_EXPORT(h3IsValid)(owner);
+    // The easiest way to ensure that the owner + vertex number is valid,
+    // and that the vertex is canonical, is to recreate and compare.
+    H3Index canonical = H3_EXPORT(cellToVertex)(owner, vertexNum);
+
+    return vertex == canonical ? 1 : 0;
 }
