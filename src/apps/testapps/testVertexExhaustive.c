@@ -63,6 +63,17 @@ static void cellToVertex_uniqueness_assertions(H3Index h3) {
     }
 }
 
+static void cellToVertex_validity_assertions(H3Index h3) {
+    H3Index verts[NUM_HEX_VERTS] = {0};
+    H3_EXPORT(cellToVertexes)(h3, verts);
+
+    for (int i = 0; i < NUM_HEX_VERTS - 1; i++) {
+        if (verts[i] != H3_NULL) {
+            t_assert(H3_EXPORT(isValidVertex(verts[i])), "vertex is valid");
+        }
+    }
+}
+
 static void cellToVertex_neighbor_assertions(H3Index h3) {
     H3Index neighbors[7] = {0};
     H3Index originVerts[NUM_HEX_VERTS] = {0};
@@ -129,5 +140,13 @@ SUITE(Vertex) {
         iterateAllIndexesAtRes(2, cellToVertex_uniqueness_assertions);
         iterateAllIndexesAtRes(3, cellToVertex_uniqueness_assertions);
         iterateAllIndexesAtRes(4, cellToVertex_uniqueness_assertions);
+    }
+
+    TEST(cellToVertex_validity) {
+        iterateAllIndexesAtRes(0, cellToVertex_validity_assertions);
+        iterateAllIndexesAtRes(1, cellToVertex_validity_assertions);
+        iterateAllIndexesAtRes(2, cellToVertex_validity_assertions);
+        iterateAllIndexesAtRes(3, cellToVertex_validity_assertions);
+        iterateAllIndexesAtRes(4, cellToVertex_validity_assertions);
     }
 }
