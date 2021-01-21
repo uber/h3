@@ -194,13 +194,12 @@ H3Index H3_EXPORT(cellToVertex)(H3Index cell, int vertexNum) {
     int cellNumVerts = cellIsPentagon ? NUM_PENT_VERTS : NUM_HEX_VERTS;
     int res = H3_GET_RESOLUTION(cell);
 
+    // Check for invalid vertexes
+    if (vertexNum < 0 || vertexNum > cellNumVerts - 1) return H3_NULL;
+
     // Default the owner and vertex number to the input cell
     H3Index owner = cell;
     int ownerVertexNum = vertexNum;
-
-    // Get the left direction. This also checks whether the vertexNum is valid.
-    Direction left = directionForVertexNum(cell, vertexNum);
-    if (left == INVALID_DIGIT) return H3_NULL;
 
     // Determine the owner, looking at the three cells that share the vertex.
     // By convention, the owner is the cell with the lowest numerical index.
@@ -209,6 +208,9 @@ H3Index H3_EXPORT(cellToVertex)(H3Index cell, int vertexNum) {
     // the lowest index of any neighbor, so we can skip determining the owner
     if (res == 0 || H3_GET_INDEX_DIGIT(cell, res) != CENTER_DIGIT) {
         // Get the left neighbor of the vertex, with its rotations
+        Direction left = directionForVertexNum(cell, vertexNum);
+        // This case should be unreachable; invalid verts fail earlier
+        if (left == INVALID_DIGIT) return H3_NULL;  // LCOV_EXCL_LINE
         int lRotations = 0;
         H3Index leftNeighbor = h3NeighborRotations(cell, left, &lRotations);
         // Set to owner if lowest index
@@ -220,7 +222,7 @@ H3Index H3_EXPORT(cellToVertex)(H3Index cell, int vertexNum) {
             // Note that vertex - 1 is the right side, as vertex numbers are CCW
             Direction right = directionForVertexNum(
                 cell, (vertexNum - 1 + cellNumVerts) % cellNumVerts);
-            // This case should be unreachable; invalid verts fail the left side first
+            // This case should be unreachable; invalid verts fail earlier
             if (right == INVALID_DIGIT) return H3_NULL;  // LCOV_EXCL_LINE
             int rRotations = 0;
             H3Index rightNeighbor =
@@ -229,7 +231,7 @@ H3Index H3_EXPORT(cellToVertex)(H3Index cell, int vertexNum) {
             if (rightNeighbor < owner) {
                 owner = rightNeighbor;
                 Direction dir =
-                    (cellIsPentagon || H3_EXPORT(h3IsPentagon)(owner))
+                    H3_EXPORT(h3IsPentagon)(owner)
                         ? directionForNeighbor(owner, cell)
                         : DIRECTIONS[(revNeighborDirectionsHex[right] +
                                       rRotations) %
@@ -242,7 +244,7 @@ H3Index H3_EXPORT(cellToVertex)(H3Index cell, int vertexNum) {
         if (owner == leftNeighbor) {
             int ownerIsPentagon = H3_EXPORT(h3IsPentagon)(owner);
             Direction dir =
-                (cellIsPentagon || ownerIsPentagon)
+                ownerIsPentagon
                     ? directionForNeighbor(owner, cell)
                     : DIRECTIONS[(revNeighborDirectionsHex[left] + lRotations) %
                                  NUM_HEX_VERTS];
