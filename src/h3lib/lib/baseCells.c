@@ -822,6 +822,8 @@ const BaseCellData baseCellData[NUM_BASE_CELLS] = {
 
 /** @brief Return whether or not the indicated base cell is a pentagon. */
 int _isBaseCellPentagon(int baseCell) {
+    if (baseCell < 0 || baseCell >= NUM_BASE_CELLS)
+        return 0;
     return baseCellData[baseCell].isPentagon;
 }
 
@@ -840,6 +842,8 @@ bool _isBaseCellPolarPentagon(int baseCell) {
  * Valid ijk+ lookup coordinates are from (0, 0, 0) to (2, 2, 2).
  */
 int _faceIjkToBaseCell(const FaceIJK* h) {
+    if (!h || h->face < 0 || h->face >= NUM_ICOSA_FACES)
+        return 0;
     return faceIjkBaseCells[h->face][h->coord.i][h->coord.j][h->coord.k]
         .baseCell;
 }
@@ -853,6 +857,8 @@ int _faceIjkToBaseCell(const FaceIJK* h) {
  * Valid ijk+ lookup coordinates are from (0, 0, 0) to (2, 2, 2).
  */
 int _faceIjkToBaseCellCCWrot60(const FaceIJK* h) {
+    if (!h || h->face < 0 || h->face >= NUM_ICOSA_FACES)
+        return 0;
     return faceIjkBaseCells[h->face][h->coord.i][h->coord.j][h->coord.k]
         .ccwRot60;
 }
@@ -860,6 +866,8 @@ int _faceIjkToBaseCellCCWrot60(const FaceIJK* h) {
 /** @brief Find the FaceIJK given a base cell.
  */
 void _baseCellToFaceIjk(int baseCell, FaceIJK* h) {
+    if (baseCell < 0 || baseCell >= NUM_BASE_CELLS)
+        return;
     *h = baseCellData[baseCell].homeFijk;
 }
 
@@ -887,6 +895,8 @@ int _baseCellToCCWrot60(int baseCell, int face) {
 /** @brief Return whether or not the tested face is a cw offset face.
  */
 bool _baseCellIsCwOffset(int baseCell, int testFace) {
+    if (baseCell < 0 || baseCell >= NUM_BASE_CELLS)
+        return false;
     return baseCellData[baseCell].cwOffsetPent[0] == testFace ||
            baseCellData[baseCell].cwOffsetPent[1] == testFace;
 }
@@ -894,6 +904,8 @@ bool _baseCellIsCwOffset(int baseCell, int testFace) {
 /** @brief Return the neighboring base cell in the given direction.
  */
 int _getBaseCellNeighbor(int baseCell, Direction dir) {
+    if (baseCell < 0 || baseCell >= NUM_BASE_CELLS)
+        return 0;
     return baseCellNeighbors[baseCell][dir];
 }
 
