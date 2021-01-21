@@ -208,20 +208,11 @@ H3Index H3_EXPORT(cellToVertex)(H3Index cell, int vertexNum) {
     // If the cell is the center child of its parent, it will always have
     // the lowest index of any neighbor, so we can skip determining the owner
     if (res == 0 || H3_GET_INDEX_DIGIT(cell, res) != CENTER_DIGIT) {
-        H3Index leftNeighbor = H3_NULL;
-        H3Index rightNeighbor = H3_NULL;
-        Direction neighborDir = CENTER_DIGIT;
-        int neighborRotations = 0;
-
         // Get the left neighbor of the vertex, with its rotations
         int lRotations = 0;
-        leftNeighbor = h3NeighborRotations(cell, left, &lRotations);
+        H3Index leftNeighbor = h3NeighborRotations(cell, left, &lRotations);
         // Set to owner if lowest index
-        if (leftNeighbor < owner) {
-            owner = leftNeighbor;
-            neighborDir = left;
-            neighborRotations = lRotations;
-        }
+        if (leftNeighbor < owner) owner = leftNeighbor;
 
         // As above, skip the right neighbor if the left is known lowest
         if (res == 0 || H3_GET_INDEX_DIGIT(leftNeighbor, res) != CENTER_DIGIT) {
@@ -229,35 +220,39 @@ H3Index H3_EXPORT(cellToVertex)(H3Index cell, int vertexNum) {
             // Note that vertex - 1 is the right side, as vertex numbers are CCW
             Direction right = directionForVertexNum(
                 cell, (vertexNum - 1 + cellNumVerts) % cellNumVerts);
+            // This case should be unreachable; invalid verts fail the left side first
+            if (right == INVALID_DIGIT) return H3_NULL;  // LCOV_EXCL_LINE
             int rRotations = 0;
-            rightNeighbor = h3NeighborRotations(cell, right, &rRotations);
+            H3Index rightNeighbor =
+                h3NeighborRotations(cell, right, &rRotations);
             // Set to owner if lowest index
             if (rightNeighbor < owner) {
                 owner = rightNeighbor;
-                neighborDir = right;
-                neighborRotations = rRotations;
+                Direction dir =
+                    (cellIsPentagon || H3_EXPORT(h3IsPentagon)(owner))
+                        ? directionForNeighbor(owner, cell)
+                        : DIRECTIONS[(revNeighborDirectionsHex[right] +
+                                      rRotations) %
+                                     NUM_HEX_VERTS];
+                ownerVertexNum = vertexNumForDirection(owner, dir);
             }
         }
 
-        // Determine the vertex number for the approppriate neighbor
-        if (owner != cell) {
+        // Determine the vertex number for the left neighbor
+        if (owner == leftNeighbor) {
             int ownerIsPentagon = H3_EXPORT(h3IsPentagon)(owner);
             Direction dir =
                 (cellIsPentagon || ownerIsPentagon)
                     ? directionForNeighbor(owner, cell)
-                    : DIRECTIONS[(revNeighborDirectionsHex[neighborDir] +
-                                  neighborRotations) %
+                    : DIRECTIONS[(revNeighborDirectionsHex[left] + lRotations) %
                                  NUM_HEX_VERTS];
-            if (owner == rightNeighbor) {
-                ownerVertexNum = vertexNumForDirection(owner, dir);
-            } else {
-                // For the left neighbor, we need the second vertex of the
-                // edge, which may involve looping around the vertex nums
-                ownerVertexNum = vertexNumForDirection(owner, dir) + 1;
-                if (ownerVertexNum == NUM_HEX_VERTS ||
-                    (ownerIsPentagon && ownerVertexNum == NUM_PENT_VERTS)) {
-                    ownerVertexNum = 0;
-                }
+
+            // For the left neighbor, we need the second vertex of the
+            // edge, which may involve looping around the vertex nums
+            ownerVertexNum = vertexNumForDirection(owner, dir) + 1;
+            if (ownerVertexNum == NUM_HEX_VERTS ||
+                (ownerIsPentagon && ownerVertexNum == NUM_PENT_VERTS)) {
+                ownerVertexNum = 0;
             }
         }
     }
