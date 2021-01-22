@@ -19,6 +19,10 @@
 
 // Fixtures. Cells are arbitrary, except that ring2 is all hexagons and
 // ring2Pent is centered on a pentagon.
+
+H3Index hex = 0x89283080ddbffff;
+H3Index pentagon = 0x89080000003ffff;
+
 H3Index ring2[] = {
     0x89283081083ffff, 0x8928308109bffff, 0x8928308108bffff, 0x8928308108fffff,
     0x89283081087ffff, 0x89283081097ffff, 0x89283081093ffff, 0x89283081467ffff,
@@ -38,13 +42,19 @@ BEGIN_BENCHMARKS();
 
 H3Index* vertexes = calloc(6, sizeof(H3Index));
 
-BENCHMARK(cellToVertexes, 10000, {
+BENCHMARK(cellToVertexes, 10000, { H3_EXPORT(cellToVertexes)(hex, vertexes); });
+
+BENCHMARK(cellToVertexesPent, 10000, {
+    H3_EXPORT(cellToVertexes)(pentagon, vertexes);
+});
+
+BENCHMARK(cellToVertexesRing, 10000, {
     for (int i = 0; i < ring2Count; i++) {
         H3_EXPORT(cellToVertexes)(ring2[i], vertexes);
     }
 });
 
-BENCHMARK(cellToVertexesPent, 10000, {
+BENCHMARK(cellToVertexesRingPent, 10000, {
     for (int i = 0; i < ring2PentCount; i++) {
         H3_EXPORT(cellToVertexes)(ring2Pent[i], vertexes);
     }
