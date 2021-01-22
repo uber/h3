@@ -86,6 +86,19 @@ SUITE(Vertex) {
                  "invalid pent vertex should return invalid direction");
     }
 
+    TEST(cellToVertex_badVerts) {
+        H3Index origin = 0x823d6ffffffffff;
+
+        t_assert(cellToVertex(origin, -1) == H3_NULL,
+                 "negative vertex should return null index");
+        t_assert(cellToVertex(origin, 6) == H3_NULL,
+                 "invalid vertex should return null index");
+
+        H3Index pentagon = 0x823007fffffffff;
+        t_assert(cellToVertex(pentagon, 5) == H3_NULL,
+                 "invalid pent vertex should return null index");
+    }
+
     TEST(isValidVertex_hex) {
         H3Index origin = 0x823d6ffffffffff;
         H3Index vert = 0x2222597fffffffff;
@@ -98,7 +111,19 @@ SUITE(Vertex) {
         }
     }
 
-    TEST(isValidVertex_badOwner) {
+    TEST(isValidVertex_invalidOwner) {
+        H3Index origin = 0x823d6ffffffffff;
+        int vertexNum = 0;
+        H3Index vert = H3_EXPORT(cellToVertex)(origin, vertexNum);
+
+        // Set a bit for an unused digit to something else.
+        vert ^= 1;
+
+        t_assert(H3_EXPORT(isValidVertex)(vert) == 0,
+                 "vertex with invalid owner is not valid");
+    }
+
+    TEST(isValidVertex_wrongOwner) {
         H3Index origin = 0x823d6ffffffffff;
         int vertexNum = 0;
         H3Index vert = H3_EXPORT(cellToVertex)(origin, vertexNum);
