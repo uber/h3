@@ -136,7 +136,7 @@ SUITE(h3Distance) {
 
         t_assert(H3_EXPORT(h3Distance)(edge, dest) == 1,
                  "edge has distance to destination");
-        t_assert(H3_EXPORT(h3Distance)(edge, dest) == 1,
+        t_assert(H3_EXPORT(h3Distance)(dest, edge) == 1,
                  "destination has distance to edge");
     }
 }
