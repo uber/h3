@@ -9,6 +9,7 @@ As a C library, bindings can be made to call H3 functions from different program
 ## C&#35;
 
 - [entrepreneur-interet-general/h3.standard](https://github.com/entrepreneur-interet-general/H3.Standard)
+- [richardvasquez/h3net](https://github.com/RichardVasquez/h3net) - A translation instead of a binding
 
 ## ClickHouse
 
