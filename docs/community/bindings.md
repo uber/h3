@@ -12,7 +12,7 @@ As a C library, bindings can be made to call H3 functions from different program
 
 ## ClickHouse
 
-- [geoToH3 function, since version 19.11](https://github.com/yandex/ClickHouse/blob/master/dbms/src/Functions/geoToH3.cpp#L35)
+- [Functions for Working with H3 Indexes](https://clickhouse.tech/docs/en/sql-reference/functions/geo/h3/)
 
 ## Clojure 
 
@@ -74,3 +74,4 @@ As a C library, bindings can be made to call H3 functions from different program
 
 - [rustyconover/libh3-sys](https://github.com/rustyconover/libh3-sys)
 - [rustyconover/libh3](https://github.com/rustyconover/libh3)
+- [nmandery/h3ron](https://github.com/nmandery/h3ron)
