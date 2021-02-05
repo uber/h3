@@ -90,10 +90,16 @@ int H3_EXPORT(h3IsValid)(H3Index h) {
     if (H3_GET_RESERVED_BITS(h) != 0) return 0;
 
     int baseCell = H3_GET_BASE_CELL(h);
-    if (baseCell < 0 || baseCell >= NUM_BASE_CELLS) return 0;
+    if (baseCell < 0 || baseCell >= NUM_BASE_CELLS) {  // LCOV_EXCL_BR_LINE
+        // Base cells less than zero can not be represented in an index
+        return 0;
+    }
 
     int res = H3_GET_RESOLUTION(h);
-    if (res < 0 || res > MAX_H3_RES) return 0;
+    if (res < 0 || res > MAX_H3_RES) {  // LCOV_EXCL_BR_LINE
+        // Resolutions less than zero can not be represented in an index
+        return 0;
+    }
 
     bool foundFirstNonZeroDigit = false;
     for (int r = 1; r <= res; r++) {
@@ -143,12 +149,12 @@ void setH3Index(H3Index* hp, int res, int baseCell, Direction initDigit) {
  */
 H3Index H3_EXPORT(h3ToParent)(H3Index h, int parentRes) {
     int childRes = H3_GET_RESOLUTION(h);
-    if (parentRes > childRes) {
+    if (parentRes < 0 || parentRes > MAX_H3_RES) {
+        return H3_NULL;
+    } else if (parentRes > childRes) {
         return H3_NULL;
     } else if (parentRes == childRes) {
         return h;
-    } else if (parentRes < 0 || parentRes > MAX_H3_RES) {
-        return H3_NULL;
     }
     H3Index parentH = H3_SET_RESOLUTION(h, parentRes);
     for (int i = parentRes + 1; i <= childRes; i++) {
@@ -787,8 +793,12 @@ int _h3ToFaceIjkWithInitializedFijk(H3Index h, FaceIJK* fijk) {
  */
 void _h3ToFaceIjk(H3Index h, FaceIJK* fijk) {
     int baseCell = H3_GET_BASE_CELL(h);
-    if (baseCell < 0 || baseCell >= NUM_BASE_CELLS) {
+    if (baseCell < 0 || baseCell >= NUM_BASE_CELLS) {  // aaa TODO
+        // Base cells less than zero can not be represented in an index
         // TODO: Indicate an error to the caller
+        // To prevent reading uninitialized memory, we zero the output.
+        fijk->face = 0;
+        fijk->coord.i = fijk->coord.j = fijk->coord.k = 0;
         return;
     }
     // adjust for the pentagonal missing sequence; all of sub-sequence 5 needs

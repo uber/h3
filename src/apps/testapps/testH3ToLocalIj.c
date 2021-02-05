@@ -132,9 +132,11 @@ SUITE(h3ToLocalIj) {
 
     TEST(experimentalH3ToLocalIjInvalid) {
         CoordIJ ij;
-        t_assert(H3_EXPORT(experimentalH3ToLocalIj)(bc1, 0x7fffffffffffffff,
-                                                    &ij) != 0,
-                 "invalid index");
+        H3Index invalidIndex = 0x7fffffffffffffff;
+        H3_SET_RESOLUTION(invalidIndex, H3_GET_RESOLUTION(bc1));
+        t_assert(
+            H3_EXPORT(experimentalH3ToLocalIj)(bc1, invalidIndex, &ij) != 0,
+            "invalid index");
         t_assert(H3_EXPORT(experimentalH3ToLocalIj)(0x7fffffffffffffff, bc1,
                                                     &ij) != 0,
                  "invalid origin");

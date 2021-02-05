@@ -290,7 +290,9 @@ H3Index h3NeighborRotations(H3Index origin, Direction dir, int* rotations) {
 
     int newRotations = 0;
     int oldBaseCell = H3_GET_BASE_CELL(out);
-    if (oldBaseCell < 0 || oldBaseCell >= NUM_BASE_CELLS) {
+    if (oldBaseCell < 0 ||
+        oldBaseCell >= NUM_BASE_CELLS) {  // LCOV_EXCL_BR_LINE
+        // Base cells less than zero can not be represented in an index
         return H3_NULL;
     }
     Direction oldLeadingDigit = _h3LeadingNonZeroDigit(out);
