@@ -787,6 +787,10 @@ int _h3ToFaceIjkWithInitializedFijk(H3Index h, FaceIJK* fijk) {
  */
 void _h3ToFaceIjk(H3Index h, FaceIJK* fijk) {
     int baseCell = H3_GET_BASE_CELL(h);
+    if (baseCell < 0 || baseCell >= NUM_BASE_CELLS) {
+        // TODO: Indicate an error to the caller
+        return;
+    }
     // adjust for the pentagonal missing sequence; all of sub-sequence 5 needs
     // to be adjusted (and some of sub-sequence 4 below)
     if (_isBaseCellPentagon(baseCell) && _h3LeadingNonZeroDigit(h) == 5)

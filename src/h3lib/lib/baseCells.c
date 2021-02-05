@@ -822,6 +822,9 @@ const BaseCellData baseCellData[NUM_BASE_CELLS] = {
 
 /** @brief Return whether or not the indicated base cell is a pentagon. */
 int _isBaseCellPentagon(int baseCell) {
+    if (baseCell < 0 || baseCell >= NUM_BASE_CELLS) {
+        return false;
+    }
     return baseCellData[baseCell].isPentagon;
 }
 

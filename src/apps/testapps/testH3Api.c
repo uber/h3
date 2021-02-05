@@ -100,6 +100,12 @@ SUITE(h3Api) {
         t_assertBoundary(h3, &boundary);
     }
 
+    TEST(h3ToGeoInvalid) {
+        GeoCoord coord;
+        H3_EXPORT(h3ToGeo)(0x7fffffffffffffff, &coord);
+        // Test is this should not crash (should return an error in the future)
+    }
+
     TEST(version) {
         t_assert(H3_VERSION_MAJOR >= 0, "major version is set");
         t_assert(H3_VERSION_MINOR >= 0, "minor version is set");
