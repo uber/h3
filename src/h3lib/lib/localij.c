@@ -138,6 +138,11 @@ int h3ToLocalIjk(H3Index origin, H3Index h3, CoordIJK* out) {
     int originBaseCell = H3_GET_BASE_CELL(origin);
     int baseCell = H3_GET_BASE_CELL(h3);
 
+    if (baseCell < 0 || baseCell >= NUM_BASE_CELLS)
+        return 1;
+    if (originBaseCell < 0 || originBaseCell >= NUM_BASE_CELLS)
+        return 1;
+
     // Direction from origin base cell to index base cell
     Direction dir = CENTER_DIGIT;
     Direction revDir = CENTER_DIGIT;
