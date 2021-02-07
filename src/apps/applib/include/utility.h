@@ -22,9 +22,9 @@
 
 #include <stdio.h>
 
-#include "childIter.h"
 #include "coordijk.h"
 #include "h3api.h"
+#include "childIter.h"
 
 #define BUFF_SIZE 256
 

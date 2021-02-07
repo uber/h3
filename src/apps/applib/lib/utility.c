@@ -26,10 +26,10 @@
 #include <string.h>
 #include <time.h>
 
-#include "childIter.h"
 #include "coordijk.h"
 #include "h3Index.h"
 #include "h3api.h"
+#include "childIter.h"
 
 void error(const char* msg) {
     fflush(stdout);
