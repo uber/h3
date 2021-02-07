@@ -8,11 +8,15 @@ The public API of this library consists of the functions declared in file
 ## [Unreleased]
 
 ### Added
-- closed-form implementation of `numHexagons` (#409)
+- Vertex mode and associated functions:
+    - `cellToVertex(cell, vertexNum)`
+    - `cellToVertexes(cell, out)`
+    - `vertexToPoint(vertex, out)` 
+    - `isValidVertex(vertex)` 
+- closed-form implementation of `numHexagons`
 
 ### Breaking changes
-- `cellToChildrenSize` (previously `maxH3ToChildrenSize`) to output `int64_t`
-  instead of `int` (#409)
+- `maxH3ToChildrenSize` to output `int64_t` instead of `int`
 
 ## [3.7.1] - 2020-10-05
 ### Fixed

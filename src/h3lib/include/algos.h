@@ -29,6 +29,9 @@
 // neighbor along the ijk coordinate system of the current face, rotated
 H3Index h3NeighborRotations(H3Index origin, Direction dir, int* rotations);
 
+// IJK direction of neighbor
+Direction directionForNeighbor(H3Index origin, H3Index destination);
+
 // k-ring implementation
 void _kRingInternal(H3Index origin, int k, H3Index* out, int* distances,
                     int maxIdx, int curK);

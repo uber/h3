@@ -13,44 +13,57 @@ Child hexagons are linearly smaller than their parent hexagons.
 
 ## H3Index Representation
 
-The **H3Index** is the integer representation of an **H3** index, which can be placed into multiple modes to indicate the concept being indexed.
+An **H3Index** is the integer representation of an **H3** index, which may be one of multiple modes to indicate the concept being indexed.
 
-* Mode 1 is an **H3** Cell (Hexagon/Pentagon) index.
-* Mode 2 is an **H3** Unidirectional Edge (Cell A -> Cell B) index.
-* Mode 3 is planned to be a bidirectional edge (Cell A <-> Cell B).
 * Mode 0 is reserved and indicates an invalid **H3** index.
-  * This mode remains, partially, for backwards compatibility with an older version of H3.
+* Mode 1 is an **H3 Cell** (Hexagon/Pentagon) index.
+* Mode 2 is an **H3 Unidirectional Edge** (Cell A -> Cell B) index.
+* Mode 3 is planned to be a bidirectional edge (Cell A <-> Cell B).
+* Mode 4 is an **H3 Vertex** (i.e. a single vertex of an H3 Cell).
+
+The canonical string representation of an **H3Index** is the hexadecimal representation of the integer, using lowercase letters. The string representation is variable length (no zero padding) and is not prefixed or suffixed.
+
+### Invalid Index
 
 Mode 0 contains a special index, `H3_NULL`, which is unique: it is bit-equivalent to `0`.
 This index indicates, *specifically*, an invalid, missing, or uninitialized **H3** index;
 it is analogous to `NaN` in floating point.
 It should be used instead of an arbitrary Mode 0 index, due to its uniqueness and easy identifiability.
 
-The components of the **H3** cell index (mode 1) are packed into a 64-bit integer in order, highest bit first, as follows:
+### H3 Cell Index
+
+An H3 Cell index (mode 1) represents a cell (hexagon or pentagon) in the H3 grid system at a particular resolution. The components of the H3 Cell index are packed into a 64-bit integer in order, highest bit first, as follows:
 
 * 1 bit reserved and set to 0,
-* 4 bits to indicate the index mode,
+* 4 bits to indicate the H3 Cell index mode,
 * 3 bits reserved and set to 0,
 * 4 bits to indicate the cell resolution 0-15,
-* 7 bits to indicate the base cell 0-121, and
+* 7 bits to indicate the base cell 0-121,
 * 3 bits to indicate each subsequent digit 0-6 from resolution 1 up to the resolution of the cell (45 bits total are reserved for resolutions 1-15)
-
-The components of the **H3** unidirectional edge index (mode 2) are packed into a 64-bit integer in order, highest bit first, as follows:
-
-* 1 bit reserved and set to 0,
-* 4 bits to indicate the index mode,
-* 3 bits to indicate the edge 1-6 of the cell to traverse,
-* 4 bits to indicate the cell resolution 0-15,
-* 7 bits to indicate the base cell 0-121, and
-* 3 bits to indicate each subsequent digit 0-6 from resolution 1 up to the resolution of the cell (45 bits total are reserved for resolutions 1-15)
-
-The canonical string representation of an **H3Index** is the hexadecimal representation of the integer, using lowercase letters. The string representation is variable length (no zero padding) and is not prefixed or suffixed.
 
 The three bits for each unused digit are set to 7.
 
+### H3 Unidirectional Edge Index
+
+An H3 Undirectional Edge index (mode 2) represents a single directed edge between two cells (an "origin" cell and a neighboring "destination" cell). The components of the H3 Unidirectional Edge index are packed into a 64-bit integer in order, highest bit first, as follows:
+
+* 1 bit reserved and set to 0,
+* 4 bits to indicate the H3 Unidirectional Edge index mode,
+* 3 bits to indicate the edge (1-6) of the origin cell,
+* Subsequent bits matching the index bits of the origin cell.
+
+### H3 Vertex Index
+
+An H3 Vertex index (mode 4) represents a single topological vertex in H3 grid system, shared by three cells. Note that this does not include the distortion vertexes occasionally present in a cell's geo boundary. An H3 Vertex is arbitrarily assigned one of the three neighboring cells as its "owner", which is used to calculate the canonical index and geo coordinate for the vertex. The components of the H3 Vertex index are packed into a 64-bit integer in order, highest bit first, as follows:
+
+* 1 bit reserved and set to 0,
+* 4 bits to indicate the H3 Vertex index mode,
+* 3 bits to indicate the vertex number (0-5) of vertex on the owner cell,
+* Subsequent bits matching the index bits of the owner cell.
+
 ## Bit layout of H3Index
 
-The layout of an **H3Index** is shown below in table form. The interpretation of the "Reserved/edge" field differs depending on the mode of the index.
+The layout of an **H3Index** is shown below in table form. The interpretation of the "Reserved" field differs depending on the mode of the index.
 
 <table>
 <tr>
@@ -76,7 +89,7 @@ The layout of an **H3Index** is shown below in table form. The interpretation of
   <th>0x30</th>
   <td>Reserved</td>
   <td colspan="4">Mode</td>
-  <td colspan="3">Reserved/edge</td>
+  <td colspan="3">Mode-Dependent</td>
   <td colspan="4">Resolution</td>
   <td colspan="4">Base cell</td>
 </tr>

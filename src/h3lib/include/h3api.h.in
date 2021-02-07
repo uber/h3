@@ -610,6 +610,38 @@ DECLSPEC void H3_EXPORT(getH3UnidirectionalEdgeBoundary)(H3Index edge,
                                                          GeoBoundary *gb);
 /** @} */
 
+/** @defgroup cellToVertex cellToVertex
+ * Functions for cellToVertex
+ * @{
+ */
+/** @brief Returns a single vertex for a given cell, as an H3 index */
+DECLSPEC H3Index H3_EXPORT(cellToVertex)(H3Index origin, int vertexNum);
+/** @} */
+
+/** @defgroup cellToVertexes cellToVertexes
+ * Functions for cellToVertexes
+ * @{
+ */
+/** @brief Returns all vertexes for a given cell, as H3 indexes */
+DECLSPEC void H3_EXPORT(cellToVertexes)(H3Index origin, H3Index *vertexes);
+/** @} */
+
+/** @defgroup vertexToPoint vertexToPoint
+ * Functions for vertexToPoint
+ * @{
+ */
+/** @brief Returns a single vertex for a given cell, as an H3 index */
+DECLSPEC void H3_EXPORT(vertexToPoint)(H3Index vertex, GeoCoord *coord);
+/** @} */
+
+/** @defgroup isValidVertex isValidVertex
+ * Functions for isValidVertex
+ * @{
+ */
+/** @brief Whether the input is a valid H3 vertex */
+DECLSPEC int H3_EXPORT(isValidVertex)(H3Index vertex);
+/** @} */
+
 /** @defgroup h3Distance h3Distance
  * Functions for h3Distance
  * @{
