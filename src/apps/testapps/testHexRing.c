@@ -120,7 +120,7 @@ SUITE(hexRing) {
             for (int i = 0; i < NUM_BASE_CELLS; i++) {
                 H3Index bc;
                 setH3Index(&bc, 0, i, 0);
-                int childrenSz = H3_EXPORT(maxUncompactSize)(&bc, 1, res);
+                int64_t childrenSz = H3_EXPORT(uncompactSize)(&bc, 1, res);
                 H3Index *children = calloc(childrenSz, sizeof(H3Index));
                 H3_EXPORT(uncompact)(&bc, 1, children, childrenSz, res);
 

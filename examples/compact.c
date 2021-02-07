@@ -50,7 +50,7 @@ int main(int argc, char* argv[]) {
     printf("Compacted to %d indexes.\n", compactedCount);
 
     int uncompactRes = 10;
-    int uncompactedSize = maxUncompactSize(compacted, inputSize, uncompactRes);
+    int64_t uncompactedSize = uncompactSize(compacted, inputSize, uncompactRes);
     H3Index* uncompacted = calloc(uncompactedSize, sizeof(H3Index));
     int err2 = uncompact(compacted, compactedCount, uncompacted,
                          uncompactedSize, uncompactRes);

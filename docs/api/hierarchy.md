@@ -47,17 +47,17 @@ Returns 0 on success.
 ## uncompact
 
 ```
-int uncompact(const H3Index *compactedSet, const int numHexes, H3Index *h3Set, const int maxHexes, const int res);
+int uncompact(const H3Index *compactedSet, const int numCompacted, H3Index *outSet, const int numOut, const int res);
 ```
 
-Uncompacts the set `compactedSet` of indexes to the resolution `res`. `h3Set` must be at least of size `maxUncompactSize(compactedSet, numHexes, res)`.
+Uncompacts the set `compactedSet` of indexes to the resolution `res`. `outSet` must be at least of size `uncompactSize(compactedSet, numCompacted, res)`.
 
 Returns 0 on success.
 
-### maxUncompactSize
+### uncompactSize
 
 ```
-int maxUncompactSize(const H3Index *compactedSet, const int numHexes, const int res)
+int64_t uncompactSize(const H3Index *compactedSet, const int numCompacted, const int res)
 ```
 
 Returns the size of the array needed by `uncompact`.

@@ -50,7 +50,7 @@ SUITE(compact) {
         t_assert(count == expectedCompactCount, "got expected compacted count");
 
         H3Index* decompressed = calloc(
-            H3_EXPORT(maxUncompactSize)(compressed, count, 9), sizeof(H3Index));
+            H3_EXPORT(uncompactSize)(compressed, count, 9), sizeof(H3Index));
         int err2 =
             H3_EXPORT(uncompact)(compressed, count, decompressed, hexCount, 9);
         t_assert(err2 == 0, "no error on uncompact");
@@ -87,9 +87,8 @@ SUITE(compact) {
                      "got expected compressed result");
         }
 
-        H3Index* decompressed =
-            calloc(H3_EXPORT(maxUncompactSize)(compressed, hexCount, 0),
-                   sizeof(H3Index));
+        H3Index* decompressed = calloc(
+            H3_EXPORT(uncompactSize)(compressed, hexCount, 0), sizeof(H3Index));
         int err2 = H3_EXPORT(uncompact)(compressed, hexCount, decompressed,
                                         hexCount, 0);
         t_assert(err2 == 0, "no error on uncompact");
@@ -124,7 +123,7 @@ SUITE(compact) {
         t_assert(count == expectedCompactCount, "got expected compacted count");
 
         H3Index* decompressed = calloc(
-            H3_EXPORT(maxUncompactSize)(compressed, count, 9), sizeof(H3Index));
+            H3_EXPORT(uncompactSize)(compressed, count, 9), sizeof(H3Index));
         int err2 =
             H3_EXPORT(uncompact)(compressed, count, decompressed, hexCount, 9);
         t_assert(err2 == 0, "no error on uncompact");
@@ -259,16 +258,16 @@ SUITE(compact) {
             setH3Index(&someHexagons[i], 5, i, 0);
         }
 
-        int sizeResult = H3_EXPORT(maxUncompactSize)(someHexagons, numHex, 4);
+        int64_t sizeResult = H3_EXPORT(uncompactSize)(someHexagons, numHex, 4);
         t_assert(sizeResult < 0,
-                 "maxUncompactSize fails when given illogical resolutions");
-        sizeResult = H3_EXPORT(maxUncompactSize)(someHexagons, numHex, -1);
+                 "uncompactSize fails when given illogical resolutions");
+        sizeResult = H3_EXPORT(uncompactSize)(someHexagons, numHex, -1);
         t_assert(sizeResult < 0,
-                 "maxUncompactSize fails when given illegal resolutions");
+                 "uncompactSize fails when given illegal resolutions");
         sizeResult =
-            H3_EXPORT(maxUncompactSize)(someHexagons, numHex, MAX_H3_RES + 1);
+            H3_EXPORT(uncompactSize)(someHexagons, numHex, MAX_H3_RES + 1);
         t_assert(sizeResult < 0,
-                 "maxUncompactSize fails when given resolutions beyond max");
+                 "uncompactSize fails when given resolutions beyond max");
 
         H3Index uncompressed[] = {0, 0, 0};
         int uncompactResult =
@@ -298,7 +297,7 @@ SUITE(compact) {
         H3Index origin;
         setH3Index(&origin, 1, 5, 0);
 
-        int childrenSz = H3_EXPORT(maxUncompactSize)(&origin, 1, 2);
+        int64_t childrenSz = H3_EXPORT(uncompactSize)(&origin, 1, 2);
         H3Index* children = calloc(childrenSz, sizeof(H3Index));
         int uncompactResult =
             H3_EXPORT(uncompact)(&origin, 1, children, childrenSz, 2);
@@ -322,20 +321,20 @@ SUITE(compact) {
     }
 
     TEST(uncompact_empty) {
-        int uncompactSz = H3_EXPORT(maxUncompactSize)(NULL, 0, 0);
-        t_assert(uncompactSz == 0, "maxUncompactSize accepts empty input");
+        int64_t uncompactSz = H3_EXPORT(uncompactSize)(NULL, 0, 0);
+        t_assert(uncompactSz == 0, "uncompactSize accepts empty input");
         t_assert(H3_EXPORT(uncompact)(NULL, 0, NULL, 0, 0) == 0,
                  "uncompact accepts empty input");
     }
 
     TEST(uncompact_onlyZero) {
-        // maxUncompactSize and uncompact both permit 0 indexes
+        // uncompactSize and uncompact both permit 0 indexes
         // in the input array, and skip them. When only a zero is
         // given, it's a no-op.
 
         H3Index origin = 0;
 
-        int childrenSz = H3_EXPORT(maxUncompactSize)(&origin, 1, 2);
+        int64_t childrenSz = H3_EXPORT(uncompactSize)(&origin, 1, 2);
         H3Index* children = calloc(childrenSz, sizeof(H3Index));
         int uncompactResult =
             H3_EXPORT(uncompact)(&origin, 1, children, childrenSz, 2);
@@ -345,11 +344,11 @@ SUITE(compact) {
     }
 
     TEST(uncompact_withZero) {
-        // maxUncompactSize and uncompact both permit 0 indexes
+        // uncompactSize and uncompact both permit 0 indexes
         // in the input array, and skip them.
 
-        int childrenSz =
-            H3_EXPORT(maxUncompactSize)(uncompactableWithZero, 4, 10);
+        int64_t childrenSz =
+            H3_EXPORT(uncompactSize)(uncompactableWithZero, 4, 10);
         H3Index* children = calloc(childrenSz, sizeof(H3Index));
         int uncompactResult = H3_EXPORT(uncompact)(uncompactableWithZero, 4,
                                                    children, childrenSz, 10);
@@ -371,7 +370,7 @@ SUITE(compact) {
         H3Index pentagon;
         setH3Index(&pentagon, 1, 4, 0);
 
-        int childrenSz = H3_EXPORT(maxUncompactSize)(&pentagon, 1, 2);
+        int64_t childrenSz = H3_EXPORT(uncompactSize)(&pentagon, 1, 2);
         H3Index* children = calloc(childrenSz, sizeof(H3Index));
         int uncompactResult =
             H3_EXPORT(uncompact)(&pentagon, 1, children, childrenSz, 2);

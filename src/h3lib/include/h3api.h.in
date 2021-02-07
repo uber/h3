@@ -492,10 +492,11 @@ DECLSPEC int H3_EXPORT(compact)(const H3Index *h3Set, H3Index *compactedSet,
  * Functions for uncompact
  * @{
  */
-/** @brief determines the maximum number of hexagons that could be uncompacted
+/** @brief determines the exact number of hexagons that will be uncompacted
  * from the compacted set */
-DECLSPEC int H3_EXPORT(maxUncompactSize)(const H3Index *compactedSet,
-                                         const int numHexes, const int res);
+DECLSPEC int64_t H3_EXPORT(uncompactSize)(const H3Index *compactedSet,
+                                          const int numCompacted,
+                                          const int res);
 
 /** @brief uncompacts the compacted hexagon set */
 DECLSPEC int H3_EXPORT(uncompact)(const H3Index *compactedSet,

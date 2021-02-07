@@ -175,7 +175,7 @@ void iterateBaseCellIndexesAtRes(int res, void (*callback)(H3Index),
     H3_SET_MODE(bc, H3_HEXAGON_MODE);
     H3_SET_RESOLUTION(bc, 0);
     H3_SET_BASE_CELL(bc, baseCell);
-    int childrenSz = H3_EXPORT(maxUncompactSize)(&bc, 1, res);
+    int64_t childrenSz = H3_EXPORT(uncompactSize)(&bc, 1, res);
     H3Index* children = calloc(childrenSz, sizeof(H3Index));
     H3_EXPORT(uncompact)(&bc, 1, children, childrenSz, res);
 
