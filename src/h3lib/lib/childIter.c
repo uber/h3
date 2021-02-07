@@ -20,6 +20,7 @@
 #include "childIter.h"
 
 static int _get(ChildIter* I, int res) {
+    // get the `res` index number of the current cell
     int s = 3 * (15 - res);
     uint64_t m = 7;
 
