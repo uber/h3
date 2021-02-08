@@ -23,6 +23,7 @@
 
 #include <math.h>
 
+#include "childIter.h"
 #include "h3Index.h"
 #include "test.h"
 #include "utility.h"
@@ -119,7 +120,18 @@ static void cell_area_assert(H3Index cell) {
  */
 static void earth_area_test(int res, double (*cell_area)(H3Index),
                             double target, double tol) {
-    double area = mapSumAllCells_double(res, cell_area);
+    double area = 0.0;
+    for (int cellNum = 0; cellNum < 122; cellNum++) {
+        H3Index baseCell;
+        setH3Index(&baseCell, 0, cellNum, 0);
+
+        ChildIter CI = ci_init(baseCell, res);
+
+        for (int i = 0; CI.h; i++) {
+            area += (*cell_area)(CI.h);
+            ci_step(&CI);
+        }
+    }
 
     t_assert(fabs(area - target) < tol,
              "sum of all cells should give earth area");
