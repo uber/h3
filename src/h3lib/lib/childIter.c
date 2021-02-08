@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Uber Technologies, Inc.
+ * Copyright 2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 /** @file childIter.c
- * @brief An iterator struct/functions for the children of a cell
+ * @brief An iterator struct and functions for the children of a cell
  */
 
 #include "childIter.h"
 
 static int _get(ChildIter* I, int res) {
-    // get the `res` index number of the current cell
+    // extract the `res` digit (0--7) of the current cell
     int s = 3 * (15 - res);
     uint64_t m = 7;
 
@@ -30,12 +30,23 @@ static int _get(ChildIter* I, int res) {
 }
 
 static void _inc(ChildIter* I, int res) {
+    // increment the digit (0--7) at location `res`
     uint64_t val = 1;
     val <<= 3 * (15 - res);
     I->h += val;
 }
 
-ChildIter ci_init(H3Index h, int childRes) {
+/*
+Initialize a ChildIter struct representing the sequence giving
+the children of cell `h` at resolution `childRes`.
+
+At any point in the iteration, starting once
+the struct is initialized, ChildIter.h gives the current child.
+
+Also, ChildIter.h == H3_NULL when all the children have been iterated
+through, or if the input to `ci_init` was invalid.
+ */
+ChildIter ci_init(const H3Index h, const int childRes) {
     ChildIter CI;
 
     CI.pr = H3_GET_RESOLUTION(h);
@@ -47,11 +58,10 @@ ChildIter ci_init(H3Index h, int childRes) {
         return CI;
     }
 
-    h = _zero_index_digits(h, CI.pr + 1, CI.cr);
-    H3_SET_RESOLUTION(h, CI.cr);
-    CI.h = h;
+    CI.h = _zero_index_digits(h, CI.pr + 1, CI.cr);
+    H3_SET_RESOLUTION(CI.h, CI.cr);
 
-    if (H3_EXPORT(h3IsPentagon)(h))
+    if (H3_EXPORT(h3IsPentagon)(CI.h))
         // The first nonzero digit skips `1` for pentagons.
         // The "fnz" moves to the left as we count up from the child resolution
         // to the parent resolution.
@@ -63,6 +73,11 @@ ChildIter ci_init(H3Index h, int childRes) {
     return CI;
 }
 
+/*
+Step a ChildIter to the next child cell.
+When the iteration is over, ChildIter.h will be H3_NULL.
+Handles iterating through hexagon and pentagon cells.
+ */
 void ci_step(ChildIter* CI) {
     // once h == H3_NULL, the iterator returns an infinite sequence of H3_NULL
     if (CI->h == H3_NULL) return;
@@ -77,8 +92,12 @@ void ci_step(ChildIter* CI) {
         }
 
         if (i == CI->fnz && _get(CI, i) == 1) {
-            // Do not pass `1`. Do not collect $200.
-            // I.e., skip the `1` in this digit
+            // Then we are iterating through the children of a pentagon cell.
+            // All children of a pentagon have the property that the first
+            // nonzero digit between the parent and child resolutions is
+            // not 1.
+            // I.e., we never see a sequence like 00001.
+            // Thus, we skip the `1` in this digit.
             _inc(CI, i);
             CI->fnz -= 1;
             return;
@@ -86,7 +105,8 @@ void ci_step(ChildIter* CI) {
 
         if (_get(CI, i) == 7) {
             _inc(CI, i);  // zeros out CI[i] and increments CI[i-1] by 1
-        } else
+        } else {
             break;
+        }
     }
 }

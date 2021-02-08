@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Uber Technologies, Inc.
+ * Copyright 2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,11 +28,15 @@
 typedef struct {
     H3Index h;
     int pr;   // parent resolution
-    int cr;   // child resolution
+    int cr;   // child resolution; note that we could drop this from the struct,
+              // but we'd have to extract it from h at each iteration.
     int fnz;  // first nonzero digit (this digit skips `1` for pentagons)
 } ChildIter;
 
 ChildIter ci_init(H3Index h, int childRes);
-void ci_step(ChildIter* I);
+void ci_step(
+    ChildIter* CI);  // instead of modifying a struct, we could also simply
+                     // create a new struct like `ci2 = ci_step(ci1)`; not sure
+                     // which interface makes more sense
 
 #endif
