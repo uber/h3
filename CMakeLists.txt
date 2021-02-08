@@ -142,7 +142,9 @@ set(APP_SOURCE_FILES
     src/apps/applib/include/args.h
     src/apps/applib/lib/kml.c
     src/apps/applib/lib/utility.c
-    src/apps/applib/lib/args.c)
+    src/apps/applib/lib/args.c
+    src/h3lib/lib/childIter.c
+    src/h3lib/include/childIter.h)
 set(TEST_APP_SOURCE_FILES
     src/apps/applib/include/test.h
     src/apps/applib/lib/test.c)
