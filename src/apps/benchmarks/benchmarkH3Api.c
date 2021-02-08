@@ -16,6 +16,7 @@
 #include "benchmark.h"
 #include "geoCoord.h"
 #include "h3api.h"
+#include "childIter.h"
 
 // Fixtures (arbitrary res 9 hexagon)
 GeoCoord coord = {0.659966917655, -2.1364398519396};
