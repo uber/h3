@@ -205,7 +205,7 @@ H3Index* getCellsAtRes(int res) {
  * Apply callback for every unidirectional edge at the given resolution.
  */
 void iterateAllUnidirectionalEdgesAtRes(int res, void (*callback)(H3Index)) {
-    CellsAtResIter CarI = cari_init(res);
+    cari_init(res);
 
     H3Index* cells = getCellsAtRes(res);
     int N = H3_EXPORT(numHexagons)(res);
