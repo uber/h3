@@ -32,7 +32,7 @@ typedef struct {
     int fnz;  // first nonzero digit (this digit skips `1` for pentagons)
 } ChildIter;
 
-void setup(ChildIter* I, H3Index h, int childRes);
-void step(ChildIter* I);
+ChildIter ci_init(H3Index h, int childRes);
+void ci_step(ChildIter* I);
 
 #endif

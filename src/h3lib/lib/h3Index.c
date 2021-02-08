@@ -224,13 +224,11 @@ H3Index makeDirectChild(H3Index h, int cellNumber) {
  * @param children H3Index* the memory to store the resulting addresses in
  */
 void H3_EXPORT(h3ToChildren)(H3Index h, int childRes, H3Index* children) {
-    ChildIter CI;
-
-    setup(&CI, h, childRes);
+    ChildIter CI = ci_init(h, childRes);
 
     for (int64_t i = 0; CI.h; i++) {
         children[i] = CI.h;
-        step(&CI);
+        ci_step(&CI);
     }
 }
 
@@ -467,17 +465,16 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
 int H3_EXPORT(uncompact)(const H3Index* compactedSet, const int numCompacted,
                          H3Index* outSet, const int numOut, const int res) {
     int i = 0;
-    ChildIter CI;
 
     for (int j = 0; j < numCompacted; j++) {
         if (!_hasChildAtRes(compactedSet[j], res)) return -2;
 
-        setup(&CI, compactedSet[j], res);
+        ChildIter CI = ci_init(compactedSet[j], res);
         while (CI.h) {
             if (i >= numOut) return -1;  // went too far; abort!
 
             outSet[i] = CI.h;
-            step(&CI);
+            ci_step(&CI);
             i++;
         }
     }

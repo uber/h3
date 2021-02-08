@@ -35,31 +35,35 @@ static void _inc(ChildIter* I, int res) {
     I->h += val;
 }
 
-void setup(ChildIter* CI, H3Index h, int childRes) {
-    CI->pr = H3_GET_RESOLUTION(h);
-    CI->cr = childRes;
+ChildIter ci_init(H3Index h, int childRes) {
+    ChildIter CI;
 
-    if (CI->cr < CI->pr || CI->cr > MAX_H3_RES || h == H3_NULL) {
+    CI.pr = H3_GET_RESOLUTION(h);
+    CI.cr = childRes;
+
+    if (CI.cr < CI.pr || CI.cr > MAX_H3_RES || h == H3_NULL) {
         // make an empty iterator
-        CI->h = H3_NULL;
-        return;
+        CI.h = H3_NULL;
+        return CI;
     }
 
-    h = _zero_index_digits(h, CI->pr + 1, CI->cr);
-    H3_SET_RESOLUTION(h, CI->cr);
-    CI->h = h;
+    h = _zero_index_digits(h, CI.pr + 1, CI.cr);
+    H3_SET_RESOLUTION(h, CI.cr);
+    CI.h = h;
 
     if (H3_EXPORT(h3IsPentagon)(h))
         // The first nonzero digit skips `1` for pentagons.
         // The "fnz" moves to the left as we count up from the child resolution
         // to the parent resolution.
-        CI->fnz = CI->cr;
+        CI.fnz = CI.cr;
     else
         // if not a pentagon, we can ignore "first nonzero digit" logic
-        CI->fnz = -1;
+        CI.fnz = -1;
+
+    return CI;
 }
 
-void step(ChildIter* CI) {
+void ci_step(ChildIter* CI) {
     // once h == H3_NULL, the iterator returns an infinite sequence of H3_NULL
     if (CI->h == H3_NULL) return;
 
