@@ -200,22 +200,6 @@ H3Index* getCellsAtRes(int res) {
 }
 
 /**
- * Apply callback to every cell for a given resolution, and sum the results.
- */
-double mapSumAllCells_double(int res, double (*callback)(H3Index)) {
-    H3Index* cells = getCellsAtRes(res);
-    int N = H3_EXPORT(numHexagons)(res);
-
-    double total = 0.0;
-    for (int i = 0; i < N; i++) {
-        total += (*callback)(cells[i]);
-    }
-    free(cells);
-
-    return total;
-}
-
-/**
  * Apply callback for every unidirectional edge at the given resolution.
  */
 void iterateAllUnidirectionalEdgesAtRes(int res, void (*callback)(H3Index)) {
