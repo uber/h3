@@ -121,16 +121,11 @@ static void cell_area_assert(H3Index cell) {
 static void earth_area_test(int res, double (*cell_area)(H3Index),
                             double target, double tol) {
     double area = 0.0;
-    for (int cellNum = 0; cellNum < 122; cellNum++) {
-        H3Index baseCell;
-        setH3Index(&baseCell, 0, cellNum, 0);
+    CellsAtResIter CarI = cari_init(res);
 
-        ChildIter CI = ci_init(baseCell, res);
-
-        for (int i = 0; CI.h; i++) {
-            area += (*cell_area)(CI.h);
-            ci_step(&CI);
-        }
+    while (CarI.h) {
+        area += (*cell_area)(CarI.h);
+        cari_step(&CarI);
     }
 
     t_assert(fabs(area - target) < tol,

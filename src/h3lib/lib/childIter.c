@@ -118,6 +118,8 @@ ChildIter base_children_init(const int baseCellNum, const int childRes) {
         return (ChildIter){.h = H3_NULL};
     }
 
+    // todo: or should we use `setH3Index(&baseCell, 0, cellNum, 0);`?
+
     H3Index baseCell = H3_INIT;
     H3_SET_MODE(baseCell, H3_HEXAGON_MODE);
     H3_SET_BASE_CELL(baseCell, baseCellNum);
@@ -126,6 +128,7 @@ ChildIter base_children_init(const int baseCellNum, const int childRes) {
 }
 
 // todo: yes, these names are terrible. will change
+// todo: don't like this mixing: `CarI->h = CarI->CI.h` or `CarI->CI.cr`
 
 // create iterator for all cells at given resolution
 CellsAtResIter cari_init(int res) {
@@ -141,6 +144,7 @@ void cari_step(CellsAtResIter* CarI) {
 
     ci_step(&(CarI->CI));
 
+    // todo: can i DRY-up this logic? same as below
     if (CarI->CI.h != H3_NULL) {
         CarI->h = CarI->CI.h;
         return;
