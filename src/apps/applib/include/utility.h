@@ -22,6 +22,7 @@
 
 #include <stdio.h>
 
+#include "childIter.h"
 #include "coordijk.h"
 #include "h3api.h"
 
