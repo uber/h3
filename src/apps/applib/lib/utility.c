@@ -26,6 +26,7 @@
 #include <string.h>
 #include <time.h>
 
+#include "childIter.h"
 #include "coordijk.h"
 #include "h3Index.h"
 #include "h3api.h"
@@ -181,6 +182,7 @@ size_t packNonzeros(H3Index* a, size_t n) {
  *
  * @return       array of H3 cells at resolution res
  */
+// todo
 H3Index* getCellsAtRes(int res) {
     int num0 = H3_EXPORT(res0IndexCount)();
     H3Index* cells0 = calloc(num0, sizeof(H3Index));
@@ -222,6 +224,7 @@ void iterateAllUnidirectionalEdgesAtRes(int res, void (*callback)(H3Index)) {
 /**
  * Call the callback for every index at the given resolution.
  */
+// todo
 void iterateAllIndexesAtRes(int res, void (*callback)(H3Index)) {
     iterateAllIndexesAtResPartial(res, callback, NUM_BASE_CELLS);
 }
@@ -230,6 +233,7 @@ void iterateAllIndexesAtRes(int res, void (*callback)(H3Index)) {
  * Call the callback for every index at the given resolution in base
  * cell 0 up to the given base cell number.
  */
+// todo
 void iterateAllIndexesAtResPartial(int res, void (*callback)(H3Index),
                                    int baseCells) {
     assert(baseCells <= NUM_BASE_CELLS);
@@ -242,6 +246,7 @@ void iterateAllIndexesAtResPartial(int res, void (*callback)(H3Index),
  * Call the callback for every index at the given resolution in a
  * specific base cell
  */
+// todo
 void iterateBaseCellIndexesAtRes(int res, void (*callback)(H3Index),
                                  int baseCell) {
     H3Index bc = H3_INIT;
