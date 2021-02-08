@@ -121,110 +121,30 @@ void geoBoundaryPrintln(const GeoBoundary* b) {
 }
 
 /**
- * Move nonzero elements to the front of array `a` of length `n`.
- *
- * Loop invariant: Everything *before* `i` or *after* `j` is "done".
- * Move `i` and `j` inwards until they equal, and exit.
- * You can move `i` forward until there's a zero in front of it.
- * You can move `j` backward until there's a nonzero to the left of it.
- * Anything to the right of `j` is "junk" that can be reallocated.
- *
- * Before:
- *   | a | b | 0 | c | d | ... |
- *           ^           ^
- *           i           j
- * After:
- *   | a | b | d | c | d | ... |
- *           ^       ^
- *           i       j
- *
- * todo: should this function be in the public API?
- * todo: add tests for this function
- *
- * @param   a  H3Index array to whose elements will be moved
- * @param   n  length of the input array
- * @return     number of nonzero elements (length of new array); can reallocate
- *             memory after this point
- */
-size_t packNonzeros(H3Index* a, size_t n) {
-    size_t i = 0;
-    size_t j = n;
-
-    while (i < j) {
-        // move j to the left until the first nonzero
-        if (a[j - 1] == 0) {
-            j -= 1;
-            continue;
-        }
-
-        // move i to the right until the first zero
-        if (a[i] != 0) {
-            i += 1;
-            continue;
-        }
-
-        // if we get to this point, we know:
-        // a[i] == 0
-        // a[j-1] != 0
-        // i < j
-        // so we can swap! (actually, move a[j-1] -> a[i])
-        a[i] = a[j - 1];
-        j -= 1;
-    }
-
-    return i;
-}
-
-/**
- * Array of all cells at a given resolution.
- *
- * @param   res  resolution
- *
- * @return       array of H3 cells at resolution res
- */
-// todo
-H3Index* getCellsAtRes(int res) {
-    int num0 = H3_EXPORT(res0IndexCount)();
-    H3Index* cells0 = calloc(num0, sizeof(H3Index));
-    H3_EXPORT(getRes0Indexes)(cells0);
-
-    int64_t numRes = H3_EXPORT(uncompactSize)(cells0, num0, res);
-
-    H3Index* cellsRes = calloc(numRes, sizeof(H3Index));
-    H3_EXPORT(uncompact)(cells0, num0, cellsRes, numRes, res);
-
-    free(cells0);
-
-    numRes = packNonzeros(cellsRes, numRes);
-    cellsRes = realloc(cellsRes, numRes * sizeof(H3Index));
-
-    return cellsRes;
-}
-
-/**
  * Apply callback for every unidirectional edge at the given resolution.
  */
 void iterateAllUnidirectionalEdgesAtRes(int res, void (*callback)(H3Index)) {
-    H3Index* cells = getCellsAtRes(res);
-    int N = H3_EXPORT(numHexagons)(res);
+    CellsAtResIter CarI = cari_init(res);
 
-    for (int i = 0; i < N; i++) {
+    while (CarI.h) {
         H3Index edges[6] = {H3_NULL};
-        int isPentagon = H3_EXPORT(h3IsPentagon)(cells[i]);
-        H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(cells[i], edges);
 
+        int isPentagon = H3_EXPORT(h3IsPentagon)(CarI.h);
+        H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(CarI.h, edges);
+
+        // todo: not sure the edge logic is correct here
         for (int j = 0; j < 6; j++) {
             if (isPentagon && j == 0) continue;
             (*callback)(edges[j]);
         }
+
+        cari_step(&CarI);
     }
-    free(cells);
 }
 
 /**
  * Call the callback for every index at the given resolution.
  */
-// todo
 void iterateAllIndexesAtRes(int res, void (*callback)(H3Index)) {
     iterateAllIndexesAtResPartial(res, callback, NUM_BASE_CELLS);
 }
