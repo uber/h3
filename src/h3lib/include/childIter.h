@@ -39,4 +39,13 @@ void ci_step(
                      // create a new struct like `ci2 = ci_step(ci1)`; not sure
                      // which interface makes more sense
 
+typedef struct {
+    H3Index h;
+    int baseCellNum;
+    ChildIter CI;
+} CellsAtResIter;
+
+CellsAtResIter cari_init(int res);
+void cari_step(CellsAtResIter* CarI);
+
 #endif

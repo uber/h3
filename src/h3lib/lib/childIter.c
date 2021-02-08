@@ -110,3 +110,50 @@ void ci_step(ChildIter* CI) {
         }
     }
 }
+
+// create iterator for children of base cell at given resolution
+ChildIter base_children_init(const int baseCellNum, const int childRes) {
+    if (baseCellNum < 0 || baseCellNum >= NUM_BASE_CELLS || childRes < 0 ||
+        childRes > MAX_H3_RES) {
+        return (ChildIter){.h = H3_NULL};
+    }
+
+    H3Index baseCell = H3_INIT;
+    H3_SET_MODE(baseCell, H3_HEXAGON_MODE);
+    H3_SET_BASE_CELL(baseCell, baseCellNum);
+
+    return ci_init(baseCell, childRes);
+}
+
+// todo: yes, these names are terrible. will change
+
+// create iterator for all cells at given resolution
+CellsAtResIter cari_init(int res) {
+    ChildIter CI = base_children_init(0, res);
+
+    CellsAtResIter CarI = {.h = CI.h, .baseCellNum = 0, .CI = CI};
+
+    return CarI;
+}
+
+void cari_step(CellsAtResIter* CarI) {
+    if (CarI->h == H3_NULL) return;
+
+    ci_step(&(CarI->CI));
+
+    if (CarI->CI.h != H3_NULL) {
+        CarI->h = CarI->CI.h;
+        return;
+    }
+
+    // H3_NULL
+    CarI->baseCellNum += 1;
+    if (CarI->baseCellNum < NUM_BASE_CELLS) {
+        CarI->CI = base_children_init(CarI->baseCellNum, CarI->CI.cr);
+        CarI->h = CarI->CI.h;
+        return;
+    } else {
+        CarI->h = H3_NULL;
+        return;
+    }
+}
