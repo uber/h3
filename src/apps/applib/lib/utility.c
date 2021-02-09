@@ -164,23 +164,11 @@ void iterateAllIndexesAtResPartial(int res, void (*callback)(H3Index),
 // todo
 void iterateBaseCellIndexesAtRes(int res, void (*callback)(H3Index),
                                  int baseCell) {
-    H3Index bc = H3_INIT;
-    H3_SET_MODE(bc, H3_HEXAGON_MODE);
-    H3_SET_RESOLUTION(bc, 0);
-    H3_SET_BASE_CELL(bc, baseCell);
-    int64_t childrenSz = H3_EXPORT(uncompactSize)(&bc, 1, res);
-    H3Index* children = calloc(childrenSz, sizeof(H3Index));
-    H3_EXPORT(uncompact)(&bc, 1, children, childrenSz, res);
+    ChildIter CI = base_children_init(baseCell, res);
 
-    for (int j = 0; j < childrenSz; j++) {
-        if (children[j] == H3_NULL) {
-            continue;
-        }
-
-        (*callback)(children[j]);
+    for (; CI.h; ci_step(&CI)) {
+        (*callback)(CI.h);
     }
-
-    free(children);
 }
 
 /**

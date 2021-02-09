@@ -34,6 +34,8 @@ typedef struct {
 } ChildIter;
 
 DECLSPEC ChildIter ci_init(H3Index h, int childRes);
+DECLSPEC ChildIter base_children_init(const int baseCellNum,
+                                      const int childRes);
 DECLSPEC void ci_step(
     ChildIter* CI);  // instead of modifying a struct, we could also simply
                      // create a new struct like `ci2 = ci_step(ci1)`; not sure
