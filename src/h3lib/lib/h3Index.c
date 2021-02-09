@@ -176,14 +176,14 @@ static bool _hasChildAtRes(H3Index h, int childRes) {
 }
 
 /**
- * cellToChildrenSize returns the maximum number of children possible for a
- * given child level.
+ * cellToChildrenSize returns the exact number of children for a cell at a
+ * given child resolution.
  *
- * @param h H3Index to find the number of children of
- * @param childRes The resolution of the child level you're interested in
+ * @param h         H3Index to find the number of children of
+ * @param childRes  The child resolution you're interested in
  *
- * @return int count of maximum number of children (equal for hexagons, less for
- * pentagons
+ * @return int      Exact number of children (handles hexagons and pentagons
+ *                  correctly)
  */
 int64_t H3_EXPORT(cellToChildrenSize)(H3Index h, int childRes) {
     if (!_hasChildAtRes(h, childRes)) return 0;
@@ -235,6 +235,7 @@ void H3_EXPORT(h3ToChildren)(H3Index h, int childRes, H3Index* children) {
 /* Zero out index digits from start to end, inclusive.
  * No-op if start > end.
  **/
+ // todo: do we really need this special function? can just use the macros?
 H3Index _zero_index_digits(H3Index h, int start, int end) {
     if (start > end) return h;
 
