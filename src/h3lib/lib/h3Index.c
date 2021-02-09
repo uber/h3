@@ -235,7 +235,7 @@ void H3_EXPORT(h3ToChildren)(H3Index h, int childRes, H3Index* children) {
 /* Zero out index digits from start to end, inclusive.
  * No-op if start > end.
  **/
- // todo: do we really need this special function? can just use the macros?
+// todo: do we really need this special function? can just use the macros?
 H3Index _zero_index_digits(H3Index h, int start, int end) {
     if (start > end) return h;
 
