@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 #include "benchmark.h"
-#include "childIter.h"
 #include "geoCoord.h"
 #include "h3api.h"
 
