@@ -27,9 +27,7 @@
 #include <time.h>
 
 #include "childIter.h"
-#include "coordijk.h"
 #include "h3Index.h"
-#include "h3api.h"
 
 void error(const char* msg) {
     fflush(stdout);

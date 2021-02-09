@@ -33,8 +33,8 @@ typedef struct {
     int fnz;  // first nonzero digit (this digit skips `1` for pentagons)
 } ChildIter;
 
-ChildIter ci_init(H3Index h, int childRes);
-void ci_step(
+DECLSPEC ChildIter ci_init(H3Index h, int childRes);
+DECLSPEC void ci_step(
     ChildIter* CI);  // instead of modifying a struct, we could also simply
                      // create a new struct like `ci2 = ci_step(ci1)`; not sure
                      // which interface makes more sense
@@ -45,7 +45,7 @@ typedef struct {
     ChildIter CI;
 } CellsAtResIter;
 
-CellsAtResIter cari_init(int res);
-void cari_step(CellsAtResIter* CarI);
+DECLSPEC CellsAtResIter cari_init(int res);
+DECLSPEC void cari_step(CellsAtResIter* CarI);
 
 #endif
