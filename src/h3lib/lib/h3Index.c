@@ -793,7 +793,7 @@ int _h3ToFaceIjkWithInitializedFijk(H3Index h, FaceIJK* fijk) {
  */
 void _h3ToFaceIjk(H3Index h, FaceIJK* fijk) {
     int baseCell = H3_GET_BASE_CELL(h);
-    if (baseCell < 0 || baseCell >= NUM_BASE_CELLS) {  // aaa TODO
+    if (baseCell < 0 || baseCell >= NUM_BASE_CELLS) {  // LCOV_EXCL_BR_LINE
         // Base cells less than zero can not be represented in an index
         // TODO: Indicate an error to the caller
         // To prevent reading uninitialized memory, we zero the output.
