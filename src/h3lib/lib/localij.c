@@ -138,6 +138,16 @@ int h3ToLocalIjk(H3Index origin, H3Index h3, CoordIJK* out) {
     int originBaseCell = H3_GET_BASE_CELL(origin);
     int baseCell = H3_GET_BASE_CELL(h3);
 
+    if (originBaseCell < 0 ||  // LCOV_EXCL_BR_LINE
+        originBaseCell >= NUM_BASE_CELLS) {
+        // Base cells less than zero can not be represented in an index
+        return 1;
+    }
+    if (baseCell < 0 || baseCell >= NUM_BASE_CELLS) {  // LCOV_EXCL_BR_LINE
+        // Base cells less than zero can not be represented in an index
+        return 1;
+    }
+
     // Direction from origin base cell to index base cell
     Direction dir = CENTER_DIGIT;
     Direction revDir = CENTER_DIGIT;
@@ -280,6 +290,11 @@ int h3ToLocalIjk(H3Index origin, H3Index h3, CoordIJK* out) {
 int localIjkToH3(H3Index origin, const CoordIJK* ijk, H3Index* out) {
     int res = H3_GET_RESOLUTION(origin);
     int originBaseCell = H3_GET_BASE_CELL(origin);
+    if (originBaseCell < 0 ||  // LCOV_EXCL_BR_LINE
+        originBaseCell >= NUM_BASE_CELLS) {
+        // Base cells less than zero can not be represented in an index
+        return 1;
+    }
     int originOnPent = _isBaseCellPentagon(originBaseCell);
 
     // This logic is very similar to faceIjkToH3

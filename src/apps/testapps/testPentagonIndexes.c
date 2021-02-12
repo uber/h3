@@ -55,4 +55,10 @@ SUITE(getPentagonIndexes) {
                      "there should be exactly 12 pentagons");
         }
     }
+
+    TEST(invalidPentagons) {
+        t_assert(!H3_EXPORT(h3IsPentagon)(0), "0 is not a pentagon");
+        t_assert(!H3_EXPORT(h3IsPentagon)(0x7fffffffffffffff),
+                 "all but high bit is not a pentagon");
+    }
 }
