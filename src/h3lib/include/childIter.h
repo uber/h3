@@ -32,6 +32,7 @@ typedef struct {
               // but we'd have to extract it from h at each iteration.
     int fnz;  // first nonzero digit (this digit skips `1` for pentagons)
 } ChildIter;
+// new name: Iter_Child
 
 DECLSPEC ChildIter ci_init(H3Index h, int childRes);
 DECLSPEC ChildIter base_children_init(const int baseCellNum,
@@ -46,6 +47,20 @@ typedef struct {
     int baseCellNum;
     ChildIter CI;
 } CellsAtResIter;
+// new name: Iter_Res
+
+DECLSPEC CellsAtResIter cari_init(int res);
+DECLSPEC void cari_step(CellsAtResIter* CarI);
+
+
+typedef struct {
+    H3Index e;
+    int baseCellNum;
+    ChildIter CI;
+} Iter_DiEdge;
+// new name: Iter_Res
+
+// uncompact iter?
 
 DECLSPEC CellsAtResIter cari_init(int res);
 DECLSPEC void cari_step(CellsAtResIter* CarI);
