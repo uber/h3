@@ -47,19 +47,6 @@ typedef struct {
     int baseCellNum;
     ChildIter CI;
 } CellsAtResIter;
-// new name: Iter_Res
-
-// DECLSPEC CellsAtResIter cari_init(int res);
-// DECLSPEC void cari_step(CellsAtResIter* CarI);
-
-// typedef struct {
-//     H3Index e;
-//     int baseCellNum;
-//     ChildIter CI;
-// } Iter_DiEdge;
-// new name: Iter_Res
-
-// uncompact iter?
 
 DECLSPEC CellsAtResIter cari_init(int res);
 DECLSPEC void cari_step(CellsAtResIter* CarI);

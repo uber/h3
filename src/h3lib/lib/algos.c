@@ -417,7 +417,7 @@ H3Index h3NeighborRotations(H3Index origin, Direction dir, int* rotations) {
  * cells are not neighbors.
  *
  * TODO: This is currently a brute-force algorithm, but as it's O(6) that's
- * probably acceptible.
+ * probably acceptable.
  */
 Direction directionForNeighbor(H3Index origin, H3Index destination) {
     bool isPentagon = H3_EXPORT(h3IsPentagon)(origin);
