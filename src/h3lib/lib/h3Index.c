@@ -465,7 +465,7 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
  */
 int H3_EXPORT(uncompact)(const H3Index* compactedSet, const int numCompacted,
                          H3Index* outSet, const int numOut, const int res) {
-    int i = 0;
+    int64_t i = 0;
 
     for (int j = 0; j < numCompacted; j++) {
         if (!_hasChildAtRes(compactedSet[j], res)) return -2;
