@@ -19,6 +19,8 @@
 
 #include "childIter.h"
 
+#include "h3Index.h"
+
 static int _get(ChildIter* I, int res) {
     // extract the `res` digit (0--7) of the current cell
     int s = 3 * (15 - res);

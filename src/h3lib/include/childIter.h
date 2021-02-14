@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** @file childIter.h
- * @brief An iterator struct/functions for the children of a cell
+/** @file iterators.h
+ * @brief Iterator structs and functions for the children of a cell,
+ * or cells at a given resolution.
  */
 
-#ifndef CHILDITER_H
-#define CHILDITER_H
+#ifndef ITERATORS_H
+#define ITERATORS_H
 
 #include <stdint.h>
 
-#include "h3Index.h"
 #include "h3api.h"
 
 typedef struct {
