@@ -278,6 +278,7 @@ H3Index H3_EXPORT(h3ToCenterChild)(H3Index h, int childRes) {
  * contiguous regions exist in the set at all and no compression possible)
  * @return an error code on bad input data
  */
+// todo: update internal implementation for int64_t
 int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
                        const int64_t numHexes) {
     if (numHexes == 0) {
