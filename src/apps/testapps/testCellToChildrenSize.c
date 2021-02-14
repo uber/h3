@@ -47,7 +47,7 @@ SUITE(cellToChildrenSize) {
     }
 
     TEST(cellToChildrenSize_largest_hexagon) {
-        H3Index h = 0x806dfffffffffff;       // res 0 *hexagon*
+        H3Index h = 0x806dfffffffffff;      // res 0 *hexagon*
         int64_t expected = 4747561509943L;  // 7^15
         int64_t out = H3_EXPORT(cellToChildrenSize)(h, 15);
 
@@ -56,7 +56,7 @@ SUITE(cellToChildrenSize) {
     }
 
     TEST(cellToChildrenSize_largest_pentagon) {
-        H3Index h = 0x8009fffffffffff;       // res 0 *pentagon*
+        H3Index h = 0x8009fffffffffff;      // res 0 *pentagon*
         int64_t expected = 3956301258286L;  // 1 + 5*(7^15 - 1)/6
         int64_t out = H3_EXPORT(cellToChildrenSize)(h, 15);
 
