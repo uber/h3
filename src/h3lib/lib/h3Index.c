@@ -279,7 +279,7 @@ H3Index H3_EXPORT(h3ToCenterChild)(H3Index h, int childRes) {
  * @return an error code on bad input data
  */
 int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
-                       const int numHexes) {
+                       const int64_t numHexes) {
     if (numHexes == 0) {
         return COMPACT_SUCCESS;
     }
@@ -462,11 +462,12 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
  * @return              An error code if output array is too small or any cell
  *                      is smaller than the output resolution.
  */
-int H3_EXPORT(uncompact)(const H3Index* compactedSet, const int numCompacted,
-                         H3Index* outSet, const int numOut, const int res) {
+int H3_EXPORT(uncompact)(const H3Index* compactedSet,
+                         const int64_t numCompacted, H3Index* outSet,
+                         const int64_t numOut, const int res) {
     int64_t i = 0;
 
-    for (int j = 0; j < numCompacted; j++) {
+    for (int64_t j = 0; j < numCompacted; j++) {
         if (!_hasChildAtRes(compactedSet[j], res)) return -2;
 
         Iter_Child iter = iterInitParent(compactedSet[j], res);
@@ -489,9 +490,9 @@ int H3_EXPORT(uncompact)(const H3Index* compactedSet, const int numCompacted,
  *                        negative number if an error occurs.
  */
 int64_t H3_EXPORT(uncompactSize)(const H3Index* compactedSet,
-                                 const int numCompacted, const int res) {
+                                 const int64_t numCompacted, const int res) {
     int64_t numOut = 0;
-    for (int i = 0; i < numCompacted; i++) {
+    for (int64_t i = 0; i < numCompacted; i++) {
         if (compactedSet[i] == H3_NULL) continue;
         if (!_hasChildAtRes(compactedSet[i], res)) return -1;  // Abort
 
