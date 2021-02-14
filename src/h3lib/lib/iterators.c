@@ -129,8 +129,6 @@ Iter_Child iterInitBaseCellNum(int baseCellNum, int childRes) {
     return iterInitParent(baseCell, childRes);
 }
 
-// todo: don't like this mixing: `itR->h = itR->itC.h` or `itR->itC.cr`
-
 // create iterator for all cells at given resolution
 Iter_Res iterInitRes(int res) {
     Iter_Child itC = iterInitBaseCellNum(0, res);
