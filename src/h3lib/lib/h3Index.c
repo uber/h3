@@ -27,8 +27,8 @@
 
 #include "alloc.h"
 #include "baseCells.h"
-#include "childIter.h"
 #include "faceijk.h"
+#include "iterators.h"
 #include "mathExtensions.h"
 
 /**

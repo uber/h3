@@ -114,7 +114,7 @@ set(LIB_SOURCE_FILES
     src/h3lib/include/faceijk.h
     src/h3lib/include/vertexGraph.h
     src/h3lib/include/mathExtensions.h
-    src/h3lib/include/childIter.h
+    src/h3lib/include/iterators.h
     src/h3lib/include/constants.h
     src/h3lib/include/coordijk.h
     src/h3lib/include/algos.h
@@ -131,7 +131,7 @@ set(LIB_SOURCE_FILES
     src/h3lib/lib/geoCoord.c
     src/h3lib/lib/h3UniEdge.c
     src/h3lib/lib/mathExtensions.c
-    src/h3lib/lib/childIter.c
+    src/h3lib/lib/iterators.c
     src/h3lib/lib/vertexGraph.c
     src/h3lib/lib/faceijk.c
     src/h3lib/lib/baseCells.c)

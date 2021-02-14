@@ -17,7 +17,7 @@
  * @brief An iterator struct and functions for the children of a cell
  */
 
-#include "childIter.h"
+#include "iterators.h"
 
 #include "h3Index.h"
 
@@ -48,7 +48,7 @@ the struct is initialized, ChildIter.h gives the current child.
 Also, ChildIter.h == H3_NULL when all the children have been iterated
 through, or if the input to `ci_init` was invalid.
  */
-ChildIter ci_init(const H3Index h, const int childRes) {
+ChildIter ci_init(H3Index h, int childRes) {
     ChildIter CI;
 
     CI.pr = H3_GET_RESOLUTION(h);
@@ -114,7 +114,7 @@ void ci_step(ChildIter* CI) {
 }
 
 // create iterator for children of base cell at given resolution
-ChildIter base_children_init(const int baseCellNum, const int childRes) {
+ChildIter base_children_init(int baseCellNum, int childRes) {
     if (baseCellNum < 0 || baseCellNum >= NUM_BASE_CELLS || childRes < 0 ||
         childRes > MAX_H3_RES) {
         return (ChildIter){.h = H3_NULL};

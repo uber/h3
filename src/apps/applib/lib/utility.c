@@ -26,8 +26,8 @@
 #include <string.h>
 #include <time.h>
 
-#include "childIter.h"
 #include "h3Index.h"
+#include "iterators.h"
 
 void error(const char* msg) {
     fflush(stdout);

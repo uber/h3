@@ -23,8 +23,8 @@
 
 #include <math.h>
 
-#include "childIter.h"
 #include "h3Index.h"
+#include "iterators.h"
 #include "test.h"
 #include "utility.h"
 
