@@ -21,21 +21,21 @@
 
 #include "h3Index.h"
 
-static int _get(Iter_Child* I, int res) {
+static int _get(Iter_Child* it, int res) {
     // extract the `res` digit (0--7) of the current cell
     int s = 3 * (15 - res);
     uint64_t m = 7;
 
     m <<= s;
 
-    return (I->h & m) >> s;
+    return (it->h & m) >> s;
 }
 
-static void _inc(Iter_Child* I, int res) {
+static void _inc(Iter_Child* it, int res) {
     // increment the digit (0--7) at location `res`
     uint64_t val = 1;
     val <<= 3 * (15 - res);
-    I->h += val;
+    it->h += val;
 }
 
 /*
@@ -49,30 +49,30 @@ Also, Iter_Child.h == H3_NULL when all the children have been iterated
 through, or if the input to `iterInitParent` was invalid.
  */
 Iter_Child iterInitParent(H3Index h, int childRes) {
-    Iter_Child CI;
+    Iter_Child it;
 
-    CI.pr = H3_GET_RESOLUTION(h);
-    CI.cr = childRes;
+    it.pr = H3_GET_RESOLUTION(h);
+    it.cr = childRes;
 
-    if (CI.cr < CI.pr || CI.cr > MAX_H3_RES || h == H3_NULL) {
+    if (it.cr < it.pr || it.cr > MAX_H3_RES || h == H3_NULL) {
         // make an empty iterator
-        CI.h = H3_NULL;
-        return CI;
+        it.h = H3_NULL;
+        return it;
     }
 
-    CI.h = _zero_index_digits(h, CI.pr + 1, CI.cr);
-    H3_SET_RESOLUTION(CI.h, CI.cr);
+    it.h = _zero_index_digits(h, it.pr + 1, it.cr);
+    H3_SET_RESOLUTION(it.h, it.cr);
 
-    if (H3_EXPORT(h3IsPentagon)(CI.h))
+    if (H3_EXPORT(h3IsPentagon)(it.h))
         // The first nonzero digit skips `1` for pentagons.
         // The "fnz" moves to the left as we count up from the child resolution
         // to the parent resolution.
-        CI.fnz = CI.cr;
+        it.fnz = it.cr;
     else
         // if not a pentagon, we can ignore "first nonzero digit" logic
-        CI.fnz = -1;
+        it.fnz = -1;
 
-    return CI;
+    return it;
 }
 
 /*
@@ -80,33 +80,33 @@ Step a Iter_Child to the next child cell.
 When the iteration is over, Iter_Child.h will be H3_NULL.
 Handles iterating through hexagon and pentagon cells.
  */
-void iterStepChild(Iter_Child* CI) {
+void iterStepChild(Iter_Child* it) {
     // once h == H3_NULL, the iterator returns an infinite sequence of H3_NULL
-    if (CI->h == H3_NULL) return;
+    if (it->h == H3_NULL) return;
 
-    _inc(CI, CI->cr);
+    _inc(it, it->cr);
 
-    for (int i = CI->cr; i >= CI->pr; i--) {
-        if (i == CI->pr) {
+    for (int i = it->cr; i >= it->pr; i--) {
+        if (i == it->pr) {
             // if we're modifying the parent resolution digit, then we're done
-            CI->h = H3_NULL;
+            it->h = H3_NULL;
             return;
         }
 
-        if (i == CI->fnz && _get(CI, i) == 1) {
+        if (i == it->fnz && _get(it, i) == 1) {
             // Then we are iterating through the children of a pentagon cell.
             // All children of a pentagon have the property that the first
             // nonzero digit between the parent and child resolutions is
             // not 1.
             // I.e., we never see a sequence like 00001.
             // Thus, we skip the `1` in this digit.
-            _inc(CI, i);
-            CI->fnz -= 1;
+            _inc(it, i);
+            it->fnz -= 1;
             return;
         }
 
-        if (_get(CI, i) == 7) {
-            _inc(CI, i);  // zeros out CI[i] and increments CI[i-1] by 1
+        if (_get(it, i) == 7) {
+            _inc(it, i);  // zeros out it[i] and increments it[i-1] by 1
         } else {
             break;
         }
@@ -129,36 +129,36 @@ Iter_Child iterInitBaseCellNum(int baseCellNum, int childRes) {
     return iterInitParent(baseCell, childRes);
 }
 
-// todo: don't like this mixing: `CarI->h = CarI->CI.h` or `CarI->CI.cr`
+// todo: don't like this mixing: `itR->h = itR->itC.h` or `itR->itC.cr`
 
 // create iterator for all cells at given resolution
 Iter_Res iterInitRes(int res) {
-    Iter_Child CI = iterInitBaseCellNum(0, res);
+    Iter_Child itC = iterInitBaseCellNum(0, res);
 
-    Iter_Res CarI = {.h = CI.h, .baseCellNum = 0, .CI = CI};
+    Iter_Res itR = {.h = itC.h, .baseCellNum = 0, .itC = itC};
 
-    return CarI;
+    return itR;
 }
 
-void iterStepRes(Iter_Res* CarI) {
-    if (CarI->h == H3_NULL) return;
+void iterStepRes(Iter_Res* itR) {
+    if (itR->h == H3_NULL) return;
 
-    iterStepChild(&(CarI->CI));
+    iterStepChild(&(itR->itC));
 
     // todo: can i DRY-up this logic? same as below
-    if (CarI->CI.h != H3_NULL) {
-        CarI->h = CarI->CI.h;
+    if (itR->itC.h != H3_NULL) {
+        itR->h = itR->itC.h;
         return;
     }
 
     // H3_NULL
-    CarI->baseCellNum += 1;
-    if (CarI->baseCellNum < NUM_BASE_CELLS) {
-        CarI->CI = iterInitBaseCellNum(CarI->baseCellNum, CarI->CI.cr);
-        CarI->h = CarI->CI.h;
+    itR->baseCellNum += 1;
+    if (itR->baseCellNum < NUM_BASE_CELLS) {
+        itR->itC = iterInitBaseCellNum(itR->baseCellNum, itR->itC.cr);
+        itR->h = itR->itC.h;
         return;
     } else {
-        CarI->h = H3_NULL;
+        itR->h = H3_NULL;
         return;
     }
 }

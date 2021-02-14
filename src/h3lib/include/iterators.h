@@ -35,7 +35,7 @@ typedef struct {
 
 DECLSPEC Iter_Child iterInitParent(H3Index h, int childRes);
 DECLSPEC Iter_Child iterInitBaseCellNum(int baseCellNum, int childRes);
-DECLSPEC void iterStepChild(Iter_Child* CI);
+DECLSPEC void iterStepChild(Iter_Child* iter);
 // instead of modifying a struct, we could also simply
 // create a new struct like `ci2 = iterStepChild(ci1)`; not sure
 // which interface makes more sense
@@ -43,10 +43,10 @@ DECLSPEC void iterStepChild(Iter_Child* CI);
 typedef struct {
     H3Index h;
     int baseCellNum;
-    Iter_Child CI;
+    Iter_Child itC;
 } Iter_Res;
 
 DECLSPEC Iter_Res iterInitRes(int res);
-DECLSPEC void iterStepRes(Iter_Res* CarI);
+DECLSPEC void iterStepRes(Iter_Res* iter);
 
 #endif
