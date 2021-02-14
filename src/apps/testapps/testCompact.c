@@ -398,8 +398,8 @@ SUITE(compact) {
         H3Index cells[] = {0x806dfffffffffff};  // res 0 *hexagon*
         int res = 15;
 
-        uint64_t expected = 4747561509943L;  // 7^15
-        uint64_t out = H3_EXPORT(uncompactSize)(cells, 1, res);
+        int64_t expected = 4747561509943L;  // 7^15
+        int64_t out = H3_EXPORT(uncompactSize)(cells, 1, res);
 
         t_assert(out == expected, "uncompact size needs 64 bit int");
     }
@@ -408,8 +408,8 @@ SUITE(compact) {
         H3Index cells[] = {0x8009fffffffffff};  // res 0 *pentagon*
         int res = 15;
 
-        uint64_t expected = 3956301258286L;  // 1 + 5*(7^15 - 1)/6
-        uint64_t out = H3_EXPORT(uncompactSize)(cells, 1, res);
+        int64_t expected = 3956301258286L;  // 1 + 5*(7^15 - 1)/6
+        int64_t out = H3_EXPORT(uncompactSize)(cells, 1, res);
 
         t_assert(out == expected, "uncompact size needs 64 bit int");
     }
