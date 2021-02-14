@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /** @file
- * @brief takes an optional H3 index and generates all descendant cells at the
+ * @brief takes an optional H3 index and generates all descendent cells at the
  * specified resolution.
  *
  *  See `h3ToHier --help` for usage.
