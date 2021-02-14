@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /** @file
- * @brief takes an optional H3 index and generates all descendent cells at the
+ * @brief takes an optional H3 index and generates all descendant cells at the
  * specified resolution.
  *
  *  See `h3ToHier --help` for usage.
@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
         .scanFormat = "%" PRIx64,
         .valueName = "parent",
         .value = &parentIndex,
-        .helpText = "Print only indexes descendant from this index."};
+        .helpText = "Print only indexes descendent from this index."};
 
     Arg *args[] = {&helpArg, &resArg, &parentArg};
     const int numArgs = 3;
