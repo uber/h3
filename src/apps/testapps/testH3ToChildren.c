@@ -121,7 +121,7 @@ SUITE(h3ToChildren) {
         H3Index h = 0x88283080ddfffff;
         int res = 7;
 
-        H3Index expected[] = {};
+        H3Index expected[] = {0};  // empty set; zeros are ignored
 
         checkChildren(h, res, expected, sizeof(expected) / sizeof(H3Index));
     }
@@ -130,7 +130,7 @@ SUITE(h3ToChildren) {
         H3Index h = 0x8f283080dcb0ae2;  // res 15 cell
         int res = MAX_H3_RES + 1;
 
-        H3Index expected[] = {};
+        H3Index expected[] = {0};  // empty set; zeros are ignored
 
         checkChildren(h, res, expected, sizeof(expected) / sizeof(H3Index));
     }
