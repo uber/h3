@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** @file childIter.c
+/** @file Iter_Child.c
  * @brief An iterator struct and functions for the children of a cell
  */
 
@@ -21,7 +21,7 @@
 
 #include "h3Index.h"
 
-static int _get(ChildIter* I, int res) {
+static int _get(Iter_Child* I, int res) {
     // extract the `res` digit (0--7) of the current cell
     int s = 3 * (15 - res);
     uint64_t m = 7;
@@ -31,7 +31,7 @@ static int _get(ChildIter* I, int res) {
     return (I->h & m) >> s;
 }
 
-static void _inc(ChildIter* I, int res) {
+static void _inc(Iter_Child* I, int res) {
     // increment the digit (0--7) at location `res`
     uint64_t val = 1;
     val <<= 3 * (15 - res);
@@ -39,17 +39,17 @@ static void _inc(ChildIter* I, int res) {
 }
 
 /*
-Initialize a ChildIter struct representing the sequence giving
+Initialize a Iter_Child struct representing the sequence giving
 the children of cell `h` at resolution `childRes`.
 
 At any point in the iteration, starting once
-the struct is initialized, ChildIter.h gives the current child.
+the struct is initialized, Iter_Child.h gives the current child.
 
-Also, ChildIter.h == H3_NULL when all the children have been iterated
-through, or if the input to `ci_init` was invalid.
+Also, Iter_Child.h == H3_NULL when all the children have been iterated
+through, or if the input to `iterInitParent` was invalid.
  */
-ChildIter ci_init(H3Index h, int childRes) {
-    ChildIter CI;
+Iter_Child iterInitParent(H3Index h, int childRes) {
+    Iter_Child CI;
 
     CI.pr = H3_GET_RESOLUTION(h);
     CI.cr = childRes;
@@ -76,11 +76,11 @@ ChildIter ci_init(H3Index h, int childRes) {
 }
 
 /*
-Step a ChildIter to the next child cell.
-When the iteration is over, ChildIter.h will be H3_NULL.
+Step a Iter_Child to the next child cell.
+When the iteration is over, Iter_Child.h will be H3_NULL.
 Handles iterating through hexagon and pentagon cells.
  */
-void ci_step(ChildIter* CI) {
+void iterStepChild(Iter_Child* CI) {
     // once h == H3_NULL, the iterator returns an infinite sequence of H3_NULL
     if (CI->h == H3_NULL) return;
 
@@ -114,10 +114,10 @@ void ci_step(ChildIter* CI) {
 }
 
 // create iterator for children of base cell at given resolution
-ChildIter base_children_init(int baseCellNum, int childRes) {
+Iter_Child iterInitBaseCellNum(int baseCellNum, int childRes) {
     if (baseCellNum < 0 || baseCellNum >= NUM_BASE_CELLS || childRes < 0 ||
         childRes > MAX_H3_RES) {
-        return (ChildIter){.h = H3_NULL};
+        return (Iter_Child){.h = H3_NULL};
     }
 
     // todo: or should we use `setH3Index(&baseCell, 0, cellNum, 0);`?
@@ -126,25 +126,25 @@ ChildIter base_children_init(int baseCellNum, int childRes) {
     H3_SET_MODE(baseCell, H3_HEXAGON_MODE);
     H3_SET_BASE_CELL(baseCell, baseCellNum);
 
-    return ci_init(baseCell, childRes);
+    return iterInitParent(baseCell, childRes);
 }
 
 // todo: yes, these names are terrible. will change
 // todo: don't like this mixing: `CarI->h = CarI->CI.h` or `CarI->CI.cr`
 
 // create iterator for all cells at given resolution
-CellsAtResIter cari_init(int res) {
-    ChildIter CI = base_children_init(0, res);
+Iter_Res iterInitRes(int res) {
+    Iter_Child CI = iterInitBaseCellNum(0, res);
 
-    CellsAtResIter CarI = {.h = CI.h, .baseCellNum = 0, .CI = CI};
+    Iter_Res CarI = {.h = CI.h, .baseCellNum = 0, .CI = CI};
 
     return CarI;
 }
 
-void cari_step(CellsAtResIter* CarI) {
+void iterStepRes(Iter_Res* CarI) {
     if (CarI->h == H3_NULL) return;
 
-    ci_step(&(CarI->CI));
+    iterStepChild(&(CarI->CI));
 
     // todo: can i DRY-up this logic? same as below
     if (CarI->CI.h != H3_NULL) {
@@ -155,7 +155,7 @@ void cari_step(CellsAtResIter* CarI) {
     // H3_NULL
     CarI->baseCellNum += 1;
     if (CarI->baseCellNum < NUM_BASE_CELLS) {
-        CarI->CI = base_children_init(CarI->baseCellNum, CarI->CI.cr);
+        CarI->CI = iterInitBaseCellNum(CarI->baseCellNum, CarI->CI.cr);
         CarI->h = CarI->CI.h;
         return;
     } else {

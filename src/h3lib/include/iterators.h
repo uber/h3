@@ -31,23 +31,22 @@ typedef struct {
     int cr;   // child resolution; note that we could drop this from the struct,
               // but we'd have to extract it from h at each iteration.
     int fnz;  // first nonzero digit (this digit skips `1` for pentagons)
-} ChildIter;
-// new name: Iter_Child
+} Iter_Child;
 
-DECLSPEC ChildIter ci_init(H3Index h, int childRes);
-DECLSPEC ChildIter base_children_init(int baseCellNum, int childRes);
-DECLSPEC void ci_step(
-    ChildIter* CI);  // instead of modifying a struct, we could also simply
-                     // create a new struct like `ci2 = ci_step(ci1)`; not sure
-                     // which interface makes more sense
+DECLSPEC Iter_Child iterInitParent(H3Index h, int childRes);
+DECLSPEC Iter_Child iterInitBaseCellNum(int baseCellNum, int childRes);
+DECLSPEC void iterStepChild(Iter_Child* CI);
+// instead of modifying a struct, we could also simply
+// create a new struct like `ci2 = iterStepChild(ci1)`; not sure
+// which interface makes more sense
 
 typedef struct {
     H3Index h;
     int baseCellNum;
-    ChildIter CI;
-} CellsAtResIter;
+    Iter_Child CI;
+} Iter_Res;
 
-DECLSPEC CellsAtResIter cari_init(int res);
-DECLSPEC void cari_step(CellsAtResIter* CarI);
+DECLSPEC Iter_Res iterInitRes(int res);
+DECLSPEC void iterStepRes(Iter_Res* CarI);
 
 #endif

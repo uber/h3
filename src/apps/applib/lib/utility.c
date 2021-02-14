@@ -122,11 +122,11 @@ void geoBoundaryPrintln(const GeoBoundary* b) {
  * Apply callback for every unidirectional edge at the given resolution.
  */
 void iterateAllUnidirectionalEdgesAtRes(int res, void (*callback)(H3Index)) {
-    CellsAtResIter CarI = cari_init(res);
+    Iter_Res iter = iterInitRes(res);
 
-    for (; CarI.h; cari_step(&CarI)) {
+    for (; iter.h; iterStepRes(&iter)) {
         H3Index edges[6] = {H3_NULL};
-        H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(CarI.h, edges);
+        H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(iter.h, edges);
 
         for (int i = 0; i < 6; i++) {
             if (edges[i] != H3_NULL) {
@@ -164,10 +164,10 @@ void iterateAllIndexesAtResPartial(int res, void (*callback)(H3Index),
 // todo
 void iterateBaseCellIndexesAtRes(int res, void (*callback)(H3Index),
                                  int baseCell) {
-    ChildIter CI = base_children_init(baseCell, res);
+    Iter_Child iter = iterInitBaseCellNum(baseCell, res);
 
-    for (; CI.h; ci_step(&CI)) {
-        (*callback)(CI.h);
+    for (; iter.h; iterStepChild(&iter)) {
+        (*callback)(iter.h);
     }
 }
 
