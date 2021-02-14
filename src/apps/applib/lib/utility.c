@@ -139,7 +139,6 @@ void iterateAllUnidirectionalEdgesAtRes(int res, void (*callback)(H3Index)) {
 /**
  * Call the callback for every index at the given resolution.
  */
-// todo
 void iterateAllIndexesAtRes(int res, void (*callback)(H3Index)) {
     iterateAllIndexesAtResPartial(res, callback, NUM_BASE_CELLS);
 }
@@ -148,7 +147,6 @@ void iterateAllIndexesAtRes(int res, void (*callback)(H3Index)) {
  * Call the callback for every index at the given resolution in base
  * cell 0 up to the given base cell number.
  */
-// todo
 void iterateAllIndexesAtResPartial(int res, void (*callback)(H3Index),
                                    int baseCells) {
     assert(baseCells <= NUM_BASE_CELLS);
@@ -161,7 +159,6 @@ void iterateAllIndexesAtResPartial(int res, void (*callback)(H3Index),
  * Call the callback for every index at the given resolution in a
  * specific base cell
  */
-// todo
 void iterateBaseCellIndexesAtRes(int res, void (*callback)(H3Index),
                                  int baseCell) {
     Iter_Child iter = iterInitBaseCellNum(baseCell, res);

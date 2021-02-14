@@ -129,7 +129,6 @@ Iter_Child iterInitBaseCellNum(int baseCellNum, int childRes) {
     return iterInitParent(baseCell, childRes);
 }
 
-// todo: yes, these names are terrible. will change
 // todo: don't like this mixing: `CarI->h = CarI->CI.h` or `CarI->CI.cr`
 
 // create iterator for all cells at given resolution
