@@ -139,24 +139,23 @@ Iter_Res iterInitRes(int res) {
 }
 
 void iterStepRes(Iter_Res* itR) {
+    // reached the end of over iterator; emits H3_NULL from now on
     if (itR->h == H3_NULL) return;
 
+    // step child iterator
     iterStepChild(&(itR->itC));
 
-    // todo: can i DRY-up this logic? same as below
-    if (itR->itC.h != H3_NULL) {
-        itR->h = itR->itC.h;
-        return;
+    // if child iterator exhausted
+    if (itR->itC.h == H3_NULL) {
+        itR->baseCellNum += 1;
+        if (itR->baseCellNum < NUM_BASE_CELLS) {
+            // init next base cell child iterator
+            itR->itC = iterInitBaseCellNum(itR->baseCellNum, itR->itC.cr);
+        }
     }
 
-    // H3_NULL
-    itR->baseCellNum += 1;
-    if (itR->baseCellNum < NUM_BASE_CELLS) {
-        itR->itC = iterInitBaseCellNum(itR->baseCellNum, itR->itC.cr);
-        itR->h = itR->itC.h;
-        return;
-    } else {
-        itR->h = H3_NULL;
-        return;
-    }
+    // This overall iterator reflects the next cell in the child iterator.
+    // Note: this will set itR->h = H3_NULL if the base cells were
+    // exhausted in the check above.
+    itR->h = itR->itC.h;
 }
