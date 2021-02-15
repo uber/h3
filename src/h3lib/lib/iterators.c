@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 /** @file Iter_Child.c
- * @brief An iterator struct and functions for the children of a cell
+ * @brief Iterator structs and functions for the children of a cell,
+ * or cells at a given resolution.
  */
 
 #include "iterators.h"
@@ -155,7 +156,7 @@ void iterStepRes(Iter_Res* itR) {
     }
 
     // This overall iterator reflects the next cell in the child iterator.
-    // Note: this will set itR->h = H3_NULL if the base cells were
+    // Note: This sets itR->h = H3_NULL if the base cells were
     // exhausted in the check above.
     itR->h = itR->itC.h;
 }
