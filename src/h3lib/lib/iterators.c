@@ -146,13 +146,11 @@ void iterStepRes(Iter_Res* itR) {
     // step child iterator
     iterStepChild(&(itR->itC));
 
-    // if child iterator exhausted
-    if (itR->itC.h == H3_NULL) {
+    // If the child iterator is exhausted and there are still
+    // base cells remaining, we initialize the next base cell child iterator
+    if ((itR->itC.h == H3_NULL) && (itR->baseCellNum + 1 < NUM_BASE_CELLS)) {
         itR->baseCellNum += 1;
-        if (itR->baseCellNum < NUM_BASE_CELLS) {
-            // init next base cell child iterator
-            itR->itC = iterInitBaseCellNum(itR->baseCellNum, itR->itC.cr);
-        }
+        itR->itC = iterInitBaseCellNum(itR->baseCellNum, itR->itC.cr);
     }
 
     // This overall iterator reflects the next cell in the child iterator.
