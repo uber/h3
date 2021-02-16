@@ -36,8 +36,7 @@ int main(int argc, char* argv[]) {
     }
     fclose(fp);
 
-    GeoCoord g = {.lat = args.lat,
-                  .lon = args.lon};
+    GeoCoord g = {.lat = args.lat, .lon = args.lon};
     H3Index h = H3_EXPORT(geoToH3)(&g, args.res);
 
     h3Println(h);

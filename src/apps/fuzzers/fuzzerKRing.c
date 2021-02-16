@@ -38,8 +38,8 @@ int main(int argc, char* argv[]) {
     int sz = H3_EXPORT(maxKringSize)(args.k);
     H3Index* results = calloc(sizeof(H3Index), sz);
     if (results != NULL) {
-         H3_EXPORT(kRing)(args.index, args.k, results);
-         h3Println(results[0]);
+        H3_EXPORT(kRing)(args.index, args.k, results);
+        h3Println(results[0]);
     }
     free(results);
 }
