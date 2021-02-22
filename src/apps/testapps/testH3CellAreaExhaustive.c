@@ -23,7 +23,8 @@
 
 #include <math.h>
 
-#include "h3Index.h"
+#include "constants.h"
+#include "h3api.h"
 #include "iterators.h"
 #include "test.h"
 #include "utility.h"

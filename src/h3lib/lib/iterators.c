@@ -254,8 +254,7 @@ void iterStepRes(Iter_Res* itR) {
     // base cells remaining, we initialize the next base cell child iterator
     if ((itR->itC.h == H3_NULL) && (itR->baseCellNum + 1 < NUM_BASE_CELLS)) {
         itR->baseCellNum += 1;
-        itR->itC = iterInitBaseCellNum(itR->baseCellNum,
-                                       H3_GET_RESOLUTION(itR->itC.h));
+        itR->itC = iterInitBaseCellNum(itR->baseCellNum, itR->itC.childRes);
     }
 
     // This overall iterator reflects the next cell in the child iterator.
