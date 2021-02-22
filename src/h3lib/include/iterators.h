@@ -33,9 +33,9 @@ typedef struct {
     H3Index h;
     int parentRes;  // parent resolution
     int childRes;   // child resolution; note that we could drop this from the
-                   // struct, but we'd have to extract it from h at each
-                   // iteration.
-    int fnz;  // first nonzero digit (this digit skips `1` for pentagons)
+                    // struct, but we'd have to extract it from h at each
+                    // iteration.
+    int fnz;        // first nonzero digit (this digit skips `1` for pentagons)
 } Iter_Child;
 
 DECLSPEC Iter_Child iterInitParent(H3Index h, int childRes);
