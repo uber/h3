@@ -43,6 +43,12 @@ static void _inc(Iter_Child* it, int res) {
     it->h += val;
 }
 
+/*
+Fully nulled-out child iterator for when an iterator is exhausted.
+This helps minimize the chance that a user will depend on the iterator
+internal state after it's exhausted, like the child resolution, for
+example.
+ */
 static Iter_Child _null_iter() {
     return (Iter_Child){.h = H3_NULL, .parentRes = -1, .fnz = -1};
 }
