@@ -160,21 +160,20 @@ Iter_Child iterInitParent(H3Index h, int childRes) {
     it.parentRes = H3_GET_RESOLUTION(h);
     it.childRes = childRes;
 
-    if (it.childRes < it.parentRes || it.childRes > MAX_H3_RES ||
-        h == H3_NULL) {
+    if (childRes < it.parentRes || childRes > MAX_H3_RES || h == H3_NULL) {
         // make an empty iterator
         it.h = H3_NULL;
         return it;
     }
 
-    it.h = _zero_index_digits(h, it.parentRes + 1, it.childRes);
-    H3_SET_RESOLUTION(it.h, it.childRes);
+    it.h = _zero_index_digits(h, it.parentRes + 1, childRes);
+    H3_SET_RESOLUTION(it.h, childRes);
 
     if (H3_EXPORT(h3IsPentagon)(it.h))
         // The first nonzero digit skips `1` for pentagons.
         // The "fnz" moves to the left as we count up from the child resolution
         // to the parent resolution.
-        it.fnz = it.childRes;
+        it.fnz = childRes;
     else
         // if not a pentagon, we can ignore "first nonzero digit" logic
         it.fnz = -1;
