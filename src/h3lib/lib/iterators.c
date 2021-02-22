@@ -190,9 +190,11 @@ void iterStepChild(Iter_Child* it) {
     // once h == H3_NULL, the iterator returns an infinite sequence of H3_NULL
     if (it->h == H3_NULL) return;
 
-    _inc(it, it->childRes);
+    int childRes = H3_GET_RESOLUTION(it->h);
 
-    for (int i = it->childRes; i >= it->parentRes; i--) {
+    _inc(it, childRes);
+
+    for (int i = childRes; i >= it->parentRes; i--) {
         if (i == it->parentRes) {
             // if we're modifying the parent resolution digit, then we're done
             it->h = H3_NULL;
@@ -252,7 +254,7 @@ void iterStepRes(Iter_Res* itR) {
     // base cells remaining, we initialize the next base cell child iterator
     if ((itR->itC.h == H3_NULL) && (itR->baseCellNum + 1 < NUM_BASE_CELLS)) {
         itR->baseCellNum += 1;
-        itR->itC = iterInitBaseCellNum(itR->baseCellNum, itR->itC.childRes);
+        itR->itC = iterInitBaseCellNum(itR->baseCellNum, H3_GET_RESOLUTION(itR->itC.h));
     }
 
     // This overall iterator reflects the next cell in the child iterator.
