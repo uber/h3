@@ -158,7 +158,6 @@ Iter_Child iterInitParent(H3Index h, int childRes) {
     Iter_Child it;
 
     it.parentRes = H3_GET_RESOLUTION(h);
-    it.childRes = childRes;
 
     if (childRes < it.parentRes || childRes > MAX_H3_RES || h == H3_NULL) {
         // make an empty iterator
@@ -238,7 +237,7 @@ Iter_Child iterInitBaseCellNum(int baseCellNum, int childRes) {
 Iter_Res iterInitRes(int res) {
     Iter_Child itC = iterInitBaseCellNum(0, res);
 
-    Iter_Res itR = {.h = itC.h, .baseCellNum = 0, .itC = itC};
+    Iter_Res itR = {.h = itC.h, .baseCellNum = 0, .res = res, .itC = itC};
 
     return itR;
 }
@@ -254,7 +253,7 @@ void iterStepRes(Iter_Res* itR) {
     // base cells remaining, we initialize the next base cell child iterator
     if ((itR->itC.h == H3_NULL) && (itR->baseCellNum + 1 < NUM_BASE_CELLS)) {
         itR->baseCellNum += 1;
-        itR->itC = iterInitBaseCellNum(itR->baseCellNum, itR->itC.childRes);
+        itR->itC = iterInitBaseCellNum(itR->baseCellNum, itR->res);
     }
 
     // This overall iterator reflects the next cell in the child iterator.
