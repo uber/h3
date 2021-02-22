@@ -129,6 +129,19 @@ We skip the `1` when we hit the next first nonzero digit.
 |   6 |          97 | 0 | 0 | 0 | 0 | 2 | 0 | ... |
                                    \
                                     first nonzero digit
+
+iterStepChild ->
+
+We won't skip the `1` in a previous digit when it
+is no longer the first nonzero digit.
+
+                            parent res      child res
+                           /               /
+| res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 | ... |
+|-----|-------------|---|---|---|---|---|---|-----|
+|   6 |          97 | 0 | 0 | 0 | 0 | 2 | 1 | ... |
+                                   \
+                                    first nonzero digit
  */
 
 /*
