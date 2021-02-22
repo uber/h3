@@ -22,8 +22,10 @@
 
 #include "h3Index.h"
 
+/*
+extract the `res` digit (0--7) of the current cell
+ */
 static int _get(Iter_Child* it, int res) {
-    // extract the `res` digit (0--7) of the current cell
     int s = 3 * (15 - res);
     uint64_t m = 7;
 
@@ -32,12 +34,102 @@ static int _get(Iter_Child* it, int res) {
     return (it->h & m) >> s;
 }
 
+/*
+increment the digit (0--7) at location `res`
+ */
 static void _inc(Iter_Child* it, int res) {
-    // increment the digit (0--7) at location `res`
     uint64_t val = 1;
     val <<= 3 * (15 - res);
     it->h += val;
 }
+
+/*
+Logic for iterating through the children of a cell.
+
+
+### Step sequence on a hexagon (non-pentagon) cell
+
+                            parent res      child res
+                           /               /
+| res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 | ... |
+|-----|-------------|---|---|---|---|---|---|-----|
+|   6 |          92 | 5 | 1 | 0 | 0 | 2 | 5 | ... |
+
+iterStepChild ->
+
+| res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 | ... |
+|-----|-------------|---|---|---|---|---|---|-----|
+|   6 |          92 | 5 | 1 | 0 | 0 | 2 | 6 | ... |
+
+iterStepChild ->
+
+| res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 | ... |
+|-----|-------------|---|---|---|---|---|---|-----|
+|   6 |          92 | 5 | 1 | 0 | 0 | 3 | 0 | ... |
+
+
+
+### Step sequence on a *pentagon* cell
+
+Pentagon cells have a pentagon base cell number
+with all zeros from digit 1 to the digit
+corresponding to the cell's resolution.
+
+                            parent res      child res
+                           /               /
+| res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 | ... |
+|-----|-------------|---|---|---|---|---|---|-----|
+|   6 |          97 | 0 | 0 | 0 | 0 | 0 | 0 | ... |
+                                           \
+                                            first nonzero digit
+
+Note that iteration skips 1 whenever we're on the first nonzero digit.
+We then move the first nonzero digit up to the next coarser resolution.
+
+iterStepChild ->
+                            parent res      child res
+                           /               /
+| res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 | ... |
+|-----|-------------|---|---|---|---|---|---|-----|
+|   6 |          97 | 0 | 0 | 0 | 0 | 0 | 2 | ... |
+                                       \
+                                        first nonzero digit
+
+Iteration is normal (same as a hexagon) if we're not on the first
+nonzero digit.
+
+iterStepChild ->
+                            parent res      child res
+                           /               /
+| res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 | ... |
+|-----|-------------|---|---|---|---|---|---|-----|
+|   6 |          97 | 0 | 0 | 0 | 0 | 0 | 3 | ... |
+                                       \
+                                        first nonzero digit
+
+...
+
+iterStepChild ->
+                            parent res      child res
+                           /               /
+| res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 | ... |
+|-----|-------------|---|---|---|---|---|---|-----|
+|   6 |          97 | 0 | 0 | 0 | 0 | 0 | 6 | ... |
+                                       \
+                                        first nonzero digit
+
+iterStepChild ->
+
+We skip the `1` when we hit the next first nonzero digit.
+
+                            parent res      child res
+                           /               /
+| res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 | ... |
+|-----|-------------|---|---|---|---|---|---|-----|
+|   6 |          97 | 0 | 0 | 0 | 0 | 2 | 0 | ... |
+                                   \
+                                    first nonzero digit
+ */
 
 /*
 Initialize a Iter_Child struct representing the sequence giving
@@ -121,11 +213,8 @@ Iter_Child iterInitBaseCellNum(int baseCellNum, int childRes) {
         return (Iter_Child){.h = H3_NULL};
     }
 
-    // todo: or should we use `setH3Index(&baseCell, 0, cellNum, 0);`?
-
-    H3Index baseCell = H3_INIT;
-    H3_SET_MODE(baseCell, H3_HEXAGON_MODE);
-    H3_SET_BASE_CELL(baseCell, baseCellNum);
+    H3Index baseCell;
+    setH3Index(&baseCell, 0, baseCellNum, 0);
 
     return iterInitParent(baseCell, childRes);
 }

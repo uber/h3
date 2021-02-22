@@ -25,6 +25,10 @@
 
 #include "h3api.h"
 
+/*
+Iter_Child: struct for iterating through the descendants of
+a given cell
+ */
 typedef struct {
     H3Index h;
     int pr;   // parent resolution
@@ -36,10 +40,10 @@ typedef struct {
 DECLSPEC Iter_Child iterInitParent(H3Index h, int childRes);
 DECLSPEC Iter_Child iterInitBaseCellNum(int baseCellNum, int childRes);
 DECLSPEC void iterStepChild(Iter_Child* iter);
-// instead of modifying a struct, we could also simply
-// create a new struct like `ci2 = iterStepChild(ci1)`; not sure
-// which interface makes more sense
 
+/*
+Iter_Res: struct for iterating through all cells at a given resolution
+ */
 typedef struct {
     H3Index h;
     int baseCellNum;
