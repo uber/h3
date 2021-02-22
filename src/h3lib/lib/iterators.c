@@ -145,22 +145,23 @@ Iter_Child iterInitParent(H3Index h, int childRes) {
     Iter_Child it;
 
     it.parentRes = H3_GET_RESOLUTION(h);
-    it.cr = childRes;
+    it.childRes = childRes;
 
-    if (it.cr < it.parentRes || it.cr > MAX_H3_RES || h == H3_NULL) {
+    if (it.childRes < it.parentRes || it.childRes > MAX_H3_RES ||
+        h == H3_NULL) {
         // make an empty iterator
         it.h = H3_NULL;
         return it;
     }
 
-    it.h = _zero_index_digits(h, it.parentRes + 1, it.cr);
-    H3_SET_RESOLUTION(it.h, it.cr);
+    it.h = _zero_index_digits(h, it.parentRes + 1, it.childRes);
+    H3_SET_RESOLUTION(it.h, it.childRes);
 
     if (H3_EXPORT(h3IsPentagon)(it.h))
         // The first nonzero digit skips `1` for pentagons.
         // The "fnz" moves to the left as we count up from the child resolution
         // to the parent resolution.
-        it.fnz = it.cr;
+        it.fnz = it.childRes;
     else
         // if not a pentagon, we can ignore "first nonzero digit" logic
         it.fnz = -1;
@@ -177,9 +178,9 @@ void iterStepChild(Iter_Child* it) {
     // once h == H3_NULL, the iterator returns an infinite sequence of H3_NULL
     if (it->h == H3_NULL) return;
 
-    _inc(it, it->cr);
+    _inc(it, it->childRes);
 
-    for (int i = it->cr; i >= it->parentRes; i--) {
+    for (int i = it->childRes; i >= it->parentRes; i--) {
         if (i == it->parentRes) {
             // if we're modifying the parent resolution digit, then we're done
             it->h = H3_NULL;
@@ -239,7 +240,7 @@ void iterStepRes(Iter_Res* itR) {
     // base cells remaining, we initialize the next base cell child iterator
     if ((itR->itC.h == H3_NULL) && (itR->baseCellNum + 1 < NUM_BASE_CELLS)) {
         itR->baseCellNum += 1;
-        itR->itC = iterInitBaseCellNum(itR->baseCellNum, itR->itC.cr);
+        itR->itC = iterInitBaseCellNum(itR->baseCellNum, itR->itC.childRes);
     }
 
     // This overall iterator reflects the next cell in the child iterator.
