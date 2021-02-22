@@ -43,6 +43,10 @@ static void _inc(Iter_Child* it, int res) {
     it->h += val;
 }
 
+static Iter_Child _null_iter() {
+    return (Iter_Child){.h = H3_NULL, .parentRes = -1, .fnz = -1};
+}
+
 /*
 Logic for iterating through the children of a cell.
 
@@ -160,9 +164,7 @@ Iter_Child iterInitParent(H3Index h, int childRes) {
     it.parentRes = H3_GET_RESOLUTION(h);
 
     if (childRes < it.parentRes || childRes > MAX_H3_RES || h == H3_NULL) {
-        // make an empty iterator
-        it.h = H3_NULL;
-        return it;
+        return _null_iter();
     }
 
     it.h = _zero_index_digits(h, it.parentRes + 1, childRes);
@@ -196,7 +198,7 @@ void iterStepChild(Iter_Child* it) {
     for (int i = childRes; i >= it->parentRes; i--) {
         if (i == it->parentRes) {
             // if we're modifying the parent resolution digit, then we're done
-            it->h = H3_NULL;
+            *it = _null_iter();
             return;
         }
 
@@ -224,7 +226,7 @@ void iterStepChild(Iter_Child* it) {
 Iter_Child iterInitBaseCellNum(int baseCellNum, int childRes) {
     if (baseCellNum < 0 || baseCellNum >= NUM_BASE_CELLS || childRes < 0 ||
         childRes > MAX_H3_RES) {
-        return (Iter_Child){.h = H3_NULL};
+        return _null_iter();
     }
 
     H3Index baseCell;
