@@ -39,6 +39,7 @@ endif()
 
 option(ENABLE_COVERAGE "Enable compiling tests with coverage." ON)
 option(BUILD_BENCHMARKS "Build benchmarking applications." ON)
+option(BUILD_FUZZERS "Build fuzzer applications (for use with afl)." ON)
 option(BUILD_FILTERS "Build filter applications." ON)
 option(BUILD_GENERATORS "Build code generation applications." ON)
 
@@ -209,6 +210,9 @@ set(OTHER_SOURCE_FILES
     src/apps/miscapps/generatePentagonDirectionFaces.c
     src/apps/miscapps/generateFaceCenterPoint.c
     src/apps/miscapps/h3ToHier.c
+    src/apps/fuzzers/fuzzerGeoToH3.c
+    src/apps/fuzzers/fuzzerH3ToGeo.c
+    src/apps/fuzzers/fuzzerKRing.c
     src/apps/benchmarks/benchmarkPolyfill.c
     src/apps/benchmarks/benchmarkPolygon.c
     src/apps/benchmarks/benchmarkH3SetToLinkedGeo.c
@@ -620,6 +624,19 @@ if(H3_IS_ROOT_PROJECT AND BUILD_TESTING)
     endif()
 
     add_custom_target(test-fast COMMAND ctest -E Exhaustive)
+endif()
+
+if(BUILD_FUZZERS)
+    add_custom_target(fuzzers)
+
+    macro(add_h3_fuzzer name srcfile)
+        add_h3_executable(${name} ${srcfile} ${APP_SOURCE_FILES})
+        add_dependencies(fuzzers ${name})
+    endmacro()
+
+    add_h3_fuzzer(fuzzerGeoToH3 src/apps/fuzzers/fuzzerGeoToH3.c)
+    add_h3_fuzzer(fuzzerH3ToGeo src/apps/fuzzers/fuzzerH3ToGeo.c)
+    add_h3_fuzzer(fuzzerKRing src/apps/fuzzers/fuzzerKRing.c)
 endif()
 
 if(BUILD_BENCHMARKS)
