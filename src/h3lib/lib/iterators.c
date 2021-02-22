@@ -144,16 +144,16 @@ through, or if the input to `iterInitParent` was invalid.
 Iter_Child iterInitParent(H3Index h, int childRes) {
     Iter_Child it;
 
-    it.pr = H3_GET_RESOLUTION(h);
+    it.parentRes = H3_GET_RESOLUTION(h);
     it.cr = childRes;
 
-    if (it.cr < it.pr || it.cr > MAX_H3_RES || h == H3_NULL) {
+    if (it.cr < it.parentRes || it.cr > MAX_H3_RES || h == H3_NULL) {
         // make an empty iterator
         it.h = H3_NULL;
         return it;
     }
 
-    it.h = _zero_index_digits(h, it.pr + 1, it.cr);
+    it.h = _zero_index_digits(h, it.parentRes + 1, it.cr);
     H3_SET_RESOLUTION(it.h, it.cr);
 
     if (H3_EXPORT(h3IsPentagon)(it.h))
@@ -179,8 +179,8 @@ void iterStepChild(Iter_Child* it) {
 
     _inc(it, it->cr);
 
-    for (int i = it->cr; i >= it->pr; i--) {
-        if (i == it->pr) {
+    for (int i = it->cr; i >= it->parentRes; i--) {
+        if (i == it->parentRes) {
             // if we're modifying the parent resolution digit, then we're done
             it->h = H3_NULL;
             return;

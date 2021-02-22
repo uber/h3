@@ -31,7 +31,7 @@ a given cell
  */
 typedef struct {
     H3Index h;
-    int pr;   // parent resolution
+    int parentRes;  // parent resolution
     int cr;   // child resolution; note that we could drop this from the struct,
               // but we'd have to extract it from h at each iteration.
     int fnz;  // first nonzero digit (this digit skips `1` for pentagons)
