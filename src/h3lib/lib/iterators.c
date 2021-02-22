@@ -144,23 +144,22 @@ through, or if the input to `iterInitParent` was invalid.
 Iter_Child iterInitParent(H3Index h, int childRes) {
     Iter_Child it;
 
-    it.pr = H3_GET_RESOLUTION(h);
-    it.cr = childRes;
+    it.parentRes = H3_GET_RESOLUTION(h);
 
-    if (it.cr < it.pr || it.cr > MAX_H3_RES || h == H3_NULL) {
+    if (childRes < it.parentRes || childRes > MAX_H3_RES || h == H3_NULL) {
         // make an empty iterator
         it.h = H3_NULL;
         return it;
     }
 
-    it.h = _zero_index_digits(h, it.pr + 1, it.cr);
-    H3_SET_RESOLUTION(it.h, it.cr);
+    it.h = _zero_index_digits(h, it.parentRes + 1, childRes);
+    H3_SET_RESOLUTION(it.h, childRes);
 
     if (H3_EXPORT(h3IsPentagon)(it.h))
         // The first nonzero digit skips `1` for pentagons.
         // The "fnz" moves to the left as we count up from the child resolution
         // to the parent resolution.
-        it.fnz = it.cr;
+        it.fnz = childRes;
     else
         // if not a pentagon, we can ignore "first nonzero digit" logic
         it.fnz = -1;
@@ -177,10 +176,10 @@ void iterStepChild(Iter_Child* it) {
     // once h == H3_NULL, the iterator returns an infinite sequence of H3_NULL
     if (it->h == H3_NULL) return;
 
-    _inc(it, it->cr);
+    _inc(it, H3_GET_RESOLUTION(it->h));
 
-    for (int i = it->cr; i >= it->pr; i--) {
-        if (i == it->pr) {
+    for (int i = H3_GET_RESOLUTION(it->h); i >= it->parentRes; i--) {
+        if (i == it->parentRes) {
             // if we're modifying the parent resolution digit, then we're done
             it->h = H3_NULL;
             return;
@@ -239,7 +238,8 @@ void iterStepRes(Iter_Res* itR) {
     // base cells remaining, we initialize the next base cell child iterator
     if ((itR->itC.h == H3_NULL) && (itR->baseCellNum + 1 < NUM_BASE_CELLS)) {
         itR->baseCellNum += 1;
-        itR->itC = iterInitBaseCellNum(itR->baseCellNum, itR->itC.cr);
+        itR->itC = iterInitBaseCellNum(itR->baseCellNum,
+                                       H3_GET_RESOLUTION(itR->itC.h));
     }
 
     // This overall iterator reflects the next cell in the child iterator.
