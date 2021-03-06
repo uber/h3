@@ -141,9 +141,17 @@ SUITE(h3ToChildren) {
         const int paddedCount = H3_EXPORT(cellToChildrenSize)(pentagon, 3);
 
         H3Index* children = calloc(paddedCount, sizeof(H3Index));
-        // H3_EXPORT(h3ToChildren)(sfHex8, 10, children);
         H3_EXPORT(h3ToChildren)(pentagon, 3, children);
+        verifyCountAndUniqueness(children, paddedCount, expectedCount);
+        free(children);
+    }
 
+    TEST(hexagonChildren) {
+        const int expectedCount = 7 * 7;
+        const int paddedCount = H3_EXPORT(cellToChildrenSize)(sfHex8, 10);
+
+        H3Index* children = calloc(paddedCount, sizeof(H3Index));
+        H3_EXPORT(h3ToChildren)(sfHex8, 10, children);
         verifyCountAndUniqueness(children, paddedCount, expectedCount);
         free(children);
     }
