@@ -168,7 +168,6 @@ SUITE(h3CellAreaExhaustive) {
         earth_area_test(0, H3_EXPORT(cellAreaKm2), km2, 1e-6);
         earth_area_test(0, H3_EXPORT(cellAreaM2), m2, 1e0);
 
-        // definitely this block, could also be a few later on
         earth_area_test(1, H3_EXPORT(cellAreaRads2), rads2, 1e-9);
         earth_area_test(1, H3_EXPORT(cellAreaKm2), km2, 1e-1);
         earth_area_test(1, H3_EXPORT(cellAreaM2), m2, 1e5);
