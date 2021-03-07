@@ -5,17 +5,17 @@ These function are used for finding the H3 index containing coordinates, and for
 ## geoToH3
 
 ```
-H3Index geoToH3(const GeoCoord *g, int res);
+H3Error geoToH3(const GeoCoord *g, int res, H3Index *out);
 ```
 
-Indexes the location at the specified resolution, returning the index of the cell containing the location.
-
-Returns 0 on error.
+Indexes the location at the specified resolution, returning 0 (E_SUCCESS) on success
+or another value on error. The index of the cell containing the location is placed
+in `out` on success.
 
 ## h3ToGeo
 
 ```
-void h3ToGeo(H3Index h3, GeoCoord *g);
+H3Error h3ToGeo(H3Index h3, GeoCoord *g);
 ```
 
 Finds the centroid of the index.
@@ -23,7 +23,7 @@ Finds the centroid of the index.
 ## h3ToGeoBoundary
 
 ```
-void h3ToGeoBoundary(H3Index h3, GeoBoundary *gp);
+H3Error h3ToGeoBoundary(H3Index h3, GeoBoundary *gp);
 ```
 
 Finds the boundary of the index.

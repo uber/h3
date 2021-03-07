@@ -739,19 +739,25 @@ H3Index _faceIjkToH3(const FaceIJK* fijk, int res) {
  *
  * @param g The spherical coordinates to encode.
  * @param res The desired H3 resolution for the encoding.
- * @return The encoded H3Index (or H3_NULL on failure).
+ * @param out The encoded H3Index.
+ * @returns E_SUCCESS (0) on success, another value otherwise
  */
-H3Index H3_EXPORT(pointToCell)(const GeoPoint* g, int res) {
+H3Error H3_EXPORT(pointToCell)(const GeoPoint* g, int res, H3Index* out) {
     if (res < 0 || res > MAX_H3_RES) {
-        return H3_NULL;
+        return E_RES_DOMAIN;
     }
     if (!isfinite(g->lat) || !isfinite(g->lon)) {
-        return H3_NULL;
+        return E_LATLON_DOMAIN;
     }
 
     FaceIJK fijk;
     _geoToFaceIjk(g, res, &fijk);
-    return _faceIjkToH3(&fijk, res);
+    *out = _faceIjkToH3(&fijk, res);
+    if (*out) {
+        return E_SUCCESS;
+    } else {
+        return E_FAILED;
+    }
 }
 
 /**
@@ -792,15 +798,14 @@ int _h3ToFaceIjkWithInitializedFijk(H3Index h, FaceIJK* fijk) {
  * @param h The H3Index.
  * @param fijk The corresponding FaceIJK address.
  */
-void _h3ToFaceIjk(H3Index h, FaceIJK* fijk) {
+H3Error _h3ToFaceIjk(H3Index h, FaceIJK* fijk) {
     int baseCell = H3_GET_BASE_CELL(h);
     if (baseCell < 0 || baseCell >= NUM_BASE_CELLS) {  // LCOV_EXCL_BR_LINE
         // Base cells less than zero can not be represented in an index
-        // TODO: Indicate an error to the caller
         // To prevent reading uninitialized memory, we zero the output.
         fijk->face = 0;
         fijk->coord.i = fijk->coord.j = fijk->coord.k = 0;
-        return;
+        return E_CELL_INVALID;
     }
     // adjust for the pentagonal missing sequence; all of sub-sequence 5 needs
     // to be adjusted (and some of sub-sequence 4 below)
@@ -810,7 +815,7 @@ void _h3ToFaceIjk(H3Index h, FaceIJK* fijk) {
     // start with the "home" face and ijk+ coordinates for the base cell of c
     *fijk = baseCellData[baseCell].homeFijk;
     if (!_h3ToFaceIjkWithInitializedFijk(h, fijk))
-        return;  // no overage is possible; h lies on this face
+        return E_SUCCESS;  // no overage is possible; h lies on this face
 
     // if we're here we have the potential for an "overage"; i.e., it is
     // possible that c lies on an adjacent face
@@ -841,6 +846,7 @@ void _h3ToFaceIjk(H3Index h, FaceIJK* fijk) {
     } else if (res != H3_GET_RESOLUTION(h)) {
         fijk->coord = origIJK;
     }
+    return E_SUCCESS;
 }
 
 /**
@@ -849,10 +855,14 @@ void _h3ToFaceIjk(H3Index h, FaceIJK* fijk) {
  * @param h3 The H3 index.
  * @param g The spherical coordinates of the H3 cell center.
  */
-void H3_EXPORT(cellToPoint)(H3Index h3, GeoPoint* g) {
+H3Error H3_EXPORT(cellToPoint)(H3Index h3, GeoPoint* g) {
     FaceIJK fijk;
-    _h3ToFaceIjk(h3, &fijk);
+    H3Error e = _h3ToFaceIjk(h3, &fijk);
+    if (e) {
+        return e;
+    }
     _faceIjkToGeo(&fijk, H3_GET_RESOLUTION(h3), g);
+    return E_SUCCESS;
 }
 
 /**
@@ -861,9 +871,12 @@ void H3_EXPORT(cellToPoint)(H3Index h3, GeoPoint* g) {
  * @param h3 The H3 index.
  * @param cb The boundary of the H3 cell in spherical coordinates.
  */
-void H3_EXPORT(cellToBoundary)(H3Index h3, CellBoundary* cb) {
+H3Error H3_EXPORT(cellToBoundary)(H3Index h3, CellBoundary* cb) {
     FaceIJK fijk;
-    _h3ToFaceIjk(h3, &fijk);
+    H3Error e = _h3ToFaceIjk(h3, &fijk);
+    if (e) {
+        return e;
+    }
     if (H3_EXPORT(isPentagon)(h3)) {
         _faceIjkPentToCellBoundary(&fijk, H3_GET_RESOLUTION(h3), 0,
                                    NUM_PENT_VERTS, cb);
@@ -871,6 +884,7 @@ void H3_EXPORT(cellToBoundary)(H3Index h3, CellBoundary* cb) {
         _faceIjkToCellBoundary(&fijk, H3_GET_RESOLUTION(h3), 0, NUM_HEX_VERTS,
                                cb);
     }
+    return E_SUCCESS;
 }
 
 /**

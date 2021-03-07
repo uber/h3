@@ -28,25 +28,28 @@
 
 SUITE(h3Api) {
     TEST(pointToCell_res) {
+        H3Index h;
         GeoPoint anywhere = {0, 0};
 
-        t_assert(H3_EXPORT(pointToCell)(&anywhere, -1) == 0,
+        t_assert(H3_EXPORT(pointToCell)(&anywhere, -1, &h) == E_RES_DOMAIN,
                  "resolution below 0 is invalid");
-        t_assert(H3_EXPORT(pointToCell)(&anywhere, 16) == 0,
+        t_assert(H3_EXPORT(pointToCell)(&anywhere, 16, &h) == E_RES_DOMAIN,
                  "resolution above 15 is invalid");
     }
 
     TEST(pointToCell_coord) {
+        H3Index h;
         GeoPoint invalidLat = {NAN, 0};
         GeoPoint invalidLon = {0, NAN};
         GeoPoint invalidLatLon = {INFINITY, -INFINITY};
 
-        t_assert(H3_EXPORT(pointToCell)(&invalidLat, 1) == 0,
+        t_assert(H3_EXPORT(pointToCell)(&invalidLat, 1, &h) == E_LATLON_DOMAIN,
                  "invalid latitude is rejected");
-        t_assert(H3_EXPORT(pointToCell)(&invalidLon, 1) == 0,
+        t_assert(H3_EXPORT(pointToCell)(&invalidLon, 1, &h) == E_LATLON_DOMAIN,
                  "invalid longitude is rejected");
-        t_assert(H3_EXPORT(pointToCell)(&invalidLatLon, 1) == 0,
-                 "coordinates with infinity are rejected");
+        t_assert(
+            H3_EXPORT(pointToCell)(&invalidLatLon, 1, &h) == E_LATLON_DOMAIN,
+            "coordinates with infinity are rejected");
     }
 
     TEST(cellToBoundary_classIIIEdgeVertex) {

@@ -30,9 +30,10 @@
 // Fixtures
 static GeoPoint sfGeo = {0.659966917655, -2.1364398519396};
 
-SUITE(directedEdge) {
-    TEST(areNeighborCells) {
-        H3Index sf = H3_EXPORT(pointToCell)(&sfGeo, 9);
+SUITE(h3UniEdge) {
+    TEST(h3IndexesAreNeighbors) {
+        H3Index sf;
+        t_assertSuccess(H3_EXPORT(pointToCell)(&sfGeo, 9, &sf));
         H3Index ring[7] = {0};
         H3_EXPORT(gridRingUnsafe)(sf, 1, ring);
 
@@ -68,7 +69,8 @@ SUITE(directedEdge) {
         t_assert(H3_EXPORT(areNeighborCells)(sfBroken, sf) == 0,
                  "broken H3Indexes can't be neighbors (reversed)");
 
-        H3Index sfBigger = H3_EXPORT(pointToCell)(&sfGeo, 7);
+        H3Index sfBigger;
+        t_assertSuccess(H3_EXPORT(pointToCell)(&sfGeo, 7, &sfBigger));
         t_assert(H3_EXPORT(areNeighborCells)(sf, sfBigger) == 0,
                  "hexagons of different resolution can't be neighbors");
 
@@ -77,7 +79,8 @@ SUITE(directedEdge) {
     }
 
     TEST(cellsToDirectedEdgeAndFriends) {
-        H3Index sf = H3_EXPORT(pointToCell)(&sfGeo, 9);
+        H3Index sf;
+        t_assertSuccess(H3_EXPORT(pointToCell)(&sfGeo, 9, &sf));
         H3Index ring[7] = {0};
         H3_EXPORT(gridRingUnsafe)(sf, 1, ring);
         H3Index sf2 = ring[0];
@@ -148,7 +151,8 @@ SUITE(directedEdge) {
     }
 
     TEST(isValidDirectedEdge) {
-        H3Index sf = H3_EXPORT(pointToCell)(&sfGeo, 9);
+        H3Index sf;
+        t_assertSuccess(H3_EXPORT(pointToCell)(&sfGeo, 9, &sf));
         H3Index ring[7] = {0};
         H3_EXPORT(gridRingUnsafe)(sf, 1, ring);
         H3Index sf2 = ring[0];
@@ -188,7 +192,8 @@ SUITE(directedEdge) {
     }
 
     TEST(originToDirectedEdges) {
-        H3Index sf = H3_EXPORT(pointToCell)(&sfGeo, 9);
+        H3Index sf;
+        t_assertSuccess(H3_EXPORT(pointToCell)(&sfGeo, 9, &sf));
         H3Index edges[6] = {0};
         H3_EXPORT(originToDirectedEdges)(sf, edges);
 
@@ -235,7 +240,7 @@ SUITE(directedEdge) {
                                            {5, 0}, {4, 5}, {0, 1}};
 
         for (int res = 0; res < MAX_H3_RES; res++) {
-            sf = H3_EXPORT(pointToCell)(&sfGeo, res);
+            t_assertSuccess(H3_EXPORT(pointToCell)(&sfGeo, res, &sf));
             H3_EXPORT(cellToBoundary)(sf, &boundary);
             H3_EXPORT(originToDirectedEdges)(sf, edges);
 
@@ -334,7 +339,8 @@ SUITE(directedEdge) {
         t_assert(H3_EXPORT(exactEdgeLengthRads)(0) == 0,
                  "Invalid edge has zero length");
         GeoPoint zero = {0, 0};
-        H3Index h3 = H3_EXPORT(pointToCell)(&zero, 0);
+        H3Index h3;
+        t_assertSuccess(H3_EXPORT(pointToCell)(&zero, 0, &h3));
         t_assert(H3_EXPORT(exactEdgeLengthRads)(h3) == 0,
                  "Non-edge (cell) has zero edge length");
     }

@@ -67,11 +67,13 @@ int main(int argc, char* argv[]) {
         GeoPoint g;
         randomGeo(&g);
 
-        H3Index h = H3_EXPORT(pointToCell)(&g, res);
-        CellBoundary b;
-        H3_EXPORT(cellToBoundary)(h, &b);
+        H3Index h;
+        if (!H3_EXPORT(pointToCell)(&g, res, &h)) {
+            CellBoundary b;
+            H3_EXPORT(cellToBoundary)(h, &b);
 
-        h3Println(h);
-        cellBoundaryPrintln(&b);
+            h3Println(h);
+            cellBoundaryPrintln(&b);
+        }
     }
 }
