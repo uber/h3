@@ -23,6 +23,7 @@
 
 #include "geoPoint.h"
 #include "h3api.h"
+#include "h3Index.h"
 #include "test.h"
 #include "utility.h"
 
@@ -101,6 +102,14 @@ SUITE(h3Api) {
         setGeoDegs(&boundary.verts[5], -52.0108315681413629,
                    -34.6437571897165668);
         t_assertBoundary(h3, &boundary);
+    }
+
+    TEST(h3ToGeoBoundary_failed) {
+        H3Index h = 0x87dc6d364ffffffL;
+        H3_SET_BASE_CELL(h, NUM_BASE_CELLS + 1);
+        GeoBoundary gb;
+        t_assert(H3_EXPORT(h3ToGeoBoundary(h, &gb) == E_CELL_INVALID),
+                 "h3ToGeoBoundary fails on invalid index");
     }
 
     TEST(h3ToGeoInvalid) {
