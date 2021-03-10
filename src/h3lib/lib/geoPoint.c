@@ -295,7 +295,7 @@ double H3_EXPORT(getHexagonEdgeLengthAvgM)(int res) {
     return lens[res];
 }
 
-int64_t H3_EXPORT(numHexagons)(int res) { return 2 + 120 * _ipow(7, res); }
+int64_t H3_EXPORT(getNumCells)(int res) { return 2 + 120 * _ipow(7, res); }
 
 /**
  * Surface area in radians^2 of spherical triangle on unit sphere.

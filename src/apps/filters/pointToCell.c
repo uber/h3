@@ -44,7 +44,7 @@
  * @param res Resolution
  */
 void doCoords(double lat, double lon, int res) {
-    GeoCoord g = {.lat = H3_EXPORT(degsToRads)(lat),
+    GeoPoint g = {.lat = H3_EXPORT(degsToRads)(lat),
                   .lon = H3_EXPORT(degsToRads)(lon)};
 
     H3Index h = H3_EXPORT(pointToCell)(&g, res);

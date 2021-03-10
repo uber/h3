@@ -38,7 +38,7 @@
  * Assumes `f` is open and ready for reading.
  * @return 0 on success, EOF on EOF
  */
-int readBoundary(FILE* f, GeoBoundary* b) {
+int readBoundary(FILE* f, CellBoundary* b) {
     char buff[BUFF_SIZE];
 
     // get the first line, which should be a "{"
@@ -46,13 +46,13 @@ int readBoundary(FILE* f, GeoBoundary* b) {
         if (feof(stdin)) {
             return EOF;
         } else {
-            printf("reading GeoBoundary from input");
+            printf("reading CellBoundary from input");
             return -1;
         }
     }
 
     if (buff[0] != '{') {
-        printf("missing GeoBoundary {");
+        printf("missing CellBoundary {");
         return -2;
     }
 
@@ -61,7 +61,7 @@ int readBoundary(FILE* f, GeoBoundary* b) {
     b->numVerts = 0;
     while (1) {
         if (!fgets(buff, BUFF_SIZE, f)) {
-            printf("reading GeoBoundary from input");
+            printf("reading CellBoundary from input");
             return -3;
         }
 
@@ -75,13 +75,13 @@ int readBoundary(FILE* f, GeoBoundary* b) {
         }
 
         if (b->numVerts == MAX_CELL_BNDRY_VERTS) {
-            printf("too many vertices in GeoBoundary from input");
+            printf("too many vertices in CellBoundary from input");
             return -5;
         }
 
         double latDegs, lonDegs;
         if (sscanf(buff, "%lf %lf", &latDegs, &lonDegs) != 2) {
-            printf("parsing GeoBoundary from input");
+            printf("parsing CellBoundary from input");
             return -6;
         }
 

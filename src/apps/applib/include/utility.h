@@ -46,7 +46,6 @@ void geoPrintNoFmt(const GeoPoint* p);
 void geoPrintlnNoFmt(const GeoPoint* p);
 void cellBoundaryPrint(const CellBoundary* b);
 void cellBoundaryPrintln(const CellBoundary* b);
-int readBoundary(FILE* f, CellBoundary* b);
 
 void randomGeo(GeoPoint* p);
 

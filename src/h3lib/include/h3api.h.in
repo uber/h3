@@ -195,16 +195,17 @@ DECLSPEC int H3_EXPORT(gridDiskUnsafe)(H3Index origin, int k, H3Index *out);
 
 /** @brief hexagons neighbors in all directions, assuming no pentagons,
  * reporting distance from origin */
-DECLSPEC int H3_EXPORT(gridDiskDistancesUnsafe)(H3Index origin, int k, H3Index *out,
-                                       int *distances);
+DECLSPEC int H3_EXPORT(gridDiskDistancesUnsafe)(H3Index origin, int k,
+                                                H3Index *out, int *distances);
 
 /** @brief hexagons neighbors in all directions reporting distance from origin
  */
-DECLSPEC void H3_EXPORT(gridDiskDistancesSafe)(H3Index origin, int k, H3Index *out,
-                                      int *distances);
+DECLSPEC void H3_EXPORT(gridDiskDistancesSafe)(H3Index origin, int k,
+                                               H3Index *out, int *distances);
 
 /** @brief collection of hex rings sorted by ring for all given hexagons */
-DECLSPEC int H3_EXPORT(gridDisksUnsafe)(H3Index *h3Set, int length, int k, H3Index *out);
+DECLSPEC int H3_EXPORT(gridDisksUnsafe)(H3Index *h3Set, int length, int k,
+                                        H3Index *out);
 
 /** @brief hexagon neighbors in all directions */
 DECLSPEC void H3_EXPORT(gridDisk)(H3Index origin, int k, H3Index *out);
@@ -217,7 +218,7 @@ DECLSPEC void H3_EXPORT(gridDisk)(H3Index origin, int k, H3Index *out);
 /** @brief hexagon neighbors in all directions, reporting distance from origin
  */
 DECLSPEC void H3_EXPORT(gridDiskDistances)(H3Index origin, int k, H3Index *out,
-                                  int *distances);
+                                           int *distances);
 /** @} */
 
 /** @defgroup gridRingUnsafe gridRingUnsafe
@@ -233,11 +234,12 @@ DECLSPEC int H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index *out);
  * @{
  */
 /** @brief maximum number of hexagons that could be in the geoloop */
-DECLSPEC int H3_EXPORT(maxPolygonToCellsSize)(const GeoPolygon *geoPolygon, int res);
+DECLSPEC int H3_EXPORT(maxPolygonToCellsSize)(const GeoPolygon *geoPolygon,
+                                              int res);
 
 /** @brief hexagons within the given geopolygon */
 DECLSPEC void H3_EXPORT(polygonToCells)(const GeoPolygon *geoPolygon, int res,
-                               H3Index *out);
+                                        H3Index *out);
 /** @} */
 
 /** @defgroup h3SetToMultiPolygon h3SetToMultiPolygon
@@ -470,7 +472,8 @@ DECLSPEC H3Index H3_EXPORT(cellToParent)(H3Index h, int parentRes);
 DECLSPEC int64_t H3_EXPORT(maxCellToChildrenSize)(H3Index h, int childRes);
 
 /** @brief provides the children (or grandchildren, etc) of the given cell */
-DECLSPEC void H3_EXPORT(cellToChildren)(H3Index h, int childRes, H3Index *children);
+DECLSPEC void H3_EXPORT(cellToChildren)(H3Index h, int childRes,
+                                        H3Index *children);
 /** @} */
 
 /** @defgroup cellToCenterChild cellToCenterChild
@@ -487,8 +490,8 @@ DECLSPEC H3Index H3_EXPORT(cellToCenterChild)(H3Index h, int childRes);
  * @{
  */
 /** @brief compacts the given set of hexagons as best as possible */
-DECLSPEC int H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
-                            const int numHexes);
+DECLSPEC int H3_EXPORT(compactCells)(const H3Index *h3Set,
+                                     H3Index *compactedSet, const int numHexes);
 /** @} */
 
 /** @defgroup uncompactCells uncompactCells
@@ -498,12 +501,13 @@ DECLSPEC int H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet
 /** @brief determines the maximum number of hexagons that could be uncompacted
  * from the compacted set */
 DECLSPEC int H3_EXPORT(maxUncompactCellsSize)(const H3Index *compactedSet,
-                                     const int numHexes, const int res);
+                                              const int numHexes,
+                                              const int res);
 
 /** @brief uncompacts the compacted cell set */
-DECLSPEC int H3_EXPORT(uncompactCells)(const H3Index *compactedSet, const int numHexes,
-                              H3Index *h3Set, const int maxHexes,
-                              const int res);
+DECLSPEC int H3_EXPORT(uncompactCells)(const H3Index *compactedSet,
+                                       const int numHexes, H3Index *h3Set,
+                                       const int maxHexes, const int res);
 /** @} */
 
 /** @defgroup isResClassIII isResClassIII
@@ -547,7 +551,8 @@ DECLSPEC int H3_EXPORT(areNeighborCells)(H3Index origin, H3Index destination);
  */
 /** @brief returns the directed edge H3Index for the specified origin and
  * destination */
-DECLSPEC H3Index H3_EXPORT(cellsToDirectedEdge)(H3Index origin, H3Index destination);
+DECLSPEC H3Index H3_EXPORT(cellsToDirectedEdge)(H3Index origin,
+                                                H3Index destination);
 /** @} */
 
 /** @defgroup isValidDirectedEdge isValidDirectedEdge
@@ -585,7 +590,8 @@ DECLSPEC H3Index H3_EXPORT(getDirectedEdgeDestination)(H3Index edge);
  */
 /** @brief Returns the origin and destination hexagons from the directed
  * edge H3Index */
-DECLSPEC void H3_EXPORT(directedEdgeToCells)(H3Index edge, H3Index *originDestination);
+DECLSPEC void H3_EXPORT(directedEdgeToCells)(H3Index edge,
+                                             H3Index *originDestination);
 /** @} */
 
 /** @defgroup originToDirectedEdges \
@@ -627,7 +633,7 @@ DECLSPEC void H3_EXPORT(cellToVertexes)(H3Index origin, H3Index *vertexes);
  * @{
  */
 /** @brief Returns a single vertex for a given cell, as an H3 index */
-DECLSPEC void H3_EXPORT(vertexToPoint)(H3Index vertex, GeoCoord *coord);
+DECLSPEC void H3_EXPORT(vertexToPoint)(H3Index vertex, GeoPoint *point);
 /** @} */
 
 /** @defgroup isValidVertex isValidVertex

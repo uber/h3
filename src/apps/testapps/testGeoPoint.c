@@ -250,7 +250,7 @@ SUITE(geoPoint) {
                                            569707381193162L};
 
         for (int r = 0; r <= MAX_H3_RES; r++) {
-            int64_t num = H3_EXPORT(numHexagons)(r);
+            int64_t num = H3_EXPORT(getNumCells)(r);
             t_assert(num == expected[r], "incorrect numHexagons count");
         }
     }
