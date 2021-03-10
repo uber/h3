@@ -56,7 +56,7 @@ void doCell(H3Index h, int maxK, TestOutput* testOutput) {
         int* gridDiskInternalDistances = calloc(sizeof(int), maxSz);
 
         H3_EXPORT(gridDiskDistancesSafe)
-        (h, k, gridDiskInternalOutput, gridDiskInternalDistances, maxSz, 0);
+        (h, k, gridDiskInternalOutput, gridDiskInternalDistances);
         int gridDiskUnsafeFailed =
             H3_EXPORT(gridDiskUnsafe)(h, k, gridDiskUnsafeOutput);
 

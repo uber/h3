@@ -82,13 +82,13 @@ static void fillIndex_assertions(H3Index h) {
         H3_EXPORT(polygonToCells)(&polygon, nextRes, polygonToCellsOut);
 
         int polygonToCellsCount =
-            countActualHexagons(polygonToCellsOut, polygonToCellsSize);
+            countNonNullIndexes(polygonToCellsOut, polygonToCellsSize);
 
         int childrenSize = H3_EXPORT(maxCellToChildrenSize)(h, nextRes);
         H3Index* children = calloc(childrenSize, sizeof(H3Index));
         H3_EXPORT(cellToChildren)(h, nextRes, children);
 
-        int cellToChildrenCount = countActualHexagons(children, childrenSize);
+        int cellToChildrenCount = countNonNullIndexes(children, childrenSize);
 
         t_assert(polygonToCellsCount == cellToChildrenCount,
                  "PolygonToCells count matches cellToChildren count");
@@ -141,9 +141,9 @@ SUITE(polygonToCells) {
         H3Index* hexagons = calloc(numHexagons, sizeof(H3Index));
 
         H3_EXPORT(polygonToCells)(&sfGeoPolygon, 9, hexagons);
-        int actualNumHexagons = countActualHexagons(hexagons, numHexagons);
+        int actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
-        t_assert(actualNumHexagons == 1253, "got expected polygonToCells size");
+        t_assert(actualNumIndexes == 1253, "got expected polygonToCells size");
         free(hexagons);
     }
 
@@ -152,9 +152,9 @@ SUITE(polygonToCells) {
         H3Index* hexagons = calloc(numHexagons, sizeof(H3Index));
 
         H3_EXPORT(polygonToCells)(&holeGeoPolygon, 9, hexagons);
-        int actualNumHexagons = countActualHexagons(hexagons, numHexagons);
+        int actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
-        t_assert(actualNumHexagons == 1214,
+        t_assert(actualNumIndexes == 1214,
                  "got expected polygonToCells size (hole)");
         free(hexagons);
     }
@@ -164,9 +164,9 @@ SUITE(polygonToCells) {
         H3Index* hexagons = calloc(numHexagons, sizeof(H3Index));
 
         H3_EXPORT(polygonToCells)(&emptyGeoPolygon, 9, hexagons);
-        int actualNumHexagons = countActualHexagons(hexagons, numHexagons);
+        int actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
-        t_assert(actualNumHexagons == 0,
+        t_assert(actualNumIndexes == 0,
                  "got expected polygonToCells size (empty)");
         free(hexagons);
     }
@@ -194,10 +194,9 @@ SUITE(polygonToCells) {
         H3Index* hexagons = calloc(numHexagons, sizeof(H3Index));
 
         H3_EXPORT(polygonToCells)(&someHexagon, 9, hexagons);
-        int actualNumHexagons = countActualHexagons(hexagons, numHexagons);
+        int actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
-        t_assert(actualNumHexagons == 1,
-                 "got expected polygonToCells size (1)");
+        t_assert(actualNumIndexes == 1, "got expected polygonToCells size (1)");
         free(hexagons);
         free(verts);
     }
@@ -241,9 +240,9 @@ SUITE(polygonToCells) {
         H3Index* hexagons = calloc(numHexagons, sizeof(H3Index));
 
         H3_EXPORT(polygonToCells)(&primeMeridianGeoPolygon, 7, hexagons);
-        int actualNumHexagons = countActualHexagons(hexagons, numHexagons);
+        int actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
-        t_assert(actualNumHexagons == expectedSize,
+        t_assert(actualNumIndexes == expectedSize,
                  "got expected polygonToCells size (prime meridian)");
 
         // Transmeridian case
@@ -255,9 +254,9 @@ SUITE(polygonToCells) {
         H3Index* hexagonsTM = calloc(numHexagons, sizeof(H3Index));
 
         H3_EXPORT(polygonToCells)(&transMeridianGeoPolygon, 7, hexagonsTM);
-        actualNumHexagons = countActualHexagons(hexagonsTM, numHexagons);
+        actualNumIndexes = countNonNullIndexes(hexagonsTM, numHexagons);
 
-        t_assert(actualNumHexagons == expectedSize,
+        t_assert(actualNumIndexes == expectedSize,
                  "got expected polygonToCells size (transmeridian)");
 
         // Transmeridian filled hole case -- only needed for calculating hole
@@ -268,8 +267,8 @@ SUITE(polygonToCells) {
 
         H3_EXPORT(polygonToCells)
         (&transMeridianFilledHoleGeoPolygon, 7, hexagonsTMFH);
-        int actualNumHoleHexagons =
-            countActualHexagons(hexagonsTMFH, numHexagons);
+        int actualNumHoleIndexes =
+            countNonNullIndexes(hexagonsTMFH, numHexagons);
 
         // Transmeridian hole case
         numHexagons =
@@ -277,9 +276,9 @@ SUITE(polygonToCells) {
         H3Index* hexagonsTMH = calloc(numHexagons, sizeof(H3Index));
 
         H3_EXPORT(polygonToCells)(&transMeridianHoleGeoPolygon, 7, hexagonsTMH);
-        actualNumHexagons = countActualHexagons(hexagonsTMH, numHexagons);
+        actualNumIndexes = countNonNullIndexes(hexagonsTMH, numHexagons);
 
-        t_assert(actualNumHexagons == expectedSize - actualNumHoleHexagons,
+        t_assert(actualNumIndexes == expectedSize - actualNumHoleIndexes,
                  "got expected polygonToCells size (transmeridian hole)");
 
         free(hexagons);
@@ -303,9 +302,9 @@ SUITE(polygonToCells) {
         H3Index* hexagons = calloc(numHexagons, sizeof(H3Index));
         H3_EXPORT(polygonToCells)(&polygon, 4, hexagons);
 
-        int actualNumHexagons = countActualHexagons(hexagons, numHexagons);
+        int actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
-        t_assert(actualNumHexagons == 1204,
+        t_assert(actualNumIndexes == 1204,
                  "got expected polygonToCells size (complex transmeridian)");
 
         free(hexagons);

@@ -99,7 +99,7 @@ void geoPrintlnNoFmt(const GeoPoint* p) {
     printf("\n");
 }
 
-void geoBoundaryPrint(const CellBoundary* b) {
+void cellBoundaryPrint(const CellBoundary* b) {
     char buff[BUFF_SIZE];
     printf("{");
     for (int v = 0; v < b->numVerts; v++) {
@@ -109,7 +109,7 @@ void geoBoundaryPrint(const CellBoundary* b) {
     printf("}");
 }
 
-void geoBoundaryPrintln(const CellBoundary* b) {
+void cellBoundaryPrintln(const CellBoundary* b) {
     char buff[BUFF_SIZE];
     printf("{\n");
     for (int v = 0; v < b->numVerts; v++) {
@@ -357,12 +357,12 @@ void randomGeo(GeoPoint* g) {
 /**
  * Returns the number of non-invalid indexes in the array.
  */
-int countActualHexagons(H3Index* hexagons, int numCells) {
-    int actualNumHexagons = 0;
+int countNonNullIndexes(H3Index* indexes, int numCells) {
+    int nonNullIndexes = 0;
     for (int i = 0; i < numCells; i++) {
-        if (hexagons[i] != H3_NULL) {
-            actualNumHexagons++;
+        if (indexes[i] != H3_NULL) {
+            nonNullIndexes++;
         }
     }
-    return actualNumHexagons;
+    return nonNullIndexes;
 }

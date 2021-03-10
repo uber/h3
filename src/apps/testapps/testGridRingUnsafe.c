@@ -143,7 +143,7 @@ SUITE(gridRingUnsafe) {
                             int *internalDistances = calloc(kSz, sizeof(int));
                             H3_EXPORT(gridDiskDistancesSafe)
                             (children[j], k, internalNeighbors,
-                             internalDistances, kSz, 0);
+                             internalDistances);
 
                             int found = 0;
                             int internalFound = 0;

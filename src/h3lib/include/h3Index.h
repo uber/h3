@@ -181,7 +181,7 @@
 #define COMPACT_ALLOC_FAILED -3
 
 void setH3Index(H3Index* h, int res, int baseCell, Direction initDigit);
-int isResDigitClassIII(int r);
+int isResolutionClassIII(int r);
 
 // Internal functions
 

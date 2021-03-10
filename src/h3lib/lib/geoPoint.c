@@ -350,14 +350,14 @@ double triangleArea(const GeoPoint *a, const GeoPoint *b, const GeoPoint *c) {
  */
 double H3_EXPORT(cellAreaRads2)(H3Index cell) {
     GeoPoint c;
-    CellBoundary gb;
+    CellBoundary cb;
     H3_EXPORT(cellToPoint)(cell, &c);
-    H3_EXPORT(cellToBoundary)(cell, &gb);
+    H3_EXPORT(cellToBoundary)(cell, &cb);
 
     double area = 0.0;
-    for (int i = 0; i < gb.numVerts; i++) {
-        int j = (i + 1) % gb.numVerts;
-        area += triangleArea(&gb.verts[i], &gb.verts[j], &c);
+    for (int i = 0; i < cb.numVerts; i++) {
+        int j = (i + 1) % cb.numVerts;
+        area += triangleArea(&cb.verts[i], &cb.verts[j], &c);
     }
 
     return area;
@@ -385,13 +385,13 @@ double H3_EXPORT(cellAreaM2)(H3Index h) {
  * @return        length in radians
  */
 double H3_EXPORT(exactEdgeLengthRads)(H3Index edge) {
-    CellBoundary gb;
+    CellBoundary cb;
 
-    H3_EXPORT(directedEdgeToBoundary)(edge, &gb);
+    H3_EXPORT(directedEdgeToBoundary)(edge, &cb);
 
     double length = 0.0;
-    for (int i = 0; i < gb.numVerts - 1; i++) {
-        length += H3_EXPORT(pointDistRads)(&gb.verts[i], &gb.verts[i + 1]);
+    for (int i = 0; i < cb.numVerts - 1; i++) {
+        length += H3_EXPORT(pointDistRads)(&cb.verts[i], &cb.verts[i + 1]);
     }
 
     return length;

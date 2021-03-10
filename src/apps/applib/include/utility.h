@@ -44,8 +44,8 @@ void geoPrint(const GeoPoint* p);
 void geoPrintln(const GeoPoint* p);
 void geoPrintNoFmt(const GeoPoint* p);
 void geoPrintlnNoFmt(const GeoPoint* p);
-void geoBoundaryPrint(const CellBoundary* b);
-void geoBoundaryPrintln(const CellBoundary* b);
+void cellBoundaryPrint(const CellBoundary* b);
+void cellBoundaryPrintln(const CellBoundary* b);
 int readBoundary(FILE* f, CellBoundary* b);
 
 void randomGeo(GeoPoint* p);
@@ -59,6 +59,6 @@ void iterateAllDirectedEdgesAtRes(int res, void (*callback)(H3Index));
 double mapSumAllCells_double(int res, double (*callback)(H3Index));
 size_t packNonzeros(H3Index* a, size_t n);
 
-int countActualHexagons(H3Index* hexagons, int numHexagons);
+int countNonNullIndexes(H3Index* indexes, int numCells);
 
 #endif

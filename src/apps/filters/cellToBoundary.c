@@ -60,7 +60,7 @@ void doCell(H3Index h, int isKmlOut) {
         outputBoundaryKML(&b, label);
     } else {
         printf("%s\n", label);
-        geoBoundaryPrintln(&b);
+        cellBoundaryPrintln(&b);
     }
 }
 

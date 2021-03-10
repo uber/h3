@@ -38,7 +38,7 @@ static void gridDisk_equals_gridDiskDistancesSafe_assertions(H3Index h3) {
         H3Index *internalNeighbors = calloc(kSz, sizeof(H3Index));
         int *internalDistances = calloc(kSz, sizeof(int));
         H3_EXPORT(gridDiskDistancesSafe)
-        (h3, k, internalNeighbors, internalDistances, kSz, 0);
+        (h3, k, internalNeighbors, internalDistances);
 
         int found = 0;
         int internalFound = 0;

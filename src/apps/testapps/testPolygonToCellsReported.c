@@ -45,8 +45,8 @@ SUITE(polygonToCells_reported) {
                 calloc(polygonToCellsSize, sizeof(H3Index));
 
             H3_EXPORT(polygonToCells)(&worldGeoPolygon, res, polygonToCellsOut);
-            int actualNumHexagons =
-                countActualHexagons(polygonToCellsOut, polygonToCellsSize);
+            int actualNumIndexes =
+                countNonNullIndexes(polygonToCellsOut, polygonToCellsSize);
 
             int polygonToCellsSize2 =
                 H3_EXPORT(maxPolygonToCellsSize)(&worldGeoPolygon2, res);
@@ -55,10 +55,10 @@ SUITE(polygonToCells_reported) {
 
             H3_EXPORT(polygonToCells)
             (&worldGeoPolygon2, res, polygonToCellsOut2);
-            int actualNumHexagons2 =
-                countActualHexagons(polygonToCellsOut2, polygonToCellsSize2);
+            int actualNumIndexes2 =
+                countNonNullIndexes(polygonToCellsOut2, polygonToCellsSize2);
 
-            t_assert(actualNumHexagons + actualNumHexagons2 ==
+            t_assert(actualNumIndexes + actualNumIndexes2 ==
                          H3_EXPORT(getNumCells)(res),
                      "got expected polygonToCells size (entire world)");
 
@@ -103,9 +103,9 @@ SUITE(polygonToCells_reported) {
         H3Index* hexagons = calloc(numHexagons, sizeof(H3Index));
 
         H3_EXPORT(polygonToCells)(&testPolygon, res, hexagons);
-        int actualNumHexagons = countActualHexagons(hexagons, numHexagons);
+        int actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
-        t_assert(actualNumHexagons == 4499,
+        t_assert(actualNumIndexes == 4499,
                  "got expected polygonToCells size (h3-js#67)");
         free(hexagons);
     }
@@ -129,9 +129,9 @@ SUITE(polygonToCells_reported) {
         H3Index* hexagons = calloc(numHexagons, sizeof(H3Index));
 
         H3_EXPORT(polygonToCells)(&testPolygon, res, hexagons);
-        int actualNumHexagons = countActualHexagons(hexagons, numHexagons);
+        int actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
-        t_assert(actualNumHexagons == 4609,
+        t_assert(actualNumIndexes == 4609,
                  "got expected polygonToCells size (h3-js#67, 2nd case)");
         free(hexagons);
     }
@@ -152,9 +152,9 @@ SUITE(polygonToCells_reported) {
         H3Index* hexagons = calloc(numHexagons, sizeof(H3Index));
 
         H3_EXPORT(polygonToCells)(&testPolygon, res, hexagons);
-        int actualNumHexagons = countActualHexagons(hexagons, numHexagons);
+        int actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
-        t_assert(actualNumHexagons == 4353, "got expected polygonToCells size");
+        t_assert(actualNumIndexes == 4353, "got expected polygonToCells size");
         free(hexagons);
     }
 }
