@@ -201,7 +201,7 @@ DECLSPEC int H3_EXPORT(gridDiskDistancesUnsafe)(H3Index origin, int k, H3Index *
 /** @brief hexagons neighbors in all directions reporting distance from origin
  */
 DECLSPEC void H3_EXPORT(gridDiskDistancesSafe)(H3Index origin, int k, H3Index *out,
-                                      int *distances, int maxIdx, int curK);
+                                      int *distances);
 
 /** @brief collection of hex rings sorted by ring for all given hexagons */
 DECLSPEC int H3_EXPORT(gridDisksUnsafe)(H3Index *h3Set, int length, int k, H3Index *out);

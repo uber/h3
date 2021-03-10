@@ -189,13 +189,13 @@ void H3_EXPORT(directedEdgeToCells)(H3Index edge, H3Index* originDestination) {
  */
 void H3_EXPORT(originToDirectedEdges)(H3Index origin, H3Index* edges) {
     // Determine if the origin is a pentagon and special treatment needed.
-    int pentagon = H3_EXPORT(isPentagon)(origin);
+    int isPent = H3_EXPORT(isPentagon)(origin);
 
     // This is actually quite simple. Just modify the bits of the origin
     // slightly for each direction, except the 'k' direction in pentagons,
     // which is zeroed.
     for (int i = 0; i < 6; i++) {
-        if (pentagon && i == 0) {
+        if (isPent && i == 0) {
             edges[i] = H3_NULL;
         } else {
             edges[i] = origin;
@@ -208,9 +208,9 @@ void H3_EXPORT(originToDirectedEdges)(H3Index origin, H3Index* edges) {
 /**
  * Provides the coordinates defining the directed edge.
  * @param edge The directed edge H3Index
- * @param gb The geoboundary object to store the edge coordinates.
+ * @param cb The cellboundary object to store the edge coordinates.
  */
-void H3_EXPORT(directedEdgeToBoundary)(H3Index edge, CellBoundary* gb) {
+void H3_EXPORT(directedEdgeToBoundary)(H3Index edge, CellBoundary* cb) {
     // Get the origin and neighbor direction from the edge
     Direction direction = H3_GET_RESERVED_BITS(edge);
     H3Index origin = H3_EXPORT(getDirectedEdgeOrigin)(edge);
@@ -220,7 +220,7 @@ void H3_EXPORT(directedEdgeToBoundary)(H3Index edge, CellBoundary* gb) {
     if (startVertex == INVALID_VERTEX_NUM) {
         // This is not actually an edge (i.e. no valid direction),
         // so return no vertices.
-        gb->numVerts = 0;
+        cb->numVerts = 0;
         return;
     }
 
@@ -231,11 +231,11 @@ void H3_EXPORT(directedEdgeToBoundary)(H3Index edge, CellBoundary* gb) {
     FaceIJK fijk;
     _h3ToFaceIjk(origin, &fijk);
     int res = H3_GET_RESOLUTION(origin);
-    int pentagon = H3_EXPORT(isPentagon)(origin);
+    int isPent = H3_EXPORT(isPentagon)(origin);
 
-    if (pentagon) {
-        _faceIjkPentToCellBoundary(&fijk, res, startVertex, 2, gb);
+    if (isPent) {
+        _faceIjkPentToCellBoundary(&fijk, res, startVertex, 2, cb);
     } else {
-        _faceIjkToCellBoundary(&fijk, res, startVertex, 2, gb);
+        _faceIjkToCellBoundary(&fijk, res, startVertex, 2, cb);
     }
 }

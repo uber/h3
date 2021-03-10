@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017, 2019-2020 Uber Technologies, Inc.
+ * Copyright 2016-2017, 2019-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,6 +72,6 @@ int main(int argc, char* argv[]) {
         H3_EXPORT(cellToBoundary)(h, &b);
 
         h3Println(h);
-        geoBoundaryPrintln(&b);
+        cellBoundaryPrintln(&b);
     }
 }

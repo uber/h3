@@ -214,19 +214,17 @@ void H3_EXPORT(gridDiskDistances)(H3Index origin, int k, H3Index* out,
                 // TODO: Return an error code when this is not void
                 return;
             }
-            H3_EXPORT(gridDiskDistancesSafe)
-            (origin, k, out, distances, maxIdx, 0);
+            _gridDiskDistancesInternal(origin, k, out, distances, maxIdx, 0);
             H3_MEMORY(free)(distances);
         } else {
             memset(distances, 0, maxIdx * sizeof(int));
-            H3_EXPORT(gridDiskDistancesSafe)
-            (origin, k, out, distances, maxIdx, 0);
+            _gridDiskDistancesInternal(origin, k, out, distances, maxIdx, 0);
         }
     }
 }
 
 /**
- * Safe but slow version of gridDiskDistances (also called by it when needed).
+ * Internal algorithm for the safe but slow version of gridDiskDistances
  *
  * Adds the origin cell to the output set (treating it as a hash set)
  * and recurses to its neighbors, if needed.
@@ -242,8 +240,8 @@ void H3_EXPORT(gridDiskDistances)(H3Index origin, int k, H3Index* out,
  * maxGridDiskSize(k))
  * @param  curK        Current distance from the origin
  */
-void H3_EXPORT(gridDiskDistancesSafe)(H3Index origin, int k, H3Index* out,
-                                      int* distances, int maxIdx, int curK) {
+void _gridDiskDistancesInternal(H3Index origin, int k, H3Index* out,
+                                int* distances, int maxIdx, int curK) {
     if (origin == 0) return;
 
     // Put origin in the output array. out is used as a hash set.
@@ -266,10 +264,30 @@ void H3_EXPORT(gridDiskDistancesSafe)(H3Index origin, int k, H3Index* out,
     // Recurse to all neighbors in no particular order.
     for (int i = 0; i < 6; i++) {
         int rotations = 0;
-        H3_EXPORT(gridDiskDistancesSafe)
-        (h3NeighborRotations(origin, DIRECTIONS[i], &rotations), k, out,
-         distances, maxIdx, curK + 1);
+        _gridDiskDistancesInternal(
+            h3NeighborRotations(origin, DIRECTIONS[i], &rotations), k, out,
+            distances, maxIdx, curK + 1);
     }
+}
+
+/**
+ * Safe but slow version of gridDiskDistances (also called by it when needed).
+ *
+ * Adds the origin cell to the output set (treating it as a hash set)
+ * and recurses to its neighbors, if needed.
+ *
+ * @param  origin      Origin cell
+ * @param  k           Maximum distance to move from the origin
+ * @param  out         Array treated as a hash set, elements being either
+ *                     H3Index or 0.
+ * @param  distances   Scratch area, with elements paralleling the out array.
+ *                     Elements indicate ijk distance from the origin cell to
+ *                     the output cell
+ */
+void H3_EXPORT(gridDiskDistancesSafe)(H3Index origin, int k, H3Index* out,
+                                      int* distances) {
+    int maxIdx = H3_EXPORT(maxGridDiskSize)(k);
+    _gridDiskDistancesInternal(origin, k, out, distances, maxIdx, 0);
 }
 
 /**
@@ -328,7 +346,7 @@ H3Index h3NeighborRotations(H3Index origin, Direction dir, int* rotations) {
         } else {
             Direction oldDigit = H3_GET_INDEX_DIGIT(out, r + 1);
             Direction nextDir;
-            if (isResDigitClassIII(r + 1)) {
+            if (isResolutionClassIII(r + 1)) {
                 H3_SET_INDEX_DIGIT(out, r + 1, NEW_DIGIT_II[oldDigit][dir]);
                 nextDir = NEW_ADJUSTMENT_II[oldDigit][dir];
             } else {
@@ -468,8 +486,8 @@ int H3_EXPORT(gridDiskUnsafe)(H3Index origin, int k, H3Index* out) {
 }
 
 /**
- * gridDiskUnsafe produces indexes within k distance of the origin index.
- * Output behavior is undefined when one of the indexes returned by this
+ * gridDiskDistancesUnsafe produces indexes within k distance of the origin
+ * index. Output behavior is undefined when one of the indexes returned by this
  * function is a pentagon or is in the pentagon distortion area.
  *
  * k-ring 0 is defined as the origin index, k-ring 1 is defined as k-ring 0 and

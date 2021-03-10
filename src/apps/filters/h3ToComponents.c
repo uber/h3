@@ -50,7 +50,7 @@ void doCell(H3Index h, bool verboseMode) {
     if (verboseMode) {
         const char* modes[] = {
             "RESERVED",       // 0
-            "Hexagon",        // 1
+            "Cell",           // 1
             "Directed Edge",  // 2
             "INVALID",        // 3
             "INVALID",        // 4

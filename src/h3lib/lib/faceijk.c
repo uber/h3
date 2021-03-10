@@ -415,7 +415,8 @@ void _geoToHex2d(const GeoPoint* g, int res, int* face, Vec2d* v) {
                       _posAngleRads(_geoAzimuthRads(&faceCenterGeo[*face], g)));
 
     // adjust theta for Class III (odd resolutions)
-    if (isResDigitClassIII(res)) theta = _posAngleRads(theta - M_AP7_ROT_RADS);
+    if (isResolutionClassIII(res))
+        theta = _posAngleRads(theta - M_AP7_ROT_RADS);
 
     // perform gnomonic scaling of r
     r = tan(r);
@@ -461,7 +462,7 @@ void _hex2dToGeo(const Vec2d* v, int face, int res, int substrate,
     // scale accordingly if this is a substrate grid
     if (substrate) {
         r /= 3.0;
-        if (isResDigitClassIII(res)) r /= M_SQRT7;
+        if (isResolutionClassIII(res)) r /= M_SQRT7;
     }
 
     r *= RES0_U_GNOMONIC;
@@ -471,7 +472,7 @@ void _hex2dToGeo(const Vec2d* v, int face, int res, int substrate,
 
     // adjust theta for Class III
     // if a substrate grid, then it's already been adjusted for Class III
-    if (!substrate && isResDigitClassIII(res))
+    if (!substrate && isResolutionClassIII(res))
         theta = _posAngleRads(theta + M_AP7_ROT_RADS);
 
     // find theta as an azimuth
@@ -532,7 +533,7 @@ void _faceIjkPentToCellBoundary(const FaceIJK* h, int res, int start,
         // all Class III pentagon edges cross icosa edges
         // note that Class II pentagons have vertices on the edge,
         // not edge intersections
-        if (isResDigitClassIII(res) && vert > start) {
+        if (isResolutionClassIII(res) && vert > start) {
             // find hex2d of the two vertexes on the last face
 
             FaceIJK tmpFijk = fijk;
@@ -641,7 +642,7 @@ void _faceIjkPentToVerts(FaceIJK* fijk, int* res, FaceIJK* fijkVerts) {
 
     // get the correct set of substrate vertices for this resolution
     CoordIJK* verts;
-    if (isResDigitClassIII(*res))
+    if (isResolutionClassIII(*res))
         verts = vertsCIII;
     else
         verts = vertsCII;
@@ -653,7 +654,7 @@ void _faceIjkPentToVerts(FaceIJK* fijk, int* res, FaceIJK* fijkVerts) {
 
     // if res is Class III we need to add a cw aperture 7 to get to
     // icosahedral Class II
-    if (isResDigitClassIII(*res)) {
+    if (isResolutionClassIII(*res)) {
         _downAp7r(&fijk->coord);
         *res += 1;
     }
@@ -713,8 +714,8 @@ void _faceIjkToCellBoundary(const FaceIJK* h, int res, int start, int length,
         projection. Note that Class II cell edges have vertices on the face
         edge, with no edge line intersections.
         */
-        if (isResDigitClassIII(res) && vert > start && fijk.face != lastFace &&
-            lastOverage != FACE_EDGE) {
+        if (isResolutionClassIII(res) && vert > start &&
+            fijk.face != lastFace && lastOverage != FACE_EDGE) {
             // find hex2d of the two vertexes on original face
             int lastV = (v + 5) % NUM_HEX_VERTS;
             Vec2d orig2d0;
@@ -818,7 +819,7 @@ void _faceIjkToVerts(FaceIJK* fijk, int* res, FaceIJK* fijkVerts) {
 
     // get the correct set of substrate vertices for this resolution
     CoordIJK* verts;
-    if (isResDigitClassIII(*res))
+    if (isResolutionClassIII(*res))
         verts = vertsCIII;
     else
         verts = vertsCII;
@@ -830,7 +831,7 @@ void _faceIjkToVerts(FaceIJK* fijk, int* res, FaceIJK* fijkVerts) {
 
     // if res is Class III we need to add a cw aperture 7 to get to
     // icosahedral Class II
-    if (isResDigitClassIII(*res)) {
+    if (isResolutionClassIII(*res)) {
         _downAp7r(&fijk->coord);
         *res += 1;
     }

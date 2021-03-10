@@ -205,7 +205,7 @@ SUITE(h3Index) {
         GeoPoint coord = {0, 0};
         for (int i = 0; i <= MAX_H3_RES; i++) {
             H3Index h = H3_EXPORT(pointToCell)(&coord, i);
-            t_assert(H3_EXPORT(isResClassIII)(h) == isResDigitClassIII(i),
+            t_assert(H3_EXPORT(isResClassIII)(h) == isResolutionClassIII(i),
                      "matches existing definition");
         }
     }

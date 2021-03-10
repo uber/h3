@@ -52,4 +52,7 @@ int _getEdgeHexagons(const GeoLoop* geoloop, int numHexagons, int res,
 int _polygonToCellsInternal(const GeoPolygon* geoPolygon, int res,
                             H3Index* out);
 
+// The safe gridDiskDistances algorithm.
+void _gridDiskDistancesInternal(H3Index origin, int k, H3Index* out,
+                                int* distances, int maxIdx, int curK);
 #endif
