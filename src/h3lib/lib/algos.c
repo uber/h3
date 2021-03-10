@@ -449,12 +449,12 @@ H3Index h3NeighborRotations(H3Index origin, Direction dir, int* rotations) {
  * probably acceptible.
  */
 Direction directionForNeighbor(H3Index origin, H3Index destination) {
-    bool isPentagon = H3_EXPORT(h3IsPentagon)(origin);
+    bool isPent = H3_EXPORT(isPentagon)(origin);
     // Checks each neighbor, in order, to determine which direction the
     // destination neighbor is located. Skips CENTER_DIGIT since that
     // would be the origin; skips deleted K direction for pentagons.
     H3Index neighbor;
-    for (Direction direction = isPentagon ? J_AXES_DIGIT : K_AXES_DIGIT;
+    for (Direction direction = isPent ? J_AXES_DIGIT : K_AXES_DIGIT;
          direction < NUM_DIGITS; direction++) {
         int rotations = 0;
         neighbor = h3NeighborRotations(origin, direction, &rotations);

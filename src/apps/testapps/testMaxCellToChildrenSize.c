@@ -41,7 +41,7 @@ SUITE(maxCellToChildrenSize) {
 
         H3Index h = 0x806dfffffffffff;       // res 0 *hexagon*
         uint64_t expected = 4747561509943L;  // 7^15
-        uint64_t out = H3_EXPORT(maxH3ToChildrenSize)(h, 15);
+        uint64_t out = H3_EXPORT(maxCellToChildrenSize)(h, 15);
 
         t_assert(out == expected,
                  "got right size for hex children 15 levels below");

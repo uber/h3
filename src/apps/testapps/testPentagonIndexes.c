@@ -57,8 +57,8 @@ SUITE(getPentagons) {
     }
 
     TEST(invalidPentagons) {
-        t_assert(!H3_EXPORT(h3IsPentagon)(0), "0 is not a pentagon");
-        t_assert(!H3_EXPORT(h3IsPentagon)(0x7fffffffffffffff),
+        t_assert(!H3_EXPORT(isPentagon)(0), "0 is not a pentagon");
+        t_assert(!H3_EXPORT(isPentagon)(0x7fffffffffffffff),
                  "all but high bit is not a pentagon");
     }
 }

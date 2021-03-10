@@ -156,20 +156,20 @@ static const Direction vertexNumToDirectionPent[NUM_PENT_VERTS] = {
  * number is invalid.
  */
 Direction directionForVertexNum(const H3Index origin, const int vertexNum) {
-    int isPentagon = H3_EXPORT(h3IsPentagon)(origin);
+    int isPent = H3_EXPORT(isPentagon)(origin);
     // Check for invalid vertexes
     if (vertexNum < 0 ||
-        vertexNum > (isPentagon ? NUM_PENT_VERTS : NUM_HEX_VERTS) - 1)
+        vertexNum > (isPent ? NUM_PENT_VERTS : NUM_HEX_VERTS) - 1)
         return INVALID_DIGIT;
 
     // Determine the vertex rotations for this cell
     int rotations = vertexRotations(origin);
 
     // Find the appropriate direction, rotating CW if necessary
-    return isPentagon ? vertexNumToDirectionPent[(vertexNum + rotations) %
-                                                 NUM_PENT_VERTS]
-                      : vertexNumToDirectionHex[(vertexNum + rotations) %
-                                                NUM_HEX_VERTS];
+    return isPent ? vertexNumToDirectionPent[(vertexNum + rotations) %
+                                             NUM_PENT_VERTS]
+                  : vertexNumToDirectionHex[(vertexNum + rotations) %
+                                            NUM_HEX_VERTS];
 }
 
 /** @brief Directions in CCW order */
@@ -190,7 +190,7 @@ static const int revNeighborDirectionsHex[NUM_DIGITS] = {
  * @param vertexNum Number (index) of the vertex to calculate
  */
 H3Index H3_EXPORT(cellToVertex)(H3Index cell, int vertexNum) {
-    int cellIsPentagon = H3_EXPORT(h3IsPentagon)(cell);
+    int cellIsPentagon = H3_EXPORT(isPentagon)(cell);
     int cellNumVerts = cellIsPentagon ? NUM_PENT_VERTS : NUM_HEX_VERTS;
     int res = H3_GET_RESOLUTION(cell);
 
@@ -231,7 +231,7 @@ H3Index H3_EXPORT(cellToVertex)(H3Index cell, int vertexNum) {
             if (rightNeighbor < owner) {
                 owner = rightNeighbor;
                 Direction dir =
-                    H3_EXPORT(h3IsPentagon)(owner)
+                    H3_EXPORT(isPentagon)(owner)
                         ? directionForNeighbor(owner, cell)
                         : DIRECTIONS[(revNeighborDirectionsHex[right] +
                                       rRotations) %
@@ -242,7 +242,7 @@ H3Index H3_EXPORT(cellToVertex)(H3Index cell, int vertexNum) {
 
         // Determine the vertex number for the left neighbor
         if (owner == leftNeighbor) {
-            int ownerIsPentagon = H3_EXPORT(h3IsPentagon)(owner);
+            int ownerIsPentagon = H3_EXPORT(isPentagon)(owner);
             Direction dir =
                 ownerIsPentagon
                     ? directionForNeighbor(owner, cell)
@@ -285,7 +285,7 @@ void H3_EXPORT(cellToVertexes)(H3Index cell, H3Index* vertexes) {
  * @param vertex H3 index describing a vertex
  * @param coord  Output geo coordinate
  */
-void H3_EXPORT(vertexToPoint)(H3Index vertex, GeoCoord* coord) {
+void H3_EXPORT(vertexToPoint)(H3Index vertex, GeoPoint* coord) {
     // Get the vertex number and owner from the vertex
     int vertexNum = H3_GET_RESERVED_BITS(vertex);
     H3Index owner = vertex;
@@ -293,15 +293,15 @@ void H3_EXPORT(vertexToPoint)(H3Index vertex, GeoCoord* coord) {
     H3_SET_RESERVED_BITS(owner, 0);
 
     // Get the single vertex from the boundary
-    GeoBoundary gb;
+    CellBoundary gb;
     FaceIJK fijk;
     _h3ToFaceIjk(owner, &fijk);
     int res = H3_GET_RESOLUTION(owner);
 
-    if (H3_EXPORT(h3IsPentagon)(owner)) {
-        _faceIjkPentToGeoBoundary(&fijk, res, vertexNum, 1, &gb);
+    if (H3_EXPORT(isPentagon)(owner)) {
+        _faceIjkPentToCellBoundary(&fijk, res, vertexNum, 1, &gb);
     } else {
-        _faceIjkToGeoBoundary(&fijk, res, vertexNum, 1, &gb);
+        _faceIjkToCellBoundary(&fijk, res, vertexNum, 1, &gb);
     }
 
     // Copy from boundary to output coord
@@ -323,7 +323,7 @@ int H3_EXPORT(isValidVertex)(H3Index vertex) {
     H3_SET_MODE(owner, H3_HEXAGON_MODE);
     H3_SET_RESERVED_BITS(owner, 0);
 
-    if (!H3_EXPORT(h3IsValid)(owner)) {
+    if (!H3_EXPORT(isValidCell)(owner)) {
         return 0;
     }
 

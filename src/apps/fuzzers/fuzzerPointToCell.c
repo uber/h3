@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /** @file
- * @brief Fuzzer program for kRing
+ * @brief Fuzzer program for pointToCell
  */
 
 #include "h3api.h"
@@ -26,20 +26,18 @@ int main(int argc, char* argv[]) {
     }
     const char* filename = argv[1];
     FILE* fp = fopen(filename, "rb");
-    struct {
-        H3Index index;
-        int k;
+    struct args {
+        double lat;
+        double lon;
+        int res;
     } args;
     if (fread(&args, sizeof(args), 1, fp) != 1) {
         error("Error reading\n");
     }
     fclose(fp);
 
-    int sz = H3_EXPORT(maxKringSize)(args.k);
-    H3Index* results = calloc(sizeof(H3Index), sz);
-    if (results != NULL) {
-        H3_EXPORT(kRing)(args.index, args.k, results);
-        h3Println(results[0]);
-    }
-    free(results);
+    GeoPoint g = {.lat = args.lat, .lon = args.lon};
+    H3Index h = H3_EXPORT(pointToCell)(&g, args.res);
+
+    h3Println(h);
 }

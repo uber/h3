@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /** @file
- * @brief Fuzzer program for h3ToGeo and h3ToGeoBoundary
+ * @brief Fuzzer program for gridDisk
  */
 
 #include "h3api.h"
@@ -26,16 +26,20 @@ int main(int argc, char* argv[]) {
     }
     const char* filename = argv[1];
     FILE* fp = fopen(filename, "rb");
-    H3Index index;
-    if (fread(&index, sizeof(H3Index), 1, fp) != 1) {
+    struct {
+        H3Index index;
+        int k;
+    } args;
+    if (fread(&args, sizeof(args), 1, fp) != 1) {
         error("Error reading\n");
     }
     fclose(fp);
 
-    GeoCoord geo;
-    H3_EXPORT(h3ToGeo)(index, &geo);
-    printf("%lf %lf\n", geo.lat, geo.lon);
-    GeoBoundary geoBoundary;
-    H3_EXPORT(h3ToGeoBoundary)(index, &geoBoundary);
-    printf("%d\n", geoBoundary.numVerts);
+    int sz = H3_EXPORT(maxGridDiskSize)(args.k);
+    H3Index* results = calloc(sizeof(H3Index), sz);
+    if (results != NULL) {
+        H3_EXPORT(gridDisk)(args.index, args.k, results);
+        h3Println(results[0]);
+    }
+    free(results);
 }

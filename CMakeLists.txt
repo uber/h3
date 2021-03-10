@@ -210,9 +210,9 @@ set(OTHER_SOURCE_FILES
     src/apps/miscapps/generatePentagonDirectionFaces.c
     src/apps/miscapps/generateFaceCenterPoint.c
     src/apps/miscapps/h3ToHier.c
-    src/apps/fuzzers/fuzzerGeoToH3.c
-    src/apps/fuzzers/fuzzerH3ToGeo.c
-    src/apps/fuzzers/fuzzerKRing.c
+    src/apps/fuzzers/fuzzerPointToCell.c
+    src/apps/fuzzers/fuzzerCellToPoint.c
+    src/apps/fuzzers/fuzzerGridDisk.c
     src/apps/benchmarks/benchmarkPolygonToCells.c
     src/apps/benchmarks/benchmarkPolygon.c
     src/apps/benchmarks/benchmarkH3SetToLinkedGeo.c
@@ -634,9 +634,9 @@ if(BUILD_FUZZERS)
         add_dependencies(fuzzers ${name})
     endmacro()
 
-    add_h3_fuzzer(fuzzerGeoToH3 src/apps/fuzzers/fuzzerGeoToH3.c)
-    add_h3_fuzzer(fuzzerH3ToGeo src/apps/fuzzers/fuzzerH3ToGeo.c)
-    add_h3_fuzzer(fuzzerKRing src/apps/fuzzers/fuzzerKRing.c)
+    add_h3_fuzzer(fuzzerPointToCell src/apps/fuzzers/fuzzerPointToCell.c)
+    add_h3_fuzzer(fuzzerCellToPoint src/apps/fuzzers/fuzzerCellToPoint.c)
+    add_h3_fuzzer(fuzzerGridDisk src/apps/fuzzers/fuzzerGridDisk.c)
 endif()
 
 if(BUILD_BENCHMARKS)

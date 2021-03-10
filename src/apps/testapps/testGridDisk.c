@@ -355,11 +355,11 @@ SUITE(gridDisk) {
         }
     }
 
-    TEST(kRingInvalid) {
+    TEST(gridDiskInvalid) {
         int k = 1000;
-        int kSz = H3_EXPORT(maxKringSize)(k);
+        int kSz = H3_EXPORT(maxGridDiskSize)(k);
         H3Index *neighbors = calloc(kSz, sizeof(H3Index));
-        H3_EXPORT(kRing)(0x7fffffffffffffff, 1000, neighbors);
+        H3_EXPORT(gridDisk)(0x7fffffffffffffff, 1000, neighbors);
         // Assertion is should not crash - should return an error in the future
         free(neighbors);
     }

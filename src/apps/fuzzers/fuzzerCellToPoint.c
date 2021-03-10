@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /** @file
- * @brief Fuzzer program for geoToH3
+ * @brief Fuzzer program for cellToPoint and cellToBoundary
  */
 
 #include "h3api.h"
@@ -26,18 +26,16 @@ int main(int argc, char* argv[]) {
     }
     const char* filename = argv[1];
     FILE* fp = fopen(filename, "rb");
-    struct args {
-        double lat;
-        double lon;
-        int res;
-    } args;
-    if (fread(&args, sizeof(args), 1, fp) != 1) {
+    H3Index index;
+    if (fread(&index, sizeof(H3Index), 1, fp) != 1) {
         error("Error reading\n");
     }
     fclose(fp);
 
-    GeoCoord g = {.lat = args.lat, .lon = args.lon};
-    H3Index h = H3_EXPORT(geoToH3)(&g, args.res);
-
-    h3Println(h);
+    GeoPoint geo;
+    H3_EXPORT(cellToPoint)(index, &geo);
+    printf("%lf %lf\n", geo.lat, geo.lon);
+    CellBoundary cellBoundary;
+    H3_EXPORT(cellToBoundary)(index, &cellBoundary);
+    printf("%d\n", cellBoundary.numVerts);
 }
