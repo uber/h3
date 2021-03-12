@@ -20,7 +20,7 @@ jobs:
         arch: [Win32, x64]
 
     steps:
-      - uses: actions/checkout@v2.1.1
+      - uses: actions/checkout@v2
 
       - name: Configure build
         shell: cmd
