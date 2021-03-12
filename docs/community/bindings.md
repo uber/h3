@@ -66,6 +66,7 @@ As a C library, bindings can be made to call H3 functions from different program
 
 - [scottmmjackson/h3r](https://github.com/scottmmjackson/h3r)
 - [crazycapivara/h3-r](https://github.com/crazycapivara/h3-r)
+- [obrl-soil/h3jsr](https://github.com/obrl-soil/h3jsr)
 
 ## Ruby
 
