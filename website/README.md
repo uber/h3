@@ -1,26 +1,33 @@
-# H3 Documentation Website
+# Website
 
-This is the source for the [H3 documentation website](https://h3geo.org/).
+This website is built using [Docusaurus 2](https://v2.docusaurus.io/), a modern static website generator.
 
-The source of the pages in the documentation is in the [docs](../docs) directory.
+## Installation
 
-## Building Locally
-
-Building the documentation requires Node.js. To build and view the H3 documentation,
-run the following from `./website`:
-
-```
-yarn
-yarn run build
+```console
+yarn install
 ```
 
-You will then be able to open `public/index.html` in your browser. Note that images
-will not render because they expect a `/h3/` path prefix.
+## Local Development
 
-## Updating the H3 Website
-
-Make sure your `gh-pages` branch has its remote set to the upstream repo, then
-
+```console
+yarn start
 ```
-make publish-website
+
+This command starts a local development server and open up a browser window. Most changes are reflected live without having to restart the server.
+
+## Build
+
+```console
+yarn build
 ```
+
+This command generates static content into the `build` directory and can be served using any static contents hosting service.
+
+## Deployment
+
+```console
+GIT_USER=<Your GitHub username> USE_SSH=true yarn deploy
+```
+
+If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
