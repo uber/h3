@@ -11,11 +11,10 @@ run the following from `./website`:
 
 ```
 yarn
-yarn run build
+yarn start
 ```
 
-You will then be able to open `public/index.html` in your browser. Note that images
-will not render because they expect a `/h3/` path prefix.
+You will then be able to open http://localhost:3000 in your browser.
 
 ## Updating the H3 Website
 
