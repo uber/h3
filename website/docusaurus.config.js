@@ -12,9 +12,9 @@ module.exports = {
   themes: ['@docusaurus/theme-live-codeblock'],
   themeConfig: {
     navbar: {
-      title: 'My Site',
+      title: 'H3',
       logo: {
-        alt: 'My Site Logo',
+        alt: 'H3 Logo',
         src: 'images/h3Logo-color.svg',
       },
       items: [
@@ -24,7 +24,6 @@ module.exports = {
           label: 'Docs',
           position: 'left',
         },
-        // {to: 'blog', label: 'Blog', position: 'left'},
         {
           href: 'https://github.com/uber/h3',
           label: 'GitHub',
@@ -39,12 +38,16 @@ module.exports = {
           title: 'Docs',
           items: [
             {
-              label: 'Style Guide',
+              label: 'Getting Started',
               to: 'docs/',
             },
             {
-              label: 'Second Doc',
-              to: 'docs/doc2/',
+              label: 'Installation',
+              to: 'docs/installation',
+            },
+            {
+              label: 'API Reference',
+              to: 'docs/api/indexing',
             },
           ],
         },
@@ -53,28 +56,20 @@ module.exports = {
           items: [
             {
               label: 'Stack Overflow',
-              href: 'https://stackoverflow.com/questions/tagged/docusaurus',
+              href: 'https://stackoverflow.com/questions/tagged/h3',
             },
             {
-              label: 'Discord',
-              href: 'https://discordapp.com/invite/docusaurus',
-            },
-            {
-              label: 'Twitter',
-              href: 'https://twitter.com/docusaurus',
+              label: 'Slack',
+              href: 'https://join.slack.com/t/h3-core/shared_invite/zt-g6u5r1hf-W_~uVJmfeiWtMQuBGc1NNg',
             },
           ],
         },
         {
-          title: 'More',
+          title: 'Source',
           items: [
             {
-              label: 'Blog',
-              to: 'blog',
-            },
-            {
               label: 'GitHub',
-              href: 'https://github.com/facebook/docusaurus',
+              href: 'https://github.com/uber/h3',
             },
           ],
         },
@@ -88,16 +83,9 @@ module.exports = {
       {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
-          // Please change this to your repo.
           editUrl:
             'https://github.com/uber/h3/edit/master/website/',
         },
-        /*blog: {
-          showReadingTime: true,
-          // Please change this to your repo.
-          editUrl:
-            'https://github.com/facebook/docusaurus/edit/master/website/blog/',
-        },*/
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
         },
