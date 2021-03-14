@@ -1,7 +1,11 @@
+---
+id: indexing
+title: Indexing functions
+sidebar_label: Indexing
+---
+
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
-
-# Indexing functions
 
 These function are used for finding the H3 index containing coordinates, and for finding the center and boundary of H3 indexes.
 
@@ -13,7 +17,8 @@ These function are used for finding the H3 index containing coordinates, and for
   values={[
     {label: 'C', value: 'c'},
     {label: 'Python', value: 'python'},
-    {label: 'JavaScript', value: 'javascript'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
   ]
 }>
 <TabItem value="c">
@@ -27,6 +32,13 @@ H3Index geoToH3(const GeoCoord *g, int res);
 
 ```py
 h3.geo_to_h3(lat, lng, resolution)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+long geoToH3(double lat, double lng, int res);
 ```
 
 </TabItem>
@@ -60,7 +72,8 @@ Returns 0 on error.
   values={[
     {label: 'C', value: 'c'},
     {label: 'Python', value: 'python'},
-    {label: 'JavaScript', value: 'javascript'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
   ]
 }>
 <TabItem value="c">
@@ -74,6 +87,14 @@ void h3ToGeo(H3Index h3, GeoCoord *g);
 
 ```py
 h3.h3_to_geo(h)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+GeoCoord h3ToGeo(long h3);
+GeoCoord h3ToGeo(String h3Address);
 ```
 
 </TabItem>
@@ -103,7 +124,8 @@ Finds the centroid of the index.
   values={[
     {label: 'C', value: 'c'},
     {label: 'Python', value: 'python'},
-    {label: 'JavaScript', value: 'javascript'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
   ]
 }>
 <TabItem value="c">
@@ -117,6 +139,14 @@ void h3ToGeoBoundary(H3Index h3, GeoBoundary *gp);
 
 ```py
 h3.h3_to_geo_boundary(h, geo_json=False)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+List<GeoCoord> h3ToGeoBoundary(long h3);
+List<GeoCoord> h3ToGeoBoundary(String h3Address);
 ```
 
 </TabItem>
