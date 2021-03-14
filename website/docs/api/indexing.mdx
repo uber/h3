@@ -13,6 +13,7 @@ These function are used for finding the H3 index containing coordinates, and for
   values={[
     {label: 'C', value: 'c'},
     {label: 'Python', value: 'python'},
+    {label: 'JavaScript', value: 'javascript'},
   ]
 }>
 <TabItem value="c">
@@ -26,6 +27,22 @@ H3Index geoToH3(const GeoCoord *g, int res);
 
 ```py
 h3.geo_to_h3(lat, lng, resolution)
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.geoToH3(lat, lng, res) ⇒ H3Index
+```
+
+```js live
+function example() {
+  const lat = 45;
+  const lng = 40;
+  const res = 2;
+  return h3.geoToH3(lat, lng, res);
+}
 ```
 
 </TabItem>
@@ -43,17 +60,36 @@ Returns 0 on error.
   values={[
     {label: 'C', value: 'c'},
     {label: 'Python', value: 'python'},
+    {label: 'JavaScript', value: 'javascript'},
   ]
 }>
 <TabItem value="c">
+
 ```c
 void h3ToGeo(H3Index h3, GeoCoord *g);
 ```
+
 </TabItem>
 <TabItem value="python">
+
 ```py
 h3.h3_to_geo(h)
 ```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.h3ToGeo(h3Index) ⇒ Array.<number>
+```
+
+```js live
+function example() {
+  const h = '85283473fffffff';
+  return h3.h3ToGeo(h);
+}
+```
+
 </TabItem>
 </Tabs>
 
@@ -67,17 +103,36 @@ Finds the centroid of the index.
   values={[
     {label: 'C', value: 'c'},
     {label: 'Python', value: 'python'},
+    {label: 'JavaScript', value: 'javascript'},
   ]
 }>
 <TabItem value="c">
+
 ```c
 void h3ToGeoBoundary(H3Index h3, GeoBoundary *gp);
 ```
+
 </TabItem>
 <TabItem value="python">
+
 ```py
 h3.h3_to_geo_boundary(h, geo_json=False)
 ```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.h3ToGeoBoundary(h3Index, [formatAsGeoJson]) ⇒ Array.<Array.<number>>
+```
+
+```js live
+function example() {
+  const h = '85283473fffffff';
+  return h3.h3ToGeoBoundary(h);
+}
+```
+
 </TabItem>
 </Tabs>
 

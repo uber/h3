@@ -9,6 +9,7 @@ module.exports = {
   favicon: 'favicon.ico',
   organizationName: 'uber', // Usually your GitHub org/user name.
   projectName: 'h3', // Usually your repo name.
+  themes: ['@docusaurus/theme-live-codeblock'],
   themeConfig: {
     navbar: {
       title: 'My Site',
