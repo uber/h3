@@ -19,6 +19,7 @@
     "@docusaurus/theme-live-codeblock": "^2.0.0-alpha.71",
     "@mdx-js/react": "^1.6.21",
     "clsx": "^1.1.1",
+    "global": "^4.4.0",
     "h3-js": "^3.7.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1"
