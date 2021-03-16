@@ -1,4 +1,9 @@
-# Conversion from latitude/longitude to containing H3 cell index
+---
+id: geoToH3desc
+title: Conversion from latitude/longitude to containing H3 cell index
+sidebar_label: Conversion from latitude/longitude to containing H3 cell index
+slug: /core-library/geoToH3desc
+---
 
 This operation is performed by function `geoToH3`. See the comments in the function for more detail.
 

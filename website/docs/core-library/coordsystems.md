@@ -1,4 +1,9 @@
-# Coordinate systems
+---
+id: coordsystems
+title: Coordinate systems
+sidebar_label: Coordinate systems
+slug: /core-library/coordsystems
+---
 
 The **H3 Core Library** uses the following coordinate systems internally.
 

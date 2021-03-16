@@ -1,4 +1,9 @@
-# Table of Cell Areas for H3 Resolutions
+---
+id: restable
+title: Table of Cell Areas for H3 Resolutions
+sidebar_label: Table of Cell Areas for H3 Resolutions
+slug: /core-library/restable
+---
 
 | H3 Resolution | Average Hexagon Area (km<sup>2</sup>) | Average Hexagon Edge Length (km) | Number of unique indexes
 | ------------- | ------------------------------------: | -------------------------------: | -----------------------:

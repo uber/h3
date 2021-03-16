@@ -1,4 +1,9 @@
-# Learning Resources
+---
+id: tutorials
+title: Learning Resources
+sidebar_label: Learning Resources
+slug: /community/tutorials
+---
 
 This page lists further learning materials and code walkthroughs for the H3 library and bindings. Contributions to this list are welcome, please feel free to open a [pull request](https://github.com/uber/h3/tree/master/docs/community/tutorials.md).
 

@@ -1,4 +1,9 @@
-# How to use H3
+---
+id: usage
+title: How to use H3
+sidebar_label: How to use H3
+slug: /core-library/usage
+---
 
 The public API of the **H3 Core Library** is defined in the file h3api.h. The functions defined in h3api.h adhere to [Semantic Versioning](http://semver.org/).
 

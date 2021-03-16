@@ -1,4 +1,9 @@
-# H3 Index Representations
+---
+id: h3Indexing
+title: H3 Index Representations
+sidebar_label: H3 Index Representations
+slug: /core-library/h3Indexing
+---
 
 ## Introduction
 

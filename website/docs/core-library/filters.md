@@ -1,4 +1,9 @@
-# Unix-style Filters for H3
+---
+id: filters
+title: Unix-style Filters for H3
+sidebar_label: Unix-style Filters for H3
+slug: /core-library/filters
+---
 
 The directory `src/apps/filters` contains unix-style stdin/stdout filters that perform conversions between integer **H3** indexes and other useful types. It currently contains the filters listed in the table below. See the header comments in each application source code file for more information.
 
