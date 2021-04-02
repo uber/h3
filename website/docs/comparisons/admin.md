@@ -18,3 +18,10 @@ When using manually drawn partitions, there is usually no spatial unit of analys
 Manually drawn partitions can better incorporate human knowledge, but can require updating as that knowledge changes. It can take a significant amount of time and effort to define and update partitions manually.
 
 The varying size of partitions means the centor of a partition may be unrelated to the center of the data points.
+
+## H3 vs ZIP Codes comparison
+
+<iframe width="100%" height="500px" src="https://studio.unfolded.ai/public/72504bc0-184e-4ba0-b10b-72fdf61e2c33/embed" frameborder="0" allowfullscreen></iframe>
+
+ZIP Codes on the left, H3 on the right. Data: [New York City 2015 Street Tree Census](https://data.cityofnewyork.us/Environment/2015-Street-Tree-Census-Tree-Data/uvpi-gqnh)
+
