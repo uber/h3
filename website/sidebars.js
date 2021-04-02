@@ -45,14 +45,22 @@ module.exports = {
     ],
     "H3 Internals": [
       "core-library/overview",
+      "core-library/restable",
       "core-library/h3Indexing",
       "core-library/coordsystems",
-      "core-library/geoToH3desc",
-      "core-library/h3ToGeoDesc",
-      "core-library/h3ToGeoBoundaryDesc",
-      "core-library/filters",
+      "core-library/creating-bindings",
+      "core-library/custom-alloc",
       "core-library/usage",
-      "core-library/restable",
+      "core-library/filters",
+      {
+        type: "category",
+        label: "Algorithms",
+        items: [
+          "core-library/geoToH3desc",
+          "core-library/h3ToGeoDesc",
+          "core-library/h3ToGeoBoundaryDesc",
+        ],
+      },
     ],
   },
 };

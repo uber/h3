@@ -11,6 +11,9 @@ module.exports = {
   projectName: 'h3', // Usually your repo name.
   themes: ['@docusaurus/theme-live-codeblock'],
   themeConfig: {
+    prism: {
+      additionalLanguages: ['java'],
+    },
     navbar: {
       title: 'H3',
       logo: {

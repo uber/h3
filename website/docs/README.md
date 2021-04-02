@@ -12,4 +12,4 @@ The **H3 Core Library** implements the H3 grid system. It includes functions for
 ## Highlights
 
 * The **H3 Core Library** is written in *C*. [Bindings for many other languages](/docs/community/bindings) are available.
-* H3 was developed to address the challenges of Uber's data science needs.
+* H3 was developed to address the [challenges of Uber's data science needs](/docs/highlights/aggregation).
