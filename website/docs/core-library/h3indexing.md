@@ -126,3 +126,8 @@ The layout of an **H3Index** is shown below in table form. The interpretation of
   <td colspan="3">Digit 15</td>
 </tr>
 </table>
+
+## Links
+
+* Observable notebook example: [H3 Index Bit Layout](https://observablehq.com/@nrabinowitz/h3-index-bit-layout?collection=@nrabinowitz/h3)
+* Observable notebook example: [H3 Index Inspector](https://observablehq.com/@nrabinowitz/h3-index-inspector?collection=@nrabinowitz/h3)

@@ -5,11 +5,11 @@ sidebar_label: Introduction
 slug: /
 ---
 
-The **H3** geospatial indexing system is a multi-precision hexagonal tiling of the sphere indexed with hierarchical linear indexes. The **H3 Core Library** provides functions for converting between latitude/longitude coordinates and **H3** geospatial indexes. Specifically, the major library entry point functions (defined in `h3api.h`) provide the functionality:
+H3 is a geospatial indexing system that partitions the world into hexagonal cells. H3 is open source under the Apache 2 license.
 
-* given a latitude/longitude point, find the index of the containing **H3** cell at a particular resolution
-* given an **H3** index, find the latitude/longitude cell center
-* given an **H3** index, determine the cell boundary in latitude/longitude coordinates
-* and more.
+The **H3 Core Library** implements the H3 grid system. It includes functions for converting from latitude and longitude coordinates to the containing H3 cell, finding the center of H3 cells, finding the boundary geometry of H3 cells, finding neighbors of H3 cells, and more.
 
-The **H3 Core Library** is written entirely in *C*. [Bindings for other languages](/docs/community/bindings) are available.
+## Highlights
+
+* The **H3 Core Library** is written in *C*. [Bindings for many other languages](/docs/community/bindings) are available.
+* H3 was developed to address the challenges of Uber's data science needs.

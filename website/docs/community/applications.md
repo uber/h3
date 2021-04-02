@@ -5,7 +5,7 @@ sidebar_label: Applications Using H3
 slug: /community/applications
 ---
 
-The following applications use H3. Contributions to this list are welcome, please feel free to open a [pull request](https://github.com/uber/h3/tree/master/docs/community/applications.md).
+The following applications use H3. Contributions to this list are welcome, please feel free to open a [pull request](https://github.com/uber/h3/tree/master/docs/website/community/applications.md).
 
 ## Visualization
 

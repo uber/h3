@@ -1,0 +1,449 @@
+---
+id: inspection
+title: Index inspection functions
+sidebar_label: Inspection
+slug: /api/inspection
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+These functions provide metadata about an H3 index, such as its resolution or base cell, and provide utilities for converting into and out of the 64-bit representation of an H3 index.
+
+## h3GetResolution
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+int h3GetResolution(H3Index h);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.h3_get_resolution(h)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+int h3GetResolution(long h3);
+int h3GetResolution(String h3Address);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.h3GetResolution(h)
+```
+
+```js live
+function example() {
+  const h = '85283473fffffff';
+  return h3.h3GetResolution(h);
+}
+```
+
+</TabItem>
+</Tabs>
+
+Returns the resolution of the index.
+
+## h3GetBaseCell
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+int h3GetBaseCell(H3Index h);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.h3_get_base_cell(h)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+int h3GetBaseCell(long h3);
+int h3GetBaseCell(String h3Address);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.h3GetBaseCell(h)
+```
+
+```js live
+function example() {
+  const h = '85283473fffffff';
+  return h3.h3GetBaseCell(h);
+}
+```
+
+</TabItem>
+</Tabs>
+
+Returns the base cell number of the index.
+
+## stringToH3
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+H3Index stringToH3(const char *str);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.string_to_h3(h)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+long stringToH3(String h3Address);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+The H3 JavaScript binding supports only the string representation of an H3 index.
+
+</TabItem>
+</Tabs>
+
+Converts the string representation to `H3Index` (`uint64_t`) representation.
+
+Returns 0 on error.
+
+## h3ToString
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+void h3ToString(H3Index h, char *str, size_t sz);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.h3_to_string(h)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+String h3ToString(long h3);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+The H3 JavaScript binding supports only the string representation of an H3 index.
+
+</TabItem>
+</Tabs>
+
+Converts the `H3Index` representation of the index to the string representation. `str` must be at least of length 17.
+
+## h3IsValid
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+int h3IsValid(H3Index h);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.h3_is_valid(h)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+boolean h3IsValid(long h3);
+boolean h3IsValid(String h3Address);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.h3IsValid(h)
+```
+
+```js live
+function example() {
+  const h = '85283473fffffff';
+  return String(h3.h3IsValid(h));
+}
+```
+
+</TabItem>
+</Tabs>
+
+Returns non-zero if this is a valid **H3** index.
+
+## h3IsResClassIII
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+int h3IsResClassIII(H3Index h);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.h3_is_res_class_III(h)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+boolean h3IsResClassIII(long h3);
+boolean h3IsResClassIII(String h3Address);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.h3IsResClassIII(h)
+```
+
+```js live
+function example() {
+  const h = '85283473fffffff';
+  return String(h3.h3IsResClassIII(h));
+}
+```
+
+</TabItem>
+</Tabs>
+
+Returns non-zero if this index has a resolution with Class III orientation.
+
+## h3IsPentagon
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+int h3IsPentagon(H3Index h);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.h3_is_pentagon(h)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+boolean h3IsPentagon(long h3);
+boolean h3IsPentagon(String h3Address);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.h3IsPentagon(h)
+```
+
+```js live
+function example() {
+  const h = '85283473fffffff';
+  return String(h3.h3IsPentagon(h));
+}
+```
+
+</TabItem>
+</Tabs>
+
+Returns non-zero if this index represents a pentagonal cell.
+
+## h3GetFaces
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+void h3GetFaces(H3Index h, int* out);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.h3_get_faces(h)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+Collection<Integer> h3GetFaces(long h3);
+Collection<Integer> h3GetFaces(String h3Address);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.h3GetFaces(h)
+```
+
+```js live
+function example() {
+  const h = '85283473fffffff';
+  return h3.h3GetFaces(h);
+}
+```
+
+</TabItem>
+</Tabs>
+
+Find all icosahedron faces intersected by a given H3 index and places them in the array `out`. `out` must be at least of length `maxFaceCount(h)`.
+
+Faces are represented as integers from 0-19, inclusive. The array is sparse, and empty (no intersection) array values are represented by -1.
+
+### maxFaceCount
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+int maxFaceCount(H3Index h3);
+```
+
+</TabItem>
+<TabItem value="python">
+
+This function exists for memory management and is not exposed.
+
+</TabItem>
+<TabItem value="java">
+
+This function exists for memory management and is not exposed.
+
+</TabItem>
+<TabItem value="javascript">
+
+This function exists for memory management and is not exposed.
+
+</TabItem>
+</Tabs>
+
+Returns the maximum number of icosahedron faces the given H3 index may intersect.

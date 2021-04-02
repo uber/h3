@@ -5,7 +5,7 @@ sidebar_label: Libraries Using H3
 slug: /community/libraries
 ---
 
-The following libraries use H3 via one of its bindings. Contributions to this list are welcome, please feel free to open a [pull request](https://github.com/uber/h3/tree/master/docs/community/libraries.md).
+The following libraries use H3 via one of its bindings. Contributions to this list are welcome, please feel free to open a [pull request](https://github.com/uber/h3/tree/master/website/docs/community/libraries.md).
 
 ## JavaScript
 
