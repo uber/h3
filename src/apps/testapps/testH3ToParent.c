@@ -47,5 +47,7 @@ SUITE(h3ToParent) {
                  "Invalid resolution fails");
         t_assert(H3_EXPORT(h3ToParent)(child, 15) == 0,
                  "Invalid resolution fails");
+        t_assert(H3_EXPORT(h3ToParent)(child, 16) == 0,
+                 "Invalid resolution fails");
     }
 }
