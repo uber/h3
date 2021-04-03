@@ -13,6 +13,7 @@
 - **Discussions**:
     - <https://github.com/uber/h3/pull/308>
     - <https://github.com/uber/h3/pull/403>
+    - <https://github.com/uber/h3/pull/441>
 
 ## Motivation
 
