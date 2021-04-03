@@ -8,9 +8,11 @@
 - **Dates**:
     - Started: 2020-02-02
     - Accepted: 2020-03-26
+    - Updated: 2021-04-03
 - **Status**: Accepted
 - **Discussions**:
     - <https://github.com/uber/h3/pull/308>
+    - <https://github.com/uber/h3/pull/403>
 
 ## Motivation
 
@@ -173,7 +175,7 @@ We may expose them in the future if a need becomes clear.
 | Current name |      Proposed name      |
 |--------------|-------------------------|
 | `h3Distance` | `gridDistance`          |
-| `h3Line`     | `gridPathCells`         |
+| `h3Line`     | `gridPath`              |
 | *DNE*        | `gridPathEdges`         |
 | *DNE*        | `gridPathDirectedEdges` |
 
