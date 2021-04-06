@@ -140,8 +140,8 @@ There is some ambiguity between property, transform, and computation, so use you
 | `h3GetFaces`                  | `getIcosahedronFaces` |
 | `geoToH3`                     | `pointToCell`         |
 | `h3ToGeo`                     | `cellToPoint`         |
-| `compact`                     | `compactCells`        |
-| `uncompact`                   | `uncompactCells`      |
+| `compact`                     | (unchanged)           |
+| `uncompact`                   | (unchanged)           |
 | `polyfill`                    | `polygonToCells`      |
 
 **Note**: `getResolution` and `getBaseCellNumber` should work for both cells and edges.
