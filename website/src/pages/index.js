@@ -12,7 +12,7 @@ const features = [
     imageUrl: 'images/icon-high-precision.svg',
     description: (
       <>
-        H3 has an easy API for indexing coordinates into a hexagonal grid.
+        H3 offers an easy API for indexing coordinates into a hexagonal grid, down to square meter resolution.
       </>
     ),
   },
@@ -21,7 +21,7 @@ const features = [
     imageUrl: 'images/icon-layers.svg',
     description: (
       <>
-        Easy index-based joins of disparate datasets. Easy computation of gradients.
+        Indexed data can be quickly joined across disparate datasets and aggregated at different levels of precision.
       </>
     ),
   },
@@ -30,7 +30,7 @@ const features = [
     imageUrl: 'images/icon-chart.svg',
     description: (
       <>
-        The entire world is addressable in H3, down to square meter resolution.
+        H3 enables a range of algorithms and optimizations based on the grid, including nearest neighbors, shortest path, gradient smoothing, and more.
       </>
     ),
   },
