@@ -5,7 +5,7 @@ sidebar_label: Machine Learning
 slug: /highlights/ml
 ---
 
-H3 is well suited to applying machine learning to geospatial data. Techniques from computer vision, such as convolution, and be applied to the pixel grid defined by H3.
+H3 is well suited to applying machine learning to geospatial data. Techniques from computer vision, such as convolution, can be applied to the pixel grid defined by H3.
 
 H3 has functions for finding neighbors (`kRing`) for use in performing convolution, and functions for transforming indexes to a two dimensional IJ coordinate space on which other computer vision algorithms can be run.
 
