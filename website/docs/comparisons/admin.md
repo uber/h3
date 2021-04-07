@@ -17,7 +17,7 @@ When using manually drawn partitions, there is usually no spatial unit of analys
 
 Manually drawn partitions can better incorporate human knowledge, but can require updating as that knowledge changes. It can take a significant amount of time and effort to define and update partitions manually.
 
-The varying size of partitions means the centor of a partition may be unrelated to the center of the data points.
+The varying size of partitions means the center of a partition may be unrelated to the center of the data points.
 
 ## ZIP Codes vs H3 comparison
 
