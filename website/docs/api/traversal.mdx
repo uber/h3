@@ -1,0 +1,692 @@
+---
+id: traversal
+title: Grid traversal functions
+sidebar_label: Traversal
+slug: /api/traversal
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+Grid traversal allows finding cells in the vicinity of an origin cell, and determining how to traverse the grid from one cell to another.
+
+## kRing
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+void kRing(H3Index origin, int k, H3Index* out);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.k_ring(origin, k)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+List<Long> kRing(long origin, int k);
+List<String> kRing(String origin, int k);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.kRing(origin, k)
+```
+
+```js live
+function example() {
+  const h = '85283473fffffff';
+  const k = 5;
+  return h3.kRing(h, k);
+}
+```
+
+</TabItem>
+</Tabs>
+
+k-rings produces indices within k distance of the origin index.
+
+k-ring 0 is defined as the origin index, k-ring 1 is defined as k-ring 0 and
+all neighboring indices, and so on.
+
+Output is placed in the provided array in no particular order. Elements of
+the output array may be left zero, as can happen when crossing a pentagon.
+
+### maxKringSize
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+int maxKringSize(int k);
+```
+
+</TabItem>
+<TabItem value="python">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+<TabItem value="java">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+<TabItem value="javascript">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+</Tabs>
+
+Maximum number of indices that result from the kRing algorithm with the given k.
+
+## kRingDistances
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+void kRingDistances(H3Index origin, int k, H3Index* out, int* distances);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.k_ring_distances(origin, k)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+List<List<Long>> kRingDistances(long origin, int k);
+List<List<String>> kRingDistances(String origin, int k);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.kRingDistances(origin, k)
+```
+
+```js live
+function example() {
+  const h = '85283473fffffff';
+  const k = 5;
+  return h3.kRingDistances(h, k);
+}
+```
+
+</TabItem>
+</Tabs>
+
+k-rings produces indices within k distance of the origin index.
+
+k-ring 0 is defined as the origin index, k-ring 1 is defined as k-ring 0 and
+all neighboring indices, and so on.
+
+Output is placed in the provided array in no particular order. Elements of
+the output array may be left zero, as can happen when crossing a pentagon.
+
+## hexRange
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+int hexRange(H3Index origin, int k, H3Index* out);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.hex_range(h, k)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+List<List<Long>> hexRange(Long h3, int k) throws PentagonEncounteredException;
+List<List<String>> hexRange(String h3Address, int k) throws PentagonEncounteredException;
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+:::note
+
+This function is not exposed.
+
+:::
+
+</TabItem>
+</Tabs>
+
+hexRange produces indexes within k distance of the origin index.
+Output behavior is undefined when one of the indexes returned by this
+function is a pentagon or is in the pentagon distortion area.
+
+k-ring 0 is defined as the origin index, k-ring 1 is defined as k-ring 0 and
+all neighboring indexes, and so on.
+
+Output is placed in the provided array in order of increasing distance from
+the origin.
+
+Returns 0 if no pentagonal distortion is encountered.
+ 
+## hexRangeDistances
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+int hexRangeDistances(H3Index origin, int k, H3Index* out, int* distances);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.hex_range_distances(h, k)
+```
+
+</TabItem>
+<TabItem value="java">
+
+:::note
+
+This function is not exposed because the same functionality is exposed by `hexRange`
+
+:::
+
+</TabItem>
+<TabItem value="javascript">
+
+:::note
+
+This function is not exposed.
+
+:::
+
+</TabItem>
+</Tabs>
+
+hexRange produces indexes within k distance of the origin index.
+Output behavior is undefined when one of the indexes returned by this
+function is a pentagon or is in the pentagon distortion area.
+
+k-ring 0 is defined as the origin index, k-ring 1 is defined as k-ring 0 and
+all neighboring indexes, and so on.
+
+Output is placed in the provided array in order of increasing distance from
+the origin. The distances in hexagons is placed in the distances array at
+the same offset.
+ 
+Returns 0 if no pentagonal distortion is encountered.
+
+## hexRanges
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+int hexRanges(H3Index* h3Set, int length, int k, H3Index* out);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.hex_ranges(h, k)
+```
+
+</TabItem>
+<TabItem value="java">
+
+:::note
+
+This function is not exposed because the same functionality is exposed by `hexRange`
+
+:::
+
+</TabItem>
+<TabItem value="javascript">
+
+:::note
+
+This function is not exposed.
+
+:::
+
+</TabItem>
+</Tabs>
+
+hexRanges takes an array of input hex IDs and a max k-ring and returns an
+array of hexagon IDs sorted first by the original hex IDs and then by the
+k-ring (0 to max), with no guaranteed sorting within each k-ring group.
+
+Returns 0 if no pentagonal distortion was encountered. Otherwise, output
+is undefined
+
+## hexRing
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+int hexRing(H3Index origin, int k, H3Index* out);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.hex_ring(h, k)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+List<Long> hexRing(long h3, int k) throws PentagonEncounteredException;
+List<String> hexRing(String h3Address, int k) throws PentagonEncounteredException;
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.hexRing(h3Index, k)
+```
+
+```js live
+function example() {
+  const h = '85283473fffffff';
+  const k = 1;
+  return h3.hexRing(h, k);
+}
+```
+
+</TabItem>
+</Tabs>
+
+Produces the hollow hexagonal ring centered at origin with sides of length k.
+ 
+Returns 0 if no pentagonal distortion was encountered.
+
+## h3Line
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+int h3Line(H3Index start, H3Index end, H3Index* out);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.h3_line(start, end)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+List<Long> h3Line(long start, long end) throws LineUndefinedException
+List<String> h3Line(String startAddress, String endAddress) throws LineUndefinedException
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.h3Line(start, end)
+```
+
+```js live
+function example() {
+  const start = '85283473fffffff';
+  const end = '8528342bfffffff';
+  return h3.h3Line(start, end);
+}
+```
+
+</TabItem>
+</Tabs>
+
+Given two H3 indexes, return the line of indexes between them (inclusive).
+
+This function may fail to find the line between two indexes, for
+example if they are very far apart. It may also fail when finding
+distances for indexes on opposite sides of a pentagon.
+
+*Notes:*
+
+ * The specific output of this function should not be considered stable
+   across library versions. The only guarantees the library provides are
+   that the line length will be `h3Distance(start, end) + 1` and that
+   every index in the line will be a neighbor of the preceding index.
+
+ * Lines are drawn in grid space, and may not correspond exactly to either
+   Cartesian lines or great arcs.
+
+## h3LineSize
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+int h3LineSize(H3Index start, H3Index end);
+```
+
+</TabItem>
+<TabItem value="python">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+<TabItem value="java">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+<TabItem value="javascript">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+</Tabs>
+
+Number of indexes in a line from the start index to the end index,
+to be used for allocating memory. Returns a negative number if the
+line cannot be computed.
+
+## h3Distance
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+int h3Distance(H3Index origin, H3Index h3);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.h3_distance(h1, h2)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+int h3Distance(long a, long b) throws DistanceUndefinedException;
+int h3Distance(String a, String b) throws DistanceUndefinedException;
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.h3Distance(a, b)
+```
+
+```js live
+function example() {
+  const start = '85283473fffffff';
+  const end = '8528342bfffffff';
+  return h3.h3Distance(start, end);
+}
+```
+
+</TabItem>
+</Tabs>
+
+Returns the distance in grid cells between the two indexes.
+
+Returns a negative number if finding the distance failed. Finding the distance can fail because the two
+indexes are not comparable (different resolutions), too far apart, or are separated by pentagonal
+distortion. This is the same set of limitations as the local IJ coordinate space functions.
+
+## experimentalH3ToLocalIj
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+int experimentalH3ToLocalIj(H3Index origin, H3Index h3, CoordIJ *out);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.experimental_h3_to_local_ij(origin, h)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+CoordIJ experimentalH3ToLocalIj(long origin, long h3) throws PentagonEncounteredException, LocalIjUndefinedException;
+CoordIJ experimentalH3ToLocalIj(String originAddress, String h3Address) throws PentagonEncounteredException, LocalIjUndefinedException;
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.experimentalH3ToLocalIj(origin, h3)
+```
+
+```js live
+function example() {
+  const origin = '85283473fffffff';
+  const h = '8528342bfffffff';
+  const {i, j} = h3.experimentalH3ToLocalIj(origin, h);
+  return [i, j];
+}
+```
+
+</TabItem>
+</Tabs>
+
+Produces local IJ coordinates for an **H3** index anchored by an origin.
+
+This function is experimental, and its output is not guaranteed
+to be compatible across different versions of **H3**.
+
+## experimentalLocalIjToH3
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+int experimentalLocalIjToH3(H3Index origin, const CoordIJ *ij, H3Index *out);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.experimental_local_ij_to_h3(origin, i, j)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+long experimentalLocalIjToH3(long origin, CoordIJ ij) throws LocalIjUndefinedException;
+String experimentalLocalIjToH3(String originAddress, CoordIJ ij) throws LocalIjUndefinedException;
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.experimentalLocalIjToH3(origin, coords)
+```
+
+```js live
+function example() {
+  const h = '85283473fffffff';
+  const coords = {i: 0, j: 0};
+  return h3.experimentalLocalIjToH3(h, coords);
+}
+```
+
+</TabItem>
+</Tabs>
+
+Produces an **H3** index from local IJ coordinates anchored by an origin.
+
+This function is experimental, and its output is not guaranteed
+to be compatible across different versions of **H3**.
