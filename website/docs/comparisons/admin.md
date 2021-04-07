@@ -19,7 +19,7 @@ Manually drawn partitions can better incorporate human knowledge, but can requir
 
 The varying size of partitions means the centor of a partition may be unrelated to the center of the data points.
 
-## H3 vs ZIP Codes comparison
+## ZIP Codes vs H3 comparison
 
 <iframe width="100%" height="500px" src="https://studio.unfolded.ai/public/72504bc0-184e-4ba0-b10b-72fdf61e2c33/embed" frameborder="0" allowfullscreen></iframe>
 
