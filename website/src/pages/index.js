@@ -8,7 +8,7 @@ import styles from './styles.module.css';
 
 const features = [
   {
-    title: 'Partition data into a hexagonal grid',
+    title: 'Hexagonal and easy',
     imageUrl: 'images/icon-high-precision.svg',
     description: (
       <>
@@ -17,7 +17,7 @@ const features = [
     ),
   },
   {
-    title: 'Hierarchical grid system',
+    title: 'Hierarchical and fast',
     imageUrl: 'images/icon-layers.svg',
     description: (
       <>
@@ -26,7 +26,7 @@ const features = [
     ),
   },
   {
-    title: 'Fully global',
+    title: 'Algorithms and optimizations',
     imageUrl: 'images/icon-chart.svg',
     description: (
       <>
