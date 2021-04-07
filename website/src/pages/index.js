@@ -12,7 +12,7 @@ const features = [
     imageUrl: 'images/icon-high-precision.svg',
     description: (
       <>
-        H3 has an easy API for indexing coordinates into a hexagonal, global grid.
+        H3 has an easy API for indexing coordinates into a hexagonal grid.
       </>
     ),
   },
@@ -21,7 +21,7 @@ const features = [
     imageUrl: 'images/icon-layers.svg',
     description: (
       <>
-        Easy, bitwise truncation to coarser, approximate cells, along with area compression/decompression algorithms.
+        Easy index-based joins of disparate datasets. Easy computation of gradients.
       </>
     ),
   },
@@ -30,7 +30,7 @@ const features = [
     imageUrl: 'images/icon-chart.svg',
     description: (
       <>
-        Along with twelve pentagons, the entire world is addressable in H3, down to square meter resolution.
+        The entire world is addressable in H3, down to square meter resolution.
       </>
     ),
   },
