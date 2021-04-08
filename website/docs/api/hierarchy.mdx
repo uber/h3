@@ -1,0 +1,378 @@
+---
+id: hierarchy
+title: Hierarchical grid functions
+sidebar_label: Hierarchy
+slug: /api/hierarchy
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+These functions permit moving between resolutions in the H3 grid system. The functions produce parent (coarser) or children (finer) cells.
+
+## h3ToParent
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+H3Index h3ToParent(H3Index h, int parentRes);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.h3_to_parent(h, parent_res)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+long h3ToParent(long h3, int parentRes);
+String h3ToParent(String h3Address, int parentRes);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.h3ToParent(h3Index, parentRes)
+```
+
+```js live
+function example() {
+  const h = '85283473fffffff';
+  return h3.h3ToParent(h, 4);
+}
+```
+
+</TabItem>
+</Tabs>
+
+Returns the parent (coarser) index containing `h`.
+
+## h3ToChildren
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+void h3ToChildren(H3Index h, int childRes, H3Index *children);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.h3_to_children(h, child_res)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+List<Long> h3ToChildren(long h3, int childRes);
+List<String> h3ToChildren(String h3Address, int childRes);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.h3ToChildren(h3Index, childRes)
+```
+
+```js live
+function example() {
+  const h = '85283473fffffff';
+  return h3.h3ToChildren(h, 6);
+}
+```
+
+</TabItem>
+</Tabs>
+
+Populates `children` with the indexes contained by `h` at resolution `childRes`. `children` must be an array of at least size `maxH3ToChildrenSize(h, childRes)`.
+
+## maxH3ToChildrenSize
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+int maxH3ToChildrenSize(H3Index h, int childRes);
+```
+
+</TabItem>
+<TabItem value="python">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+<TabItem value="java">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+<TabItem value="javascript">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+</Tabs>
+
+Returns the parent (coarser) index containing `h`.
+
+## h3ToCenterChild
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+H3Index h3ToCenterChild(H3Index h, int childRes);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.h3_to_center_child(h3, child_res)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+long h3ToCenterChild(long h3, int childRes);
+String h3ToCenterChild(String h3, int childRes);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.h3ToCenterChild(h, childRes)
+```
+
+```js live
+function example() {
+  const h = '85283473fffffff';
+  return h3.h3ToCenterChild(h, 7);
+}
+```
+
+</TabItem>
+</Tabs>
+
+Returns the center child (finer) index contained by `h` at resolution `childRes`.
+
+## compact
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+int compact(const H3Index *h3Set, H3Index *compactedSet, const int numHexes);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.compact(hexes)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+List<Long> compact(Collection<Long> h3);
+List<String> compactAddress(Collection<String> h3);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.compact(hexes)
+```
+
+```js live
+function example() {
+  const h = '85283473fffffff';
+  const nearby = h3.kRing(h, 4);
+  return h3.compact(nearby);
+}
+```
+
+</TabItem>
+</Tabs>
+
+Compacts the set `h3Set` of indexes as best as possible, into the array `compactedSet`. `compactedSet` must be at least the size of `h3Set` in case the set cannot be compacted.
+
+Returns 0 on success.
+
+## uncompact
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+int uncompact(const H3Index *compactedSet, const int numHexes, H3Index *h3Set, const int maxHexes, const int res);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.uncompact(hexes, res)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+List<Long> uncompact(Collection<Long> h3, int res);
+List<String> uncompactAddress(Collection<String> h3, int res);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.uncompact(hexes, res)
+```
+
+```js live
+function example() {
+  const h = '85283473fffffff';
+  const nearby = h3.kRing(h, 4);
+  const compacted = h3.compact(nearby);
+  return h3.uncompact(compacted, 5);
+}
+```
+
+</TabItem>
+</Tabs>
+
+Uncompacts the set `compactedSet` of indexes to the resolution `res`. `h3Set` must be at least of size `maxUncompactSize(compactedSet, numHexes, res)`.
+
+Returns 0 on success.
+
+## maxUncompactSize
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+int maxUncompactSize(const H3Index *compactedSet, const int numHexes, const int res)
+```
+
+</TabItem>
+<TabItem value="python">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+<TabItem value="java">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+<TabItem value="javascript">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+</Tabs>
+
+Returns the size of the array needed by `uncompact`.

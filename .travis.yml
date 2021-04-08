@@ -41,7 +41,7 @@ matrix:
     - name: "Website and FOSSA report"
       arch: amd64
       language: node_js
-      node_js: 10
+      node_js: 12
       install: []
       before_script:
         - "curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | sudo bash"

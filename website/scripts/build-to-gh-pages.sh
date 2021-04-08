@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright 2018 Uber Technologies, Inc.
+# Copyright 2018, 2021 Uber Technologies, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +12,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+echo TODO: This script needs to be update for the new Docusaurus build
+exit 1
 
 # This file runs the build of the H3 documentation website and commits the
 # results to the `gh-pages` branch.
