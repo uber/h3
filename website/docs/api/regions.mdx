@@ -69,9 +69,10 @@ polyfill takes a given GeoJSON-like data structure and preallocated,
 zeroed memory, and fills it with the hexagons that are contained by
 the GeoJSON-like data structure.
 
-The current implementation is very primitive and slow, but correct,
-performing a point-in-poly operation on every hexagon in a k-ring defined
-around the given geofence.
+Containment is determined by the cells' centroids. A partioning
+using the GeoJSON-like data structure, where polygons cover an area
+without overlap, will result in a partitioning in the H3 grid, where
+cells cover the same area without overlap.
 
 ### maxPolyfillSize
 
