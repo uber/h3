@@ -5,12 +5,12 @@ sidebar_label: Coordinate systems
 slug: /core-library/coordsystems
 ---
 
-The **H3 Core Library** uses the following coordinate systems internally.
+The H3 Core Library uses the following coordinate systems internally.
 
 IJK Coordinates
 ---
 
-Discrete hexagon planar grid systems naturally have 3 coordinate axes spaced 120&deg; apart. We refer to such a system as an *ijk coordinate system*, for the three coordinate axes *i*, *j*, and *k*. A single *ijk* coordinate triplet is represented in the **H3 Core Library** using the structure type `CoordIJK`.
+Discrete hexagon planar grid systems naturally have 3 coordinate axes spaced 120&deg; apart. We refer to such a system as an *ijk coordinate system*, for the three coordinate axes *i*, *j*, and *k*. A single *ijk* coordinate triplet is represented in the H3 Core Library using the structure type `CoordIJK`.
 
 Using an *ijk* coordinate system to address hexagon grid cells provides multiple valid addresses for each cell. *Normalizing* an *ijk* address (function `_ijkNormalize`) creates a unique address consisting of the minimal positive *ijk* components; this always results in at most two non-zero components.
 
@@ -21,7 +21,7 @@ Using an *ijk* coordinate system to address hexagon grid cells provides multiple
 FaceIJK Coordinates
 ---
 
-The **H3 Core Library** centers an *ijk* coordinate system on each face of the icosahedron; the combination of a face number and *ijk* coordinates on that face's coordinate system is represented using the structure type `FaceIJK`.
+The H3 Core Library centers an *ijk* coordinate system on each face of the icosahedron; the combination of a face number and *ijk* coordinates on that face's coordinate system is represented using the structure type `FaceIJK`.
 
 Each grid resolution is rotated ~19.1&deg; relative to the next coarser resolution. The rotation alternates between counterclockwise and clockwise at each successive resolution, so that each resolution will have one of two possible orientations: *Class II* or *Class III* (using a terminology coined by R. Buckminster Fuller). The base cells, which make up resolution 0, are *Class II*.
 

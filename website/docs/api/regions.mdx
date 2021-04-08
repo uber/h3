@@ -32,7 +32,7 @@ void polyfill(const GeoPolygon* geoPolygon, int res, H3Index* out);
 <TabItem value="python">
 
 ```py
-h3.polyfill(polygons, res)
+h3.polyfill(polygons, res, geo_json_conformant=False)
 ```
 
 </TabItem>
@@ -47,7 +47,7 @@ List<String> polyfillAddress(List<GeoCoord> points, List<List<GeoCoord>> holes, 
 <TabItem value="javascript">
 
 ```js
-h3.polyfill(polygon, res)
+h3.polyfill(polygon, res, isGeoJson)
 ```
 
 ```js live

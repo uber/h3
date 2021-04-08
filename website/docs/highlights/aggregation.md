@@ -21,6 +21,8 @@ This property allows for simpler analysis of movement. Hexagons have the propert
   <i>All six neighbors of a hexagon (ring 1)</i>
 </div>
 
+Hexagons are also optimally space-filling. On average, a polygon may be filled with hexagon tiles with a smaller margin of error than would be present with square tiles.
+
 ## References
 
 * Use case: [H3: Uber’s Hexagonal Hierarchical Spatial Index ](https://eng.uber.com/h3/)

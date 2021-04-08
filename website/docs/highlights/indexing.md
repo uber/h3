@@ -7,7 +7,7 @@ slug: /highlights/indexing
 
 H3 is a hierarchical geospatial index. H3 indexes refer to cells by the spatial hierarchy. Every hexagonal cell, up to the maximum resolution supported by H3, has seven child cells below it in this hierarchy. This subdivision is referred to as *aperture 7*.
 
-Hexagons do not cleanly subdivide into seven finer hexagons. However, by alternating the orientation of grids a subdivision into seven cells can be approximated. This makes it possible to truncate the precision within a fixed margin of error of an **H3** index. It is also possible to determine all the children of a parent **H3** index. Approximate containment only applies when truncating the precision of an **H3** index. The borders of hexagons indexed at a specific resolution are not approximate.
+Hexagons do not cleanly subdivide into seven finer hexagons. However, by alternating the orientation of grids a subdivision into seven cells can be approximated. This makes it possible to truncate the precision within a fixed margin of error of an H3 index. It is also possible to determine all the children of a parent H3 index. Approximate containment only applies when truncating the precision of an H3 index. The borders of hexagons indexed at a specific resolution are not approximate.
 
 This approximation allows for efficiently relating datasets indexed at different resolutions of the H3 grid. The functions for changing precision (`h3ToParent`, `h3ToChildren`) are implemented with only a few bitwise operations, making them very fast. The structure of the H3 index means that geographically close locations will tend to have numerically close indexes.
 

@@ -7,7 +7,7 @@ slug: /core-library/h3ToGeoBoundaryDesc
 
 This operation is performed by function `h3ToGeoBoundary`. See the comments in the function source code for more detail.
 
-The conversion is performed as a series of coordinate system conversions described below. See the page [Coordinate Systems used by the **H3 Core Library**](/docs/core-library/coordsystems) for more information on each of these coordinate systems.
+The conversion is performed as a series of coordinate system conversions described below. See the page [Coordinate Systems used by the H3 Core Library](/docs/core-library/coordsystems) for more information on each of these coordinate systems.
 
 * We note that the cell vertices are the center points of cells in an aperture 3 grid one resolution finer than the cell resolution, which we term a *substrate* grid. We precalculate the substrate *ijk* coordinates of a cell with *ijk* coordinates (0,0,0), adding additional aperture 3 and aperture 7 (if required, by Class III cell grid) substrate grid resolutions as required to transform the vertex coordinates into a Class II substrate grid.
 

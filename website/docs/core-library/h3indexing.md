@@ -7,7 +7,7 @@ slug: /core-library/h3Indexing
 
 ## Introduction
 
-The **H3** system assigns a unique hierarchical index to each cell. The **H3** index of a resolution *r* cell begins with the appropriate resolution 0 base cell number. This is followed by a sequence of *r* digits 0-6, where each *i*<sup>th</sup> digit *d*<sub>i</sub> specifies one of the 7 cells centered on the cell indicated by the coarser resolution digits *d*<sub>1</sub> through *d*<sub>i-1</sub>. A local hexagon coordinate system is assigned to each of the resolution 0 base cells and is used to orient all hierarchical indexing child cells of that base cell. The assignment of digits 0-6 at each resolution uses a *Central Place Indexing* arrangement (see [Sahr, 2014](http://webpages.sou.edu/~sahrk/sqspc/pubs/autocarto14.pdf)). In the case of the 12 pentagonal cells the indexing hierarchy produced by sub-digit 1 is removed at all resolutions.
+The H3 system assigns a unique hierarchical index to each cell. The H3 index of a resolution *r* cell begins with the appropriate resolution 0 base cell number. This is followed by a sequence of *r* digits 0-6, where each *i*<sup>th</sup> digit *d*<sub>i</sub> specifies one of the 7 cells centered on the cell indicated by the coarser resolution digits *d*<sub>1</sub> through *d*<sub>i-1</sub>. A local hexagon coordinate system is assigned to each of the resolution 0 base cells and is used to orient all hierarchical indexing child cells of that base cell. The assignment of digits 0-6 at each resolution uses a *Central Place Indexing* arrangement (see [Sahr, 2014](http://webpages.sou.edu/~sahrk/sqspc/pubs/autocarto14.pdf)). In the case of the 12 pentagonal cells the indexing hierarchy produced by sub-digit 1 is removed at all resolutions.
 
 Child hexagons are linearly smaller than their parent hexagons.
 
@@ -18,20 +18,20 @@ Child hexagons are linearly smaller than their parent hexagons.
 
 ## H3Index Representation
 
-An **H3Index** is the integer representation of an **H3** index, which may be one of multiple modes to indicate the concept being indexed.
+An `H3Index` is the integer representation of an H3 index, which may be one of multiple modes to indicate the concept being indexed.
 
-* Mode 0 is reserved and indicates an invalid **H3** index.
-* Mode 1 is an **H3 Cell** (Hexagon/Pentagon) index.
-* Mode 2 is an **H3 Unidirectional Edge** (Cell A -> Cell B) index.
+* Mode 0 is reserved and indicates an invalid H3 index.
+* Mode 1 is an *H3 Cell* (Hexagon/Pentagon) index.
+* Mode 2 is an *H3 Unidirectional Edge* (Cell A -> Cell B) index.
 * Mode 3 is planned to be a bidirectional edge (Cell A <-> Cell B).
-* Mode 4 is an **H3 Vertex** (i.e. a single vertex of an H3 Cell).
+* Mode 4 is an *H3 Vertex* (i.e. a single vertex of an H3 Cell).
 
-The canonical string representation of an **H3Index** is the hexadecimal representation of the integer, using lowercase letters. The string representation is variable length (no zero padding) and is not prefixed or suffixed.
+The canonical string representation of an `H3Index` is the hexadecimal representation of the integer, using lowercase letters. The string representation is variable length (no zero padding) and is not prefixed or suffixed.
 
 ### Invalid Index
 
 Mode 0 contains a special index, `H3_NULL`, which is unique: it is bit-equivalent to `0`.
-This index indicates, *specifically*, an invalid, missing, or uninitialized **H3** index;
+This index indicates, *specifically*, an invalid, missing, or uninitialized H3 index;
 it is analogous to `NaN` in floating point.
 It should be used instead of an arbitrary Mode 0 index, due to its uniqueness and easy identifiability.
 
@@ -68,7 +68,7 @@ An H3 Vertex index (mode 4) represents a single topological vertex in H3 grid sy
 
 ## Bit layout of H3Index
 
-The layout of an **H3Index** is shown below in table form. The interpretation of the "Reserved" field differs depending on the mode of the index.
+The layout of an `H3Index` is shown below in table form. The interpretation of the "Reserved" field differs depending on the mode of the index.
 
 <table>
 <tr>
