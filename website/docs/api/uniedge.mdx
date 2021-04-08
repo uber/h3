@@ -143,7 +143,7 @@ int h3UnidirectionalEdgeIsValid(H3Index edge);
 <TabItem value="python">
 
 ```py
-h3_unidirectional_edge_is_valid(edge)
+h3.h3_unidirectional_edge_is_valid(edge)
 ```
 
 </TabItem>
@@ -407,7 +407,7 @@ void getH3UnidirectionalEdgeBoundary(H3Index edge, GeoBoundary* gb);
 <TabItem value="python">
 
 ```py
-h3.get_h3_unidirectional_edge_boundary(edge)
+h3.get_h3_unidirectional_edge_boundary(edge, geo_json=False)
 ```
 
 </TabItem>
@@ -422,7 +422,7 @@ List<GeoCoord> getH3UnidirectionalEdgeBoundary(String edgeAddress);
 <TabItem value="javascript">
 
 ```js
-h3.getH3UnidirectionalEdgeBoundary(edge)
+h3.getH3UnidirectionalEdgeBoundary(edge, [formatAsGeoJson])
 ```
 
 ```js live
