@@ -1,26 +1,43 @@
 {
-  "description": "A website built with ocular",
-  "license": "Apache-2.0",
-  "keywords": [
-    "ocular"
-  ],
-  "main": "index.js",
+  "name": "h3-website",
+  "version": "0.0.0",
+  "private": true,
   "scripts": {
-    "start": "yarn clean && yarn develop",
-    "clean": "rm -rf ./.cache ./public",
-    "develop": "gatsby develop --port=8001",
-    "build": "yarn clean && gatsby build --prefix-paths",
-    "serve": "gatsby serve --prefix-paths",
-    "deploy": "NODE_DEBUG=gh-pages gh-pages -d public"
+    "docusaurus": "docusaurus",
+    "start": "docusaurus start",
+    "build": "docusaurus build",
+    "swizzle": "docusaurus swizzle --danger",
+    "deploy": "docusaurus deploy",
+    "clear": "docusaurus clear",
+    "serve": "docusaurus serve",
+    "write-translations": "docusaurus write-translations",
+    "write-heading-ids": "docusaurus write-heading-ids"
   },
   "dependencies": {
-    "gatsby": "^2.18.0",
-    "gatsby-remark-katex": "^3.1.20",
-    "gatsby-theme-ocular": "^1.2.0-beta.8",
-    "gatsby-transformer-remark": "^2.6.44",
-    "katex": "^0.11.1",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6"
+    "@docusaurus/core": "2.0.0-alpha.71",
+    "@docusaurus/preset-classic": "2.0.0-alpha.71",
+    "@docusaurus/theme-live-codeblock": "^2.0.0-alpha.71",
+    "@mdx-js/react": "^1.6.21",
+    "clsx": "^1.1.1",
+    "global": "^4.4.0",
+    "h3-js": "^3.7.1",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1"
   },
-  "devDependencies": {}
+  "browserslist": {
+    "production": [
+      ">0.5%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "volta": {
+    "node": "12.21.0",
+    "yarn": "1.22.10"
+  }
 }
