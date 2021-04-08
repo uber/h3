@@ -30,8 +30,8 @@
 // Fixtures
 static GeoPoint sfGeo = {0.659966917655, -2.1364398519396};
 
-SUITE(h3UniEdge) {
-    TEST(h3IndexesAreNeighbors) {
+SUITE(directedEdge) {
+    TEST(areNeighborCells) {
         H3Index sf;
         t_assertSuccess(H3_EXPORT(pointToCell)(&sfGeo, 9, &sf));
         H3Index ring[7] = {0};
