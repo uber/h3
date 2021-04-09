@@ -29,9 +29,7 @@ H3Index* out =
 BENCHMARK(gridPathNear, 10000, {
     H3_EXPORT(gridPath)(startIndex, endNear, out);
 });
-BENCHMARK(gridPathFar, 1000, {
-    H3_EXPORT(gridPath)(startIndex, endFar, out);
-});
+BENCHMARK(gridPathFar, 1000, { H3_EXPORT(gridPath)(startIndex, endFar, out); });
 
 free(out);
 
