@@ -186,10 +186,10 @@ H3Index* getCellsAtRes(int res) {
     H3Index* cells0 = calloc(num0, sizeof(H3Index));
     H3_EXPORT(getRes0Cells)(cells0);
 
-    int numRes = H3_EXPORT(maxUncompactCellsSize)(cells0, num0, res);
+    int numRes = H3_EXPORT(maxUncompactSize)(cells0, num0, res);
 
     H3Index* cellsRes = calloc(numRes, sizeof(H3Index));
-    H3_EXPORT(uncompactCells)(cells0, num0, cellsRes, numRes, res);
+    H3_EXPORT(uncompact)(cells0, num0, cellsRes, numRes, res);
 
     free(cells0);
 
@@ -264,9 +264,9 @@ void iterateBaseCellIndexesAtRes(int res, void (*callback)(H3Index),
     H3_SET_MODE(bc, H3_HEXAGON_MODE);
     H3_SET_RESOLUTION(bc, 0);
     H3_SET_BASE_CELL(bc, baseCell);
-    int childrenSz = H3_EXPORT(maxUncompactCellsSize)(&bc, 1, res);
+    int childrenSz = H3_EXPORT(maxUncompactSize)(&bc, 1, res);
     H3Index* children = calloc(childrenSz, sizeof(H3Index));
-    H3_EXPORT(uncompactCells)(&bc, 1, children, childrenSz, res);
+    H3_EXPORT(uncompact)(&bc, 1, children, childrenSz, res);
 
     for (int j = 0; j < childrenSz; j++) {
         if (children[j] == H3_NULL) {

@@ -172,7 +172,7 @@
 #define H3_NULL 0
 
 /*
- * Return codes for compactCells
+ * Return codes for compact
  */
 
 #define COMPACT_SUCCESS 0
