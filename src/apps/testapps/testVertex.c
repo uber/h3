@@ -148,7 +148,7 @@ SUITE(Vertex) {
         t_assert(H3_EXPORT(isValidVertex)(origin) == 0, "cell is not valid");
 
         H3Index fakeEdge = origin;
-        H3_SET_MODE(fakeEdge, H3_UNIEDGE_MODE);
+        H3_SET_MODE(fakeEdge, H3_DIRECTEDEDGE_MODE);
         t_assert(H3_EXPORT(isValidVertex)(fakeEdge) == 0,
                  "edge mode is not valid");
 

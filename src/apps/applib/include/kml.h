@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 Uber Technologies, Inc.
+ * Copyright 2016-2017, 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 #ifndef KML_H
 #define KML_H
 
-#include "geoCoord.h"
+#include "geoPoint.h"
 
 // output the KML header file for points
 void kmlPtsHeader(const char* name, const char* desc);
@@ -31,11 +31,11 @@ void kmlPtsFooter(void);
 void kmlBoundaryFooter(void);
 
 // output KML individual points or polygons
-void outputLatLonKML(const GeoCoord* g);
-void outputPointKML(const GeoCoord* g, const char* name);
-void outputTriKML(const GeoCoord* v1, const GeoCoord* v2, const GeoCoord* v3,
+void outputLatLonKML(const GeoPoint* g);
+void outputPointKML(const GeoPoint* g, const char* name);
+void outputTriKML(const GeoPoint* v1, const GeoPoint* v2, const GeoPoint* v3,
                   const char* name);
-void outputPolyKML(const GeoCoord geoVerts[], int numVerts, const char* name);
-void outputBoundaryKML(const GeoBoundary* b, const char* name);
+void outputPolyKML(const GeoPoint geoVerts[], int numVerts, const char* name);
+void outputBoundaryKML(const CellBoundary* b, const char* name);
 
 #endif

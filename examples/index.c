@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Uber Technologies, Inc.
+ * Copyright 2017, 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,16 +24,16 @@
 
 int main(int argc, char *argv[]) {
     // Get the H3 index of some location and print it.
-    GeoCoord location;
+    GeoPoint location;
     location.lat = degsToRads(40.689167);
     location.lon = degsToRads(-74.044444);
     int resolution = 10;
-    H3Index indexed = geoToH3(&location, resolution);
+    H3Index indexed = pointToCell(&location, resolution);
     printf("The index is: %" PRIx64 "\n", indexed);
 
     // Get the vertices of the H3 index.
-    GeoBoundary boundary;
-    h3ToGeoBoundary(indexed, &boundary);
+    CellBoundary boundary;
+    cellToBoundary(indexed, &boundary);
     // Indexes can have different number of vertices under some cases,
     // which is why boundary.numVerts is needed.
     for (int v = 0; v < boundary.numVerts; v++) {
@@ -43,8 +43,8 @@ int main(int argc, char *argv[]) {
     }
 
     // Get the center coordinates.
-    GeoCoord center;
-    h3ToGeo(indexed, &center);
+    GeoPoint center;
+    cellToPoint(indexed, &center);
     printf("Center coordinates: %lf, %lf\n", radsToDegs(center.lat),
            radsToDegs(center.lon));
 }

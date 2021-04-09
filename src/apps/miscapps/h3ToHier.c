@@ -42,7 +42,7 @@
 void recursiveH3IndexToHier(H3Index h, int res) {
     for (int d = 0; d < 7; d++) {
         // skip the pentagonal deleted subsequence
-        if (H3_EXPORT(h3IsPentagon)(h) && d == 1) {
+        if (H3_EXPORT(isPentagon)(h) && d == 1) {
             continue;
         }
 
@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    if (parentArg.found && !H3_EXPORT(h3IsValid)(parentIndex)) {
+    if (parentArg.found && !H3_EXPORT(isValidCell)(parentIndex)) {
         printHelp(stderr, argv[0], helpText, numArgs, args,
                   "Parent index is invalid.", NULL);
         return 1;

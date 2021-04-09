@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017, 2019 Uber Technologies, Inc.
+ * Copyright 2016-2017, 2019-2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,22 +49,22 @@ void doCell(H3Index h, bool verboseMode) {
     int h3BaseCell = H3_GET_BASE_CELL(h);
     if (verboseMode) {
         const char* modes[] = {
-            "RESERVED",             // 0
-            "Hexagon",              // 1
-            "Unidirectional Edge",  // 2
-            "INVALID",              // 3
-            "INVALID",              // 4
-            "INVALID",              // 5
-            "INVALID",              // 6
-            "INVALID",              // 7
-            "INVALID",              // 8
-            "INVALID",              // 9
-            "INVALID",              // 10
-            "INVALID",              // 11
-            "INVALID",              // 12
-            "INVALID",              // 13
-            "INVALID",              // 14
-            "INVALID",              // 15
+            "RESERVED",       // 0
+            "Cell",           // 1
+            "Directed Edge",  // 2
+            "INVALID",        // 3
+            "INVALID",        // 4
+            "INVALID",        // 5
+            "INVALID",        // 6
+            "INVALID",        // 7
+            "INVALID",        // 8
+            "INVALID",        // 9
+            "INVALID",        // 10
+            "INVALID",        // 11
+            "INVALID",        // 12
+            "INVALID",        // 13
+            "INVALID",        // 14
+            "INVALID",        // 15
         };
         printf("╔════════════╗\n");
         char hStr[BUFF_SIZE];
@@ -73,7 +73,7 @@ void doCell(H3Index h, bool verboseMode) {
         printf("╠════════════╣\n");
         printf("║ Mode       ║ %s (%i)\n", modes[h3Mode], h3Mode);
         printf("║ Resolution ║ %i\n", h3Res);
-        if (h3Mode == H3_UNIEDGE_MODE) {
+        if (h3Mode == H3_DIRECTEDEDGE_MODE) {
             printf("║ Edge       ║ %i\n", H3_GET_RESERVED_BITS(h));
         }
         printf("║ Base Cell  ║ %i\n", h3BaseCell);
@@ -89,7 +89,7 @@ void doCell(H3Index h, bool verboseMode) {
                 printf("%c", resDigitToChar(H3_GET_INDEX_DIGIT(h, i)));
             }
             printf("\n");
-        } else if (h3Mode == H3_UNIEDGE_MODE) {
+        } else if (h3Mode == H3_DIRECTEDEDGE_MODE) {
             printf("%d:%d:%d:%d:", h3Mode, H3_GET_RESERVED_BITS(h), h3Res,
                    h3BaseCell);
             for (int i = 1; i <= h3Res; i++) {

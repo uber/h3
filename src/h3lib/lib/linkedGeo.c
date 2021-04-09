@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Uber Technologies, Inc.
+ * Copyright 2017-2018, 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@
 #include <stdlib.h>
 
 #include "alloc.h"
-#include "geoCoord.h"
+#include "geoPoint.h"
 #include "h3api.h"
 
 /**
@@ -73,11 +73,11 @@ LinkedGeoLoop* addLinkedLoop(LinkedGeoPolygon* polygon, LinkedGeoLoop* loop) {
  * @param  vertex Coordinate to add
  * @return        Pointer to the coordinate
  */
-LinkedGeoCoord* addLinkedCoord(LinkedGeoLoop* loop, const GeoCoord* vertex) {
-    LinkedGeoCoord* coord = H3_MEMORY(malloc)(sizeof(*coord));
+LinkedGeoPoint* addLinkedCoord(LinkedGeoLoop* loop, const GeoPoint* vertex) {
+    LinkedGeoPoint* coord = H3_MEMORY(malloc)(sizeof(*coord));
     assert(coord != NULL);
-    *coord = (LinkedGeoCoord){.vertex = *vertex, .next = NULL};
-    LinkedGeoCoord* last = loop->last;
+    *coord = (LinkedGeoPoint){.vertex = *vertex, .next = NULL};
+    LinkedGeoPoint* last = loop->last;
     if (last == NULL) {
         assert(loop->first == NULL);
         loop->first = coord;
@@ -94,8 +94,8 @@ LinkedGeoCoord* addLinkedCoord(LinkedGeoLoop* loop, const GeoCoord* vertex) {
  * @param loop Loop to free
  */
 void destroyLinkedGeoLoop(LinkedGeoLoop* loop) {
-    LinkedGeoCoord* nextCoord;
-    for (LinkedGeoCoord* currentCoord = loop->first; currentCoord != NULL;
+    LinkedGeoPoint* nextCoord;
+    for (LinkedGeoPoint* currentCoord = loop->first; currentCoord != NULL;
          currentCoord = nextCoord) {
         nextCoord = currentCoord->next;
         H3_MEMORY(free)(currentCoord);
@@ -165,7 +165,7 @@ int countLinkedLoops(LinkedGeoPolygon* polygon) {
  * @return      Count
  */
 int countLinkedCoords(LinkedGeoLoop* loop) {
-    LinkedGeoCoord* coord = loop->first;
+    LinkedGeoPoint* coord = loop->first;
     int count = 0;
     while (coord != NULL) {
         count++;

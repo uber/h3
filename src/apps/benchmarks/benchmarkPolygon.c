@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Uber Technologies, Inc.
+ * Copyright 2018, 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,19 +19,19 @@
 #include "polygon.h"
 
 // Fixtures
-GeoCoord coord = {0.6593020122281105, -2.136646587644049};
+GeoPoint coord = {0.6593020122281105, -2.136646587644049};
 
-GeoCoord smallVerts[] = {{0.6593216174404631, -2.136686544190228},
+GeoPoint smallVerts[] = {{0.6593216174404631, -2.136686544190228},
                          {0.6592922488566673, -2.1367052400423},
                          {0.6592659902057862, -2.136683255590617},
                          {0.6592690997315311, -2.136642575268508},
                          {0.6592984683133152, -2.1366238782059224},
                          {0.6593247273713713, -2.136645862675915},
                          {0.6593216174404631, -2.136686544190228}};
-Geofence smallGeofence;
+GeoLoop smallGeoLoop;
 BBox smallBBox;
 
-GeoCoord largeVerts[] = {{0.659094230575688, -2.1371021015485354},
+GeoPoint largeVerts[] = {{0.659094230575688, -2.1371021015485354},
                          {0.6590648582999955, -2.137120785446624},
                          {0.6590386025000088, -2.1370988011284138},
                          {0.6590417185683777, -2.1370581328924323},
@@ -122,29 +122,29 @@ GeoCoord largeVerts[] = {{0.659094230575688, -2.1371021015485354},
                          {0.6591498571948209, -2.137105402167002},
                          {0.6591204854444472, -2.137124086561602},
                          {0.659094230575688, -2.1371021015485354}};
-Geofence largeGeofence;
+GeoLoop largeGeoLoop;
 BBox largeBBox;
 
 BEGIN_BENCHMARKS();
 
-smallGeofence.numVerts = 6;
-smallGeofence.verts = smallVerts;
-bboxFromGeofence(&smallGeofence, &smallBBox);
+smallGeoLoop.numVerts = 6;
+smallGeoLoop.verts = smallVerts;
+bboxFromGeoLoop(&smallGeoLoop, &smallBBox);
 
-largeGeofence.numVerts = 90;
-largeGeofence.verts = largeVerts;
-bboxFromGeofence(&largeGeofence, &largeBBox);
+largeGeoLoop.numVerts = 90;
+largeGeoLoop.verts = largeVerts;
+bboxFromGeoLoop(&largeGeoLoop, &largeBBox);
 
-BENCHMARK(pointInsideGeofenceSmall, 100000,
-          { pointInsideGeofence(&smallGeofence, &smallBBox, &coord); });
+BENCHMARK(pointInsideGeoLoopSmall, 100000,
+          { pointInsideGeoLoop(&smallGeoLoop, &smallBBox, &coord); });
 
-BENCHMARK(pointInsideGeofenceLarge, 100000,
-          { pointInsideGeofence(&largeGeofence, &largeBBox, &coord); });
+BENCHMARK(pointInsideGeoLoopLarge, 100000,
+          { pointInsideGeoLoop(&largeGeoLoop, &largeBBox, &coord); });
 
-BENCHMARK(bboxFromGeofenceSmall, 100000,
-          { bboxFromGeofence(&smallGeofence, &smallBBox); });
+BENCHMARK(bboxFromGeoLoopSmall, 100000,
+          { bboxFromGeoLoop(&smallGeoLoop, &smallBBox); });
 
-BENCHMARK(bboxFromGeofenceLarge, 100000,
-          { bboxFromGeofence(&largeGeofence, &largeBBox); });
+BENCHMARK(bboxFromGeoLoopLarge, 100000,
+          { bboxFromGeoLoop(&largeGeoLoop, &largeBBox); });
 
 END_BENCHMARKS();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2019 Uber Technologies, Inc.
+ * Copyright 2016-2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@
 #define FACEIJK_H
 
 #include "coordijk.h"
-#include "geoCoord.h"
+#include "geoPoint.h"
 #include "vec2d.h"
 
 /** @struct FaceIJK
@@ -47,7 +47,7 @@ typedef struct {
                    /// face
 } FaceOrientIJK;
 
-extern const GeoCoord faceCenterGeo[NUM_ICOSA_FACES];
+extern const GeoPoint faceCenterGeo[NUM_ICOSA_FACES];
 
 // indexes for faceNeighbors table
 /** IJ quadrant faceNeighbors table direction */
@@ -72,16 +72,16 @@ typedef enum {
 
 // Internal functions
 
-void _geoToFaceIjk(const GeoCoord* g, int res, FaceIJK* h);
-void _geoToHex2d(const GeoCoord* g, int res, int* face, Vec2d* v);
-void _faceIjkToGeo(const FaceIJK* h, int res, GeoCoord* g);
-void _faceIjkToGeoBoundary(const FaceIJK* h, int res, int start, int length,
-                           GeoBoundary* g);
-void _faceIjkPentToGeoBoundary(const FaceIJK* h, int res, int start, int length,
-                               GeoBoundary* g);
+void _geoToFaceIjk(const GeoPoint* g, int res, FaceIJK* h);
+void _geoToHex2d(const GeoPoint* g, int res, int* face, Vec2d* v);
+void _faceIjkToGeo(const FaceIJK* h, int res, GeoPoint* g);
+void _faceIjkToCellBoundary(const FaceIJK* h, int res, int start, int length,
+                            CellBoundary* g);
+void _faceIjkPentToCellBoundary(const FaceIJK* h, int res, int start,
+                                int length, CellBoundary* g);
 void _faceIjkToVerts(FaceIJK* fijk, int* res, FaceIJK* fijkVerts);
 void _faceIjkPentToVerts(FaceIJK* fijk, int* res, FaceIJK* fijkVerts);
-void _hex2dToGeo(const Vec2d* v, int face, int res, int substrate, GeoCoord* g);
+void _hex2dToGeo(const Vec2d* v, int face, int res, int substrate, GeoPoint* g);
 Overage _adjustOverageClassII(FaceIJK* fijk, int res, int pentLeading4,
                               int substrate);
 Overage _adjustPentVertOverage(FaceIJK* fijk, int res);

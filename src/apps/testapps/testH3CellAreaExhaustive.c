@@ -38,17 +38,17 @@
  *     pointDistKm
  *     pointDistM
  *
- * @param  edge  H3 unidirectional edge denoting neighboring cells
+ * @param  edge  H3 directed edge denoting neighboring cells
  */
 static void haversine_assert(H3Index edge) {
-    GeoCoord a, b;
+    GeoPoint a, b;
     H3Index origin, destination;
 
-    origin = H3_EXPORT(getOriginH3IndexFromUnidirectionalEdge)(edge);
-    H3_EXPORT(h3ToGeo)(origin, &a);
+    origin = H3_EXPORT(getDirectedEdgeOrigin)(edge);
+    H3_EXPORT(cellToPoint)(origin, &a);
 
-    destination = H3_EXPORT(getDestinationH3IndexFromUnidirectionalEdge)(edge);
-    H3_EXPORT(h3ToGeo)(destination, &b);
+    destination = H3_EXPORT(getDirectedEdgeDestination)(edge);
+    H3_EXPORT(cellToPoint)(destination, &b);
 
     char pos[] = "distance between cell centers should be positive";
     char comm[] = "pairwise cell distances should be commutative";
@@ -134,17 +134,17 @@ static void earth_area_test(int res, double (*cell_area)(H3Index),
 
 SUITE(h3CellAreaExhaustive) {
     TEST(haversine_distances) {
-        iterateAllUnidirectionalEdgesAtRes(0, haversine_assert);
-        iterateAllUnidirectionalEdgesAtRes(1, haversine_assert);
-        iterateAllUnidirectionalEdgesAtRes(2, haversine_assert);
-        iterateAllUnidirectionalEdgesAtRes(3, haversine_assert);
+        iterateAllDirectedEdgesAtRes(0, haversine_assert);
+        iterateAllDirectedEdgesAtRes(1, haversine_assert);
+        iterateAllDirectedEdgesAtRes(2, haversine_assert);
+        iterateAllDirectedEdgesAtRes(3, haversine_assert);
     }
 
     TEST(edge_length) {
-        iterateAllUnidirectionalEdgesAtRes(0, edge_length_assert);
-        iterateAllUnidirectionalEdgesAtRes(1, edge_length_assert);
-        iterateAllUnidirectionalEdgesAtRes(2, edge_length_assert);
-        iterateAllUnidirectionalEdgesAtRes(3, edge_length_assert);
+        iterateAllDirectedEdgesAtRes(0, edge_length_assert);
+        iterateAllDirectedEdgesAtRes(1, edge_length_assert);
+        iterateAllDirectedEdgesAtRes(2, edge_length_assert);
+        iterateAllDirectedEdgesAtRes(3, edge_length_assert);
     }
 
     TEST(cell_area_positive) {

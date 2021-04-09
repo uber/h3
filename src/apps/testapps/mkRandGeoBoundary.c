@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017, 2019 Uber Technologies, Inc.
+ * Copyright 2016-2017, 2019-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 /** @file
  * @brief generates random cell indexes and the corresponding cell boundaries
  *
- *  See `mkRandGeoBoundary --help` for usage.
+ *  See `mkRandCellBoundary --help` for usage.
  *
  *  The program generates `numPoints` random lat/lon coordinates and outputs
  *  them along with the corresponding H3Index at the specified `resolution`.
@@ -64,14 +64,14 @@ int main(int argc, char* argv[]) {
     }
 
     for (int i = 0; i < numPoints; i++) {
-        GeoCoord g;
+        GeoPoint g;
         randomGeo(&g);
 
-        H3Index h = H3_EXPORT(geoToH3)(&g, res);
-        GeoBoundary b;
-        H3_EXPORT(h3ToGeoBoundary)(h, &b);
+        H3Index h = H3_EXPORT(pointToCell)(&g, res);
+        CellBoundary b;
+        H3_EXPORT(cellToBoundary)(h, &b);
 
         h3Println(h);
-        geoBoundaryPrintln(&b);
+        cellBoundaryPrintln(&b);
     }
 }

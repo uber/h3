@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Uber Technologies, Inc.
+ * Copyright 2018, 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,9 +27,9 @@ int main(int argc, char* argv[]) {
     // Distance away from the origin to find:
     int k = 2;
 
-    int maxNeighboring = maxKringSize(k);
+    int maxNeighboring = maxGridDiskSize(k);
     H3Index* neighboring = calloc(maxNeighboring, sizeof(H3Index));
-    kRing(indexed, k, neighboring);
+    gridDisk(indexed, k, neighboring);
 
     printf("Neighbors:\n");
     for (int i = 0; i < maxNeighboring; i++) {

@@ -56,14 +56,14 @@ void coordIjkPrint(const CoordIJK* c) {
 /**
  * Assumes `str` is big enough to hold the result.
  */
-void geoToStringRads(const GeoCoord* p, char* str) {
+void geoToStringRads(const GeoPoint* p, char* str) {
     sprintf(str, "(%.4lf, %.4lf)", p->lat, p->lon);
 }
 
 /**
  * Assumes `str` is big enough to hold the result.
  */
-void geoToStringDegs(const GeoCoord* p, char* str) {
+void geoToStringDegs(const GeoPoint* p, char* str) {
     sprintf(str, "(%.9lf, %.9lf)", H3_EXPORT(radsToDegs)(p->lat),
             H3_EXPORT(radsToDegs)(p->lon));
 }
@@ -71,34 +71,34 @@ void geoToStringDegs(const GeoCoord* p, char* str) {
 /**
  * Assumes `str` is big enough to hold the result.
  */
-void geoToStringDegsNoFmt(const GeoCoord* p, char* str) {
+void geoToStringDegsNoFmt(const GeoPoint* p, char* str) {
     sprintf(str, "%.9lf %.9lf", H3_EXPORT(radsToDegs)(p->lat),
             H3_EXPORT(radsToDegs)(p->lon));
 }
 
-void geoPrint(const GeoCoord* p) {
+void geoPrint(const GeoPoint* p) {
     char buff[BUFF_SIZE];
     geoToStringDegs(p, buff);
     printf("%s", buff);
 }
 
-void geoPrintln(const GeoCoord* p) {
+void geoPrintln(const GeoPoint* p) {
     geoPrint(p);
     printf("\n");
 }
 
-void geoPrintNoFmt(const GeoCoord* p) {
+void geoPrintNoFmt(const GeoPoint* p) {
     char buff[BUFF_SIZE];
     geoToStringDegsNoFmt(p, buff);
     printf("%s", buff);
 }
 
-void geoPrintlnNoFmt(const GeoCoord* p) {
+void geoPrintlnNoFmt(const GeoPoint* p) {
     geoPrintNoFmt(p);
     printf("\n");
 }
 
-void geoBoundaryPrint(const GeoBoundary* b) {
+void cellBoundaryPrint(const CellBoundary* b) {
     char buff[BUFF_SIZE];
     printf("{");
     for (int v = 0; v < b->numVerts; v++) {
@@ -108,7 +108,7 @@ void geoBoundaryPrint(const GeoBoundary* b) {
     printf("}");
 }
 
-void geoBoundaryPrintln(const GeoBoundary* b) {
+void cellBoundaryPrintln(const CellBoundary* b) {
     char buff[BUFF_SIZE];
     printf("{\n");
     for (int v = 0; v < b->numVerts; v++) {
@@ -121,7 +121,7 @@ void geoBoundaryPrintln(const GeoBoundary* b) {
 /**
  * Apply callback for every unidirectional edge at the given resolution.
  */
-void iterateAllUnidirectionalEdgesAtRes(int res, void (*callback)(H3Index)) {
+void iterateAllDirectedEdgesAtRes(int res, void (*callback)(H3Index)) {
     Iter_Res iter = iterInitRes(res);
 
     for (; iter.h; iterStepRes(&iter)) {
@@ -173,7 +173,7 @@ void iterateBaseCellIndexesAtRes(int res, void (*callback)(H3Index),
  *
  * @param g Lat/lon will be placed here.
  */
-void randomGeo(GeoCoord* g) {
+void randomGeo(GeoPoint* g) {
     static int init = 0;
     if (!init) {
         srand((unsigned int)time(0));
@@ -188,12 +188,12 @@ void randomGeo(GeoCoord* g) {
 /**
  * Returns the number of non-invalid indexes in the array.
  */
-int countActualHexagons(H3Index* hexagons, int numHexagons) {
-    int actualNumHexagons = 0;
-    for (int i = 0; i < numHexagons; i++) {
-        if (hexagons[i] != H3_NULL) {
-            actualNumHexagons++;
+int countNonNullIndexes(H3Index* indexes, int numCells) {
+    int nonNullIndexes = 0;
+    for (int i = 0; i < numCells; i++) {
+        if (indexes[i] != H3_NULL) {
+            nonNullIndexes++;
         }
     }
-    return actualNumHexagons;
+    return nonNullIndexes;
 }

@@ -81,7 +81,7 @@ int main(int argc, char *argv[]) {
         return helpArg.found ? 0 : 1;
     }
 
-    if (!H3_EXPORT(h3IsValid)(origin)) {
+    if (!H3_EXPORT(isValidCell)(origin)) {
         printHelp(stderr, argv[0], helpText, numArgs, args,
                   "Origin is invalid.", NULL);
         return 1;

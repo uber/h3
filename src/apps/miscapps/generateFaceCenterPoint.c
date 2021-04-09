@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Uber Technologies, Inc.
+ * Copyright 2018, 2020-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@
 
 /** @brief icosahedron face centers in lat/lon radians. Copied from faceijk.c.
  */
-const GeoCoord faceCenterGeoCopy[NUM_ICOSA_FACES] = {
+const GeoPoint faceCenterGeoCopy[NUM_ICOSA_FACES] = {
     {0.803582649718989942, 1.248397419617396099},    // face  0
     {1.307747883455638156, 2.536945009877921159},    // face  1
     {1.054751253523952054, -1.347517358900396623},   // face  2
@@ -55,7 +55,7 @@ const GeoCoord faceCenterGeoCopy[NUM_ICOSA_FACES] = {
 static void generate() {
     printf("static const Vec3d faceCenterPoint[NUM_ICOSA_FACES] = {\n");
     for (int i = 0; i < NUM_ICOSA_FACES; i++) {
-        GeoCoord centerCoords = faceCenterGeoCopy[i];
+        GeoPoint centerCoords = faceCenterGeoCopy[i];
         Vec3d centerPoint;
         _geoToVec3d(&centerCoords, &centerPoint);
         printf("    {%.16f, %.16f, %.16f}, // face %2d\n", centerPoint.x,

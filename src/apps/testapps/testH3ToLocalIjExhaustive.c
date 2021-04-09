@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Uber Technologies, Inc.
+ * Copyright 2019-2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,8 @@
 
 static const int MAX_DISTANCES[] = {1, 2, 5, 12, 19, 26};
 
-// The same traversal constants from algos.c (for hexRange) here reused as local
-// IJ vectors.
+// The same traversal constants from algos.c (for gridDiskUnsafe) here reused as
+// local IJ vectors.
 static const CoordIJ DIRECTIONS[6] = {{0, 1},  {-1, 0}, {-1, -1},
                                       {0, -1}, {1, 0},  {1, 1}};
 
@@ -98,7 +98,7 @@ void h3ToLocalIj_neighbors_assertions(H3Index h3) {
     ijToIjk(&origin, &originIjk);
 
     for (Direction d = K_AXES_DIGIT; d < INVALID_DIGIT; d++) {
-        if (d == K_AXES_DIGIT && H3_EXPORT(h3IsPentagon)(h3)) {
+        if (d == K_AXES_DIGIT && H3_EXPORT(isPentagon)(h3)) {
             continue;
         }
 
@@ -126,16 +126,16 @@ void h3ToLocalIj_neighbors_assertions(H3Index h3) {
  * Test that the neighbors (k-ring), if they can be found in the local IJ
  * coordinate space, can be converted back to indexes.
  */
-void localIjToH3_kRing_assertions(H3Index h3) {
+void localIjToH3_gridDisk_assertions(H3Index h3) {
     int r = H3_GET_RESOLUTION(h3);
-    t_assert(r <= 5, "resolution supported by test function (kRing)");
+    t_assert(r <= 5, "resolution supported by test function (gridDisk)");
     int maxK = MAX_DISTANCES[r];
 
-    int sz = H3_EXPORT(maxKringSize)(maxK);
+    int sz = H3_EXPORT(maxGridDiskSize)(maxK);
     H3Index *neighbors = calloc(sz, sizeof(H3Index));
     int *distances = calloc(sz, sizeof(int));
 
-    H3_EXPORT(kRingDistances)(h3, maxK, neighbors, distances);
+    H3_EXPORT(gridDiskDistances)(h3, maxK, neighbors, distances);
 
     for (int i = 0; i < sz; i++) {
         if (neighbors[i] == 0) {
@@ -167,7 +167,7 @@ void localIjToH3_traverse_assertions(H3Index h3) {
     t_assert(H3_EXPORT(experimentalH3ToLocalIj)(h3, h3, &ij) == 0,
              "Got origin coordinates");
 
-    // This logic is from hexRangeDistances.
+    // This logic is from gridDiskDistancesUnsafe.
     // 0 < ring <= k, current ring
     int ring = 1;
     // 0 <= direction < 6, current side of the ring
@@ -188,7 +188,7 @@ void localIjToH3_traverse_assertions(H3Index h3) {
 
         int failed = H3_EXPORT(experimentalLocalIjToH3)(h3, &ij, &testH3);
         if (!failed) {
-            t_assert(H3_EXPORT(h3IsValid)(testH3),
+            t_assert(H3_EXPORT(isValidCell)(testH3),
                      "test coordinates result in valid index");
 
             CoordIJ expectedIj;
@@ -245,12 +245,12 @@ SUITE(h3ToLocalIj) {
         iterateAllIndexesAtRes(2, h3ToLocalIj_neighbors_assertions);
     }
 
-    TEST(localIjToH3_kRing) {
-        iterateAllIndexesAtRes(0, localIjToH3_kRing_assertions);
-        iterateAllIndexesAtRes(1, localIjToH3_kRing_assertions);
-        iterateAllIndexesAtRes(2, localIjToH3_kRing_assertions);
+    TEST(localIjToH3_gridDisk) {
+        iterateAllIndexesAtRes(0, localIjToH3_gridDisk_assertions);
+        iterateAllIndexesAtRes(1, localIjToH3_gridDisk_assertions);
+        iterateAllIndexesAtRes(2, localIjToH3_gridDisk_assertions);
         // Don't iterate all of res 3, to save time
-        iterateAllIndexesAtResPartial(3, localIjToH3_kRing_assertions, 27);
+        iterateAllIndexesAtResPartial(3, localIjToH3_gridDisk_assertions, 27);
         // Further resolutions aren't tested to save time.
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Uber Technologies, Inc.
+ * Copyright 2017-2018, 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@
 #include <stdlib.h>
 
 #include "bbox.h"
-#include "geoCoord.h"
+#include "geoPoint.h"
 #include "h3api.h"
 
 // Error codes for normalizeMultiPolygon
@@ -34,8 +34,8 @@
 // Macros for use with polygonAlgos.h
 /** Macro: Init iteration vars for LinkedGeoLoop */
 #define INIT_ITERATION_LINKED_LOOP       \
-    LinkedGeoCoord* currentCoord = NULL; \
-    LinkedGeoCoord* nextCoord = NULL
+    LinkedGeoPoint* currentCoord = NULL; \
+    LinkedGeoPoint* nextCoord = NULL
 
 /** Macro: Get the next coord in a linked loop, wrapping if needed */
 #define GET_NEXT_COORD(loop, coordToCheck) \
@@ -56,7 +56,7 @@ int normalizeMultiPolygon(LinkedGeoPolygon* root);
 LinkedGeoPolygon* addNewLinkedPolygon(LinkedGeoPolygon* polygon);
 LinkedGeoLoop* addNewLinkedLoop(LinkedGeoPolygon* polygon);
 LinkedGeoLoop* addLinkedLoop(LinkedGeoPolygon* polygon, LinkedGeoLoop* loop);
-LinkedGeoCoord* addLinkedCoord(LinkedGeoLoop* loop, const GeoCoord* vertex);
+LinkedGeoPoint* addLinkedCoord(LinkedGeoLoop* loop, const GeoPoint* vertex);
 int countLinkedPolygons(LinkedGeoPolygon* polygon);
 int countLinkedLoops(LinkedGeoPolygon* polygon);
 int countLinkedCoords(LinkedGeoLoop* loop);
@@ -67,7 +67,7 @@ void destroyLinkedGeoLoop(LinkedGeoLoop* loop);
 
 /**
  * Create a bounding box from a LinkedGeoLoop
- * @param geofence Input Geofence
+ * @param geoloop Input GeoLoop
  * @param bbox     Output bbox
  */
 void bboxFromLinkedGeoLoop(const LinkedGeoLoop* loop, BBox* bbox);
@@ -81,7 +81,7 @@ void bboxFromLinkedGeoLoop(const LinkedGeoLoop* loop, BBox* bbox);
  * @return              Whether the point is contained
  */
 bool pointInsideLinkedGeoLoop(const LinkedGeoLoop* loop, const BBox* bbox,
-                              const GeoCoord* coord);
+                              const GeoPoint* coord);
 
 /**
  * Whether the winding order of a given LinkedGeoLoop is clockwise

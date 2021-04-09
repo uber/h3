@@ -36,27 +36,26 @@ void h3Println(H3Index h);  // prints as integer
 
 void coordIjkPrint(const CoordIJK* c);
 
-void geoToStringRads(const GeoCoord* p, char* str);
-void geoToStringDegs(const GeoCoord* p, char* str);
-void geoToStringDegsNoFmt(const GeoCoord* p, char* str);
+void geoToStringRads(const GeoPoint* p, char* str);
+void geoToStringDegs(const GeoPoint* p, char* str);
+void geoToStringDegsNoFmt(const GeoPoint* p, char* str);
 
-void geoPrint(const GeoCoord* p);
-void geoPrintln(const GeoCoord* p);
-void geoPrintNoFmt(const GeoCoord* p);
-void geoPrintlnNoFmt(const GeoCoord* p);
-void geoBoundaryPrint(const GeoBoundary* b);
-void geoBoundaryPrintln(const GeoBoundary* b);
-int readBoundary(FILE* f, GeoBoundary* b);
+void geoPrint(const GeoPoint* p);
+void geoPrintln(const GeoPoint* p);
+void geoPrintNoFmt(const GeoPoint* p);
+void geoPrintlnNoFmt(const GeoPoint* p);
+void cellBoundaryPrint(const CellBoundary* b);
+void cellBoundaryPrintln(const CellBoundary* b);
 
-void randomGeo(GeoCoord* p);
+void randomGeo(GeoPoint* p);
 
 void iterateAllIndexesAtRes(int res, void (*callback)(H3Index));
 void iterateAllIndexesAtResPartial(int res, void (*callback)(H3Index),
                                    int maxBaseCell);
 void iterateBaseCellIndexesAtRes(int res, void (*callback)(H3Index),
                                  int baseCell);
-void iterateAllUnidirectionalEdgesAtRes(int res, void (*callback)(H3Index));
+void iterateAllDirectedEdgesAtRes(int res, void (*callback)(H3Index));
 
-int countActualHexagons(H3Index* hexagons, int numHexagons);
+int countNonNullIndexes(H3Index* indexes, int numCells);
 
 #endif

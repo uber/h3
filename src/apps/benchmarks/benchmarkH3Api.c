@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Uber Technologies, Inc.
+ * Copyright 2017, 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 #include "benchmark.h"
-#include "geoCoord.h"
+#include "geoPoint.h"
 #include "h3api.h"
 
 // Fixtures (arbitrary res 9 hexagon)
-GeoCoord coord = {0.659966917655, -2.1364398519396};
+GeoPoint coord = {0.659966917655, -2.1364398519396};
 H3Index hex = 0x89283080ddbffff;
 
 BEGIN_BENCHMARKS();
 
-GeoCoord outCoord;
-GeoBoundary outBoundary;
+GeoPoint outCoord;
+CellBoundary outBoundary;
 
-BENCHMARK(geoToH3, 10000, { H3_EXPORT(geoToH3)(&coord, 9); });
+BENCHMARK(pointToCell, 10000, { H3_EXPORT(pointToCell)(&coord, 9); });
 
-BENCHMARK(h3ToGeo, 10000, { H3_EXPORT(h3ToGeo)(hex, &outCoord); });
+BENCHMARK(cellToPoint, 10000, { H3_EXPORT(cellToPoint)(hex, &outCoord); });
 
-BENCHMARK(h3ToGeoBoundary, 10000, {
-    H3_EXPORT(h3ToGeoBoundary)(hex, &outBoundary);
+BENCHMARK(cellToBoundary, 10000, {
+    H3_EXPORT(cellToBoundary)(hex, &outBoundary);
 });
 
 END_BENCHMARKS();

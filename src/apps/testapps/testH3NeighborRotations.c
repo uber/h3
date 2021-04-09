@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 Uber Technologies, Inc.
+ * Copyright 2016-2017, 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 /** @file
- * @brief tests hexRange vs. _kRingInternal.
+ * @brief tests gridDiskUnsafe vs. gridDiskDistancesSafe.
  *
  *  usage: `testH3NeighborRotations resolution [maxK]`
  *
- *  All indexes at `resolution` will be tested. For each index, kRing
+ *  All indexes at `resolution` will be tested. For each index, gridDisk
  *  of `k` up to `maxK` (default 5) will be run. Standard out will show
- *  the number of cases that returned each return code from hexRange.
+ *  the number of cases that returned each return code from gridDiskUnsafe.
  *
  *  If `FAILED` is present in the output, the numbers following it
  *  are the number of test cases that failed validation.
@@ -38,7 +38,7 @@
 /**
  * @brief testH3NeighborRotations validation result
  *
- * Number of cases with the given return code from hexRange.
+ * Number of cases with the given return code from gridDiskUnsafe.
  */
 typedef struct {
     int ret0;
@@ -50,19 +50,20 @@ typedef struct {
 
 void doCell(H3Index h, int maxK, TestOutput* testOutput) {
     for (int k = 0; k < maxK; k++) {
-        int maxSz = H3_EXPORT(maxKringSize)(k);
-        H3Index* kRingInternalOutput = calloc(sizeof(H3Index), maxSz);
-        H3Index* hexRangeOutput = calloc(sizeof(H3Index), maxSz);
-        int* kRingInternalDistances = calloc(sizeof(int), maxSz);
+        int maxSz = H3_EXPORT(maxGridDiskSize)(k);
+        H3Index* gridDiskInternalOutput = calloc(sizeof(H3Index), maxSz);
+        H3Index* gridDiskUnsafeOutput = calloc(sizeof(H3Index), maxSz);
+        int* gridDiskInternalDistances = calloc(sizeof(int), maxSz);
 
-        _kRingInternal(h, k, kRingInternalOutput, kRingInternalDistances, maxSz,
-                       0);
-        int hexRangeFailed = H3_EXPORT(hexRange)(h, k, hexRangeOutput);
+        H3_EXPORT(gridDiskDistancesSafe)
+        (h, k, gridDiskInternalOutput, gridDiskInternalDistances);
+        int gridDiskUnsafeFailed =
+            H3_EXPORT(gridDiskUnsafe)(h, k, gridDiskUnsafeOutput);
 
-        if (hexRangeFailed == 2) {
+        if (gridDiskUnsafeFailed == 2) {
             testOutput->ret2++;
             continue;
-        } else if (hexRangeFailed == 0) {
+        } else if (gridDiskUnsafeFailed == 0) {
             testOutput->ret0++;
             int startIdx = 0;
             // i is the current ring number
@@ -72,12 +73,12 @@ void doCell(H3Index h, int maxK, TestOutput* testOutput) {
                 if (i == 0) n = 1;
 
                 for (int ii = 0; ii < n; ii++) {
-                    H3Index h2 = hexRangeOutput[ii + startIdx];
+                    H3Index h2 = gridDiskUnsafeOutput[ii + startIdx];
                     int found = 0;
 
                     for (int iii = 0; iii < maxSz; iii++) {
-                        if (kRingInternalOutput[iii] == h2 &&
-                            kRingInternalDistances[iii] == i) {
+                        if (gridDiskInternalOutput[iii] == h2 &&
+                            gridDiskInternalDistances[iii] == i) {
                             found = 1;
                             break;
                         }
@@ -94,18 +95,18 @@ void doCell(H3Index h, int maxK, TestOutput* testOutput) {
 
                 startIdx += n;
             }
-        } else if (hexRangeFailed == 1) {
+        } else if (gridDiskUnsafeFailed == 1) {
             testOutput->ret1++;
             int foundPent = 0;
             for (int i = 0; i < maxSz; i++) {
-                if (H3_EXPORT(h3IsPentagon)(kRingInternalOutput[i])) {
+                if (H3_EXPORT(isPentagon)(gridDiskInternalOutput[i])) {
                     foundPent = 1;
                     break;
                 }
             }
 
             if (!foundPent) {
-                // Failed to find the pentagon that caused hexRange
+                // Failed to find the pentagon that caused gridDiskUnsafe
                 // to fail.
                 printf("NO C k=%d h=%" PRIx64 "\n", k, h);
                 testOutput->ret1ValidationFailures++;
@@ -113,9 +114,9 @@ void doCell(H3Index h, int maxK, TestOutput* testOutput) {
             }
         }
 
-        free(kRingInternalOutput);
-        free(hexRangeOutput);
-        free(kRingInternalDistances);
+        free(gridDiskInternalOutput);
+        free(gridDiskUnsafeOutput);
+        free(gridDiskInternalDistances);
     }
 }
 

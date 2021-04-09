@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Uber Technologies, Inc.
+ * Copyright 2018, 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 /** @file
  * @brief Include file for poylgon algorithms. This includes the core
  *        logic for algorithms acting over loops of coordinates,
- *        allowing them to be reused for both Geofence and
+ *        allowing them to be reused for both GeoLoop and
  *        LinkegGeoLoop structures. This file is intended to be
  *        included inline in a file that defines the type-specific
  *        macros required for iteration.
@@ -28,7 +28,7 @@
 
 #include "bbox.h"
 #include "constants.h"
-#include "geoCoord.h"
+#include "geoPoint.h"
 #include "h3api.h"
 #include "linkedGeo.h"
 #include "polygon.h"
@@ -65,7 +65,7 @@
  * @return      Whether the point is contained
  */
 bool GENERIC_LOOP_ALGO(pointInside)(const TYPE* loop, const BBox* bbox,
-                                    const GeoCoord* coord) {
+                                    const GeoPoint* coord) {
     // fail fast if we're outside the bounding box
     if (!bboxContains(bbox, coord)) {
         return false;
@@ -76,8 +76,8 @@ bool GENERIC_LOOP_ALGO(pointInside)(const TYPE* loop, const BBox* bbox,
     double lat = coord->lat;
     double lng = NORMALIZE_LON(coord->lon, isTransmeridian);
 
-    GeoCoord a;
-    GeoCoord b;
+    GeoPoint a;
+    GeoPoint b;
 
     INIT_ITERATION;
 
@@ -87,7 +87,7 @@ bool GENERIC_LOOP_ALGO(pointInside)(const TYPE* loop, const BBox* bbox,
         // Ray casting algo requires the second point to always be higher
         // than the first, so swap if needed
         if (a.lat > b.lat) {
-            GeoCoord tmp = a;
+            GeoPoint tmp = a;
             a = b;
             b = tmp;
         }
@@ -151,8 +151,8 @@ void GENERIC_LOOP_ALGO(bboxFrom)(const TYPE* loop, BBox* bbox) {
 
     double lat;
     double lon;
-    GeoCoord coord;
-    GeoCoord next;
+    GeoPoint coord;
+    GeoPoint next;
 
     INIT_ITERATION;
 
@@ -191,8 +191,8 @@ void GENERIC_LOOP_ALGO(bboxFrom)(const TYPE* loop, BBox* bbox) {
 static bool GENERIC_LOOP_ALGO(isClockwiseNormalized)(const TYPE* loop,
                                                      bool isTransmeridian) {
     double sum = 0;
-    GeoCoord a;
-    GeoCoord b;
+    GeoPoint a;
+    GeoPoint b;
 
     INIT_ITERATION;
     while (true) {

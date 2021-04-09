@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2018 Uber Technologies, Inc.
+ * Copyright 2016-2018, 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,12 +43,16 @@ void h3SetToVertexGraph(const H3Index* h3Set, const int numHexes,
 // Create a LinkedGeoPolygon from a vertex graph
 void _vertexGraphToLinkedGeo(VertexGraph* graph, LinkedGeoPolygon* out);
 
-// Internal function for polyfill that traces a geofence with hexagons of a
-// specific size
-int _getEdgeHexagons(const Geofence* geofence, int numHexagons, int res,
+// Internal function for polygonToCells that traces a geoloop with hexagons of
+// a specific size
+int _getEdgeHexagons(const GeoLoop* geoloop, int numHexagons, int res,
                      int* numSearchHexes, H3Index* search, H3Index* found);
 
-// The polyfill algorithm. Separated out because it can theoretically fail
-int _polyfillInternal(const GeoPolygon* geoPolygon, int res, H3Index* out);
+// The polygonToCells algorithm. Separated out because it can theoretically fail
+int _polygonToCellsInternal(const GeoPolygon* geoPolygon, int res,
+                            H3Index* out);
 
+// The safe gridDiskDistances algorithm.
+void _gridDiskDistancesInternal(H3Index origin, int k, H3Index* out,
+                                int* distances, int maxIdx, int curK);
 #endif

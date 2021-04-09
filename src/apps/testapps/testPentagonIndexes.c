@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Uber Technologies, Inc.
+ * Copyright 2019-2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,13 +21,13 @@
 
 #define PADDED_COUNT 16
 
-SUITE(getPentagonIndexes) {
+SUITE(getPentagons) {
     TEST(propertyTests) {
-        int expectedCount = H3_EXPORT(pentagonIndexCount)();
+        int expectedCount = H3_EXPORT(pentagonCount)();
 
         for (int res = 0; res <= 15; res++) {
             H3Index h3Indexes[PADDED_COUNT] = {0};
-            H3_EXPORT(getPentagonIndexes)(res, h3Indexes);
+            H3_EXPORT(getPentagons)(res, h3Indexes);
 
             int numFound = 0;
 
@@ -35,11 +35,11 @@ SUITE(getPentagonIndexes) {
                 H3Index h3Index = h3Indexes[i];
                 if (h3Index) {
                     numFound++;
-                    t_assert(H3_EXPORT(h3IsValid(h3Index)),
+                    t_assert(H3_EXPORT(isValidCell(h3Index)),
                              "index should be valid");
-                    t_assert(H3_EXPORT(h3IsPentagon(h3Index)),
+                    t_assert(H3_EXPORT(isPentagon(h3Index)),
                              "index should be pentagon");
-                    t_assert(H3_EXPORT(h3GetResolution(h3Index)) == res,
+                    t_assert(H3_EXPORT(getResolution(h3Index)) == res,
                              "index should have correct resolution");
 
                     // verify uniqueness
@@ -54,5 +54,11 @@ SUITE(getPentagonIndexes) {
             t_assert(numFound == expectedCount,
                      "there should be exactly 12 pentagons");
         }
+    }
+
+    TEST(invalidPentagons) {
+        t_assert(!H3_EXPORT(isPentagon)(0), "0 is not a pentagon");
+        t_assert(!H3_EXPORT(isPentagon)(0x7fffffffffffffff),
+                 "all but high bit is not a pentagon");
     }
 }

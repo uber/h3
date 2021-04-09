@@ -22,7 +22,7 @@
 #include "vertex.h"
 
 static void directionForVertexNum_symmetry_assertions(H3Index h3) {
-    int numVerts = H3_EXPORT(h3IsPentagon)(h3) ? NUM_PENT_VERTS : NUM_HEX_VERTS;
+    int numVerts = H3_EXPORT(isPentagon)(h3) ? NUM_PENT_VERTS : NUM_HEX_VERTS;
     for (int i = 0; i < numVerts; i++) {
         Direction dir = directionForVertexNum(h3, i);
         int vertexNum = vertexNumForDirection(h3, dir);
@@ -33,14 +33,14 @@ static void directionForVertexNum_symmetry_assertions(H3Index h3) {
 }
 
 static void cellToVertex_point_assertions(H3Index h3) {
-    GeoBoundary gb;
-    H3_EXPORT(h3ToGeoBoundary)(h3, &gb);
-    int numVerts = H3_EXPORT(h3IsPentagon)(h3) ? NUM_PENT_VERTS : NUM_HEX_VERTS;
+    CellBoundary gb;
+    H3_EXPORT(cellToBoundary)(h3, &gb);
+    int numVerts = H3_EXPORT(isPentagon)(h3) ? NUM_PENT_VERTS : NUM_HEX_VERTS;
 
     // This test won't work if there are distortion vertexes in the boundary
     if (numVerts < gb.numVerts) return;
 
-    GeoCoord coord;
+    GeoPoint coord;
     for (int i = 0; i < numVerts; i++) {
         H3Index vertex = H3_EXPORT(cellToVertex)(h3, i);
         H3_EXPORT(vertexToPoint)(vertex, &coord);
@@ -79,7 +79,7 @@ static void cellToVertex_neighbor_assertions(H3Index h3) {
     H3Index originVerts[NUM_HEX_VERTS] = {0};
     H3Index neighborVerts[NUM_HEX_VERTS] = {0};
 
-    H3_EXPORT(kRing)(h3, 1, neighbors);
+    H3_EXPORT(gridDisk)(h3, 1, neighbors);
     H3_EXPORT(cellToVertexes)(h3, originVerts);
 
     for (int i = 0; i < 7; i++) {

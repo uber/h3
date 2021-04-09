@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Uber Technologies, Inc.
+ * Copyright 2018, 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,11 +26,11 @@ int main(int argc, char *argv[]) {
     H3Index origin = 0x8a2a1072b59ffffL;
     H3Index destination = 0x8a2a1072b597fffL;  // north of the origin
 
-    H3Index edge = getH3UnidirectionalEdge(origin, destination);
+    H3Index edge = cellsToDirectedEdge(origin, destination);
     printf("The edge is %" PRIx64 "\n", edge);
 
-    GeoBoundary boundary;
-    getH3UnidirectionalEdgeBoundary(edge, &boundary);
+    CellBoundary boundary;
+    directedEdgeToBoundary(edge, &boundary);
     for (int v = 0; v < boundary.numVerts; v++) {
         printf("Edge vertex #%d: %lf, %lf\n", v,
                radsToDegs(boundary.verts[v].lat),

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 Uber Technologies, Inc.
+ * Copyright 2016-2017, 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,12 +107,12 @@ void kmlBoundaryFooter(void) {
     printf("</kml>\n");
 }
 
-void outputLatLonKML(const GeoCoord* g) {
+void outputLatLonKML(const GeoPoint* g) {
     printf("            %8lf,%8lf,5.0\n", H3_EXPORT(radsToDegs)(g->lon),
            H3_EXPORT(radsToDegs)(g->lat));
 }
 
-void outputPointKML(const GeoCoord* g, const char* name) {
+void outputPointKML(const GeoPoint* g, const char* name) {
     printf("<Placemark>\n");
     printf("   <name>%s</name>\n", name);
     printf("   <styleUrl>#m_ylw-pushpin</styleUrl>\n");
@@ -125,7 +125,7 @@ void outputPointKML(const GeoCoord* g, const char* name) {
     printf("</Placemark>\n");
 }
 
-void outputTriKML(const GeoCoord* v1, const GeoCoord* v2, const GeoCoord* v3,
+void outputTriKML(const GeoPoint* v1, const GeoPoint* v2, const GeoPoint* v3,
                   const char* name) {
     printf("<Placemark>\n");
     printf("<name>%s</name>\n", name);
@@ -142,12 +142,12 @@ void outputTriKML(const GeoCoord* v1, const GeoCoord* v2, const GeoCoord* v3,
     printf("</Placemark>\n");
 }
 
-void outputBoundaryKML(const GeoBoundary* b, const char* name) {
-    const GeoCoord* v = (const GeoCoord*)&(b->verts);
+void outputBoundaryKML(const CellBoundary* b, const char* name) {
+    const GeoPoint* v = (const GeoPoint*)&(b->verts);
     outputPolyKML(v, b->numVerts, name);
 }
 
-void outputPolyKML(const GeoCoord geoVerts[], int numVerts, const char* name) {
+void outputPolyKML(const GeoPoint geoVerts[], int numVerts, const char* name) {
     printf("<Placemark>\n");
     printf("<name>%s</name>\n", name);
     printf("      <styleUrl>#lineStyle1</styleUrl>\n");

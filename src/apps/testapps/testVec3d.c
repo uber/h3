@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Uber Technologies, Inc.
+ * Copyright 2018, 2020 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,19 +44,19 @@ SUITE(Vec3d) {
     TEST(_geoToVec3d) {
         Vec3d origin = {0};
 
-        GeoCoord c1 = {0, 0};
+        GeoPoint c1 = {0, 0};
         Vec3d p1;
         _geoToVec3d(&c1, &p1);
         t_assert(fabs(_pointSquareDist(&origin, &p1) - 1) < EPSILON_RAD,
                  "Geo point is on the unit sphere");
 
-        GeoCoord c2 = {M_PI_2, 0};
+        GeoPoint c2 = {M_PI_2, 0};
         Vec3d p2;
         _geoToVec3d(&c2, &p2);
         t_assert(fabs(_pointSquareDist(&p1, &p2) - 2) < EPSILON_RAD,
                  "Geo point is on another axis");
 
-        GeoCoord c3 = {M_PI, 0};
+        GeoPoint c3 = {M_PI, 0};
         Vec3d p3;
         _geoToVec3d(&c3, &p3);
         t_assert(fabs(_pointSquareDist(&p1, &p3) - 4) < EPSILON_RAD,
