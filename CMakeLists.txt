@@ -216,7 +216,7 @@ set(OTHER_SOURCE_FILES
     src/apps/benchmarks/benchmarkPolygonToCells.c
     src/apps/benchmarks/benchmarkPolygon.c
     src/apps/benchmarks/benchmarkH3SetToLinkedGeo.c
-    src/apps/benchmarks/benchmarkGridDiskCells.c
+    src/apps/benchmarks/benchmarkGridDisk.c
     src/apps/benchmarks/benchmarkGridPath.c
     src/apps/benchmarks/benchmarkDirectedEdge.c
     src/apps/benchmarks/benchmarkVertex.c
@@ -650,7 +650,7 @@ if(BUILD_BENCHMARKS)
     endmacro()
 
     add_h3_benchmark(benchmarkH3Api src/apps/benchmarks/benchmarkH3Api.c)
-    add_h3_benchmark(benchmarkGridDiskCells src/apps/benchmarks/benchmarkGridDiskCells.c)
+    add_h3_benchmark(benchmarkGridDisk src/apps/benchmarks/benchmarkGridDisk.c)
     add_h3_benchmark(benchmarkGridPath src/apps/benchmarks/benchmarkGridPath.c)
     add_h3_benchmark(benchmarkDirectedEdge src/apps/benchmarks/benchmarkDirectedEdge.c)
     add_h3_benchmark(benchmarkVertex src/apps/benchmarks/benchmarkVertex.c)

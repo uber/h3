@@ -29,7 +29,7 @@ SUITE(gridDisksUnsafe) {
                     0x89283080d53ffff, 0x89283080dcfffff, 0x89283080dc3ffff};
     H3Index withPentagon[] = {0x8029fffffffffff, 0x801dfffffffffff};
 
-    TEST(identityGridDiskCells) {
+    TEST(identityGridDisk) {
         int err;
 
         H3Index k0[] = {0};
