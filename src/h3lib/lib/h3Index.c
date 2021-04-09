@@ -196,7 +196,7 @@ int64_t H3_EXPORT(cellToChildrenSize)(H3Index h, int childRes) {
 
     int n = childRes - H3_GET_RESOLUTION(h);
 
-    if (H3_EXPORT(h3IsPentagon)(h)) {
+    if (H3_EXPORT(isPentagon)(h)) {
         return 1 + 5 * (_ipow(7, n) - 1) / 6;
     } else {
         return _ipow(7, n);
@@ -273,7 +273,7 @@ H3Index H3_EXPORT(cellToCenterChild)(H3Index h, int childRes) {
 }
 
 /**
- * compactCells takes a set of hexagons all at the same resolution and
+ * compact takes a set of hexagons all at the same resolution and
  * compresses them by pruning full child branches to the parent level. This is
  * also done for all parents recursively to get the minimum number of hex
  * addresses that perfectly cover the defined space.

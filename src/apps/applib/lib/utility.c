@@ -126,7 +126,7 @@ void iterateAllDirectedEdgesAtRes(int res, void (*callback)(H3Index)) {
 
     for (; iter.h; iterStepRes(&iter)) {
         H3Index edges[6] = {H3_NULL};
-        H3_EXPORT(getH3UnidirectionalEdgesFromHexagon)(iter.h, edges);
+        H3_EXPORT(originToDirectedEdges)(iter.h, edges);
 
         for (int i = 0; i < 6; i++) {
             if (edges[i] != H3_NULL) {

@@ -33,7 +33,7 @@ static void test_number(int res) {
         count++;
     }
 
-    int64_t expected = H3_EXPORT(numHexagons)(res);
+    int64_t expected = H3_EXPORT(getNumCells)(res);
 
     t_assert(count == expected,
              "expect the correct number of cells from the iterator");
@@ -43,7 +43,7 @@ static void test_valid(int res) {
     Iter_Res iter = iterInitRes(res);
 
     for (; iter.h; iterStepRes(&iter)) {
-        t_assert(H3_EXPORT(h3IsValid)(iter.h), "iterator cell is valid");
+        t_assert(H3_EXPORT(isValidCell)(iter.h), "iterator cell is valid");
     }
 }
 

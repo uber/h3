@@ -19,19 +19,19 @@
 #include "h3Index.h"
 #include "test.h"
 
-SUITE(maxCellToChildrenSize) {
+SUITE(cellToChildrenSize) {
     GeoPoint sf = {0.659966917655, 2 * 3.14159 - 2.1364398519396};
 
-    TEST(maxCellToChildrenSize) {
+    TEST(cellToChildrenSize) {
         H3Index parent = H3_EXPORT(pointToCell)(&sf, 7);
 
-        t_assert(H3_EXPORT(maxCellToChildrenSize)(parent, 3) == 0,
+        t_assert(H3_EXPORT(cellToChildrenSize)(parent, 3) == 0,
                  "got expected size for coarser res");
-        t_assert(H3_EXPORT(maxCellToChildrenSize)(parent, 7) == 1,
+        t_assert(H3_EXPORT(cellToChildrenSize)(parent, 7) == 1,
                  "got expected size for same res");
-        t_assert(H3_EXPORT(maxCellToChildrenSize)(parent, 8) == 7,
+        t_assert(H3_EXPORT(cellToChildrenSize)(parent, 8) == 7,
                  "got expected size for child res");
-        t_assert(H3_EXPORT(maxCellToChildrenSize)(parent, 9) == 7 * 7,
+        t_assert(H3_EXPORT(cellToChildrenSize)(parent, 9) == 7 * 7,
                  "got expected size for grandchild res");
     }
 
@@ -41,7 +41,7 @@ SUITE(maxCellToChildrenSize) {
 
         H3Index h = 0x806dfffffffffff;       // res 0 *hexagon*
         uint64_t expected = 4747561509943L;  // 7^15
-        uint64_t out = H3_EXPORT(maxCellToChildrenSize)(h, 15);
+        uint64_t out = H3_EXPORT(cellToChildrenSize)(h, 15);
 
         t_assert(out == expected,
                  "got right size for hex children 15 levels below");

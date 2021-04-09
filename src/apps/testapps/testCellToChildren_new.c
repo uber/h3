@@ -22,7 +22,7 @@
 static void assertNoDuplicates(H3Index* cells, int n) {
     for (int i = 0; i < n; i++) {
         if (cells[i] == 0) continue;
-        t_assert(H3_EXPORT(h3IsValid)(cells[i]), "must be valid H3 cell");
+        t_assert(H3_EXPORT(isValidCell)(cells[i]), "must be valid H3 cell");
         for (int j = i + 1; j < n; j++) {
             t_assert(cells[i] != cells[j], "can't have duplicate cells in set");
         }
@@ -62,14 +62,14 @@ static void checkChildren(H3Index h, int res, H3Index* expected,
                           int numExpected) {
     int numChildren = H3_EXPORT(cellToChildrenSize)(h, res);
     H3Index* children = calloc(numChildren, sizeof(H3Index));
-    H3_EXPORT(h3ToChildren)(h, res, children);
+    H3_EXPORT(cellToChildren)(h, res, children);
 
     assertSetsEqual(children, numChildren, expected, numExpected);
 
     free(children);
 }
 
-SUITE(h3ToChildren_new) {
+SUITE(cellToChildren_new) {
     TEST(oneResStep) {
         H3Index h = 0x88283080ddfffff;
         int res = 9;
