@@ -47,9 +47,14 @@ void doCoords(double lat, double lon, int res) {
     GeoPoint g = {.lat = H3_EXPORT(degsToRads)(lat),
                   .lon = H3_EXPORT(degsToRads)(lon)};
 
-    H3Index h = H3_EXPORT(pointToCell)(&g, res);
+    H3Index h;
+    H3Error e = H3_EXPORT(pointToCell)(&g, res, &h);
 
-    h3Println(h);
+    if (e == E_SUCCESS) {
+        h3Println(h);
+    } else {
+        h3Println(H3_NULL);
+    }
 }
 
 int main(int argc, char* argv[]) {

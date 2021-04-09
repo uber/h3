@@ -789,7 +789,11 @@ int _getEdgeHexagons(const GeoLoop* geoloop, int numHexagons, int res,
             interpolate.lon =
                 (origin.lon * (numHexesEstimate - j) / numHexesEstimate) +
                 (destination.lon * j / numHexesEstimate);
-            H3Index pointHex = H3_EXPORT(pointToCell)(&interpolate, res);
+            H3Index pointHex;
+            H3Error e = H3_EXPORT(pointToCell)(&interpolate, res, &pointHex);
+            if (e) {
+                return e;
+            }
             // A simple hash to store the hexagon, or move to another place if
             // needed
             int loc = (int)(pointHex % numHexagons);

@@ -44,7 +44,8 @@ static void verifyCountAndUniqueness(H3Index* children, int paddedCount,
 
 SUITE(cellToChildren) {
     GeoPoint sf = {0.659966917655, 2 * 3.14159 - 2.1364398519396};
-    H3Index sfHex8 = H3_EXPORT(pointToCell)(&sf, 8);
+    H3Index sfHex8;
+    t_assertSuccess(H3_EXPORT(pointToCell)(&sf, 8, &sfHex8));
 
     TEST(oneResStep) {
         const int expectedCount = 7;
@@ -55,7 +56,8 @@ SUITE(cellToChildren) {
 
         GeoPoint center;
         H3_EXPORT(cellToPoint)(sfHex8, &center);
-        H3Index sfHex9_0 = H3_EXPORT(pointToCell)(&center, 9);
+        H3Index sfHex9_0;
+        t_assertSuccess(H3_EXPORT(pointToCell)(&center, 9, &sfHex9_0));
 
         int numFound = 0;
 
@@ -76,7 +78,8 @@ SUITE(cellToChildren) {
             GeoPoint avg = {0};
             avg.lat = (outside.verts[i].lat + center.lat) / 2;
             avg.lon = (outside.verts[i].lon + center.lon) / 2;
-            H3Index avgHex9 = H3_EXPORT(pointToCell)(&avg, 9);
+            H3Index avgHex9;
+            t_assertSuccess(H3_EXPORT(pointToCell)(&avg, 9, &avgHex9));
             for (int j = 0; j < expectedCount; j++) {
                 if (avgHex9 == sfHex9s[j]) {
                     numFound++;
@@ -124,7 +127,8 @@ SUITE(cellToChildren) {
     TEST(childResTooFine) {
         const int expectedCount = 0;
         const int paddedCount = 7;
-        H3Index sfHexMax = H3_EXPORT(pointToCell)(&sf, MAX_H3_RES);
+        H3Index sfHexMax;
+        t_assertSuccess(H3_EXPORT(pointToCell)(&sf, MAX_H3_RES, &sfHexMax));
 
         H3Index* children = calloc(paddedCount, sizeof(H3Index));
         H3_EXPORT(cellToChildren)(sfHexMax, MAX_H3_RES + 1, children);
