@@ -491,8 +491,8 @@ DECLSPEC void H3_EXPORT(cellToChildren)(H3Index h, int childRes,
 DECLSPEC H3Index H3_EXPORT(cellToCenterChild)(H3Index h, int childRes);
 /** @} */
 
-/** @defgroup compactCells compactCells
- * Functions for compactCells
+/** @defgroup compact compact
+ * Functions for compact
  * @{
  */
 /** @brief compacts the given set of hexagons as best as possible */
@@ -500,8 +500,8 @@ DECLSPEC int H3_EXPORT(compact)(const H3Index *h3Set, H3Index *compactedSet,
                                 const int64_t numHexes);
 /** @} */
 
-/** @defgroup uncompactCells uncompactCells
- * Functions for uncompactCells
+/** @defgroup uncompact uncompact
+ * Functions for uncompact
  * @{
  */
 /** @brief determines the exact number of hexagons that will be uncompacted

@@ -30,12 +30,12 @@ H3Index uncompactableWithZero[] = {0x89283470803ffff, 0x8928347081bffff, 0,
 SUITE(compact) {
     TEST(roundtrip) {
         int k = 9;
-        int hexCount = H3_EXPORT(maxKringSize)(k);
+        int hexCount = H3_EXPORT(maxGridDiskSize)(k);
         int expectedCompactCount = 73;
 
         // Generate a set of hexagons to compact
         H3Index* sunnyvaleExpanded = calloc(hexCount, sizeof(H3Index));
-        H3_EXPORT(kRing)(sunnyvale, k, sunnyvaleExpanded);
+        H3_EXPORT(gridDisk)(sunnyvale, k, sunnyvaleExpanded);
 
         H3Index* compressed = calloc(hexCount, sizeof(H3Index));
         int err = H3_EXPORT(compact)(sunnyvaleExpanded, compressed, hexCount);
@@ -162,7 +162,7 @@ SUITE(compact) {
         int64_t arrSize = H3_EXPORT(cellToChildrenSize)(h3, res + 1) + 1;
         H3Index* children = calloc(arrSize, sizeof(H3Index));
 
-        H3_EXPORT(h3ToChildren)(h3, res + 1, children);
+        H3_EXPORT(cellToChildren)(h3, res + 1, children);
         // duplicate one index
         children[arrSize - 1] = children[0];
 
@@ -186,9 +186,9 @@ SUITE(compact) {
         int64_t arrSize = H3_EXPORT(cellToChildrenSize)(h3, res + 1) + 1;
         H3Index* children = calloc(arrSize, sizeof(H3Index));
 
-        H3_EXPORT(h3ToChildren)(h3, res + 1, children);
+        H3_EXPORT(cellToChildren)(h3, res + 1, children);
         // duplicate one index
-        children[arrSize - 1] = H3_EXPORT(h3ToCenterChild)(h3, res + 1);
+        children[arrSize - 1] = H3_EXPORT(cellToCenterChild)(h3, res + 1);
 
         H3Index* output = calloc(arrSize, sizeof(H3Index));
 
@@ -212,7 +212,7 @@ SUITE(compact) {
         int64_t arrSize = H3_EXPORT(cellToChildrenSize)(h3, res + 1);
         H3Index* children = calloc(arrSize, sizeof(H3Index));
 
-        H3_EXPORT(h3ToChildren)(h3, res + 1, children);
+        H3_EXPORT(cellToChildren)(h3, res + 1, children);
         // duplicate one index
         children[arrSize - 1] = children[0];
 
