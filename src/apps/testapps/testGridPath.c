@@ -16,7 +16,7 @@
 /** @file
  * @brief tests H3 grid path function.
  *
- *  usage: `testGridPathCells`
+ *  usage: `testGridPath`
  */
 
 #include <stdio.h>
@@ -29,12 +29,12 @@
 #include "test.h"
 #include "utility.h"
 
-SUITE(gridPathCells) {
-    TEST(gridPathCells_acrossMultipleFaces) {
+SUITE(gridPath) {
+    TEST(gridPath_acrossMultipleFaces) {
         H3Index start = 0x85285aa7fffffff;
         H3Index end = 0x851d9b1bfffffff;
 
-        int lineSz = H3_EXPORT(gridPathCellsSize)(start, end);
+        int lineSz = H3_EXPORT(gridPathSize)(start, end);
         t_assert(lineSz < 0, "Line not computable across multiple icosa faces");
     }
 }

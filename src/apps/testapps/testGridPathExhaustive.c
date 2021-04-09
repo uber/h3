@@ -17,7 +17,7 @@
  * @brief tests grid path cells function using tests over a large number of
  * indexes.
  *
- *  usage: `testGridPathCellsExhaustive`
+ *  usage: `testGridPathExhaustive`
  */
 
 #include <stdio.h>
@@ -33,14 +33,14 @@
 static const int MAX_DISTANCES[] = {1, 2, 5, 12, 19, 26};
 
 /**
- * Property-based testing of gridPathCells output
+ * Property-based testing of gridPath output
  */
-static void gridPathCells_assertions(H3Index start, H3Index end) {
-    int sz = H3_EXPORT(gridPathCellsSize)(start, end);
+static void gridPath_assertions(H3Index start, H3Index end) {
+    int sz = H3_EXPORT(gridPathSize)(start, end);
     t_assert(sz > 0, "got valid size");
     H3Index *line = calloc(sz, sizeof(H3Index));
 
-    int err = H3_EXPORT(gridPathCells)(start, end, line);
+    int err = H3_EXPORT(gridPath)(start, end, line);
 
     t_assert(err == 0, "no error on line");
     t_assert(line[0] == start, "line starts with start index");
@@ -61,21 +61,21 @@ static void gridPathCells_assertions(H3Index start, H3Index end) {
 }
 
 /**
- * Tests for invalid gridPathCells input
+ * Tests for invalid gridPath input
  */
-static void gridPathCells_invalid_assertions(H3Index start, H3Index end) {
-    int sz = H3_EXPORT(gridPathCellsSize)(start, end);
+static void gridPath_invalid_assertions(H3Index start, H3Index end) {
+    int sz = H3_EXPORT(gridPathSize)(start, end);
     t_assert(sz < 0, "line size marked as invalid");
 
     H3Index *line = {0};
-    int err = H3_EXPORT(gridPathCells)(start, end, line);
+    int err = H3_EXPORT(gridPath)(start, end, line);
     t_assert(err != 0, "line marked as invalid");
 }
 
 /**
  * Test for lines from an index to all neighbors within a gridDisk
  */
-static void gridPathCells_gridDisk_assertions(H3Index h3) {
+static void gridPath_gridDisk_assertions(H3Index h3) {
     int r = H3_GET_RESOLUTION(h3);
     t_assert(r <= 5, "resolution supported by test function (gridDisk)");
     int maxK = MAX_DISTANCES[r];
@@ -95,22 +95,22 @@ static void gridPathCells_gridDisk_assertions(H3Index h3) {
         }
         int distance = H3_EXPORT(gridDistance)(h3, neighbors[i]);
         if (distance >= 0) {
-            gridPathCells_assertions(h3, neighbors[i]);
+            gridPath_assertions(h3, neighbors[i]);
         } else {
-            gridPathCells_invalid_assertions(h3, neighbors[i]);
+            gridPath_invalid_assertions(h3, neighbors[i]);
         }
     }
 
     free(neighbors);
 }
 
-SUITE(gridPathCells) {
-    TEST(gridPathCells_gridDisk) {
-        iterateAllIndexesAtRes(0, gridPathCells_gridDisk_assertions);
-        iterateAllIndexesAtRes(1, gridPathCells_gridDisk_assertions);
-        iterateAllIndexesAtRes(2, gridPathCells_gridDisk_assertions);
+SUITE(gridPath) {
+    TEST(gridPath_gridDisk) {
+        iterateAllIndexesAtRes(0, gridPath_gridDisk_assertions);
+        iterateAllIndexesAtRes(1, gridPath_gridDisk_assertions);
+        iterateAllIndexesAtRes(2, gridPath_gridDisk_assertions);
         // Don't iterate all of res 3, to save time
-        iterateAllIndexesAtResPartial(3, gridPathCells_gridDisk_assertions, 6);
+        iterateAllIndexesAtResPartial(3, gridPath_gridDisk_assertions, 6);
         // Further resolutions aren't tested to save time.
     }
 }

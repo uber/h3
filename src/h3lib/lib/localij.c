@@ -567,7 +567,7 @@ int H3_EXPORT(gridDistance)(H3Index origin, H3Index h3) {
  * @return Size of the line, or a negative number if the line cannot
  * be computed.
  */
-int H3_EXPORT(gridPathCellsSize)(H3Index start, H3Index end) {
+int H3_EXPORT(gridPathSize)(H3Index start, H3Index end) {
     int distance = H3_EXPORT(gridDistance)(start, end);
     return distance >= 0 ? distance + 1 : distance;
 }
@@ -621,10 +621,10 @@ static void cubeRound(double i, double j, double k, CoordIJK* ijk) {
  *
  * @param start Start index of the line
  * @param end End index of the line
- * @param out Output array, which must be of size gridPathCellsSize(start, end)
+ * @param out Output array, which must be of size gridPathSize(start, end)
  * @return 0 on success, or another value on failure.
  */
-int H3_EXPORT(gridPathCells)(H3Index start, H3Index end, H3Index* out) {
+int H3_EXPORT(gridPath)(H3Index start, H3Index end, H3Index* out) {
     int distance = H3_EXPORT(gridDistance)(start, end);
     // Early exit if we can't calculate the line
     if (distance < 0) {

@@ -24,13 +24,13 @@ H3Index endFar = 0x8929a5653c3ffff;
 BEGIN_BENCHMARKS();
 
 H3Index* out =
-    calloc(H3_EXPORT(gridPathCellsSize)(startIndex, endFar), sizeof(H3Index));
+    calloc(H3_EXPORT(gridPathSize)(startIndex, endFar), sizeof(H3Index));
 
-BENCHMARK(gridPathCellsNear, 10000, {
-    H3_EXPORT(gridPathCells)(startIndex, endNear, out);
+BENCHMARK(gridPathNear, 10000, {
+    H3_EXPORT(gridPath)(startIndex, endNear, out);
 });
-BENCHMARK(gridPathCellsFar, 1000, {
-    H3_EXPORT(gridPathCells)(startIndex, endFar, out);
+BENCHMARK(gridPathFar, 1000, {
+    H3_EXPORT(gridPath)(startIndex, endFar, out);
 });
 
 free(out);

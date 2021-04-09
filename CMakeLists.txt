@@ -197,8 +197,8 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testH3ToLocalIjExhaustive.c
     src/apps/testapps/testGridDistance.c
     src/apps/testapps/testGridDistanceExhaustive.c
-    src/apps/testapps/testGridPathCells.c
-    src/apps/testapps/testGridPathCellsExhaustive.c
+    src/apps/testapps/testGridPath.c
+    src/apps/testapps/testGridPathExhaustive.c
     src/apps/testapps/testH3CellArea.c
     src/apps/testapps/testH3CellAreaExhaustive.c
     src/apps/testapps/testCoordIj.c
@@ -217,7 +217,7 @@ set(OTHER_SOURCE_FILES
     src/apps/benchmarks/benchmarkPolygon.c
     src/apps/benchmarks/benchmarkH3SetToLinkedGeo.c
     src/apps/benchmarks/benchmarkGridDiskCells.c
-    src/apps/benchmarks/benchmarkGridPathCells.c
+    src/apps/benchmarks/benchmarkGridPath.c
     src/apps/benchmarks/benchmarkDirectedEdge.c
     src/apps/benchmarks/benchmarkVertex.c
     src/apps/benchmarks/benchmarkH3Api.c)
@@ -597,7 +597,7 @@ if(H3_IS_ROOT_PROJECT AND BUILD_TESTING)
     add_h3_test(testVec3d src/apps/testapps/testVec3d.c)
     add_h3_test(testH3ToLocalIj src/apps/testapps/testH3ToLocalIj.c)
     add_h3_test(testGridDistance src/apps/testapps/testGridDistance.c)
-    add_h3_test(testGridPathCells src/apps/testapps/testGridPathCells.c)
+    add_h3_test(testGridPath src/apps/testapps/testGridPath.c)
     add_h3_test(testH3CellArea src/apps/testapps/testH3CellArea.c)
     add_h3_test(testCoordIj src/apps/testapps/testCoordIj.c)
     add_h3_test(testCoordIjk src/apps/testapps/testCoordIjk.c)
@@ -613,7 +613,7 @@ if(H3_IS_ROOT_PROJECT AND BUILD_TESTING)
     add_h3_test(testDirectedEdgeExhaustive src/apps/testapps/testDirectedEdgeExhaustive.c)
     add_h3_test(testVertexExhaustive src/apps/testapps/testVertexExhaustive.c)
     add_h3_test(testH3ToLocalIjExhaustive src/apps/testapps/testH3ToLocalIjExhaustive.c)
-    add_h3_test(testGridPathCellsExhaustive src/apps/testapps/testGridPathCellsExhaustive.c)
+    add_h3_test(testGridPathExhaustive src/apps/testapps/testGridPathExhaustive.c)
     add_h3_test(testGridDistanceExhaustive src/apps/testapps/testGridDistanceExhaustive.c)
     add_h3_test(testH3CellAreaExhaustive src/apps/testapps/testH3CellAreaExhaustive.c)
 
@@ -651,7 +651,7 @@ if(BUILD_BENCHMARKS)
 
     add_h3_benchmark(benchmarkH3Api src/apps/benchmarks/benchmarkH3Api.c)
     add_h3_benchmark(benchmarkGridDiskCells src/apps/benchmarks/benchmarkGridDiskCells.c)
-    add_h3_benchmark(benchmarkGridPathCells src/apps/benchmarks/benchmarkGridPathCells.c)
+    add_h3_benchmark(benchmarkGridPath src/apps/benchmarks/benchmarkGridPath.c)
     add_h3_benchmark(benchmarkDirectedEdge src/apps/benchmarks/benchmarkDirectedEdge.c)
     add_h3_benchmark(benchmarkVertex src/apps/benchmarks/benchmarkVertex.c)
     add_h3_benchmark(benchmarkH3SetToLinkedGeo src/apps/benchmarks/benchmarkH3SetToLinkedGeo.c)
