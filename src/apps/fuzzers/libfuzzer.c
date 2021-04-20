@@ -22,6 +22,17 @@
 #include "h3api.h"
 #include "utility.h"
 
+#include <stdint.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+
+#include "h3api.h"
+#include "utility.h"
+
+static const Direction DIGITS[7] = {CENTER_DIGIT, K_AXES_DIGIT, J_AXES_DIGIT, JK_AXES_DIGIT, I_AXES_DIGIT,
+     IK_AXES_DIGIT, IJ_AXES_DIGIT};
+
 int
 LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 {
@@ -32,17 +43,17 @@ LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
     memcpy(new_str, data, size);
     new_str[size] = '\0';
 
-    
+
     H3Index h3;
     h3 = H3_EXPORT(stringToH3)(new_str);
-    
+
     H3Index input[] = {h3, h3};
     int inputSize = sizeof(input) / sizeof(H3Index);
 
     // fuzz compactCells
     H3Index* compacted = calloc(inputSize, sizeof(H3Index));
     int err = compactCells(input, compacted, inputSize);
-    
+
     // fuzz uncompactCells
     int compactedCount = 0;
     for (int i = 0; i < inputSize; i++) {
@@ -50,22 +61,23 @@ LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
             compactedCount++;
         }
     }
-    if(uncompactedSize<10) {
+    if(compactedCount<2) {
         int uncompactRes = 10;
         int uncompactedSize =
             maxUncompactCellsSize(compacted, inputSize, uncompactRes);
-        
+
         H3Index* uncompacted = calloc(uncompactedSize, sizeof(H3Index));
         int err2 = uncompactCells(compacted, compactedCount, uncompacted,
                               uncompactedSize, uncompactRes);
         free(uncompacted);
     }
-    
+
     // fuzz h3NeighborRotations 
     int rotations = 0;
-    h3NeighborRotations(h3, CENTER_DIGIT, &rotations);
-
-    free(compacted);    
+    for(int i=0; i<7; i++) {
+        h3NeighborRotations(h3, DIGITS[i], &rotations);
+    }
+    free(compacted);
     free(new_str);
     return 0;
 }
