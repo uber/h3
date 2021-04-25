@@ -119,7 +119,7 @@ typedef struct {
     @brief cell boundary in latitude/longitude
 */
 typedef struct {
-    int numVerts;                          ///< number of vertices
+    int numVerts;                        ///< number of vertices
     LatLng verts[MAX_CELL_BNDRY_VERTS];  ///< vertices in ccw order
 } CellBoundary;
 
@@ -194,7 +194,7 @@ typedef struct {
 /** @brief find the H3 index of the resolution res cell containing the lat/lng
  */
 DECLSPEC H3Error H3_EXPORT(latLngToCell)(const LatLng *g, int res,
-                                        H3Index *out);
+                                         H3Index *out);
 /** @} */
 
 /** @defgroup cellToPoint cellToPoint
