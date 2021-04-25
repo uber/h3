@@ -201,7 +201,7 @@ DECLSPEC H3Error H3_EXPORT(latLngToCell)(const LatLng *g, int res,
  * Functions for cellToPoint
  * @{
  */
-/** @brief find the lat/lon center point g of the cell h3 */
+/** @brief find the lat/lng center point g of the cell h3 */
 DECLSPEC H3Error H3_EXPORT(cellToLatLng)(H3Index h3, LatLng *g);
 /** @} */
 
@@ -209,7 +209,7 @@ DECLSPEC H3Error H3_EXPORT(cellToLatLng)(H3Index h3, LatLng *g);
  * Functions for cellToBoundary
  * @{
  */
-/** @brief give the cell boundary in lat/lon coordinates for the cell h3 */
+/** @brief give the cell boundary in lat/lng coordinates for the cell h3 */
 DECLSPEC H3Error H3_EXPORT(cellToBoundary)(H3Index h3, CellBoundary *gp);
 /** @} */
 
