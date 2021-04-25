@@ -14,7 +14,7 @@
     - <https://github.com/uber/h3/pull/308>
     - <https://github.com/uber/h3/pull/403>
     - <https://github.com/uber/h3/pull/441>
-    - <https://github.com/uber/h3/pull/451>
+    - <https://github.com/uber/h3/issues/451>
 
 ## Motivation
 
