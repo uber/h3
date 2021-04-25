@@ -107,20 +107,20 @@ typedef enum {
  */
 #define MAX_CELL_BNDRY_VERTS 10
 
-/** @struct GeoPoint
+/** @struct LatLng
     @brief latitude/longitude in radians
 */
 typedef struct {
     double lat;  ///< latitude in radians
-    double lon;  ///< longitude in radians
-} GeoPoint;
+    double lng;  ///< longitude in radians
+} LatLng;
 
 /** @struct CellBoundary
     @brief cell boundary in latitude/longitude
 */
 typedef struct {
     int numVerts;                          ///< number of vertices
-    GeoPoint verts[MAX_CELL_BNDRY_VERTS];  ///< vertices in ccw order
+    LatLng verts[MAX_CELL_BNDRY_VERTS];  ///< vertices in ccw order
 } CellBoundary;
 
 /** @struct GeoLoop
@@ -128,7 +128,7 @@ typedef struct {
  */
 typedef struct {
     int numVerts;
-    GeoPoint *verts;
+    LatLng *verts;
 } GeoLoop;
 
 /** @struct GeoPolygon
@@ -148,13 +148,13 @@ typedef struct {
     GeoPolygon *polygons;
 } GeoMultiPolygon;
 
-/** @struct LinkedGeoPoint
+/** @struct LinkedLatLng
  *  @brief A coordinate node in a linked geo structure, part of a linked list
  */
-typedef struct LinkedGeoPoint LinkedGeoPoint;
-struct LinkedGeoPoint {
-    GeoPoint vertex;
-    LinkedGeoPoint *next;
+typedef struct LinkedLatLng LinkedLatLng;
+struct LinkedLatLng {
+    LatLng vertex;
+    LinkedLatLng *next;
 };
 
 /** @struct LinkedGeoLoop
@@ -162,8 +162,8 @@ struct LinkedGeoPoint {
  */
 typedef struct LinkedGeoLoop LinkedGeoLoop;
 struct LinkedGeoLoop {
-    LinkedGeoPoint *first;
-    LinkedGeoPoint *last;
+    LinkedLatLng *first;
+    LinkedLatLng *last;
     LinkedGeoLoop *next;
 };
 
@@ -187,13 +187,13 @@ typedef struct {
     int j;  ///< j component
 } CoordIJ;
 
-/** @defgroup pointToCell pointToCell
- * Functions for pointToCell
+/** @defgroup latLngToCell latLngToCell
+ * Functions for latLngToCell
  * @{
  */
 /** @brief find the H3 index of the resolution res cell containing the lat/lng
  */
-DECLSPEC H3Error H3_EXPORT(pointToCell)(const GeoPoint *g, int res,
+DECLSPEC H3Error H3_EXPORT(latLngToCell)(const LatLng *g, int res,
                                         H3Index *out);
 /** @} */
 
@@ -202,7 +202,7 @@ DECLSPEC H3Error H3_EXPORT(pointToCell)(const GeoPoint *g, int res,
  * @{
  */
 /** @brief find the lat/lon center point g of the cell h3 */
-DECLSPEC H3Error H3_EXPORT(cellToPoint)(H3Index h3, GeoPoint *g);
+DECLSPEC H3Error H3_EXPORT(cellToLatLng)(H3Index h3, LatLng *g);
 /** @} */
 
 /** @defgroup cellToBoundary cellToBoundary
@@ -302,19 +302,19 @@ DECLSPEC double H3_EXPORT(degsToRads)(double degrees);
 DECLSPEC double H3_EXPORT(radsToDegs)(double radians);
 /** @} */
 
-/** @defgroup pointDist pointDist
- * Functions for pointDist
+/** @defgroup latLngDist latLngDist
+ * Functions for latLngDist
  * @{
  */
-/** @brief "great circle distance" between pairs of GeoPoint points in radians*/
-double H3_EXPORT(pointDistRads)(const GeoPoint *a, const GeoPoint *b);
+/** @brief "great circle distance" between pairs of LatLng points in radians*/
+double H3_EXPORT(latLngDistRads)(const LatLng *a, const LatLng *b);
 
-/** @brief "great circle distance" between pairs of GeoPoint points in
+/** @brief "great circle distance" between pairs of LatLng points in
  * kilometers*/
-double H3_EXPORT(pointDistKm)(const GeoPoint *a, const GeoPoint *b);
+double H3_EXPORT(latLngDistKm)(const LatLng *a, const LatLng *b);
 
-/** @brief "great circle distance" between pairs of GeoPoint points in meters*/
-double H3_EXPORT(pointDistM)(const GeoPoint *a, const GeoPoint *b);
+/** @brief "great circle distance" between pairs of LatLng points in meters*/
+double H3_EXPORT(latLngDistM)(const LatLng *a, const LatLng *b);
 /** @} */
 
 /** @defgroup getHexagonAreaAvg getHexagonAreaAvg
@@ -664,7 +664,7 @@ DECLSPEC void H3_EXPORT(cellToVertexes)(H3Index origin, H3Index *vertexes);
  * @{
  */
 /** @brief Returns a single vertex for a given cell, as an H3 index */
-DECLSPEC void H3_EXPORT(vertexToPoint)(H3Index vertex, GeoPoint *point);
+DECLSPEC void H3_EXPORT(vertexToPoint)(H3Index vertex, LatLng *point);
 /** @} */
 
 /** @defgroup isValidVertex isValidVertex
