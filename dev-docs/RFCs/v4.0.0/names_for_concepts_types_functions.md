@@ -8,12 +8,13 @@
 - **Dates**:
     - Started: 2020-02-02
     - Accepted: 2020-03-26
-    - Updated: 2021-04-03
+    - Latest update: 2021-04-25
 - **Status**: Accepted
 - **Discussions**:
     - <https://github.com/uber/h3/pull/308>
     - <https://github.com/uber/h3/pull/403>
     - <https://github.com/uber/h3/pull/441>
+    - <https://github.com/uber/h3/pull/451>
 
 ## Motivation
 
@@ -140,8 +141,8 @@ There is some ambiguity between property, transform, and computation, so use you
 | `h3GetFaces`                  | `getIcosahedronFaces` |
 | `geoToH3`                     | `pointToCell`         |
 | `h3ToGeo`                     | `cellToPoint`         |
-| `compact`                     | (unchanged)           |
-| `uncompact`                   | (unchanged)           |
+| `compact`                     | `compactCells`        |
+| `uncompact`                   | `uncompactCells`      |
 | `polyfill`                    | `polygonToCells`      |
 
 **Note**: `getResolution` and `getBaseCellNumber` should work for both cells and edges.
@@ -176,7 +177,7 @@ We may expose them in the future if a need becomes clear.
 | Current name |      Proposed name      |
 |--------------|-------------------------|
 | `h3Distance` | `gridDistance`          |
-| `h3Line`     | `gridPath`              |
+| `h3Line`     | `gridPathCells`         |
 | *DNE*        | `gridPathEdges`         |
 | *DNE*        | `gridPathDirectedEdges` |
 
