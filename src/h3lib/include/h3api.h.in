@@ -197,8 +197,8 @@ DECLSPEC H3Error H3_EXPORT(latLngToCell)(const LatLng *g, int res,
                                          H3Index *out);
 /** @} */
 
-/** @defgroup cellToPoint cellToPoint
- * Functions for cellToPoint
+/** @defgroup cellToLatLng cellToLatLng
+ * Functions for cellToLatLng
  * @{
  */
 /** @brief find the lat/lng center point g of the cell h3 */
@@ -659,12 +659,12 @@ DECLSPEC H3Index H3_EXPORT(cellToVertex)(H3Index origin, int vertexNum);
 DECLSPEC void H3_EXPORT(cellToVertexes)(H3Index origin, H3Index *vertexes);
 /** @} */
 
-/** @defgroup vertexToPoint vertexToPoint
- * Functions for vertexToPoint
+/** @defgroup vertexToLatLng vertexToLatLng
+ * Functions for vertexToLatLng
  * @{
  */
-/** @brief Returns a single vertex for a given cell, as an H3 index */
-DECLSPEC void H3_EXPORT(vertexToPoint)(H3Index vertex, LatLng *point);
+/** @brief Return the LatLng point corresponding to vertex */
+DECLSPEC void H3_EXPORT(vertexToLatLng)(H3Index vertex, LatLng *point);
 /** @} */
 
 /** @defgroup isValidVertex isValidVertex
