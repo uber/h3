@@ -5,7 +5,7 @@ sidebar_label: Overview
 slug: /core-library/overview
 ---
 
-The H3 geospatial indexing system is a discrete global grid system (see [Sahr et al., 2003](http://webpages.sou.edu/~sahrk/sqspc/pubs/gdggs03.pdf)) consisting of a multi-precision hexagonal tiling of the sphere with hierarchical indexes. The hexagonal grid system is created on the planar faces of a sphere-circumscribed icosahedron, and the grid cells are then projected to the surface of the sphere using an inverse face-centered polyhedral gnomonic projection.
+The H3 geospatial indexing system is a discrete global grid system (see [Sahr et al., 2003](http://webpages.sou.edu/~sahrk/sqspc/pubs/gdggs03.pdf)) consisting of a multi-precision hexagonal tiling of the sphere with hierarchical indexes. The hexagonal grid system is created on the planar faces of a sphere-circumscribed icosahedron, and the grid cells are then projected to the surface of the sphere using an inverse face-centered polyhedral gnomonic projection. <<Insert some comment about WGS84 here.>>
 
 The icosahedron is fixed relative to the sphere using a *Dymaxion* orientation (due to R. Buckminster Fuller). This is the only known orientation of a spherical icosahedron that places all 12 icosahedron vertices in the ocean.
 
