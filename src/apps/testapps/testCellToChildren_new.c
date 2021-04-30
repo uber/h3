@@ -60,7 +60,7 @@ static void assertSetsEqual(H3Index* set1, int len1, H3Index* set2, int len2) {
 
 static void checkChildren(H3Index h, int res, H3Index* expected,
                           int numExpected) {
-    int numChildren = H3_EXPORT(cellToChildrenSize)(h, res);
+    int64_t numChildren = H3_EXPORT(cellToChildrenSize)(h, res);
     H3Index* children = calloc(numChildren, sizeof(H3Index));
     H3_EXPORT(cellToChildren)(h, res, children);
 

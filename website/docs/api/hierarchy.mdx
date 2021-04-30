@@ -112,9 +112,9 @@ function example() {
 </TabItem>
 </Tabs>
 
-Populates `children` with the indexes contained by `h` at resolution `childRes`. `children` must be an array of at least size `maxH3ToChildrenSize(h, childRes)`.
+Populates `children` with the indexes contained by `h` at resolution `childRes`. `children` must be an array of at least size `cellToChildrenSize(h, childRes)`.
 
-## maxH3ToChildrenSize
+## cellToChildrenSize
 
 <Tabs
   groupId="language"
@@ -129,7 +129,7 @@ Populates `children` with the indexes contained by `h` at resolution `childRes`.
 <TabItem value="c">
 
 ```c
-int maxH3ToChildrenSize(H3Index h, int childRes);
+int64_t cellToChildrenSize(H3Index h, int childRes);
 ```
 
 </TabItem>

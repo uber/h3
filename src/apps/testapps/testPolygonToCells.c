@@ -84,7 +84,7 @@ static void fillIndex_assertions(H3Index h) {
         int polygonToCellsCount =
             countNonNullIndexes(polygonToCellsOut, polygonToCellsSize);
 
-        int childrenSize = H3_EXPORT(cellToChildrenSize)(h, nextRes);
+        int64_t childrenSize = H3_EXPORT(cellToChildrenSize)(h, nextRes);
         H3Index* children = calloc(childrenSize, sizeof(H3Index));
         H3_EXPORT(cellToChildren)(h, nextRes, children);
 
