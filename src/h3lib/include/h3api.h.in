@@ -73,6 +73,7 @@ typedef uint64_t H3Index;
  * or missing data in arrays of H3 indices. Analogous to NaN in floating point.
  */
 #define H3_NULL 0
+
 /** @brief Result code (success or specific error) from an H3 operation */
 typedef uint32_t H3Error;
 
