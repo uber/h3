@@ -40,7 +40,7 @@ SUITE(compactCells) {
         H3Index* compressed = calloc(hexCount, sizeof(H3Index));
         int err =
             H3_EXPORT(compactCells)(sunnyvaleExpanded, compressed, hexCount);
-        t_assert(err == 0, "no error on compact");
+        t_assert(err == 0, "no error on compactCells");
 
         int count = 0;
         for (int i = 0; i < hexCount; i++) {

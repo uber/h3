@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
     printf("Starting with %d indexes.\n", inputSize);
 
     H3Index* compacted = calloc(inputSize, sizeof(H3Index));
-    int err = compact(input, compacted, inputSize);
+    int err = compactCells(input, compacted, inputSize);
     // An error case can occur on e.g. duplicate input.
     assert(err == 0);
 

@@ -25,7 +25,7 @@ set(EXAMPLES
     index
     distance
     neighbors
-    compact
+    compactCells
     edge)
 
 set(EXECUTABLE_OUTPUT_PATH bin)
