@@ -323,11 +323,11 @@ function example() {
 </TabItem>
 </Tabs>
 
-Uncompacts the set `compactedSet` of indexes to the resolution `res`. `h3Set` must be at least of size `ucompactCellsSize(compactedSet, numHexes, res)`.
+Uncompacts the set `compactedSet` of indexes to the resolution `res`. `h3Set` must be at least of size `uncompactCellsSize(compactedSet, numHexes, res)`.
 
 Returns 0 on success.
 
-## ucompactCellsSize
+## uncompactCellsSize
 
 <Tabs
   groupId="language"
@@ -342,7 +342,7 @@ Returns 0 on success.
 <TabItem value="c">
 
 ```c
-int64_t ucompactCellsSize(const H3Index *compactedSet, const int numHexes, const int res)
+int64_t uncompactCellsSize(const H3Index *compactedSet, const int numHexes, const int res)
 ```
 
 </TabItem>
