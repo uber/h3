@@ -151,7 +151,7 @@ set(EXAMPLE_SOURCE_FILES
     examples/index.c
     examples/distance.c
     examples/neighbors.c
-    examples/compact.c
+    examples/compactCells.c
     examples/edge.c)
 set(OTHER_SOURCE_FILES
     src/apps/filters/cellToPoint.c
@@ -163,7 +163,7 @@ set(OTHER_SOURCE_FILES
     src/apps/filters/gridDisk.c
     src/apps/filters/gridDiskUnsafe.c
     src/apps/testapps/testVertexGraph.c
-    src/apps/testapps/testCompact.c
+    src/apps/testapps/testCompactCells.c
     src/apps/testapps/testPolygonToCells.c
     src/apps/testapps/testPolygonToCellsReported.c
     src/apps/testapps/testPentagonIndexes.c
@@ -575,7 +575,7 @@ if(H3_IS_ROOT_PROJECT AND BUILD_TESTING)
         add_h3_test_with_file(testCellToBoundary src/apps/testapps/testCellToBoundary.c ${file})
     endforeach()
 
-    add_h3_test(testCompact src/apps/testapps/testCompact.c)
+    add_h3_test(testCompactCells src/apps/testapps/testCompactCells.c)
     add_h3_test(testGridDisk src/apps/testapps/testGridDisk.c)
     add_h3_test(testGridRingUnsafe src/apps/testapps/testGridRingUnsafe.c)
     add_h3_test(testGridDisksUnsafe src/apps/testapps/testGridDisksUnsafe.c)
