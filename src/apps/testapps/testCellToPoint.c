@@ -44,8 +44,9 @@ void assertExpected(H3Index h1, const GeoPoint* g1) {
 
     // Convert back to H3 to verify
     int res = H3_EXPORT(getResolution)(h1);
-    H3Index h2 = H3_EXPORT(pointToCell)(&g2, res);
-    t_assert(h1 == h2, "got expected pointToCell output");
+    H3Index h2;
+    t_assertSuccess(H3_EXPORT(pointToCell)(&g2, res, &h2));
+    t_assert(h1 == h2, "got expected geoToH3 output");
 }
 
 int main(int argc, char* argv[]) {

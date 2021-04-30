@@ -22,8 +22,9 @@
 SUITE(cellToChildrenSize) {
     GeoPoint sf = {0.659966917655, 2 * 3.14159 - 2.1364398519396};
 
-    TEST(cellToChildrenSize) {
-        H3Index parent = H3_EXPORT(pointToCell)(&sf, 7);
+    TEST(maxCellToChildrenSize) {
+        H3Index parent;
+        t_assertSuccess(H3_EXPORT(pointToCell)(&sf, 7, &parent));
 
         t_assert(H3_EXPORT(cellToChildrenSize)(parent, 3) == 0,
                  "got expected size for coarser res");

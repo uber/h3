@@ -68,10 +68,11 @@ int main(int argc, char* argv[]) {
         GeoPoint g;
         randomGeo(&g);
 
-        H3Index h = H3_EXPORT(pointToCell)(&g, res);
-
-        h3Print(h);
-        printf(" ");
-        geoPrintlnNoFmt(&g);
+        H3Index h;
+        if (!H3_EXPORT(pointToCell)(&g, res, &h)) {
+            h3Print(h);
+            printf(" ");
+            geoPrintlnNoFmt(&g);
+        }
     }
 }

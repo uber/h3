@@ -30,10 +30,14 @@ SUITE(cellToCenterChild) {
         for (int res = 0; res <= MAX_H3_RES - 1; res++) {
             for (int childRes = res + 1; childRes <= MAX_H3_RES; childRes++) {
                 GeoPoint centroid;
-                H3Index h3Index = H3_EXPORT(pointToCell)(&baseCentroid, res);
+                H3Index h3Index;
+                t_assertSuccess(
+                    H3_EXPORT(pointToCell)(&baseCentroid, res, &h3Index));
                 H3_EXPORT(cellToPoint)(h3Index, &centroid);
 
-                H3Index geoChild = H3_EXPORT(pointToCell)(&centroid, childRes);
+                H3Index geoChild;
+                t_assertSuccess(
+                    H3_EXPORT(pointToCell)(&centroid, childRes, &geoChild));
                 H3Index centerChild =
                     H3_EXPORT(cellToCenterChild)(h3Index, childRes);
 

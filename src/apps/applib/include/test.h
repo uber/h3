@@ -41,6 +41,8 @@ extern const char* currentTestName;
         printf(".");                                                       \
     } while (0)
 
+#define t_assertSuccess(condition) t_assert(!(condition), "expected E_SUCCESS")
+
 void t_assertBoundary(H3Index h3, const CellBoundary* b1);
 
 #define SUITE(NAME)                                         \

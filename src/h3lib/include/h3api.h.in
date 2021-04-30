@@ -62,7 +62,10 @@
 extern "C" {
 #endif
 
-/** @brief the H3Index fits within a 64-bit unsigned integer */
+/** @brief Identifier for an object (cell, edge, etc) in the H3 system.
+ *
+ * The H3Index fits within a 64-bit unsigned integer.
+ */
 typedef uint64_t H3Index;
 
 /**
@@ -70,6 +73,32 @@ typedef uint64_t H3Index;
  * or missing data in arrays of H3 indices. Analogous to NaN in floating point.
  */
 #define H3_NULL 0
+/** @brief Result code (success or specific error) from an H3 operation */
+typedef uint32_t H3Error;
+
+typedef enum {
+    E_SUCCESS = 0,  // Success (no error)
+    E_FAILED =
+        1,  // The operation failed but a more specific error is not available
+    E_DOMAIN = 2,  // Argument was outside of acceptable range (when a more
+                   // specific error code is not available)
+    E_LATLON_DOMAIN =
+        3,  // Latitude or longitude arguments were outside of acceptable range
+    E_RES_DOMAIN = 4,    // Resolution argument was outside of acceptable range
+    E_CELL_INVALID = 5,  // `H3Index` cell argument was not valid
+    E_DIR_EDGE_INVALID = 6,  // `H3Index` directed edge argument was not valid
+    E_UNDIR_EDGE_INVALID =
+        7,                 // `H3Index` undirected edge argument was not valid
+    E_VERTEX_INVALID = 8,  // `H3Index` vertex argument was not valid
+    E_PENTAGON = 9,  // Pentagon distortion was encountered which the algorithm
+                     // could not handle it
+    E_DUPLICATE_INPUT = 10,  // Duplicate input was encountered in the arguments
+                             // and the algorithm could not handle it
+    E_NOT_NEIGHBORS = 11,    // `H3Index` cell arguments were not neighbors
+    E_RES_MISMATCH =
+        12,        // `H3Index` cell arguments had incompatible resolutions
+    E_MEMORY = 13  // Necessary memory allocation failed
+} H3ErrorCodes;
 
 /* library version numbers generated from VERSION file */
 // clang-format off
@@ -169,7 +198,8 @@ typedef struct {
  */
 /** @brief find the H3 index of the resolution res cell containing the lat/lng
  */
-DECLSPEC H3Index H3_EXPORT(pointToCell)(const GeoPoint *g, int res);
+DECLSPEC H3Error H3_EXPORT(pointToCell)(const GeoPoint *g, int res,
+                                        H3Index *out);
 /** @} */
 
 /** @defgroup cellToPoint cellToPoint
@@ -177,7 +207,7 @@ DECLSPEC H3Index H3_EXPORT(pointToCell)(const GeoPoint *g, int res);
  * @{
  */
 /** @brief find the lat/lon center point g of the cell h3 */
-DECLSPEC void H3_EXPORT(cellToPoint)(H3Index h3, GeoPoint *g);
+DECLSPEC H3Error H3_EXPORT(cellToPoint)(H3Index h3, GeoPoint *g);
 /** @} */
 
 /** @defgroup cellToBoundary cellToBoundary
@@ -185,7 +215,7 @@ DECLSPEC void H3_EXPORT(cellToPoint)(H3Index h3, GeoPoint *g);
  * @{
  */
 /** @brief give the cell boundary in lat/lon coordinates for the cell h3 */
-DECLSPEC void H3_EXPORT(cellToBoundary)(H3Index h3, CellBoundary *gp);
+DECLSPEC H3Error H3_EXPORT(cellToBoundary)(H3Index h3, CellBoundary *gp);
 /** @} */
 
 /** @defgroup gridDisk gridDisk

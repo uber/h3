@@ -29,9 +29,10 @@ SUITE(cellToParent) {
 
         for (int res = 1; res < 15; res++) {
             for (int step = 0; step < res; step++) {
-                child = H3_EXPORT(pointToCell)(&sf, res);
+                t_assertSuccess(H3_EXPORT(pointToCell)(&sf, res, &child));
                 parent = H3_EXPORT(cellToParent)(child, res - step);
-                comparisonParent = H3_EXPORT(pointToCell)(&sf, res - step);
+                t_assertSuccess(
+                    H3_EXPORT(pointToCell)(&sf, res - step, &comparisonParent));
 
                 t_assert(parent == comparisonParent, "Got expected parent");
             }
@@ -39,7 +40,8 @@ SUITE(cellToParent) {
     }
 
     TEST(invalidInputs) {
-        H3Index child = H3_EXPORT(pointToCell)(&sf, 5);
+        H3Index child;
+        t_assertSuccess(H3_EXPORT(pointToCell)(&sf, 5, &child));
 
         t_assert(H3_EXPORT(cellToParent)(child, 6) == 0,
                  "Higher resolution fails");

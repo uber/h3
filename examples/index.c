@@ -28,12 +28,19 @@ int main(int argc, char *argv[]) {
     location.lat = degsToRads(40.689167);
     location.lon = degsToRads(-74.044444);
     int resolution = 10;
-    H3Index indexed = pointToCell(&location, resolution);
+    H3Index indexed;
+    if (pointToCell(&location, resolution, &indexed) != E_SUCCESS) {
+        printf("Failed\n");
+        return 1;
+    }
     printf("The index is: %" PRIx64 "\n", indexed);
 
     // Get the vertices of the H3 index.
     CellBoundary boundary;
-    cellToBoundary(indexed, &boundary);
+    if (cellToBoundary(indexed, &boundary) != E_SUCCESS) {
+        printf("Failed\n");
+        return 1;
+    }
     // Indexes can have different number of vertices under some cases,
     // which is why boundary.numVerts is needed.
     for (int v = 0; v < boundary.numVerts; v++) {
@@ -44,7 +51,10 @@ int main(int argc, char *argv[]) {
 
     // Get the center coordinates.
     GeoPoint center;
-    cellToPoint(indexed, &center);
+    if (cellToPoint(indexed, &center) != E_SUCCESS) {
+        printf("Failed\n");
+        return 1;
+    }
     printf("Center coordinates: %lf, %lf\n", radsToDegs(center.lat),
            radsToDegs(center.lon));
 }
