@@ -132,31 +132,32 @@ SUITE(h3Memory) {
 
         resetMemoryCounters(0);
         failAlloc = true;
-        int err = H3_EXPORT(compact)(sunnyvaleExpanded, compressed, hexCount);
+        int err =
+            H3_EXPORT(compactCells)(sunnyvaleExpanded, compressed, hexCount);
         t_assert(err == COMPACT_ALLOC_FAILED, "malloc failed (1)");
         t_assert(actualAllocCalls == 1, "alloc called once");
         t_assert(actualFreeCalls == 0, "free not called");
 
         resetMemoryCounters(1);
-        err = H3_EXPORT(compact)(sunnyvaleExpanded, compressed, hexCount);
+        err = H3_EXPORT(compactCells)(sunnyvaleExpanded, compressed, hexCount);
         t_assert(err == COMPACT_ALLOC_FAILED, "malloc failed (2)");
         t_assert(actualAllocCalls == 2, "alloc called twice");
         t_assert(actualFreeCalls == 1, "free called once");
 
         resetMemoryCounters(2);
-        err = H3_EXPORT(compact)(sunnyvaleExpanded, compressed, hexCount);
+        err = H3_EXPORT(compactCells)(sunnyvaleExpanded, compressed, hexCount);
         t_assert(err == COMPACT_ALLOC_FAILED, "malloc failed (3)");
         t_assert(actualAllocCalls == 3, "alloc called three times");
         t_assert(actualFreeCalls == 2, "free called twice");
 
         resetMemoryCounters(3);
-        err = H3_EXPORT(compact)(sunnyvaleExpanded, compressed, hexCount);
+        err = H3_EXPORT(compactCells)(sunnyvaleExpanded, compressed, hexCount);
         t_assert(err == COMPACT_ALLOC_FAILED, "compact failed (4)");
         t_assert(actualAllocCalls == 4, "alloc called four times");
         t_assert(actualFreeCalls == 3, "free called three times");
 
         resetMemoryCounters(4);
-        err = H3_EXPORT(compact)(sunnyvaleExpanded, compressed, hexCount);
+        err = H3_EXPORT(compactCells)(sunnyvaleExpanded, compressed, hexCount);
         t_assert(err == COMPACT_SUCCESS, "compact using successful malloc");
         t_assert(actualAllocCalls == 4, "alloc called four times");
         t_assert(actualFreeCalls == 4, "free called four times");

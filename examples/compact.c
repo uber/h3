@@ -50,10 +50,11 @@ int main(int argc, char* argv[]) {
     printf("Compacted to %d indexes.\n", compactedCount);
 
     int uncompactRes = 10;
-    int64_t uncompactedSize = uncompactSize(compacted, inputSize, uncompactRes);
+    int64_t uncompactedSize =
+        uncompactCellsSize(compacted, inputSize, uncompactRes);
     H3Index* uncompacted = calloc(uncompactedSize, sizeof(H3Index));
-    int err2 = uncompact(compacted, compactedCount, uncompacted,
-                         uncompactedSize, uncompactRes);
+    int err2 = uncompactCells(compacted, compactedCount, uncompacted,
+                              uncompactedSize, uncompactRes);
     // An error case could happen if the output array is too small, or indexes
     // have a higher resolution than uncompactRes.
     assert(err2 == 0);

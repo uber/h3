@@ -273,7 +273,7 @@ H3Index H3_EXPORT(cellToCenterChild)(H3Index h, int childRes) {
 }
 
 /**
- * compact takes a set of hexagons all at the same resolution and
+ * compactCells takes a set of hexagons all at the same resolution and
  * compresses them by pruning full child branches to the parent level. This is
  * also done for all parents recursively to get the minimum number of hex
  * addresses that perfectly cover the defined space.
@@ -284,8 +284,8 @@ H3Index H3_EXPORT(cellToCenterChild)(H3Index h, int childRes) {
  * @return an error code on bad input data
  */
 // todo: update internal implementation for int64_t
-int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
-                       const int64_t numHexes) {
+int H3_EXPORT(compactCells)(const H3Index* h3Set, H3Index* compactedSet,
+                            const int64_t numHexes) {
     if (numHexes == 0) {
         return COMPACT_SUCCESS;
     }
@@ -455,7 +455,7 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
 }
 
 /**
- * uncompact takes a compressed set of cells and expands back to the
+ * uncompactCells takes a compressed set of cells and expands back to the
  * original set of cells.
  *
  * Skips elements that are H3_NULL (i.e., 0).
@@ -468,9 +468,9 @@ int H3_EXPORT(compact)(const H3Index* h3Set, H3Index* compactedSet,
  * @return              An error code if output array is too small or any cell
  *                      is smaller than the output resolution.
  */
-int H3_EXPORT(uncompact)(const H3Index* compactedSet,
-                         const int64_t numCompacted, H3Index* outSet,
-                         const int64_t numOut, const int res) {
+int H3_EXPORT(uncompactCells)(const H3Index* compactedSet,
+                              const int64_t numCompacted, H3Index* outSet,
+                              const int64_t numOut, const int res) {
     int64_t i = 0;
 
     for (int64_t j = 0; j < numCompacted; j++) {
@@ -486,7 +486,7 @@ int H3_EXPORT(uncompact)(const H3Index* compactedSet,
 }
 
 /**
- * uncompactSize takes a compacted set of hexagons and provides
+ * uncompactCellsSize takes a compacted set of hexagons and provides
  * the exact size of the uncompacted set of hexagons.
  *
  * @param   compactedSet  Set of hexagons
@@ -495,8 +495,9 @@ int H3_EXPORT(uncompact)(const H3Index* compactedSet,
  * @return                The number of hexagons to allocate memory for, or a
  *                        negative number if an error occurs.
  */
-int64_t H3_EXPORT(uncompactSize)(const H3Index* compactedSet,
-                                 const int64_t numCompacted, const int res) {
+int64_t H3_EXPORT(uncompactCellsSize)(const H3Index* compactedSet,
+                                      const int64_t numCompacted,
+                                      const int res) {
     int64_t numOut = 0;
     for (int64_t i = 0; i < numCompacted; i++) {
         if (compactedSet[i] == H3_NULL) continue;

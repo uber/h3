@@ -165,7 +165,7 @@
              << ((MAX_H3_RES - (res)) * H3_PER_DIGIT_OFFSET)))
 
 /*
- * Return codes for compact
+ * Return codes for compactCells
  */
 
 #define COMPACT_SUCCESS 0

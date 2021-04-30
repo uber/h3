@@ -216,7 +216,7 @@ function example() {
 
 Returns the center child (finer) index contained by `h` at resolution `childRes`.
 
-## compact
+## compactCells
 
 <Tabs
   groupId="language"
@@ -231,7 +231,7 @@ Returns the center child (finer) index contained by `h` at resolution `childRes`
 <TabItem value="c">
 
 ```c
-int compact(const H3Index *h3Set, H3Index *compactedSet, const int numHexes);
+int compactCells(const H3Index *h3Set, H3Index *compactedSet, const int numHexes);
 ```
 
 </TabItem>
@@ -271,7 +271,7 @@ Compacts the set `h3Set` of indexes as best as possible, into the array `compact
 
 Returns 0 on success.
 
-## uncompact
+## uncompactCells
 
 <Tabs
   groupId="language"
@@ -286,7 +286,7 @@ Returns 0 on success.
 <TabItem value="c">
 
 ```c
-int uncompact(const H3Index *compactedSet, const int numHexes, H3Index *h3Set, const int maxHexes, const int res);
+int uncompactCells(const H3Index *compactedSet, const int numHexes, H3Index *h3Set, const int maxHexes, const int res);
 ```
 
 </TabItem>
@@ -323,11 +323,11 @@ function example() {
 </TabItem>
 </Tabs>
 
-Uncompacts the set `compactedSet` of indexes to the resolution `res`. `h3Set` must be at least of size `maxUncompactSize(compactedSet, numHexes, res)`.
+Uncompacts the set `compactedSet` of indexes to the resolution `res`. `h3Set` must be at least of size `ucompactCellsSize(compactedSet, numHexes, res)`.
 
 Returns 0 on success.
 
-## maxUncompactSize
+## ucompactCellsSize
 
 <Tabs
   groupId="language"
@@ -342,7 +342,7 @@ Returns 0 on success.
 <TabItem value="c">
 
 ```c
-int maxUncompactSize(const H3Index *compactedSet, const int numHexes, const int res)
+int64_t ucompactCellsSize(const H3Index *compactedSet, const int numHexes, const int res)
 ```
 
 </TabItem>
@@ -375,4 +375,4 @@ This function exists for memory management and is not exposed.
 </TabItem>
 </Tabs>
 
-Returns the size of the array needed by `uncompact`.
+Returns the size of the array needed by `uncompactCells`.
