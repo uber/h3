@@ -46,7 +46,8 @@ internal state after it's exhausted, like the child resolution, for
 example.
  */
 static Iter_Child _null_iter() {
-    return (Iter_Child){.h = H3_NULL, ._parentRes = -1, ._nextPentagonDigit = -1};
+    return (Iter_Child){
+        .h = H3_NULL, ._parentRes = -1, ._nextPentagonDigit = -1};
 }
 
 /*
@@ -174,8 +175,8 @@ Iter_Child iterInitParent(H3Index h, int childRes) {
 
     if (H3_EXPORT(isPentagon)(it.h)) {
         // The first nonzero digit skips `1` for pentagons.
-        // The "_nextPentagonDigit" moves to the left as we count up from the child resolution
-        // to the parent resolution.
+        // The "_nextPentagonDigit" moves to the left as we count up from the
+        // child resolution to the parent resolution.
         it._nextPentagonDigit = childRes;
     } else {
         // if not a pentagon, we can ignore "first nonzero digit" logic
