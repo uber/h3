@@ -26,12 +26,7 @@
 extract the `res` digit (0--7) of the current cell
  */
 static int _get(Iter_Child* it, int res) {
-    int s = 3 * (15 - res);
-    uint64_t m = 7;
-
-    m <<= s;
-
-    return (it->h & m) >> s;
+    return H3_GET_INDEX_DIGIT(it->h, res);
 }
 
 /*

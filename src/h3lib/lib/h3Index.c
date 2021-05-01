@@ -237,17 +237,19 @@ void H3_EXPORT(cellToChildren)(H3Index h, int childRes, H3Index* children) {
     }
 }
 
-/* Zero out index digits from start to end, inclusive.
+/**
+ * Zero out index digits from start to end, inclusive.
  * No-op if start > end.
- **/
+ */
 H3Index _zero_index_digits(H3Index h, int start, int end) {
     if (start > end) return h;
 
-    uint64_t m = ~0;
+    uint64_t m = 0;
 
-    m <<= 3 * (end - start + 1);
     m = ~m;
-    m <<= 3 * (15 - end);
+    m <<= H3_PER_DIGIT_OFFSET * (end - start + 1);
+    m = ~m;
+    m <<= H3_PER_DIGIT_OFFSET * (15 - end);
     m = ~m;
 
     return h & m;
