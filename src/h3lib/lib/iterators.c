@@ -46,7 +46,7 @@ internal state after it's exhausted, like the child resolution, for
 example.
  */
 static Iter_Child _null_iter() {
-    return (Iter_Child){.h = H3_NULL, .parentRes = -1, .fnz = -1};
+    return (Iter_Child){.h = H3_NULL, ._parentRes = -1, .fnz = -1};
 }
 
 /*
@@ -163,13 +163,13 @@ through, or if the input to `iterInitParent` was invalid.
 Iter_Child iterInitParent(H3Index h, int childRes) {
     Iter_Child it;
 
-    it.parentRes = H3_GET_RESOLUTION(h);
+    it._parentRes = H3_GET_RESOLUTION(h);
 
-    if (childRes < it.parentRes || childRes > MAX_H3_RES || h == H3_NULL) {
+    if (childRes < it._parentRes || childRes > MAX_H3_RES || h == H3_NULL) {
         return _null_iter();
     }
 
-    it.h = _zeroIndexDigits(h, it.parentRes + 1, childRes);
+    it.h = _zeroIndexDigits(h, it._parentRes + 1, childRes);
     H3_SET_RESOLUTION(it.h, childRes);
 
     if (H3_EXPORT(isPentagon)(it.h)) {
@@ -198,8 +198,8 @@ void iterStepChild(Iter_Child* it) {
 
     _inc(it, childRes);
 
-    for (int i = childRes; i >= it->parentRes; i--) {
-        if (i == it->parentRes) {
+    for (int i = childRes; i >= it->_parentRes; i--) {
+        if (i == it->_parentRes) {
             // if we're modifying the parent resolution digit, then we're done
             *it = _null_iter();
             return;
