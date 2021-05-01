@@ -46,7 +46,7 @@
 #define HEX_RANGE_K_SUBSEQUENCE 2
 #define MAX_ONE_RING_SIZE 7
 #define HEX_HASH_OVERFLOW -1
-#define POLYFILL_BUFFER 12
+#define POLYGON_TO_CELLS_BUFFER 12
 
 /**
  * Directions used for traversing a hexagonal ring counterclockwise around
@@ -721,7 +721,7 @@ int H3_EXPORT(maxPolygonToCellsSize)(const GeoPolygon* geoPolygon, int res) {
     // resolution, the line tracing needs an extra buffer than the estimator
     // function provides (but beefing that up to cover causes most situations to
     // overallocate memory)
-    numHexagons += POLYFILL_BUFFER;
+    numHexagons += POLYGON_TO_CELLS_BUFFER;
     return numHexagons;
 }
 

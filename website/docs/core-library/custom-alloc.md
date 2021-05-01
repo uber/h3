@@ -7,7 +7,7 @@ slug: /core-library/custom-alloc
 
 H3's approach to memory management is to rely on memory allocated by the caller as much as possible. This allows memory to be managed by an external framework.
 
-In some cases (for example, `polyfill`), H3 allocates heap memory. When this is needed, it uses the standard C memory allocation functions.
+In some cases (for example, `polygonToCells`), H3 allocates heap memory. When this is needed, it uses the standard C memory allocation functions.
 
 ## Custom Memory Allocators
 
