@@ -249,7 +249,7 @@ H3Index _zero_index_digits(H3Index h, int start, int end) {
     m = ~m;
     m <<= H3_PER_DIGIT_OFFSET * (end - start + 1);
     m = ~m;
-    m <<= H3_PER_DIGIT_OFFSET * (15 - end);
+    m <<= H3_PER_DIGIT_OFFSET * (MAX_H3_RES - end);
     m = ~m;
 
     return h & m;

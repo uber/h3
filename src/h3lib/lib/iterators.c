@@ -34,7 +34,7 @@ increment the digit (0--7) at location `res`
  */
 static void _inc(Iter_Child* it, int res) {
     uint64_t val = 1;
-    val <<= 3 * (15 - res);
+    val <<= H3_PER_DIGIT_OFFSET * (MAX_H3_RES - res);
     it->h += val;
 }
 
@@ -203,7 +203,8 @@ void iterStepChild(Iter_Child* it) {
             return;
         }
 
-        if (i == it->fnz && _get(it, i) == 1) {
+        // K_AXES_DIGIT == 1
+        if (i == it->fnz && _get(it, i) == K_AXES_DIGIT) {
             // Then we are iterating through the children of a pentagon cell.
             // All children of a pentagon have the property that the first
             // nonzero digit between the parent and child resolutions is
