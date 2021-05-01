@@ -186,6 +186,6 @@ H3Index _h3RotatePent60ccw(H3Index h);
 H3Index _h3RotatePent60cw(H3Index h);
 H3Index _h3Rotate60ccw(H3Index h);
 H3Index _h3Rotate60cw(H3Index h);
-DECLSPEC H3Index _zero_index_digits(H3Index h, int start, int end);
+DECLSPEC H3Index _zeroIndexDigits(H3Index h, int start, int end);
 
 #endif

@@ -168,7 +168,7 @@ Iter_Child iterInitParent(H3Index h, int childRes) {
         return _null_iter();
     }
 
-    it.h = _zero_index_digits(h, it.parentRes + 1, childRes);
+    it.h = _zeroIndexDigits(h, it.parentRes + 1, childRes);
     H3_SET_RESOLUTION(it.h, childRes);
 
     if (H3_EXPORT(isPentagon)(it.h)) {
