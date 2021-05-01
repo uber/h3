@@ -46,7 +46,7 @@ internal state after it's exhausted, like the child resolution, for
 example.
  */
 static Iter_Child _null_iter() {
-    return (Iter_Child){.h = H3_NULL, ._parentRes = -1, .fnz = -1};
+    return (Iter_Child){.h = H3_NULL, ._parentRes = -1, ._nextPentagonDigit = -1};
 }
 
 /*
@@ -174,12 +174,12 @@ Iter_Child iterInitParent(H3Index h, int childRes) {
 
     if (H3_EXPORT(isPentagon)(it.h)) {
         // The first nonzero digit skips `1` for pentagons.
-        // The "fnz" moves to the left as we count up from the child resolution
+        // The "_nextPentagonDigit" moves to the left as we count up from the child resolution
         // to the parent resolution.
-        it.fnz = childRes;
+        it._nextPentagonDigit = childRes;
     } else {
         // if not a pentagon, we can ignore "first nonzero digit" logic
-        it.fnz = -1;
+        it._nextPentagonDigit = -1;
     }
 
     return it;
@@ -206,7 +206,7 @@ void iterStepChild(Iter_Child* it) {
         }
 
         // K_AXES_DIGIT == 1
-        if (i == it->fnz && _get(it, i) == K_AXES_DIGIT) {
+        if (i == it->_nextPentagonDigit && _get(it, i) == K_AXES_DIGIT) {
             // Then we are iterating through the children of a pentagon cell.
             // All children of a pentagon have the property that the first
             // nonzero digit between the parent and child resolutions is
@@ -214,7 +214,7 @@ void iterStepChild(Iter_Child* it) {
             // I.e., we never see a sequence like 00001.
             // Thus, we skip the `1` in this digit.
             _inc(it, i);
-            it->fnz -= 1;
+            it->_nextPentagonDigit -= 1;
             return;
         }
 

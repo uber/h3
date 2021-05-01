@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 /** @file iterators.h
  * @brief Iterator structs and functions for the children of a cell,
  * or cells at a given resolution.
@@ -32,7 +33,7 @@ a given cell
 typedef struct {
     H3Index h;
     int _parentRes;  // parent resolution
-    int fnz;         // first nonzero digit (this digit skips `1` for pentagons)
+    int _nextPentagonDigit;        // first nonzero digit (this digit skips `1` for pentagons)
 } Iter_Child;
 
 DECLSPEC Iter_Child iterInitParent(H3Index h, int childRes);
