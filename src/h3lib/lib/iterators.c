@@ -215,7 +215,8 @@ void iterStepChild(Iter_Child* it) {
             return;
         }
 
-        if (_get(it, i) == 7) {
+        // INVALID_DIGIT == 7
+        if (_get(it, i) == INVALID_DIGIT) {
             _inc(it, i);  // zeros out it[i] and increments it[i-1] by 1
         } else {
             break;
