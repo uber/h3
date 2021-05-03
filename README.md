@@ -72,6 +72,14 @@ sudo pkg install bash cmake gmake doxygen lcov
 
 #### Compilation
 
+When checking out the H3 Git repository, by default you will check out the latest
+development version of H3. When using H3 in an application, you will want to check
+out the most recently released version:
+
+```
+git checkout v$(<VERSION)
+```
+
 From the repository root, you can compile H3 with:
 
 ```
