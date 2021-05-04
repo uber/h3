@@ -71,6 +71,8 @@ These are the bits we'll be focused on when iterating through child cells.
 To help describe the iteration logic, we'll use diagrams displaying the
 (decimal) values for each component like:
 
+                            child digit for resolution 2
+                           /
 | res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 | ... |
 |-----|-------------|---|---|---|---|---|---|-----|
 |   9 |          17 | 5 | 3 | 0 | 6 | 2 | 1 | ... |
@@ -84,8 +86,8 @@ for each child digit (up to the child's resolution).
 
 For example, suppose a resolution 3 hexagon index has the following
 components:
-                               parent resolution
-                              /
+                                parent resolution
+                               /
 | res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 | ... |
 |-----|-------------|---|---|---|---|---|---|-----|
 |   3 |          17 | 3 | 5 | 1 | 7 | 7 | 7 | ... |
@@ -97,108 +99,108 @@ The iteration through all children of resolution 6 would look like:
                                /           /
 | res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | ... |
 |-----|-------------|---|---|---|---|---|---|---|---|-----|
-|   6 |          17 | 3 | 5 | 1 | 0 | 0 | 0 | 7 | 7 | ... |
-
-| res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | ... |
-|-----|-------------|---|---|---|---|---|---|---|---|-----|
-|   6 |          17 | 3 | 5 | 1 | 0 | 0 | 1 | 7 | 7 | ... |
-
-...
-
-| res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | ... |
-|-----|-------------|---|---|---|---|---|---|---|---|-----|
-|   6 |          17 | 3 | 5 | 1 | 0 | 0 | 6 | 7 | 7 | ... |
-
-| res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | ... |
-|-----|-------------|---|---|---|---|---|---|---|---|-----|
-|   6 |          17 | 3 | 5 | 1 | 0 | 1 | 0 | 7 | 7 | ... |
-
-| res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | ... |
-|-----|-------------|---|---|---|---|---|---|---|---|-----|
-|   6 |          17 | 3 | 5 | 1 | 0 | 1 | 1 | 7 | 7 | ... |
-
-...
-
-| res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | ... |
-|-----|-------------|---|---|---|---|---|---|---|---|-----|
-|   6 |          17 | 3 | 5 | 1 | 6 | 6 | 6 | 7 | 7 | ... |
-
-
+| 6   |          17 | 3 | 5 | 1 | 0 | 0 | 0 | 7 | 7 | ... |
+| 6   |          17 | 3 | 5 | 1 | 0 | 0 | 1 | 7 | 7 | ... |
+| ... |             |   |   |   |   |   |   |   |   |     |
+| 6   |          17 | 3 | 5 | 1 | 0 | 0 | 6 | 7 | 7 | ... |
+| 6   |          17 | 3 | 5 | 1 | 0 | 1 | 0 | 7 | 7 | ... |
+| 6   |          17 | 3 | 5 | 1 | 0 | 1 | 1 | 7 | 7 | ... |
+| ... |             |   |   |   |   |   |   |   |   |     |
+| 6   |          17 | 3 | 5 | 1 | 6 | 6 | 6 | 7 | 7 | ... |
 
 
 ### Step sequence on a *pentagon* cell
 
-Pentagon cells have a base cell number corresponding to a
+Pentagon cells have a base cell number (e.g., 97) corresponding to a
 resolution 0 pentagon, and have all zeros from digit 1 to the digit
 corresponding to the cell's resolution.
+(We'll drop the ellipses from now on, knowing that digits should contain
+7's beyond the cell resolution.)
 
                             parent res      child res
                            /               /
-| res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 | ... |
-|-----|-------------|---|---|---|---|---|---|-----|
-|   6 |          97 | 0 | 0 | 0 | 0 | 0 | 0 | ... |
+| res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 |
+|-----|-------------|---|---|---|---|---|---|
+|   6 |          97 | 0 | 0 | 0 | 0 | 0 | 0 |
+
+Iteration through children of a *pentagon* is almost the same
+as *hexagon* iteration, except that we skip the *first* 1 value
+that appears in the "skip digit". This corresponds to the fact
+that a pentagon only has 6 children, which are denoted with
+the numbers {0,2,3,4,5,6}.
+
+The skip digit starts at the child resolution position.
+When iterating through children more than one resolution below
+the parent, we move the skip digit to the left
+(up to the next coarser resolution) each time we skip the 1 value
+in that digit.
+
+Iteration would start like:
+
+                            parent res      child res
+                           /               /
+| res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 |
+|-----|-------------|---|---|---|---|---|---|
+|   6 |          97 | 0 | 0 | 0 | 0 | 0 | 0 |
                                            \
-                                            first nonzero digit
+                                            skip digit
 
-Note that iteration skips 1 whenever we're on the first nonzero digit.
-We then move the first nonzero digit up to the next coarser resolution.
+Noticing we skip the 1 value and move the skip digit,
+the next iterate would be:
 
-iterStepChild ->
-                            parent res      child res
-                           /               /
-| res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 | ... |
-|-----|-------------|---|---|---|---|---|---|-----|
-|   6 |          97 | 0 | 0 | 0 | 0 | 0 | 2 | ... |
+
+| res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 |
+|-----|-------------|---|---|---|---|---|---|
+|   6 |          97 | 0 | 0 | 0 | 0 | 0 | 2 |
                                        \
-                                        first nonzero digit
+                                        skip digit
 
-Iteration is normal (same as a hexagon) if we're not on the first
-nonzero digit.
+Iteration continues normally until we get to:
 
-iterStepChild ->
-                            parent res      child res
-                           /               /
-| res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 | ... |
-|-----|-------------|---|---|---|---|---|---|-----|
-|   6 |          97 | 0 | 0 | 0 | 0 | 0 | 3 | ... |
+
+| res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 |
+|-----|-------------|---|---|---|---|---|---|
+|   6 |          97 | 0 | 0 | 0 | 0 | 0 | 6 |
                                        \
-                                        first nonzero digit
+                                        skip digit
 
-...
+which is followed by (skipping the 1):
 
-iterStepChild ->
-                            parent res      child res
-                           /               /
-| res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 | ... |
-|-----|-------------|---|---|---|---|---|---|-----|
-|   6 |          97 | 0 | 0 | 0 | 0 | 0 | 6 | ... |
-                                       \
-                                        first nonzero digit
 
-iterStepChild ->
-
-We skip the `1` when we hit the next first nonzero digit.
-
-                            parent res      child res
-                           /               /
-| res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 | ... |
-|-----|-------------|---|---|---|---|---|---|-----|
-|   6 |          97 | 0 | 0 | 0 | 0 | 2 | 0 | ... |
+| res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 |
+|-----|-------------|---|---|---|---|---|---|
+|   6 |          97 | 0 | 0 | 0 | 0 | 2 | 0 |
                                    \
-                                    first nonzero digit
+                                    skip digit
 
-iterStepChild ->
+For the next iterate, we won't skip the `1` in the previous digit
+because it is no longer the skip digit:
 
-We won't skip the `1` in a previous digit when it
-is no longer the first nonzero digit.
-
-                            parent res      child res
-                           /               /
-| res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 | ... |
-|-----|-------------|---|---|---|---|---|---|-----|
-|   6 |          97 | 0 | 0 | 0 | 0 | 2 | 1 | ... |
+| res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 |
+|-----|-------------|---|---|---|---|---|---|
+|   6 |          97 | 0 | 0 | 0 | 0 | 2 | 1 |
                                    \
-                                    first nonzero digit
+                                    skip digit
+
+Iteration continues normally until we're right before the next skip
+digit:
+
+| res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 |
+|-----|-------------|---|---|---|---|---|---|
+|   6 |          97 | 0 | 0 | 0 | 0 | 6 | 6 |
+                                   \
+                                    skip digit
+
+Which is followed by
+
+| res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 |
+|-----|-------------|---|---|---|---|---|---|
+|   6 |          97 | 0 | 0 | 0 | 2 | 0 | 0 |
+                               \
+                                skip digit
+
+and so on.
+
  */
 
 /*
@@ -224,12 +226,12 @@ Iter_Child iterInitParent(H3Index h, int childRes) {
     H3_SET_RESOLUTION(it.h, childRes);
 
     if (H3_EXPORT(isPentagon)(it.h)) {
-        // The first nonzero digit skips `1` for pentagons.
+        // The skip digit skips `1` for pentagons.
         // The "_skipDigit" moves to the left as we count up from the
         // child resolution to the parent resolution.
         it._skipDigit = childRes;
     } else {
-        // if not a pentagon, we can ignore "first nonzero digit" logic
+        // if not a pentagon, we can ignore "skip digit" logic
         it._skipDigit = -1;
     }
 
