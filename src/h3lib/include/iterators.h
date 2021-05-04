@@ -32,9 +32,8 @@ a given cell
  */
 typedef struct {
     H3Index h;
-    int _parentRes;          // parent resolution
-    int _nextPentagonDigit;  // first nonzero digit (this digit skips `1` for
-                             // pentagons)
+    int _parentRes;  // parent resolution
+    int _skipDigit;  // this digit skips `1` for pentagons
 } Iter_Child;
 
 DECLSPEC Iter_Child iterInitParent(H3Index h, int childRes);

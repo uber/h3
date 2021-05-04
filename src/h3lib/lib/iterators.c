@@ -40,46 +40,96 @@ static void _inc(Iter_Child* it, int res) {
 }
 
 /*
-Fully nulled-out child iterator for when an iterator is exhausted.
+Create a fully nulled-out child iterator for when an iterator is exhausted.
 This helps minimize the chance that a user will depend on the iterator
 internal state after it's exhausted, like the child resolution, for
 example.
  */
 static Iter_Child _null_iter() {
-    return (Iter_Child){
-        .h = H3_NULL, ._parentRes = -1, ._nextPentagonDigit = -1};
+    return (Iter_Child){.h = H3_NULL, ._parentRes = -1, ._skipDigit = -1};
 }
 
 /*
-Logic for iterating through the children of a cell.
+
+## Logic for iterating through the children of a cell
+
+We'll describe the logic for ....
+
+- normal (non pentagon iteration)
+- pentagon iteration. define "pentagon digit"
 
 
-### Step sequence on a hexagon (non-pentagon) cell
+### Cell Index Component Diagrams
 
-                            parent res      child res
-                           /               /
+The lower 56 bits of an H3 Cell Index describe the following index components:
+
+- the cell resolution (4 bits)
+- the base cell number (7 bits)
+- the child cell digit for each resolution from 1 to 15 (3*15 = 45 bits)
+
+These are the bits we'll be focused on when iterating through child cells.
+To help describe the iteration logic, we'll use diagrams displaying the
+(decimal) values for each component like:
+
 | res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 | ... |
 |-----|-------------|---|---|---|---|---|---|-----|
-|   6 |          92 | 5 | 1 | 0 | 0 | 2 | 5 | ... |
+|   9 |          17 | 5 | 3 | 0 | 6 | 2 | 1 | ... |
 
-iterStepChild ->
 
+### Iteration through children of a hexagon (but not a pentagon)
+
+Iteration through the children of a *hexagon* (but not a pentagon)
+simply involves iterating through all the children values (0--6)
+for each child digit (up to the child's resolution).
+
+For example, suppose a resolution 3 hexagon index has the following
+components:
+                               parent resolution
+                              /
 | res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 | ... |
 |-----|-------------|---|---|---|---|---|---|-----|
-|   6 |          92 | 5 | 1 | 0 | 0 | 2 | 6 | ... |
+|   3 |          17 | 3 | 5 | 1 | 7 | 7 | 7 | ... |
 
-iterStepChild ->
+The iteration through all children of resolution 6 would look like:
 
-| res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 | ... |
-|-----|-------------|---|---|---|---|---|---|-----|
-|   6 |          92 | 5 | 1 | 0 | 0 | 3 | 0 | ... |
+
+                                parent res  child res
+                               /           /
+| res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | ... |
+|-----|-------------|---|---|---|---|---|---|---|---|-----|
+|   6 |          17 | 3 | 5 | 1 | 0 | 0 | 0 | 7 | 7 | ... |
+
+| res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | ... |
+|-----|-------------|---|---|---|---|---|---|---|---|-----|
+|   6 |          17 | 3 | 5 | 1 | 0 | 0 | 1 | 7 | 7 | ... |
+
+...
+
+| res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | ... |
+|-----|-------------|---|---|---|---|---|---|---|---|-----|
+|   6 |          17 | 3 | 5 | 1 | 0 | 0 | 6 | 7 | 7 | ... |
+
+| res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | ... |
+|-----|-------------|---|---|---|---|---|---|---|---|-----|
+|   6 |          17 | 3 | 5 | 1 | 0 | 1 | 0 | 7 | 7 | ... |
+
+| res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | ... |
+|-----|-------------|---|---|---|---|---|---|---|---|-----|
+|   6 |          17 | 3 | 5 | 1 | 0 | 1 | 1 | 7 | 7 | ... |
+
+...
+
+| res | base cell # | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | ... |
+|-----|-------------|---|---|---|---|---|---|---|---|-----|
+|   6 |          17 | 3 | 5 | 1 | 6 | 6 | 6 | 7 | 7 | ... |
+
 
 
 
 ### Step sequence on a *pentagon* cell
 
-Pentagon cells have a pentagon base cell number
-with all zeros from digit 1 to the digit
+Pentagon cells have a base cell number corresponding to a
+resolution 0 pentagon, and have all zeros from digit 1 to the digit
 corresponding to the cell's resolution.
 
                             parent res      child res
@@ -175,12 +225,12 @@ Iter_Child iterInitParent(H3Index h, int childRes) {
 
     if (H3_EXPORT(isPentagon)(it.h)) {
         // The first nonzero digit skips `1` for pentagons.
-        // The "_nextPentagonDigit" moves to the left as we count up from the
+        // The "_skipDigit" moves to the left as we count up from the
         // child resolution to the parent resolution.
-        it._nextPentagonDigit = childRes;
+        it._skipDigit = childRes;
     } else {
         // if not a pentagon, we can ignore "first nonzero digit" logic
-        it._nextPentagonDigit = -1;
+        it._skipDigit = -1;
     }
 
     return it;
@@ -207,7 +257,7 @@ void iterStepChild(Iter_Child* it) {
         }
 
         // K_AXES_DIGIT == 1
-        if (i == it->_nextPentagonDigit && _get(it, i) == K_AXES_DIGIT) {
+        if (i == it->_skipDigit && _get(it, i) == K_AXES_DIGIT) {
             // Then we are iterating through the children of a pentagon cell.
             // All children of a pentagon have the property that the first
             // nonzero digit between the parent and child resolutions is
@@ -215,7 +265,7 @@ void iterStepChild(Iter_Child* it) {
             // I.e., we never see a sequence like 00001.
             // Thus, we skip the `1` in this digit.
             _inc(it, i);
-            it->_nextPentagonDigit -= 1;
+            it->_skipDigit -= 1;
             return;
         }
 
