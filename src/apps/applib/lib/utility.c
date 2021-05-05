@@ -122,7 +122,7 @@ void cellBoundaryPrintln(const CellBoundary* b) {
  * Apply callback for every unidirectional edge at the given resolution.
  */
 void iterateAllDirectedEdgesAtRes(int res, void (*callback)(H3Index)) {
-    Iter_Res iter = iterInitRes(res);
+    IterResCells iter = iterInitRes(res);
 
     for (; iter.h; iterStepRes(&iter)) {
         H3Index edges[6] = {H3_NULL};
@@ -161,7 +161,7 @@ void iterateAllIndexesAtResPartial(int res, void (*callback)(H3Index),
  */
 void iterateBaseCellIndexesAtRes(int res, void (*callback)(H3Index),
                                  int baseCell) {
-    Iter_Child iter = iterInitBaseCellNum(baseCell, res);
+    IterChildCells iter = iterInitBaseCellNum(baseCell, res);
 
     for (; iter.h; iterStepChild(&iter)) {
         (*callback)(iter.h);
