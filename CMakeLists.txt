@@ -356,12 +356,6 @@ add_custom_target(update-version
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
 
-# Website publishing
-add_custom_target(publish-website
-    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/publish_website.sh
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-    )
-
 # Link all executables against H3
 macro(add_h3_executable name)
     # invoke built-in add_executable
