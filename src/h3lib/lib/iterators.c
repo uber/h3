@@ -297,7 +297,7 @@ Iter_Child iterInitBaseCellNum(int baseCellNum, int childRes) {
 Iter_Res iterInitRes(int res) {
     Iter_Child itC = iterInitBaseCellNum(0, res);
 
-    Iter_Res itR = {.h = itC.h, .baseCellNum = 0, .res = res, .itC = itC};
+    Iter_Res itR = {.h = itC.h, ._baseCellNum = 0, ._res = res, ._itC = itC};
 
     return itR;
 }
@@ -307,17 +307,17 @@ void iterStepRes(Iter_Res* itR) {
     if (itR->h == H3_NULL) return;
 
     // step child iterator
-    iterStepChild(&(itR->itC));
+    iterStepChild(&(itR->_itC));
 
     // If the child iterator is exhausted and there are still
     // base cells remaining, we initialize the next base cell child iterator
-    if ((itR->itC.h == H3_NULL) && (itR->baseCellNum + 1 < NUM_BASE_CELLS)) {
-        itR->baseCellNum += 1;
-        itR->itC = iterInitBaseCellNum(itR->baseCellNum, itR->res);
+    if ((itR->_itC.h == H3_NULL) && (itR->_baseCellNum + 1 < NUM_BASE_CELLS)) {
+        itR->_baseCellNum += 1;
+        itR->_itC = iterInitBaseCellNum(itR->_baseCellNum, itR->_res);
     }
 
     // This overall iterator reflects the next cell in the child iterator.
     // Note: This sets itR->h = H3_NULL if the base cells were
     // exhausted in the check above.
-    itR->h = itR->itC.h;
+    itR->h = itR->_itC.h;
 }

@@ -45,9 +45,9 @@ Iter_Res: struct for iterating through all cells at a given resolution
  */
 typedef struct {
     H3Index h;
-    int baseCellNum;
-    int res;
-    Iter_Child itC;
+    int _baseCellNum;
+    int _res;
+    Iter_Child _itC;
 } Iter_Res;
 
 DECLSPEC Iter_Res iterInitRes(int res);
