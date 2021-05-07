@@ -1,0 +1,438 @@
+---
+id: uniedge
+title: Unidirectional edge functions
+sidebar_label: Unidirectional edges
+slug: /api/uniedge
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+Unidirectional edges allow encoding the directed edge from one cell to a neighboring cell.
+
+## h3IndexesAreNeighbors
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+int h3IndexesAreNeighbors(H3Index origin, H3Index destination);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.h3_indexes_are_neighbors(origin, destination)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+boolean h3IndexesAreNeighbors(long origin, long destination);
+boolean h3IndexesAreNeighbors(String origin, String destination);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.h3IndexesAreNeighbors(origin, destination)
+```
+
+```js live
+function example() {
+  const origin = '85283473fffffff';
+  const destination = '85283477fffffff';
+  return String(h3.h3IndexesAreNeighbors(origin, destination));
+}
+```
+
+</TabItem>
+</Tabs>
+
+Returns whether or not the provided H3Indexes are neighbors.
+
+Returns 1 if the indexes are neighbors, 0 otherwise.
+
+## getH3UnidirectionalEdge
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+H3Index getH3UnidirectionalEdge(H3Index origin, H3Index destination);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.get_h3_unidirectional_edge(origin, destination)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+long getH3UnidirectionalEdge(long origin, long destination);
+String getH3UnidirectionalEdge(String origin, String destination);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.getH3UnidirectionalEdge(h3Index)
+```
+
+```js live
+function example() {
+  const origin = '85283473fffffff';
+  const destination = '85283477fffffff';
+  return h3.getH3UnidirectionalEdge(origin, destination);
+}
+```
+
+</TabItem>
+</Tabs>
+
+Returns a unidirectional edge H3 index based on the provided origin and
+destination.
+
+Returns 0 on error.
+
+## h3UnidirectionalEdgeIsValid
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+int h3UnidirectionalEdgeIsValid(H3Index edge);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.h3_unidirectional_edge_is_valid(edge)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+boolean h3UnidirectionalEdgeIsValid(long edge);
+boolean h3UnidirectionalEdgeIsValid(String edgeAddress);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.h3UnidirectionalEdgeIsValid(edge)
+```
+
+```js live
+function example() {
+  const edge = '115283473fffffff';
+  return String(h3.h3UnidirectionalEdgeIsValid(edge));
+}
+```
+
+</TabItem>
+</Tabs>
+
+Determines if the provided H3Index is a valid unidirectional edge index.
+
+Returns 1 if it is a unidirectional edge H3Index, otherwise 0.
+
+## getOriginH3IndexFromUnidirectionalEdge
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+H3Index getOriginH3IndexFromUnidirectionalEdge(H3Index edge);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.get_origin_h3_index_from_unidirectional_edge(edge)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+long getOriginH3IndexFromUnidirectionalEdge(long edge);
+String getOriginH3IndexFromUnidirectionalEdge(String edgeAddress);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.getOriginH3IndexFromUnidirectionalEdge(h3Index)
+```
+
+```js live
+function example() {
+  const edge = '115283473fffffff';
+  return h3.getOriginH3IndexFromUnidirectionalEdge(edge);
+}
+```
+
+</TabItem>
+</Tabs>
+
+Returns the origin hexagon from the unidirectional edge H3Index.
+
+## getDestinationH3IndexFromUnidirectionalEdge
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+H3Index getDestinationH3IndexFromUnidirectionalEdge(H3Index edge);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.get_destination_h3_index_from_unidirectional_edge(edge)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+long getDestinationH3IndexFromUnidirectionalEdge(long edge);
+String getDestinationH3IndexFromUnidirectionalEdge(String edgeAddress);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.getDestinationH3IndexFromUnidirectionalEdge(edge)
+```
+
+```js live
+function example() {
+  const edge = '115283473fffffff';
+  return h3.getDestinationH3IndexFromUnidirectionalEdge(edge);
+}
+```
+
+</TabItem>
+</Tabs>
+
+Returns the destination hexagon from the unidirectional edge H3Index.
+
+## getH3IndexesFromUnidirectionalEdge
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+void getH3IndexesFromUnidirectionalEdge(H3Index edge, H3Index* originDestination);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.get_h3_indexes_from_unidirectional_edge(edge)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+List<Long> getH3IndexesFromUnidirectionalEdge(long edge);
+List<String> getH3IndexesFromUnidirectionalEdge(String edgeAddress);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.getH3IndexesFromUnidirectionalEdge(edge)
+```
+
+```js live
+function example() {
+  const edge = '115283473fffffff';
+  return h3.getH3IndexesFromUnidirectionalEdge(edge);
+}
+```
+
+</TabItem>
+</Tabs>
+
+Returns the origin, destination pair of hexagon IDs for the given edge ID, which are placed at `originDestination[0]` and
+`originDestination[1]` respectively.
+
+## getH3UnidirectionalEdgesFromHexagon
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+void getH3UnidirectionalEdgesFromHexagon(H3Index origin, H3Index* edges);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.get_h3_unidirectional_edges_from_hexagon(h)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+List<Long> getH3UnidirectionalEdgesFromHexagon(long h3);
+List<String> getH3UnidirectionalEdgesFromHexagon(String h3);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.getH3UnidirectionalEdgesFromHexagon(h3Index)
+```
+
+```js live
+function example() {
+  const h = '85283473fffffff';
+  return h3.getH3UnidirectionalEdgesFromHexagon(h);
+}
+```
+
+</TabItem>
+</Tabs>
+
+Provides all of the unidirectional edges from the current H3Index. `edges` must be of length 6,
+and the number of undirectional edges placed in the array may be less than 6.
+
+## getH3UnidirectionalEdgeBoundary
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+void getH3UnidirectionalEdgeBoundary(H3Index edge, GeoBoundary* gb);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.get_h3_unidirectional_edge_boundary(edge, geo_json=False)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+List<GeoCoord> getH3UnidirectionalEdgeBoundary(long edge);
+List<GeoCoord> getH3UnidirectionalEdgeBoundary(String edgeAddress);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.getH3UnidirectionalEdgeBoundary(edge, [formatAsGeoJson])
+```
+
+```js live
+function example() {
+  const edge = '115283473fffffff';
+  return h3.getH3UnidirectionalEdgeBoundary(edge);
+}
+```
+
+</TabItem>
+</Tabs>
+
+Provides the coordinates defining the unidirectional edge.

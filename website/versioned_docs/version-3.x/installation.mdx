@@ -1,0 +1,186 @@
+---
+id: installation
+title: Installation
+sidebar_label: Installation
+slug: /installation
+---
+
+<!-- when updating this file with a new version number, do a search and replace
+for all instances. -->
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+We recommend using prebuilt bindings if they are available for your programming language. Bindings for Go, Java, JavaScript, Python, and others are available.
+
+## Package managers
+
+<Tabs
+  groupId="env"
+  defaultValue="python"
+  values={[
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript', value: 'javascript'},
+    {label: 'Homebrew', value: 'brew'},
+  ]
+}>
+<TabItem value="python">
+
+Using [PyPi](https://pypi.org/project/h3/), run:
+
+```bash
+pip install h3
+```
+
+Using [Conda](https://github.com/conda-forge/h3-py-feedstock), run:
+
+```
+conda config --add channels conda-forge
+conda install h3-py
+```
+
+</TabItem>
+<TabItem value="java">
+
+Using Maven, add to your `pom.xml`:
+
+```xml
+<dependency>
+    <groupId>com.uber</groupId>
+    <artifactId>h3</artifactId>
+    <version>3.7.0</version>
+</dependency>
+```
+
+Using Gradle, add to your build script:
+
+```gradle
+compile("com.uber:h3:3.7.0")
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+Using npm, run:
+
+```bash
+npm install h3-js
+```
+
+Using yarn, run:
+
+```bash
+yarn add h3-js
+```
+
+</TabItem>
+<TabItem value="brew">
+
+Using brew, run:
+
+```bash
+brew install h3
+```
+
+This installs the C library and filter applications.
+
+</TabItem>
+</Tabs>
+
+## Install from source
+
+First, clone the repository or [download the source](https://github.com/uber/h3)
+and check out the latest release:
+
+```bash
+git clone https://github.com/uber/h3.git
+cd h3
+git checkout v$(<VERSION)
+```
+
+You will need to install build dependencies for your operating system.
+
+<Tabs
+  groupId="os"
+  defaultValue="python"
+  values={[
+    {label: 'mac OS', value: 'macos'},
+    {label: 'alpine', value: 'alpine'},
+    {label: 'Debian/Ubuntu', value: 'debian'},
+    {label: 'Windows', value: 'windows'},
+    {label: 'FreeBSD', value: 'freebsd'},
+  ]
+}>
+<TabItem value="macos">
+
+First make sure you [have the developer tools installed](http://osxdaily.com/2014/02/12/install-command-line-tools-mac-os-x/) and then run:
+
+```bash
+# Installing the bare build requirements
+brew install cmake
+# Installing useful tools for development
+brew install clang-format lcov doxygen
+```
+
+</TabItem>
+<TabItem value="alpine">
+
+```bash
+# Installing the bare build requirements
+apk add cmake make gcc libtool musl-dev
+```
+
+</TabItem>
+<TabItem value="debian">
+
+```bash     
+# Installing the bare build requirements
+sudo apt install cmake make gcc libtool
+# Installing useful tools for development
+sudo apt install clang-format cmake-curses-gui lcov doxygen
+```
+
+</TabItem>
+<TabItem value="windows">
+
+You will need to install CMake and Visual Studio, including the Visual C++ compiler.
+
+```bash     
+# Installing the bare build requirements
+sudo apt install cmake make gcc libtool
+# Installing useful tools for development
+sudo apt install clang-format cmake-curses-gui lcov doxygen
+```
+
+</TabItem>
+<TabItem value="freebsd">
+
+```bash
+# Installing the build requirements
+sudo pkg install bash cmake gmake doxygen lcov
+```
+
+</TabItem>
+</Tabs>
+
+Next, you can build the library:
+
+```bash
+mkdir build
+cd build
+cmake ..
+cmake --build .
+```
+
+Optionally, to run H3's test suite, run:
+
+```
+ctest
+```
+
+By default, the filter applications are built when you build H3. You can confirm they are working by running:
+
+```
+./bin/geoToH3 --lat 14 --lon -42 --resolution 2
+```

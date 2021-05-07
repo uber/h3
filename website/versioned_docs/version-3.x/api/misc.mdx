@@ -1,0 +1,1002 @@
+---
+id: misc
+title: Miscellaneous H3 functions
+sidebar_label: Miscellaneous
+slug: /api/misc
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+These functions include descriptions of the H3 grid system.
+
+## degsToRads
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+double degsToRads(double degrees);
+```
+
+</TabItem>
+<TabItem value="python">
+
+:::note
+
+Use `math.radians(degrees)` instead.
+
+:::
+
+</TabItem>
+<TabItem value="java">
+
+:::note
+
+Use `java.lang.Math.toRadians(double degrees)` instead.
+
+:::
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.degsToRads(degrees)
+```
+
+```js live
+function example() {
+  const degrees = 45;
+  return h3.degsToRads(degrees);
+}
+```
+
+</TabItem>
+</Tabs>
+
+Converts degrees to radians.
+
+## radsToDegs
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+double radsToDegs(double radians);
+```
+
+</TabItem>
+<TabItem value="python">
+
+:::note
+
+Use `math.degrees(radians)` instead.
+
+:::
+
+</TabItem>
+<TabItem value="java">
+
+:::note
+
+Use `java.lang.Math.toDegrees(double radians)` instead.
+
+:::
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.radsToDegs(h)
+```
+
+```js live
+function example() {
+  const radians = 3.14159;
+  return h3.radsToDegs(radians);
+}
+```
+
+</TabItem>
+</Tabs>
+
+Converts radians to degrees.
+
+## hexAreaKm2
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+double hexAreaKm2(int res);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.hex_area(res, unit='km^2')
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+double hexArea(int res, AreaUnit unit);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.hexArea(res, h3.UNITS.km2)
+```
+
+```js live
+function example() {
+  const res = 5;
+  return h3.hexArea(res, h3.UNITS.km2);
+}
+```
+
+</TabItem>
+</Tabs>
+
+Average hexagon area in square kilometers at the given resolution.
+
+## hexAreaM2
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+double hexAreaM2(int res);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.hex_area(res, unit='m^2')
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+double hexArea(int res, AreaUnit unit);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.hexArea(res, h3.UNITS.m2)
+```
+
+```js live
+function example() {
+  const res = 5;
+  return h3.hexArea(res, h3.UNITS.m2);
+}
+```
+
+</TabItem>
+</Tabs>
+
+Average hexagon area in square meters at the given resolution.
+
+## cellAreaM2
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+double cellAreaM2(H3Index h);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.cell_area(h, unit='m^2')
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+double cellArea(long h3, AreaUnit unit);
+int cellArea(String h3Address, AreaUnit unit);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.cellArea(h, h3.UNITS.m2)
+```
+
+```js live
+function example() {
+  const h = '85283473fffffff';
+  return h3.cellArea(h, h3.UNITS.m2);
+}
+```
+
+</TabItem>
+</Tabs>
+
+Exact area of specific cell in square meters.
+
+## cellAreaRads2
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+double cellAreaRads2(H3Index h);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.cell_area(h, unit='rads^2')
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+double cellArea(long h3, AreaUnit unit);
+int cellArea(String h3Address, AreaUnit unit);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.cellArea(h, h3.UNITS.rads2)
+```
+
+```js live
+function example() {
+  const h = '85283473fffffff';
+  return h3.cellArea(h, h3.UNITS.rads2);
+}
+```
+
+</TabItem>
+</Tabs>
+
+Exact area of specific cell in square radians.
+
+## edgeLengthKm
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+double edgeLengthKm(int res);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.edge_length(res, unit='km')
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+double edgeLength(int res, LengthUnit unit);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.edgeLength(res, h3.UNITS.km)
+```
+
+```js live
+function example() {
+  const res = 5;
+  return h3.edgeLength(res, h3.UNITS.km);
+}
+```
+
+</TabItem>
+</Tabs>
+
+Average hexagon edge length in kilometers at the given resolution.
+
+## edgeLengthM
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+double edgeLengthM(int res);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.edge_length(res, unit='m')
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+double edgeLength(int res, LengthUnit unit);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.edgeLength(res, h3.UNITS.km)
+```
+
+```js live
+function example() {
+  const res = 5;
+  return h3.edgeLength(res, h3.UNITS.km);
+}
+```
+
+</TabItem>
+</Tabs>
+
+Average hexagon edge length in meters at the given resolution.
+
+
+## exactEdgeLengthKm
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+double exactEdgeLengthKm(H3Index edge);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.exact_edge_length(h, unit='km')
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+double exactEdgeLength(long h3, LengthUnit unit);
+double exactEdgeLength(String h3Address, LengthUnit unit);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.exactEdgeLength(h3, h3.UNITS.km)
+```
+
+```js live
+function example() {
+  const h = '115283473fffffff';
+  return h3.exactEdgeLength(h, h3.UNITS.km);
+}
+```
+
+</TabItem>
+</Tabs>
+
+Exact edge length of specific unidirectional edge in kilometers.
+
+## exactEdgeLengthM
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+double exactEdgeLengthM(H3Index edge);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.exact_edge_length(h, unit='m')
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+double exactEdgeLength(long h3, LengthUnit unit);
+double exactEdgeLength(String h3Address, LengthUnit unit);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.exactEdgeLength(h3, h3.UNITS.m)
+```
+
+```js live
+function example() {
+  const h = '115283473fffffff';
+  return h3.exactEdgeLength(h, h3.UNITS.m);
+}
+```
+
+</TabItem>
+</Tabs>
+
+Exact edge length of specific unidirectional edge in meters.
+
+## exactEdgeLengthRads
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+double exactEdgeLengthRads(H3Index edge);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.exact_edge_length(h, unit='rads')
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+double exactEdgeLength(long h3, LengthUnit unit);
+double exactEdgeLength(String h3Address, LengthUnit unit);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.exactEdgeLength(h3, h3.UNITS.rads)
+```
+
+```js live
+function example() {
+  const h = '115283473fffffff';
+  return h3.exactEdgeLength(h, h3.UNITS.rads);
+}
+```
+
+</TabItem>
+</Tabs>
+
+Exact edge length of specific unidirectional edge in radians.
+
+## numHexagons
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+int64_t numHexagons(int res);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.num_hexagons(res)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+long numHexagons(int res);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.numHexagons(res)
+```
+
+```js live
+function example() {
+  const res = 5;
+  return h3.numHexagons(res);
+}
+```
+
+</TabItem>
+</Tabs>
+
+Number of unique H3 indexes at the given resolution.
+
+## getRes0Indexes
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+void getRes0Indexes(H3Index *out);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.get_res0_indexes(res)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+Collection<Long> getRes0Indexes(int res);
+Collection<String> getRes0IndexesAddresses(int res);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.getRes0Indexes(res)
+```
+
+```js live
+function example() {
+  const res = 5;
+  return h3.getRes0Indexes(res);
+}
+```
+
+</TabItem>
+</Tabs>
+
+All the resolution 0 H3 indexes.
+`out` must be an array of at least size `res0IndexCount()`.
+
+## res0IndexCount
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+int res0IndexCount();
+```
+
+</TabItem>
+<TabItem value="python">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+<TabItem value="java">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+<TabItem value="javascript">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+</Tabs>
+
+Number of resolution 0 H3 indexes.
+
+## getPentagonIndexes
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+void getPentagonIndexes(int res, H3Index *out);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.get_pentagon_indexes(res)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+Collection<Long> getPentagonIndexes(int res);
+Collection<String> h3.getPentagonIndexesAddresses(int res);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.getPentagonIndexes(res)
+```
+
+```js live
+function example() {
+  const res = 5;
+  return h3.getPentagonIndexes(res);
+}
+```
+
+</TabItem>
+</Tabs>
+
+All the pentagon H3 indexes at the specified resolution.
+`out` must be an array of at least size `pentagonIndexCount()`.
+
+## pentagonIndexCount
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+int pentagonIndexCount();
+```
+
+</TabItem>
+<TabItem value="python">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+<TabItem value="java">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+<TabItem value="javascript">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+</Tabs>
+
+Number of pentagon H3 indexes per resolution. This is always 12, but provided as a convenience.
+
+## pointDistKm
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+double pointDistKm(const GeoCoord *a, const GeoCoord *b);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.point_dist(point1, point2, unit='km')
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+double pointDist(GeoCoord point1, GeoCoord point2, LengthUnit unit);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.pointDist(point1, point2, h3.UNITS.km)
+```
+
+```js live
+function example() {
+  const point1 = [-10, 0];
+  const point2 = [10, 0];
+  return h3.pointDist(point1, point2, h3.UNITS.km)
+}
+```
+
+</TabItem>
+</Tabs>
+
+Gives the "great circle" or "haversine" distance between pairs of
+GeoCoord points (lat/lng pairs) in kilometers.
+
+## pointDistM
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+double pointDistM(const GeoCoord *a, const GeoCoord *b);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.point_dist(point1, point2, unit='m')
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+double pointDist(GeoCoord point1, GeoCoord point2, LengthUnit unit);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.pointDist(point1, point2, h3.UNITS.m)
+```
+
+```js live
+function example() {
+  const point1 = [-10, 0];
+  const point2 = [10, 0];
+  return h3.pointDist(point1, point2, h3.UNITS.m)
+}
+```
+
+</TabItem>
+</Tabs>
+
+Gives the "great circle" or "haversine" distance between pairs of
+GeoCoord points (lat/lng pairs) in meters.
+
+## pointDistRads
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+double pointDistRads(const GeoCoord *a, const GeoCoord *b);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.point_dist(point1, point2, unit='rads')
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+double pointDist(GeoCoord point1, GeoCoord point2, LengthUnit unit);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.pointDist(point1, point2, h3.UNITS.rads)
+```
+
+```js live
+function example() {
+  const point1 = [-10, 0];
+  const point2 = [10, 0];
+  return h3.pointDist(point1, point2, h3.UNITS.rads)
+}
+```
+
+</TabItem>
+</Tabs>
+
+Gives the "great circle" or "haversine" distance between pairs of
+GeoCoord points (lat/lng pairs) in radians.
