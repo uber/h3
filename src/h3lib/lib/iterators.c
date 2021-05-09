@@ -258,8 +258,8 @@ void iterStepChild(IterChildCells* it) {
             return;
         }
 
-        // K_AXES_DIGIT == 1
-        if (i == it->_skipDigit && _get(it, i) == K_AXES_DIGIT) {
+        // PENTAGON_SKIPPED_DIGIT == 1
+        if (i == it->_skipDigit && _get(it, i) == PENTAGON_SKIPPED_DIGIT) {
             // Then we are iterating through the children of a pentagon cell.
             // All children of a pentagon have the property that the first
             // nonzero digit between the parent and child resolutions is
