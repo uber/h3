@@ -1,0 +1,240 @@
+---
+id: regions
+title: Region functions
+sidebar_label: Regions
+slug: /api/regions
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+These functions convert H3 indexes to and from polygonal areas.
+
+## polyfill
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+void polyfill(const GeoPolygon* geoPolygon, int res, H3Index* out);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.polyfill(polygons, res, geo_json_conformant=False)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+List<Long> polyfill(List<GeoCoord> points, List<List<GeoCoord>> holes, int res);
+List<String> polyfillAddress(List<GeoCoord> points, List<List<GeoCoord>> holes, int res);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.polyfill(polygon, res, isGeoJson)
+```
+
+```js live
+function example() {
+    const polygon = [
+        [37.813318999983238, -122.4089866999972145],
+        [37.7198061999978478, -122.3544736999993603],
+        [37.8151571999998453, -122.4798767000009008]
+    ];
+    const res = 7;
+    return h3.polyfill(polygon, res);
+}
+```
+
+</TabItem>
+</Tabs>
+
+polyfill takes a given GeoJSON-like data structure and preallocated,
+zeroed memory, and fills it with the hexagons that are contained by
+the GeoJSON-like data structure.
+
+Containment is determined by the cells' centroids. A partioning
+using the GeoJSON-like data structure, where polygons cover an area
+without overlap, will result in a partitioning in the H3 grid, where
+cells cover the same area without overlap.
+
+### maxPolyfillSize
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+int maxPolyfillSize(const GeoPolygon* geoPolygon, int res);
+```
+
+</TabItem>
+<TabItem value="python">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+<TabItem value="java">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+<TabItem value="javascript">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+</Tabs>
+
+maxPolyfillSize returns the number of hexagons to allocate space for when
+performing a polyfill on the given GeoJSON-like data structure.
+
+## h3SetToLinkedGeo / h3SetToMultiPolygon
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+void h3SetToLinkedGeo(const H3Index* h3Set, const int numHexes, LinkedGeoPolygon* out);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.h3_set_to_multi_polygon(hexes, geo_json=False)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+List<List<List<GeoCoord>>> h3SetToMultiPolygon(Collection<Long> h3, boolean geoJson);
+List<List<List<GeoCoord>>> h3AddressSetToMultiPolygon(Collection<String> h3Addresses, boolean geoJson);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.h3SetToMultiPolygon(polygon, geoJson)
+```
+
+```js live
+function example() {
+    const hexagons = ['872830828ffffff', '87283082effffff'];
+    return h3.h3SetToMultiPolygon(hexagons, true);
+}
+```
+
+</TabItem>
+</Tabs>
+
+Create a LinkedGeoPolygon describing the outline(s) of a set of  hexagons.
+Polygon outlines will follow GeoJSON MultiPolygon order: Each polygon will
+have one outer loop, which is first in the list, followed by any holes.
+
+It is the responsibility of the caller to call destroyLinkedPolygon on the
+populated linked geo structure, or the memory for that structure will
+not be freed.
+
+It is expected that all hexagons in the set have the same resolution and
+that the set contains no duplicates. Behavior is undefined if duplicates
+or multiple resolutions are present, and the algorithm may produce
+unexpected or invalid output.
+
+## destroyLinkedPolygon
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+void destroyLinkedPolygon(LinkedGeoPolygon* polygon);
+```
+
+</TabItem>
+<TabItem value="python">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+<TabItem value="java">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+<TabItem value="javascript">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+</Tabs>
+
+Free all allocated memory for a linked geo structure. The caller is
+responsible for freeing memory allocated to the input polygon struct.

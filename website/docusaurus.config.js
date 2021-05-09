@@ -28,6 +28,11 @@ module.exports = {
           position: 'left',
         },
         {
+          type: 'docsVersionDropdown',
+          position: 'right',
+          dropdownActiveClassDisabled: true,
+        },
+        {
           href: 'https://github.com/uber/h3',
           label: 'GitHub',
           position: 'right',
@@ -86,8 +91,15 @@ module.exports = {
       {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
-          editUrl:
-            'https://github.com/uber/h3/edit/master/website/',
+          editUrl: ({docPath}) => {
+            // Per docusaurus, apply changes to the "next" version, not the current one
+            return `https://github.com/uber/h3/edit/master/website/docs/${docPath}`;
+          },
+          versions: {
+            current: {
+              label: '4.x'
+            },
+          },
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
