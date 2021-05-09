@@ -28,6 +28,19 @@ module.exports = {
       "quickstart",
       // TODO: Add FAQ here
     ],
+    "Concepts and Guides": [
+      {
+        type: "category",
+        label: "Migrating from 3.x",
+        items: [
+          "library/migrating-3.x",
+          "library/migration-3.x/functions",
+        ],
+      },
+      "library/terminology",
+      "library/errors",
+      "library/restable",
+    ],
     "API Reference": [
       "api/indexing",
       "api/inspection",
@@ -45,7 +58,6 @@ module.exports = {
     ],
     "H3 Internals": [
       "core-library/overview",
-      "core-library/restable",
       "core-library/h3Indexing",
       "core-library/coordsystems",
       "core-library/creating-bindings",

@@ -1,0 +1,193 @@
+{
+  "version-3.x/someSidebar": [
+    {
+      "collapsed": true,
+      "type": "category",
+      "label": "Getting Started",
+      "items": [
+        {
+          "type": "doc",
+          "id": "version-3.x/README"
+        },
+        {
+          "collapsed": true,
+          "type": "category",
+          "label": "Highlights",
+          "items": [
+            {
+              "type": "doc",
+              "id": "version-3.x/highlights/aggregation"
+            },
+            {
+              "type": "doc",
+              "id": "version-3.x/highlights/joining"
+            },
+            {
+              "type": "doc",
+              "id": "version-3.x/highlights/flowmodel"
+            },
+            {
+              "type": "doc",
+              "id": "version-3.x/highlights/ml"
+            },
+            {
+              "type": "doc",
+              "id": "version-3.x/highlights/indexing"
+            }
+          ]
+        },
+        {
+          "collapsed": true,
+          "type": "category",
+          "label": "Comparisons",
+          "items": [
+            {
+              "type": "doc",
+              "id": "version-3.x/comparisons/s2"
+            },
+            {
+              "type": "doc",
+              "id": "version-3.x/comparisons/geohash"
+            },
+            {
+              "type": "doc",
+              "id": "version-3.x/comparisons/hexbin"
+            },
+            {
+              "type": "doc",
+              "id": "version-3.x/comparisons/admin"
+            },
+            {
+              "type": "doc",
+              "id": "version-3.x/comparisons/placekey"
+            }
+          ]
+        },
+        {
+          "type": "doc",
+          "id": "version-3.x/installation"
+        },
+        {
+          "type": "doc",
+          "id": "version-3.x/quickstart"
+        }
+      ]
+    },
+    {
+      "collapsed": true,
+      "type": "category",
+      "label": "API Reference",
+      "items": [
+        {
+          "type": "doc",
+          "id": "version-3.x/api/indexing"
+        },
+        {
+          "type": "doc",
+          "id": "version-3.x/api/inspection"
+        },
+        {
+          "type": "doc",
+          "id": "version-3.x/api/traversal"
+        },
+        {
+          "type": "doc",
+          "id": "version-3.x/api/hierarchy"
+        },
+        {
+          "type": "doc",
+          "id": "version-3.x/api/regions"
+        },
+        {
+          "type": "doc",
+          "id": "version-3.x/api/uniedge"
+        },
+        {
+          "type": "doc",
+          "id": "version-3.x/api/misc"
+        }
+      ]
+    },
+    {
+      "collapsed": true,
+      "type": "category",
+      "label": "Community",
+      "items": [
+        {
+          "type": "doc",
+          "id": "version-3.x/community/bindings"
+        },
+        {
+          "type": "doc",
+          "id": "version-3.x/community/libraries"
+        },
+        {
+          "type": "doc",
+          "id": "version-3.x/community/tutorials"
+        },
+        {
+          "type": "doc",
+          "id": "version-3.x/community/applications"
+        }
+      ]
+    },
+    {
+      "collapsed": true,
+      "type": "category",
+      "label": "H3 Internals",
+      "items": [
+        {
+          "type": "doc",
+          "id": "version-3.x/core-library/overview"
+        },
+        {
+          "type": "doc",
+          "id": "version-3.x/core-library/restable"
+        },
+        {
+          "type": "doc",
+          "id": "version-3.x/core-library/h3Indexing"
+        },
+        {
+          "type": "doc",
+          "id": "version-3.x/core-library/coordsystems"
+        },
+        {
+          "type": "doc",
+          "id": "version-3.x/core-library/creating-bindings"
+        },
+        {
+          "type": "doc",
+          "id": "version-3.x/core-library/custom-alloc"
+        },
+        {
+          "type": "doc",
+          "id": "version-3.x/core-library/usage"
+        },
+        {
+          "type": "doc",
+          "id": "version-3.x/core-library/filters"
+        },
+        {
+          "collapsed": true,
+          "type": "category",
+          "label": "Algorithms",
+          "items": [
+            {
+              "type": "doc",
+              "id": "version-3.x/core-library/geoToH3desc"
+            },
+            {
+              "type": "doc",
+              "id": "version-3.x/core-library/h3ToGeoDesc"
+            },
+            {
+              "type": "doc",
+              "id": "version-3.x/core-library/h3ToGeoBoundaryDesc"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
