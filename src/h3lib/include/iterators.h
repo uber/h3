@@ -27,30 +27,31 @@
 #include "h3api.h"
 
 /*
-IterChildCells: struct for iterating through the descendants of
+IterCellsChildren: struct for iterating through the descendants of
 a given cell
  */
 typedef struct {
     H3Index h;
     int _parentRes;  // parent resolution
     int _skipDigit;  // this digit skips `1` for pentagons
-} IterChildCells;
+} IterCellsChildren;
 
-DECLSPEC IterChildCells iterInitParent(H3Index h, int childRes);
-DECLSPEC IterChildCells iterInitBaseCellNum(int baseCellNum, int childRes);
-DECLSPEC void iterStepChild(IterChildCells* iter);
+DECLSPEC IterCellsChildren iterInitParent(H3Index h, int childRes);
+DECLSPEC IterCellsChildren iterInitBaseCellNum(int baseCellNum, int childRes);
+DECLSPEC void iterStepChild(IterCellsChildren* iter);
 
 /*
-IterResCells: struct for iterating through all cells at a given resolution
+IterCellsResolution: struct for iterating through all cells at a given
+resolution
  */
 typedef struct {
     H3Index h;
     int _baseCellNum;
     int _res;
-    IterChildCells _itC;
-} IterResCells;
+    IterCellsChildren _itC;
+} IterCellsResolution;
 
-DECLSPEC IterResCells iterInitRes(int res);
-DECLSPEC void iterStepRes(IterResCells* iter);
+DECLSPEC IterCellsResolution iterInitRes(int res);
+DECLSPEC void iterStepRes(IterCellsResolution* iter);
 
 #endif

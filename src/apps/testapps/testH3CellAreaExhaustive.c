@@ -122,7 +122,7 @@ static void cell_area_assert(H3Index cell) {
 static void earth_area_test(int res, double (*cell_area)(H3Index),
                             double target, double tol) {
     double area = 0.0;
-    IterResCells iter = iterInitRes(res);
+    IterCellsResolution iter = iterInitRes(res);
 
     for (; iter.h; iterStepRes(&iter)) {
         area += (*cell_area)(iter.h);

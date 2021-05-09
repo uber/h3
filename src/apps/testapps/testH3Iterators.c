@@ -27,7 +27,7 @@
 static void test_number(int res) {
     int64_t count = 0;
 
-    IterResCells iter = iterInitRes(res);
+    IterCellsResolution iter = iterInitRes(res);
 
     for (; iter.h; iterStepRes(&iter)) {
         count++;
@@ -40,7 +40,7 @@ static void test_number(int res) {
 }
 
 static void test_valid(int res) {
-    IterResCells iter = iterInitRes(res);
+    IterCellsResolution iter = iterInitRes(res);
 
     for (; iter.h; iterStepRes(&iter)) {
         t_assert(H3_EXPORT(isValidCell)(iter.h), "iterator cell is valid");

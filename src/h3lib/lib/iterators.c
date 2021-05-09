@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-/** @file IterChildCells.c
+/** @file IterCellsChildren.c
  * @brief Iterator structs and functions for the children of a cell,
  * or cells at a given resolution.
  */
@@ -26,14 +26,14 @@
 /*
 extract the `res` digit (0--7) of the current cell
  */
-static int _get(IterChildCells* it, int res) {
+static int _get(IterCellsChildren* it, int res) {
     return H3_GET_INDEX_DIGIT(it->h, res);
 }
 
 /*
 increment the digit (0--7) at location `res`
  */
-static void _inc(IterChildCells* it, int res) {
+static void _inc(IterCellsChildren* it, int res) {
     uint64_t val = 1;
     val <<= H3_PER_DIGIT_OFFSET * (MAX_H3_RES - res);
     it->h += val;
@@ -45,8 +45,9 @@ This helps minimize the chance that a user will depend on the iterator
 internal state after it's exhausted, like the child resolution, for
 example.
  */
-static IterChildCells _null_iter() {
-    return (IterChildCells){.h = H3_NULL, ._parentRes = -1, ._skipDigit = -1};
+static IterCellsChildren _null_iter() {
+    return (IterCellsChildren){
+        .h = H3_NULL, ._parentRes = -1, ._skipDigit = -1};
 }
 
 /*
@@ -204,17 +205,17 @@ and so on.
  */
 
 /*
-Initialize a IterChildCells struct representing the sequence giving
+Initialize a IterCellsChildren struct representing the sequence giving
 the children of cell `h` at resolution `childRes`.
 
 At any point in the iteration, starting once
-the struct is initialized, IterChildCells.h gives the current child.
+the struct is initialized, IterCellsChildren.h gives the current child.
 
-Also, IterChildCells.h == H3_NULL when all the children have been iterated
+Also, IterCellsChildren.h == H3_NULL when all the children have been iterated
 through, or if the input to `iterInitParent` was invalid.
  */
-IterChildCells iterInitParent(H3Index h, int childRes) {
-    IterChildCells it;
+IterCellsChildren iterInitParent(H3Index h, int childRes) {
+    IterCellsChildren it;
 
     it._parentRes = H3_GET_RESOLUTION(h);
 
@@ -239,11 +240,11 @@ IterChildCells iterInitParent(H3Index h, int childRes) {
 }
 
 /*
-Step a IterChildCells to the next child cell.
-When the iteration is over, IterChildCells.h will be H3_NULL.
+Step a IterCellsChildren to the next child cell.
+When the iteration is over, IterCellsChildren.h will be H3_NULL.
 Handles iterating through hexagon and pentagon cells.
  */
-void iterStepChild(IterChildCells* it) {
+void iterStepChild(IterCellsChildren* it) {
     // once h == H3_NULL, the iterator returns an infinite sequence of H3_NULL
     if (it->h == H3_NULL) return;
 
@@ -281,7 +282,7 @@ void iterStepChild(IterChildCells* it) {
 }
 
 // create iterator for children of base cell at given resolution
-IterChildCells iterInitBaseCellNum(int baseCellNum, int childRes) {
+IterCellsChildren iterInitBaseCellNum(int baseCellNum, int childRes) {
     if (baseCellNum < 0 || baseCellNum >= NUM_BASE_CELLS || childRes < 0 ||
         childRes > MAX_H3_RES) {
         return _null_iter();
@@ -294,16 +295,16 @@ IterChildCells iterInitBaseCellNum(int baseCellNum, int childRes) {
 }
 
 // create iterator for all cells at given resolution
-IterResCells iterInitRes(int res) {
-    IterChildCells itC = iterInitBaseCellNum(0, res);
+IterCellsResolution iterInitRes(int res) {
+    IterCellsChildren itC = iterInitBaseCellNum(0, res);
 
-    IterResCells itR = {
+    IterCellsResolution itR = {
         .h = itC.h, ._baseCellNum = 0, ._res = res, ._itC = itC};
 
     return itR;
 }
 
-void iterStepRes(IterResCells* itR) {
+void iterStepRes(IterCellsResolution* itR) {
     // reached the end of over iterator; emits H3_NULL from now on
     if (itR->h == H3_NULL) return;
 
