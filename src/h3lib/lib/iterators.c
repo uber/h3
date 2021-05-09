@@ -23,34 +23,31 @@
 
 #include "h3Index.h"
 
-/*
-extract the `res` digit (0--7) of the current cell
- */
+// extract the `res` digit (0--7) of the current cell
 static int _get(IterCellsChildren* it, int res) {
     return H3_GET_INDEX_DIGIT(it->h, res);
 }
 
-/*
-increment the digit (0--7) at location `res`
- */
+// increment the digit (0--7) at location `res`
+// H3_PER_DIGIT_OFFSET == 3
 static void _inc(IterCellsChildren* it, int res) {
     uint64_t val = 1;
     val <<= H3_PER_DIGIT_OFFSET * (MAX_H3_RES - res);
     it->h += val;
 }
 
-/*
-Create a fully nulled-out child iterator for when an iterator is exhausted.
-This helps minimize the chance that a user will depend on the iterator
-internal state after it's exhausted, like the child resolution, for
-example.
+/**
+ * Create a fully nulled-out child iterator for when an iterator is exhausted.
+ * This helps minimize the chance that a user will depend on the iterator
+ * internal state after it's exhausted, like the child resolution, for
+ * example.
  */
 static IterCellsChildren _null_iter() {
     return (IterCellsChildren){
         .h = H3_NULL, ._parentRes = -1, ._skipDigit = -1};
 }
 
-/*
+/**
 
 ## Logic for iterating through the children of a cell
 
@@ -204,15 +201,15 @@ and so on.
 
  */
 
-/*
-Initialize a IterCellsChildren struct representing the sequence giving
-the children of cell `h` at resolution `childRes`.
-
-At any point in the iteration, starting once
-the struct is initialized, IterCellsChildren.h gives the current child.
-
-Also, IterCellsChildren.h == H3_NULL when all the children have been iterated
-through, or if the input to `iterInitParent` was invalid.
+/**
+ * Initialize a IterCellsChildren struct representing the sequence giving
+ * the children of cell `h` at resolution `childRes`.
+ *
+ * At any point in the iteration, starting once
+ * the struct is initialized, IterCellsChildren.h gives the current child.
+ *
+ * Also, IterCellsChildren.h == H3_NULL when all the children have been iterated
+ * through, or if the input to `iterInitParent` was invalid.
  */
 IterCellsChildren iterInitParent(H3Index h, int childRes) {
     IterCellsChildren it;
@@ -239,10 +236,10 @@ IterCellsChildren iterInitParent(H3Index h, int childRes) {
     return it;
 }
 
-/*
-Step a IterCellsChildren to the next child cell.
-When the iteration is over, IterCellsChildren.h will be H3_NULL.
-Handles iterating through hexagon and pentagon cells.
+/**
+ * Step a IterCellsChildren to the next child cell.
+ * When the iteration is over, IterCellsChildren.h will be H3_NULL.
+ * Handles iterating through hexagon and pentagon cells.
  */
 void iterStepChild(IterCellsChildren* it) {
     // once h == H3_NULL, the iterator returns an infinite sequence of H3_NULL
