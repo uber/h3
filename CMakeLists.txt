@@ -178,7 +178,6 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testGridDisksUnsafe.c
     src/apps/testapps/testCellToPoint.c
     src/apps/testapps/testCellToCenterChild.c
-    src/apps/testapps/testCellToChildren_new.c
     src/apps/testapps/testCellToChildren.c
     src/apps/testapps/testGetIcosahedronFaces.c
     src/apps/testapps/testGeoPoint.c
@@ -575,7 +574,6 @@ if(H3_IS_ROOT_PROJECT AND BUILD_TESTING)
     add_h3_test(testGridDisksUnsafe src/apps/testapps/testGridDisksUnsafe.c)
     add_h3_test(testCellToParent src/apps/testapps/testCellToParent.c)
     add_h3_test(testCellToCenterChild src/apps/testapps/testCellToCenterChild.c)
-    add_h3_test(testCellToChildren_new src/apps/testapps/testCellToChildren_new.c)
     add_h3_test(testCellToChildren src/apps/testapps/testCellToChildren.c)
     add_h3_test(testGetIcosahedronFaces src/apps/testapps/testGetIcosahedronFaces.c)
     add_h3_test(testCellToChildrenSize src/apps/testapps/testCellToChildrenSize.c)
