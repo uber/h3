@@ -244,7 +244,7 @@ void H3_EXPORT(cellToChildren)(H3Index h, int childRes, H3Index* children) {
 H3Index _zeroIndexDigits(H3Index h, int start, int end) {
     if (start > end) return h;
 
-    uint64_t m = 0;
+    H3Index m = 0;
 
     m = ~m;
     m <<= H3_PER_DIGIT_OFFSET * (end - start + 1);

@@ -31,7 +31,7 @@ static int _get(IterCellsChildren* it, int res) {
 // increment the digit (0--7) at location `res`
 // H3_PER_DIGIT_OFFSET == 3
 static void _inc(IterCellsChildren* it, int res) {
-    uint64_t val = 1;
+    H3Index val = 1;
     val <<= H3_PER_DIGIT_OFFSET * (MAX_H3_RES - res);
     it->h += val;
 }
