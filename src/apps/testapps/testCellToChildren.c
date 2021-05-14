@@ -26,7 +26,7 @@
 
 static void assertNoDuplicates(H3Index* cells, int n) {
     for (int i = 0; i < n; i++) {
-        if (cells[i] == 0) continue;
+        if (cells[i] == H3_NULL) continue;
         t_assert(H3_EXPORT(isValidCell)(cells[i]), "must be valid H3 cell");
         for (int j = i + 1; j < n; j++) {
             t_assert(cells[i] != cells[j], "can't have duplicate cells in set");
@@ -39,7 +39,7 @@ static void assertSubset(H3Index* set1, int len1, H3Index* set2, int len2) {
     assertNoDuplicates(set1, len1);
 
     for (int i = 0; i < len1; i++) {
-        if (set1[i] == 0) continue;
+        if (set1[i] == H3_NULL) continue;
 
         bool present = false;
         for (int j = 0; j < len2; j++) {
