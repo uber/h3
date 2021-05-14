@@ -10,7 +10,7 @@ import TabItem from '@theme/TabItem';
 
 These functions permit moving between resolutions in the H3 grid system. The functions produce parent (coarser) or children (finer) cells.
 
-## h3ToParent
+## cellToParent
 
 <Tabs
   groupId="language"
@@ -25,44 +25,44 @@ These functions permit moving between resolutions in the H3 grid system. The fun
 <TabItem value="c">
 
 ```c
-H3Index h3ToParent(H3Index h, int parentRes);
+H3Index cellToParent(H3Index cell, int parentRes);
 ```
 
 </TabItem>
 <TabItem value="python">
 
 ```py
-h3.h3_to_parent(h, parent_res)
+h3.cell_to_parent(cell, parent_res)
 ```
 
 </TabItem>
 <TabItem value="java">
 
 ```java
-long h3ToParent(long h3, int parentRes);
-String h3ToParent(String h3Address, int parentRes);
+long cellToParent(long cell, int parentRes);
+String cellToParent(String cellAddress, int parentRes);
 ```
 
 </TabItem>
 <TabItem value="javascript">
 
 ```js
-h3.h3ToParent(h3Index, parentRes)
+h3.cellToParent(cell, parentRes)
 ```
 
 ```js live
 function example() {
-  const h = '85283473fffffff';
-  return h3.h3ToParent(h, 4);
+  const cell = '85283473fffffff';
+  return h3.cellToParent(cell, 4);
 }
 ```
 
 </TabItem>
 </Tabs>
 
-Returns the parent (coarser) index containing `h`.
+Returns the parent (coarser) index containing `cell`.
 
-## h3ToChildren
+## cellToChildren
 
 <Tabs
   groupId="language"
@@ -77,44 +77,44 @@ Returns the parent (coarser) index containing `h`.
 <TabItem value="c">
 
 ```c
-void h3ToChildren(H3Index h, int childRes, H3Index *children);
+void cellToChildren(H3Index cell, int childRes, H3Index *children);
 ```
 
 </TabItem>
 <TabItem value="python">
 
 ```py
-h3.h3_to_children(h, child_res)
+h3.cell_to_children(cell, child_res)
 ```
 
 </TabItem>
 <TabItem value="java">
 
 ```java
-List<Long> h3ToChildren(long h3, int childRes);
-List<String> h3ToChildren(String h3Address, int childRes);
+List<Long> cellToChildren(long cell, int childRes);
+List<String> cellToChildren(String cellAddress, int childRes);
 ```
 
 </TabItem>
 <TabItem value="javascript">
 
 ```js
-h3.h3ToChildren(h3Index, childRes)
+h3.cellToChildren(cell, childRes)
 ```
 
 ```js live
 function example() {
-  const h = '85283473fffffff';
-  return h3.h3ToChildren(h, 6);
+  const cell = '85283473fffffff';
+  return h3.cellToChildren(cell, 6);
 }
 ```
 
 </TabItem>
 </Tabs>
 
-Populates `children` with the indexes contained by `h` at resolution `childRes`. `children` must be an array of at least size `maxH3ToChildrenSize(h, childRes)`.
+Populates `children` with the indexes contained by `cell` at resolution `childRes`. `children` must be an array of at least size `maxH3ToChildrenSize(cell, childRes)`.
 
-## maxH3ToChildrenSize
+## maxCellToChildrenSize
 
 <Tabs
   groupId="language"
@@ -129,7 +129,7 @@ Populates `children` with the indexes contained by `h` at resolution `childRes`.
 <TabItem value="c">
 
 ```c
-int maxH3ToChildrenSize(H3Index h, int childRes);
+int maxCellToChildrenSize(H3Index cell, int childRes);
 ```
 
 </TabItem>
@@ -162,9 +162,9 @@ This function exists for memory management and is not exposed.
 </TabItem>
 </Tabs>
 
-Returns the parent (coarser) index containing `h`.
+Returns the size of the `children` array needed for the given inputs to `cellToChildren`.
 
-## h3ToCenterChild
+## cellToCenterChild
 
 <Tabs
   groupId="language"
@@ -179,44 +179,44 @@ Returns the parent (coarser) index containing `h`.
 <TabItem value="c">
 
 ```c
-H3Index h3ToCenterChild(H3Index h, int childRes);
+H3Index cellToCenterChild(H3Index cell, int childRes);
 ```
 
 </TabItem>
 <TabItem value="python">
 
 ```py
-h3.h3_to_center_child(h3, child_res)
+h3.cell_to_center_child(cell, child_res)
 ```
 
 </TabItem>
 <TabItem value="java">
 
 ```java
-long h3ToCenterChild(long h3, int childRes);
-String h3ToCenterChild(String h3, int childRes);
+long cellToCenterChild(long cell, int childRes);
+String cellToCenterChild(String cellAddress, int childRes);
 ```
 
 </TabItem>
 <TabItem value="javascript">
 
 ```js
-h3.h3ToCenterChild(h, childRes)
+h3.cellToCenterChild(cell, childRes)
 ```
 
 ```js live
 function example() {
-  const h = '85283473fffffff';
-  return h3.h3ToCenterChild(h, 7);
+  const cell = '85283473fffffff';
+  return h3.cellToCenterChild(h, 7);
 }
 ```
 
 </TabItem>
 </Tabs>
 
-Returns the center child (finer) index contained by `h` at resolution `childRes`.
+Returns the center child (finer) index contained by `cell` at resolution `childRes`.
 
-## compact
+## compactCells
 
 <Tabs
   groupId="language"
@@ -231,47 +231,45 @@ Returns the center child (finer) index contained by `h` at resolution `childRes`
 <TabItem value="c">
 
 ```c
-int compact(const H3Index *h3Set, H3Index *compactedSet, const int numHexes);
+int compactCells(const H3Index *cellSet, H3Index *compactedSet, const int numCells);
 ```
 
 </TabItem>
 <TabItem value="python">
 
 ```py
-h3.compact(hexes)
+h3.compact_cells(cells)
 ```
 
 </TabItem>
 <TabItem value="java">
 
 ```java
-List<Long> compact(Collection<Long> h3);
-List<String> compactAddress(Collection<String> h3);
+List<Long> compactCells(Collection<Long> cells);
+List<String> compactCellsAddress(Collection<String> cells);
 ```
 
 </TabItem>
 <TabItem value="javascript">
 
 ```js
-h3.compact(hexes)
+h3.compactCells(cells)
 ```
 
 ```js live
 function example() {
-  const h = '85283473fffffff';
-  const nearby = h3.kRing(h, 4);
-  return h3.compact(nearby);
+  const cell = '85283473fffffff';
+  const nearby = h3.kRing(cell, 4);
+  return h3.compactCells(nearby);
 }
 ```
 
 </TabItem>
 </Tabs>
 
-Compacts the set `h3Set` of indexes as best as possible, into the array `compactedSet`. `compactedSet` must be at least the size of `h3Set` in case the set cannot be compacted.
+Compacts the set `cellSet` of indexes as best as possible, into the array `compactedSet`. `compactedSet` must be at least the size of `cellSet` in case the set cannot be compacted.
 
-Returns 0 on success.
-
-## uncompact
+## uncompactCells
 
 <Tabs
   groupId="language"
@@ -286,48 +284,46 @@ Returns 0 on success.
 <TabItem value="c">
 
 ```c
-int uncompact(const H3Index *compactedSet, const int numHexes, H3Index *h3Set, const int maxHexes, const int res);
+int uncompactCells(const H3Index *compactedSet, const int numCells, H3Index *cellSet, const int maxCells, const int res);
 ```
 
 </TabItem>
 <TabItem value="python">
 
 ```py
-h3.uncompact(hexes, res)
+h3.uncompact_cells(cells, res)
 ```
 
 </TabItem>
 <TabItem value="java">
 
 ```java
-List<Long> uncompact(Collection<Long> h3, int res);
-List<String> uncompactAddress(Collection<String> h3, int res);
+List<Long> uncompactCells(Collection<Long> cells, int res);
+List<String> uncompactCellsAddress(Collection<String> cells, int res);
 ```
 
 </TabItem>
 <TabItem value="javascript">
 
 ```js
-h3.uncompact(hexes, res)
+h3.uncompactCells(cells, res)
 ```
 
 ```js live
 function example() {
-  const h = '85283473fffffff';
-  const nearby = h3.kRing(h, 4);
+  const cell = '85283473fffffff';
+  const nearby = h3.kRing(cell, 4);
   const compacted = h3.compact(nearby);
-  return h3.uncompact(compacted, 5);
+  return h3.uncompactCells(compacted, 5);
 }
 ```
 
 </TabItem>
 </Tabs>
 
-Uncompacts the set `compactedSet` of indexes to the resolution `res`. `h3Set` must be at least of size `maxUncompactSize(compactedSet, numHexes, res)`.
+Uncompacts the set `compactedSet` of indexes to the resolution `res`. `cellSet` must be at least of size `maxUncompactSize(compactedSet, numCells, res)`.
 
-Returns 0 on success.
-
-## maxUncompactSize
+## maxUncompactCellsSize
 
 <Tabs
   groupId="language"
@@ -342,7 +338,7 @@ Returns 0 on success.
 <TabItem value="c">
 
 ```c
-int maxUncompactSize(const H3Index *compactedSet, const int numHexes, const int res)
+int maxUncompactCellsSize(const H3Index *compactedSet, const int numCells, const int res)
 ```
 
 </TabItem>
@@ -375,4 +371,4 @@ This function exists for memory management and is not exposed.
 </TabItem>
 </Tabs>
 
-Returns the size of the array needed by `uncompact`.
+Returns the size of the array needed by `uncompactCells`.
