@@ -53,51 +53,6 @@ static void test_resolution(int res) {
 }
 
 // also verifies uniqueness of iterated cells
-
-// static void test_ordered(int res) {
-//     H3Index prev;
-
-//     IterCellsResolution iter = iterInitRes(res);
-//     while (1) {
-//         prev = iter.h;
-//         iterStepRes(&iter);
-//         if (iter.h == H3_NULL) {
-//             break;
-//         }
-
-//         t_assert(prev < iter.h,
-//                  "cells should be iterated in order without duplicates");
-//     }
-// }
-
-// static void test_ordered(int res) {
-//     IterCellsResolution iter = iterInitRes(res);
-//     H3Index prev = iter.h;
-//     iterStepRes(&iter);
-//     H3Index curr = iter.h;
-
-//     do {
-//         t_assert(prev < curr,
-//                  "cells should be iterated in order without duplicates");
-//         prev = iter.h;
-//         iterStepRes(&iter);
-//         curr = iter.h;
-//     } while (curr);
-// }
-
-// static void test_ordered(int res) {
-//     IterCellsResolution iter = iterInitRes(res);
-//     H3Index prev = iter.h;
-//     iterStepRes(&iter);
-
-//     while (iter.h) {
-//         t_assert(prev < iter.h,
-//                  "cells should be iterated in order without duplicates");
-//         prev = iter.h;
-//         iterStepRes(&iter);
-//     }
-// }
-
 static void test_ordered(int res) {
     IterCellsResolution iter = iterInitRes(res);
     H3Index prev = iter.h;
