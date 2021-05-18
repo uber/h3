@@ -15,6 +15,7 @@ As a C library, bindings can be made to call H3 functions from different program
 
 - [entrepreneur-interet-general/h3.standard](https://github.com/entrepreneur-interet-general/H3.Standard)
 - [richardvasquez/h3net](https://github.com/RichardVasquez/h3net) - A translation instead of a binding
+- [pocketken/H3.net](https://github.com/pocketken/H3.net) - A translation instead of a binding
 
 ## ClickHouse
 
