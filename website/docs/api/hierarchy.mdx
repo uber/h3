@@ -112,7 +112,7 @@ function example() {
 </TabItem>
 </Tabs>
 
-Populates `children` with the indexes contained by `cell` at resolution `childRes`. `children` must be an array of at least size `cellToChildrenSize(h, childRes)`.
+Populates `children` with the indexes contained by `cell` at resolution `childRes`. `children` must be an array of at least size `cellToChildrenSize(cell, childRes)`.
 
 ## cellToChildrenSize
 
@@ -342,7 +342,7 @@ Returns 0 on success.
 <TabItem value="c">
 
 ```c
-int64_t uncompactCellsSize(const H3Index* compactedSet, const int64_t numCompacted, const int res)
+int64_t uncompactCellsSize(const H3Index *compactedSet, const int64_t numCompacted, const int res);
 ```
 
 </TabItem>
