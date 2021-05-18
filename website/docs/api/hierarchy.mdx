@@ -129,7 +129,7 @@ Populates `children` with the indexes contained by `h` at resolution `childRes`.
 <TabItem value="c">
 
 ```c
-int64_t cellToChildrenSize(H3Index h, int childRes);
+int64_t cellToChildrenSize(H3Index cell, int childRes);
 ```
 
 </TabItem>
@@ -286,7 +286,7 @@ Returns 0 on success.
 <TabItem value="c">
 
 ```c
-int uncompactCells(const H3Index* compactedSet, const int64_t numCompacted, H3Index* outSet, const int64_t numOut, const int res);
+int uncompactCells(const H3Index *compactedSet, const int numCells, H3Index *cellSet, const int maxCells, const int res);
 ```
 
 </TabItem>
