@@ -44,6 +44,119 @@ static void test_valid(int res) {
     }
 }
 
+static void test_resolution(int res) {
+    for (IterCellsResolution iter = iterInitRes(res); iter.h;
+         iterStepRes(&iter)) {
+        t_assert(H3_EXPORT(getResolution)(iter.h) == res,
+                 "iterator cell is the correct resolution");
+    }
+}
+
+// also verifies uniqueness of iterated cells
+static void test_ordered(int res) {
+    H3Index prev;
+
+    IterCellsResolution iter = iterInitRes(res);
+    while (1) {
+        prev = iter.h;
+        iterStepRes(&iter);
+        if (iter.h == H3_NULL) {
+            break;
+        }
+
+        t_assert(prev < iter.h,
+                 "cells should be iterated in order without duplicates");
+    }
+
+    IterCellsResolution iter = iterInitRes(res);
+    H3Index prev = iter.h;
+    iterStepRes(&iter);
+    H3Index curr = iter.h;
+
+    do {
+        t_assert(prev < curr,
+                 "cells should be iterated in order without duplicates");
+        prev = iter.h;
+        iterStepRes(&iter);
+        curr = iter.h;
+    } while (curr);
+
+    IterCellsResolution iter = iterInitRes(res);
+    H3Index prev = iter.h;
+    iterStepRes(&iter);
+
+    while (iter.h) {
+        t_assert(prev < iter.h,
+                 "cells should be iterated in order without duplicates");
+        prev = iter.h;
+    }
+
+    IterCellsResolution iter = iterInitRes(res);
+    H3Index prev = iter.h;
+    iterStepRes(&iter);
+
+    for (; iter.h; iterStepRes(&iter)) {
+        t_assert(prev < iter.h,
+                 "cells should be iterated in order without duplicates");
+        prev = iter.h;
+    }
+}
+
+// also verifies uniqueness of iterated cells
+static void test_ordered(int res) {
+    H3Index prev;
+
+    IterCellsResolution iter = iterInitRes(res);
+    while (1) {
+        prev = iter.h;
+        iterStepRes(&iter);
+        if (iter.h == H3_NULL) {
+            break;
+        }
+
+        t_assert(prev < iter.h,
+                 "cells should be iterated in order without duplicates");
+    }
+}
+
+static void test_ordered(int res) {
+    IterCellsResolution iter = iterInitRes(res);
+    H3Index prev = iter.h;
+    iterStepRes(&iter);
+    H3Index curr = iter.h;
+
+    do {
+        t_assert(prev < curr,
+                 "cells should be iterated in order without duplicates");
+        prev = iter.h iterStepRes(&iter);
+        curr = iter.h;
+    } while (curr);
+}
+
+static void test_ordered(int res) {
+    IterCellsResolution iter = iterInitRes(res);
+    H3Index prev = iter.h;
+    iterStepRes(&iter);
+
+    while (iter.h) {
+        t_assert(prev < iter.h,
+                 "cells should be iterated in order without duplicates");
+        prev = iter.h;
+    }
+}
+
+static void test_ordered(int res) {
+    IterCellsResolution iter = iterInitRes(res);
+    H3Index prev = iter.h;
+    iterStepRes(&iter);
+
+    for (; iter.h; iterStepRes(&iter)) {
+        t_assert(prev < iter.h,
+                 "cells should be iterated in order without duplicates");
+        prev = iter.h;
+    }
+}
+
 SUITE(h3Iterators) {
     TEST(iterator_cell_count) {
         test_number(0);
@@ -57,5 +170,19 @@ SUITE(h3Iterators) {
         test_valid(1);
         test_valid(2);
         test_valid(3);
+    }
+
+    TEST(iterator_cell_resolution) {
+        test_resolution(0);
+        test_resolution(1);
+        test_resolution(2);
+        test_resolution(3);
+    }
+
+    TEST(iterator_cell_ordered) {
+        test_ordered(0);
+        test_ordered(1);
+        test_ordered(2);
+        test_ordered(3);
     }
 }
