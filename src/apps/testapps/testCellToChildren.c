@@ -24,7 +24,7 @@
 #include "h3api.h"
 #include "test.h"
 
-static void assertNoDuplicates(H3Index* cells, int n) {
+static void assertNoDuplicates(H3Index *cells, int n) {
     for (int i = 0; i < n; i++) {
         if (cells[i] == H3_NULL) continue;
         t_assert(H3_EXPORT(isValidCell)(cells[i]), "must be valid H3 cell");
@@ -35,7 +35,7 @@ static void assertNoDuplicates(H3Index* cells, int n) {
 }
 
 // assert that set1 is a subset of set2
-static void assertSubset(H3Index* set1, int len1, H3Index* set2, int len2) {
+static void assertSubset(H3Index *set1, int len1, H3Index *set2, int len2) {
     assertNoDuplicates(set1, len1);
 
     for (int i = 0; i < len1; i++) {
@@ -58,15 +58,15 @@ Assert that two arrays of h3 cells are equal sets:
     - Ignore zero elements (so array sizes may be different).
     - Ignore array order.
  */
-static void assertSetsEqual(H3Index* set1, int len1, H3Index* set2, int len2) {
+static void assertSetsEqual(H3Index *set1, int len1, H3Index *set2, int len2) {
     assertSubset(set1, len1, set2, len2);
     assertSubset(set2, len2, set1, len1);
 }
 
-static void checkChildren(H3Index h, int res, H3Index* expected,
+static void checkChildren(H3Index h, int res, H3Index *expected,
                           int numExpected) {
     int64_t numChildren = H3_EXPORT(cellToChildrenSize)(h, res);
-    H3Index* children = calloc(numChildren, sizeof(H3Index));
+    H3Index *children = calloc(numChildren, sizeof(H3Index));
     H3_EXPORT(cellToChildren)(h, res, children);
 
     assertSetsEqual(children, numChildren, expected, numExpected);
