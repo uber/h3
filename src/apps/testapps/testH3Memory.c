@@ -116,7 +116,7 @@ SUITE(h3Memory) {
         free(gridDiskOutput);
     }
 
-    TEST(compact) {
+    TEST(compactCells) {
         int k = 9;
         int hexCount = H3_EXPORT(maxGridDiskSize)(k);
         int expectedCompactCount = 73;
@@ -152,7 +152,7 @@ SUITE(h3Memory) {
 
         resetMemoryCounters(3);
         err = H3_EXPORT(compactCells)(sunnyvaleExpanded, compressed, hexCount);
-        t_assert(err == COMPACT_ALLOC_FAILED, "compact failed (4)");
+        t_assert(err == COMPACT_ALLOC_FAILED, "compactCells failed (4)");
         t_assert(actualAllocCalls == 4, "alloc called four times");
         t_assert(actualFreeCalls == 3, "free called three times");
 
