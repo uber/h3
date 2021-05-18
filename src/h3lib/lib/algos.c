@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 Uber Technologies, Inc.
+ * Copyright 2016-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@
 #define HEX_RANGE_K_SUBSEQUENCE 2
 #define MAX_ONE_RING_SIZE 7
 #define HEX_HASH_OVERFLOW -1
-#define POLYFILL_BUFFER 12
+#define POLYGON_TO_CELLS_BUFFER 12
 
 /**
  * Directions used for traversing a hexagonal ring counterclockwise around
@@ -446,7 +446,7 @@ H3Index h3NeighborRotations(H3Index origin, Direction dir, int* rotations) {
  * cells are not neighbors.
  *
  * TODO: This is currently a brute-force algorithm, but as it's O(6) that's
- * probably acceptible.
+ * probably acceptable.
  */
 Direction directionForNeighbor(H3Index origin, H3Index destination) {
     bool isPent = H3_EXPORT(isPentagon)(origin);
@@ -721,7 +721,7 @@ int H3_EXPORT(maxPolygonToCellsSize)(const GeoPolygon* geoPolygon, int res) {
     // resolution, the line tracing needs an extra buffer than the estimator
     // function provides (but beefing that up to cover causes most situations to
     // overallocate memory)
-    numHexagons += POLYFILL_BUFFER;
+    numHexagons += POLYGON_TO_CELLS_BUFFER;
     return numHexagons;
 }
 

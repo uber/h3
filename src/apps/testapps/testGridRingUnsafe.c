@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018, 2020 Uber Technologies, Inc.
+ * Copyright 2017-2018, 2020-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -121,7 +121,7 @@ SUITE(gridRingUnsafe) {
             for (int i = 0; i < NUM_BASE_CELLS; i++) {
                 H3Index bc;
                 setH3Index(&bc, 0, i, 0);
-                int childrenSz = H3_EXPORT(maxUncompactCellsSize)(&bc, 1, res);
+                int64_t childrenSz = H3_EXPORT(uncompactCellsSize)(&bc, 1, res);
                 H3Index *children = calloc(childrenSz, sizeof(H3Index));
                 H3_EXPORT(uncompactCells)(&bc, 1, children, childrenSz, res);
 

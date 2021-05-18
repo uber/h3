@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 Uber Technologies, Inc.
+ * Copyright 2016-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,6 +68,12 @@ extern "C" {
  */
 typedef uint64_t H3Index;
 
+/**
+ * Invalid index used to indicate an error from geoToH3 and related functions
+ * or missing data in arrays of H3 indices. Analogous to NaN in floating point.
+ */
+#define H3_NULL 0
+
 /** @brief Result code (success or specific error) from an H3 operation */
 typedef uint32_t H3Error;
 
@@ -94,6 +100,14 @@ typedef enum {
         12,        // `H3Index` cell arguments had incompatible resolutions
     E_MEMORY = 13  // Necessary memory allocation failed
 } H3ErrorCodes;
+
+/**
+ * Return codes for compactCells
+ */
+#define COMPACT_SUCCESS 0
+#define COMPACT_LOOP_EXCEEDED -1
+#define COMPACT_DUPLICATE -2
+#define COMPACT_ALLOC_FAILED -3
 
 /* library version numbers generated from VERSION file */
 // clang-format off
@@ -498,9 +512,9 @@ DECLSPEC H3Index H3_EXPORT(cellToParent)(H3Index h, int parentRes);
  * Functions for cellToChildren
  * @{
  */
-/** @brief determines the maximum number of children (or grandchildren, etc)
- * that could be returned for the given cell */
-DECLSPEC int64_t H3_EXPORT(maxCellToChildrenSize)(H3Index h, int childRes);
+/** @brief determines the exact number of children (or grandchildren, etc)
+ * that would be returned for the given cell */
+DECLSPEC int64_t H3_EXPORT(cellToChildrenSize)(H3Index h, int childRes);
 
 /** @brief provides the children (or grandchildren, etc) of the given cell */
 DECLSPEC void H3_EXPORT(cellToChildren)(H3Index h, int childRes,
@@ -522,23 +536,25 @@ DECLSPEC H3Index H3_EXPORT(cellToCenterChild)(H3Index h, int childRes);
  */
 /** @brief compacts the given set of hexagons as best as possible */
 DECLSPEC int H3_EXPORT(compactCells)(const H3Index *h3Set,
-                                     H3Index *compactedSet, const int numHexes);
+                                     H3Index *compactedSet,
+                                     const int64_t numHexes);
 /** @} */
 
 /** @defgroup uncompactCells uncompactCells
  * Functions for uncompactCells
  * @{
  */
-/** @brief determines the maximum number of hexagons that could be uncompacted
+/** @brief determines the exact number of hexagons that will be uncompacted
  * from the compacted set */
-DECLSPEC int H3_EXPORT(maxUncompactCellsSize)(const H3Index *compactedSet,
-                                              const int numHexes,
-                                              const int res);
+DECLSPEC int64_t H3_EXPORT(uncompactCellsSize)(const H3Index *compactedSet,
+                                               const int64_t numCompacted,
+                                               const int res);
 
-/** @brief uncompacts the compacted cell set */
+/** @brief uncompacts the compacted hexagon set */
 DECLSPEC int H3_EXPORT(uncompactCells)(const H3Index *compactedSet,
-                                       const int numHexes, H3Index *h3Set,
-                                       const int maxHexes, const int res);
+                                       const int64_t numCompacted,
+                                       H3Index *outSet, const int64_t numOut,
+                                       const int res);
 /** @} */
 
 /** @defgroup isResClassIII isResClassIII

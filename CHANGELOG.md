@@ -16,7 +16,8 @@ The public API of this library consists of the functions declared in file
 - closed-form implementation of `numHexagons`
 
 ### Breaking changes
-- `maxH3ToChildrenSize` to output `int64_t` instead of `int`
+- rename `maxH3ToChildrenSize` to `cellToChildrenSize`
+- `cellToChildrenSize` to output `int64_t` instead of `int`
 
 ## [3.7.1] - 2020-10-05
 ### Fixed

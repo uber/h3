@@ -121,7 +121,7 @@ SUITE(h3Memory) {
         int hexCount = H3_EXPORT(maxGridDiskSize)(k);
         int expectedCompactCount = 73;
 
-        // Generate a set of hexagons to compactCells
+        // Generate a set of hexagons to compact
         H3Index* sunnyvaleExpanded = calloc(hexCount, sizeof(H3Index));
         resetMemoryCounters(0);
         H3_EXPORT(gridDisk)(sunnyvale, k, sunnyvaleExpanded);
@@ -158,8 +158,7 @@ SUITE(h3Memory) {
 
         resetMemoryCounters(4);
         err = H3_EXPORT(compactCells)(sunnyvaleExpanded, compressed, hexCount);
-        t_assert(err == COMPACT_SUCCESS,
-                 "compactCells using successful malloc");
+        t_assert(err == COMPACT_SUCCESS, "compact using successful malloc");
         t_assert(actualAllocCalls == 4, "alloc called four times");
         t_assert(actualFreeCalls == 4, "free called four times");
 
@@ -169,8 +168,7 @@ SUITE(h3Memory) {
                 count++;
             }
         }
-        t_assert(count == expectedCompactCount,
-                 "got expected compactCells count");
+        t_assert(count == expectedCompactCount, "got expected compact count");
 
         free(compressed);
         free(sunnyvaleExpanded);

@@ -1,4 +1,4 @@
-# Copyright 2017-2020 Uber Technologies, Inc.
+# Copyright 2017-2021 Uber Technologies, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -115,6 +115,7 @@ set(LIB_SOURCE_FILES
     src/h3lib/include/faceijk.h
     src/h3lib/include/vertexGraph.h
     src/h3lib/include/mathExtensions.h
+    src/h3lib/include/iterators.h
     src/h3lib/include/constants.h
     src/h3lib/include/coordijk.h
     src/h3lib/include/algos.h
@@ -131,6 +132,7 @@ set(LIB_SOURCE_FILES
     src/h3lib/lib/geoPoint.c
     src/h3lib/lib/directedEdge.c
     src/h3lib/lib/mathExtensions.c
+    src/h3lib/lib/iterators.c
     src/h3lib/lib/vertexGraph.c
     src/h3lib/lib/faceijk.c
     src/h3lib/lib/baseCells.c)
@@ -149,7 +151,7 @@ set(EXAMPLE_SOURCE_FILES
     examples/index.c
     examples/distance.c
     examples/neighbors.c
-    examples/compact.c
+    examples/compactCells.c
     examples/edge.c)
 set(OTHER_SOURCE_FILES
     src/apps/filters/cellToPoint.c
@@ -172,7 +174,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/mkRandGeoBoundary.c
     src/apps/testapps/testPointToCell.c
     src/apps/testapps/testH3NeighborRotations.c
-    src/apps/testapps/testMaxCellToChildrenSize.c
+    src/apps/testapps/testCellToChildrenSize.c
     src/apps/testapps/testGridDisksUnsafe.c
     src/apps/testapps/testCellToPoint.c
     src/apps/testapps/testCellToCenterChild.c
@@ -204,6 +206,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testCoordIj.c
     src/apps/testapps/testCoordIjk.c
     src/apps/testapps/testH3Memory.c
+    src/apps/testapps/testH3Iterators.c
     src/apps/miscapps/cellToBoundaryHier.c
     src/apps/miscapps/cellToPointHier.c
     src/apps/miscapps/generateBaseCellNeighbors.c
@@ -354,12 +357,6 @@ endif()
 add_custom_target(update-version
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/update_version.sh
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    )
-
-# Website publishing
-add_custom_target(publish-website
-    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/publish_website.sh
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )
 
 # Link all executables against H3
@@ -579,7 +576,7 @@ if(H3_IS_ROOT_PROJECT AND BUILD_TESTING)
     add_h3_test(testCellToCenterChild src/apps/testapps/testCellToCenterChild.c)
     add_h3_test(testCellToChildren src/apps/testapps/testCellToChildren.c)
     add_h3_test(testGetIcosahedronFaces src/apps/testapps/testGetIcosahedronFaces.c)
-    add_h3_test(testMaxCellToChildrenSize src/apps/testapps/testMaxCellToChildrenSize.c)
+    add_h3_test(testCellToChildrenSize src/apps/testapps/testCellToChildrenSize.c)
     add_h3_test(testH3Index src/apps/testapps/testH3Index.c)
     add_h3_test(testH3Api src/apps/testapps/testH3Api.c)
     add_h3_test(testH3SetToLinkedGeo src/apps/testapps/testH3SetToLinkedGeo.c)
@@ -603,6 +600,7 @@ if(H3_IS_ROOT_PROJECT AND BUILD_TESTING)
     add_h3_test(testCoordIjk src/apps/testapps/testCoordIjk.c)
     add_h3_test(testBaseCells src/apps/testapps/testBaseCells.c)
     add_h3_test(testPentagonIndexes src/apps/testapps/testPentagonIndexes.c)
+    add_h3_test(testH3Iterators src/apps/testapps/testH3Iterators.c)
 
     add_h3_test_with_arg(testH3NeighborRotations src/apps/testapps/testH3NeighborRotations.c 0)
     add_h3_test_with_arg(testH3NeighborRotations src/apps/testapps/testH3NeighborRotations.c 1)

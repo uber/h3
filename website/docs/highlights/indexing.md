@@ -18,12 +18,12 @@ The hierachical structure can also be used in analysis, when the precision or un
   <i>A parent hexagon approximately contains seven children</i>
 </div>
 
-Hierarchical containment allows for use cases like making contiguous sets of hexagons `compact`. It is then possible to `uncompact` to the same input set of hexagons.
+Hierarchical containment allows for use cases like making contiguous sets of cells "compact" with `compactCells`. It is then possible to `uncompactCells` to the same input set of cells.
 
-| Uncompact (dense) | Compact (sparse)
+| Uncompacted (dense) | Compacted (sparse)
 | ----------------- | ----------------
 | <img src="/images/ca_uncompact_6_10633.png" style={{width:'500px'}} /> | <img src="/images/ca_compact_6_901.png" style={{width:'500px'}} />
-| California represented by 10633 uncompact hexagons | California represented by 901 compact hexagons
+| California represented by 10633 uncompacted cells | California represented by 901 compacted cells
 
 ## Links
 
