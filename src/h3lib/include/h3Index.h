@@ -164,13 +164,6 @@
             (((uint64_t)(digit))                                            \
              << ((MAX_H3_RES - (res)) * H3_PER_DIGIT_OFFSET)))
 
-/**
- * Invalid index used to indicate an error from pointToCell and related
- * functions or missing data in arrays of h3 indices. Analogous to NaN in
- * floating point.
- */
-#define H3_NULL 0
-
 /*
  * Return codes for compactCells
  */
@@ -193,5 +186,6 @@ H3Index _h3RotatePent60ccw(H3Index h);
 H3Index _h3RotatePent60cw(H3Index h);
 H3Index _h3Rotate60ccw(H3Index h);
 H3Index _h3Rotate60cw(H3Index h);
+DECLSPEC H3Index _zeroIndexDigits(H3Index h, int start, int end);
 
 #endif

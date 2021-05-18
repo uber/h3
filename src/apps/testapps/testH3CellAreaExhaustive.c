@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Uber Technologies, Inc.
+ * Copyright 2020-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,9 @@
 
 #include <math.h>
 
-#include "h3Index.h"
+#include "constants.h"
+#include "h3api.h"
+#include "iterators.h"
 #include "test.h"
 #include "utility.h"
 
@@ -119,7 +121,11 @@ static void cell_area_assert(H3Index cell) {
  */
 static void earth_area_test(int res, double (*cell_area)(H3Index),
                             double target, double tol) {
-    double area = mapSumAllCells_double(res, cell_area);
+    double area = 0.0;
+    for (IterCellsResolution iter = iterInitRes(res); iter.h;
+         iterStepRes(&iter)) {
+        area += (*cell_area)(iter.h);
+    }
 
     t_assert(fabs(area - target) < tol,
              "sum of all cells should give earth area");

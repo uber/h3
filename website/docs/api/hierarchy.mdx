@@ -112,9 +112,9 @@ function example() {
 </TabItem>
 </Tabs>
 
-Populates `children` with the indexes contained by `cell` at resolution `childRes`. `children` must be an array of at least size `maxH3ToChildrenSize(cell, childRes)`.
+Populates `children` with the indexes contained by `cell` at resolution `childRes`. `children` must be an array of at least size `cellToChildrenSize(cell, childRes)`.
 
-## maxCellToChildrenSize
+## cellToChildrenSize
 
 <Tabs
   groupId="language"
@@ -129,7 +129,7 @@ Populates `children` with the indexes contained by `cell` at resolution `childRe
 <TabItem value="c">
 
 ```c
-int maxCellToChildrenSize(H3Index cell, int childRes);
+int64_t cellToChildrenSize(H3Index cell, int childRes);
 ```
 
 </TabItem>
@@ -269,6 +269,8 @@ function example() {
 
 Compacts the set `cellSet` of indexes as best as possible, into the array `compactedSet`. `compactedSet` must be at least the size of `cellSet` in case the set cannot be compacted.
 
+Returns 0 on success.
+
 ## uncompactCells
 
 <Tabs
@@ -321,9 +323,11 @@ function example() {
 </TabItem>
 </Tabs>
 
-Uncompacts the set `compactedSet` of indexes to the resolution `res`. `cellSet` must be at least of size `maxUncompactSize(compactedSet, numCells, res)`.
+Uncompacts the set `compactedSet` of indexes to the resolution `res`. `h3Set` must be at least of size `uncompactCellsSize(compactedSet, numHexes, res)`.
 
-## maxUncompactCellsSize
+Returns 0 on success.
+
+## uncompactCellsSize
 
 <Tabs
   groupId="language"
@@ -338,7 +342,7 @@ Uncompacts the set `compactedSet` of indexes to the resolution `res`. `cellSet` 
 <TabItem value="c">
 
 ```c
-int maxUncompactCellsSize(const H3Index *compactedSet, const int numCells, const int res)
+int64_t uncompactCellsSize(const H3Index *compactedSet, const int64_t numCompacted, const int res);
 ```
 
 </TabItem>

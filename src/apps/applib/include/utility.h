@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 Uber Technologies, Inc.
+ * Copyright 2016-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,8 +55,6 @@ void iterateAllIndexesAtResPartial(int res, void (*callback)(H3Index),
 void iterateBaseCellIndexesAtRes(int res, void (*callback)(H3Index),
                                  int baseCell);
 void iterateAllDirectedEdgesAtRes(int res, void (*callback)(H3Index));
-double mapSumAllCells_double(int res, double (*callback)(H3Index));
-size_t packNonzeros(H3Index* a, size_t n);
 
 int countNonNullIndexes(H3Index* indexes, int numCells);
 

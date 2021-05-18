@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Uber Technologies, Inc.
+ * Copyright 2017-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,10 @@
 
 H3Index sunnyvale = 0x89283470c27ffff;
 
-H3Index uncompactCellsable[] = {0x89283470803ffff, 0x8928347081bffff,
-                                0x8928347080bffff};
-H3Index uncompactCellsableWithZero[] = {0x89283470803ffff, 0x8928347081bffff, 0,
-                                        0x8928347080bffff};
+H3Index uncompactable[] = {0x89283470803ffff, 0x8928347081bffff,
+                           0x8928347080bffff};
+H3Index uncompactableWithZero[] = {0x89283470803ffff, 0x8928347081bffff, 0,
+                                   0x8928347080bffff};
 
 SUITE(compactCells) {
     TEST(roundtrip) {
@@ -33,7 +33,7 @@ SUITE(compactCells) {
         int hexCount = H3_EXPORT(maxGridDiskSize)(k);
         int expectedCompactCount = 73;
 
-        // Generate a set of hexagons to compactCells
+        // Generate a set of hexagons to compact
         H3Index* sunnyvaleExpanded = calloc(hexCount, sizeof(H3Index));
         H3_EXPORT(gridDisk)(sunnyvale, k, sunnyvaleExpanded);
 
@@ -48,11 +48,10 @@ SUITE(compactCells) {
                 count++;
             }
         }
-        t_assert(count == expectedCompactCount,
-                 "got expected compactCellsed count");
+        t_assert(count == expectedCompactCount, "got expected compacted count");
 
         H3Index* decompressed =
-            calloc(H3_EXPORT(maxUncompactCellsSize)(compressed, count, 9),
+            calloc(H3_EXPORT(uncompactCellsSize)(compressed, count, 9),
                    sizeof(H3Index));
         int err2 = H3_EXPORT(uncompactCells)(compressed, count, decompressed,
                                              hexCount, 9);
@@ -64,7 +63,7 @@ SUITE(compactCells) {
                 count2++;
             }
         }
-        t_assert(count2 == hexCount, "got expected uncompactCellsed count");
+        t_assert(count2 == hexCount, "got expected uncompacted count");
 
         free(compressed);
         free(decompressed);
@@ -80,7 +79,7 @@ SUITE(compactCells) {
         }
         H3Index* compressed = calloc(hexCount, sizeof(H3Index));
         int err = H3_EXPORT(compactCells)(res0Hexes, compressed, hexCount);
-        t_assert(err == 0, "no error on compactCells");
+        t_assert(err == 0, "no error on compact");
 
         for (int i = 0; i < hexCount; i++) {
             // At resolution 0, it will be an exact copy.
@@ -91,7 +90,7 @@ SUITE(compactCells) {
         }
 
         H3Index* decompressed =
-            calloc(H3_EXPORT(maxUncompactCellsSize)(compressed, hexCount, 0),
+            calloc(H3_EXPORT(uncompactCellsSize)(compressed, hexCount, 0),
                    sizeof(H3Index));
         int err2 = H3_EXPORT(uncompactCells)(compressed, hexCount, decompressed,
                                              hexCount, 0);
@@ -103,7 +102,7 @@ SUITE(compactCells) {
                 count2++;
             }
         }
-        t_assert(count2 == hexCount, "got expected uncompactCellsed count");
+        t_assert(count2 == hexCount, "got expected uncompacted count");
 
         free(res0Hexes);
         free(compressed);
@@ -115,9 +114,8 @@ SUITE(compactCells) {
         int expectedCompactCount = 3;
 
         H3Index* compressed = calloc(hexCount, sizeof(H3Index));
-        int err =
-            H3_EXPORT(compactCells)(uncompactCellsable, compressed, hexCount);
-        t_assert(err == 0, "no error on compactCells");
+        int err = H3_EXPORT(compactCells)(uncompactable, compressed, hexCount);
+        t_assert(err == 0, "no error on compact");
 
         int count = 0;
         for (int i = 0; i < hexCount; i++) {
@@ -125,11 +123,10 @@ SUITE(compactCells) {
                 count++;
             }
         }
-        t_assert(count == expectedCompactCount,
-                 "got expected compactCellsed count");
+        t_assert(count == expectedCompactCount, "got expected compacted count");
 
         H3Index* decompressed =
-            calloc(H3_EXPORT(maxUncompactCellsSize)(compressed, count, 9),
+            calloc(H3_EXPORT(uncompactCellsSize)(compressed, count, 9),
                    sizeof(H3Index));
         int err2 = H3_EXPORT(uncompactCells)(compressed, count, decompressed,
                                              hexCount, 9);
@@ -141,7 +138,7 @@ SUITE(compactCells) {
                 count2++;
             }
         }
-        t_assert(count2 == hexCount, "got expected uncompactCellsed count");
+        t_assert(count2 == hexCount, "got expected uncompacted count");
 
         free(compressed);
         free(decompressed);
@@ -166,7 +163,7 @@ SUITE(compactCells) {
         // Arbitrary index
         setH3Index(&h3, res, 0, 2);
 
-        int arrSize = H3_EXPORT(maxCellToChildrenSize)(h3, res + 1) + 1;
+        int64_t arrSize = H3_EXPORT(cellToChildrenSize)(h3, res + 1) + 1;
         H3Index* children = calloc(arrSize, sizeof(H3Index));
 
         H3_EXPORT(cellToChildren)(h3, res + 1, children);
@@ -191,7 +188,7 @@ SUITE(compactCells) {
         // Arbitrary pentagon parent cell
         setH3Index(&h3, res, 4, 0);
 
-        int arrSize = H3_EXPORT(maxCellToChildrenSize)(h3, res + 1) + 1;
+        int64_t arrSize = H3_EXPORT(cellToChildrenSize)(h3, res + 1) + 1;
         H3Index* children = calloc(arrSize, sizeof(H3Index));
 
         H3_EXPORT(cellToChildren)(h3, res + 1, children);
@@ -218,7 +215,7 @@ SUITE(compactCells) {
         // Arbitrary index
         setH3Index(&h3, res, 0, 2);
 
-        int arrSize = H3_EXPORT(maxCellToChildrenSize)(h3, res + 1);
+        int64_t arrSize = H3_EXPORT(cellToChildrenSize)(h3, res + 1);
         H3Index* children = calloc(arrSize, sizeof(H3Index));
 
         H3_EXPORT(cellToChildren)(h3, res + 1, children);
@@ -242,7 +239,7 @@ SUITE(compactCells) {
     }
 
     TEST(compactCells_disparate) {
-        // Exercises a case where compactCellsion needs to be tested but none is
+        // Exercises a case where compaction needs to be tested but none is
         // possible
         const int numHex = 7;
         H3Index disparate[] = {0, 0, 0, 0, 0, 0, 0};
@@ -268,19 +265,17 @@ SUITE(compactCells) {
             setH3Index(&someHexagons[i], 5, i, 0);
         }
 
-        int sizeResult =
-            H3_EXPORT(maxUncompactCellsSize)(someHexagons, numHex, 4);
-        t_assert(
-            sizeResult < 0,
-            "maxUncompactCellsSize fails when given illogical resolutions");
-        sizeResult = H3_EXPORT(maxUncompactCellsSize)(someHexagons, numHex, -1);
+        int64_t sizeResult =
+            H3_EXPORT(uncompactCellsSize)(someHexagons, numHex, 4);
         t_assert(sizeResult < 0,
-                 "maxUncompactCellsSize fails when given illegal resolutions");
-        sizeResult = H3_EXPORT(maxUncompactCellsSize)(someHexagons, numHex,
-                                                      MAX_H3_RES + 1);
-        t_assert(
-            sizeResult < 0,
-            "maxUncompactCellsSize fails when given resolutions beyond max");
+                 "uncompactCellsSize fails when given illogical resolutions");
+        sizeResult = H3_EXPORT(uncompactCellsSize)(someHexagons, numHex, -1);
+        t_assert(sizeResult < 0,
+                 "uncompactCellsSize fails when given illegal resolutions");
+        sizeResult =
+            H3_EXPORT(uncompactCellsSize)(someHexagons, numHex, MAX_H3_RES + 1);
+        t_assert(sizeResult < 0,
+                 "uncompactCellsSize fails when given resolutions beyond max");
 
         H3Index uncompressed[] = {0, 0, 0};
         int uncompactCellsResult = H3_EXPORT(uncompactCells)(
@@ -310,16 +305,16 @@ SUITE(compactCells) {
         H3Index origin;
         setH3Index(&origin, 1, 5, 0);
 
-        int childrenSz = H3_EXPORT(maxUncompactCellsSize)(&origin, 1, 2);
+        int64_t childrenSz = H3_EXPORT(uncompactCellsSize)(&origin, 1, 2);
         H3Index* children = calloc(childrenSz, sizeof(H3Index));
         int uncompactCellsResult =
             H3_EXPORT(uncompactCells)(&origin, 1, children, childrenSz, 2);
         t_assert(uncompactCellsResult == 0, "uncompactCells origin succeeds");
 
         H3Index* result = calloc(childrenSz, sizeof(H3Index));
-        int compactCellsResult =
+        int compactResult =
             H3_EXPORT(compactCells)(children, result, childrenSz);
-        t_assert(compactCellsResult == 0, "compactCells origin succeeds");
+        t_assert(compactResult == 0, "compact origin succeeds");
 
         int found = 0;
         for (int i = 0; i < childrenSz; i++) {
@@ -328,28 +323,27 @@ SUITE(compactCells) {
                 t_assert(result[i] == origin, "compacted to correct origin");
             }
         }
-        t_assert(found == 1, "compactCellsed to a single hexagon");
+        t_assert(found == 1, "compacted to a single hexagon");
 
         free(children);
         free(result);
     }
 
     TEST(uncompactCells_empty) {
-        int uncompactCellsSz = H3_EXPORT(maxUncompactCellsSize)(NULL, 0, 0);
-        t_assert(uncompactCellsSz == 0,
-                 "maxUncompactCellsSize accepts empty input");
+        int64_t uncompactSz = H3_EXPORT(uncompactCellsSize)(NULL, 0, 0);
+        t_assert(uncompactSz == 0, "uncompactCellsSize accepts empty input");
         t_assert(H3_EXPORT(uncompactCells)(NULL, 0, NULL, 0, 0) == 0,
                  "uncompactCells accepts empty input");
     }
 
     TEST(uncompactCells_onlyZero) {
-        // maxUncompactCellsSize and uncompactCells both permit 0 indexes
+        // uncompactCellsSize and uncompactCells both permit 0 indexes
         // in the input array, and skip them. When only a zero is
         // given, it's a no-op.
 
         H3Index origin = 0;
 
-        int childrenSz = H3_EXPORT(maxUncompactCellsSize)(&origin, 1, 2);
+        int64_t childrenSz = H3_EXPORT(uncompactCellsSize)(&origin, 1, 2);
         H3Index* children = calloc(childrenSz, sizeof(H3Index));
         int uncompactCellsResult =
             H3_EXPORT(uncompactCells)(&origin, 1, children, childrenSz, 2);
@@ -359,14 +353,14 @@ SUITE(compactCells) {
     }
 
     TEST(uncompactCells_withZero) {
-        // maxUncompactCellsSize and uncompactCells both permit 0 indexes
+        // uncompactCellsSize and uncompactSize both permit 0 indexes
         // in the input array, and skip them.
 
-        int childrenSz =
-            H3_EXPORT(maxUncompactCellsSize)(uncompactCellsableWithZero, 4, 10);
+        int64_t childrenSz =
+            H3_EXPORT(uncompactCellsSize)(uncompactableWithZero, 4, 10);
         H3Index* children = calloc(childrenSz, sizeof(H3Index));
         int uncompactCellsResult = H3_EXPORT(uncompactCells)(
-            uncompactCellsableWithZero, 4, children, childrenSz, 10);
+            uncompactableWithZero, 4, children, childrenSz, 10);
         t_assert(uncompactCellsResult == 0,
                  "uncompactCells with zero succeeds");
 
@@ -377,7 +371,7 @@ SUITE(compactCells) {
             }
         }
         t_assert(found == childrenSz,
-                 "uncompactCellsed with zero to expected number of hexagons");
+                 "uncompacted with zero to expected number of hexagons");
 
         free(children);
     }
@@ -386,28 +380,48 @@ SUITE(compactCells) {
         H3Index pentagon;
         setH3Index(&pentagon, 1, 4, 0);
 
-        int childrenSz = H3_EXPORT(maxUncompactCellsSize)(&pentagon, 1, 2);
+        int64_t childrenSz = H3_EXPORT(uncompactCellsSize)(&pentagon, 1, 2);
         H3Index* children = calloc(childrenSz, sizeof(H3Index));
         int uncompactCellsResult =
             H3_EXPORT(uncompactCells)(&pentagon, 1, children, childrenSz, 2);
         t_assert(uncompactCellsResult == 0, "uncompactCells pentagon succeeds");
 
         H3Index* result = calloc(childrenSz, sizeof(H3Index));
-        int compactCellsResult =
+        int compactResult =
             H3_EXPORT(compactCells)(children, result, childrenSz);
-        t_assert(compactCellsResult == 0, "compactCells pentagon succeeds");
+        t_assert(compactResult == 0, "compact pentagon succeeds");
 
         int found = 0;
         for (int i = 0; i < childrenSz; i++) {
             if (result[i] != 0) {
                 found++;
                 t_assert(result[i] == pentagon,
-                         "compactCellsed to correct pentagon");
+                         "compacted to correct pentagon");
             }
         }
         t_assert(found == 1, "compacted to a single pentagon");
 
         free(children);
         free(result);
+    }
+
+    TEST(large_uncompact_size_hexagon) {
+        H3Index cells[] = {0x806dfffffffffff};  // res 0 *hexagon*
+        int res = 15;
+
+        int64_t expected = 4747561509943L;  // 7^15
+        int64_t out = H3_EXPORT(uncompactCellsSize)(cells, 1, res);
+
+        t_assert(out == expected, "uncompactCells size needs 64 bit int");
+    }
+
+    TEST(large_uncompact_size_pentagon) {
+        H3Index cells[] = {0x8009fffffffffff};  // res 0 *pentagon*
+        int res = 15;
+
+        int64_t expected = 3956301258286L;  // 1 + 5*(7^15 - 1)/6
+        int64_t out = H3_EXPORT(uncompactCellsSize)(cells, 1, res);
+
+        t_assert(out == expected, "uncompactCells size needs 64 bit int");
     }
 }

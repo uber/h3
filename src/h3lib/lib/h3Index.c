@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 Uber Technologies, Inc.
+ * Copyright 2016-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@
 #include "alloc.h"
 #include "baseCells.h"
 #include "faceijk.h"
+#include "iterators.h"
 #include "mathExtensions.h"
 
 /**
@@ -164,15 +165,16 @@ H3Index H3_EXPORT(cellToParent)(H3Index h, int parentRes) {
 }
 
 /**
- * Determines whether one resolution is a valid child resolution of another.
+ * Determines whether one resolution is a valid child resolution for a cell.
  * Each resolution is considered a valid child resolution of itself.
  *
- * @param parentRes int resolution of the parent
- * @param childRes int resolution of the child
+ * @param h         h3Index  parent cell
+ * @param childRes  int      resolution of the child
  *
  * @return The validity of the child resolution
  */
-static bool _isValidChildRes(int parentRes, int childRes) {
+static bool _hasChildAtRes(H3Index h, int childRes) {
+    int parentRes = H3_GET_RESOLUTION(h);
     if (childRes < parentRes || childRes > MAX_H3_RES) {
         return false;
     }
@@ -180,21 +182,25 @@ static bool _isValidChildRes(int parentRes, int childRes) {
 }
 
 /**
- * maxCellToChildrenSize returns the maximum number of children possible for a
- * given child level.
+ * cellToChildrenSize returns the exact number of children for a cell at a
+ * given child resolution.
  *
- * @param h H3Index to find the number of children of
- * @param childRes The resolution of the child level you're interested in
+ * @param h         H3Index to find the number of children of
+ * @param childRes  The child resolution you're interested in
  *
- * @return int count of maximum number of children (equal for hexagons, less for
- * pentagons
+ * @return int      Exact number of children (handles hexagons and pentagons
+ *                  correctly)
  */
-int64_t H3_EXPORT(maxCellToChildrenSize)(H3Index h, int childRes) {
-    int parentRes = H3_GET_RESOLUTION(h);
-    if (!_isValidChildRes(parentRes, childRes)) {
-        return 0;
+int64_t H3_EXPORT(cellToChildrenSize)(H3Index h, int childRes) {
+    if (!_hasChildAtRes(h, childRes)) return 0;
+
+    int n = childRes - H3_GET_RESOLUTION(h);
+
+    if (H3_EXPORT(isPentagon)(h)) {
+        return 1 + 5 * (_ipow(7, n) - 1) / 6;
+    } else {
+        return _ipow(7, n);
     }
-    return _ipow(7, (childRes - parentRes));
 }
 
 /**
@@ -217,36 +223,37 @@ H3Index makeDirectChild(H3Index h, int cellNumber) {
 /**
  * cellToChildren takes the given hexagon id and generates all of the children
  * at the specified resolution storing them into the provided memory pointer.
- * It's assumed that maxCellToChildrenSize was used to determine the allocation.
+ * It's assumed that cellToChildrenSize was used to determine the allocation.
  *
  * @param h H3Index to find the children of
  * @param childRes int the child level to produce
  * @param children H3Index* the memory to store the resulting addresses in
  */
 void H3_EXPORT(cellToChildren)(H3Index h, int childRes, H3Index* children) {
-    int parentRes = H3_GET_RESOLUTION(h);
-    if (!_isValidChildRes(parentRes, childRes)) {
-        return;
-    } else if (parentRes == childRes) {
-        *children = h;
-        return;
+    int64_t i = 0;
+    for (IterCellsChildren iter = iterInitParent(h, childRes); iter.h;
+         iterStepChild(&iter)) {
+        children[i] = iter.h;
+        i++;
     }
-    int bufferSize = H3_EXPORT(maxCellToChildrenSize)(h, childRes);
-    int bufferChildStep = (bufferSize / 7);
-    int isAPentagon = H3_EXPORT(isPentagon)(h);
-    for (int i = 0; i < 7; i++) {
-        if (isAPentagon && i == K_AXES_DIGIT) {
-            H3Index* nextChild = children + bufferChildStep;
-            while (children < nextChild) {
-                *children = H3_NULL;
-                children++;
-            }
-        } else {
-            H3_EXPORT(cellToChildren)
-            (makeDirectChild(h, i), childRes, children);
-            children += bufferChildStep;
-        }
-    }
+}
+
+/**
+ * Zero out index digits from start to end, inclusive.
+ * No-op if start > end.
+ */
+H3Index _zeroIndexDigits(H3Index h, int start, int end) {
+    if (start > end) return h;
+
+    H3Index m = 0;
+
+    m = ~m;
+    m <<= H3_PER_DIGIT_OFFSET * (end - start + 1);
+    m = ~m;
+    m <<= H3_PER_DIGIT_OFFSET * (MAX_H3_RES - end);
+    m = ~m;
+
+    return h & m;
 }
 
 /**
@@ -260,17 +267,12 @@ void H3_EXPORT(cellToChildren)(H3Index h, int childRes, H3Index* children) {
  * parent
  */
 H3Index H3_EXPORT(cellToCenterChild)(H3Index h, int childRes) {
-    int parentRes = H3_GET_RESOLUTION(h);
-    if (!_isValidChildRes(parentRes, childRes)) {
-        return H3_NULL;
-    } else if (childRes == parentRes) {
-        return h;
-    }
-    H3Index child = H3_SET_RESOLUTION(h, childRes);
-    for (int i = parentRes + 1; i <= childRes; i++) {
-        H3_SET_INDEX_DIGIT(child, i, 0);
-    }
-    return child;
+    if (!_hasChildAtRes(h, childRes)) return H3_NULL;
+
+    h = _zeroIndexDigits(h, H3_GET_RESOLUTION(h) + 1, childRes);
+    H3_SET_RESOLUTION(h, childRes);
+
+    return h;
 }
 
 /**
@@ -284,8 +286,9 @@ H3Index H3_EXPORT(cellToCenterChild)(H3Index h, int childRes) {
  * contiguous regions exist in the set at all and no compression possible)
  * @return an error code on bad input data
  */
+// todo: update internal implementation for int64_t
 int H3_EXPORT(compactCells)(const H3Index* h3Set, H3Index* compactedSet,
-                            const int numHexes) {
+                            const int64_t numHexes) {
     if (numHexes == 0) {
         return COMPACT_SUCCESS;
     }
@@ -455,79 +458,57 @@ int H3_EXPORT(compactCells)(const H3Index* h3Set, H3Index* compactedSet,
 }
 
 /**
- * uncompactCells takes a compressed set of hexagons and expands back to the
- * original set of hexagons.
- * @param compactedSet Set of hexagons
- * @param numHexes The number of hexes in the input set
- * @param h3Set Output array of decompressed hexagons (preallocated)
- * @param maxHexes The size of the output array to bound check against
- * @param res The hexagon resolution to decompress to
- * @return An error code if output array is too small or any hexagon is
- * smaller than the output resolution.
+ * uncompactCells takes a compressed set of cells and expands back to the
+ * original set of cells.
+ *
+ * Skips elements that are H3_NULL (i.e., 0).
+ *
+ * @param   compactSet  Set of compacted cells
+ * @param   numCompact  The number of cells in the input compacted set
+ * @param   outSet      Output array for decompressed cells (preallocated)
+ * @param   numOut      The size of the output array to bound check against
+ * @param   res         The H3 resolution to decompress to
+ * @return              An error code if output array is too small or any cell
+ *                      is smaller than the output resolution.
  */
-int H3_EXPORT(uncompactCells)(const H3Index* compactedSet, const int numHexes,
-                              H3Index* h3Set, const int maxHexes,
-                              const int res) {
-    int outOffset = 0;
-    for (int i = 0; i < numHexes; i++) {
-        if (compactedSet[i] == 0) continue;
-        if (outOffset >= maxHexes) {
-            // We went too far, abort!
-            return -1;
-        }
-        int currentRes = H3_GET_RESOLUTION(compactedSet[i]);
-        if (!_isValidChildRes(currentRes, res)) {
-            // Nonsensical. Abort.
-            return -2;
-        }
-        if (currentRes == res) {
-            // Just copy and move along
-            h3Set[outOffset] = compactedSet[i];
-            outOffset++;
-        } else {
-            // Bigger hexagon to reduce in size
-            int numHexesToGen =
-                H3_EXPORT(maxCellToChildrenSize)(compactedSet[i], res);
-            if (outOffset + numHexesToGen > maxHexes) {
-                // We're about to go too far, abort!
-                return -1;
-            }
-            H3_EXPORT(cellToChildren)(compactedSet[i], res, h3Set + outOffset);
-            outOffset += numHexesToGen;
+int H3_EXPORT(uncompactCells)(const H3Index* compactedSet,
+                              const int64_t numCompacted, H3Index* outSet,
+                              const int64_t numOut, const int res) {
+    int64_t i = 0;
+
+    for (int64_t j = 0; j < numCompacted; j++) {
+        if (!_hasChildAtRes(compactedSet[j], res)) return -2;
+
+        for (IterCellsChildren iter = iterInitParent(compactedSet[j], res);
+             iter.h; i++, iterStepChild(&iter)) {
+            if (i >= numOut) return -1;  // went too far; abort!
+            outSet[i] = iter.h;
         }
     }
     return 0;
 }
 
 /**
- * maxUncompactCellsSize takes a compacted set of hexagons are provides an
- * upper-bound estimate of the size of the uncompacted set of hexagons.
- * @param compactedSet Set of hexagons
- * @param numHexes The number of hexes in the input set
- * @param res The hexagon resolution to decompress to
- * @return The number of hexagons to allocate memory for, or a negative
- * number if an error occurs.
+ * uncompactCellsSize takes a compacted set of hexagons and provides
+ * the exact size of the uncompacted set of hexagons.
+ *
+ * @param   compactedSet  Set of hexagons
+ * @param   numHexes      The number of hexes in the input set
+ * @param   res           The hexagon resolution to decompress to
+ * @return                The number of hexagons to allocate memory for, or a
+ *                        negative number if an error occurs.
  */
-int H3_EXPORT(maxUncompactCellsSize)(const H3Index* compactedSet,
-                                     const int numHexes, const int res) {
-    int maxNumHexagons = 0;
-    for (int i = 0; i < numHexes; i++) {
-        if (compactedSet[i] == 0) continue;
-        int currentRes = H3_GET_RESOLUTION(compactedSet[i]);
-        if (!_isValidChildRes(currentRes, res)) {
-            // Nonsensical. Abort.
-            return -1;
-        }
-        if (currentRes == res) {
-            maxNumHexagons++;
-        } else {
-            // Bigger hexagon to reduce in size
-            int numHexesToGen =
-                H3_EXPORT(maxCellToChildrenSize)(compactedSet[i], res);
-            maxNumHexagons += numHexesToGen;
-        }
+int64_t H3_EXPORT(uncompactCellsSize)(const H3Index* compactedSet,
+                                      const int64_t numCompacted,
+                                      const int res) {
+    int64_t numOut = 0;
+    for (int64_t i = 0; i < numCompacted; i++) {
+        if (compactedSet[i] == H3_NULL) continue;
+        if (!_hasChildAtRes(compactedSet[i], res)) return -1;  // Abort
+
+        numOut += H3_EXPORT(cellToChildrenSize)(compactedSet[i], res);
     }
-    return maxNumHexagons;
+    return numOut;
 }
 
 /**

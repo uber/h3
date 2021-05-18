@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 Uber Technologies, Inc.
+ * Copyright 2016-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,9 +26,8 @@
 #include <string.h>
 #include <time.h>
 
-#include "coordijk.h"
 #include "h3Index.h"
-#include "h3api.h"
+#include "iterators.h"
 
 void error(const char* msg) {
     fflush(stdout);
@@ -120,119 +119,20 @@ void cellBoundaryPrintln(const CellBoundary* b) {
 }
 
 /**
- * Move nonzero elements to the front of array `a` of length `n`.
- *
- * Loop invariant: Everything *before* `i` or *after* `j` is "done".
- * Move `i` and `j` inwards until they equal, and exit.
- * You can move `i` forward until there's a zero in front of it.
- * You can move `j` backward until there's a nonzero to the left of it.
- * Anything to the right of `j` is "junk" that can be reallocated.
- *
- * Before:
- *   | a | b | 0 | c | d | ... |
- *           ^           ^
- *           i           j
- * After:
- *   | a | b | d | c | d | ... |
- *           ^       ^
- *           i       j
- *
- * todo: should this function be in the public API?
- * todo: add tests for this function
- *
- * @param   a  H3Index array to whose elements will be moved
- * @param   n  length of the input array
- * @return     number of nonzero elements (length of new array); can reallocate
- *             memory after this point
- */
-size_t packNonzeros(H3Index* a, size_t n) {
-    size_t i = 0;
-    size_t j = n;
-
-    while (i < j) {
-        // move j to the left until the first nonzero
-        if (a[j - 1] == 0) {
-            j -= 1;
-            continue;
-        }
-
-        // move i to the right until the first zero
-        if (a[i] != 0) {
-            i += 1;
-            continue;
-        }
-
-        // if we get to this point, we know:
-        // a[i] == 0
-        // a[j-1] != 0
-        // i < j
-        // so we can swap! (actually, move a[j-1] -> a[i])
-        a[i] = a[j - 1];
-        j -= 1;
-    }
-
-    return i;
-}
-
-/**
- * Array of all cells at a given resolution.
- *
- * @param   res  resolution
- *
- * @return       array of H3 cells at resolution res
- */
-H3Index* getCellsAtRes(int res) {
-    int num0 = H3_EXPORT(res0CellCount)();
-    H3Index* cells0 = calloc(num0, sizeof(H3Index));
-    H3_EXPORT(getRes0Cells)(cells0);
-
-    int numRes = H3_EXPORT(maxUncompactCellsSize)(cells0, num0, res);
-
-    H3Index* cellsRes = calloc(numRes, sizeof(H3Index));
-    H3_EXPORT(uncompactCells)(cells0, num0, cellsRes, numRes, res);
-
-    free(cells0);
-
-    numRes = packNonzeros(cellsRes, numRes);
-    cellsRes = realloc(cellsRes, numRes * sizeof(H3Index));
-
-    return cellsRes;
-}
-
-/**
- * Apply callback to every cell for a given resolution, and sum the results.
- */
-double mapSumAllCells_double(int res, double (*callback)(H3Index)) {
-    H3Index* cells = getCellsAtRes(res);
-    int N = H3_EXPORT(getNumCells)(res);
-
-    double total = 0.0;
-    for (int i = 0; i < N; i++) {
-        total += (*callback)(cells[i]);
-    }
-    free(cells);
-
-    return total;
-}
-
-/**
- * Apply callback for every directed edge at the given resolution.
+ * Apply callback for every unidirectional edge at the given resolution.
  */
 void iterateAllDirectedEdgesAtRes(int res, void (*callback)(H3Index)) {
-    H3Index* cells = getCellsAtRes(res);
-    int N = H3_EXPORT(getNumCells)(res);
-
-    for (int i = 0; i < N; i++) {
+    for (IterCellsResolution iter = iterInitRes(res); iter.h;
+         iterStepRes(&iter)) {
         H3Index edges[6] = {H3_NULL};
-        int pentagon = H3_EXPORT(isPentagon)(cells[i]);
-        H3_EXPORT(originToDirectedEdges)(cells[i], edges);
+        H3_EXPORT(originToDirectedEdges)(iter.h, edges);
 
-        for (int j = 0; j < 6; j++) {
-            if (pentagon && j == 0) continue;
-            (*callback)(edges[j]);
+        for (int i = 0; i < 6; i++) {
+            if (edges[i] != H3_NULL) {
+                (*callback)(edges[i]);
+            }
         }
     }
-    free(cells);
 }
 
 /**
@@ -260,23 +160,10 @@ void iterateAllIndexesAtResPartial(int res, void (*callback)(H3Index),
  */
 void iterateBaseCellIndexesAtRes(int res, void (*callback)(H3Index),
                                  int baseCell) {
-    H3Index bc = H3_INIT;
-    H3_SET_MODE(bc, H3_HEXAGON_MODE);
-    H3_SET_RESOLUTION(bc, 0);
-    H3_SET_BASE_CELL(bc, baseCell);
-    int childrenSz = H3_EXPORT(maxUncompactCellsSize)(&bc, 1, res);
-    H3Index* children = calloc(childrenSz, sizeof(H3Index));
-    H3_EXPORT(uncompactCells)(&bc, 1, children, childrenSz, res);
-
-    for (int j = 0; j < childrenSz; j++) {
-        if (children[j] == H3_NULL) {
-            continue;
-        }
-
-        (*callback)(children[j]);
+    for (IterCellsChildren iter = iterInitBaseCellNum(baseCell, res); iter.h;
+         iterStepChild(&iter)) {
+        (*callback)(iter.h);
     }
-
-    free(children);
 }
 
 /**

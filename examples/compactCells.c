@@ -1,5 +1,5 @@
 /*
- * Copyright 2018, 2020 Uber Technologies, Inc.
+ * Copyright 2018, 2020-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,8 +50,8 @@ int main(int argc, char* argv[]) {
     printf("Compacted to %d indexes.\n", compactedCount);
 
     int uncompactRes = 10;
-    int uncompactedSize =
-        maxUncompactCellsSize(compacted, inputSize, uncompactRes);
+    int64_t uncompactedSize =
+        uncompactCellsSize(compacted, inputSize, uncompactRes);
     H3Index* uncompacted = calloc(uncompactedSize, sizeof(H3Index));
     int err2 = uncompactCells(compacted, compactedCount, uncompacted,
                               uncompactedSize, uncompactRes);

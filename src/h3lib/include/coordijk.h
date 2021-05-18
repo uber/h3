@@ -79,7 +79,9 @@ typedef enum {
     INVALID_DIGIT = 7,
     /** Valid digits will be less than this value. Same value as INVALID_DIGIT.
      */
-    NUM_DIGITS = INVALID_DIGIT
+    NUM_DIGITS = INVALID_DIGIT,
+    /** Child digit which is skipped for pentagons */
+    PENTAGON_SKIPPED_DIGIT = K_AXES_DIGIT /* 1 */
 } Direction;
 
 // Internal functions

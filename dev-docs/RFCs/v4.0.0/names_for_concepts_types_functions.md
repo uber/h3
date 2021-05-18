@@ -100,9 +100,9 @@ The proposed prefix is `h3_`.
     + object properties (`getResolution`, `getBaseCellNumber`)
 - use `to` to denote transforms
     + different representations of the same object
-    + when doing a lossy transformation to a new object (`cellToParent`, `pointToCell`)
+    + when doing a lossy transformation to a new object (`cellToParent`, `pointToCell`, `polygonToCells`)
 - do not use `get` or `to` for *computations*
-    + e.g., `polyfill`, `compact`, `cellAreaKm2`
+    + e.g., `compactCells`, `cellAreaKm2`
 
 There is some ambiguity between property, transform, and computation, so use your best judgement with these guidelines in mind.
 
