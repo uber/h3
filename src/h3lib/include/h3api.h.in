@@ -101,6 +101,14 @@ typedef enum {
     E_MEMORY = 13  // Necessary memory allocation failed
 } H3ErrorCodes;
 
+/**
+ * Return codes for compactCells
+ */
+#define COMPACT_SUCCESS 0
+#define COMPACT_LOOP_EXCEEDED -1
+#define COMPACT_DUPLICATE -2
+#define COMPACT_ALLOC_FAILED -3
+
 /* library version numbers generated from VERSION file */
 // clang-format off
 #define H3_VERSION_MAJOR @H3_VERSION_MAJOR@

@@ -164,15 +164,6 @@
             (((uint64_t)(digit))                                            \
              << ((MAX_H3_RES - (res)) * H3_PER_DIGIT_OFFSET)))
 
-/*
- * Return codes for compactCells
- */
-
-#define COMPACT_SUCCESS 0
-#define COMPACT_LOOP_EXCEEDED -1
-#define COMPACT_DUPLICATE -2
-#define COMPACT_ALLOC_FAILED -3
-
 void setH3Index(H3Index* h, int res, int baseCell, Direction initDigit);
 int isResolutionClassIII(int r);
 
