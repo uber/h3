@@ -43,7 +43,7 @@ Sample:
 H3Error err;
 H3Index result;
 
-err = geoToH3(lat, lon, res, &result);
+err = geoToH3(lat, lng, res, &result);
 if (err) {
     fprintf(stderr, "Error: %d", err);
 }
@@ -53,7 +53,7 @@ Sample with errors discarded:
 ```
 H3Index result;
 
-geoToH3(lat, lon, res, &result);
+geoToH3(lat, lng, res, &result);
 ```
 
 Placing error information in the return of function calls requires that functions return two pieces of information - the error status, and the requested data. This approach does make it clear that a status code is returned and that may make it more usual that a consumer of the API does check the error status.
@@ -65,7 +65,7 @@ Sample:
 H3Error err;
 H3Index result;
 
-err = geoToH3(lat, lon, res, &result);
+err = geoToH3(lat, lng, res, &result);
 if (err) {
     fprintf(stderr, "Error: %d", err);
 }
@@ -75,7 +75,7 @@ Sample with errors discarded:
 ```
 H3Index result;
 
-result = unsafe_geoToH3(lat, lon, res);
+result = unsafe_geoToH3(lat, lng, res);
 ```
 
 This approach is the same as using return codes, but offers an "unsafe" version of some functions where there is less or no error information returned. This is intended to be used in performance critical cases where the inputs are known to be suitable ahead of time, or the caller would not do anything with the error information anyways.
@@ -87,7 +87,7 @@ Sample:
 H3Error err;
 H3Index result;
 
-err = geoToH3(lat, lon, res, &result);
+err = geoToH3(lat, lng, res, &result);
 if (err) {
     const char* msg = h3GetError();
     fprintf(stderr, "Error: %d (%s)", err, msg);
@@ -105,7 +105,7 @@ Sample:
 H3Error err;
 H3Index result;
 
-result = geoToH3(lat, lon, res);
+result = geoToH3(lat, lng, res);
 if (err = h3GetError()) {
     fprintf(stderr, "Error: %d", err);
 }
@@ -115,7 +115,7 @@ Sample with errors discarded:
 ```
 H3Index result;
 
-result = geoToH3(lat, lon, res);
+result = geoToH3(lat, lng, res);
 ```
 
 In this approach, the data requested is returned from the function, and the consumer is responsible for knowing when to check for errors, and how to handle them. There are a few drawbacks:
@@ -131,7 +131,7 @@ Sample:
 H3Error err;
 H3Index result;
 
-result = geoToH3(lat, lon, res, &err);
+result = geoToH3(lat, lng, res, &err);
 if (err) {
     fprintf(stderr, "Error: %d", err);    
 }
@@ -140,7 +140,7 @@ if (err) {
 Sample with errors discarded:
 ```
 H3Index result;
-result = geoToH3(lat, lon, res, NULL);
+result = geoToH3(lat, lng, res, NULL);
 ```
 
 This is an inversion of the return code approach, where the error status is the reference parameter. This offers an advantage that a caller could choose to disregard the error status (for example by passing NULL)
@@ -156,7 +156,7 @@ int err;
 if (err = setjmp(env)) {
     fprintf(stderr, "Error: %d", err);
 } else {
-    result = geoToH3(lat, lon, res, env);
+    result = geoToH3(lat, lng, res, env);
 }
 ```
 
@@ -178,7 +178,7 @@ error (for example, due to domain issues in its input) will return an error code
 
 The signature for `geoToH3` will look like:
 ```
-H3Error geoToH3(double lat, double lon, int res, H3Index *result);
+H3Error geoToH3(double lat, double lng, int res, H3Index *result);
 ```
 
 ### Is Valid Functions
