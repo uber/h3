@@ -28,8 +28,8 @@
 
 #include "constants.h"
 #include "coordijk.h"
-#include "geoPoint.h"
 #include "h3Index.h"
+#include "latLng.h"
 #include "vec3d.h"
 
 /** square root of 7 */

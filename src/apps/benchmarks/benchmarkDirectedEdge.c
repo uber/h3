@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 #include "benchmark.h"
-#include "geoPoint.h"
 #include "h3api.h"
+#include "latLng.h"
 
 // Fixtures (arbitrary res 9 hexagon)
 H3Index edges[6] = {0};

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 #include "benchmark.h"
-#include "geoPoint.h"
 #include "h3api.h"
+#include "latLng.h"
 
 // Fixtures (arbitrary res 9 hexagon)
 LatLng coord = {0.659966917655, -2.1364398519396};

@@ -24,8 +24,8 @@
 #include <stdbool.h>
 
 #include "constants.h"
-#include "geoPoint.h"
 #include "h3Index.h"
+#include "latLng.h"
 
 /**
  * Whether the given bounding box crosses the antimeridian

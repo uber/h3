@@ -26,7 +26,7 @@
 #include <string.h>
 
 #include "constants.h"
-#include "geoPoint.h"
+#include "latLng.h"
 #include "mathExtensions.h"
 
 /**

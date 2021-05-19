@@ -30,8 +30,8 @@
 #ifndef COORDIJK_H
 #define COORDIJK_H
 
-#include "geoPoint.h"
 #include "h3api.h"
+#include "latLng.h"
 #include "vec2d.h"
 
 /** @struct CoordIJK

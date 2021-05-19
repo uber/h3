@@ -26,7 +26,7 @@
 #include <stdlib.h>
 
 #include "alloc.h"
-#include "geoPoint.h"
+#include "latLng.h"
 
 /**
  * Initialize a new VertexGraph

@@ -23,8 +23,8 @@
 #include <stdlib.h>
 
 #include "bbox.h"
-#include "geoPoint.h"
 #include "h3api.h"
+#include "latLng.h"
 
 // Error codes for normalizeMultiPolygon
 #define NORMALIZATION_SUCCESS 0

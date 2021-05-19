@@ -19,8 +19,8 @@
 
 #include "bbox.h"
 #include "constants.h"
-#include "geoPoint.h"
 #include "h3Index.h"
+#include "latLng.h"
 #include "linkedGeo.h"
 #include "polygon.h"
 #include "test.h"

@@ -23,8 +23,8 @@
 #include <stdbool.h>
 
 #include "bbox.h"
-#include "geoPoint.h"
 #include "h3api.h"
+#include "latLng.h"
 #include "linkedGeo.h"
 
 // Macros for use with polygonAlgos.h

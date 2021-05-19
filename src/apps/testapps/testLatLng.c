@@ -23,8 +23,8 @@
 #include <math.h>
 
 #include "constants.h"
-#include "geoPoint.h"
 #include "h3api.h"
+#include "latLng.h"
 #include "test.h"
 #include "utility.h"
 
@@ -46,7 +46,7 @@ static void testDecreasingFunction(double (*function)(int),
     }
 }
 
-SUITE(geoPoint) {
+SUITE(latLng) {
     TEST(radsToDegs) {
         double originalRads = 1;
         double degs = H3_EXPORT(radsToDegs)(originalRads);

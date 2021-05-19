@@ -22,8 +22,8 @@
 
 #include <stdio.h>
 
-#include "geoPoint.h"
 #include "h3api.h"
+#include "latLng.h"
 
 extern int globalTestCount;
 extern const char* currentSuiteName;

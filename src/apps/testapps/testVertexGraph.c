@@ -17,8 +17,8 @@
 #include <assert.h>
 #include <stdio.h>
 
-#include "geoPoint.h"
 #include "h3api.h"
+#include "latLng.h"
 #include "test.h"
 #include "vertexGraph.h"
 

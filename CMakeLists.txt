@@ -106,7 +106,7 @@ set(LIB_SOURCE_FILES
     src/h3lib/include/polygonAlgos.h
     src/h3lib/include/h3Index.h
     src/h3lib/include/directedEdge.h
-    src/h3lib/include/geoPoint.h
+    src/h3lib/include/latLng.h
     src/h3lib/include/vec2d.h
     src/h3lib/include/vec3d.h
     src/h3lib/include/linkedGeo.h
@@ -129,7 +129,7 @@ set(LIB_SOURCE_FILES
     src/h3lib/lib/vertex.c
     src/h3lib/lib/linkedGeo.c
     src/h3lib/lib/localij.c
-    src/h3lib/lib/geoPoint.c
+    src/h3lib/lib/latLng.c
     src/h3lib/lib/directedEdge.c
     src/h3lib/lib/mathExtensions.c
     src/h3lib/lib/iterators.c

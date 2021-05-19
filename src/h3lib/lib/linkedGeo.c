@@ -23,8 +23,8 @@
 #include <stdlib.h>
 
 #include "alloc.h"
-#include "geoPoint.h"
 #include "h3api.h"
+#include "latLng.h"
 
 /**
  * Add a linked polygon to the current polygon

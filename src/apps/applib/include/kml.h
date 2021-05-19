@@ -20,7 +20,7 @@
 #ifndef KML_H
 #define KML_H
 
-#include "geoPoint.h"
+#include "latLng.h"
 
 // output the KML header file for points
 void kmlPtsHeader(const char* name, const char* desc);

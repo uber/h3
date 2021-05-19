@@ -27,8 +27,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "geoPoint.h"
 #include "h3Index.h"
+#include "latLng.h"
 #include "test.h"
 #include "utility.h"
 

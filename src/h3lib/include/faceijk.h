@@ -25,7 +25,7 @@
 #define FACEIJK_H
 
 #include "coordijk.h"
-#include "geoPoint.h"
+#include "latLng.h"
 #include "vec2d.h"
 
 /** @struct FaceIJK

@@ -19,7 +19,7 @@
 
 #include "bbox.h"
 #include "constants.h"
-#include "geoPoint.h"
+#include "latLng.h"
 #include "polygon.h"
 #include "test.h"
 

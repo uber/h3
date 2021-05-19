@@ -26,8 +26,8 @@
 
 #include "baseCells.h"
 #include "constants.h"
-#include "geoPoint.h"
 #include "h3Index.h"
+#include "latLng.h"
 #include "test.h"
 #include "utility.h"
 

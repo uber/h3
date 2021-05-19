@@ -23,7 +23,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "geoPoint.h"
+#include "latLng.h"
 
 /** @struct VertexNode
  *  @brief A single node in a vertex graph, part of a linked list
