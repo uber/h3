@@ -39,7 +39,7 @@ bool bboxIsTransmeridian(const BBox* bbox) { return bbox->east < bbox->west; }
  * @param bbox   Input bounding box
  * @param center Output center coordinate
  */
-void bboxCenter(const BBox* bbox, GeoPoint* center) {
+void bboxCenter(const BBox* bbox, LatLng* center) {
     center->lat = (bbox->north + bbox->south) / 2.0;
     // If the bbox crosses the antimeridian, shift east 360 degrees
     double east = bboxIsTransmeridian(bbox) ? bbox->east + M_2PI : bbox->east;
@@ -52,7 +52,7 @@ void bboxCenter(const BBox* bbox, GeoPoint* center) {
  * @param  point Point to test
  * @return       Whether the point is contained
  */
-bool bboxContains(const BBox* bbox, const GeoPoint* point) {
+bool bboxContains(const BBox* bbox, const LatLng* point) {
     return point->lat >= bbox->south && point->lat <= bbox->north &&
            (bboxIsTransmeridian(bbox) ?
                                       // transmeridian case
@@ -82,7 +82,7 @@ bool bboxEquals(const BBox* b1, const BBox* b2) {
 double _hexRadiusKm(H3Index h3Index) {
     // There is probably a cheaper way to determine the radius of a
     // hexagon, but this way is conceptually simple
-    GeoPoint h3Center;
+    LatLng h3Center;
     CellBoundary h3Boundary;
     H3_EXPORT(cellToLatLng)(h3Index, &h3Center);
     H3_EXPORT(cellToBoundary)(h3Index, &h3Boundary);
@@ -111,7 +111,7 @@ int bboxHexEstimate(const BBox* bbox, int res) {
         0.8 * (2.59807621135 * pentagonRadiusKm * pentagonRadiusKm);
 
     // Then get the area of the bounding box of the geoloop in question
-    GeoPoint p1, p2;
+    LatLng p1, p2;
     p1.lat = bbox->north;
     p1.lon = bbox->east;
     p2.lat = bbox->south;
@@ -136,7 +136,7 @@ int bboxHexEstimate(const BBox* bbox, int res) {
  *  @param res the resolution of the H3 hexagons to trace the line
  *  @return the estimated number of hexagons required to trace the line
  */
-int lineHexEstimate(const GeoPoint* origin, const GeoPoint* destination,
+int lineHexEstimate(const LatLng* origin, const LatLng* destination,
                     int res) {
     // Get the area of the pentagon as the maximally-distorted area possible
     H3Index pentagons[12] = {0};

@@ -18,12 +18,12 @@
 #include "h3api.h"
 
 // Fixtures (arbitrary res 9 hexagon)
-GeoPoint coord = {0.659966917655, -2.1364398519396};
+LatLng coord = {0.659966917655, -2.1364398519396};
 H3Index hex = 0x89283080ddbffff;
 
 BEGIN_BENCHMARKS();
 
-GeoPoint outCoord;
+LatLng outCoord;
 CellBoundary outBoundary;
 H3Index h;
 

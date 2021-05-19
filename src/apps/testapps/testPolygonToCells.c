@@ -24,20 +24,20 @@
 #include "utility.h"
 
 // Fixtures
-static GeoPoint sfVerts[] = {
+static LatLng sfVerts[] = {
     {0.659966917655, -2.1364398519396},  {0.6595011102219, -2.1359434279405},
     {0.6583348114025, -2.1354884206045}, {0.6581220034068, -2.1382437718946},
     {0.6594479998527, -2.1384597563896}, {0.6599990002976, -2.1376771158464}};
 static GeoLoop sfGeoLoop = {.numVerts = 6, .verts = sfVerts};
 static GeoPolygon sfGeoPolygon;
 
-static GeoPoint holeVerts[] = {{0.6595072188743, -2.1371053983433},
+static LatLng holeVerts[] = {{0.6595072188743, -2.1371053983433},
                                {0.6591482046471, -2.1373141048153},
                                {0.6592295020837, -2.1365222838402}};
 static GeoLoop holeGeoLoop = {.numVerts = 3, .verts = holeVerts};
 static GeoPolygon holeGeoPolygon;
 
-static GeoPoint emptyVerts[] = {{0.659966917655, -2.1364398519394},
+static LatLng emptyVerts[] = {{0.659966917655, -2.1364398519394},
                                 {0.659966917655, -2.1364398519395},
                                 {0.659966917655, -2.1364398519396}};
 static GeoLoop emptyGeoLoop = {.numVerts = 3, .verts = emptyVerts};
@@ -172,13 +172,13 @@ SUITE(polygonToCells) {
     }
 
     TEST(polygonToCellsExact) {
-        GeoPoint somewhere = {1, 2};
+        LatLng somewhere = {1, 2};
         H3Index origin;
         t_assertSuccess(H3_EXPORT(latLngToCell)(&somewhere, 9, &origin));
         CellBoundary boundary;
         H3_EXPORT(cellToBoundary)(origin, &boundary);
 
-        GeoPoint* verts = calloc(boundary.numVerts + 1, sizeof(GeoPoint));
+        LatLng* verts = calloc(boundary.numVerts + 1, sizeof(LatLng));
         for (int i = 0; i < boundary.numVerts; i++) {
             verts[i] = boundary.verts[i];
         }
@@ -203,14 +203,14 @@ SUITE(polygonToCells) {
     }
 
     TEST(polygonToCellsTransmeridian) {
-        GeoPoint primeMeridianVerts[] = {
+        LatLng primeMeridianVerts[] = {
             {0.01, 0.01}, {0.01, -0.01}, {-0.01, -0.01}, {-0.01, 0.01}};
         GeoLoop primeMeridianGeoLoop = {.numVerts = 4,
                                         .verts = primeMeridianVerts};
         GeoPolygon primeMeridianGeoPolygon = {.geoloop = primeMeridianGeoLoop,
                                               .numHoles = 0};
 
-        GeoPoint transMeridianVerts[] = {{0.01, -M_PI + 0.01},
+        LatLng transMeridianVerts[] = {{0.01, -M_PI + 0.01},
                                          {0.01, M_PI - 0.01},
                                          {-0.01, M_PI - 0.01},
                                          {-0.01, -M_PI + 0.01}};
@@ -219,7 +219,7 @@ SUITE(polygonToCells) {
         GeoPolygon transMeridianGeoPolygon = {.geoloop = transMeridianGeoLoop,
                                               .numHoles = 0};
 
-        GeoPoint transMeridianHoleVerts[] = {{0.005, -M_PI + 0.005},
+        LatLng transMeridianHoleVerts[] = {{0.005, -M_PI + 0.005},
                                              {0.005, M_PI - 0.005},
                                              {-0.005, M_PI - 0.005},
                                              {-0.005, -M_PI + 0.005}};
@@ -292,7 +292,7 @@ SUITE(polygonToCells) {
         // This polygon is "complex" in that it has > 4 vertices - this
         // tests for a bug that was taking the max and min longitude as
         // the bounds for transmeridian polygons
-        GeoPoint verts[] = {{0.1, -M_PI + 0.00001},  {0.1, M_PI - 0.00001},
+        LatLng verts[] = {{0.1, -M_PI + 0.00001},  {0.1, M_PI - 0.00001},
                             {0.05, M_PI - 0.2},      {-0.1, M_PI - 0.00001},
                             {-0.1, -M_PI + 0.00001}, {-0.05, -M_PI + 0.2}};
         GeoLoop geoloop = {.numVerts = 6, .verts = verts};
@@ -314,29 +314,29 @@ SUITE(polygonToCells) {
     TEST(polygonToCellsPentagon) {
         H3Index pentagon;
         setH3Index(&pentagon, 9, 24, 0);
-        GeoPoint coord;
+        LatLng coord;
         H3_EXPORT(cellToLatLng)(pentagon, &coord);
 
         // Length of half an edge of the polygon, in radians
         double edgeLength2 = H3_EXPORT(degsToRads)(0.001);
 
-        GeoPoint boundingTopRigt = coord;
+        LatLng boundingTopRigt = coord;
         boundingTopRigt.lat += edgeLength2;
         boundingTopRigt.lon += edgeLength2;
 
-        GeoPoint boundingTopLeft = coord;
+        LatLng boundingTopLeft = coord;
         boundingTopLeft.lat += edgeLength2;
         boundingTopLeft.lon -= edgeLength2;
 
-        GeoPoint boundingBottomRight = coord;
+        LatLng boundingBottomRight = coord;
         boundingBottomRight.lat -= edgeLength2;
         boundingBottomRight.lon += edgeLength2;
 
-        GeoPoint boundingBottomLeft = coord;
+        LatLng boundingBottomLeft = coord;
         boundingBottomLeft.lat -= edgeLength2;
         boundingBottomLeft.lon -= edgeLength2;
 
-        GeoPoint verts[] = {boundingBottomLeft, boundingTopLeft,
+        LatLng verts[] = {boundingBottomLeft, boundingTopLeft,
                             boundingTopRigt, boundingBottomRight};
 
         GeoLoop geoloop;

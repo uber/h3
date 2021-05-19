@@ -20,7 +20,7 @@
 #include "test.h"
 
 SUITE(cellToParent) {
-    GeoPoint sf = {0.659966917655, 2 * 3.14159 - 2.1364398519396};
+    LatLng sf = {0.659966917655, 2 * 3.14159 - 2.1364398519396};
 
     TEST(ancestorsForEachRes) {
         H3Index child;

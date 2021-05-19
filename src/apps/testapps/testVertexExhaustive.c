@@ -40,7 +40,7 @@ static void cellToVertex_point_assertions(H3Index h3) {
     // This test won't work if there are distortion vertexes in the boundary
     if (numVerts < gb.numVerts) return;
 
-    GeoPoint coord;
+    LatLng coord;
     for (int i = 0; i < numVerts; i++) {
         H3Index vertex = H3_EXPORT(cellToVertex)(h3, i);
         H3_EXPORT(vertexToLatLng)(vertex, &coord);

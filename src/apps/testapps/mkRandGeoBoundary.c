@@ -64,7 +64,7 @@ int main(int argc, char* argv[]) {
     }
 
     for (int i = 0; i < numPoints; i++) {
-        GeoPoint g;
+        LatLng g;
         randomGeo(&g);
 
         H3Index h;

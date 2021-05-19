@@ -28,7 +28,7 @@
 #include "utility.h"
 
 // Fixtures
-static GeoPoint sfGeo = {0.659966917655, -2.1364398519396};
+static LatLng sfGeo = {0.659966917655, -2.1364398519396};
 
 SUITE(directedEdge) {
     TEST(areNeighborCells) {
@@ -338,7 +338,7 @@ SUITE(directedEdge) {
         // Test that invalid inputs do not cause crashes.
         t_assert(H3_EXPORT(exactEdgeLengthRads)(0) == 0,
                  "Invalid edge has zero length");
-        GeoPoint zero = {0, 0};
+        LatLng zero = {0, 0};
         H3Index h3;
         t_assertSuccess(H3_EXPORT(latLngToCell)(&zero, 0, &h3));
         t_assert(H3_EXPORT(exactEdgeLengthRads)(h3) == 0,

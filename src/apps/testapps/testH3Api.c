@@ -30,7 +30,7 @@
 SUITE(h3Api) {
     TEST(latLngToCell_res) {
         H3Index h;
-        GeoPoint anywhere = {0, 0};
+        LatLng anywhere = {0, 0};
 
         t_assert(H3_EXPORT(latLngToCell)(&anywhere, -1, &h) == E_RES_DOMAIN,
                  "resolution below 0 is invalid");
@@ -40,9 +40,9 @@ SUITE(h3Api) {
 
     TEST(latLngToCell_coord) {
         H3Index h;
-        GeoPoint invalidLat = {NAN, 0};
-        GeoPoint invalidLon = {0, NAN};
-        GeoPoint invalidLatLon = {INFINITY, -INFINITY};
+        LatLng invalidLat = {NAN, 0};
+        LatLng invalidLon = {0, NAN};
+        LatLng invalidLatLon = {INFINITY, -INFINITY};
 
         t_assert(H3_EXPORT(latLngToCell)(&invalidLat, 1, &h) == E_LATLON_DOMAIN,
                  "invalid latitude is rejected");
@@ -113,7 +113,7 @@ SUITE(h3Api) {
     }
 
     TEST(h3ToGeoInvalid) {
-        GeoPoint coord;
+        LatLng coord;
         H3_EXPORT(cellToLatLng)(0x7fffffffffffffff, &coord);
         // Test is this should not crash (should return an error in the future)
     }

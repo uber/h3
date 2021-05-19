@@ -33,10 +33,10 @@
 #include "test.h"
 #include "utility.h"
 
-void assertExpected(H3Index h1, const GeoPoint* g1) {
+void assertExpected(H3Index h1, const LatLng* g1) {
     const double epsilon = 0.000001 * M_PI_180;
     // convert H3 to lat/lon and verify
-    GeoPoint g2;
+    LatLng g2;
     H3_EXPORT(cellToLatLng)(h1, &g2);
 
     t_assert(geoAlmostEqualThreshold(&g2, g1, epsilon),
@@ -75,7 +75,7 @@ int main(int argc, char* argv[]) {
         H3Index h3;
         h3 = H3_EXPORT(stringToH3)(h3Str);
 
-        GeoPoint coord;
+        LatLng coord;
         setGeoDegs(&coord, latDegs, lonDegs);
 
         assertExpected(h3, &coord);

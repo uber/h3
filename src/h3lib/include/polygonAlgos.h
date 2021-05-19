@@ -65,7 +65,7 @@
  * @return      Whether the point is contained
  */
 bool GENERIC_LOOP_ALGO(pointInside)(const TYPE* loop, const BBox* bbox,
-                                    const GeoPoint* coord) {
+                                    const LatLng* coord) {
     // fail fast if we're outside the bounding box
     if (!bboxContains(bbox, coord)) {
         return false;
@@ -76,8 +76,8 @@ bool GENERIC_LOOP_ALGO(pointInside)(const TYPE* loop, const BBox* bbox,
     double lat = coord->lat;
     double lng = NORMALIZE_LON(coord->lon, isTransmeridian);
 
-    GeoPoint a;
-    GeoPoint b;
+    LatLng a;
+    LatLng b;
 
     INIT_ITERATION;
 
@@ -87,7 +87,7 @@ bool GENERIC_LOOP_ALGO(pointInside)(const TYPE* loop, const BBox* bbox,
         // Ray casting algo requires the second point to always be higher
         // than the first, so swap if needed
         if (a.lat > b.lat) {
-            GeoPoint tmp = a;
+            LatLng tmp = a;
             a = b;
             b = tmp;
         }
@@ -151,8 +151,8 @@ void GENERIC_LOOP_ALGO(bboxFrom)(const TYPE* loop, BBox* bbox) {
 
     double lat;
     double lon;
-    GeoPoint coord;
-    GeoPoint next;
+    LatLng coord;
+    LatLng next;
 
     INIT_ITERATION;
 
@@ -191,8 +191,8 @@ void GENERIC_LOOP_ALGO(bboxFrom)(const TYPE* loop, BBox* bbox) {
 static bool GENERIC_LOOP_ALGO(isClockwiseNormalized)(const TYPE* loop,
                                                      bool isTransmeridian) {
     double sum = 0;
-    GeoPoint a;
-    GeoPoint b;
+    LatLng a;
+    LatLng b;
 
     INIT_ITERATION;
     while (true) {

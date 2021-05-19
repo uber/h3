@@ -23,10 +23,10 @@
 #include "test.h"
 
 // Fixtures
-static GeoPoint vertex1;
-static GeoPoint vertex2;
-static GeoPoint vertex3;
-static GeoPoint vertex4;
+static LatLng vertex1;
+static LatLng vertex2;
+static LatLng vertex3;
+static LatLng vertex4;
 
 SUITE(linkedGeo) {
     setGeoDegs(&vertex1, 87.372002166, 166.160981117);

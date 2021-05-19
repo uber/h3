@@ -41,7 +41,7 @@
  * @param  edge  H3 directed edge denoting neighboring cells
  */
 static void haversine_assert(H3Index edge) {
-    GeoPoint a, b;
+    LatLng a, b;
     H3Index origin, destination;
 
     origin = H3_EXPORT(getDirectedEdgeOrigin)(edge);

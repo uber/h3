@@ -20,7 +20,7 @@
 #include "test.h"
 
 SUITE(gridDisksUnsafe) {
-    GeoPoint sf = {0.659966917655, 2 * 3.14159 - 2.1364398519396};
+    LatLng sf = {0.659966917655, 2 * 3.14159 - 2.1364398519396};
     H3Index sfHex;
     t_assertSuccess(H3_EXPORT(latLngToCell)(&sf, 9, &sfHex));
     H3Index* sfHexPtr = &sfHex;

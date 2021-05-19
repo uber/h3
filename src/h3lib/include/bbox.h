@@ -35,11 +35,11 @@ typedef struct {
 } BBox;
 
 bool bboxIsTransmeridian(const BBox* bbox);
-void bboxCenter(const BBox* bbox, GeoPoint* center);
-bool bboxContains(const BBox* bbox, const GeoPoint* point);
+void bboxCenter(const BBox* bbox, LatLng* center);
+bool bboxContains(const BBox* bbox, const LatLng* point);
 bool bboxEquals(const BBox* b1, const BBox* b2);
 int bboxHexEstimate(const BBox* bbox, int res);
-int lineHexEstimate(const GeoPoint* origin, const GeoPoint* destination,
+int lineHexEstimate(const LatLng* origin, const LatLng* destination,
                     int res);
 
 #endif
