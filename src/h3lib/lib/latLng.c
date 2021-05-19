@@ -202,7 +202,7 @@ void _geoAzDistanceRads(const LatLng *p1, double az, double distance,
         return;
     }
 
-    double sinlat, sinlon, coslon;
+    double sinlat, sinlng, coslng;
 
     az = _posAngleRads(az);
 
@@ -239,14 +239,14 @@ void _geoAzDistanceRads(const LatLng *p1, double az, double distance,
             p2->lat = -M_PI_2;
             p2->lon = 0.0;
         } else {
-            sinlon = sin(az) * sin(distance) / cos(p2->lat);
-            coslon = (cos(distance) - sin(p1->lat) * sin(p2->lat)) /
+            sinlng = sin(az) * sin(distance) / cos(p2->lat);
+            coslng = (cos(distance) - sin(p1->lat) * sin(p2->lat)) /
                      cos(p1->lat) / cos(p2->lat);
-            if (sinlon > 1.0) sinlon = 1.0;
-            if (sinlon < -1.0) sinlon = -1.0;
-            if (coslon > 1.0) coslon = 1.0;
-            if (coslon < -1.0) coslon = -1.0;
-            p2->lon = constrainLng(p1->lon + atan2(sinlon, coslon));
+            if (sinlng > 1.0) sinlng = 1.0;
+            if (sinlng < -1.0) sinlng = -1.0;
+            if (coslng > 1.0) coslng = 1.0;
+            if (coslng < -1.0) coslng = -1.0;
+            p2->lon = constrainLng(p1->lon + atan2(sinlng, coslng));
         }
     }
 }

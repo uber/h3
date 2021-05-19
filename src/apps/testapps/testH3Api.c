@@ -84,7 +84,7 @@ SUITE(h3Api) {
         t_assertBoundary(h3, &boundary);
     }
 
-    TEST(cellToBoundary_coslonConstrain) {
+    TEST(cellToBoundary_coslngConstrain) {
         // Bug test for https://github.com/uber/h3/issues/212
         H3Index h3 = 0x87dc6d364ffffffL;
         CellBoundary boundary;
