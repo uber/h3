@@ -41,12 +41,12 @@ SUITE(h3Api) {
     TEST(latLngToCell_coord) {
         H3Index h;
         LatLng invalidLat = {NAN, 0};
-        LatLng invalidLon = {0, NAN};
+        LatLng invalidLng = {0, NAN};
         LatLng invalidLatLng = {INFINITY, -INFINITY};
 
         t_assert(H3_EXPORT(latLngToCell)(&invalidLat, 1, &h) == E_LATLNG_DOMAIN,
                  "invalid latitude is rejected");
-        t_assert(H3_EXPORT(latLngToCell)(&invalidLon, 1, &h) == E_LATLNG_DOMAIN,
+        t_assert(H3_EXPORT(latLngToCell)(&invalidLng, 1, &h) == E_LATLNG_DOMAIN,
                  "invalid longitude is rejected");
         t_assert(
             H3_EXPORT(latLngToCell)(&invalidLatLng, 1, &h) == E_LATLNG_DOMAIN,
