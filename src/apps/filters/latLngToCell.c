@@ -45,7 +45,7 @@
  */
 void doCoords(double lat, double lng, int res) {
     LatLng g = {.lat = H3_EXPORT(degsToRads)(lat),
-                .lon = H3_EXPORT(degsToRads)(lng)};
+                .lng = H3_EXPORT(degsToRads)(lng)};
 
     H3Index h;
     H3Error e = H3_EXPORT(latLngToCell)(&g, res, &h);

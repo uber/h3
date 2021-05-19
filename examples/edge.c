@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
     for (int v = 0; v < boundary.numVerts; v++) {
         printf("Edge vertex #%d: %lf, %lf\n", v,
                radsToDegs(boundary.verts[v].lat),
-               radsToDegs(boundary.verts[v].lon));
+               radsToDegs(boundary.verts[v].lng));
     }
     // Output:
     // The edge is 16a2a1072b59ffff

@@ -59,7 +59,7 @@ void doCell(H3Index h, int isKmlOut) {
         outputPointKML(&g, label);
     } else {
         printf("%.10lf %.10lf\n", H3_EXPORT(radsToDegs)(g.lat),
-               H3_EXPORT(radsToDegs)(g.lon));
+               H3_EXPORT(radsToDegs)(g.lng));
     }
 }
 

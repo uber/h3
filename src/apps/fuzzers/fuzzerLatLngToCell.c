@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
     }
     fclose(fp);
 
-    LatLng g = {.lat = args.lat, .lon = args.lng};
+    LatLng g = {.lat = args.lat, .lng = args.lng};
     H3Index h;
     H3Error e = H3_EXPORT(latLngToCell)(&g, args.res, &h);
 

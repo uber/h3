@@ -34,7 +34,7 @@ int main(int argc, char* argv[]) {
 
     LatLng geo;
     H3_EXPORT(cellToLatLng)(index, &geo);
-    printf("%lf %lf\n", geo.lat, geo.lon);
+    printf("%lf %lf\n", geo.lat, geo.lng);
     CellBoundary cellBoundary;
     H3_EXPORT(cellToBoundary)(index, &cellBoundary);
     printf("%d\n", cellBoundary.numVerts);

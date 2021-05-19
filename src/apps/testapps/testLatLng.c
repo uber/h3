@@ -75,17 +75,17 @@ SUITE(latLng) {
         t_assert(geoAlmostEqualThreshold(&a, &b, DBL_EPSILON), "same point");
 
         b.lat = 15.00001;
-        b.lon = 10.00002;
+        b.lng = 10.00002;
         t_assert(geoAlmostEqualThreshold(&a, &b, 0.0001),
                  "differences under threshold");
 
         b.lat = 15.00001;
-        b.lon = 10;
+        b.lng = 10;
         t_assert(!geoAlmostEqualThreshold(&a, &b, 0.000001),
                  "lat over threshold");
 
         b.lat = 15;
-        b.lon = 10.00001;
+        b.lng = 10.00001;
         t_assert(!geoAlmostEqualThreshold(&a, &b, 0.000001),
                  "lng over threshold");
     }
@@ -196,8 +196,8 @@ SUITE(latLng) {
     }
 
     TEST(pointDistRads_wrappedLongitude) {
-        const LatLng negativeLongitude = {.lat = 0, .lon = -(M_PI + M_PI_2)};
-        const LatLng zero = {.lat = 0, .lon = 0};
+        const LatLng negativeLongitude = {.lat = 0, .lng = -(M_PI + M_PI_2)};
+        const LatLng zero = {.lat = 0, .lng = 0};
 
         t_assert(fabs(M_PI_2 - H3_EXPORT(pointDistRads)(&negativeLongitude,
                                                         &zero)) < EPSILON_RAD,

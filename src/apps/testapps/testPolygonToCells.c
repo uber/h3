@@ -52,8 +52,8 @@ static bool isTransmeridianCell(H3Index h) {
 
     double minLng = M_PI, maxLng = -M_PI;
     for (int i = 0; i < bndry.numVerts; i++) {
-        if (bndry.verts[i].lon < minLng) minLng = bndry.verts[i].lon;
-        if (bndry.verts[i].lon > maxLng) maxLng = bndry.verts[i].lon;
+        if (bndry.verts[i].lng < minLng) minLng = bndry.verts[i].lng;
+        if (bndry.verts[i].lng > maxLng) maxLng = bndry.verts[i].lng;
     }
 
     return maxLng - minLng > M_PI - (M_PI / 4);
@@ -322,19 +322,19 @@ SUITE(polygonToCells) {
 
         LatLng boundingTopRigt = coord;
         boundingTopRigt.lat += edgeLength2;
-        boundingTopRigt.lon += edgeLength2;
+        boundingTopRigt.lng += edgeLength2;
 
         LatLng boundingTopLeft = coord;
         boundingTopLeft.lat += edgeLength2;
-        boundingTopLeft.lon -= edgeLength2;
+        boundingTopLeft.lng -= edgeLength2;
 
         LatLng boundingBottomRight = coord;
         boundingBottomRight.lat -= edgeLength2;
-        boundingBottomRight.lon += edgeLength2;
+        boundingBottomRight.lng += edgeLength2;
 
         LatLng boundingBottomLeft = coord;
         boundingBottomLeft.lat -= edgeLength2;
-        boundingBottomLeft.lon -= edgeLength2;
+        boundingBottomLeft.lng -= edgeLength2;
 
         LatLng verts[] = {boundingBottomLeft, boundingTopLeft, boundingTopRigt,
                           boundingBottomRight};

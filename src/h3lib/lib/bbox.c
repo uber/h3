@@ -113,13 +113,13 @@ int bboxHexEstimate(const BBox* bbox, int res) {
     // Then get the area of the bounding box of the geoloop in question
     LatLng p1, p2;
     p1.lat = bbox->north;
-    p1.lon = bbox->east;
+    p1.lng = bbox->east;
     p2.lat = bbox->south;
-    p2.lon = bbox->west;
+    p2.lng = bbox->west;
     double d = H3_EXPORT(pointDistKm)(&p1, &p2);
     // Derived constant based on: https://math.stackexchange.com/a/1921940
     // Clamped to 3 as higher values tend to rapidly drag the estimate to zero.
-    double a = d * d / fmin(3.0, fabs((p1.lon - p2.lon) / (p1.lat - p2.lat)));
+    double a = d * d / fmin(3.0, fabs((p1.lng - p2.lng) / (p1.lat - p2.lat)));
 
     // Divide the two to get an estimate of the number of hexagons needed
     int estimate = (int)ceil(a / pentagonAreaKm2);

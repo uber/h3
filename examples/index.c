@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
     // Get the H3 index of some location and print it.
     LatLng location;
     location.lat = degsToRads(40.689167);
-    location.lon = degsToRads(-74.044444);
+    location.lng = degsToRads(-74.044444);
     int resolution = 10;
     H3Index indexed;
     if (latLngToCell(&location, resolution, &indexed) != E_SUCCESS) {
@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
     for (int v = 0; v < boundary.numVerts; v++) {
         printf("Boundary vertex #%d: %lf, %lf\n", v,
                radsToDegs(boundary.verts[v].lat),
-               radsToDegs(boundary.verts[v].lon));
+               radsToDegs(boundary.verts[v].lng));
     }
 
     // Get the center coordinates.
@@ -56,5 +56,5 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     printf("Center coordinates: %lf, %lf\n", radsToDegs(center.lat),
-           radsToDegs(center.lon));
+           radsToDegs(center.lng));
 }

@@ -98,8 +98,8 @@ bool GENERIC_LOOP_ALGO(pointInside)(const TYPE* loop, const BBox* bbox,
             continue;
         }
 
-        double aLng = NORMALIZE_LNG(a.lon, isTransmeridian);
-        double bLng = NORMALIZE_LNG(b.lon, isTransmeridian);
+        double aLng = NORMALIZE_LNG(a.lng, isTransmeridian);
+        double bLng = NORMALIZE_LNG(b.lng, isTransmeridian);
 
         // Rays are cast in the longitudinal direction, in case a point
         // exactly matches, to decide tiebreakers, bias westerly
@@ -160,7 +160,7 @@ void GENERIC_LOOP_ALGO(bboxFrom)(const TYPE* loop, BBox* bbox) {
         ITERATE(loop, coord, next);
 
         lat = coord.lat;
-        lng = coord.lon;
+        lng = coord.lng;
         if (lat < bbox->south) bbox->south = lat;
         if (lng < bbox->west) bbox->west = lng;
         if (lat > bbox->north) bbox->north = lat;
@@ -170,7 +170,7 @@ void GENERIC_LOOP_ALGO(bboxFrom)(const TYPE* loop, BBox* bbox) {
         if (lng > 0 && lng < minPosLng) minPosLng = lng;
         if (lng < 0 && lng > maxNegLng) maxNegLng = lng;
         // check for arcs > 180 degrees longitude, flagging as transmeridian
-        if (fabs(lng - next.lon) > M_PI) {
+        if (fabs(lng - next.lng) > M_PI) {
             isTransmeridian = true;
         }
     }
@@ -199,11 +199,11 @@ static bool GENERIC_LOOP_ALGO(isClockwiseNormalized)(const TYPE* loop,
         ITERATE(loop, a, b);
         // If we identify a transmeridian arc (> 180 degrees longitude),
         // start over with the transmeridian flag set
-        if (!isTransmeridian && fabs(a.lon - b.lon) > M_PI) {
+        if (!isTransmeridian && fabs(a.lng - b.lng) > M_PI) {
             return GENERIC_LOOP_ALGO(isClockwiseNormalized)(loop, true);
         }
-        sum += ((NORMALIZE_LNG(b.lon, isTransmeridian) -
-                 NORMALIZE_LNG(a.lon, isTransmeridian)) *
+        sum += ((NORMALIZE_LNG(b.lng, isTransmeridian) -
+                 NORMALIZE_LNG(a.lng, isTransmeridian)) *
                 (b.lat + a.lat));
     }
 

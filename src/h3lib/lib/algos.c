@@ -785,9 +785,9 @@ int _getEdgeHexagons(const GeoLoop* geoloop, int numHexagons, int res,
             interpolate.lat =
                 (origin.lat * (numHexesEstimate - j) / numHexesEstimate) +
                 (destination.lat * j / numHexesEstimate);
-            interpolate.lon =
-                (origin.lon * (numHexesEstimate - j) / numHexesEstimate) +
-                (destination.lon * j / numHexesEstimate);
+            interpolate.lng =
+                (origin.lng * (numHexesEstimate - j) / numHexesEstimate) +
+                (destination.lng * j / numHexesEstimate);
             H3Index pointHex;
             H3Error e = H3_EXPORT(latLngToCell)(&interpolate, res, &pointHex);
             if (e) {
