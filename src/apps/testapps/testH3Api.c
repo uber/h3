@@ -28,7 +28,7 @@
 #include "utility.h"
 
 SUITE(h3Api) {
-    TEST(pointToCell_res) {
+    TEST(latLngToCell_res) {
         H3Index h;
         GeoPoint anywhere = {0, 0};
 
@@ -38,7 +38,7 @@ SUITE(h3Api) {
                  "resolution above 15 is invalid");
     }
 
-    TEST(pointToCell_coord) {
+    TEST(latLngToCell_coord) {
         H3Index h;
         GeoPoint invalidLat = {NAN, 0};
         GeoPoint invalidLon = {0, NAN};

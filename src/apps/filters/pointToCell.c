@@ -17,7 +17,7 @@
  * @brief stdin/stdout filter that converts from lat/lon coordinates to integer
  * H3 indexes
  *
- *  See `pointToCell --help` for usage.
+ *  See `latLngToCell --help` for usage.
  *
  *  The program reads lat/lon pairs from stdin until EOF is encountered. For
  *  each lat/lon the program outputs to stdout the integer H3 index of the

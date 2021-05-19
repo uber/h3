@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
     location.lon = degsToRads(-74.044444);
     int resolution = 10;
     H3Index indexed;
-    if (pointToCell(&location, resolution, &indexed) != E_SUCCESS) {
+    if (latLngToCell(&location, resolution, &indexed) != E_SUCCESS) {
         printf("Failed\n");
         return 1;
     }

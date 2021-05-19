@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /** @file
- * @brief Fuzzer program for pointToCell
+ * @brief Fuzzer program for latLngToCell
  */
 
 #include "h3api.h"

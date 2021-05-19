@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 /** @file
- * @brief tests H3 function `pointToCell`
+ * @brief tests H3 function `latLngToCell`
  *
  *  usage: `testPointToCell`
  *
  *  The program reads lines containing H3 indexes and lat/lon  pairs from
- *  stdin until EOF is encountered. For each input line, it calls `pointToCell`
+ *  stdin until EOF is encountered. For each input line, it calls `latLngToCell`
  *  to convert the input lat/lon to an H3 index, and then validates the
  *  index against the original input index.
  */
@@ -37,7 +37,7 @@ static void assertExpected(H3Index h1, const GeoPoint* g1) {
     int res = H3_EXPORT(getResolution)(h1);
     H3Index h2;
     t_assertSuccess(H3_EXPORT(latLngToCell)(g1, res, &h2));
-    t_assert(h1 == h2, "got expected pointToCell output");
+    t_assert(h1 == h2, "got expected latLngToCell output");
 }
 
 int main(int argc, char* argv[]) {

@@ -27,7 +27,7 @@ GeoPoint outCoord;
 CellBoundary outBoundary;
 H3Index h;
 
-BENCHMARK(pointToCell, 10000, { H3_EXPORT(latLngToCell)(&coord, 9, &h); });
+BENCHMARK(latLngToCell, 10000, { H3_EXPORT(latLngToCell)(&coord, 9, &h); });
 
 BENCHMARK(cellToPoint, 10000, { H3_EXPORT(cellToPoint)(hex, &outCoord); });
 

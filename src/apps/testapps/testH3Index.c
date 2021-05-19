@@ -29,7 +29,7 @@
 #include "utility.h"
 
 SUITE(h3Index) {
-    TEST(pointToCellExtremeCoordinates) {
+    TEST(latLngToCellExtremeCoordinates) {
         H3Index h;
         // Check that none of these cause crashes.
         GeoPoint g = {0, 1E45};
