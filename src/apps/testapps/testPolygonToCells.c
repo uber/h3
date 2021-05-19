@@ -52,8 +52,8 @@ static bool isTransmeridianCell(H3Index h) {
 
     double minLng = M_PI, maxLng = -M_PI;
     for (int i = 0; i < bndry.numVerts; i++) {
-        if (bndry.verts[i].lon < minLon) minLng = bndry.verts[i].lon;
-        if (bndry.verts[i].lon > maxLon) maxLng = bndry.verts[i].lon;
+        if (bndry.verts[i].lon < minLng) minLng = bndry.verts[i].lon;
+        if (bndry.verts[i].lon > maxLng) maxLng = bndry.verts[i].lon;
     }
 
     return maxLng - minLng > M_PI - (M_PI / 4);
