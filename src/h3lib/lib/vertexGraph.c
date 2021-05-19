@@ -65,7 +65,7 @@ void destroyVertexGraph(VertexGraph* graph) {
  * TODO: Light testing suggests this might not be sufficient at resolutions
  * finer than 10. Design a better hash function if performance and collisions
  * seem to be an issue here.
- * @param  vertex     Lat/lon vertex to hash
+ * @param  vertex     Lat/lng vertex to hash
  * @param  res        Resolution of the hexagon the vertex belongs to
  * @param  numBuckets Number of buckets in the graph
  * @return            Integer hash

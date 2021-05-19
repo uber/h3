@@ -169,7 +169,7 @@ void iterateBaseCellIndexesAtRes(int res, void (*callback)(H3Index),
 /**
  * Generates a random lat/lng pair.
  *
- * @param g Lat/lon will be placed here.
+ * @param g Lat/lng will be placed here.
  */
 void randomGeo(LatLng* g) {
     static int init = 0;
