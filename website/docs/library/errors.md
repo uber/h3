@@ -17,7 +17,7 @@ This code example checks for an error when calling an H3 function and prints a m
 H3Error err;
 H3Index result;
 
-err = geoToH3(lat, lon, res, &result);
+err = geoToH3(lat, lng, res, &result);
 if (err) {
     fprintf(stderr, "Error: %d", err);
 }

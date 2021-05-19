@@ -61,7 +61,7 @@ int main(int argc, char* argv[]) {
 
         double latDegs, lngDegs;
         if (sscanf(buff, "%s %lf %lf", h3Str, &latDegs, &lngDegs) != 3)
-            error("parsing input (should be \"H3Index lat lon\")");
+            error("parsing input (should be \"H3Index lat lng\")");
 
         H3Index h3;
         h3 = H3_EXPORT(stringToH3)(h3Str);
