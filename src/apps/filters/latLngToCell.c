@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 /** @file
- * @brief stdin/stdout filter that converts from lat/lon coordinates to integer
+ * @brief stdin/stdout filter that converts from lat/lng coordinates to integer
  * H3 indexes
  *
  *  See `latLngToCell --help` for usage.
  *
- *  The program reads lat/lon pairs from stdin until EOF is encountered. For
- *  each lat/lon the program outputs to stdout the integer H3 index of the
+ *  The program reads lat/lng pairs from stdin until EOF is encountered. For
+ *  each lat/lng the program outputs to stdout the integer H3 index of the
  *  containing cell at the specified resolution.
  *
- *  The stdin input should have the following format (lat/lon in decimal
+ *  The stdin input should have the following format (lat/lng in decimal
  *  degrees):
  *
  *       lat0 lon0
@@ -101,19 +101,19 @@ int main(int argc, char* argv[]) {
     if (latArg.found) {
         doCoords(lat, lon, res);
     } else {
-        // process the lat/lon's on stdin
+        // process the lat/lng's on stdin
         char buff[BUFF_SIZE];
         while (1) {
-            // get a lat/lon from stdin
+            // get a lat/lng from stdin
             if (!fgets(buff, BUFF_SIZE, stdin)) {
                 if (feof(stdin))
                     break;
                 else
-                    error("reading lat/lon");
+                    error("reading lat/lng");
             }
 
             if (sscanf(buff, "%lf %lf", &lat, &lon) != 2)
-                error("parsing lat/lon");
+                error("parsing lat/lng");
 
             // convert to H3
             doCoords(lat, lon, res);

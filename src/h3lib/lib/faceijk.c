@@ -35,7 +35,7 @@
 /** square root of 7 */
 #define M_SQRT7 2.6457513110645905905016157536392604257102L
 
-/** @brief icosahedron face centers in lat/lon radians */
+/** @brief icosahedron face centers in lat/lng radians */
 const LatLng faceCenterGeo[NUM_ICOSA_FACES] = {
     {0.803582649718989942, 1.248397419617396099},    // face  0
     {1.307747883455638156, 2.536945009877921159},    // face  1
@@ -516,7 +516,7 @@ void _faceIjkPentToCellBoundary(const FaceIJK* h, int res, int start,
     // of a distortion vertex on the last edge
     int additionalIteration = length == NUM_PENT_VERTS ? 1 : 0;
 
-    // convert each vertex to lat/lon
+    // convert each vertex to lat/lng
     // adjust the face of each vertex as appropriate and introduce
     // edge-crossing vertices as needed
     g->numVerts = 0;
@@ -584,7 +584,7 @@ void _faceIjkPentToCellBoundary(const FaceIJK* h, int res, int start,
                     break;
             }
 
-            // find the intersection and add the lat/lon point to the result
+            // find the intersection and add the lat/lng point to the result
             Vec2d inter;
             _v2dIntersect(&orig2d0, &orig2d1, edge0, edge1, &inter);
             _hex2dToGeo(&inter, tmpFijk.face, adjRes, 1,
@@ -592,7 +592,7 @@ void _faceIjkPentToCellBoundary(const FaceIJK* h, int res, int start,
             g->numVerts++;
         }
 
-        // convert vertex to lat/lon and add to the result
+        // convert vertex to lat/lng and add to the result
         // vert == start + NUM_PENT_VERTS is only used to test for possible
         // intersection on last edge
         if (vert < start + NUM_PENT_VERTS) {
@@ -689,7 +689,7 @@ void _faceIjkToCellBoundary(const FaceIJK* h, int res, int start, int length,
     // of a distortion vertex on the last edge
     int additionalIteration = length == NUM_HEX_VERTS ? 1 : 0;
 
-    // convert each vertex to lat/lon
+    // convert each vertex to lat/lng
     // adjust the face of each vertex as appropriate and introduce
     // edge-crossing vertices as needed
     g->numVerts = 0;
@@ -749,7 +749,7 @@ void _faceIjkToCellBoundary(const FaceIJK* h, int res, int start, int length,
                     break;
             }
 
-            // find the intersection and add the lat/lon point to the result
+            // find the intersection and add the lat/lng point to the result
             Vec2d inter;
             _v2dIntersect(&orig2d0, &orig2d1, edge0, edge1, &inter);
             /*
@@ -766,7 +766,7 @@ void _faceIjkToCellBoundary(const FaceIJK* h, int res, int start, int length,
             }
         }
 
-        // convert vertex to lat/lon and add to the result
+        // convert vertex to lat/lng and add to the result
         // vert == start + NUM_HEX_VERTS is only used to test for possible
         // intersection on last edge
         if (vert < start + NUM_HEX_VERTS) {

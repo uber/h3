@@ -19,7 +19,7 @@
  *
  *  See `cellToLatLngHier --help` for usage.
  *
- *  The program generates the cell center points in lat/lon coordinates for all
+ *  The program generates the cell center points in lat/lng coordinates for all
  *  hierarchical children of H3Index at the specified resolution. If the
  *  specified resolution is less than or equal to the resolution of H3Index
  *  the single cell H3Index is processed.
@@ -34,7 +34,7 @@
  *  ---------
  *
  *     `cellToLatLngHier --parent 836e9bfffffffff`
- *        - outputs the cell center point in lat/lon for cell
+ *        - outputs the cell center point in lat/lng for cell
  *          `836e9bfffffffff` as plain text
  *
  *     `cellToLatLngHier --parent 820ceffffffffff --resolution 4 --kml >

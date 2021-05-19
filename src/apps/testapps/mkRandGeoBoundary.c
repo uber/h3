@@ -18,7 +18,7 @@
  *
  *  See `mkRandCellBoundary --help` for usage.
  *
- *  The program generates `numPoints` random lat/lon coordinates and outputs
+ *  The program generates `numPoints` random lat/lng coordinates and outputs
  *  them along with the corresponding H3Index at the specified `resolution`.
  */
 
@@ -39,7 +39,7 @@ int main(int argc, char* argv[]) {
         .scanFormat = "%d",
         .valueName = "num",
         .value = &numPoints,
-        .helpText = "Number of random lat/lon pairs to generate."};
+        .helpText = "Number of random lat/lng pairs to generate."};
     Arg resArg = {.names = {"-r", "--resolution"},
                   .required = true,
                   .scanFormat = "%d",

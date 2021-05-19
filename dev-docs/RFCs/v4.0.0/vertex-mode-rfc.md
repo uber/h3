@@ -13,8 +13,8 @@ This proposal would add a new H3 index mode, Vertex Mode, to provide a canonical
 The advantages of this approach:
 
 * Shared vertices can be compared between hexagons with a strict equality check
-* Vertices can be represented and stored without the trig calls required to produce a lat/lon point
-* Vertex to lat/lon can be guaranteed to return the same result across different cells that share the vertex
+* Vertices can be represented and stored without the trig calls required to produce a lat/lng point
+* Vertex to lat/lng can be guaranteed to return the same result across different cells that share the vertex
 
 At a minimum, this should open up significant performance and correctness gains in `h3SetToLinkedGeo` and `directedEdgeToBoundary`, and there are likely other uses as well.
 

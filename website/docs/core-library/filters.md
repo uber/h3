@@ -14,9 +14,9 @@ All latitude/longitude coordinates are in decimal degrees. See the [H3 Index Rep
 
 | filter           | input     | outputs
 | ---------------- | --------- | -------
-| `geoToH3`        | lat/lon   | `H3Index`
-| `h3ToGeo`        | `H3Index` | cell center point in lat/lon
-| `h3ToGeoBoundary`| `H3Index` | cell boundary in lat/lon
+| `geoToH3`        | lat/lng   | `H3Index`
+| `h3ToGeo`        | `H3Index` | cell center point in lat/lng
+| `h3ToGeoBoundary`| `H3Index` | cell boundary in lat/lng
 | `h3ToComponents` | `H3Index` | components
 | `kRing`          | `H3Index` | surrounding `H3Index`
 | `hexRange`       | `H3Index` | surrounding `H3Index`, in order

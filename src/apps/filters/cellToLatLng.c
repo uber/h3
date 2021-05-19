@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /** @file
- * @brief stdin/stdout filter that converts from integer H3 indexes to lat/lon
+ * @brief stdin/stdout filter that converts from integer H3 indexes to lat/lng
  * cell center point
  *
  *  See `cellToLatLng --help` for usage.

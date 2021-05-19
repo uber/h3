@@ -15,7 +15,7 @@
  */
 /** @file coordijk.c
  * @brief   Hex IJK coordinate systems functions including conversions to/from
- * lat/lon.
+ * lat/lng.
  */
 
 #include "coordijk.h"

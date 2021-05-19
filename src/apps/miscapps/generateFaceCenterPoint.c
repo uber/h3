@@ -24,7 +24,7 @@
 #include "faceijk.h"
 #include "vec3d.h"
 
-/** @brief icosahedron face centers in lat/lon radians. Copied from faceijk.c.
+/** @brief icosahedron face centers in lat/lng radians. Copied from faceijk.c.
  */
 const LatLng faceCenterGeoCopy[NUM_ICOSA_FACES] = {
     {0.803582649718989942, 1.248397419617396099},    // face  0

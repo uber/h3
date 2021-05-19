@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 /** @file
- * @brief generates random lat/lon pairs and bins them at the specified
+ * @brief generates random lat/lng pairs and bins them at the specified
  * resolution
  *
  *  See `mkRandGeo --help` for usage.
  *
- *  The program generates `numPoints` random lat/lon coordinates and outputs
+ *  The program generates `numPoints` random lat/lng coordinates and outputs
  *  them along with the corresponding H3Index at the specified `resolution`.
  */
 
@@ -40,7 +40,7 @@ int main(int argc, char* argv[]) {
         .scanFormat = "%d",
         .valueName = "num",
         .value = &numPoints,
-        .helpText = "Number of random lat/lon pairs to generate."};
+        .helpText = "Number of random lat/lng pairs to generate."};
     Arg resArg = {.names = {"-r", "--resolution"},
                   .required = true,
                   .scanFormat = "%d",
@@ -51,7 +51,7 @@ int main(int argc, char* argv[]) {
     Arg* args[] = {&helpArg, &numPointsArg, &resArg};
     const int numArgs = 3;
     const char* helpText =
-        "Generates random lat/lon pairs and indexes them at the specified "
+        "Generates random lat/lng pairs and indexes them at the specified "
         "resolution.";
 
     if (parseArgs(argc, argv, numArgs, args, &helpArg, helpText)) {

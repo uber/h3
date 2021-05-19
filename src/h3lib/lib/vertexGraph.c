@@ -60,7 +60,7 @@ void destroyVertexGraph(VertexGraph* graph) {
 }
 
 /**
- * Get an integer hash for a lat/lon point, at a precision determined
+ * Get an integer hash for a lat/lng point, at a precision determined
  * by the current hexagon resolution.
  * TODO: Light testing suggests this might not be sufficient at resolutions
  * finer than 10. Design a better hash function if performance and collisions

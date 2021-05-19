@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /** @file coordijk.h
- * @brief   Header file for CoordIJK functions including conversion from lat/lon
+ * @brief   Header file for CoordIJK functions including conversion from lat/lng
  *
  * References two Vec2d cartesian coordinate systems:
  *

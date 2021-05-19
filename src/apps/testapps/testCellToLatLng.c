@@ -18,7 +18,7 @@
  *
  *  usage: `testCellToLatLng`
  *
- *  The program reads lines containing H3 indexes and lat/lon center
+ *  The program reads lines containing H3 indexes and lat/lng center
  *  point pairs from stdin until EOF is encountered. For each input line,
  *  the program calls `cellToLatLng` to convert H3 index to a lat/lng, then
  *  validates against the input lat/lng within a given threshold
@@ -35,7 +35,7 @@
 
 void assertExpected(H3Index h1, const LatLng* g1) {
     const double epsilon = 0.000001 * M_PI_180;
-    // convert H3 to lat/lon and verify
+    // convert H3 to lat/lng and verify
     LatLng g2;
     H3_EXPORT(cellToLatLng)(h1, &g2);
 
@@ -56,7 +56,7 @@ int main(int argc, char* argv[]) {
         exit(1);
     }
 
-    // process the indexes and lat/lons on stdin
+    // process the indexes and lat/lngs on stdin
     char buff[BUFF_SIZE];
     char h3Str[BUFF_SIZE];
     while (1) {

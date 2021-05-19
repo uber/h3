@@ -167,7 +167,7 @@ void iterateBaseCellIndexesAtRes(int res, void (*callback)(H3Index),
 }
 
 /**
- * Generates a random lat/lon pair.
+ * Generates a random lat/lng pair.
  *
  * @param g Lat/lon will be placed here.
  */

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /** @file latLng.c
- * @brief   Functions for working with lat/lon coordinates.
+ * @brief   Functions for working with lat/lng coordinates.
  */
 
 #include "latLng.h"

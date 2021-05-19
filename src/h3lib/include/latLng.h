@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /** @file latLng.h
- * @brief   Geodetic (lat/lon) functions.
+ * @brief   Geodetic (lat/lng) functions.
  */
 
 #ifndef GEOPOINT_H
