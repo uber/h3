@@ -776,9 +776,8 @@ int _getEdgeHexagons(const GeoLoop* geoloop, int numHexagons, int res,
                      int* numSearchHexes, H3Index* search, H3Index* found) {
     for (int i = 0; i < geoloop->numVerts; i++) {
         LatLng origin = geoloop->verts[i];
-        LatLng destination = i == geoloop->numVerts - 1
-                                   ? geoloop->verts[0]
-                                   : geoloop->verts[i + 1];
+        LatLng destination = i == geoloop->numVerts - 1 ? geoloop->verts[0]
+                                                        : geoloop->verts[i + 1];
         const int numHexesEstimate =
             lineHexEstimate(&origin, &destination, res);
         for (int j = 0; j < numHexesEstimate; j++) {

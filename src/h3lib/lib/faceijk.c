@@ -444,8 +444,7 @@ void _geoToHex2d(const LatLng* g, int res, int* face, Vec2d* v) {
  *        grid relative to the specified resolution.
  * @param g The spherical coordinates of the cell center point.
  */
-void _hex2dToGeo(const Vec2d* v, int face, int res, int substrate,
-                 LatLng* g) {
+void _hex2dToGeo(const Vec2d* v, int face, int res, int substrate, LatLng* g) {
     // calculate (r, theta) in hex2d
     double r = _v2dMag(v);
 

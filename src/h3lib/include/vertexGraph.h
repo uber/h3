@@ -57,8 +57,7 @@ int removeVertexNode(VertexGraph* graph, VertexNode* node);
 VertexNode* findNodeForEdge(const VertexGraph* graph, const LatLng* fromVtx,
                             const LatLng* toVtx);
 
-VertexNode* findNodeForVertex(const VertexGraph* graph,
-                              const LatLng* fromVtx);
+VertexNode* findNodeForVertex(const VertexGraph* graph, const LatLng* fromVtx);
 
 VertexNode* firstVertexNode(const VertexGraph* graph);
 

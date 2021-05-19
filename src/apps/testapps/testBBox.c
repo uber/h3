@@ -84,9 +84,9 @@ SUITE(BBox) {
 
     TEST(transmeridian) {
         LatLng verts[] = {{0.4, M_PI - 0.1},
-                            {0.4, -M_PI + 0.1},
-                            {-0.4, -M_PI + 0.1},
-                            {-0.4, M_PI - 0.1}};
+                          {0.4, -M_PI + 0.1},
+                          {-0.4, -M_PI + 0.1},
+                          {-0.4, M_PI - 0.1}};
         const GeoLoop geoloop = {.numVerts = 4, .verts = verts};
         const BBox expected = {0.4, -0.4, -M_PI + 0.1, M_PI - 0.1};
         const LatLng insideOnMeridian = {-0.1, M_PI};
@@ -110,9 +110,9 @@ SUITE(BBox) {
 
     TEST(edgeOnNorthPole) {
         LatLng verts[] = {{M_PI_2 - 0.1, 0.1},
-                            {M_PI_2 - 0.1, 0.8},
-                            {M_PI_2, 0.8},
-                            {M_PI_2, 0.1}};
+                          {M_PI_2 - 0.1, 0.8},
+                          {M_PI_2, 0.8},
+                          {M_PI_2, 0.1}};
         const GeoLoop geoloop = {.numVerts = 4, .verts = verts};
         const BBox expected = {M_PI_2, M_PI_2 - 0.1, 0.8, 0.1};
         const LatLng inside = {M_PI_2 - 0.01, 0.4};
@@ -122,9 +122,9 @@ SUITE(BBox) {
 
     TEST(edgeOnSouthPole) {
         LatLng verts[] = {{-M_PI_2 + 0.1, 0.1},
-                            {-M_PI_2 + 0.1, 0.8},
-                            {-M_PI_2, 0.8},
-                            {-M_PI_2, 0.1}};
+                          {-M_PI_2 + 0.1, 0.8},
+                          {-M_PI_2, 0.8},
+                          {-M_PI_2, 0.1}};
         const GeoLoop geoloop = {.numVerts = 4, .verts = verts};
         const BBox expected = {-M_PI_2 + 0.1, -M_PI_2, 0.8, 0.1};
         const LatLng inside = {-M_PI_2 + 0.01, 0.4};

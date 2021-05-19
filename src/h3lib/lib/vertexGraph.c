@@ -194,8 +194,7 @@ VertexNode* findNodeForEdge(const VertexGraph* graph, const LatLng* fromVtx,
  * @param  fromVtx Start vertex
  * @return         Pointer to the vertex node, if found
  */
-VertexNode* findNodeForVertex(const VertexGraph* graph,
-                              const LatLng* fromVtx) {
+VertexNode* findNodeForVertex(const VertexGraph* graph, const LatLng* fromVtx) {
     return findNodeForEdge(graph, fromVtx, NULL);
 }
 

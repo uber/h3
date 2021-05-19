@@ -32,14 +32,14 @@ static GeoLoop sfGeoLoop = {.numVerts = 6, .verts = sfVerts};
 static GeoPolygon sfGeoPolygon;
 
 static LatLng holeVerts[] = {{0.6595072188743, -2.1371053983433},
-                               {0.6591482046471, -2.1373141048153},
-                               {0.6592295020837, -2.1365222838402}};
+                             {0.6591482046471, -2.1373141048153},
+                             {0.6592295020837, -2.1365222838402}};
 static GeoLoop holeGeoLoop = {.numVerts = 3, .verts = holeVerts};
 static GeoPolygon holeGeoPolygon;
 
 static LatLng emptyVerts[] = {{0.659966917655, -2.1364398519394},
-                                {0.659966917655, -2.1364398519395},
-                                {0.659966917655, -2.1364398519396}};
+                              {0.659966917655, -2.1364398519395},
+                              {0.659966917655, -2.1364398519396}};
 static GeoLoop emptyGeoLoop = {.numVerts = 3, .verts = emptyVerts};
 static GeoPolygon emptyGeoPolygon;
 
@@ -211,18 +211,18 @@ SUITE(polygonToCells) {
                                               .numHoles = 0};
 
         LatLng transMeridianVerts[] = {{0.01, -M_PI + 0.01},
-                                         {0.01, M_PI - 0.01},
-                                         {-0.01, M_PI - 0.01},
-                                         {-0.01, -M_PI + 0.01}};
+                                       {0.01, M_PI - 0.01},
+                                       {-0.01, M_PI - 0.01},
+                                       {-0.01, -M_PI + 0.01}};
         GeoLoop transMeridianGeoLoop = {.numVerts = 4,
                                         .verts = transMeridianVerts};
         GeoPolygon transMeridianGeoPolygon = {.geoloop = transMeridianGeoLoop,
                                               .numHoles = 0};
 
         LatLng transMeridianHoleVerts[] = {{0.005, -M_PI + 0.005},
-                                             {0.005, M_PI - 0.005},
-                                             {-0.005, M_PI - 0.005},
-                                             {-0.005, -M_PI + 0.005}};
+                                           {0.005, M_PI - 0.005},
+                                           {-0.005, M_PI - 0.005},
+                                           {-0.005, -M_PI + 0.005}};
         GeoLoop transMeridianHoleGeoLoop = {.numVerts = 4,
                                             .verts = transMeridianHoleVerts};
         GeoPolygon transMeridianHoleGeoPolygon = {
@@ -293,8 +293,8 @@ SUITE(polygonToCells) {
         // tests for a bug that was taking the max and min longitude as
         // the bounds for transmeridian polygons
         LatLng verts[] = {{0.1, -M_PI + 0.00001},  {0.1, M_PI - 0.00001},
-                            {0.05, M_PI - 0.2},      {-0.1, M_PI - 0.00001},
-                            {-0.1, -M_PI + 0.00001}, {-0.05, -M_PI + 0.2}};
+                          {0.05, M_PI - 0.2},      {-0.1, M_PI - 0.00001},
+                          {-0.1, -M_PI + 0.00001}, {-0.05, -M_PI + 0.2}};
         GeoLoop geoloop = {.numVerts = 6, .verts = verts};
         GeoPolygon polygon = {.geoloop = geoloop, .numHoles = 0};
 
@@ -336,8 +336,8 @@ SUITE(polygonToCells) {
         boundingBottomLeft.lat -= edgeLength2;
         boundingBottomLeft.lon -= edgeLength2;
 
-        LatLng verts[] = {boundingBottomLeft, boundingTopLeft,
-                            boundingTopRigt, boundingBottomRight};
+        LatLng verts[] = {boundingBottomLeft, boundingTopLeft, boundingTopRigt,
+                          boundingBottomRight};
 
         GeoLoop geoloop;
         geoloop.verts = verts;

@@ -139,9 +139,9 @@ SUITE(polygonToCells_reported) {
     // https://github.com/uber/h3/issues/136
     TEST(h3_136) {
         LatLng testVerts[] = {{0.10068990369902957, 0.8920772174196191},
-                                {0.10032914690616246, 0.8915914753447348},
-                                {0.10033349237998787, 0.8915860128746426},
-                                {0.10069496685903621, 0.8920742194546231}};
+                              {0.10032914690616246, 0.8915914753447348},
+                              {0.10033349237998787, 0.8915860128746426},
+                              {0.10069496685903621, 0.8920742194546231}};
         GeoLoop testGeoLoop = {.numVerts = 4, .verts = testVerts};
         GeoPolygon testPolygon;
         testPolygon.geoloop = testGeoLoop;

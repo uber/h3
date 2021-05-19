@@ -136,8 +136,7 @@ int bboxHexEstimate(const BBox* bbox, int res) {
  *  @param res the resolution of the H3 hexagons to trace the line
  *  @return the estimated number of hexagons required to trace the line
  */
-int lineHexEstimate(const LatLng* origin, const LatLng* destination,
-                    int res) {
+int lineHexEstimate(const LatLng* origin, const LatLng* destination, int res) {
     // Get the area of the pentagon as the maximally-distorted area possible
     H3Index pentagons[12] = {0};
     H3_EXPORT(getPentagons)(res, pentagons);

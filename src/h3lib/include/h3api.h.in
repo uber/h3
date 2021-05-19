@@ -133,7 +133,7 @@ typedef struct {
     @brief cell boundary in latitude/longitude
 */
 typedef struct {
-    int numVerts;                          ///< number of vertices
+    int numVerts;                        ///< number of vertices
     LatLng verts[MAX_CELL_BNDRY_VERTS];  ///< vertices in ccw order
 } CellBoundary;
 
