@@ -54,8 +54,8 @@
 #define GENERIC_LOOP_ALGO(func) LOOP_ALGO_TJOIN(func, TYPE)
 
 /** Macro: Normalize longitude, dealing with transmeridian arcs */
-#define NORMALIZE_LON(lon, isTransmeridian) \
-    (isTransmeridian && lon < 0 ? lon + (double)M_2PI : lon)
+#define NORMALIZE_LON(lng, isTransmeridian) \
+    (isTransmeridian && lng < 0 ? lng + (double)M_2PI : lng)
 
 /**
  * pointInside is the core loop of the point-in-poly algorithm
@@ -150,7 +150,7 @@ void GENERIC_LOOP_ALGO(bboxFrom)(const TYPE* loop, BBox* bbox) {
     bool isTransmeridian = false;
 
     double lat;
-    double lon;
+    double lng;
     LatLng coord;
     LatLng next;
 
@@ -160,17 +160,17 @@ void GENERIC_LOOP_ALGO(bboxFrom)(const TYPE* loop, BBox* bbox) {
         ITERATE(loop, coord, next);
 
         lat = coord.lat;
-        lon = coord.lon;
+        lng = coord.lon;
         if (lat < bbox->south) bbox->south = lat;
-        if (lon < bbox->west) bbox->west = lon;
+        if (lng < bbox->west) bbox->west = lng;
         if (lat > bbox->north) bbox->north = lat;
-        if (lon > bbox->east) bbox->east = lon;
+        if (lng > bbox->east) bbox->east = lng;
         // Save the min positive and max negative longitude for
         // use in the transmeridian case
-        if (lon > 0 && lon < minPosLng) minPosLng = lon;
-        if (lon < 0 && lon > maxNegLng) maxNegLng = lon;
+        if (lng > 0 && lng < minPosLng) minPosLng = lng;
+        if (lng < 0 && lng > maxNegLng) maxNegLng = lng;
         // check for arcs > 180 degrees longitude, flagging as transmeridian
-        if (fabs(lon - next.lon) > M_PI) {
+        if (fabs(lng - next.lon) > M_PI) {
             isTransmeridian = true;
         }
     }
