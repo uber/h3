@@ -37,7 +37,8 @@
  *        - outputs the cell center point in lat/lon for cell
  *          `836e9bfffffffff` as plain text
  *
- *     `cellToLatLngHier --parent 820ceffffffffff --resolution 4 --kml > pts.kml`
+ *     `cellToLatLngHier --parent 820ceffffffffff --resolution 4 --kml >
+ * pts.kml`
  *        - outputs the cell center points of all of the resolution 4
  *          descendants of cell `820ceffffffffff` as a KML file (redirected to
  *          `pts.kml`).
