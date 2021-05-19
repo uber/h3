@@ -138,9 +138,9 @@ the passed-in cell.
 
 |      3.x name     |    4.0.0 name     |               Notes               |
 |-------------------|-------------------|-----------------------------------|
-| `GeoBoundary`     | `CellBoundary`    | <= 10 stack-allocated `GeoPoint`s |
-| `GeoCoord`        | `GeoPoint`        |                                   |
-| `Geofence`        | `GeoLoop`         | heap-allocated `GeoPoint`s        |
+| `GeoBoundary`     | `CellBoundary`    | <= 10 stack-allocated `LatLng`s |
+| `GeoCoord`        | `LatLng`        |                                   |
+| `Geofence`        | `GeoLoop`         | heap-allocated `LatLng`s        |
 | `GeoPolygon`      | `GeoPolygon`      |                                   |
 | `GeoMultiPolygon` | `GeoMultiPolygon` | currently not used                |
 

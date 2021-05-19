@@ -262,9 +262,9 @@ discussion requiring benchmarking, so we will defer that to a
 
 |    Current name   |   Proposed name   |               Notes               |
 |-------------------|-------------------|-----------------------------------|
-| `GeoBoundary`     | `CellBoundary`    | <= 10 stack-allocated `GeoPoint`s |
-| `GeoCoord`        | `GeoPoint`        |                                   |
-| `Geofence`        | `GeoLoop`         | heap-allocated `GeoPoint`s        |
+| `GeoBoundary`     | `CellBoundary`    | <= 10 stack-allocated `LatLng`s |
+| `GeoCoord`        | `LatLng`        |                                   |
+| `Geofence`        | `GeoLoop`         | heap-allocated `LatLng`s        |
 | `GeoPolygon`      | `GeoPolygon`      |                                   |
 | `GeoMultiPolygon` | `GeoMultiPolygon` | currently not used                |
 

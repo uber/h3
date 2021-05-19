@@ -25,7 +25,7 @@ These function are used for finding the H3 cell index containing coordinates, an
 <TabItem value="c">
 
 ```c
-H3Error latLngToCell(const GeoPoint *g, int res, H3Index *out);
+H3Error latLngToCell(const LatLng *g, int res, H3Index *out);
 ```
 
 </TabItem>
@@ -81,7 +81,7 @@ Returns 0 (`E_SUCCESS`) on success.
 <TabItem value="c">
 
 ```c
-H3Error cellToLatLng(H3Index cell, GeoPoint *g);
+H3Error cellToLatLng(H3Index cell, LatLng *g);
 ```
 
 </TabItem>
@@ -95,8 +95,8 @@ h3.cell_to_point(cell)
 <TabItem value="java">
 
 ```java
-GeoPoint cellToLatLng(long cell);
-GeoPoint cellToLatLng(String cellAddress);
+LatLng cellToLatLng(long cell);
+LatLng cellToLatLng(String cellAddress);
 ```
 
 </TabItem>
@@ -149,8 +149,8 @@ h3.cell_to_boundary(cell, geo_json=False)
 <TabItem value="java">
 
 ```java
-List<GeoPoint> cellToBoundary(long cell);
-List<GeoPoint> cellToBoundary(String cellAddress);
+List<LatLng> cellToBoundary(long cell);
+List<LatLng> cellToBoundary(String cellAddress);
 ```
 
 </TabItem>

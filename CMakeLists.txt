@@ -180,7 +180,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testCellToCenterChild.c
     src/apps/testapps/testCellToChildren.c
     src/apps/testapps/testGetIcosahedronFaces.c
-    src/apps/testapps/testGeoPoint.c
+    src/apps/testapps/testLatLng.c
     src/apps/testapps/testGridRingUnsafe.c
     src/apps/testapps/testH3SetToVertexGraph.c
     src/apps/testapps/testBBox.c
@@ -586,7 +586,7 @@ if(H3_IS_ROOT_PROJECT AND BUILD_TESTING)
     add_h3_test(testPolygonToCellsReported src/apps/testapps/testPolygonToCellsReported.c)
     add_h3_test(testVertexGraph src/apps/testapps/testVertexGraph.c)
     add_h3_test(testDirectedEdge src/apps/testapps/testDirectedEdge.c)
-    add_h3_test(testGeoPoint src/apps/testapps/testGeoPoint.c)
+    add_h3_test(testLatLng src/apps/testapps/testLatLng.c)
     add_h3_test(testBBox src/apps/testapps/testBBox.c)
     add_h3_test(testVertex src/apps/testapps/testVertex.c)
     add_h3_test(testPolygon src/apps/testapps/testPolygon.c)
