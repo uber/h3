@@ -54,7 +54,7 @@
 #define GENERIC_LOOP_ALGO(func) LOOP_ALGO_TJOIN(func, TYPE)
 
 /** Macro: Normalize longitude, dealing with transmeridian arcs */
-#define NORMALIZE_LON(lng, isTransmeridian) \
+#define NORMALIZE_LNG(lng, isTransmeridian) \
     (isTransmeridian && lng < 0 ? lng + (double)M_2PI : lng)
 
 /**
@@ -74,7 +74,7 @@ bool GENERIC_LOOP_ALGO(pointInside)(const TYPE* loop, const BBox* bbox,
     bool contains = false;
 
     double lat = coord->lat;
-    double lng = NORMALIZE_LON(coord->lon, isTransmeridian);
+    double lng = NORMALIZE_LNG(coord->lon, isTransmeridian);
 
     LatLng a;
     LatLng b;
@@ -98,8 +98,8 @@ bool GENERIC_LOOP_ALGO(pointInside)(const TYPE* loop, const BBox* bbox,
             continue;
         }
 
-        double aLng = NORMALIZE_LON(a.lon, isTransmeridian);
-        double bLng = NORMALIZE_LON(b.lon, isTransmeridian);
+        double aLng = NORMALIZE_LNG(a.lon, isTransmeridian);
+        double bLng = NORMALIZE_LNG(b.lon, isTransmeridian);
 
         // Rays are cast in the longitudinal direction, in case a point
         // exactly matches, to decide tiebreakers, bias westerly
@@ -114,7 +114,7 @@ bool GENERIC_LOOP_ALGO(pointInside)(const TYPE* loop, const BBox* bbox,
         // of a to b
         double ratio = (lat - a.lat) / (b.lat - a.lat);
         double testLng =
-            NORMALIZE_LON(aLng + (bLng - aLng) * ratio, isTransmeridian);
+            NORMALIZE_LNG(aLng + (bLng - aLng) * ratio, isTransmeridian);
 
         // Intersection of the ray
         if (testLng > lng) {
@@ -202,8 +202,8 @@ static bool GENERIC_LOOP_ALGO(isClockwiseNormalized)(const TYPE* loop,
         if (!isTransmeridian && fabs(a.lon - b.lon) > M_PI) {
             return GENERIC_LOOP_ALGO(isClockwiseNormalized)(loop, true);
         }
-        sum += ((NORMALIZE_LON(b.lon, isTransmeridian) -
-                 NORMALIZE_LON(a.lon, isTransmeridian)) *
+        sum += ((NORMALIZE_LNG(b.lon, isTransmeridian) -
+                 NORMALIZE_LNG(a.lon, isTransmeridian)) *
                 (b.lat + a.lat));
     }
 
