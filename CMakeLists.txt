@@ -176,7 +176,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testH3NeighborRotations.c
     src/apps/testapps/testCellToChildrenSize.c
     src/apps/testapps/testGridDisksUnsafe.c
-    src/apps/testapps/testCellToPoint.c
+    src/apps/testapps/testCellToLatLng.c
     src/apps/testapps/testCellToCenterChild.c
     src/apps/testapps/testCellToChildren.c
     src/apps/testapps/testGetIcosahedronFaces.c
@@ -214,7 +214,7 @@ set(OTHER_SOURCE_FILES
     src/apps/miscapps/generateFaceCenterPoint.c
     src/apps/miscapps/h3ToHier.c
     src/apps/fuzzers/fuzzerPointToCell.c
-    src/apps/fuzzers/fuzzerCellToPoint.c
+    src/apps/fuzzers/fuzzerCellToLatLng.c
     src/apps/fuzzers/fuzzerGridDisk.c
     src/apps/benchmarks/benchmarkPolygonToCells.c
     src/apps/benchmarks/benchmarkPolygon.c
@@ -555,7 +555,7 @@ if(H3_IS_ROOT_PROJECT AND BUILD_TESTING)
 
     file(GLOB all_ic_files tests/inputfiles/res*ic.txt)
     foreach(file ${all_ic_files})
-        add_h3_test_with_file(testCellToPoint src/apps/testapps/testCellToPoint.c ${file})
+        add_h3_test_with_file(testCellToLatLng src/apps/testapps/testCellToLatLng.c ${file})
     endforeach()
 
     file(GLOB all_centers tests/inputfiles/rand*centers.txt)
@@ -633,7 +633,7 @@ if(BUILD_FUZZERS)
     endmacro()
 
     add_h3_fuzzer(fuzzerPointToCell src/apps/fuzzers/fuzzerPointToCell.c)
-    add_h3_fuzzer(fuzzerCellToPoint src/apps/fuzzers/fuzzerCellToPoint.c)
+    add_h3_fuzzer(fuzzerCellToLatLng src/apps/fuzzers/fuzzerCellToLatLng.c)
     add_h3_fuzzer(fuzzerGridDisk src/apps/fuzzers/fuzzerGridDisk.c)
 endif()
 
