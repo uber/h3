@@ -243,7 +243,7 @@ SQLite's approach to this is to define broad error categories (in 8 bits), and t
 | 0     | E_SUCCESS            | Success (no error)
 | 1     | E_FAILED             | The operation failed but a more specific error is not available
 | 2     | E_DOMAIN             | Argument was outside of acceptable range (when a more specific error code is not available)
-| 3     | E_LATLON_DOMAIN      | Latitude or longitude arguments were outside of acceptable range
+| 3     | E_LATLNG_DOMAIN      | Latitude or longitude arguments were outside of acceptable range
 | 4     | E_RES_DOMAIN         | Resolution argument was outside of acceptable range
 | 5     | E_CELL_INVALID       | `H3Index` cell argument was not valid
 | 6     | E_DIR_EDGE_INVALID   | `H3Index` directed edge argument was not valid
@@ -260,7 +260,7 @@ The H3 library may always add additional error messages. Error messages not reco
 #### Example error code results
 
 ```
-geoToH3(lat=Infinity, lon=0, res=0, &out) => E_LATLON_DOMAIN
+geoToH3(lat=Infinity, lon=0, res=0, &out) => E_LATLNG_DOMAIN
 geoToH3(lat=0, lat=0, res=-1, &out) => E_RES_DOMAIN
 h3ToGeo(index=0, &out) => E_CELL_INVALID
 h3IsResClassIII(index=RES_0_INDEX, &out) => E_SUCCESS
@@ -272,7 +272,7 @@ hexRange(origin=AN_INDEX, k=-1, &out) => E_DOMAIN
 hexRange(origin=PENTAGON_INDEX, k=1, &out) => E_PENTAGON
 # Failed to allocate internal buffer:
 kRing(origin=AN_INDEX, k=1, &out) => E_MEMORY
-pointDistRads({Infinity, Infinity}, {0, 0}, &out) => E_LATLON_DOMAIN
+pointDistRads({Infinity, Infinity}, {0, 0}, &out) => E_LATLNG_DOMAIN
 hexAreaKm2(res=-1) => E_RES_DOMAIN
 # Cannot parse:
 stringToH3(str="zzzz", &out) => E_FAILED

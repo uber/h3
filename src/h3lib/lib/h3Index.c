@@ -728,7 +728,7 @@ H3Error H3_EXPORT(latLngToCell)(const LatLng* g, int res, H3Index* out) {
         return E_RES_DOMAIN;
     }
     if (!isfinite(g->lat) || !isfinite(g->lon)) {
-        return E_LATLON_DOMAIN;
+        return E_LATLNG_DOMAIN;
     }
 
     FaceIJK fijk;

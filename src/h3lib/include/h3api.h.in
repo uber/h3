@@ -83,7 +83,7 @@ typedef enum {
         1,  // The operation failed but a more specific error is not available
     E_DOMAIN = 2,  // Argument was outside of acceptable range (when a more
                    // specific error code is not available)
-    E_LATLON_DOMAIN =
+    E_LATLNG_DOMAIN =
         3,  // Latitude or longitude arguments were outside of acceptable range
     E_RES_DOMAIN = 4,    // Resolution argument was outside of acceptable range
     E_CELL_INVALID = 5,  // `H3Index` cell argument was not valid
