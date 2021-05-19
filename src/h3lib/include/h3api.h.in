@@ -126,7 +126,7 @@ typedef enum {
 */
 typedef struct {
     double lat;  ///< latitude in radians
-    double lon;  ///< longitude in radians
+    double lng;  ///< longitude in radians
 } LatLng;
 
 /** @struct CellBoundary
