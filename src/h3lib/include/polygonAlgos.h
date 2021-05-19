@@ -167,8 +167,8 @@ void GENERIC_LOOP_ALGO(bboxFrom)(const TYPE* loop, BBox* bbox) {
         if (lon > bbox->east) bbox->east = lon;
         // Save the min positive and max negative longitude for
         // use in the transmeridian case
-        if (lon > 0 && lon < minPosLon) minPosLng = lon;
-        if (lon < 0 && lon > maxNegLon) maxNegLng = lon;
+        if (lon > 0 && lon < minPosLng) minPosLng = lon;
+        if (lon < 0 && lon > maxNegLng) maxNegLng = lon;
         // check for arcs > 180 degrees longitude, flagging as transmeridian
         if (fabs(lon - next.lon) > M_PI) {
             isTransmeridian = true;
@@ -176,8 +176,8 @@ void GENERIC_LOOP_ALGO(bboxFrom)(const TYPE* loop, BBox* bbox) {
     }
     // Swap east and west if transmeridian
     if (isTransmeridian) {
-        bbox->east = maxNegLon;
-        bbox->west = minPosLon;
+        bbox->east = maxNegLng;
+        bbox->west = minPosLng;
     }
 }
 
