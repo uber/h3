@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
 
     // Get the center coordinates.
     GeoPoint center;
-    if (cellToPoint(indexed, &center) != E_SUCCESS) {
+    if (cellToLatLng(indexed, &center) != E_SUCCESS) {
         printf("Failed\n");
         return 1;
     }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /** @file
- * @brief Fuzzer program for cellToPoint and cellToBoundary
+ * @brief Fuzzer program for cellToLatLng and cellToBoundary
  */
 
 #include "h3api.h"

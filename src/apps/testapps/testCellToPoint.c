@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 /** @file
- * @brief tests H3 function `cellToPoint`
+ * @brief tests H3 function `cellToLatLng`
  *
  *  usage: `testCellToPoint`
  *
  *  The program reads lines containing H3 indexes and lat/lon center
  *  point pairs from stdin until EOF is encountered. For each input line,
- *  the program calls `cellToPoint` to convert H3 index to a lat/lng, then
+ *  the program calls `cellToLatLng` to convert H3 index to a lat/lng, then
  *  validates against the input lat/lng within a given threshold
  */
 
@@ -40,7 +40,7 @@ void assertExpected(H3Index h1, const GeoPoint* g1) {
     H3_EXPORT(cellToLatLng)(h1, &g2);
 
     t_assert(geoAlmostEqualThreshold(&g2, g1, epsilon),
-             "got expected cellToPoint output");
+             "got expected cellToLatLng output");
 
     // Convert back to H3 to verify
     int res = H3_EXPORT(getResolution)(h1);
