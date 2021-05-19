@@ -73,11 +73,11 @@ LinkedGeoLoop* addLinkedLoop(LinkedGeoPolygon* polygon, LinkedGeoLoop* loop) {
  * @param  vertex Coordinate to add
  * @return        Pointer to the coordinate
  */
-LinkedGeoPoint* addLinkedCoord(LinkedGeoLoop* loop, const GeoPoint* vertex) {
-    LinkedGeoPoint* coord = H3_MEMORY(malloc)(sizeof(*coord));
+LinkedLatLng* addLinkedCoord(LinkedGeoLoop* loop, const GeoPoint* vertex) {
+    LinkedLatLng* coord = H3_MEMORY(malloc)(sizeof(*coord));
     assert(coord != NULL);
-    *coord = (LinkedGeoPoint){.vertex = *vertex, .next = NULL};
-    LinkedGeoPoint* last = loop->last;
+    *coord = (LinkedLatLng){.vertex = *vertex, .next = NULL};
+    LinkedLatLng* last = loop->last;
     if (last == NULL) {
         assert(loop->first == NULL);
         loop->first = coord;
@@ -94,8 +94,8 @@ LinkedGeoPoint* addLinkedCoord(LinkedGeoLoop* loop, const GeoPoint* vertex) {
  * @param loop Loop to free
  */
 void destroyLinkedGeoLoop(LinkedGeoLoop* loop) {
-    LinkedGeoPoint* nextCoord;
-    for (LinkedGeoPoint* currentCoord = loop->first; currentCoord != NULL;
+    LinkedLatLng* nextCoord;
+    for (LinkedLatLng* currentCoord = loop->first; currentCoord != NULL;
          currentCoord = nextCoord) {
         nextCoord = currentCoord->next;
         H3_MEMORY(free)(currentCoord);
@@ -165,7 +165,7 @@ int countLinkedLoops(LinkedGeoPolygon* polygon) {
  * @return      Count
  */
 int countLinkedCoords(LinkedGeoLoop* loop) {
-    LinkedGeoPoint* coord = loop->first;
+    LinkedLatLng* coord = loop->first;
     int count = 0;
     while (coord != NULL) {
         count++;

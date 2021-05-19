@@ -34,8 +34,8 @@
 // Macros for use with polygonAlgos.h
 /** Macro: Init iteration vars for LinkedGeoLoop */
 #define INIT_ITERATION_LINKED_LOOP       \
-    LinkedGeoPoint* currentCoord = NULL; \
-    LinkedGeoPoint* nextCoord = NULL
+    LinkedLatLng* currentCoord = NULL; \
+    LinkedLatLng* nextCoord = NULL
 
 /** Macro: Get the next coord in a linked loop, wrapping if needed */
 #define GET_NEXT_COORD(loop, coordToCheck) \
@@ -56,7 +56,7 @@ int normalizeMultiPolygon(LinkedGeoPolygon* root);
 LinkedGeoPolygon* addNewLinkedPolygon(LinkedGeoPolygon* polygon);
 LinkedGeoLoop* addNewLinkedLoop(LinkedGeoPolygon* polygon);
 LinkedGeoLoop* addLinkedLoop(LinkedGeoPolygon* polygon, LinkedGeoLoop* loop);
-LinkedGeoPoint* addLinkedCoord(LinkedGeoLoop* loop, const GeoPoint* vertex);
+LinkedLatLng* addLinkedCoord(LinkedGeoLoop* loop, const GeoPoint* vertex);
 int countLinkedPolygons(LinkedGeoPolygon* polygon);
 int countLinkedLoops(LinkedGeoPolygon* polygon);
 int countLinkedCoords(LinkedGeoLoop* loop);

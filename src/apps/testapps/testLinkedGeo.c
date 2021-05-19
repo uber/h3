@@ -37,7 +37,7 @@ SUITE(linkedGeo) {
     TEST(createLinkedGeo) {
         LinkedGeoPolygon* polygon = calloc(1, sizeof(LinkedGeoPolygon));
         LinkedGeoLoop* loop;
-        LinkedGeoPoint* coord;
+        LinkedLatLng* coord;
 
         loop = addNewLinkedLoop(polygon);
         t_assert(loop != NULL, "Loop created");

@@ -162,13 +162,13 @@ typedef struct {
     GeoPolygon *polygons;
 } GeoMultiPolygon;
 
-/** @struct LinkedGeoPoint
+/** @struct LinkedLatLng
  *  @brief A coordinate node in a linked geo structure, part of a linked list
  */
-typedef struct LinkedGeoPoint LinkedGeoPoint;
-struct LinkedGeoPoint {
+typedef struct LinkedLatLng LinkedLatLng;
+struct LinkedLatLng {
     GeoPoint vertex;
-    LinkedGeoPoint *next;
+    LinkedLatLng *next;
 };
 
 /** @struct LinkedGeoLoop
@@ -176,8 +176,8 @@ struct LinkedGeoPoint {
  */
 typedef struct LinkedGeoLoop LinkedGeoLoop;
 struct LinkedGeoLoop {
-    LinkedGeoPoint *first;
-    LinkedGeoPoint *last;
+    LinkedLatLng *first;
+    LinkedLatLng *last;
     LinkedGeoLoop *next;
 };
 
