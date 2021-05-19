@@ -43,7 +43,7 @@ static void cellToVertex_point_assertions(H3Index h3) {
     GeoPoint coord;
     for (int i = 0; i < numVerts; i++) {
         H3Index vertex = H3_EXPORT(cellToVertex)(h3, i);
-        H3_EXPORT(vertexToPoint)(vertex, &coord);
+        H3_EXPORT(vertexToLatLng)(vertex, &coord);
         int almostEqual =
             geoAlmostEqualThreshold(&gb.verts[i], &coord, 0.000001);
         t_assert(almostEqual, "Vertex coordinates match boundary vertex");

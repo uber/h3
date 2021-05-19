@@ -675,12 +675,12 @@ DECLSPEC H3Index H3_EXPORT(cellToVertex)(H3Index origin, int vertexNum);
 DECLSPEC void H3_EXPORT(cellToVertexes)(H3Index origin, H3Index *vertexes);
 /** @} */
 
-/** @defgroup vertexToPoint vertexToPoint
- * Functions for vertexToPoint
+/** @defgroup vertexToLatLng vertexToLatLng
+ * Functions for vertexToLatLng
  * @{
  */
 /** @brief Returns a single vertex for a given cell, as an H3 index */
-DECLSPEC void H3_EXPORT(vertexToPoint)(H3Index vertex, GeoPoint *point);
+DECLSPEC void H3_EXPORT(vertexToLatLng)(H3Index vertex, GeoPoint *point);
 /** @} */
 
 /** @defgroup isValidVertex isValidVertex
