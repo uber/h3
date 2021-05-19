@@ -33,7 +33,7 @@
 
 // Macros for use with polygonAlgos.h
 /** Macro: Init iteration vars for LinkedGeoLoop */
-#define INIT_ITERATION_LINKED_LOOP       \
+#define INIT_ITERATION_LINKED_LOOP     \
     LinkedLatLng* currentCoord = NULL; \
     LinkedLatLng* nextCoord = NULL
 
