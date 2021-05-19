@@ -50,13 +50,13 @@ static bool isTransmeridianCell(H3Index h) {
     CellBoundary bndry;
     H3_EXPORT(cellToBoundary)(h, &bndry);
 
-    double minLon = M_PI, maxLon = -M_PI;
+    double minLng = M_PI, maxLng = -M_PI;
     for (int i = 0; i < bndry.numVerts; i++) {
-        if (bndry.verts[i].lon < minLon) minLon = bndry.verts[i].lon;
-        if (bndry.verts[i].lon > maxLon) maxLon = bndry.verts[i].lon;
+        if (bndry.verts[i].lon < minLon) minLng = bndry.verts[i].lon;
+        if (bndry.verts[i].lon > maxLon) maxLng = bndry.verts[i].lon;
     }
 
-    return maxLon - minLon > M_PI - (M_PI / 4);
+    return maxLng - minLng > M_PI - (M_PI / 4);
 }
 
 static void fillIndex_assertions(H3Index h) {
