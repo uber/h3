@@ -140,7 +140,7 @@ There is some ambiguity between property, transform, and computation, so use you
 | *DNE*                         | `getMode`             |
 | `h3GetFaces`                  | `getIcosahedronFaces` |
 | `geoToH3`                     | `latLngToCell`         |
-| `h3ToGeo`                     | `cellToPoint`         |
+| `h3ToGeo`                     | `cellToLatLng`         |
 | `compact`                     | `compactCells`        |
 | `uncompact`                   | `uncompactCells`      |
 | `polyfill`                    | `polygonToCells`      |

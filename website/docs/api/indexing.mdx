@@ -66,7 +66,7 @@ Indexes the location at the specified resolution, returning the index of the cel
 
 Returns 0 (`E_SUCCESS`) on success.
 
-## cellToPoint
+## cellToLatLng
 
 <Tabs
   groupId="language"
@@ -81,7 +81,7 @@ Returns 0 (`E_SUCCESS`) on success.
 <TabItem value="c">
 
 ```c
-H3Error cellToPoint(H3Index cell, GeoPoint *g);
+H3Error cellToLatLng(H3Index cell, GeoPoint *g);
 ```
 
 </TabItem>
@@ -95,21 +95,21 @@ h3.cell_to_point(cell)
 <TabItem value="java">
 
 ```java
-GeoPoint cellToPoint(long cell);
-GeoPoint cellToPoint(String cellAddress);
+GeoPoint cellToLatLng(long cell);
+GeoPoint cellToLatLng(String cellAddress);
 ```
 
 </TabItem>
 <TabItem value="javascript">
 
 ```js
-h3.cellToPoint(cell)
+h3.cellToLatLng(cell)
 ```
 
 ```js live
 function example() {
   const cell = '85283473fffffff';
-  return h3.cellToPoint(cell);
+  return h3.cellToLatLng(cell);
 }
 ```
 

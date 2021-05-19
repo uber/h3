@@ -154,7 +154,7 @@ set(EXAMPLE_SOURCE_FILES
     examples/compactCells.c
     examples/edge.c)
 set(OTHER_SOURCE_FILES
-    src/apps/filters/cellToPoint.c
+    src/apps/filters/cellToLatLng.c
     src/apps/filters/h3ToLocalIj.c
     src/apps/filters/localIjToH3.c
     src/apps/filters/h3ToComponents.c
@@ -208,7 +208,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testH3Memory.c
     src/apps/testapps/testH3Iterators.c
     src/apps/miscapps/cellToBoundaryHier.c
-    src/apps/miscapps/cellToPointHier.c
+    src/apps/miscapps/cellToLatLngHier.c
     src/apps/miscapps/generateBaseCellNeighbors.c
     src/apps/miscapps/generatePentagonDirectionFaces.c
     src/apps/miscapps/generateFaceCenterPoint.c
@@ -380,14 +380,14 @@ if(BUILD_FILTERS)
 
     add_h3_filter(latLngToCell src/apps/filters/latLngToCell.c ${APP_SOURCE_FILES})
     add_h3_filter(h3ToComponents src/apps/filters/h3ToComponents.c ${APP_SOURCE_FILES})
-    add_h3_filter(cellToPoint src/apps/filters/cellToPoint.c ${APP_SOURCE_FILES})
+    add_h3_filter(cellToLatLng src/apps/filters/cellToLatLng.c ${APP_SOURCE_FILES})
     add_h3_filter(h3ToLocalIj src/apps/filters/h3ToLocalIj.c ${APP_SOURCE_FILES})
     add_h3_filter(localIjToH3 src/apps/filters/localIjToH3.c ${APP_SOURCE_FILES})
     add_h3_filter(cellToBoundary src/apps/filters/cellToBoundary.c ${APP_SOURCE_FILES})
     add_h3_filter(gridDiskUnsafe src/apps/filters/gridDiskUnsafe.c ${APP_SOURCE_FILES})
     add_h3_filter(gridDisk src/apps/filters/gridDisk.c ${APP_SOURCE_FILES})
     add_h3_filter(cellToBoundaryHier src/apps/miscapps/cellToBoundaryHier.c ${APP_SOURCE_FILES})
-    add_h3_filter(cellToPointHier src/apps/miscapps/cellToPointHier.c ${APP_SOURCE_FILES})
+    add_h3_filter(cellToLatLngHier src/apps/miscapps/cellToLatLngHier.c ${APP_SOURCE_FILES})
     add_h3_filter(h3ToHier src/apps/miscapps/h3ToHier.c ${APP_SOURCE_FILES})
 
     # Generate KML files for visualizing the H3 grid
@@ -405,7 +405,7 @@ if(BUILD_FILTERS)
             VERBATIM
             DEPENDS create-kml-dir)
         add_custom_target(kml_centers_${resolution}
-            COMMAND ${SHELL} "$<TARGET_FILE:h3ToHier> -r ${resolution} | $<TARGET_FILE:cellToPoint> --kml --kml-name res${resolution}centers.kml --kml-description \"Res ${resolution} Centers\" > KML/res${resolution}centers.kml"
+            COMMAND ${SHELL} "$<TARGET_FILE:h3ToHier> -r ${resolution} | $<TARGET_FILE:cellToLatLng> --kml --kml-name res${resolution}centers.kml --kml-description \"Res ${resolution} Centers\" > KML/res${resolution}centers.kml"
             VERBATIM
             DEPENDS create-kml-dir)
         add_dependencies(kml
