@@ -79,13 +79,13 @@ int readBoundary(FILE* f, CellBoundary* b) {
             return -5;
         }
 
-        double latDegs, lonDegs;
-        if (sscanf(buff, "%lf %lf", &latDegs, &lonDegs) != 2) {
+        double latDegs, lngDegs;
+        if (sscanf(buff, "%lf %lf", &latDegs, &lngDegs) != 2) {
             printf("parsing CellBoundary from input");
             return -6;
         }
 
-        setGeoDegs(&b->verts[b->numVerts], latDegs, lonDegs);
+        setGeoDegs(&b->verts[b->numVerts], latDegs, lngDegs);
         b->numVerts++;
     }
 

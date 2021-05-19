@@ -72,11 +72,11 @@ bool geoAlmostEqual(const LatLng *p1, const LatLng *p2) {
  *
  * @param p The spherical coordinates.
  * @param latDegs The desired latitude in decimal degrees.
- * @param lonDegs The desired longitude in decimal degrees.
+ * @param lngDegs The desired longitude in decimal degrees.
  */
-void setGeoDegs(LatLng *p, double latDegs, double lonDegs) {
+void setGeoDegs(LatLng *p, double latDegs, double lngDegs) {
     _setGeoRads(p, H3_EXPORT(degsToRads)(latDegs),
-                H3_EXPORT(degsToRads)(lonDegs));
+                H3_EXPORT(degsToRads)(lngDegs));
 }
 
 /**

@@ -59,15 +59,15 @@ int main(int argc, char* argv[]) {
                 error("reading input from stdin");
         }
 
-        double latDegs, lonDegs;
-        if (sscanf(buff, "%s %lf %lf", h3Str, &latDegs, &lonDegs) != 3)
+        double latDegs, lngDegs;
+        if (sscanf(buff, "%s %lf %lf", h3Str, &latDegs, &lngDegs) != 3)
             error("parsing input (should be \"H3Index lat lon\")");
 
         H3Index h3;
         h3 = H3_EXPORT(stringToH3)(h3Str);
 
         LatLng coord;
-        setGeoDegs(&coord, latDegs, lonDegs);
+        setGeoDegs(&coord, latDegs, lngDegs);
 
         assertExpected(h3, &coord);
     }
