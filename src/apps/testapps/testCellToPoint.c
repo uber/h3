@@ -37,7 +37,7 @@ void assertExpected(H3Index h1, const GeoPoint* g1) {
     const double epsilon = 0.000001 * M_PI_180;
     // convert H3 to lat/lon and verify
     GeoPoint g2;
-    H3_EXPORT(cellToPoint)(h1, &g2);
+    H3_EXPORT(cellToLatLng)(h1, &g2);
 
     t_assert(geoAlmostEqualThreshold(&g2, g1, epsilon),
              "got expected cellToPoint output");

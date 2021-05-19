@@ -836,7 +836,7 @@ H3Error _h3ToFaceIjk(H3Index h, FaceIJK* fijk) {
  * @param h3 The H3 index.
  * @param g The spherical coordinates of the H3 cell center.
  */
-H3Error H3_EXPORT(cellToPoint)(H3Index h3, GeoPoint* g) {
+H3Error H3_EXPORT(cellToLatLng)(H3Index h3, GeoPoint* g) {
     FaceIJK fijk;
     H3Error e = _h3ToFaceIjk(h3, &fijk);
     if (e) {

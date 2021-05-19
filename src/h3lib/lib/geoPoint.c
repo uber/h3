@@ -351,7 +351,7 @@ double triangleArea(const GeoPoint *a, const GeoPoint *b, const GeoPoint *c) {
 double H3_EXPORT(cellAreaRads2)(H3Index cell) {
     GeoPoint c;
     CellBoundary cb;
-    H3_EXPORT(cellToPoint)(cell, &c);
+    H3_EXPORT(cellToLatLng)(cell, &c);
     H3_EXPORT(cellToBoundary)(cell, &cb);
 
     double area = 0.0;

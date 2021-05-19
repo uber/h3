@@ -49,7 +49,7 @@
 
 void doCell(H3Index h, int isKmlOut) {
     GeoPoint g;
-    H3_EXPORT(cellToPoint)(h, &g);
+    H3_EXPORT(cellToLatLng)(h, &g);
 
     char label[BUFF_SIZE];
 

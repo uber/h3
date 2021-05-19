@@ -960,7 +960,7 @@ int _polygonToCellsInternal(const GeoPolygon* geoPolygon, int res,
 
                 // Check if the hexagon is in the polygon or not
                 GeoPoint hexCenter;
-                H3_EXPORT(cellToPoint)(hex, &hexCenter);
+                H3_EXPORT(cellToLatLng)(hex, &hexCenter);
 
                 // If not, skip
                 if (!pointInsidePolygon(geoPolygon, bboxes, &hexCenter)) {

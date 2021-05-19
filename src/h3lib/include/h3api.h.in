@@ -216,7 +216,7 @@ DECLSPEC H3Error H3_EXPORT(latLngToCell)(const GeoPoint *g, int res,
  * @{
  */
 /** @brief find the lat/lon center point g of the cell h3 */
-DECLSPEC H3Error H3_EXPORT(cellToPoint)(H3Index h3, GeoPoint *g);
+DECLSPEC H3Error H3_EXPORT(cellToLatLng)(H3Index h3, GeoPoint *g);
 /** @} */
 
 /** @defgroup cellToBoundary cellToBoundary

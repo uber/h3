@@ -114,7 +114,7 @@ SUITE(h3Api) {
 
     TEST(h3ToGeoInvalid) {
         GeoPoint coord;
-        H3_EXPORT(cellToPoint)(0x7fffffffffffffff, &coord);
+        H3_EXPORT(cellToLatLng)(0x7fffffffffffffff, &coord);
         // Test is this should not crash (should return an error in the future)
     }
 
