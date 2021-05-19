@@ -38,7 +38,7 @@ int main(int argc, char* argv[]) {
 
     GeoPoint g = {.lat = args.lat, .lon = args.lon};
     H3Index h;
-    H3Error e = H3_EXPORT(pointToCell)(&g, args.res, &h);
+    H3Error e = H3_EXPORT(latLngToCell)(&g, args.res, &h);
 
     h3Println(e);
     h3Println(h);

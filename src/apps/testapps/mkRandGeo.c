@@ -69,7 +69,7 @@ int main(int argc, char* argv[]) {
         randomGeo(&g);
 
         H3Index h;
-        if (!H3_EXPORT(pointToCell)(&g, res, &h)) {
+        if (!H3_EXPORT(latLngToCell)(&g, res, &h)) {
             h3Print(h);
             printf(" ");
             geoPrintlnNoFmt(&g);

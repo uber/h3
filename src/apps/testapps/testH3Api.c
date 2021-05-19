@@ -32,9 +32,9 @@ SUITE(h3Api) {
         H3Index h;
         GeoPoint anywhere = {0, 0};
 
-        t_assert(H3_EXPORT(pointToCell)(&anywhere, -1, &h) == E_RES_DOMAIN,
+        t_assert(H3_EXPORT(latLngToCell)(&anywhere, -1, &h) == E_RES_DOMAIN,
                  "resolution below 0 is invalid");
-        t_assert(H3_EXPORT(pointToCell)(&anywhere, 16, &h) == E_RES_DOMAIN,
+        t_assert(H3_EXPORT(latLngToCell)(&anywhere, 16, &h) == E_RES_DOMAIN,
                  "resolution above 15 is invalid");
     }
 
@@ -44,12 +44,12 @@ SUITE(h3Api) {
         GeoPoint invalidLon = {0, NAN};
         GeoPoint invalidLatLon = {INFINITY, -INFINITY};
 
-        t_assert(H3_EXPORT(pointToCell)(&invalidLat, 1, &h) == E_LATLON_DOMAIN,
+        t_assert(H3_EXPORT(latLngToCell)(&invalidLat, 1, &h) == E_LATLON_DOMAIN,
                  "invalid latitude is rejected");
-        t_assert(H3_EXPORT(pointToCell)(&invalidLon, 1, &h) == E_LATLON_DOMAIN,
+        t_assert(H3_EXPORT(latLngToCell)(&invalidLon, 1, &h) == E_LATLON_DOMAIN,
                  "invalid longitude is rejected");
         t_assert(
-            H3_EXPORT(pointToCell)(&invalidLatLon, 1, &h) == E_LATLON_DOMAIN,
+            H3_EXPORT(latLngToCell)(&invalidLatLon, 1, &h) == E_LATLON_DOMAIN,
             "coordinates with infinity are rejected");
     }
 

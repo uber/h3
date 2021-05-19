@@ -68,7 +68,7 @@ int main(int argc, char* argv[]) {
         randomGeo(&g);
 
         H3Index h;
-        if (!H3_EXPORT(pointToCell)(&g, res, &h)) {
+        if (!H3_EXPORT(latLngToCell)(&g, res, &h)) {
             CellBoundary b;
             H3_EXPORT(cellToBoundary)(h, &b);
 

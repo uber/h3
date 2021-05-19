@@ -174,7 +174,7 @@ SUITE(polygonToCells) {
     TEST(polygonToCellsExact) {
         GeoPoint somewhere = {1, 2};
         H3Index origin;
-        t_assertSuccess(H3_EXPORT(pointToCell)(&somewhere, 9, &origin));
+        t_assertSuccess(H3_EXPORT(latLngToCell)(&somewhere, 9, &origin));
         CellBoundary boundary;
         H3_EXPORT(cellToBoundary)(origin, &boundary);
 

@@ -77,7 +77,7 @@ SUITE(gridDisk) {
     TEST(gridDisk0) {
         GeoPoint sf = {0.659966917655, 2 * 3.14159 - 2.1364398519396};
         H3Index sfHex0;
-        t_assertSuccess(H3_EXPORT(pointToCell)(&sf, 0, &sfHex0));
+        t_assertSuccess(H3_EXPORT(latLngToCell)(&sf, 0, &sfHex0));
 
         H3Index k1[] = {0, 0, 0, 0, 0, 0, 0};
         int k1Dist[] = {0, 0, 0, 0, 0, 0, 0};

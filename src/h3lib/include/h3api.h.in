@@ -207,7 +207,7 @@ typedef struct {
  */
 /** @brief find the H3 index of the resolution res cell containing the lat/lng
  */
-DECLSPEC H3Error H3_EXPORT(pointToCell)(const GeoPoint *g, int res,
+DECLSPEC H3Error H3_EXPORT(latLngToCell)(const GeoPoint *g, int res,
                                         H3Index *out);
 /** @} */
 

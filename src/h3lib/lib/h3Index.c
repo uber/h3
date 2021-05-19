@@ -723,7 +723,7 @@ H3Index _faceIjkToH3(const FaceIJK* fijk, int res) {
  * @param out The encoded H3Index.
  * @returns E_SUCCESS (0) on success, another value otherwise
  */
-H3Error H3_EXPORT(pointToCell)(const GeoPoint* g, int res, H3Index* out) {
+H3Error H3_EXPORT(latLngToCell)(const GeoPoint* g, int res, H3Index* out) {
     if (res < 0 || res > MAX_H3_RES) {
         return E_RES_DOMAIN;
     }

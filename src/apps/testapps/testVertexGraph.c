@@ -56,7 +56,7 @@ SUITE(vertexGraph) {
         int numBuckets = 1000;
 
         for (int res = 0; res < 11; res++) {
-            t_assertSuccess(H3_EXPORT(pointToCell)(&center, res, &centerIndex));
+            t_assertSuccess(H3_EXPORT(latLngToCell)(&center, res, &centerIndex));
             H3_EXPORT(cellToBoundary)(centerIndex, &outline);
             for (int i = 0; i < outline.numVerts; i++) {
                 hash1 = _hashVertex(&outline.verts[i], res, numBuckets);

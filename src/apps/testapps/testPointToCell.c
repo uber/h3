@@ -36,7 +36,7 @@ static void assertExpected(H3Index h1, const GeoPoint* g1) {
     // convert lat/lon to H3 and verify
     int res = H3_EXPORT(getResolution)(h1);
     H3Index h2;
-    t_assertSuccess(H3_EXPORT(pointToCell)(g1, res, &h2));
+    t_assertSuccess(H3_EXPORT(latLngToCell)(g1, res, &h2));
     t_assert(h1 == h2, "got expected pointToCell output");
 }
 
