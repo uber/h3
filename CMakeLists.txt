@@ -172,7 +172,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testCellToParent.c
     src/apps/testapps/testH3Index.c
     src/apps/testapps/mkRandGeoBoundary.c
-    src/apps/testapps/testPointToCell.c
+    src/apps/testapps/testLatLngToCell.c
     src/apps/testapps/testH3NeighborRotations.c
     src/apps/testapps/testCellToChildrenSize.c
     src/apps/testapps/testGridDisksUnsafe.c
@@ -213,7 +213,7 @@ set(OTHER_SOURCE_FILES
     src/apps/miscapps/generatePentagonDirectionFaces.c
     src/apps/miscapps/generateFaceCenterPoint.c
     src/apps/miscapps/h3ToHier.c
-    src/apps/fuzzers/fuzzerPointToCell.c
+    src/apps/fuzzers/fuzzerLatLngToCell.c
     src/apps/fuzzers/fuzzerCellToLatLng.c
     src/apps/fuzzers/fuzzerGridDisk.c
     src/apps/benchmarks/benchmarkPolygonToCells.c
@@ -550,7 +550,7 @@ if(H3_IS_ROOT_PROJECT AND BUILD_TESTING)
     # Add each individual test
     file(GLOB all_centers tests/inputfiles/bc*centers.txt)
     foreach(file ${all_centers})
-        add_h3_test_with_file(testPointToCell src/apps/testapps/testPointToCell.c ${file})
+        add_h3_test_with_file(testLatLngToCell src/apps/testapps/testLatLngToCell.c ${file})
     endforeach()
 
     file(GLOB all_ic_files tests/inputfiles/res*ic.txt)
@@ -560,7 +560,7 @@ if(H3_IS_ROOT_PROJECT AND BUILD_TESTING)
 
     file(GLOB all_centers tests/inputfiles/rand*centers.txt)
     foreach(file ${all_centers})
-        add_h3_test_with_file(testPointToCell src/apps/testapps/testPointToCell.c ${file})
+        add_h3_test_with_file(testLatLngToCell src/apps/testapps/testLatLngToCell.c ${file})
     endforeach()
 
     file(GLOB all_cells tests/inputfiles/*cells.txt)
@@ -632,7 +632,7 @@ if(BUILD_FUZZERS)
         add_dependencies(fuzzers ${name})
     endmacro()
 
-    add_h3_fuzzer(fuzzerPointToCell src/apps/fuzzers/fuzzerPointToCell.c)
+    add_h3_fuzzer(fuzzerLatLngToCell src/apps/fuzzers/fuzzerLatLngToCell.c)
     add_h3_fuzzer(fuzzerCellToLatLng src/apps/fuzzers/fuzzerCellToLatLng.c)
     add_h3_fuzzer(fuzzerGridDisk src/apps/fuzzers/fuzzerGridDisk.c)
 endif()
