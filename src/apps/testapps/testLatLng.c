@@ -87,7 +87,7 @@ SUITE(latLng) {
         b.lat = 15;
         b.lon = 10.00001;
         t_assert(!geoAlmostEqualThreshold(&a, &b, 0.000001),
-                 "lon over threshold");
+                 "lng over threshold");
     }
 
     TEST(constrainLatLng) {
