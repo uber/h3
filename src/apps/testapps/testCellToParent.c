@@ -31,8 +31,8 @@ SUITE(cellToParent) {
             for (int step = 0; step < res; step++) {
                 t_assertSuccess(H3_EXPORT(latLngToCell)(&sf, res, &child));
                 parent = H3_EXPORT(cellToParent)(child, res - step);
-                t_assertSuccess(
-                    H3_EXPORT(latLngToCell)(&sf, res - step, &comparisonParent));
+                t_assertSuccess(H3_EXPORT(latLngToCell)(&sf, res - step,
+                                                        &comparisonParent));
 
                 t_assert(parent == comparisonParent, "Got expected parent");
             }
