@@ -84,11 +84,11 @@ void setGeoDegs(LatLng *p, double latDegs, double lngDegs) {
  *
  * @param p The spherical coordinates.
  * @param latRads The desired latitude in decimal radians.
- * @param lonRads The desired longitude in decimal radians.
+ * @param lngRads The desired longitude in decimal radians.
  */
-void _setGeoRads(LatLng *p, double latRads, double lonRads) {
+void _setGeoRads(LatLng *p, double latRads, double lngRads) {
     p->lat = latRads;
-    p->lon = lonRads;
+    p->lon = lngRads;
 }
 
 /**
