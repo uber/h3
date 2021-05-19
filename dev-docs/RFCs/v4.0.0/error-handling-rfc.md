@@ -260,7 +260,7 @@ The H3 library may always add additional error messages. Error messages not reco
 #### Example error code results
 
 ```
-geoToH3(lat=Infinity, lon=0, res=0, &out) => E_LATLNG_DOMAIN
+geoToH3(lat=Infinity, lng=0, res=0, &out) => E_LATLNG_DOMAIN
 geoToH3(lat=0, lat=0, res=-1, &out) => E_RES_DOMAIN
 h3ToGeo(index=0, &out) => E_CELL_INVALID
 h3IsResClassIII(index=RES_0_INDEX, &out) => E_SUCCESS

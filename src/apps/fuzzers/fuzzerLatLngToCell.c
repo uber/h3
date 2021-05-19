@@ -28,7 +28,7 @@ int main(int argc, char* argv[]) {
     FILE* fp = fopen(filename, "rb");
     struct args {
         double lat;
-        double lon;
+        double lng;
         int res;
     } args;
     if (fread(&args, sizeof(args), 1, fp) != 1) {
@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
     }
     fclose(fp);
 
-    LatLng g = {.lat = args.lat, .lon = args.lon};
+    LatLng g = {.lat = args.lat, .lon = args.lng};
     H3Index h;
     H3Error e = H3_EXPORT(latLngToCell)(&g, args.res, &h);
 
