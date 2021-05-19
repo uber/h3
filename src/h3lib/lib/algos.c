@@ -1007,8 +1007,8 @@ int _polygonToCellsInternal(const GeoPolygon* geoPolygon, int res,
 void h3SetToVertexGraph(const H3Index* h3Set, const int numHexes,
                         VertexGraph* graph) {
     CellBoundary vertices;
-    GeoPoint *fromVtx;
-    GeoPoint *toVtx;
+    GeoPoint* fromVtx;
+    GeoPoint* toVtx;
     VertexNode* edge;
     if (numHexes < 1) {
         // We still need to init the graph, or calls to destroyVertexGraph will

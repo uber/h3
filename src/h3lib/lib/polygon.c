@@ -64,7 +64,7 @@ void bboxesFromGeoPolygon(const GeoPolygon* polygon, BBox* bboxes) {
  * @return           Whether the point is contained
  */
 bool pointInsidePolygon(const GeoPolygon* geoPolygon, const BBox* bboxes,
-                        const GeoPoint *coord) {
+                        const GeoPoint* coord) {
     // Start with contains state of primary geoloop
     bool contains =
         pointInsideGeoLoop(&(geoPolygon->geoloop), &bboxes[0], coord);

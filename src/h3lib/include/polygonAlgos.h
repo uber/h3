@@ -65,7 +65,7 @@
  * @return      Whether the point is contained
  */
 bool GENERIC_LOOP_ALGO(pointInside)(const TYPE* loop, const BBox* bbox,
-                                    const GeoPoint *coord) {
+                                    const GeoPoint* coord) {
     // fail fast if we're outside the bounding box
     if (!bboxContains(bbox, coord)) {
         return false;

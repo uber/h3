@@ -56,14 +56,14 @@ void coordIjkPrint(const CoordIJK* c) {
 /**
  * Assumes `str` is big enough to hold the result.
  */
-void geoToStringRads(const GeoPoint *p, char* str) {
+void geoToStringRads(const GeoPoint* p, char* str) {
     sprintf(str, "(%.4lf, %.4lf)", p->lat, p->lon);
 }
 
 /**
  * Assumes `str` is big enough to hold the result.
  */
-void geoToStringDegs(const GeoPoint *p, char* str) {
+void geoToStringDegs(const GeoPoint* p, char* str) {
     sprintf(str, "(%.9lf, %.9lf)", H3_EXPORT(radsToDegs)(p->lat),
             H3_EXPORT(radsToDegs)(p->lon));
 }
@@ -71,29 +71,29 @@ void geoToStringDegs(const GeoPoint *p, char* str) {
 /**
  * Assumes `str` is big enough to hold the result.
  */
-void geoToStringDegsNoFmt(const GeoPoint *p, char* str) {
+void geoToStringDegsNoFmt(const GeoPoint* p, char* str) {
     sprintf(str, "%.9lf %.9lf", H3_EXPORT(radsToDegs)(p->lat),
             H3_EXPORT(radsToDegs)(p->lon));
 }
 
-void geoPrint(const GeoPoint *p) {
+void geoPrint(const GeoPoint* p) {
     char buff[BUFF_SIZE];
     geoToStringDegs(p, buff);
     printf("%s", buff);
 }
 
-void geoPrintln(const GeoPoint *p) {
+void geoPrintln(const GeoPoint* p) {
     geoPrint(p);
     printf("\n");
 }
 
-void geoPrintNoFmt(const GeoPoint *p) {
+void geoPrintNoFmt(const GeoPoint* p) {
     char buff[BUFF_SIZE];
     geoToStringDegsNoFmt(p, buff);
     printf("%s", buff);
 }
 
-void geoPrintlnNoFmt(const GeoPoint *p) {
+void geoPrintlnNoFmt(const GeoPoint* p) {
     geoPrintNoFmt(p);
     printf("\n");
 }
@@ -171,7 +171,7 @@ void iterateBaseCellIndexesAtRes(int res, void (*callback)(H3Index),
  *
  * @param g Lat/lon will be placed here.
  */
-void randomGeo(GeoPoint *g) {
+void randomGeo(GeoPoint* g) {
     static int init = 0;
     if (!init) {
         srand((unsigned int)time(0));

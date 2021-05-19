@@ -33,7 +33,7 @@
 #include "test.h"
 #include "utility.h"
 
-void assertExpected(H3Index h1, const GeoPoint *g1) {
+void assertExpected(H3Index h1, const GeoPoint* g1) {
     const double epsilon = 0.000001 * M_PI_180;
     // convert H3 to lat/lon and verify
     GeoPoint g2;

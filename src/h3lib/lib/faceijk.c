@@ -368,7 +368,7 @@ static const int unitScaleByCIIres[] = {
  * @param res The desired H3 resolution for the encoding.
  * @param h The FaceIJK address of the containing cell at resolution res.
  */
-void _geoToFaceIjk(const GeoPoint *g, int res, FaceIJK* h) {
+void _geoToFaceIjk(const GeoPoint* g, int res, FaceIJK* h) {
     // first convert to hex2d
     Vec2d v;
     _geoToHex2d(g, res, &h->face, &v);
@@ -386,7 +386,7 @@ void _geoToFaceIjk(const GeoPoint *g, int res, FaceIJK* h) {
  * @param face The icosahedral face containing the spherical coordinates.
  * @param v The 2D hex coordinates of the cell containing the point.
  */
-void _geoToHex2d(const GeoPoint *g, int res, int* face, Vec2d* v) {
+void _geoToHex2d(const GeoPoint* g, int res, int* face, Vec2d* v) {
     Vec3d v3d;
     _geoToVec3d(g, &v3d);
 
@@ -445,7 +445,7 @@ void _geoToHex2d(const GeoPoint *g, int res, int* face, Vec2d* v) {
  * @param g The spherical coordinates of the cell center point.
  */
 void _hex2dToGeo(const Vec2d* v, int face, int res, int substrate,
-                 GeoPoint *g) {
+                 GeoPoint* g) {
     // calculate (r, theta) in hex2d
     double r = _v2dMag(v);
 
@@ -490,7 +490,7 @@ void _hex2dToGeo(const Vec2d* v, int face, int res, int substrate,
  * @param res The H3 resolution of the cell.
  * @param g The spherical coordinates of the cell center point.
  */
-void _faceIjkToGeo(const FaceIJK* h, int res, GeoPoint *g) {
+void _faceIjkToGeo(const FaceIJK* h, int res, GeoPoint* g) {
     Vec2d v;
     _ijkToHex2d(&h->coord, &v);
     _hex2dToGeo(&v, h->face, res, 0, g);

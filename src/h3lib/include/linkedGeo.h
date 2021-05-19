@@ -56,7 +56,7 @@ int normalizeMultiPolygon(LinkedGeoPolygon* root);
 LinkedGeoPolygon* addNewLinkedPolygon(LinkedGeoPolygon* polygon);
 LinkedGeoLoop* addNewLinkedLoop(LinkedGeoPolygon* polygon);
 LinkedGeoLoop* addLinkedLoop(LinkedGeoPolygon* polygon, LinkedGeoLoop* loop);
-LinkedLatLng* addLinkedCoord(LinkedGeoLoop* loop, const GeoPoint *vertex);
+LinkedLatLng* addLinkedCoord(LinkedGeoLoop* loop, const GeoPoint* vertex);
 int countLinkedPolygons(LinkedGeoPolygon* polygon);
 int countLinkedLoops(LinkedGeoPolygon* polygon);
 int countLinkedCoords(LinkedGeoLoop* loop);
@@ -81,7 +81,7 @@ void bboxFromLinkedGeoLoop(const LinkedGeoLoop* loop, BBox* bbox);
  * @return              Whether the point is contained
  */
 bool pointInsideLinkedGeoLoop(const LinkedGeoLoop* loop, const BBox* bbox,
-                              const GeoPoint *coord);
+                              const GeoPoint* coord);
 
 /**
  * Whether the winding order of a given LinkedGeoLoop is clockwise

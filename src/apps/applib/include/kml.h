@@ -31,9 +31,9 @@ void kmlPtsFooter(void);
 void kmlBoundaryFooter(void);
 
 // output KML individual points or polygons
-void outputLatLonKML(const GeoPoint *g);
-void outputPointKML(const GeoPoint *g, const char* name);
-void outputTriKML(const GeoPoint *v1, const GeoPoint *v2, const GeoPoint *v3,
+void outputLatLonKML(const GeoPoint* g);
+void outputPointKML(const GeoPoint* g, const char* name);
+void outputTriKML(const GeoPoint* v1, const GeoPoint* v2, const GeoPoint* v3,
                   const char* name);
 void outputPolyKML(const GeoPoint geoVerts[], int numVerts, const char* name);
 void outputBoundaryKML(const CellBoundary* b, const char* name);
