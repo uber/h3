@@ -36,7 +36,7 @@ void assertBBox(const GeoLoop* geoloop, const BBox* expected,
 }
 
 SUITE(BBox) {
-    TEST(posLatPosLon) {
+    TEST(posLatPosLng) {
         LatLng verts[] = {{0.8, 0.3}, {0.7, 0.6}, {1.1, 0.7}, {1.0, 0.2}};
         const GeoLoop geoloop = {.numVerts = 4, .verts = verts};
         const BBox expected = {1.1, 0.7, 0.7, 0.2};
@@ -45,7 +45,7 @@ SUITE(BBox) {
         assertBBox(&geoloop, &expected, &inside, &outside);
     }
 
-    TEST(negLatPosLon) {
+    TEST(negLatPosLng) {
         LatLng verts[] = {{-0.3, 0.6}, {-0.4, 0.9}, {-0.2, 0.8}, {-0.1, 0.6}};
         const GeoLoop geoloop = {.numVerts = 4, .verts = verts};
         const BBox expected = {-0.1, -0.4, 0.9, 0.6};
@@ -54,7 +54,7 @@ SUITE(BBox) {
         assertBBox(&geoloop, &expected, &inside, &outside);
     }
 
-    TEST(posLatNegLon) {
+    TEST(posLatNegLng) {
         LatLng verts[] = {{0.7, -1.4}, {0.8, -0.9}, {1.0, -0.8}, {1.1, -1.3}};
         const GeoLoop geoloop = {.numVerts = 4, .verts = verts};
         const BBox expected = {1.1, 0.7, -0.8, -1.4};
@@ -63,7 +63,7 @@ SUITE(BBox) {
         assertBBox(&geoloop, &expected, &inside, &outside);
     }
 
-    TEST(negLatNegLon) {
+    TEST(negLatNegLng) {
         LatLng verts[] = {
             {-0.4, -1.4}, {-0.3, -1.1}, {-0.1, -1.2}, {-0.2, -1.4}};
         const GeoLoop geoloop = {.numVerts = 4, .verts = verts};
