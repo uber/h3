@@ -108,7 +108,7 @@ void kmlBoundaryFooter(void) {
 }
 
 void outputLatLngKML(const LatLng* g) {
-    printf("            %8lf,%8lf,5.0\n", H3_EXPORT(radsToDegs)(g->lon),
+    printf("            %8lf,%8lf,5.0\n", H3_EXPORT(radsToDegs)(g->lng),
            H3_EXPORT(radsToDegs)(g->lat));
 }
 

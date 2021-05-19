@@ -73,7 +73,7 @@ void destroyVertexGraph(VertexGraph* graph) {
 uint32_t _hashVertex(const LatLng* vertex, int res, int numBuckets) {
     // Simple hash: Take the sum of the lat and lng with a precision level
     // determined by the resolution, converted to int, modulo bucket count.
-    return (uint32_t)fmod(fabs((vertex->lat + vertex->lon) * pow(10, 15 - res)),
+    return (uint32_t)fmod(fabs((vertex->lat + vertex->lng) * pow(10, 15 - res)),
                           numBuckets);
 }
 

@@ -727,7 +727,7 @@ H3Error H3_EXPORT(latLngToCell)(const LatLng* g, int res, H3Index* out) {
     if (res < 0 || res > MAX_H3_RES) {
         return E_RES_DOMAIN;
     }
-    if (!isfinite(g->lat) || !isfinite(g->lon)) {
+    if (!isfinite(g->lat) || !isfinite(g->lng)) {
         return E_LATLNG_DOMAIN;
     }
 

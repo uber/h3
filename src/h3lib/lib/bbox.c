@@ -43,7 +43,7 @@ void bboxCenter(const BBox* bbox, LatLng* center) {
     center->lat = (bbox->north + bbox->south) / 2.0;
     // If the bbox crosses the antimeridian, shift east 360 degrees
     double east = bboxIsTransmeridian(bbox) ? bbox->east + M_2PI : bbox->east;
-    center->lon = constrainLng((east + bbox->west) / 2.0);
+    center->lng = constrainLng((east + bbox->west) / 2.0);
 }
 
 /**
@@ -56,10 +56,10 @@ bool bboxContains(const BBox* bbox, const LatLng* point) {
     return point->lat >= bbox->south && point->lat <= bbox->north &&
            (bboxIsTransmeridian(bbox) ?
                                       // transmeridian case
-                (point->lon >= bbox->west || point->lon <= bbox->east)
+                (point->lng >= bbox->west || point->lng <= bbox->east)
                                       :
                                       // standard case
-                (point->lon >= bbox->west && point->lon <= bbox->east));
+                (point->lng >= bbox->west && point->lng <= bbox->east));
 }
 
 /**

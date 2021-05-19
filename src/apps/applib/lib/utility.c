@@ -57,7 +57,7 @@ void coordIjkPrint(const CoordIJK* c) {
  * Assumes `str` is big enough to hold the result.
  */
 void geoToStringRads(const LatLng* p, char* str) {
-    sprintf(str, "(%.4lf, %.4lf)", p->lat, p->lon);
+    sprintf(str, "(%.4lf, %.4lf)", p->lat, p->lng);
 }
 
 /**
@@ -65,7 +65,7 @@ void geoToStringRads(const LatLng* p, char* str) {
  */
 void geoToStringDegs(const LatLng* p, char* str) {
     sprintf(str, "(%.9lf, %.9lf)", H3_EXPORT(radsToDegs)(p->lat),
-            H3_EXPORT(radsToDegs)(p->lon));
+            H3_EXPORT(radsToDegs)(p->lng));
 }
 
 /**
@@ -73,7 +73,7 @@ void geoToStringDegs(const LatLng* p, char* str) {
  */
 void geoToStringDegsNoFmt(const LatLng* p, char* str) {
     sprintf(str, "%.9lf %.9lf", H3_EXPORT(radsToDegs)(p->lat),
-            H3_EXPORT(radsToDegs)(p->lon));
+            H3_EXPORT(radsToDegs)(p->lng));
 }
 
 void geoPrint(const LatLng* p) {
@@ -180,7 +180,7 @@ void randomGeo(LatLng* g) {
 
     g->lat = H3_EXPORT(degsToRads)(
         (((float)rand() / (float)(RAND_MAX)) * 180.0) - 90.0);
-    g->lon = H3_EXPORT(degsToRads)((float)rand() / (float)(RAND_MAX)) * 360.0;
+    g->lng = H3_EXPORT(degsToRads)((float)rand() / (float)(RAND_MAX)) * 360.0;
 }
 
 /**

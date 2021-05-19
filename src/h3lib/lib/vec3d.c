@@ -51,6 +51,6 @@ void _geoToVec3d(const LatLng* geo, Vec3d* v) {
     double r = cos(geo->lat);
 
     v->z = sin(geo->lat);
-    v->x = cos(geo->lon) * r;
-    v->y = sin(geo->lon) * r;
+    v->x = cos(geo->lng) * r;
+    v->y = sin(geo->lng) * r;
 }

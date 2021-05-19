@@ -74,7 +74,7 @@ bool GENERIC_LOOP_ALGO(pointInside)(const TYPE* loop, const BBox* bbox,
     bool contains = false;
 
     double lat = coord->lat;
-    double lng = NORMALIZE_LNG(coord->lon, isTransmeridian);
+    double lng = NORMALIZE_LNG(coord->lng, isTransmeridian);
 
     LatLng a;
     LatLng b;

@@ -51,7 +51,7 @@ double _posAngleRads(double rads) {
 bool geoAlmostEqualThreshold(const LatLng *p1, const LatLng *p2,
                              double threshold) {
     return fabs(p1->lat - p2->lat) < threshold &&
-           fabs(p1->lon - p2->lon) < threshold;
+           fabs(p1->lng - p2->lng) < threshold;
 }
 
 /**
@@ -88,7 +88,7 @@ void setGeoDegs(LatLng *p, double latDegs, double lngDegs) {
  */
 void _setGeoRads(LatLng *p, double latRads, double lngRads) {
     p->lat = latRads;
-    p->lon = lngRads;
+    p->lng = lngRads;
 }
 
 /**
@@ -151,7 +151,7 @@ double constrainLng(double lng) {
  */
 double H3_EXPORT(pointDistRads)(const LatLng *a, const LatLng *b) {
     double sinLat = sin((b->lat - a->lat) / 2.0);
-    double sinLng = sin((b->lon - a->lon) / 2.0);
+    double sinLng = sin((b->lng - a->lng) / 2.0);
 
     double A = sinLat * sinLat + cos(a->lat) * cos(b->lat) * sinLng * sinLng;
 
@@ -180,9 +180,9 @@ double H3_EXPORT(pointDistM)(const LatLng *a, const LatLng *b) {
  * @return The azimuth in radians from p1 to p2.
  */
 double _geoAzimuthRads(const LatLng *p1, const LatLng *p2) {
-    return atan2(cos(p2->lat) * sin(p2->lon - p1->lon),
+    return atan2(cos(p2->lat) * sin(p2->lng - p1->lng),
                  cos(p1->lat) * sin(p2->lat) -
-                     sin(p1->lat) * cos(p2->lat) * cos(p2->lon - p1->lon));
+                     sin(p1->lat) * cos(p2->lat) * cos(p2->lng - p1->lng));
 }
 
 /**
@@ -216,13 +216,13 @@ void _geoAzDistanceRads(const LatLng *p1, double az, double distance,
         if (fabs(p2->lat - M_PI_2) < EPSILON)  // north pole
         {
             p2->lat = M_PI_2;
-            p2->lon = 0.0;
+            p2->lng = 0.0;
         } else if (fabs(p2->lat + M_PI_2) < EPSILON)  // south pole
         {
             p2->lat = -M_PI_2;
-            p2->lon = 0.0;
+            p2->lng = 0.0;
         } else
-            p2->lon = constrainLng(p1->lon);
+            p2->lng = constrainLng(p1->lng);
     } else  // not due north or south
     {
         sinlat = sin(p1->lat) * cos(distance) +
@@ -233,11 +233,11 @@ void _geoAzDistanceRads(const LatLng *p1, double az, double distance,
         if (fabs(p2->lat - M_PI_2) < EPSILON)  // north pole
         {
             p2->lat = M_PI_2;
-            p2->lon = 0.0;
+            p2->lng = 0.0;
         } else if (fabs(p2->lat + M_PI_2) < EPSILON)  // south pole
         {
             p2->lat = -M_PI_2;
-            p2->lon = 0.0;
+            p2->lng = 0.0;
         } else {
             sinlng = sin(az) * sin(distance) / cos(p2->lat);
             coslng = (cos(distance) - sin(p1->lat) * sin(p2->lat)) /
@@ -246,7 +246,7 @@ void _geoAzDistanceRads(const LatLng *p1, double az, double distance,
             if (sinlng < -1.0) sinlng = -1.0;
             if (coslng > 1.0) coslng = 1.0;
             if (coslng < -1.0) coslng = -1.0;
-            p2->lon = constrainLng(p1->lon + atan2(sinlng, coslng));
+            p2->lng = constrainLng(p1->lng + atan2(sinlng, coslng));
         }
     }
 }
