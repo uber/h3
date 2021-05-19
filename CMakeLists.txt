@@ -158,7 +158,7 @@ set(OTHER_SOURCE_FILES
     src/apps/filters/h3ToLocalIj.c
     src/apps/filters/localIjToH3.c
     src/apps/filters/h3ToComponents.c
-    src/apps/filters/pointToCell.c
+    src/apps/filters/latLngToCell.c
     src/apps/filters/cellToBoundary.c
     src/apps/filters/gridDisk.c
     src/apps/filters/gridDiskUnsafe.c
@@ -378,7 +378,7 @@ if(BUILD_FILTERS)
         list(APPEND INSTALL_TARGETS ${name})
     endmacro()
 
-    add_h3_filter(pointToCell src/apps/filters/pointToCell.c ${APP_SOURCE_FILES})
+    add_h3_filter(latLngToCell src/apps/filters/latLngToCell.c ${APP_SOURCE_FILES})
     add_h3_filter(h3ToComponents src/apps/filters/h3ToComponents.c ${APP_SOURCE_FILES})
     add_h3_filter(cellToPoint src/apps/filters/cellToPoint.c ${APP_SOURCE_FILES})
     add_h3_filter(h3ToLocalIj src/apps/filters/h3ToLocalIj.c ${APP_SOURCE_FILES})

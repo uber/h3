@@ -10,7 +10,7 @@ import TabItem from '@theme/TabItem';
 
 These function are used for finding the H3 cell index containing coordinates, and for finding the center and boundary of H3 indexes.
 
-## pointToCell
+## latLngToCell
 
 <Tabs
   groupId="language"
@@ -25,7 +25,7 @@ These function are used for finding the H3 cell index containing coordinates, an
 <TabItem value="c">
 
 ```c
-H3Error pointToCell(const GeoPoint *g, int res, H3Index *out);
+H3Error latLngToCell(const GeoPoint *g, int res, H3Index *out);
 ```
 
 </TabItem>
@@ -39,15 +39,15 @@ h3.point_to_cell(lat, lng, resolution)
 <TabItem value="java">
 
 ```java
-long pointToCell(double lat, double lng, int res);
-String pointToCellAddress(double lat, double lng, int res);
+long latLngToCell(double lat, double lng, int res);
+String latLngToCellAddress(double lat, double lng, int res);
 ```
 
 </TabItem>
 <TabItem value="javascript">
 
 ```js
-h3.pointToCell(lat, lng, res)
+h3.latLngToCell(lat, lng, res)
 ```
 
 ```js live
@@ -55,7 +55,7 @@ function example() {
   const lat = 45;
   const lng = 40;
   const res = 2;
-  return h3.pointToCell(lat, lng, res);
+  return h3.latLngToCell(lat, lng, res);
 }
 ```
 

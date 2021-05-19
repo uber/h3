@@ -201,8 +201,8 @@ typedef struct {
     int j;  ///< j component
 } CoordIJ;
 
-/** @defgroup pointToCell pointToCell
- * Functions for pointToCell
+/** @defgroup latLngToCell latLngToCell
+ * Functions for latLngToCell
  * @{
  */
 /** @brief find the H3 index of the resolution res cell containing the lat/lng

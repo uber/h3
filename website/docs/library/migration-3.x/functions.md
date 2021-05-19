@@ -27,7 +27,7 @@ The following function and structure names changed from 3.x to 4.0.0:
 | `h3GetResolution`             | `getResolution`       |
 | *DNE*                         | `getMode`             |
 | `h3GetFaces`                  | `getIcosahedronFaces` |
-| `geoToH3`                     | `pointToCell`         |
+| `geoToH3`                     | `latLngToCell`         |
 | `h3ToGeo`                     | `cellToPoint`         |
 | `compact`                     | `compactCells`        |
 | `uncompact`                   | `uncompactCells`      |

@@ -100,7 +100,7 @@ The proposed prefix is `h3_`.
     + object properties (`getResolution`, `getBaseCellNumber`)
 - use `to` to denote transforms
     + different representations of the same object
-    + when doing a lossy transformation to a new object (`cellToParent`, `pointToCell`, `polygonToCells`)
+    + when doing a lossy transformation to a new object (`cellToParent`, `latLngToCell`, `polygonToCells`)
 - do not use `get` or `to` for *computations*
     + e.g., `compactCells`, `cellAreaKm2`
 
@@ -139,7 +139,7 @@ There is some ambiguity between property, transform, and computation, so use you
 | `h3GetResolution`             | `getResolution`       |
 | *DNE*                         | `getMode`             |
 | `h3GetFaces`                  | `getIcosahedronFaces` |
-| `geoToH3`                     | `pointToCell`         |
+| `geoToH3`                     | `latLngToCell`         |
 | `h3ToGeo`                     | `cellToPoint`         |
 | `compact`                     | `compactCells`        |
 | `uncompact`                   | `uncompactCells`      |
