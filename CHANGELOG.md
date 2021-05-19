@@ -18,6 +18,12 @@ The public API of this library consists of the functions declared in file
 ### Breaking changes
 - rename `maxH3ToChildrenSize` to `cellToChildrenSize`
 - `cellToChildrenSize` to output `int64_t` instead of `int`
+- rename `GeoPoint` to `LatLng`
+- rename `LinkedGeoPoint` to `LinkedLatLng`
+- rename `pointToCell` to `latLngToCell`
+- rename `cellToPoint` to `cellToLatLng`
+- rename `vertexToPoint` to `vertexToLatLng`
+- generally use `lng` instead of `lon`
 
 ## [3.7.1] - 2020-10-05
 ### Fixed
