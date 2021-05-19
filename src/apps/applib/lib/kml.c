@@ -107,12 +107,12 @@ void kmlBoundaryFooter(void) {
     printf("</kml>\n");
 }
 
-void outputLatLonKML(const GeoPoint* g) {
+void outputLatLonKML(const GeoPoint *g) {
     printf("            %8lf,%8lf,5.0\n", H3_EXPORT(radsToDegs)(g->lon),
            H3_EXPORT(radsToDegs)(g->lat));
 }
 
-void outputPointKML(const GeoPoint* g, const char* name) {
+void outputPointKML(const GeoPoint *g, const char* name) {
     printf("<Placemark>\n");
     printf("   <name>%s</name>\n", name);
     printf("   <styleUrl>#m_ylw-pushpin</styleUrl>\n");
@@ -125,7 +125,7 @@ void outputPointKML(const GeoPoint* g, const char* name) {
     printf("</Placemark>\n");
 }
 
-void outputTriKML(const GeoPoint* v1, const GeoPoint* v2, const GeoPoint* v3,
+void outputTriKML(const GeoPoint *v1, const GeoPoint *v2, const GeoPoint *v3,
                   const char* name) {
     printf("<Placemark>\n");
     printf("<name>%s</name>\n", name);
@@ -143,7 +143,7 @@ void outputTriKML(const GeoPoint* v1, const GeoPoint* v2, const GeoPoint* v3,
 }
 
 void outputBoundaryKML(const CellBoundary* b, const char* name) {
-    const GeoPoint* v = (const GeoPoint*)&(b->verts);
+    const GeoPoint *v = (const GeoPoint*)&(b->verts);
     outputPolyKML(v, b->numVerts, name);
 }
 

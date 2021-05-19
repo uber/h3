@@ -31,7 +31,7 @@ static GeoPoint sfVerts[] = {
     {0.6583348114025, -2.1354884206045}, {0.6581220034068, -2.1382437718946},
     {0.6594479998527, -2.1384597563896}, {0.6599990002976, -2.1376771158464}};
 
-static void createLinkedLoop(LinkedGeoLoop* loop, GeoPoint* verts,
+static void createLinkedLoop(LinkedGeoLoop* loop, GeoPoint *verts,
                              int numVerts) {
     *loop = (LinkedGeoLoop){0};
     for (int i = 0; i < numVerts; i++) {

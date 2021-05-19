@@ -24,7 +24,7 @@
 #include "test.h"
 
 void assertBBox(const GeoLoop* geoloop, const BBox* expected,
-                const GeoPoint* inside, const GeoPoint* outside) {
+                const GeoPoint *inside, const GeoPoint *outside) {
     BBox result;
 
     bboxFromGeoLoop(geoloop, &result);

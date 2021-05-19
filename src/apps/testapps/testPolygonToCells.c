@@ -178,7 +178,7 @@ SUITE(polygonToCells) {
         CellBoundary boundary;
         H3_EXPORT(cellToBoundary)(origin, &boundary);
 
-        GeoPoint* verts = calloc(boundary.numVerts + 1, sizeof(GeoPoint));
+        GeoPoint *verts = calloc(boundary.numVerts + 1, sizeof(GeoPoint));
         for (int i = 0; i < boundary.numVerts; i++) {
             verts[i] = boundary.verts[i];
         }

@@ -36,18 +36,18 @@ void h3Println(H3Index h);  // prints as integer
 
 void coordIjkPrint(const CoordIJK* c);
 
-void geoToStringRads(const GeoPoint* p, char* str);
-void geoToStringDegs(const GeoPoint* p, char* str);
-void geoToStringDegsNoFmt(const GeoPoint* p, char* str);
+void geoToStringRads(const GeoPoint *p, char* str);
+void geoToStringDegs(const GeoPoint *p, char* str);
+void geoToStringDegsNoFmt(const GeoPoint *p, char* str);
 
-void geoPrint(const GeoPoint* p);
-void geoPrintln(const GeoPoint* p);
-void geoPrintNoFmt(const GeoPoint* p);
-void geoPrintlnNoFmt(const GeoPoint* p);
+void geoPrint(const GeoPoint *p);
+void geoPrintln(const GeoPoint *p);
+void geoPrintNoFmt(const GeoPoint *p);
+void geoPrintlnNoFmt(const GeoPoint *p);
 void cellBoundaryPrint(const CellBoundary* b);
 void cellBoundaryPrintln(const CellBoundary* b);
 
-void randomGeo(GeoPoint* p);
+void randomGeo(GeoPoint *p);
 
 void iterateAllIndexesAtRes(int res, void (*callback)(H3Index));
 void iterateAllIndexesAtResPartial(int res, void (*callback)(H3Index),

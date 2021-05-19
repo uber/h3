@@ -43,7 +43,7 @@
 // Defined directly in polygon.c:
 void bboxesFromGeoPolygon(const GeoPolygon* polygon, BBox* bboxes);
 bool pointInsidePolygon(const GeoPolygon* geoPolygon, const BBox* bboxes,
-                        const GeoPoint* coord);
+                        const GeoPoint *coord);
 
 // The following functions are created via macro in polygonAlgos.h,
 // so their signatures are documented here:
@@ -64,7 +64,7 @@ void bboxFromGeoLoop(const GeoLoop* loop, BBox* bbox);
  * @return              Whether the point is contained
  */
 bool pointInsideGeoLoop(const GeoLoop* loop, const BBox* bbox,
-                        const GeoPoint* coord);
+                        const GeoPoint *coord);
 
 /**
  * Whether the winding order of a given GeoLoop is clockwise

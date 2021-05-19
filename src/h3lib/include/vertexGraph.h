@@ -49,22 +49,22 @@ void initVertexGraph(VertexGraph* graph, int numBuckets, int res);
 
 void destroyVertexGraph(VertexGraph* graph);
 
-VertexNode* addVertexNode(VertexGraph* graph, const GeoPoint* fromVtx,
-                          const GeoPoint* toVtx);
+VertexNode* addVertexNode(VertexGraph* graph, const GeoPoint *fromVtx,
+                          const GeoPoint *toVtx);
 
 int removeVertexNode(VertexGraph* graph, VertexNode* node);
 
-VertexNode* findNodeForEdge(const VertexGraph* graph, const GeoPoint* fromVtx,
-                            const GeoPoint* toVtx);
+VertexNode* findNodeForEdge(const VertexGraph* graph, const GeoPoint *fromVtx,
+                            const GeoPoint *toVtx);
 
 VertexNode* findNodeForVertex(const VertexGraph* graph,
-                              const GeoPoint* fromVtx);
+                              const GeoPoint *fromVtx);
 
 VertexNode* firstVertexNode(const VertexGraph* graph);
 
 // Internal functions
-uint32_t _hashVertex(const GeoPoint* vertex, int res, int numBuckets);
-void _initVertexNode(VertexNode* node, const GeoPoint* fromVtx,
-                     const GeoPoint* toVtx);
+uint32_t _hashVertex(const GeoPoint *vertex, int res, int numBuckets);
+void _initVertexNode(VertexNode* node, const GeoPoint *fromVtx,
+                     const GeoPoint *toVtx);
 
 #endif

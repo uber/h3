@@ -73,7 +73,7 @@ LinkedGeoLoop* addLinkedLoop(LinkedGeoPolygon* polygon, LinkedGeoLoop* loop) {
  * @param  vertex Coordinate to add
  * @return        Pointer to the coordinate
  */
-LinkedLatLng* addLinkedCoord(LinkedGeoLoop* loop, const GeoPoint* vertex) {
+LinkedLatLng* addLinkedCoord(LinkedGeoLoop* loop, const GeoPoint *vertex) {
     LinkedLatLng* coord = H3_MEMORY(malloc)(sizeof(*coord));
     assert(coord != NULL);
     *coord = (LinkedLatLng){.vertex = *vertex, .next = NULL};
