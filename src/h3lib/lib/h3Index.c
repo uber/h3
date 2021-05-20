@@ -287,10 +287,10 @@ H3Index H3_EXPORT(cellToCenterChild)(H3Index h, int childRes) {
  * @return an error code on bad input data
  */
 // todo: update internal implementation for int64_t
-int H3_EXPORT(compactCells)(const H3Index* h3Set, H3Index* compactedSet,
-                            const int64_t numHexes) {
+H3Error H3_EXPORT(compactCells)(const H3Index* h3Set, H3Index* compactedSet,
+                                const int64_t numHexes) {
     if (numHexes == 0) {
-        return COMPACT_SUCCESS;
+        return E_SUCCESS;
     }
     int res = H3_GET_RESOLUTION(h3Set[0]);
     if (res == 0) {
@@ -298,17 +298,17 @@ int H3_EXPORT(compactCells)(const H3Index* h3Set, H3Index* compactedSet,
         for (int i = 0; i < numHexes; i++) {
             compactedSet[i] = h3Set[i];
         }
-        return COMPACT_SUCCESS;
+        return E_SUCCESS;
     }
     H3Index* remainingHexes = H3_MEMORY(malloc)(numHexes * sizeof(H3Index));
     if (!remainingHexes) {
-        return COMPACT_ALLOC_FAILED;
+        return E_MEMORY;
     }
     memcpy(remainingHexes, h3Set, numHexes * sizeof(H3Index));
     H3Index* hashSetArray = H3_MEMORY(calloc)(numHexes, sizeof(H3Index));
     if (!hashSetArray) {
         H3_MEMORY(free)(remainingHexes);
-        return COMPACT_ALLOC_FAILED;
+        return E_MEMORY;
     }
     H3Index* compactedSetOffset = compactedSet;
     int numRemainingHexes = numHexes;
@@ -333,7 +333,7 @@ int H3_EXPORT(compactCells)(const H3Index* h3Set, H3Index* compactedSet,
                         // numRemainingHexes.
                         H3_MEMORY(free)(remainingHexes);
                         H3_MEMORY(free)(hashSetArray);
-                        return COMPACT_LOOP_EXCEEDED;
+                        return E_FAILED;
                         // LCOV_EXCL_STOP
                     }
                     H3Index tempIndex =
@@ -352,7 +352,7 @@ int H3_EXPORT(compactCells)(const H3Index* h3Set, H3Index* compactedSet,
                             // Only possible on duplicate input
                             H3_MEMORY(free)(remainingHexes);
                             H3_MEMORY(free)(hashSetArray);
-                            return COMPACT_DUPLICATE;
+                            return E_DUPLICATE_INPUT;
                         }
                         H3_SET_RESERVED_BITS(parent, count);
                         hashSetArray[loc] = H3_NULL;
@@ -379,7 +379,7 @@ int H3_EXPORT(compactCells)(const H3Index* h3Set, H3Index* compactedSet,
         if (!compactableHexes) {
             H3_MEMORY(free)(remainingHexes);
             H3_MEMORY(free)(hashSetArray);
-            return COMPACT_ALLOC_FAILED;
+            return E_MEMORY;
         }
         for (int i = 0; i < numRemainingHexes; i++) {
             if (hashSetArray[i] == 0) continue;
@@ -422,7 +422,7 @@ int H3_EXPORT(compactCells)(const H3Index* h3Set, H3Index* compactedSet,
                         H3_MEMORY(free)(compactableHexes);
                         H3_MEMORY(free)(remainingHexes);
                         H3_MEMORY(free)(hashSetArray);
-                        return COMPACT_LOOP_EXCEEDED;
+                        return E_FAILED;
                         // LCOV_EXCL_STOP
                     }
                     H3Index tempIndex =
@@ -454,7 +454,7 @@ int H3_EXPORT(compactCells)(const H3Index* h3Set, H3Index* compactedSet,
     }
     H3_MEMORY(free)(remainingHexes);
     H3_MEMORY(free)(hashSetArray);
-    return COMPACT_SUCCESS;
+    return E_SUCCESS;
 }
 
 /**
@@ -471,21 +471,21 @@ int H3_EXPORT(compactCells)(const H3Index* h3Set, H3Index* compactedSet,
  * @return              An error code if output array is too small or any cell
  *                      is smaller than the output resolution.
  */
-int H3_EXPORT(uncompactCells)(const H3Index* compactedSet,
-                              const int64_t numCompacted, H3Index* outSet,
-                              const int64_t numOut, const int res) {
+H3Error H3_EXPORT(uncompactCells)(const H3Index* compactedSet,
+                                  const int64_t numCompacted, H3Index* outSet,
+                                  const int64_t numOut, const int res) {
     int64_t i = 0;
 
     for (int64_t j = 0; j < numCompacted; j++) {
-        if (!_hasChildAtRes(compactedSet[j], res)) return -2;
+        if (!_hasChildAtRes(compactedSet[j], res)) return E_FAILED;
 
         for (IterCellsChildren iter = iterInitParent(compactedSet[j], res);
              iter.h; i++, iterStepChild(&iter)) {
-            if (i >= numOut) return -1;  // went too far; abort!
+            if (i >= numOut) return E_BOUNDS;  // went too far; abort!
             outSet[i] = iter.h;
         }
     }
-    return 0;
+    return E_SUCCESS;
 }
 
 /**
@@ -495,20 +495,21 @@ int H3_EXPORT(uncompactCells)(const H3Index* compactedSet,
  * @param   compactedSet  Set of hexagons
  * @param   numHexes      The number of hexes in the input set
  * @param   res           The hexagon resolution to decompress to
- * @return                The number of hexagons to allocate memory for, or a
- *                        negative number if an error occurs.
+ * @param   out           The number of hexagons to allocate memory for
+ * @returns E_SUCCESS on success, or another value on error
  */
-int64_t H3_EXPORT(uncompactCellsSize)(const H3Index* compactedSet,
-                                      const int64_t numCompacted,
-                                      const int res) {
+H3Error H3_EXPORT(uncompactCellsSize)(const H3Index* compactedSet,
+                                      const int64_t numCompacted, const int res,
+                                      int64_t* out) {
     int64_t numOut = 0;
     for (int64_t i = 0; i < numCompacted; i++) {
         if (compactedSet[i] == H3_NULL) continue;
-        if (!_hasChildAtRes(compactedSet[i], res)) return -1;  // Abort
+        if (!_hasChildAtRes(compactedSet[i], res)) return E_FAILED;  // Abort
 
         numOut += H3_EXPORT(cellToChildrenSize)(compactedSet[i], res);
     }
-    return numOut;
+    *out = numOut;
+    return E_SUCCESS;
 }
 
 /**
