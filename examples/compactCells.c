@@ -51,7 +51,8 @@ int main(int argc, char* argv[]) {
 
     int uncompactRes = 10;
     int64_t uncompactedSize;
-    H3Error err2 = uncompactCellsSize(compacted, inputSize, uncompactRes, &uncompactedSize);
+    H3Error err2 = uncompactCellsSize(compacted, inputSize, uncompactRes,
+                                      &uncompactedSize);
     assert(err2 == E_SUCCESS);
     H3Index* uncompacted = calloc(uncompactedSize, sizeof(H3Index));
     int err3 = uncompactCells(compacted, compactedCount, uncompacted,
