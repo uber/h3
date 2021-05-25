@@ -5,11 +5,11 @@ sidebar_label: Admin Boundaries
 slug: /comparisons/admin
 ---
 
-Administrative boundaries, such as ZIP Codes and Census Blocks in the United States, can be used for aggregating and analyzing data. These boundaries have a number of drawbacks for aggregating data, primarily related to not having a comparable spatial unit of analysis, being unable to spatially relate data, being unrelated to the data being analyzed.
+Administrative boundaries, such as ZIP Codes and Census Blocks in the United States, can be used for aggregating and analyzing data. These boundaries have a number of drawbacks for aggregating data. These are primarily related to not having a comparable spatial unit of analysis, being unable to spatially relate data, and being unrelated to the data being analyzed.
 
 ## ZIP Codes
 
-The article [Stop Using Zip Codes for Geospatial Analysis](https://towardsdatascience.com/stop-using-zip-codes-for-geospatial-analysis-ceacb6e80c38) summarizes a number of problems with using ZIP Codes. In short, ZIP Codes do not represent areas themselves rather mail delivery routes, vary greatly in spatial size when rendered as ZIP Code Tabulation Areas, and [change for unrelated reasons](https://fas.org/sgp/crs/misc/RL33488.pdf).
+The article [Stop Using Zip Codes for Geospatial Analysis](https://towardsdatascience.com/stop-using-zip-codes-for-geospatial-analysis-ceacb6e80c38) summarizes a number of problems with using ZIP Codes. In short, ZIP Codes do not represent areas themselves but rather mail delivery routes. They also vary greatly in spatial size when rendered as ZIP Code Tabulation Areas and [change for unrelated reasons](https://fas.org/sgp/crs/misc/RL33488.pdf).
 
 ## Use case specific partitioning
 

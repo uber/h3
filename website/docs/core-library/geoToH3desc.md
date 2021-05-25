@@ -13,6 +13,6 @@ The conversion is performed as a series of coordinate system conversions describ
 2. The *Hex2d* coordinate is converted into resolution *r* normalized *ijk* coordinates using function `_hex2dToCoordIJK`.
 3. The face and face-centered *ijk* coordinates are then converted into an `H3Index` representation using the following steps:
 
-   * the H3 index digits are calculated from resolution *r* up to 0, adjusting the *ijk* coordinates at each successively coarser resolution.
-   * when resolution 0 is reached, if the remaining *ijk* coordinates are (0,0,0) then the base cell centered on the face is chosen for the index
-   * if the remaining resolution 0 *ijk* coordinates are not (0,0,0), then a lookup operation is performed to find the appropriate base cell and the required rotation (if any) to orient the cell in that base cell's coordinate system. The index is then translated and rotated into the coordinate system centered on the new base cell.
+   1. The H3 index digits are calculated from resolution *r* up to 0, adjusting the *ijk* coordinates at each successively coarser resolution.
+   2. When resolution 0 is reached, if the remaining *ijk* coordinates are (0,0,0) then the base cell centered on the face is chosen for the index.
+   3. If the remaining resolution 0 *ijk* coordinates are not (0,0,0), then a lookup operation is performed to find the appropriate base cell and the required rotation (if any) to orient the cell in that base cell's coordinate system. The index is then translated and rotated into the coordinate system centered on the new base cell.
