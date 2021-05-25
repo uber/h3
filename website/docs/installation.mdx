@@ -11,7 +11,7 @@ for all instances. -->
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-We recommend using prebuilt bindings if they are available for your programming language. Bindings for Go, Java, JavaScript, Python, and others are available.
+We recommend using prebuilt [bindings](/docs/community/bindings) if they are available for your programming language. Bindings for Go, Java, JavaScript, Python, and others are available.
 
 ## Package managers
 
@@ -43,7 +43,7 @@ conda install h3-py
 </TabItem>
 <TabItem value="java">
 
-Using Maven, add to your `pom.xml`:
+Using Maven, add the following to your `pom.xml` file:
 
 ```xml
 <dependency>
@@ -53,7 +53,7 @@ Using Maven, add to your `pom.xml`:
 </dependency>
 ```
 
-Using Gradle, add to your build script:
+Using Gradle, add the following to your build script:
 
 ```gradle
 compile("com.uber:h3:3.7.0")
@@ -99,7 +99,7 @@ cd h3
 git checkout v$(<VERSION)
 ```
 
-You will need to install build dependencies for your operating system.
+Note: You must install build dependencies for your operating system.
 
 <Tabs
   groupId="os"
@@ -144,13 +144,20 @@ sudo apt install clang-format cmake-curses-gui lcov doxygen
 </TabItem>
 <TabItem value="windows">
 
-You will need to install CMake and Visual Studio, including the Visual C++ compiler.
+You need to install CMake and Visual Studio, including the Visual C++ compiler.
 
 :::info
 
 You can build H3 as a shared library (DLL) on Windows, but the test suite does not support this configuration because the tests use functions internal to the DLL, and they are not exposed for testing.
 
 :::
+
+```bash
+# Installing the bare build requirements
+sudo apt install cmake make gcc libtool
+# Installing useful tools for development
+sudo apt install clang-format cmake-curses-gui lcov doxygen
+```
 
 </TabItem>
 <TabItem value="freebsd">
@@ -163,7 +170,7 @@ sudo pkg install bash cmake gmake doxygen lcov
 </TabItem>
 </Tabs>
 
-Next, you can build the library:
+Next, build the library:
 
 ```bash
 mkdir build
@@ -178,7 +185,7 @@ Optionally, to run H3's test suite, run:
 ctest
 ```
 
-By default, the filter applications are built when you build H3. You can confirm they are working by running:
+By default, the filter applications are built when you build H3. Confirm they are working by running:
 
 ```
 ./bin/latLngToCell --lat 14 --lng -42 --resolution 2

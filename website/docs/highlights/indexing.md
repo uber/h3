@@ -11,7 +11,7 @@ Hexagons do not cleanly subdivide into seven finer hexagons. However, by alterna
 
 This approximation allows for efficiently relating datasets indexed at different resolutions of the H3 grid. The functions for changing precision (`h3ToParent`, `h3ToChildren`) are implemented with only a few bitwise operations, making them very fast. The structure of the H3 index means that geographically close locations will tend to have numerically close indexes.
 
-The hierachical structure can also be used in analysis, when the precision or uncertainty for a location needs to be encoded in the spatial index. As examples, a point from a GPS receiver could be indexed at a coarser resolution when the precision of the signal is lower, or some cells could be aggregated to a parent cell when there are too few data points in each of the finer cells.
+The hierachical structure can also be used in analysis, when the precision or uncertainty for a location needs to be encoded in the spatial index. For example, a point from a GPS receiver could be indexed at a coarser resolution when the precision of the signal is lower, or some cells could be aggregated to a parent cell when there are too few data points in each of the finer cells.
 
 <div align="center">
   <img src="/images/parent-child.png" style={{width:'400px'}} /><br />
