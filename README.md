@@ -160,7 +160,7 @@ To get the H3 index for some location:
 You can then take this index and get some information about it, for example:
 
 ```
-./bin/h3ToGeoBoundary --index 8a2a1072b59ffff
+./bin/cellToBoundary --index 8a2a1072b59ffff
 ```
 
 This will produce the vertices of the hexagon at this location:

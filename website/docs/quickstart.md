@@ -36,6 +36,6 @@ Note that the result of this example is not our original coordinates. That's bec
 ```js live
 function example() {
   const h = '8a283082a677fff';
-  return h3.h3ToGeoBoundary(h);
+  return h3.cellToBoundary(h);
 }
 ```

@@ -70,7 +70,7 @@ module.exports = {
         items: [
           "core-library/latLngToCelldesc",
           "core-library/h3ToGeoDesc",
-          "core-library/h3ToGeoBoundaryDesc",
+          "core-library/cellToBoundaryDesc",
         ],
       },
     ],
