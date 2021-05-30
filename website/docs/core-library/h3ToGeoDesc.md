@@ -1,8 +1,8 @@
 ---
-id: h3ToGeoDesc
+id: cellToLatLngDesc
 title: Determine the latitude/longitude coordinates of the center point of an H3Index cell
 sidebar_label: Determine the latitude/longitude coordinates of the center point of an H3Index cell
-slug: /core-library/h3ToGeoDesc
+slug: /core-library/cellToLatLngDesc
 ---
 
 This operation is performed by function `h3ToGeo`. See the comments in the function source code for more detail.

@@ -69,7 +69,7 @@ module.exports = {
         label: "Algorithms",
         items: [
           "core-library/latLngToCelldesc",
-          "core-library/h3ToGeoDesc",
+          "core-library/cellToLatLngDesc",
           "core-library/cellToBoundaryDesc",
         ],
       },
