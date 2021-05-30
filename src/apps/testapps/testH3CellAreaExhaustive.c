@@ -65,14 +65,14 @@ static void haversine_assert(H3Index edge) {
     t_assert(ab > 0, pos);
     t_assert(ab == ba, comm);
 
-    ab = H3_EXPORT(pointDistM)(&a, &b);
-    ba = H3_EXPORT(pointDistM)(&b, &a);
+    ab = H3_EXPORT(distanceM)(&a, &b);
+    ba = H3_EXPORT(distanceM)(&b, &a);
     t_assert(ab > 0, pos);
     t_assert(ab == ba, comm);
 
     t_assert(H3_EXPORT(distanceKm)(&a, &b) > H3_EXPORT(distanceRads)(&a, &b),
              "measurement in kilometers should be greater than in radians");
-    t_assert(H3_EXPORT(pointDistM)(&a, &b) > H3_EXPORT(distanceKm)(&a, &b),
+    t_assert(H3_EXPORT(distanceM)(&a, &b) > H3_EXPORT(distanceKm)(&a, &b),
              "measurement in meters should be greater than in kilometers");
 }
 

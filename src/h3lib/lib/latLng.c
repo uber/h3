@@ -168,7 +168,7 @@ double H3_EXPORT(distanceKm)(const LatLng *a, const LatLng *b) {
 /**
  * The great circle distance in meters between two spherical coordinates.
  */
-double H3_EXPORT(pointDistM)(const LatLng *a, const LatLng *b) {
+double H3_EXPORT(distanceM)(const LatLng *a, const LatLng *b) {
     return H3_EXPORT(distanceKm)(a, b) * 1000;
 }
 

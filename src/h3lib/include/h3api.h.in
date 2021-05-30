@@ -328,7 +328,7 @@ double H3_EXPORT(distanceRads)(const LatLng *a, const LatLng *b);
 double H3_EXPORT(distanceKm)(const LatLng *a, const LatLng *b);
 
 /** @brief "great circle distance" between pairs of LatLng points in meters*/
-double H3_EXPORT(pointDistM)(const LatLng *a, const LatLng *b);
+double H3_EXPORT(distanceM)(const LatLng *a, const LatLng *b);
 /** @} */
 
 /** @defgroup getHexagonAreaAvg getHexagonAreaAvg
