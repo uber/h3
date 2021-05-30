@@ -39,8 +39,8 @@ h3.polyfill(polygons, res, geo_json_conformant=False)
 <TabItem value="java">
 
 ```java
-List<Long> polyfill(List<GeoCoord> points, List<List<GeoCoord>> holes, int res);
-List<String> polyfillAddress(List<GeoCoord> points, List<List<GeoCoord>> holes, int res);
+List<Long> polyfill(List<LatLng> points, List<List<LatLng>> holes, int res);
+List<String> polyfillAddress(List<LatLng> points, List<List<LatLng>> holes, int res);
 ```
 
 </TabItem>
@@ -154,8 +154,8 @@ h3.h3_set_to_multi_polygon(hexes, geo_json=False)
 <TabItem value="java">
 
 ```java
-List<List<List<GeoCoord>>> h3SetToMultiPolygon(Collection<Long> h3, boolean geoJson);
-List<List<List<GeoCoord>>> h3AddressSetToMultiPolygon(Collection<String> h3Addresses, boolean geoJson);
+List<List<List<LatLng>>> h3SetToMultiPolygon(Collection<Long> h3, boolean geoJson);
+List<List<List<LatLng>>> h3AddressSetToMultiPolygon(Collection<String> h3Addresses, boolean geoJson);
 ```
 
 </TabItem>

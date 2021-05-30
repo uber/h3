@@ -47,4 +47,4 @@ Proposed simple algorithm for determining ownership:
 
 * `void getCellVertexes(H3Index cell, H3Vertex *vertices)`
 * `H3Vertex getCellVertex(H3Index cell, int vertIndex)`
-* `GeoCoord vertexToLatLng(H3Vertex vertex)`
+* `LatLng vertexToLatLng(H3Vertex vertex)`

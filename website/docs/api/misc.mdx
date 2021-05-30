@@ -857,7 +857,7 @@ Number of pentagon H3 indexes per resolution. This is always 12, but provided as
 <TabItem value="c">
 
 ```c
-double pointDistKm(const GeoCoord *a, const GeoCoord *b);
+double pointDistKm(const LatLng *a, const LatLng *b);
 ```
 
 </TabItem>
@@ -871,7 +871,7 @@ h3.point_dist(point1, point2, unit='km')
 <TabItem value="java">
 
 ```java
-double pointDist(GeoCoord point1, GeoCoord point2, LengthUnit unit);
+double pointDist(LatLng point1, LatLng point2, LengthUnit unit);
 ```
 
 </TabItem>
@@ -893,7 +893,7 @@ function example() {
 </Tabs>
 
 Gives the "great circle" or "haversine" distance between pairs of
-GeoCoord points (lat/lng pairs) in kilometers.
+LatLng points (lat/lng pairs) in kilometers.
 
 ## pointDistM
 
@@ -910,7 +910,7 @@ GeoCoord points (lat/lng pairs) in kilometers.
 <TabItem value="c">
 
 ```c
-double pointDistM(const GeoCoord *a, const GeoCoord *b);
+double pointDistM(const LatLng *a, const LatLng *b);
 ```
 
 </TabItem>
@@ -924,7 +924,7 @@ h3.point_dist(point1, point2, unit='m')
 <TabItem value="java">
 
 ```java
-double pointDist(GeoCoord point1, GeoCoord point2, LengthUnit unit);
+double pointDist(LatLng point1, LatLng point2, LengthUnit unit);
 ```
 
 </TabItem>
@@ -946,7 +946,7 @@ function example() {
 </Tabs>
 
 Gives the "great circle" or "haversine" distance between pairs of
-GeoCoord points (lat/lng pairs) in meters.
+LatLng points (lat/lng pairs) in meters.
 
 ## pointDistRads
 
@@ -963,7 +963,7 @@ GeoCoord points (lat/lng pairs) in meters.
 <TabItem value="c">
 
 ```c
-double pointDistRads(const GeoCoord *a, const GeoCoord *b);
+double pointDistRads(const LatLng *a, const LatLng *b);
 ```
 
 </TabItem>
@@ -977,7 +977,7 @@ h3.point_dist(point1, point2, unit='rads')
 <TabItem value="java">
 
 ```java
-double pointDist(GeoCoord point1, GeoCoord point2, LengthUnit unit);
+double pointDist(LatLng point1, LatLng point2, LengthUnit unit);
 ```
 
 </TabItem>
@@ -999,4 +999,4 @@ function example() {
 </Tabs>
 
 Gives the "great circle" or "haversine" distance between pairs of
-GeoCoord points (lat/lng pairs) in radians.
+LatLng points (lat/lng pairs) in radians.
