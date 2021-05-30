@@ -112,7 +112,7 @@ SUITE(h3Api) {
                  "cellToBoundary fails on invalid index");
     }
 
-    TEST(h3ToGeoInvalid) {
+    TEST(cellToLatLngInvalid) {
         LatLng coord;
         H3_EXPORT(cellToLatLng)(0x7fffffffffffffff, &coord);
         // Test is this should not crash (should return an error in the future)

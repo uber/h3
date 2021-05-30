@@ -180,7 +180,7 @@ This will produce the vertices of the hexagon at this location:
 You can get the center coordinate of the hexagon like so:
 
 ```
-./bin/h3ToGeo --index 8a2a1072b59ffff
+./bin/cellToLatLng --index 8a2a1072b59ffff
 ```
 
 This will produce some coordinate:

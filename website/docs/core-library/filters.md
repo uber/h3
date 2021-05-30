@@ -30,7 +30,7 @@ Unix Command Line Examples
 
 * output the cell center point for `H3Index` 845ad1bffffffff
 
-     `h3ToGeo --index 845ad1bffffffff`
+     `cellToLatLng --index 845ad1bffffffff`
 
 * output the cell boundary for `H3Index` 845ad1bffffffff
 
@@ -48,4 +48,4 @@ Unix Command Line Examples
 
      `hexRange -k 2 --origin 845ad1bffffffff`
 
-Note that the filters `h3ToGeo` and `cellToBoundary` take optional arguments that allow them to generate `kml` output. See the header comments in the corresponding source code files for details.
+Note that the filters `cellToLatLng` and `cellToBoundary` take optional arguments that allow them to generate `kml` output. See the header comments in the corresponding source code files for details.

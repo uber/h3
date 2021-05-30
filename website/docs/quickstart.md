@@ -27,7 +27,7 @@ The result is the identifier of the hexagonal cell in H3 containing this point. 
 ```js live
 function example() {
   const h = '8a283082a677fff';
-  return h3.h3ToGeo(h);
+  return h3.cellToLatLng(h);
 }
 ```
 
