@@ -321,7 +321,7 @@ DECLSPEC double H3_EXPORT(radsToDegs)(double radians);
  * @{
  */
 /** @brief "great circle distance" between pairs of LatLng points in radians*/
-double H3_EXPORT(pointDistRads)(const LatLng *a, const LatLng *b);
+double H3_EXPORT(distanceRads)(const LatLng *a, const LatLng *b);
 
 /** @brief "great circle distance" between pairs of LatLng points in
  * kilometers*/
