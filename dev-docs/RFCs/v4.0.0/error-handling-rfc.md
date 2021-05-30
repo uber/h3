@@ -272,7 +272,7 @@ hexRange(origin=AN_INDEX, k=-1, &out) => E_DOMAIN
 hexRange(origin=PENTAGON_INDEX, k=1, &out) => E_PENTAGON
 # Failed to allocate internal buffer:
 kRing(origin=AN_INDEX, k=1, &out) => E_MEMORY
-pointDistRads({Infinity, Infinity}, {0, 0}, &out) => E_LATLNG_DOMAIN
+distanceRads({Infinity, Infinity}, {0, 0}, &out) => E_LATLNG_DOMAIN
 hexAreaKm2(res=-1) => E_RES_DOMAIN
 # Cannot parse:
 stringToH3(str="zzzz", &out) => E_FAILED

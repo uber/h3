@@ -18,6 +18,9 @@ The public API of this library consists of the functions declared in file
 ### Breaking changes
 - rename functions according to the terminology RFC (#403, #466)
 - `cellToChildrenSize` to output `int64_t` instead of `int`
+- `pointDistRads` to `distanceRads`
+- `pointDistKm` to `distanceKm`
+- `pointDistM` to `distanceM`
 
 ### Other changes
 - generally use `lng` instead of `lon`
