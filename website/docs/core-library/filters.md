@@ -12,14 +12,14 @@ Filters are experimental and are not part of the semantic version of the H3 libr
 All latitude/longitude coordinates are in decimal degrees. See the [H3 Index Representations](/docs/core-library/h3indexing) page for information on the integer `H3Index`.
 
 
-| filter           | input     | outputs
-| ---------------- | --------- | -------
-| `geoToH3`        | lat/lng   | `H3Index`
-| `h3ToGeo`        | `H3Index` | cell center point in lat/lng
-| `h3ToGeoBoundary`| `H3Index` | cell boundary in lat/lng
-| `h3ToComponents` | `H3Index` | components
-| `kRing`          | `H3Index` | surrounding `H3Index`
-| `hexRange`       | `H3Index` | surrounding `H3Index`, in order
+|      filter      |   input   |             outputs             |
+|------------------|-----------|---------------------------------|
+| `latLngToCell`   | lat/lng   | `H3Index`                       |
+| `cellToLatLng`   | `H3Index` | cell center point in lat/lng    |
+| `cellToBoundary` | `H3Index` | cell boundary in lat/lng        |
+| `h3ToComponents` | `H3Index` | components                      |
+| `gridDisk`       | `H3Index` | surrounding `H3Index`           |
+| `gridDiskUnsafe` | `H3Index` | surrounding `H3Index`, in order |
 
 Unix Command Line Examples
 ---
