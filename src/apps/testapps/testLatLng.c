@@ -200,7 +200,7 @@ SUITE(latLng) {
         const LatLng zero = {.lat = 0, .lng = 0};
 
         t_assert(fabs(M_PI_2 - H3_EXPORT(distanceRads)(&negativeLongitude,
-                                                        &zero)) < EPSILON_RAD,
+                                                       &zero)) < EPSILON_RAD,
                  "Distance with wrapped longitude");
         t_assert(fabs(M_PI_2 - H3_EXPORT(distanceRads)(
                                    &zero, &negativeLongitude)) < EPSILON_RAD,

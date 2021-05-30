@@ -316,8 +316,8 @@ DECLSPEC double H3_EXPORT(degsToRads)(double degrees);
 DECLSPEC double H3_EXPORT(radsToDegs)(double radians);
 /** @} */
 
-/** @defgroup pointDist pointDist
- * Functions for pointDist
+/** @defgroup distance distance
+ * Functions for distance
  * @{
  */
 /** @brief "great circle distance" between pairs of LatLng points in radians*/
