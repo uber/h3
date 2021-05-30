@@ -30,8 +30,9 @@ The following are technical terms used by H3.
 - **grid**:
     - the graph with nodes corresponding to H3 cells, and edges given by pairs of adjacent cells
     - for example, `gridDistance` is the minimal number of edges in a graph path connecting two cells
-- **point**:
+- **lat/lng point**:
     - a representation of a geographic point in terms of a latitude/longitude pair
+    - when abbreviating, we use "lng" (instead of "lon") for longitude
 - **topological**:
     - H3 cells are **topological** pentagons or hexagons, in the sense that they have 5 or 6 neighbors, respectively, in the H3 **grid**
     - the majority of **hexagons** are also **geometric** hexagons (similarly with **pentagons**), in that they have 6 edges and vertices when represented as polygons of lat/lng points
