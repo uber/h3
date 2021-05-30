@@ -18,6 +18,13 @@ yarn start
 
 You will then be able to open http://localhost:3000 in your browser.
 
+To clean any generated files, you can run:
+
+```
+yarn clear
+rm -rf node_modules
+```
+
 ## Updating the H3 Website
 
 Deployment is done via [Docusaurus](https://docusaurus.io/docs/deployment#deploy). You will need
