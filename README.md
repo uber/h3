@@ -152,7 +152,7 @@ To build the documentation website, see the [website/](./website/) directory.
 To get the H3 index for some location:
 
 ```
-./bin/geoToH3 --resolution 10 --latitude 40.689167 --longitude -74.044444
+./bin/latLngToCell --resolution 10 --latitude 40.689167 --longitude -74.044444
 ```
 
 10 is the H3 resolution, between 0 (coarsest) and 15 (finest). The coordinates entered are the latitude and longitude, in degrees, you want the index for (these coordinates are the Statue of Liberty).  You should get an H3 index as output, like `8a2a1072b59ffff`.

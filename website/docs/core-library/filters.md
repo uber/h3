@@ -26,7 +26,7 @@ Unix Command Line Examples
 
 * find the index for coordinates at resolution 5
 
-     `geoToH3 --resolution 5 --latitude 40.689167 --longitude -74.044444`
+     `latLngToCell --resolution 5 --latitude 40.689167 --longitude -74.044444`
 
 * output the cell center point for `H3Index` 845ad1bffffffff
 

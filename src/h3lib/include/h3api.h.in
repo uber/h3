@@ -69,7 +69,7 @@ extern "C" {
 typedef uint64_t H3Index;
 
 /**
- * Invalid index used to indicate an error from geoToH3 and related functions
+ * Invalid index used to indicate an error from latLngToCell and related functions
  * or missing data in arrays of H3 indices. Analogous to NaN in floating point.
  */
 #define H3_NULL 0

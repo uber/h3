@@ -18,7 +18,7 @@ function example() {
   const lat = 37.7955;
   const lng = -122.3937;
   const res = 10;
-  return h3.geoToH3(lat, lng, res);
+  return h3.latLngToCell(lat, lng, res);
 }
 ```
 

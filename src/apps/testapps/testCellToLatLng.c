@@ -46,7 +46,7 @@ void assertExpected(H3Index h1, const LatLng* g1) {
     int res = H3_EXPORT(getResolution)(h1);
     H3Index h2;
     t_assertSuccess(H3_EXPORT(latLngToCell)(&g2, res, &h2));
-    t_assert(h1 == h2, "got expected geoToH3 output");
+    t_assert(h1 == h2, "got expected latLngToCell output");
 }
 
 int main(int argc, char* argv[]) {
