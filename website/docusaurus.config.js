@@ -97,7 +97,7 @@ module.exports = {
           },
           versions: {
             current: {
-              label: '4.x'
+              label: '4.x (alpha)'
             },
           },
         },
