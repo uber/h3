@@ -122,21 +122,21 @@ int numHexagons;
 H3Index* hexagons;
 
 BENCHMARK(polygonToCellsSF, 500, {
-    numHexagons = H3_EXPORT(maxPolygonToCellsSize)(&sfGeoPolygon, 9);
+    H3_EXPORT(maxPolygonToCellsSize)(&sfGeoPolygon, 9, &numHexagons);
     hexagons = calloc(numHexagons, sizeof(H3Index));
     H3_EXPORT(polygonToCells)(&sfGeoPolygon, 9, hexagons);
     free(hexagons);
 });
 
 BENCHMARK(polygonToCellsAlameda, 500, {
-    numHexagons = H3_EXPORT(maxPolygonToCellsSize)(&alamedaGeoPolygon, 9);
+    H3_EXPORT(maxPolygonToCellsSize)(&alamedaGeoPolygon, 9, &numHexagons);
     hexagons = calloc(numHexagons, sizeof(H3Index));
     H3_EXPORT(polygonToCells)(&alamedaGeoPolygon, 9, hexagons);
     free(hexagons);
 });
 
 BENCHMARK(polygonToCellsSouthernExpansion, 10, {
-    numHexagons = H3_EXPORT(maxPolygonToCellsSize)(&southernGeoPolygon, 9);
+    H3_EXPORT(maxPolygonToCellsSize)(&southernGeoPolygon, 9, &numHexagons);
     hexagons = calloc(numHexagons, sizeof(H3Index));
     H3_EXPORT(polygonToCells)(&southernGeoPolygon, 9, hexagons);
     free(hexagons);
