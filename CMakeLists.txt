@@ -17,6 +17,8 @@ cmake_minimum_required(VERSION 3.1)
 set(H3_PREFIX "" CACHE STRING "Prefix for exported symbols")
 set(H3_ALLOC_PREFIX "" CACHE STRING "Prefix for allocation functions")
 
+# Do not try to append extensions to source files
+cmake_policy(SET CMP0115 NEW)
 # Needed due to CMP0042
 set(CMAKE_MACOSX_RPATH 1)
 # YCM needs compilation database
