@@ -477,7 +477,7 @@ H3Error H3_EXPORT(uncompactCells)(const H3Index* compactedSet,
     int64_t i = 0;
 
     for (int64_t j = 0; j < numCompacted; j++) {
-        if (!_hasChildAtRes(compactedSet[j], res)) return E_FAILED;
+        if (!_hasChildAtRes(compactedSet[j], res)) return E_RES_MISMATCH;
 
         for (IterCellsChildren iter = iterInitParent(compactedSet[j], res);
              iter.h; i++, iterStepChild(&iter)) {
@@ -504,7 +504,8 @@ H3Error H3_EXPORT(uncompactCellsSize)(const H3Index* compactedSet,
     int64_t numOut = 0;
     for (int64_t i = 0; i < numCompacted; i++) {
         if (compactedSet[i] == H3_NULL) continue;
-        if (!_hasChildAtRes(compactedSet[i], res)) return E_FAILED;  // Abort
+        if (!_hasChildAtRes(compactedSet[i], res))
+            return E_RES_MISMATCH;  // Abort
 
         numOut += H3_EXPORT(cellToChildrenSize)(compactedSet[i], res);
     }

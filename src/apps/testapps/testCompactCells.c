@@ -265,20 +265,20 @@ SUITE(compactCells) {
 
         int64_t sizeResult;
         t_assert(H3_EXPORT(uncompactCellsSize)(someHexagons, numHex, 4,
-                                               &sizeResult) == E_FAILED,
+                                               &sizeResult) == E_RES_MISMATCH,
                  "uncompactCellsSize fails when given illogical resolutions");
         t_assert(H3_EXPORT(uncompactCellsSize)(someHexagons, numHex, -1,
-                                               &sizeResult) == E_FAILED,
+                                               &sizeResult) == E_RES_MISMATCH,
                  "uncompactCellsSize fails when given illegal resolutions");
         t_assert(
             H3_EXPORT(uncompactCellsSize)(someHexagons, numHex, MAX_H3_RES + 1,
-                                          &sizeResult) == E_FAILED,
+                                          &sizeResult) == E_RES_MISMATCH,
             "uncompactCellsSize fails when given resolutions beyond max");
 
         H3Index uncompressed[] = {0, 0, 0};
         H3Error uncompactCellsResult = H3_EXPORT(uncompactCells)(
             someHexagons, numHex, uncompressed, numHex, 0);
-        t_assert(uncompactCellsResult == E_FAILED,
+        t_assert(uncompactCellsResult == E_RES_MISMATCH,
                  "uncompactCells fails when given illogical resolutions");
         uncompactCellsResult = H3_EXPORT(uncompactCells)(
             someHexagons, numHex, uncompressed, numHex, 6);
@@ -295,7 +295,7 @@ SUITE(compactCells) {
         }
         uncompactCellsResult = H3_EXPORT(uncompactCells)(
             someHexagons, numHex, uncompressed, numHex * 7, MAX_H3_RES + 1);
-        t_assert(uncompactCellsResult == E_FAILED,
+        t_assert(uncompactCellsResult == E_RES_MISMATCH,
                  "uncompactCells fails when given resolutions beyond max");
     }
 
