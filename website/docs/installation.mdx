@@ -146,12 +146,11 @@ sudo apt install clang-format cmake-curses-gui lcov doxygen
 
 You will need to install CMake and Visual Studio, including the Visual C++ compiler.
 
-```bash     
-# Installing the bare build requirements
-sudo apt install cmake make gcc libtool
-# Installing useful tools for development
-sudo apt install clang-format cmake-curses-gui lcov doxygen
-```
+:::info
+
+You can build H3 as a shared library (DLL) on Windows, but the test suite does not support this configuration because the tests use functions internal to the DLL, and they are not exposed for testing.
+
+:::
 
 </TabItem>
 <TabItem value="freebsd">
