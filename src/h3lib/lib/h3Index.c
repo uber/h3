@@ -481,7 +481,7 @@ H3Error H3_EXPORT(uncompactCells)(const H3Index* compactedSet,
 
         for (IterCellsChildren iter = iterInitParent(compactedSet[j], res);
              iter.h; i++, iterStepChild(&iter)) {
-            if (i >= numOut) return E_BOUNDS;  // went too far; abort!
+            if (i >= numOut) return E_MEMORY_BOUNDS;  // went too far; abort!
             outSet[i] = iter.h;
         }
     }

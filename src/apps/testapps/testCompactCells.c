@@ -282,11 +282,11 @@ SUITE(compactCells) {
                  "uncompactCells fails when given illogical resolutions");
         uncompactCellsResult = H3_EXPORT(uncompactCells)(
             someHexagons, numHex, uncompressed, numHex, 6);
-        t_assert(uncompactCellsResult == E_BOUNDS,
+        t_assert(uncompactCellsResult == E_MEMORY_BOUNDS,
                  "uncompactCells fails when given too little buffer");
         uncompactCellsResult = H3_EXPORT(uncompactCells)(
             someHexagons, numHex, uncompressed, numHex - 1, 5);
-        t_assert(uncompactCellsResult == E_BOUNDS,
+        t_assert(uncompactCellsResult == E_MEMORY_BOUNDS,
                  "uncompactCells fails when given too little buffer (same "
                  "resolution)");
 
