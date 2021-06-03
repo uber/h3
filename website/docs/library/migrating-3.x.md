@@ -6,7 +6,7 @@ slug: /library/migrating-3.x
 ---
 
 The H3 library introduced breaking changes in version 4.0.0, so applications developed against earlier versions
-will be to be updated before they can use the new library version. Most of the changes relate to function naming,
+need to be updated before they can use the new library version. Most of the changes relate to function naming,
 and some relate to the behavior of the functions in some cases.
 
 The grid itself - the layout of cells, which cell an H3 index refers to, and the structure of an H3 index - is
