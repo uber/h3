@@ -97,17 +97,10 @@ typedef enum {
                              // and the algorithm could not handle it
     E_NOT_NEIGHBORS = 11,    // `H3Index` cell arguments were not neighbors
     E_RES_MISMATCH =
-        12,        // `H3Index` cell arguments had incompatible resolutions
-    E_MEMORY = 13  // Necessary memory allocation failed
+        12,         // `H3Index` cell arguments had incompatible resolutions
+    E_MEMORY = 13,  // Necessary memory allocation failed
+    E_MEMORY_BOUNDS = 14  // Bounds of provided memory were not large enough
 } H3ErrorCodes;
-
-/**
- * Return codes for compactCells
- */
-#define COMPACT_SUCCESS 0
-#define COMPACT_LOOP_EXCEEDED -1
-#define COMPACT_DUPLICATE -2
-#define COMPACT_ALLOC_FAILED -3
 
 /* library version numbers generated from VERSION file */
 // clang-format off
@@ -535,9 +528,9 @@ DECLSPEC H3Index H3_EXPORT(cellToCenterChild)(H3Index h, int childRes);
  * @{
  */
 /** @brief compacts the given set of hexagons as best as possible */
-DECLSPEC int H3_EXPORT(compactCells)(const H3Index *h3Set,
-                                     H3Index *compactedSet,
-                                     const int64_t numHexes);
+DECLSPEC H3Error H3_EXPORT(compactCells)(const H3Index *h3Set,
+                                         H3Index *compactedSet,
+                                         const int64_t numHexes);
 /** @} */
 
 /** @defgroup uncompactCells uncompactCells
@@ -546,15 +539,15 @@ DECLSPEC int H3_EXPORT(compactCells)(const H3Index *h3Set,
  */
 /** @brief determines the exact number of hexagons that will be uncompacted
  * from the compacted set */
-DECLSPEC int64_t H3_EXPORT(uncompactCellsSize)(const H3Index *compactedSet,
+DECLSPEC H3Error H3_EXPORT(uncompactCellsSize)(const H3Index *compactedSet,
                                                const int64_t numCompacted,
-                                               const int res);
+                                               const int res, int64_t *out);
 
 /** @brief uncompacts the compacted hexagon set */
-DECLSPEC int H3_EXPORT(uncompactCells)(const H3Index *compactedSet,
-                                       const int64_t numCompacted,
-                                       H3Index *outSet, const int64_t numOut,
-                                       const int res);
+DECLSPEC H3Error H3_EXPORT(uncompactCells)(const H3Index *compactedSet,
+                                           const int64_t numCompacted,
+                                           H3Index *outSet,
+                                           const int64_t numOut, const int res);
 /** @} */
 
 /** @defgroup isResClassIII isResClassIII

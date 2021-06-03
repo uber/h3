@@ -35,9 +35,9 @@ int main(int argc, char* argv[]) {
     printf("Starting with %d indexes.\n", inputSize);
 
     H3Index* compacted = calloc(inputSize, sizeof(H3Index));
-    int err = compactCells(input, compacted, inputSize);
+    H3Error err = compactCells(input, compacted, inputSize);
     // An error case can occur on e.g. duplicate input.
-    assert(err == 0);
+    assert(err == E_SUCCESS);
 
     int compactedCount = 0;
     printf("Compacted:\n");
@@ -50,14 +50,16 @@ int main(int argc, char* argv[]) {
     printf("Compacted to %d indexes.\n", compactedCount);
 
     int uncompactRes = 10;
-    int64_t uncompactedSize =
-        uncompactCellsSize(compacted, inputSize, uncompactRes);
+    int64_t uncompactedSize;
+    H3Error err2 = uncompactCellsSize(compacted, inputSize, uncompactRes,
+                                      &uncompactedSize);
+    assert(err2 == E_SUCCESS);
     H3Index* uncompacted = calloc(uncompactedSize, sizeof(H3Index));
-    int err2 = uncompactCells(compacted, compactedCount, uncompacted,
+    int err3 = uncompactCells(compacted, compactedCount, uncompacted,
                               uncompactedSize, uncompactRes);
     // An error case could happen if the output array is too small, or indexes
     // have a higher resolution than uncompactRes.
-    assert(err2 == 0);
+    assert(err3 == E_SUCCESS);
 
     int uncompactedCount = 0;
     printf("Uncompacted:\n");

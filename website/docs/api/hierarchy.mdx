@@ -231,7 +231,7 @@ Returns the center child (finer) index contained by `cell` at resolution `childR
 <TabItem value="c">
 
 ```c
-int compactCells(const H3Index *cellSet, H3Index *compactedSet, const int numCells);
+H3Error compactCells(const H3Index *cellSet, H3Index *compactedSet, const int numCells);
 ```
 
 </TabItem>
@@ -269,7 +269,7 @@ function example() {
 
 Compacts the set `cellSet` of indexes as best as possible, into the array `compactedSet`. `compactedSet` must be at least the size of `cellSet` in case the set cannot be compacted.
 
-Returns 0 on success.
+Returns 0 (`E_SUCCESS`) on success.
 
 ## uncompactCells
 
@@ -286,7 +286,7 @@ Returns 0 on success.
 <TabItem value="c">
 
 ```c
-int uncompactCells(const H3Index *compactedSet, const int numCells, H3Index *cellSet, const int maxCells, const int res);
+H3Error uncompactCells(const H3Index *compactedSet, const int numCells, H3Index *cellSet, const int maxCells, const int res);
 ```
 
 </TabItem>
@@ -325,7 +325,7 @@ function example() {
 
 Uncompacts the set `compactedSet` of indexes to the resolution `res`. `h3Set` must be at least of size `uncompactCellsSize(compactedSet, numHexes, res)`.
 
-Returns 0 on success.
+Returns 0 (`E_SUCCESS`) on success.
 
 ## uncompactCellsSize
 
@@ -342,7 +342,7 @@ Returns 0 on success.
 <TabItem value="c">
 
 ```c
-int64_t uncompactCellsSize(const H3Index *compactedSet, const int64_t numCompacted, const int res);
+H3Error uncompactCellsSize(const H3Index *compactedSet, const int64_t numCompacted, const int res, int64_t *out);
 ```
 
 </TabItem>
@@ -375,4 +375,6 @@ This function exists for memory management and is not exposed.
 </TabItem>
 </Tabs>
 
-Returns the size of the array needed by `uncompactCells`.
+Places the size of the array needed by `uncompactCells` into `out`.
+
+Returns 0 (`E_SUCCESS`) on success.
