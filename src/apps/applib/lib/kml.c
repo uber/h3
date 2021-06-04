@@ -107,7 +107,7 @@ void kmlBoundaryFooter(void) {
     printf("</kml>\n");
 }
 
-void outputLatLngKML(const LatLng* g) {
+void outputLngLatKML(const LatLng* g) {
     printf("            %8lf,%8lf,5.0\n", H3_EXPORT(radsToDegs)(g->lng),
            H3_EXPORT(radsToDegs)(g->lat));
 }
@@ -119,7 +119,7 @@ void outputPointKML(const LatLng* g, const char* name) {
     printf("   <Point>\n");
     printf("      <altitudeMode>relativeToGround</altitudeMode>\n");
     printf("      <coordinates>\n");
-    outputLatLngKML(g);
+    outputLngLatKML(g);
     printf("      </coordinates>\n");
     printf("   </Point>\n");
     printf("</Placemark>\n");
@@ -133,10 +133,10 @@ void outputTriKML(const LatLng* v1, const LatLng* v2, const LatLng* v3,
     printf("      <LineString>\n");
     printf("         <tessellate>1</tessellate>\n");
     printf("         <coordinates>\n");
-    outputLatLngKML(v1);
-    outputLatLngKML(v2);
-    outputLatLngKML(v3);
-    outputLatLngKML(v1);
+    outputLngLatKML(v1);
+    outputLngLatKML(v2);
+    outputLngLatKML(v3);
+    outputLngLatKML(v1);
     printf("         </coordinates>\n");
     printf("      </LineString>\n");
     printf("</Placemark>\n");
@@ -155,8 +155,8 @@ void outputPolyKML(const LatLng geoVerts[], int numVerts, const char* name) {
     printf("         <tessellate>1</tessellate>\n");
     printf("         <coordinates>\n");
 
-    for (int v = 0; v < numVerts; v++) outputLatLngKML(&geoVerts[v]);
-    outputLatLngKML(&geoVerts[0]);
+    for (int v = 0; v < numVerts; v++) outputLngLatKML(&geoVerts[v]);
+    outputLngLatKML(&geoVerts[0]);
 
     printf("         </coordinates>\n");
     printf("      </LineString>\n");
