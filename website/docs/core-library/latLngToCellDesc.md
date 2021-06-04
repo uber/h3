@@ -1,8 +1,8 @@
 ---
-id: latLngToCelldesc
+id: latLngToCellDesc
 title: Conversion from latitude/longitude to containing H3 cell index
 sidebar_label: Conversion from latitude/longitude to containing H3 cell index
-slug: /core-library/latLngToCelldesc
+slug: /core-library/latLngToCellDesc
 ---
 
 This operation is performed by function `latLngToCell`. See the comments in the function for more detail.

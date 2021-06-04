@@ -68,7 +68,7 @@ module.exports = {
         type: "category",
         label: "Algorithms",
         items: [
-          "core-library/latLngToCelldesc",
+          "core-library/latLngToCellDesc",
           "core-library/cellToLatLngDesc",
           "core-library/cellToBoundaryDesc",
         ],
