@@ -68,9 +68,9 @@ SUITE(h3Index) {
 
     TEST(isValidCellAtResolution) {
         for (int i = 0; i <= MAX_H3_RES; i++) {
-            LatLng LatLng = {0, 0};
+            LatLng g = {0, 0};
             H3Index h3;
-            t_assertSuccess(H3_EXPORT(latLngToCell)(&LatLng, i, &h3));
+            t_assertSuccess(H3_EXPORT(latLngToCell)(&g, i, &h3));
             char failureMessage[BUFF_SIZE];
             sprintf(failureMessage, "isValidCell failed on resolution %d", i);
             t_assert(H3_EXPORT(isValidCell)(h3), failureMessage);
@@ -78,9 +78,9 @@ SUITE(h3Index) {
     }
 
     TEST(isValidCellDigits) {
-        LatLng LatLng = {0, 0};
+        LatLng g = {0, 0};
         H3Index h3;
-        t_assertSuccess(H3_EXPORT(latLngToCell)(&LatLng, 1, &h3));
+        t_assertSuccess(H3_EXPORT(latLngToCell)(&g, 1, &h3));
         // Set a bit for an unused digit to something else.
         h3 ^= 1;
         t_assert(!H3_EXPORT(isValidCell)(h3),
