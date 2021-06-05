@@ -77,7 +77,7 @@ static void fillIndex_assertions(H3Index h) {
 
         int polygonToCellsSize =
             H3_EXPORT(maxPolygonToCellsSize)(&polygon, nextRes);
-        H3Index* polygonToCellsOut =
+        H3Index *polygonToCellsOut =
             calloc(polygonToCellsSize, sizeof(H3Index));
         H3_EXPORT(polygonToCells)(&polygon, nextRes, polygonToCellsOut);
 
@@ -85,7 +85,7 @@ static void fillIndex_assertions(H3Index h) {
             countNonNullIndexes(polygonToCellsOut, polygonToCellsSize);
 
         int64_t childrenSize = H3_EXPORT(cellToChildrenSize)(h, nextRes);
-        H3Index* children = calloc(childrenSize, sizeof(H3Index));
+        H3Index *children = calloc(childrenSize, sizeof(H3Index));
         H3_EXPORT(cellToChildren)(h, nextRes, children);
 
         int cellToChildrenCount = countNonNullIndexes(children, childrenSize);
@@ -138,7 +138,7 @@ SUITE(polygonToCells) {
 
     TEST(polygonToCells) {
         int numHexagons = H3_EXPORT(maxPolygonToCellsSize)(&sfGeoPolygon, 9);
-        H3Index* hexagons = calloc(numHexagons, sizeof(H3Index));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         H3_EXPORT(polygonToCells)(&sfGeoPolygon, 9, hexagons);
         int actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
@@ -149,7 +149,7 @@ SUITE(polygonToCells) {
 
     TEST(polygonToCellsHole) {
         int numHexagons = H3_EXPORT(maxPolygonToCellsSize)(&holeGeoPolygon, 9);
-        H3Index* hexagons = calloc(numHexagons, sizeof(H3Index));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         H3_EXPORT(polygonToCells)(&holeGeoPolygon, 9, hexagons);
         int actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
@@ -161,7 +161,7 @@ SUITE(polygonToCells) {
 
     TEST(polygonToCellsEmpty) {
         int numHexagons = H3_EXPORT(maxPolygonToCellsSize)(&emptyGeoPolygon, 9);
-        H3Index* hexagons = calloc(numHexagons, sizeof(H3Index));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         H3_EXPORT(polygonToCells)(&emptyGeoPolygon, 9, hexagons);
         int actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
@@ -178,7 +178,7 @@ SUITE(polygonToCells) {
         CellBoundary boundary;
         H3_EXPORT(cellToBoundary)(origin, &boundary);
 
-        LatLng* verts = calloc(boundary.numVerts + 1, sizeof(LatLng));
+        LatLng *verts = calloc(boundary.numVerts + 1, sizeof(LatLng));
         for (int i = 0; i < boundary.numVerts; i++) {
             verts[i] = boundary.verts[i];
         }
@@ -192,7 +192,7 @@ SUITE(polygonToCells) {
         someHexagon.numHoles = 0;
 
         int numHexagons = H3_EXPORT(maxPolygonToCellsSize)(&someHexagon, 9);
-        H3Index* hexagons = calloc(numHexagons, sizeof(H3Index));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         H3_EXPORT(polygonToCells)(&someHexagon, 9, hexagons);
         int actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
@@ -238,7 +238,7 @@ SUITE(polygonToCells) {
         expectedSize = 4228;
         int numHexagons =
             H3_EXPORT(maxPolygonToCellsSize)(&primeMeridianGeoPolygon, 7);
-        H3Index* hexagons = calloc(numHexagons, sizeof(H3Index));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         H3_EXPORT(polygonToCells)(&primeMeridianGeoPolygon, 7, hexagons);
         int actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
@@ -252,7 +252,7 @@ SUITE(polygonToCells) {
         expectedSize = 4238;
         numHexagons =
             H3_EXPORT(maxPolygonToCellsSize)(&transMeridianGeoPolygon, 7);
-        H3Index* hexagonsTM = calloc(numHexagons, sizeof(H3Index));
+        H3Index *hexagonsTM = calloc(numHexagons, sizeof(H3Index));
 
         H3_EXPORT(polygonToCells)(&transMeridianGeoPolygon, 7, hexagonsTM);
         actualNumIndexes = countNonNullIndexes(hexagonsTM, numHexagons);
@@ -264,7 +264,7 @@ SUITE(polygonToCells) {
         // size
         numHexagons = H3_EXPORT(maxPolygonToCellsSize)(
             &transMeridianFilledHoleGeoPolygon, 7);
-        H3Index* hexagonsTMFH = calloc(numHexagons, sizeof(H3Index));
+        H3Index *hexagonsTMFH = calloc(numHexagons, sizeof(H3Index));
 
         H3_EXPORT(polygonToCells)
         (&transMeridianFilledHoleGeoPolygon, 7, hexagonsTMFH);
@@ -274,7 +274,7 @@ SUITE(polygonToCells) {
         // Transmeridian hole case
         numHexagons =
             H3_EXPORT(maxPolygonToCellsSize)(&transMeridianHoleGeoPolygon, 7);
-        H3Index* hexagonsTMH = calloc(numHexagons, sizeof(H3Index));
+        H3Index *hexagonsTMH = calloc(numHexagons, sizeof(H3Index));
 
         H3_EXPORT(polygonToCells)(&transMeridianHoleGeoPolygon, 7, hexagonsTMH);
         actualNumIndexes = countNonNullIndexes(hexagonsTMH, numHexagons);
@@ -300,7 +300,7 @@ SUITE(polygonToCells) {
 
         int numHexagons = H3_EXPORT(maxPolygonToCellsSize)(&polygon, 4);
 
-        H3Index* hexagons = calloc(numHexagons, sizeof(H3Index));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
         H3_EXPORT(polygonToCells)(&polygon, 4, hexagons);
 
         int actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
@@ -348,7 +348,7 @@ SUITE(polygonToCells) {
         polygon.numHoles = 0;
 
         int numHexagons = H3_EXPORT(maxPolygonToCellsSize)(&polygon, 9);
-        H3Index* hexagons = calloc(numHexagons, sizeof(H3Index));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         H3_EXPORT(polygonToCells)(&polygon, 9, hexagons);
 

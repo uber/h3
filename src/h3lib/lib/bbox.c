@@ -32,14 +32,14 @@
  * @param  bbox Bounding box to inspect
  * @return      is transmeridian
  */
-bool bboxIsTransmeridian(const BBox* bbox) { return bbox->east < bbox->west; }
+bool bboxIsTransmeridian(const BBox *bbox) { return bbox->east < bbox->west; }
 
 /**
  * Get the center of a bounding box
  * @param bbox   Input bounding box
  * @param center Output center coordinate
  */
-void bboxCenter(const BBox* bbox, LatLng* center) {
+void bboxCenter(const BBox *bbox, LatLng *center) {
     center->lat = (bbox->north + bbox->south) / 2.0;
     // If the bbox crosses the antimeridian, shift east 360 degrees
     double east = bboxIsTransmeridian(bbox) ? bbox->east + M_2PI : bbox->east;
@@ -52,7 +52,7 @@ void bboxCenter(const BBox* bbox, LatLng* center) {
  * @param  point Point to test
  * @return       Whether the point is contained
  */
-bool bboxContains(const BBox* bbox, const LatLng* point) {
+bool bboxContains(const BBox *bbox, const LatLng *point) {
     return point->lat >= bbox->south && point->lat <= bbox->north &&
            (bboxIsTransmeridian(bbox) ?
                                       // transmeridian case
@@ -68,7 +68,7 @@ bool bboxContains(const BBox* bbox, const LatLng* point) {
  * @param  b2 Bounding box 2
  * @return    Whether the boxes are equal
  */
-bool bboxEquals(const BBox* b1, const BBox* b2) {
+bool bboxEquals(const BBox *b1, const BBox *b2) {
     return b1->north == b2->north && b1->south == b2->south &&
            b1->east == b2->east && b1->west == b2->west;
 }
@@ -97,7 +97,7 @@ double _hexRadiusKm(H3Index h3Index) {
  * @param res the resolution of the H3 hexagons to fill the bounding box
  * @return the estimated number of hexagons to fill the bounding box
  */
-int bboxHexEstimate(const BBox* bbox, int res) {
+int bboxHexEstimate(const BBox *bbox, int res) {
     // Get the area of the pentagon as the maximally-distorted area possible
     H3Index pentagons[12] = {0};
     H3_EXPORT(getPentagons)(res, pentagons);
@@ -136,7 +136,7 @@ int bboxHexEstimate(const BBox* bbox, int res) {
  *  @param res the resolution of the H3 hexagons to trace the line
  *  @return the estimated number of hexagons required to trace the line
  */
-int lineHexEstimate(const LatLng* origin, const LatLng* destination, int res) {
+int lineHexEstimate(const LatLng *origin, const LatLng *destination, int res) {
     // Get the area of the pentagon as the maximally-distorted area possible
     H3Index pentagons[12] = {0};
     H3_EXPORT(getPentagons)(res, pentagons);

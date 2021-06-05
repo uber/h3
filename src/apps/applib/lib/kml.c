@@ -23,7 +23,7 @@
 
 #include "h3api.h"
 
-void kmlPtsHeader(const char* name, const char* desc) {
+void kmlPtsHeader(const char *name, const char *desc) {
     printf("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
     printf(
         "<kml xmlns=\"http://www.opengis.net/kml/2.2\" "
@@ -83,7 +83,7 @@ void kmlPtsHeader(const char* name, const char* desc) {
     printf("        </Style>\n");
 }
 
-void kmlBoundaryHeader(const char* name, const char* desc) {
+void kmlBoundaryHeader(const char *name, const char *desc) {
     printf("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
     printf("<kml xmlns=\"http://earth.google.com/kml/2.1\">\n");
     printf("<Folder>\n");
@@ -107,12 +107,12 @@ void kmlBoundaryFooter(void) {
     printf("</kml>\n");
 }
 
-void outputLngLatKML(const LatLng* g) {
+void outputLngLatKML(const LatLng *g) {
     printf("            %8lf,%8lf,5.0\n", H3_EXPORT(radsToDegs)(g->lng),
            H3_EXPORT(radsToDegs)(g->lat));
 }
 
-void outputPointKML(const LatLng* g, const char* name) {
+void outputPointKML(const LatLng *g, const char *name) {
     printf("<Placemark>\n");
     printf("   <name>%s</name>\n", name);
     printf("   <styleUrl>#m_ylw-pushpin</styleUrl>\n");
@@ -125,8 +125,8 @@ void outputPointKML(const LatLng* g, const char* name) {
     printf("</Placemark>\n");
 }
 
-void outputTriKML(const LatLng* v1, const LatLng* v2, const LatLng* v3,
-                  const char* name) {
+void outputTriKML(const LatLng *v1, const LatLng *v2, const LatLng *v3,
+                  const char *name) {
     printf("<Placemark>\n");
     printf("<name>%s</name>\n", name);
     printf("      <styleUrl>#lineStyle1</styleUrl>\n");
@@ -142,12 +142,12 @@ void outputTriKML(const LatLng* v1, const LatLng* v2, const LatLng* v3,
     printf("</Placemark>\n");
 }
 
-void outputBoundaryKML(const CellBoundary* b, const char* name) {
-    const LatLng* v = (const LatLng*)&(b->verts);
+void outputBoundaryKML(const CellBoundary *b, const char *name) {
+    const LatLng *v = (const LatLng *)&(b->verts);
     outputPolyKML(v, b->numVerts, name);
 }
 
-void outputPolyKML(const LatLng geoVerts[], int numVerts, const char* name) {
+void outputPolyKML(const LatLng geoVerts[], int numVerts, const char *name) {
     printf("<Placemark>\n");
     printf("<name>%s</name>\n", name);
     printf("      <styleUrl>#lineStyle1</styleUrl>\n");

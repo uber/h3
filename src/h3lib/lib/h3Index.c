@@ -55,7 +55,7 @@ int H3_EXPORT(getBaseCellNumber)(H3Index h) { return H3_GET_BASE_CELL(h); }
  * @return The H3 index corresponding to the string argument, or H3_NULL if
  * invalid.
  */
-H3Index H3_EXPORT(stringToH3)(const char* str) {
+H3Index H3_EXPORT(stringToH3)(const char *str) {
     H3Index h = H3_NULL;
     // If failed, h will be unmodified and we should return H3_NULL anyways.
     sscanf(str, "%" PRIx64, &h);
@@ -68,7 +68,7 @@ H3Index H3_EXPORT(stringToH3)(const char* str) {
  * @param str The string representation of the H3 index.
  * @param sz Size of the buffer `str`
  */
-void H3_EXPORT(h3ToString)(H3Index h, char* str, size_t sz) {
+void H3_EXPORT(h3ToString)(H3Index h, char *str, size_t sz) {
     // An unsigned 64 bit integer will be expressed in at most
     // 16 digits plus 1 for the null terminator.
     if (sz < 17) {
@@ -131,7 +131,7 @@ int H3_EXPORT(isValidCell)(H3Index h) {
  * @param baseCell The H3 base cell to initialize the index to.
  * @param initDigit The H3 digit (0-7) to initialize all of the index digits to.
  */
-void setH3Index(H3Index* hp, int res, int baseCell, Direction initDigit) {
+void setH3Index(H3Index *hp, int res, int baseCell, Direction initDigit) {
     H3Index h = H3_INIT;
     H3_SET_MODE(h, H3_HEXAGON_MODE);
     H3_SET_RESOLUTION(h, res);
@@ -229,7 +229,7 @@ H3Index makeDirectChild(H3Index h, int cellNumber) {
  * @param childRes int the child level to produce
  * @param children H3Index* the memory to store the resulting addresses in
  */
-void H3_EXPORT(cellToChildren)(H3Index h, int childRes, H3Index* children) {
+void H3_EXPORT(cellToChildren)(H3Index h, int childRes, H3Index *children) {
     int64_t i = 0;
     for (IterCellsChildren iter = iterInitParent(h, childRes); iter.h;
          iterStepChild(&iter)) {
@@ -287,7 +287,7 @@ H3Index H3_EXPORT(cellToCenterChild)(H3Index h, int childRes) {
  * @return an error code on bad input data
  */
 // todo: update internal implementation for int64_t
-H3Error H3_EXPORT(compactCells)(const H3Index* h3Set, H3Index* compactedSet,
+H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
                                 const int64_t numHexes) {
     if (numHexes == 0) {
         return E_SUCCESS;
@@ -300,17 +300,17 @@ H3Error H3_EXPORT(compactCells)(const H3Index* h3Set, H3Index* compactedSet,
         }
         return E_SUCCESS;
     }
-    H3Index* remainingHexes = H3_MEMORY(malloc)(numHexes * sizeof(H3Index));
+    H3Index *remainingHexes = H3_MEMORY(malloc)(numHexes * sizeof(H3Index));
     if (!remainingHexes) {
         return E_MEMORY;
     }
     memcpy(remainingHexes, h3Set, numHexes * sizeof(H3Index));
-    H3Index* hashSetArray = H3_MEMORY(calloc)(numHexes, sizeof(H3Index));
+    H3Index *hashSetArray = H3_MEMORY(calloc)(numHexes, sizeof(H3Index));
     if (!hashSetArray) {
         H3_MEMORY(free)(remainingHexes);
         return E_MEMORY;
     }
-    H3Index* compactedSetOffset = compactedSet;
+    H3Index *compactedSetOffset = compactedSet;
     int numRemainingHexes = numHexes;
     while (numRemainingHexes) {
         res = H3_GET_RESOLUTION(remainingHexes[0]);
@@ -374,7 +374,7 @@ H3Error H3_EXPORT(compactCells)(const H3Index* h3Set, H3Index* compactedSet,
                    numRemainingHexes * sizeof(remainingHexes[0]));
             break;
         }
-        H3Index* compactableHexes =
+        H3Index *compactableHexes =
             H3_MEMORY(calloc)(maxCompactableCount, sizeof(H3Index));
         if (!compactableHexes) {
             H3_MEMORY(free)(remainingHexes);
@@ -471,8 +471,8 @@ H3Error H3_EXPORT(compactCells)(const H3Index* h3Set, H3Index* compactedSet,
  * @return              An error code if output array is too small or any cell
  *                      is smaller than the output resolution.
  */
-H3Error H3_EXPORT(uncompactCells)(const H3Index* compactedSet,
-                                  const int64_t numCompacted, H3Index* outSet,
+H3Error H3_EXPORT(uncompactCells)(const H3Index *compactedSet,
+                                  const int64_t numCompacted, H3Index *outSet,
                                   const int64_t numOut, const int res) {
     int64_t i = 0;
 
@@ -498,9 +498,9 @@ H3Error H3_EXPORT(uncompactCells)(const H3Index* compactedSet,
  * @param   out           The number of hexagons to allocate memory for
  * @returns E_SUCCESS on success, or another value on error
  */
-H3Error H3_EXPORT(uncompactCellsSize)(const H3Index* compactedSet,
+H3Error H3_EXPORT(uncompactCellsSize)(const H3Index *compactedSet,
                                       const int64_t numCompacted, const int res,
-                                      int64_t* out) {
+                                      int64_t *out) {
     int64_t numOut = 0;
     for (int64_t i = 0; i < numCompacted; i++) {
         if (compactedSet[i] == H3_NULL) continue;
@@ -628,7 +628,7 @@ H3Index _h3Rotate60cw(H3Index h) {
  * @param res The cell resolution.
  * @return The encoded H3Index (or H3_NULL on failure).
  */
-H3Index _faceIjkToH3(const FaceIJK* fijk, int res) {
+H3Index _faceIjkToH3(const FaceIJK *fijk, int res) {
     // initialize the index
     H3Index h = H3_INIT;
     H3_SET_MODE(h, H3_HEXAGON_MODE);
@@ -654,7 +654,7 @@ H3Index _faceIjkToH3(const FaceIJK* fijk, int res) {
     // build the H3Index from finest res up
     // adjust r for the fact that the res 0 base cell offsets the indexing
     // digits
-    CoordIJK* ijk = &fijkBC.coord;
+    CoordIJK *ijk = &fijkBC.coord;
     for (int r = res - 1; r >= 0; r--) {
         CoordIJK lastIJK = *ijk;
         CoordIJK lastCenter;
@@ -725,7 +725,7 @@ H3Index _faceIjkToH3(const FaceIJK* fijk, int res) {
  * @param out The encoded H3Index.
  * @returns E_SUCCESS (0) on success, another value otherwise
  */
-H3Error H3_EXPORT(latLngToCell)(const LatLng* g, int res, H3Index* out) {
+H3Error H3_EXPORT(latLngToCell)(const LatLng *g, int res, H3Index *out) {
     if (res < 0 || res > MAX_H3_RES) {
         return E_RES_DOMAIN;
     }
@@ -750,8 +750,8 @@ H3Error H3_EXPORT(latLngToCell)(const LatLng* g, int res, H3Index* out) {
  *        and normalized base cell coordinates.
  * @return Returns 1 if the possibility of overage exists, otherwise 0.
  */
-int _h3ToFaceIjkWithInitializedFijk(H3Index h, FaceIJK* fijk) {
-    CoordIJK* ijk = &fijk->coord;
+int _h3ToFaceIjkWithInitializedFijk(H3Index h, FaceIJK *fijk) {
+    CoordIJK *ijk = &fijk->coord;
     int res = H3_GET_RESOLUTION(h);
 
     // center base cell hierarchy is entirely on this face
@@ -781,7 +781,7 @@ int _h3ToFaceIjkWithInitializedFijk(H3Index h, FaceIJK* fijk) {
  * @param h The H3Index.
  * @param fijk The corresponding FaceIJK address.
  */
-H3Error _h3ToFaceIjk(H3Index h, FaceIJK* fijk) {
+H3Error _h3ToFaceIjk(H3Index h, FaceIJK *fijk) {
     int baseCell = H3_GET_BASE_CELL(h);
     if (baseCell < 0 || baseCell >= NUM_BASE_CELLS) {  // LCOV_EXCL_BR_LINE
         // Base cells less than zero can not be represented in an index
@@ -838,7 +838,7 @@ H3Error _h3ToFaceIjk(H3Index h, FaceIJK* fijk) {
  * @param h3 The H3 index.
  * @param g The spherical coordinates of the H3 cell center.
  */
-H3Error H3_EXPORT(cellToLatLng)(H3Index h3, LatLng* g) {
+H3Error H3_EXPORT(cellToLatLng)(H3Index h3, LatLng *g) {
     FaceIJK fijk;
     H3Error e = _h3ToFaceIjk(h3, &fijk);
     if (e) {
@@ -854,7 +854,7 @@ H3Error H3_EXPORT(cellToLatLng)(H3Index h3, LatLng* g) {
  * @param h3 The H3 index.
  * @param cb The boundary of the H3 cell in spherical coordinates.
  */
-H3Error H3_EXPORT(cellToBoundary)(H3Index h3, CellBoundary* cb) {
+H3Error H3_EXPORT(cellToBoundary)(H3Index h3, CellBoundary *cb) {
     FaceIJK fijk;
     H3Error e = _h3ToFaceIjk(h3, &fijk);
     if (e) {
@@ -891,7 +891,7 @@ int H3_EXPORT(maxFaceCount)(H3Index h3) {
  * @param h3 The H3 index
  * @param out Output array. Must be of size maxFaceCount(h3).
  */
-void H3_EXPORT(getIcosahedronFaces)(H3Index h3, int* out) {
+void H3_EXPORT(getIcosahedronFaces)(H3Index h3, int *out) {
     int res = H3_GET_RESOLUTION(h3);
     int isPent = H3_EXPORT(isPentagon)(h3);
 
@@ -932,7 +932,7 @@ void H3_EXPORT(getIcosahedronFaces)(H3Index h3, int* out) {
 
     // add each vertex face, using the output array as a hash set
     for (int i = 0; i < vertexCount; i++) {
-        FaceIJK* vert = &fijkVerts[i];
+        FaceIJK *vert = &fijkVerts[i];
 
         // Adjust overage, determining whether this vertex is
         // on another face
@@ -965,7 +965,7 @@ int H3_EXPORT(pentagonCount)() { return NUM_PENTAGONS; }
  * @param res The resolution to produce pentagons at.
  * @param out Output array. Must be of size pentagonCount().
  */
-void H3_EXPORT(getPentagons)(int res, H3Index* out) {
+void H3_EXPORT(getPentagons)(int res, H3Index *out) {
     int i = 0;
     for (int bc = 0; bc < NUM_BASE_CELLS; bc++) {
         if (_isBaseCellPentagon(bc)) {

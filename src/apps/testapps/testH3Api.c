@@ -55,7 +55,7 @@ SUITE(h3Api) {
 
     TEST(cellToBoundary_classIIIEdgeVertex) {
         // Bug test for https://github.com/uber/h3/issues/45
-        char* hexes[] = {
+        char *hexes[] = {
             "894cc5349b7ffff", "894cc534d97ffff", "894cc53682bffff",
             "894cc536b17ffff", "894cc53688bffff", "894cead92cbffff",
             "894cc536537ffff", "894cc5acbabffff", "894cc536597ffff"};

@@ -24,13 +24,13 @@
 #include "h3Index.h"
 
 // extract the `res` digit (0--7) of the current cell
-static int _getResDigit(IterCellsChildren* it, int res) {
+static int _getResDigit(IterCellsChildren *it, int res) {
     return H3_GET_INDEX_DIGIT(it->h, res);
 }
 
 // increment the digit (0--7) at location `res`
 // H3_PER_DIGIT_OFFSET == 3
-static void _incrementResDigit(IterCellsChildren* it, int res) {
+static void _incrementResDigit(IterCellsChildren *it, int res) {
     H3Index val = 1;
     val <<= H3_PER_DIGIT_OFFSET * (MAX_H3_RES - res);
     it->h += val;
@@ -241,7 +241,7 @@ IterCellsChildren iterInitParent(H3Index h, int childRes) {
  * When the iteration is over, IterCellsChildren.h will be H3_NULL.
  * Handles iterating through hexagon and pentagon cells.
  */
-void iterStepChild(IterCellsChildren* it) {
+void iterStepChild(IterCellsChildren *it) {
     // once h == H3_NULL, the iterator returns an infinite sequence of H3_NULL
     if (it->h == H3_NULL) return;
 
@@ -303,7 +303,7 @@ IterCellsResolution iterInitRes(int res) {
     return itR;
 }
 
-void iterStepRes(IterCellsResolution* itR) {
+void iterStepRes(IterCellsResolution *itR) {
     // reached the end of over iterator; emits H3_NULL from now on
     if (itR->h == H3_NULL) return;
 

@@ -41,7 +41,7 @@ SUITE(polygonToCells_reported) {
         for (int res = 0; res < 3; res++) {
             int polygonToCellsSize =
                 H3_EXPORT(maxPolygonToCellsSize)(&worldGeoPolygon, res);
-            H3Index* polygonToCellsOut =
+            H3Index *polygonToCellsOut =
                 calloc(polygonToCellsSize, sizeof(H3Index));
 
             H3_EXPORT(polygonToCells)(&worldGeoPolygon, res, polygonToCellsOut);
@@ -50,7 +50,7 @@ SUITE(polygonToCells_reported) {
 
             int polygonToCellsSize2 =
                 H3_EXPORT(maxPolygonToCellsSize)(&worldGeoPolygon2, res);
-            H3Index* polygonToCellsOut2 =
+            H3Index *polygonToCellsOut2 =
                 calloc(polygonToCellsSize2, sizeof(H3Index));
 
             H3_EXPORT(polygonToCells)
@@ -100,7 +100,7 @@ SUITE(polygonToCells_reported) {
 
         int res = 7;
         int numHexagons = H3_EXPORT(maxPolygonToCellsSize)(&testPolygon, res);
-        H3Index* hexagons = calloc(numHexagons, sizeof(H3Index));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         H3_EXPORT(polygonToCells)(&testPolygon, res, hexagons);
         int actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
@@ -126,7 +126,7 @@ SUITE(polygonToCells_reported) {
 
         int res = 7;
         int numHexagons = H3_EXPORT(maxPolygonToCellsSize)(&testPolygon, res);
-        H3Index* hexagons = calloc(numHexagons, sizeof(H3Index));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         H3_EXPORT(polygonToCells)(&testPolygon, res, hexagons);
         int actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
@@ -149,7 +149,7 @@ SUITE(polygonToCells_reported) {
 
         int res = 13;
         int numHexagons = H3_EXPORT(maxPolygonToCellsSize)(&testPolygon, res);
-        H3Index* hexagons = calloc(numHexagons, sizeof(H3Index));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         H3_EXPORT(polygonToCells)(&testPolygon, res, hexagons);
         int actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);

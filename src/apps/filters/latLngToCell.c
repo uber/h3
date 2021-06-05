@@ -57,7 +57,7 @@ void doCoords(double lat, double lng, int res) {
     }
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     int res = 0;
     double lat = 0;
     double lng = 0;
@@ -82,9 +82,9 @@ int main(int argc, char* argv[]) {
                   .value = &lng,
                   .helpText = "Longitude in degrees."};
 
-    Arg* args[] = {&helpArg, &resArg, &latArg, &lngArg};
+    Arg *args[] = {&helpArg, &resArg, &latArg, &lngArg};
     const int numArgs = 4;
-    const char* helpText =
+    const char *helpText =
         "Convert degrees latitude/longitude coordinates to H3 indexes.";
 
     if (parseArgs(argc, argv, numArgs, args, &helpArg, helpText)) {

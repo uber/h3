@@ -28,7 +28,7 @@
 #include "args.h"
 #include "utility.h"
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     int res = 0;
     int numPoints = 0;
 
@@ -47,9 +47,9 @@ int main(int argc, char* argv[]) {
                   .value = &res,
                   .helpText = "Resolution, 0-15 inclusive."};
 
-    Arg* args[] = {&helpArg, &numPointsArg, &resArg};
+    Arg *args[] = {&helpArg, &numPointsArg, &resArg};
     const int numArgs = 3;
-    const char* helpText =
+    const char *helpText =
         "Generates random cell indexes and cell boundaries at the specified "
         "resolution.";
 

@@ -30,24 +30,24 @@
 /** Macro: Get the size of a fixed-size array */
 #define ARRAY_SIZE(x) sizeof(x) / sizeof(x[0])
 
-void error(const char* msg);
+void error(const char *msg);
 void h3Print(H3Index h);    // prints as integer
 void h3Println(H3Index h);  // prints as integer
 
-void coordIjkPrint(const CoordIJK* c);
+void coordIjkPrint(const CoordIJK *c);
 
-void geoToStringRads(const LatLng* p, char* str);
-void geoToStringDegs(const LatLng* p, char* str);
-void geoToStringDegsNoFmt(const LatLng* p, char* str);
+void geoToStringRads(const LatLng *p, char *str);
+void geoToStringDegs(const LatLng *p, char *str);
+void geoToStringDegsNoFmt(const LatLng *p, char *str);
 
-void geoPrint(const LatLng* p);
-void geoPrintln(const LatLng* p);
-void geoPrintNoFmt(const LatLng* p);
-void geoPrintlnNoFmt(const LatLng* p);
-void cellBoundaryPrint(const CellBoundary* b);
-void cellBoundaryPrintln(const CellBoundary* b);
+void geoPrint(const LatLng *p);
+void geoPrintln(const LatLng *p);
+void geoPrintNoFmt(const LatLng *p);
+void geoPrintlnNoFmt(const LatLng *p);
+void cellBoundaryPrint(const CellBoundary *b);
+void cellBoundaryPrintln(const CellBoundary *b);
 
-void randomGeo(LatLng* p);
+void randomGeo(LatLng *p);
 
 void iterateAllIndexesAtRes(int res, void (*callback)(H3Index));
 void iterateAllIndexesAtResPartial(int res, void (*callback)(H3Index),
@@ -56,6 +56,6 @@ void iterateBaseCellIndexesAtRes(int res, void (*callback)(H3Index),
                                  int baseCell);
 void iterateAllDirectedEdgesAtRes(int res, void (*callback)(H3Index));
 
-int countNonNullIndexes(H3Index* indexes, int numCells);
+int countNonNullIndexes(H3Index *indexes, int numCells);
 
 #endif

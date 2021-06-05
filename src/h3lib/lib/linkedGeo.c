@@ -31,9 +31,9 @@
  * @param  polygon Polygon to add link to
  * @return         Pointer to new polygon
  */
-LinkedGeoPolygon* addNewLinkedPolygon(LinkedGeoPolygon* polygon) {
+LinkedGeoPolygon *addNewLinkedPolygon(LinkedGeoPolygon *polygon) {
     assert(polygon->next == NULL);
-    LinkedGeoPolygon* next = H3_MEMORY(calloc)(1, sizeof(*next));
+    LinkedGeoPolygon *next = H3_MEMORY(calloc)(1, sizeof(*next));
     assert(next != NULL);
     polygon->next = next;
     return next;
@@ -44,8 +44,8 @@ LinkedGeoPolygon* addNewLinkedPolygon(LinkedGeoPolygon* polygon) {
  * @param  polygon Polygon to add loop to
  * @return         Pointer to loop
  */
-LinkedGeoLoop* addNewLinkedLoop(LinkedGeoPolygon* polygon) {
-    LinkedGeoLoop* loop = H3_MEMORY(calloc)(1, sizeof(*loop));
+LinkedGeoLoop *addNewLinkedLoop(LinkedGeoPolygon *polygon) {
+    LinkedGeoLoop *loop = H3_MEMORY(calloc)(1, sizeof(*loop));
     assert(loop != NULL);
     return addLinkedLoop(polygon, loop);
 }
@@ -55,8 +55,8 @@ LinkedGeoLoop* addNewLinkedLoop(LinkedGeoPolygon* polygon) {
  * @param  polygon Polygon to add loop to
  * @return         Pointer to loop
  */
-LinkedGeoLoop* addLinkedLoop(LinkedGeoPolygon* polygon, LinkedGeoLoop* loop) {
-    LinkedGeoLoop* last = polygon->last;
+LinkedGeoLoop *addLinkedLoop(LinkedGeoPolygon *polygon, LinkedGeoLoop *loop) {
+    LinkedGeoLoop *last = polygon->last;
     if (last == NULL) {
         assert(polygon->first == NULL);
         polygon->first = loop;
@@ -73,11 +73,11 @@ LinkedGeoLoop* addLinkedLoop(LinkedGeoPolygon* polygon, LinkedGeoLoop* loop) {
  * @param  vertex Coordinate to add
  * @return        Pointer to the coordinate
  */
-LinkedLatLng* addLinkedCoord(LinkedGeoLoop* loop, const LatLng* vertex) {
-    LinkedLatLng* coord = H3_MEMORY(malloc)(sizeof(*coord));
+LinkedLatLng *addLinkedCoord(LinkedGeoLoop *loop, const LatLng *vertex) {
+    LinkedLatLng *coord = H3_MEMORY(malloc)(sizeof(*coord));
     assert(coord != NULL);
     *coord = (LinkedLatLng){.vertex = *vertex, .next = NULL};
-    LinkedLatLng* last = loop->last;
+    LinkedLatLng *last = loop->last;
     if (last == NULL) {
         assert(loop->first == NULL);
         loop->first = coord;
@@ -93,9 +93,9 @@ LinkedLatLng* addLinkedCoord(LinkedGeoLoop* loop, const LatLng* vertex) {
  * responsible for freeing memory allocated to input loop struct.
  * @param loop Loop to free
  */
-void destroyLinkedGeoLoop(LinkedGeoLoop* loop) {
-    LinkedLatLng* nextCoord;
-    for (LinkedLatLng* currentCoord = loop->first; currentCoord != NULL;
+void destroyLinkedGeoLoop(LinkedGeoLoop *loop) {
+    LinkedLatLng *nextCoord;
+    for (LinkedLatLng *currentCoord = loop->first; currentCoord != NULL;
          currentCoord = nextCoord) {
         nextCoord = currentCoord->next;
         H3_MEMORY(free)(currentCoord);
@@ -107,14 +107,14 @@ void destroyLinkedGeoLoop(LinkedGeoLoop* loop) {
  * responsible for freeing memory allocated to input polygon struct.
  * @param polygon Pointer to the first polygon in the structure
  */
-void H3_EXPORT(destroyLinkedPolygon)(LinkedGeoPolygon* polygon) {
+void H3_EXPORT(destroyLinkedPolygon)(LinkedGeoPolygon *polygon) {
     // flag to skip the input polygon
     bool skip = true;
-    LinkedGeoPolygon* nextPolygon;
-    LinkedGeoLoop* nextLoop;
-    for (LinkedGeoPolygon* currentPolygon = polygon; currentPolygon != NULL;
+    LinkedGeoPolygon *nextPolygon;
+    LinkedGeoLoop *nextLoop;
+    for (LinkedGeoPolygon *currentPolygon = polygon; currentPolygon != NULL;
          currentPolygon = nextPolygon) {
-        for (LinkedGeoLoop* currentLoop = currentPolygon->first;
+        for (LinkedGeoLoop *currentLoop = currentPolygon->first;
              currentLoop != NULL; currentLoop = nextLoop) {
             destroyLinkedGeoLoop(currentLoop);
             nextLoop = currentLoop->next;
@@ -135,7 +135,7 @@ void H3_EXPORT(destroyLinkedPolygon)(LinkedGeoPolygon* polygon) {
  * @param  polygon Starting polygon
  * @return         Count
  */
-int countLinkedPolygons(LinkedGeoPolygon* polygon) {
+int countLinkedPolygons(LinkedGeoPolygon *polygon) {
     int count = 0;
     while (polygon != NULL) {
         count++;
@@ -149,8 +149,8 @@ int countLinkedPolygons(LinkedGeoPolygon* polygon) {
  * @param  polygon Polygon to count loops for
  * @return         Count
  */
-int countLinkedLoops(LinkedGeoPolygon* polygon) {
-    LinkedGeoLoop* loop = polygon->first;
+int countLinkedLoops(LinkedGeoPolygon *polygon) {
+    LinkedGeoLoop *loop = polygon->first;
     int count = 0;
     while (loop != NULL) {
         count++;
@@ -164,8 +164,8 @@ int countLinkedLoops(LinkedGeoPolygon* polygon) {
  * @param  loop Loop to count coordinates for
  * @return      Count
  */
-int countLinkedCoords(LinkedGeoLoop* loop) {
-    LinkedLatLng* coord = loop->first;
+int countLinkedCoords(LinkedGeoLoop *loop) {
+    LinkedLatLng *coord = loop->first;
     int count = 0;
     while (coord != NULL) {
         count++;
@@ -182,9 +182,9 @@ int countLinkedCoords(LinkedGeoLoop* loop) {
  * @param  polygonCount Number of polygons in the test array
  * @return              Number of polygons containing the loop
  */
-static int countContainers(const LinkedGeoLoop* loop,
-                           const LinkedGeoPolygon** polygons,
-                           const BBox** bboxes, const int polygonCount) {
+static int countContainers(const LinkedGeoLoop *loop,
+                           const LinkedGeoPolygon **polygons,
+                           const BBox **bboxes, const int polygonCount) {
     int containerCount = 0;
     for (int i = 0; i < polygonCount; i++) {
         if (loop != polygons[i]->first &&
@@ -203,11 +203,11 @@ static int countContainers(const LinkedGeoLoop* loop,
  * @param  polygonCount Number of polygons in the list
  * @return              Deepest container, or null if list is empty
  */
-static const LinkedGeoPolygon* findDeepestContainer(
-    const LinkedGeoPolygon** polygons, const BBox** bboxes,
+static const LinkedGeoPolygon *findDeepestContainer(
+    const LinkedGeoPolygon **polygons, const BBox **bboxes,
     const int polygonCount) {
     // Set the initial return value to the first candidate
-    const LinkedGeoPolygon* parent = polygonCount > 0 ? polygons[0] : NULL;
+    const LinkedGeoPolygon *parent = polygonCount > 0 ? polygons[0] : NULL;
 
     // If we have multiple polygons, they must be nested inside each other.
     // Find the innermost polygon by taking the one with the most containers
@@ -236,19 +236,19 @@ static const LinkedGeoPolygon* findDeepestContainer(
  * @param  polygonCount Number of polygons to check
  * @return              Pointer to parent polygon, or null if not found
  */
-static const LinkedGeoPolygon* findPolygonForHole(
-    const LinkedGeoLoop* loop, const LinkedGeoPolygon* polygon,
-    const BBox* bboxes, const int polygonCount) {
+static const LinkedGeoPolygon *findPolygonForHole(
+    const LinkedGeoLoop *loop, const LinkedGeoPolygon *polygon,
+    const BBox *bboxes, const int polygonCount) {
     // Early exit with no polygons
     if (polygonCount == 0) {
         return NULL;
     }
     // Initialize arrays for candidate loops and their bounding boxes
-    const LinkedGeoPolygon** candidates =
-        H3_MEMORY(malloc)(polygonCount * sizeof(LinkedGeoPolygon*));
+    const LinkedGeoPolygon **candidates =
+        H3_MEMORY(malloc)(polygonCount * sizeof(LinkedGeoPolygon *));
     assert(candidates != NULL);
-    const BBox** candidateBBoxes =
-        H3_MEMORY(malloc)(polygonCount * sizeof(BBox*));
+    const BBox **candidateBBoxes =
+        H3_MEMORY(malloc)(polygonCount * sizeof(BBox *));
     assert(candidateBBoxes != NULL);
 
     // Find all polygons that contain the loop
@@ -267,7 +267,7 @@ static const LinkedGeoPolygon* findPolygonForHole(
     }
 
     // The most deeply nested container is the immediate parent
-    const LinkedGeoPolygon* parent =
+    const LinkedGeoPolygon *parent =
         findDeepestContainer(candidates, candidateBBoxes, candidateCount);
 
     // Free allocated memory
@@ -290,7 +290,7 @@ static const LinkedGeoPolygon* findPolygonForHole(
  * @param root Root polygon including all loops
  * @return     0 on success, or an error code > 0 for invalid input
  */
-int normalizeMultiPolygon(LinkedGeoPolygon* root) {
+int normalizeMultiPolygon(LinkedGeoPolygon *root) {
     // We assume that the input is a single polygon with loops;
     // if it has multiple polygons, don't touch it
     if (root->next) {
@@ -304,24 +304,24 @@ int normalizeMultiPolygon(LinkedGeoPolygon* root) {
     }
 
     int resultCode = NORMALIZATION_SUCCESS;
-    LinkedGeoPolygon* polygon = NULL;
-    LinkedGeoLoop* next;
+    LinkedGeoPolygon *polygon = NULL;
+    LinkedGeoLoop *next;
     int innerCount = 0;
     int outerCount = 0;
 
     // Create an array to hold all of the inner loops. Note that
     // this array will never be full, as there will always be fewer
     // inner loops than outer loops.
-    LinkedGeoLoop** innerLoops =
-        H3_MEMORY(malloc)(loopCount * sizeof(LinkedGeoLoop*));
+    LinkedGeoLoop **innerLoops =
+        H3_MEMORY(malloc)(loopCount * sizeof(LinkedGeoLoop *));
     assert(innerLoops != NULL);
 
     // Create an array to hold the bounding boxes for the outer loops
-    BBox* bboxes = H3_MEMORY(malloc)(loopCount * sizeof(BBox));
+    BBox *bboxes = H3_MEMORY(malloc)(loopCount * sizeof(BBox));
     assert(bboxes != NULL);
 
     // Get the first loop and unlink it from root
-    LinkedGeoLoop* loop = root->first;
+    LinkedGeoLoop *loop = root->first;
     *root = (LinkedGeoPolygon){0};
 
     // Iterate over all loops, moving inner loops into an array and
@@ -344,8 +344,8 @@ int normalizeMultiPolygon(LinkedGeoPolygon* root) {
 
     // Find polygon for each inner loop and assign the hole to it
     for (int i = 0; i < innerCount; i++) {
-        polygon = (LinkedGeoPolygon*)findPolygonForHole(innerLoops[i], root,
-                                                        bboxes, outerCount);
+        polygon = (LinkedGeoPolygon *)findPolygonForHole(innerLoops[i], root,
+                                                         bboxes, outerCount);
         if (polygon) {
             addLinkedLoop(polygon, innerLoops[i]);
         } else {

@@ -44,7 +44,7 @@ void resetMemoryCounters(int permitted) {
     permittedAllocCalls = permitted;
 }
 
-void* test_prefix_malloc(size_t size) {
+void *test_prefix_malloc(size_t size) {
     actualAllocCalls++;
     if (permittedAllocCalls && actualAllocCalls > permittedAllocCalls) {
         failAlloc = true;
@@ -55,7 +55,7 @@ void* test_prefix_malloc(size_t size) {
     return malloc(size);
 }
 
-void* test_prefix_calloc(size_t num, size_t size) {
+void *test_prefix_calloc(size_t num, size_t size) {
     actualAllocCalls++;
     if (permittedAllocCalls && actualAllocCalls > permittedAllocCalls) {
         failAlloc = true;
@@ -66,7 +66,7 @@ void* test_prefix_calloc(size_t num, size_t size) {
     return calloc(num, size);
 }
 
-void* test_prefix_realloc(void* ptr, size_t size) {
+void *test_prefix_realloc(void *ptr, size_t size) {
     actualAllocCalls++;
     if (permittedAllocCalls && actualAllocCalls > permittedAllocCalls) {
         failAlloc = true;
@@ -77,7 +77,7 @@ void* test_prefix_realloc(void* ptr, size_t size) {
     return realloc(ptr, size);
 }
 
-void test_prefix_free(void* ptr) {
+void test_prefix_free(void *ptr) {
     actualFreeCalls++;
     return free(ptr);
 }
@@ -89,7 +89,7 @@ SUITE(h3Memory) {
     TEST(gridDisk) {
         int k = 2;
         int hexCount = H3_EXPORT(maxGridDiskSize)(k);
-        H3Index* gridDiskOutput = calloc(hexCount, sizeof(H3Index));
+        H3Index *gridDiskOutput = calloc(hexCount, sizeof(H3Index));
 
         resetMemoryCounters(0);
         H3_EXPORT(gridDisk)(sunnyvale, k, gridDiskOutput);
@@ -122,13 +122,13 @@ SUITE(h3Memory) {
         int expectedCompactCount = 73;
 
         // Generate a set of hexagons to compact
-        H3Index* sunnyvaleExpanded = calloc(hexCount, sizeof(H3Index));
+        H3Index *sunnyvaleExpanded = calloc(hexCount, sizeof(H3Index));
         resetMemoryCounters(0);
         H3_EXPORT(gridDisk)(sunnyvale, k, sunnyvaleExpanded);
         t_assert(actualAllocCalls == 0, "gridDisk did not call alloc");
         t_assert(actualFreeCalls == 0, "gridDisk did not call free");
 
-        H3Index* compressed = calloc(hexCount, sizeof(H3Index));
+        H3Index *compressed = calloc(hexCount, sizeof(H3Index));
 
         resetMemoryCounters(0);
         failAlloc = true;

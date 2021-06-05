@@ -20,12 +20,12 @@
 #include "h3api.h"
 #include "utility.h"
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     if (argc != 2) {
         error("Should have one argument (test case file)\n");
     }
-    const char* filename = argv[1];
-    FILE* fp = fopen(filename, "rb");
+    const char *filename = argv[1];
+    FILE *fp = fopen(filename, "rb");
     H3Index index;
     if (fread(&index, sizeof(H3Index), 1, fp) != 1) {
         error("Error reading\n");

@@ -36,7 +36,7 @@
  * @param message
  */
 static void testDecreasingFunction(double (*function)(int),
-                                   const char* message) {
+                                   const char *message) {
     double last = 0;
     double next;
     for (int i = MAX_H3_RES; i >= 0; i--) {

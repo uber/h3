@@ -26,8 +26,8 @@
 #include "latLng.h"
 
 extern int globalTestCount;
-extern const char* currentSuiteName;
-extern const char* currentTestName;
+extern const char *currentSuiteName;
+extern const char *currentTestName;
 
 #define t_assert(condition, msg)                                           \
     do {                                                                   \
@@ -43,7 +43,7 @@ extern const char* currentTestName;
 
 #define t_assertSuccess(condition) t_assert(!(condition), "expected E_SUCCESS")
 
-void t_assertBoundary(H3Index h3, const CellBoundary* b1);
+void t_assertBoundary(H3Index h3, const CellBoundary *b1);
 
 #define SUITE(NAME)                                         \
     static void runTests(void);                             \

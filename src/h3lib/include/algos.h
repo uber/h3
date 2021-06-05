@@ -27,32 +27,32 @@
 #include "vertexGraph.h"
 
 // neighbor along the ijk coordinate system of the current face, rotated
-H3Index h3NeighborRotations(H3Index origin, Direction dir, int* rotations);
+H3Index h3NeighborRotations(H3Index origin, Direction dir, int *rotations);
 
 // IJK direction of neighbor
 Direction directionForNeighbor(H3Index origin, H3Index destination);
 
 // k-ring implementation
-void _kRingInternal(H3Index origin, int k, H3Index* out, int* distances,
+void _kRingInternal(H3Index origin, int k, H3Index *out, int *distances,
                     int maxIdx, int curK);
 
 // Create a vertex graph from a set of hexagons
-void h3SetToVertexGraph(const H3Index* h3Set, const int numHexes,
-                        VertexGraph* out);
+void h3SetToVertexGraph(const H3Index *h3Set, const int numHexes,
+                        VertexGraph *out);
 
 // Create a LinkedGeoPolygon from a vertex graph
-void _vertexGraphToLinkedGeo(VertexGraph* graph, LinkedGeoPolygon* out);
+void _vertexGraphToLinkedGeo(VertexGraph *graph, LinkedGeoPolygon *out);
 
 // Internal function for polygonToCells that traces a geoloop with hexagons of
 // a specific size
-int _getEdgeHexagons(const GeoLoop* geoloop, int numHexagons, int res,
-                     int* numSearchHexes, H3Index* search, H3Index* found);
+int _getEdgeHexagons(const GeoLoop *geoloop, int numHexagons, int res,
+                     int *numSearchHexes, H3Index *search, H3Index *found);
 
 // The polygonToCells algorithm. Separated out because it can theoretically fail
-int _polygonToCellsInternal(const GeoPolygon* geoPolygon, int res,
-                            H3Index* out);
+int _polygonToCellsInternal(const GeoPolygon *geoPolygon, int res,
+                            H3Index *out);
 
 // The safe gridDiskDistances algorithm.
-void _gridDiskDistancesInternal(H3Index origin, int k, H3Index* out,
-                                int* distances, int maxIdx, int curK);
+void _gridDiskDistancesInternal(H3Index origin, int k, H3Index *out,
+                                int *distances, int maxIdx, int curK);
 #endif

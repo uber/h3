@@ -31,7 +31,7 @@ static LatLng sfVerts[] = {
     {0.6583348114025, -2.1354884206045}, {0.6581220034068, -2.1382437718946},
     {0.6594479998527, -2.1384597563896}, {0.6599990002976, -2.1376771158464}};
 
-static void createLinkedLoop(LinkedGeoLoop* loop, LatLng* verts, int numVerts) {
+static void createLinkedLoop(LinkedGeoLoop *loop, LatLng *verts, int numVerts) {
     *loop = (LinkedGeoLoop){0};
     for (int i = 0; i < numVerts; i++) {
         addLinkedCoord(loop, verts++);
@@ -150,7 +150,7 @@ SUITE(polygon) {
 
         const BBox expected = {1.1, 0.7, 0.7, 0.2};
 
-        BBox* result = calloc(sizeof(BBox), 1);
+        BBox *result = calloc(sizeof(BBox), 1);
         bboxesFromGeoPolygon(&polygon, result);
         t_assert(bboxEquals(&result[0], &expected), "Got expected bbox");
 
@@ -171,7 +171,7 @@ SUITE(polygon) {
         const BBox expected = {1.1, 0.7, 0.7, 0.2};
         const BBox expectedHole = {1.0, 0.9, 0.7, 0.3};
 
-        BBox* result = calloc(sizeof(BBox), 2);
+        BBox *result = calloc(sizeof(BBox), 2);
         bboxesFromGeoPolygon(&polygon, result);
         t_assert(bboxEquals(&result[0], &expected), "Got expected bbox");
         t_assert(bboxEquals(&result[1], &expectedHole),
@@ -280,7 +280,7 @@ SUITE(polygon) {
     TEST(normalizeMultiPolygonSingle) {
         LatLng verts[] = {{0, 0}, {0, 1}, {1, 1}};
 
-        LinkedGeoLoop* outer = malloc(sizeof(*outer));
+        LinkedGeoLoop *outer = malloc(sizeof(*outer));
         assert(outer != NULL);
         createLinkedLoop(outer, &verts[0], 3);
 
@@ -301,13 +301,13 @@ SUITE(polygon) {
     TEST(normalizeMultiPolygonTwoOuterLoops) {
         LatLng verts1[] = {{0, 0}, {0, 1}, {1, 1}};
 
-        LinkedGeoLoop* outer1 = malloc(sizeof(*outer1));
+        LinkedGeoLoop *outer1 = malloc(sizeof(*outer1));
         assert(outer1 != NULL);
         createLinkedLoop(outer1, &verts1[0], 3);
 
         LatLng verts2[] = {{2, 2}, {2, 3}, {3, 3}};
 
-        LinkedGeoLoop* outer2 = malloc(sizeof(*outer2));
+        LinkedGeoLoop *outer2 = malloc(sizeof(*outer2));
         assert(outer2 != NULL);
         createLinkedLoop(outer2, &verts2[0], 3);
 
@@ -331,13 +331,13 @@ SUITE(polygon) {
     TEST(normalizeMultiPolygonOneHole) {
         LatLng verts[] = {{0, 0}, {0, 3}, {3, 3}, {3, 0}};
 
-        LinkedGeoLoop* outer = malloc(sizeof(*outer));
+        LinkedGeoLoop *outer = malloc(sizeof(*outer));
         assert(outer != NULL);
         createLinkedLoop(outer, &verts[0], 4);
 
         LatLng verts2[] = {{1, 1}, {2, 2}, {1, 2}};
 
-        LinkedGeoLoop* inner = malloc(sizeof(*inner));
+        LinkedGeoLoop *inner = malloc(sizeof(*inner));
         assert(inner != NULL);
         createLinkedLoop(inner, &verts2[0], 3);
 
@@ -361,19 +361,19 @@ SUITE(polygon) {
     TEST(normalizeMultiPolygonTwoHoles) {
         LatLng verts[] = {{0, 0}, {0, 0.4}, {0.4, 0.4}, {0.4, 0}};
 
-        LinkedGeoLoop* outer = malloc(sizeof(*outer));
+        LinkedGeoLoop *outer = malloc(sizeof(*outer));
         assert(outer != NULL);
         createLinkedLoop(outer, &verts[0], 4);
 
         LatLng verts2[] = {{0.1, 0.1}, {0.2, 0.2}, {0.1, 0.2}};
 
-        LinkedGeoLoop* inner1 = malloc(sizeof(*inner1));
+        LinkedGeoLoop *inner1 = malloc(sizeof(*inner1));
         assert(inner1 != NULL);
         createLinkedLoop(inner1, &verts2[0], 3);
 
         LatLng verts3[] = {{0.2, 0.2}, {0.3, 0.3}, {0.2, 0.3}};
 
-        LinkedGeoLoop* inner2 = malloc(sizeof(*inner2));
+        LinkedGeoLoop *inner2 = malloc(sizeof(*inner2));
         assert(inner2 != NULL);
         createLinkedLoop(inner2, &verts3[0], 3);
 
@@ -397,22 +397,22 @@ SUITE(polygon) {
 
     TEST(normalizeMultiPolygonTwoDonuts) {
         LatLng verts[] = {{0, 0}, {0, 3}, {3, 3}, {3, 0}};
-        LinkedGeoLoop* outer = malloc(sizeof(*outer));
+        LinkedGeoLoop *outer = malloc(sizeof(*outer));
         assert(outer != NULL);
         createLinkedLoop(outer, &verts[0], 4);
 
         LatLng verts2[] = {{1, 1}, {2, 2}, {1, 2}};
-        LinkedGeoLoop* inner = malloc(sizeof(*inner));
+        LinkedGeoLoop *inner = malloc(sizeof(*inner));
         assert(inner != NULL);
         createLinkedLoop(inner, &verts2[0], 3);
 
         LatLng verts3[] = {{0, 0}, {0, -3}, {-3, -3}, {-3, 0}};
-        LinkedGeoLoop* outer2 = malloc(sizeof(*outer));
+        LinkedGeoLoop *outer2 = malloc(sizeof(*outer));
         assert(outer2 != NULL);
         createLinkedLoop(outer2, &verts3[0], 4);
 
         LatLng verts4[] = {{-1, -1}, {-2, -2}, {-1, -2}};
-        LinkedGeoLoop* inner2 = malloc(sizeof(*inner));
+        LinkedGeoLoop *inner2 = malloc(sizeof(*inner));
         assert(inner2 != NULL);
         createLinkedLoop(inner2, &verts4[0], 3);
 
@@ -445,22 +445,22 @@ SUITE(polygon) {
 
     TEST(normalizeMultiPolygonNestedDonuts) {
         LatLng verts[] = {{0.2, 0.2}, {0.2, -0.2}, {-0.2, -0.2}, {-0.2, 0.2}};
-        LinkedGeoLoop* outer = malloc(sizeof(*outer));
+        LinkedGeoLoop *outer = malloc(sizeof(*outer));
         assert(outer != NULL);
         createLinkedLoop(outer, &verts[0], 4);
 
         LatLng verts2[] = {{0.1, 0.1}, {-0.1, 0.1}, {-0.1, -0.1}, {0.1, -0.1}};
-        LinkedGeoLoop* inner = malloc(sizeof(*inner));
+        LinkedGeoLoop *inner = malloc(sizeof(*inner));
         assert(inner != NULL);
         createLinkedLoop(inner, &verts2[0], 4);
 
         LatLng verts3[] = {{0.6, 0.6}, {0.6, -0.6}, {-0.6, -0.6}, {-0.6, 0.6}};
-        LinkedGeoLoop* outerBig = malloc(sizeof(*outerBig));
+        LinkedGeoLoop *outerBig = malloc(sizeof(*outerBig));
         assert(outerBig != NULL);
         createLinkedLoop(outerBig, &verts3[0], 4);
 
         LatLng verts4[] = {{0.5, 0.5}, {-0.5, 0.5}, {-0.5, -0.5}, {0.5, -0.5}};
-        LinkedGeoLoop* innerBig = malloc(sizeof(*innerBig));
+        LinkedGeoLoop *innerBig = malloc(sizeof(*innerBig));
         assert(innerBig != NULL);
         createLinkedLoop(innerBig, &verts4[0], 4);
 
@@ -490,13 +490,13 @@ SUITE(polygon) {
     TEST(normalizeMultiPolygonNoOuterLoops) {
         LatLng verts1[] = {{0, 0}, {1, 1}, {0, 1}};
 
-        LinkedGeoLoop* outer1 = malloc(sizeof(*outer1));
+        LinkedGeoLoop *outer1 = malloc(sizeof(*outer1));
         assert(outer1 != NULL);
         createLinkedLoop(outer1, &verts1[0], 3);
 
         LatLng verts2[] = {{2, 2}, {3, 3}, {2, 3}};
 
-        LinkedGeoLoop* outer2 = malloc(sizeof(*outer2));
+        LinkedGeoLoop *outer2 = malloc(sizeof(*outer2));
         assert(outer2 != NULL);
         createLinkedLoop(outer2, &verts2[0], 3);
 
@@ -519,19 +519,19 @@ SUITE(polygon) {
     TEST(normalizeMultiPolygonAlreadyNormalized) {
         LatLng verts1[] = {{0, 0}, {0, 1}, {1, 1}};
 
-        LinkedGeoLoop* outer1 = malloc(sizeof(*outer1));
+        LinkedGeoLoop *outer1 = malloc(sizeof(*outer1));
         assert(outer1 != NULL);
         createLinkedLoop(outer1, &verts1[0], 3);
 
         LatLng verts2[] = {{2, 2}, {2, 3}, {3, 3}};
 
-        LinkedGeoLoop* outer2 = malloc(sizeof(*outer2));
+        LinkedGeoLoop *outer2 = malloc(sizeof(*outer2));
         assert(outer2 != NULL);
         createLinkedLoop(outer2, &verts2[0], 3);
 
         LinkedGeoPolygon polygon = {0};
         addLinkedLoop(&polygon, outer1);
-        LinkedGeoPolygon* next = addNewLinkedPolygon(&polygon);
+        LinkedGeoPolygon *next = addNewLinkedPolygon(&polygon);
         addLinkedLoop(next, outer2);
 
         // Should be a no-op
@@ -554,13 +554,13 @@ SUITE(polygon) {
     TEST(normalizeMultiPolygon_unassignedHole) {
         LatLng verts[] = {{0, 0}, {0, 1}, {1, 1}, {1, 0}};
 
-        LinkedGeoLoop* outer = malloc(sizeof(*outer));
+        LinkedGeoLoop *outer = malloc(sizeof(*outer));
         assert(outer != NULL);
         createLinkedLoop(outer, &verts[0], 4);
 
         LatLng verts2[] = {{2, 2}, {3, 3}, {2, 3}};
 
-        LinkedGeoLoop* inner = malloc(sizeof(*inner));
+        LinkedGeoLoop *inner = malloc(sizeof(*inner));
         assert(inner != NULL);
         createLinkedLoop(inner, &verts2[0], 3);
 

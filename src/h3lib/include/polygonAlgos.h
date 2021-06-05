@@ -64,8 +64,8 @@
  * @param coord The coordinate to check
  * @return      Whether the point is contained
  */
-bool GENERIC_LOOP_ALGO(pointInside)(const TYPE* loop, const BBox* bbox,
-                                    const LatLng* coord) {
+bool GENERIC_LOOP_ALGO(pointInside)(const TYPE *loop, const BBox *bbox,
+                                    const LatLng *coord) {
     // fail fast if we're outside the bounding box
     if (!bboxContains(bbox, coord)) {
         return false;
@@ -134,7 +134,7 @@ bool GENERIC_LOOP_ALGO(pointInside)(const TYPE* loop, const BBox* bbox,
  * @param loop     Loop of coordinates
  * @param bbox     Output bbox
  */
-void GENERIC_LOOP_ALGO(bboxFrom)(const TYPE* loop, BBox* bbox) {
+void GENERIC_LOOP_ALGO(bboxFrom)(const TYPE *loop, BBox *bbox) {
     // Early exit if there are no vertices
     if (IS_EMPTY(loop)) {
         *bbox = (BBox){0};
@@ -188,7 +188,7 @@ void GENERIC_LOOP_ALGO(bboxFrom)(const TYPE* loop, BBox* bbox) {
  * @param isTransmeridian   Whether the loop crosses the antimeridian
  * @return                  Whether the loop is clockwise
  */
-static bool GENERIC_LOOP_ALGO(isClockwiseNormalized)(const TYPE* loop,
+static bool GENERIC_LOOP_ALGO(isClockwiseNormalized)(const TYPE *loop,
                                                      bool isTransmeridian) {
     double sum = 0;
     LatLng a;
@@ -216,6 +216,6 @@ static bool GENERIC_LOOP_ALGO(isClockwiseNormalized)(const TYPE* loop,
  * @param loop  The loop to check
  * @return      Whether the loop is clockwise
  */
-bool GENERIC_LOOP_ALGO(isClockwise)(const TYPE* loop) {
+bool GENERIC_LOOP_ALGO(isClockwise)(const TYPE *loop) {
     return GENERIC_LOOP_ALGO(isClockwiseNormalized)(loop, false);
 }

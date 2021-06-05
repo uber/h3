@@ -79,8 +79,8 @@ SUITE(vertexGraph) {
     TEST(addVertexNode) {
         VertexGraph graph;
         initVertexGraph(&graph, 10, 9);
-        VertexNode* node;
-        VertexNode* addedNode;
+        VertexNode *node;
+        VertexNode *addedNode;
 
         // Basic add
         addedNode = addVertexNode(&graph, &vertex1, &vertex2);
@@ -117,8 +117,8 @@ SUITE(vertexGraph) {
     TEST(addVertexNodeDupe) {
         VertexGraph graph;
         initVertexGraph(&graph, 10, 9);
-        VertexNode* node;
-        VertexNode* addedNode;
+        VertexNode *node;
+        VertexNode *addedNode;
 
         // Basic add
         addedNode = addVertexNode(&graph, &vertex1, &vertex2);
@@ -139,7 +139,7 @@ SUITE(vertexGraph) {
         // Basic lookup tested in testAddVertexNode, only test failures here
         VertexGraph graph;
         initVertexGraph(&graph, 10, 9);
-        VertexNode* node;
+        VertexNode *node;
 
         // Empty graph
         node = findNodeForEdge(&graph, &vertex1, &vertex2);
@@ -170,7 +170,7 @@ SUITE(vertexGraph) {
     TEST(findNodeForVertex) {
         VertexGraph graph;
         initVertexGraph(&graph, 10, 9);
-        VertexNode* node;
+        VertexNode *node;
 
         // Empty graph
         node = findNodeForVertex(&graph, &vertex1);
@@ -191,7 +191,7 @@ SUITE(vertexGraph) {
     TEST(removeVertexNode) {
         VertexGraph graph;
         initVertexGraph(&graph, 10, 9);
-        VertexNode* node;
+        VertexNode *node;
         int success;
 
         // Straight removal
@@ -265,8 +265,8 @@ SUITE(vertexGraph) {
     TEST(firstVertexNode) {
         VertexGraph graph;
         initVertexGraph(&graph, 10, 9);
-        VertexNode* node;
-        VertexNode* addedNode;
+        VertexNode *node;
+        VertexNode *addedNode;
 
         node = firstVertexNode(&graph);
         t_assert(node == NULL, "No node found for empty graph");
@@ -288,7 +288,7 @@ SUITE(vertexGraph) {
     TEST(singleBucketVertexGraph) {
         VertexGraph graph;
         initVertexGraph(&graph, 1, 9);
-        VertexNode* node;
+        VertexNode *node;
 
         t_assert(graph.numBuckets == 1, "1 bucket created");
 

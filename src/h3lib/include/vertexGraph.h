@@ -32,38 +32,38 @@ typedef struct VertexNode VertexNode;
 struct VertexNode {
     LatLng from;
     LatLng to;
-    VertexNode* next;
+    VertexNode *next;
 };
 
 /** @struct VertexGraph
  *  @brief A data structure to store a graph of vertices
  */
 typedef struct {
-    VertexNode** buckets;
+    VertexNode **buckets;
     int numBuckets;
     int size;
     int res;
 } VertexGraph;
 
-void initVertexGraph(VertexGraph* graph, int numBuckets, int res);
+void initVertexGraph(VertexGraph *graph, int numBuckets, int res);
 
-void destroyVertexGraph(VertexGraph* graph);
+void destroyVertexGraph(VertexGraph *graph);
 
-VertexNode* addVertexNode(VertexGraph* graph, const LatLng* fromVtx,
-                          const LatLng* toVtx);
+VertexNode *addVertexNode(VertexGraph *graph, const LatLng *fromVtx,
+                          const LatLng *toVtx);
 
-int removeVertexNode(VertexGraph* graph, VertexNode* node);
+int removeVertexNode(VertexGraph *graph, VertexNode *node);
 
-VertexNode* findNodeForEdge(const VertexGraph* graph, const LatLng* fromVtx,
-                            const LatLng* toVtx);
+VertexNode *findNodeForEdge(const VertexGraph *graph, const LatLng *fromVtx,
+                            const LatLng *toVtx);
 
-VertexNode* findNodeForVertex(const VertexGraph* graph, const LatLng* fromVtx);
+VertexNode *findNodeForVertex(const VertexGraph *graph, const LatLng *fromVtx);
 
-VertexNode* firstVertexNode(const VertexGraph* graph);
+VertexNode *firstVertexNode(const VertexGraph *graph);
 
 // Internal functions
-uint32_t _hashVertex(const LatLng* vertex, int res, int numBuckets);
-void _initVertexNode(VertexNode* node, const LatLng* fromVtx,
-                     const LatLng* toVtx);
+uint32_t _hashVertex(const LatLng *vertex, int res, int numBuckets);
+void _initVertexNode(VertexNode *node, const LatLng *fromVtx,
+                     const LatLng *toVtx);
 
 #endif

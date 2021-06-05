@@ -55,7 +55,7 @@ typedef struct {
 
 DECLSPEC IterCellsChildren iterInitParent(H3Index h, int childRes);
 DECLSPEC IterCellsChildren iterInitBaseCellNum(int baseCellNum, int childRes);
-DECLSPEC void iterStepChild(IterCellsChildren* iter);
+DECLSPEC void iterStepChild(IterCellsChildren *iter);
 
 /**
  * IterCellsResolution: struct for iterating through all cells at a given
@@ -81,6 +81,6 @@ typedef struct {
 } IterCellsResolution;
 
 DECLSPEC IterCellsResolution iterInitRes(int res);
-DECLSPEC void iterStepRes(IterCellsResolution* iter);
+DECLSPEC void iterStepRes(IterCellsResolution *iter);
 
 #endif

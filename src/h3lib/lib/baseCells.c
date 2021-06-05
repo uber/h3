@@ -843,7 +843,7 @@ bool _isBaseCellPolarPentagon(int baseCell) {
  *
  * Valid ijk+ lookup coordinates are from (0, 0, 0) to (2, 2, 2).
  */
-int _faceIjkToBaseCell(const FaceIJK* h) {
+int _faceIjkToBaseCell(const FaceIJK *h) {
     return faceIjkBaseCells[h->face][h->coord.i][h->coord.j][h->coord.k]
         .baseCell;
 }
@@ -856,14 +856,14 @@ int _faceIjkToBaseCell(const FaceIJK* h) {
  *
  * Valid ijk+ lookup coordinates are from (0, 0, 0) to (2, 2, 2).
  */
-int _faceIjkToBaseCellCCWrot60(const FaceIJK* h) {
+int _faceIjkToBaseCellCCWrot60(const FaceIJK *h) {
     return faceIjkBaseCells[h->face][h->coord.i][h->coord.j][h->coord.k]
         .ccwRot60;
 }
 
 /** @brief Find the FaceIJK given a base cell.
  */
-void _baseCellToFaceIjk(int baseCell, FaceIJK* h) {
+void _baseCellToFaceIjk(int baseCell, FaceIJK *h) {
     *h = baseCellData[baseCell].homeFijk;
 }
 
@@ -927,7 +927,7 @@ int H3_EXPORT(res0CellCount)() { return NUM_BASE_CELLS; }
  *
  * @param out H3Index* the memory to store the resulting base cells in
  */
-void H3_EXPORT(getRes0Cells)(H3Index* out) {
+void H3_EXPORT(getRes0Cells)(H3Index *out) {
     for (int bc = 0; bc < NUM_BASE_CELLS; bc++) {
         H3Index baseCell = H3_INIT;
         H3_SET_MODE(baseCell, H3_HEXAGON_MODE);

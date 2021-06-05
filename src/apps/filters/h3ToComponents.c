@@ -48,7 +48,7 @@ void doCell(H3Index h, bool verboseMode) {
     int h3Res = H3_GET_RESOLUTION(h);
     int h3BaseCell = H3_GET_BASE_CELL(h);
     if (verboseMode) {
-        const char* modes[] = {
+        const char *modes[] = {
             "RESERVED",       // 0
             "Cell",           // 1
             "Directed Edge",  // 2
@@ -102,13 +102,13 @@ void doCell(H3Index h, bool verboseMode) {
     }
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     Arg helpArg = ARG_HELP;
     Arg verboseArg = {.names = {"-v", "--verbose"},
                       .helpText = "Verbose output mode."};
     DEFINE_INDEX_ARG(index, indexArg);
     const int numArgs = 3;
-    Arg* args[] = {&helpArg, &verboseArg, &indexArg};
+    Arg *args[] = {&helpArg, &verboseArg, &indexArg};
 
     if (parseArgs(argc, argv, numArgs, args, &helpArg,
                   "Converts H3 indexes to component parts")) {
