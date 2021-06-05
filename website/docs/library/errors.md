@@ -52,6 +52,7 @@ The type returned by most H3 functions is `H3Error`, a 32 bit integer type with 
 | 11    | E_NOT_NEIGHBORS      | `H3Index` cell arguments were not neighbors
 | 12    | E_RES_MISMATCH       | `H3Index` cell arguments had incompatible resolutions
 | 13    | E_MEMORY             | Necessary memory allocation failed
+| 14    | E_MEMORY_BOUNDS      | Bounds of provided memory were not large enough
 
 The H3 library may always add additional error messages. Error messages not recognized by the application should be treated as `E_FAILED`.
 
