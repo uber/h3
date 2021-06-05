@@ -45,7 +45,7 @@ void _vertexGraphToLinkedGeo(VertexGraph* graph, LinkedGeoPolygon* out);
 
 // Internal function for polygonToCells that traces a geoloop with hexagons of
 // a specific size
-H3Error _getEdgeHexagons(const GeoLoop* geoloop, int numHexagons, int res,
+H3Error _getEdgeHexagons(const GeoLoop* geoloop, int64_t numHexagons, int res,
                          int* numSearchHexes, H3Index* search, H3Index* found);
 
 // The safe gridDiskDistances algorithm.

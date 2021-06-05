@@ -97,7 +97,7 @@ double _hexRadiusKm(H3Index h3Index) {
  * @param res the resolution of the H3 hexagons to fill the bounding box
  * @return the estimated number of hexagons to fill the bounding box
  */
-int bboxHexEstimate(const BBox* bbox, int res) {
+int64_t bboxHexEstimate(const BBox* bbox, int res) {
     // Get the area of the pentagon as the maximally-distorted area possible
     H3Index pentagons[12] = {0};
     H3_EXPORT(getPentagons)(res, pentagons);
@@ -122,7 +122,7 @@ int bboxHexEstimate(const BBox* bbox, int res) {
     double a = d * d / fmin(3.0, fabs((p1.lon - p2.lon) / (p1.lat - p2.lat)));
 
     // Divide the two to get an estimate of the number of hexagons needed
-    int estimate = (int)ceil(a / pentagonAreaKm2);
+    int64_t estimate = (int64_t)ceil(a / pentagonAreaKm2);
     if (estimate == 0) estimate = 1;
     return estimate;
 }

@@ -705,12 +705,12 @@ int H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index* out) {
  * @return 0 (E_SUCCESS) on success.
  */
 H3Error H3_EXPORT(maxPolygonToCellsSize)(const GeoPolygon* geoPolygon, int res,
-                                         int* out) {
+                                         int64_t* out) {
     // Get the bounding box for the GeoJSON-like struct
     BBox bbox;
     const GeoLoop geoloop = geoPolygon->geoloop;
     bboxFromGeoLoop(&geoloop, &bbox);
-    int numHexagons = bboxHexEstimate(&bbox, res);
+    int64_t numHexagons = bboxHexEstimate(&bbox, res);
     // This algorithm assumes that the number of vertices is usually less than
     // the number of hexagons, but when it's wrong, this will keep it from
     // failing
@@ -773,7 +773,7 @@ H3Error H3_EXPORT(polygonToCells)(const GeoPolygon* geoPolygon, int res,
 
     // Get the estimated number of hexagons and allocate some temporary memory
     // for the hexagons
-    int numHexagons;
+    int64_t numHexagons;
     H3Error numHexagonsError =
         H3_EXPORT(maxPolygonToCellsSize)(geoPolygon, res, &numHexagons);
     if (numHexagonsError) {
@@ -837,7 +837,7 @@ H3Error H3_EXPORT(polygonToCells)(const GeoPolygon* geoPolygon, int res,
     }
 
     // 3. Re-zero the found hash so it can be used in the main loop below
-    for (int i = 0; i < numHexagons; i++) found[i] = 0;
+    for (int64_t i = 0; i < numHexagons; i++) found[i] = H3_NULL;
 
     // 4. Begin main loop. While the search hash is not empty do the following
     while (numSearchHexes > 0) {
