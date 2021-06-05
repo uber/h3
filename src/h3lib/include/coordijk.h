@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /** @file coordijk.h
- * @brief   Header file for CoordIJK functions including conversion from lat/lon
+ * @brief   Header file for CoordIJK functions including conversion from lat/lng
  *
  * References two Vec2d cartesian coordinate systems:
  *
@@ -30,8 +30,8 @@
 #ifndef COORDIJK_H
 #define COORDIJK_H
 
-#include "geoPoint.h"
 #include "h3api.h"
+#include "latLng.h"
 #include "vec2d.h"
 
 /** @struct CoordIJK

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017, 2020 Uber Technologies, Inc.
+ * Copyright 2016-2017, 2020-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,25 +107,25 @@ void kmlBoundaryFooter(void) {
     printf("</kml>\n");
 }
 
-void outputLatLonKML(const GeoPoint* g) {
-    printf("            %8lf,%8lf,5.0\n", H3_EXPORT(radsToDegs)(g->lon),
+void outputLngLatKML(const LatLng* g) {
+    printf("            %8lf,%8lf,5.0\n", H3_EXPORT(radsToDegs)(g->lng),
            H3_EXPORT(radsToDegs)(g->lat));
 }
 
-void outputPointKML(const GeoPoint* g, const char* name) {
+void outputPointKML(const LatLng* g, const char* name) {
     printf("<Placemark>\n");
     printf("   <name>%s</name>\n", name);
     printf("   <styleUrl>#m_ylw-pushpin</styleUrl>\n");
     printf("   <Point>\n");
     printf("      <altitudeMode>relativeToGround</altitudeMode>\n");
     printf("      <coordinates>\n");
-    outputLatLonKML(g);
+    outputLngLatKML(g);
     printf("      </coordinates>\n");
     printf("   </Point>\n");
     printf("</Placemark>\n");
 }
 
-void outputTriKML(const GeoPoint* v1, const GeoPoint* v2, const GeoPoint* v3,
+void outputTriKML(const LatLng* v1, const LatLng* v2, const LatLng* v3,
                   const char* name) {
     printf("<Placemark>\n");
     printf("<name>%s</name>\n", name);
@@ -133,21 +133,21 @@ void outputTriKML(const GeoPoint* v1, const GeoPoint* v2, const GeoPoint* v3,
     printf("      <LineString>\n");
     printf("         <tessellate>1</tessellate>\n");
     printf("         <coordinates>\n");
-    outputLatLonKML(v1);
-    outputLatLonKML(v2);
-    outputLatLonKML(v3);
-    outputLatLonKML(v1);
+    outputLngLatKML(v1);
+    outputLngLatKML(v2);
+    outputLngLatKML(v3);
+    outputLngLatKML(v1);
     printf("         </coordinates>\n");
     printf("      </LineString>\n");
     printf("</Placemark>\n");
 }
 
 void outputBoundaryKML(const CellBoundary* b, const char* name) {
-    const GeoPoint* v = (const GeoPoint*)&(b->verts);
+    const LatLng* v = (const LatLng*)&(b->verts);
     outputPolyKML(v, b->numVerts, name);
 }
 
-void outputPolyKML(const GeoPoint geoVerts[], int numVerts, const char* name) {
+void outputPolyKML(const LatLng geoVerts[], int numVerts, const char* name) {
     printf("<Placemark>\n");
     printf("<name>%s</name>\n", name);
     printf("      <styleUrl>#lineStyle1</styleUrl>\n");
@@ -155,8 +155,8 @@ void outputPolyKML(const GeoPoint geoVerts[], int numVerts, const char* name) {
     printf("         <tessellate>1</tessellate>\n");
     printf("         <coordinates>\n");
 
-    for (int v = 0; v < numVerts; v++) outputLatLonKML(&geoVerts[v]);
-    outputLatLonKML(&geoVerts[0]);
+    for (int v = 0; v < numVerts; v++) outputLngLatKML(&geoVerts[v]);
+    outputLngLatKML(&geoVerts[0]);
 
     printf("         </coordinates>\n");
     printf("      </LineString>\n");

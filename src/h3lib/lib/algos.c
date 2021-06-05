@@ -30,9 +30,9 @@
 #include "baseCells.h"
 #include "bbox.h"
 #include "faceijk.h"
-#include "geoPoint.h"
 #include "h3Index.h"
 #include "h3api.h"
+#include "latLng.h"
 #include "linkedGeo.h"
 #include "polygon.h"
 #include "vertexGraph.h"
@@ -775,22 +775,21 @@ void H3_EXPORT(polygonToCells)(const GeoPolygon* geoPolygon, int res,
 int _getEdgeHexagons(const GeoLoop* geoloop, int numHexagons, int res,
                      int* numSearchHexes, H3Index* search, H3Index* found) {
     for (int i = 0; i < geoloop->numVerts; i++) {
-        GeoPoint origin = geoloop->verts[i];
-        GeoPoint destination = i == geoloop->numVerts - 1
-                                   ? geoloop->verts[0]
-                                   : geoloop->verts[i + 1];
+        LatLng origin = geoloop->verts[i];
+        LatLng destination = i == geoloop->numVerts - 1 ? geoloop->verts[0]
+                                                        : geoloop->verts[i + 1];
         const int numHexesEstimate =
             lineHexEstimate(&origin, &destination, res);
         for (int j = 0; j < numHexesEstimate; j++) {
-            GeoPoint interpolate;
+            LatLng interpolate;
             interpolate.lat =
                 (origin.lat * (numHexesEstimate - j) / numHexesEstimate) +
                 (destination.lat * j / numHexesEstimate);
-            interpolate.lon =
-                (origin.lon * (numHexesEstimate - j) / numHexesEstimate) +
-                (destination.lon * j / numHexesEstimate);
+            interpolate.lng =
+                (origin.lng * (numHexesEstimate - j) / numHexesEstimate) +
+                (destination.lng * j / numHexesEstimate);
             H3Index pointHex;
-            H3Error e = H3_EXPORT(pointToCell)(&interpolate, res, &pointHex);
+            H3Error e = H3_EXPORT(latLngToCell)(&interpolate, res, &pointHex);
             if (e) {
                 return e;
             }
@@ -959,8 +958,8 @@ int _polygonToCellsInternal(const GeoPolygon* geoPolygon, int res,
                 }
 
                 // Check if the hexagon is in the polygon or not
-                GeoPoint hexCenter;
-                H3_EXPORT(cellToPoint)(hex, &hexCenter);
+                LatLng hexCenter;
+                H3_EXPORT(cellToLatLng)(hex, &hexCenter);
 
                 // If not, skip
                 if (!pointInsidePolygon(geoPolygon, bboxes, &hexCenter)) {
@@ -1007,8 +1006,8 @@ int _polygonToCellsInternal(const GeoPolygon* geoPolygon, int res,
 void h3SetToVertexGraph(const H3Index* h3Set, const int numHexes,
                         VertexGraph* graph) {
     CellBoundary vertices;
-    GeoPoint* fromVtx;
-    GeoPoint* toVtx;
+    LatLng* fromVtx;
+    LatLng* toVtx;
     VertexNode* edge;
     if (numHexes < 1) {
         // We still need to init the graph, or calls to destroyVertexGraph will
@@ -1054,7 +1053,7 @@ void _vertexGraphToLinkedGeo(VertexGraph* graph, LinkedGeoPolygon* out) {
     *out = (LinkedGeoPolygon){0};
     LinkedGeoLoop* loop;
     VertexNode* edge;
-    GeoPoint nextVtx;
+    LatLng nextVtx;
     // Find the next unused entry point
     while ((edge = firstVertexNode(graph)) != NULL) {
         loop = addNewLinkedLoop(out);

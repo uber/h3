@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Uber Technologies, Inc.
+ * Copyright 2020-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,8 @@
 
 #include "baseCells.h"
 #include "constants.h"
-#include "geoPoint.h"
 #include "h3Index.h"
+#include "latLng.h"
 #include "test.h"
 #include "utility.h"
 

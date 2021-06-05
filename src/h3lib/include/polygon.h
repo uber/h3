@@ -1,5 +1,5 @@
 /*
- * Copyright 2018, 2020 Uber Technologies, Inc.
+ * Copyright 2018, 2020-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,8 @@
 #include <stdbool.h>
 
 #include "bbox.h"
-#include "geoPoint.h"
 #include "h3api.h"
+#include "latLng.h"
 #include "linkedGeo.h"
 
 // Macros for use with polygonAlgos.h
@@ -43,7 +43,7 @@
 // Defined directly in polygon.c:
 void bboxesFromGeoPolygon(const GeoPolygon* polygon, BBox* bboxes);
 bool pointInsidePolygon(const GeoPolygon* geoPolygon, const BBox* bboxes,
-                        const GeoPoint* coord);
+                        const LatLng* coord);
 
 // The following functions are created via macro in polygonAlgos.h,
 // so their signatures are documented here:
@@ -64,7 +64,7 @@ void bboxFromGeoLoop(const GeoLoop* loop, BBox* bbox);
  * @return              Whether the point is contained
  */
 bool pointInsideGeoLoop(const GeoLoop* loop, const BBox* bbox,
-                        const GeoPoint* coord);
+                        const LatLng* coord);
 
 /**
  * Whether the winding order of a given GeoLoop is clockwise

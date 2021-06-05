@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018, 2020 Uber Technologies, Inc.
+ * Copyright 2017-2018, 2020-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "geoPoint.h"
 #include "h3api.h"
+#include "latLng.h"
 #include "linkedGeo.h"
 #include "test.h"
 
 // Fixtures
-static GeoPoint vertex1;
-static GeoPoint vertex2;
-static GeoPoint vertex3;
-static GeoPoint vertex4;
+static LatLng vertex1;
+static LatLng vertex2;
+static LatLng vertex3;
+static LatLng vertex4;
 
 SUITE(linkedGeo) {
     setGeoDegs(&vertex1, 87.372002166, 166.160981117);
@@ -37,7 +37,7 @@ SUITE(linkedGeo) {
     TEST(createLinkedGeo) {
         LinkedGeoPolygon* polygon = calloc(1, sizeof(LinkedGeoPolygon));
         LinkedGeoLoop* loop;
-        LinkedGeoPoint* coord;
+        LinkedLatLng* coord;
 
         loop = addNewLinkedLoop(polygon);
         t_assert(loop != NULL, "Loop created");

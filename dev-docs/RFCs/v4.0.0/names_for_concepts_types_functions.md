@@ -52,7 +52,7 @@ The following technical terms should be used in the documentation, the H3 codeba
 - **grid**:
     - the graph with nodes corresponding to H3 cells, and edges given by pairs of adjacent cells
     - for example, `gridDistance` is the minimal number of edges in a graph path connecting two cells
-- **point**:
+- **lat/lng point**:
     - a representation of a geographic point in terms of a latitude/longitude pair
 - **topological**:
     - H3 cells are **topological** pentagons or hexagons, in the sense that they have 5 or 6 neighbors, respectively, in the H3 **grid**
@@ -66,7 +66,7 @@ The following technical terms should be used in the documentation, the H3 codeba
     - there is a one-to-one correspondence between the "base cell number" and the `H3Index` representation of resolution `0` cells
         + e.g., base cell 0 has `H3Index` hexadecimal representation `'8001fffffffffff'`
 - **boundary**:
-    - all or part of the list of geometric points that enclose an H3 cell
+    - all or part of the list of lat/lng points that enclose an H3 cell
     - may include more than 6 points in the case that a cell is not a geometric hexagon, such as when a hexagon crosses an icosahedron boundary
     - may also be used to describe the boundary between two geometric cells, as in the case of an edge
     - represented in the H3 codebase with the `CellBoundary` struct (previously `GeoBoundary` before v4.0)
@@ -100,7 +100,7 @@ The proposed prefix is `h3_`.
     + object properties (`getResolution`, `getBaseCellNumber`)
 - use `to` to denote transforms
     + different representations of the same object
-    + when doing a lossy transformation to a new object (`cellToParent`, `pointToCell`, `polygonToCells`)
+    + when doing a lossy transformation to a new object (`cellToParent`, `latLngToCell`, `polygonToCells`)
 - do not use `get` or `to` for *computations*
     + e.g., `compactCells`, `cellAreaKm2`
 
@@ -139,8 +139,8 @@ There is some ambiguity between property, transform, and computation, so use you
 | `h3GetResolution`             | `getResolution`       |
 | *DNE*                         | `getMode`             |
 | `h3GetFaces`                  | `getIcosahedronFaces` |
-| `geoToH3`                     | `pointToCell`         |
-| `h3ToGeo`                     | `cellToPoint`         |
+| `geoToH3`                     | `latLngToCell`        |
+| `h3ToGeo`                     | `cellToLatLng`        |
 | `compact`                     | `compactCells`        |
 | `uncompact`                   | `uncompactCells`      |
 | `polyfill`                    | `polygonToCells`      |
@@ -260,13 +260,13 @@ discussion requiring benchmarking, so we will defer that to a
 
 - rename `GeoBoundary` to `CellBoundary` to indicate it is space-limited to describing the geometry of cells
 
-|    Current name   |   Proposed name   |               Notes               |
-|-------------------|-------------------|-----------------------------------|
-| `GeoBoundary`     | `CellBoundary`    | <= 10 stack-allocated `GeoPoint`s |
-| `GeoCoord`        | `GeoPoint`        |                                   |
-| `Geofence`        | `GeoLoop`         | heap-allocated `GeoPoint`s        |
-| `GeoPolygon`      | `GeoPolygon`      |                                   |
-| `GeoMultiPolygon` | `GeoMultiPolygon` | currently not used                |
+|    Current name   |   Proposed name   |              Notes              |
+|-------------------|-------------------|---------------------------------|
+| `GeoCoord`        | `LatLng`          |                                 |
+| `GeoBoundary`     | `CellBoundary`    | <= 10 stack-allocated `LatLng`s |
+| `Geofence`        | `GeoLoop`         | heap-allocated `LatLng`s        |
+| `GeoPolygon`      | `GeoPolygon`      |                                 |
+| `GeoMultiPolygon` | `GeoMultiPolygon` | currently not used              |
 
 
 ### Functions

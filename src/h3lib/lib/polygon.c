@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2020 Uber Technologies, Inc.
+ * Copyright 2018-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@
 
 #include "bbox.h"
 #include "constants.h"
-#include "geoPoint.h"
 #include "h3api.h"
+#include "latLng.h"
 #include "linkedGeo.h"
 
 // Define macros used in polygon algos for GeoLoop
@@ -64,7 +64,7 @@ void bboxesFromGeoPolygon(const GeoPolygon* polygon, BBox* bboxes) {
  * @return           Whether the point is contained
  */
 bool pointInsidePolygon(const GeoPolygon* geoPolygon, const BBox* bboxes,
-                        const GeoPoint* coord) {
+                        const LatLng* coord) {
     // Start with contains state of primary geoloop
     bool contains =
         pointInsideGeoLoop(&(geoPolygon->geoloop), &bboxes[0], coord);

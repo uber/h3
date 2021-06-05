@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Uber Technologies, Inc.
+ * Copyright 2017-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@
 
 #include "algos.h"
 #include "constants.h"
-#include "geoPoint.h"
 #include "h3Index.h"
+#include "latLng.h"
 #include "test.h"
 #include "utility.h"
 
@@ -29,11 +29,11 @@ SUITE(polygonToCells_reported) {
     // https://github.com/uber/h3-js/issues/76#issuecomment-561204505
     TEST(entireWorld) {
         // TODO: Fails for a single worldwide polygon
-        GeoPoint worldVerts[] = {
+        LatLng worldVerts[] = {
             {-M_PI_2, -M_PI}, {M_PI_2, -M_PI}, {M_PI_2, 0}, {-M_PI_2, 0}};
         GeoLoop worldGeoLoop = {.numVerts = 4, .verts = worldVerts};
         GeoPolygon worldGeoPolygon = {.geoloop = worldGeoLoop, .numHoles = 0};
-        GeoPoint worldVerts2[] = {
+        LatLng worldVerts2[] = {
             {-M_PI_2, 0}, {M_PI_2, 0}, {M_PI_2, M_PI}, {-M_PI_2, M_PI}};
         GeoLoop worldGeoLoop2 = {.numVerts = 4, .verts = worldVerts2};
         GeoPolygon worldGeoPolygon2 = {.geoloop = worldGeoLoop2, .numHoles = 0};
@@ -91,7 +91,7 @@ SUITE(polygonToCells_reported) {
         double south = H3_EXPORT(degsToRads)(-34.30714385628804);
         double west = H3_EXPORT(degsToRads)(-57.65625);
 
-        GeoPoint testVerts[] = {
+        LatLng testVerts[] = {
             {north, east}, {south, east}, {south, west}, {north, west}};
         GeoLoop testGeoLoop = {.numVerts = 4, .verts = testVerts};
         GeoPolygon testPolygon;
@@ -117,7 +117,7 @@ SUITE(polygonToCells_reported) {
         double south = H3_EXPORT(degsToRads)(-35.4606699514953);
         double west = H3_EXPORT(degsToRads)(-59.0625);
 
-        GeoPoint testVerts[] = {
+        LatLng testVerts[] = {
             {north, east}, {south, east}, {south, west}, {north, west}};
         GeoLoop testGeoLoop = {.numVerts = 4, .verts = testVerts};
         GeoPolygon testPolygon;
@@ -138,10 +138,10 @@ SUITE(polygonToCells_reported) {
 
     // https://github.com/uber/h3/issues/136
     TEST(h3_136) {
-        GeoPoint testVerts[] = {{0.10068990369902957, 0.8920772174196191},
-                                {0.10032914690616246, 0.8915914753447348},
-                                {0.10033349237998787, 0.8915860128746426},
-                                {0.10069496685903621, 0.8920742194546231}};
+        LatLng testVerts[] = {{0.10068990369902957, 0.8920772174196191},
+                              {0.10032914690616246, 0.8915914753447348},
+                              {0.10033349237998787, 0.8915860128746426},
+                              {0.10069496685903621, 0.8920742194546231}};
         GeoLoop testGeoLoop = {.numVerts = 4, .verts = testVerts};
         GeoPolygon testPolygon;
         testPolygon.geoloop = testGeoLoop;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017, 2020 Uber Technologies, Inc.
+ * Copyright 2017, 2020-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,12 +24,12 @@
 
 int main(int argc, char *argv[]) {
     // Get the H3 index of some location and print it.
-    GeoPoint location;
+    LatLng location;
     location.lat = degsToRads(40.689167);
-    location.lon = degsToRads(-74.044444);
+    location.lng = degsToRads(-74.044444);
     int resolution = 10;
     H3Index indexed;
-    if (pointToCell(&location, resolution, &indexed) != E_SUCCESS) {
+    if (latLngToCell(&location, resolution, &indexed) != E_SUCCESS) {
         printf("Failed\n");
         return 1;
     }
@@ -46,15 +46,15 @@ int main(int argc, char *argv[]) {
     for (int v = 0; v < boundary.numVerts; v++) {
         printf("Boundary vertex #%d: %lf, %lf\n", v,
                radsToDegs(boundary.verts[v].lat),
-               radsToDegs(boundary.verts[v].lon));
+               radsToDegs(boundary.verts[v].lng));
     }
 
     // Get the center coordinates.
-    GeoPoint center;
-    if (cellToPoint(indexed, &center) != E_SUCCESS) {
+    LatLng center;
+    if (cellToLatLng(indexed, &center) != E_SUCCESS) {
         printf("Failed\n");
         return 1;
     }
     printf("Center coordinates: %lf, %lf\n", radsToDegs(center.lat),
-           radsToDegs(center.lon));
+           radsToDegs(center.lng));
 }

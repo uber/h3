@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017, 2020 Uber Technologies, Inc.
+ * Copyright 2016-2017, 2020-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 /** @file
- * @brief generates random lat/lon pairs and bins them at the specified
+ * @brief generates random lat/lng pairs and bins them at the specified
  * resolution
  *
  *  See `mkRandGeo --help` for usage.
  *
- *  The program generates `numPoints` random lat/lon coordinates and outputs
+ *  The program generates `numPoints` random lat/lng coordinates and outputs
  *  them along with the corresponding H3Index at the specified `resolution`.
  */
 
@@ -40,7 +40,7 @@ int main(int argc, char* argv[]) {
         .scanFormat = "%d",
         .valueName = "num",
         .value = &numPoints,
-        .helpText = "Number of random lat/lon pairs to generate."};
+        .helpText = "Number of random lat/lng pairs to generate."};
     Arg resArg = {.names = {"-r", "--resolution"},
                   .required = true,
                   .scanFormat = "%d",
@@ -51,7 +51,7 @@ int main(int argc, char* argv[]) {
     Arg* args[] = {&helpArg, &numPointsArg, &resArg};
     const int numArgs = 3;
     const char* helpText =
-        "Generates random lat/lon pairs and indexes them at the specified "
+        "Generates random lat/lng pairs and indexes them at the specified "
         "resolution.";
 
     if (parseArgs(argc, argv, numArgs, args, &helpArg, helpText)) {
@@ -65,11 +65,11 @@ int main(int argc, char* argv[]) {
     }
 
     for (int i = 0; i < numPoints; i++) {
-        GeoPoint g;
+        LatLng g;
         randomGeo(&g);
 
         H3Index h;
-        if (!H3_EXPORT(pointToCell)(&g, res, &h)) {
+        if (!H3_EXPORT(latLngToCell)(&g, res, &h)) {
             h3Print(h);
             printf(" ");
             geoPrintlnNoFmt(&g);

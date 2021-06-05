@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017, 2020 Uber Technologies, Inc.
+ * Copyright 2016-2017, 2020-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@
 
 #include <stdbool.h>
 
-#include "geoPoint.h"
+#include "latLng.h"
 
 /** @struct BBox
  *  @brief  Geographic bounding box with coordinates defined in radians
@@ -35,11 +35,10 @@ typedef struct {
 } BBox;
 
 bool bboxIsTransmeridian(const BBox* bbox);
-void bboxCenter(const BBox* bbox, GeoPoint* center);
-bool bboxContains(const BBox* bbox, const GeoPoint* point);
+void bboxCenter(const BBox* bbox, LatLng* center);
+bool bboxContains(const BBox* bbox, const LatLng* point);
 bool bboxEquals(const BBox* b1, const BBox* b2);
 int bboxHexEstimate(const BBox* bbox, int res);
-int lineHexEstimate(const GeoPoint* origin, const GeoPoint* destination,
-                    int res);
+int lineHexEstimate(const LatLng* origin, const LatLng* destination, int res);
 
 #endif

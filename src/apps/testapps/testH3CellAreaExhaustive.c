@@ -34,45 +34,45 @@
  * neighboring cells. Tests positivity and commutativity.
  *
  * Tests the functions:
- *     pointDistRads
- *     pointDistKm
- *     pointDistM
+ *     distanceRads
+ *     distanceKm
+ *     distanceM
  *
  * @param  edge  H3 directed edge denoting neighboring cells
  */
 static void haversine_assert(H3Index edge) {
-    GeoPoint a, b;
+    LatLng a, b;
     H3Index origin, destination;
 
     origin = H3_EXPORT(getDirectedEdgeOrigin)(edge);
-    H3_EXPORT(cellToPoint)(origin, &a);
+    H3_EXPORT(cellToLatLng)(origin, &a);
 
     destination = H3_EXPORT(getDirectedEdgeDestination)(edge);
-    H3_EXPORT(cellToPoint)(destination, &b);
+    H3_EXPORT(cellToLatLng)(destination, &b);
 
     char pos[] = "distance between cell centers should be positive";
     char comm[] = "pairwise cell distances should be commutative";
 
     double ab, ba;
 
-    ab = H3_EXPORT(pointDistRads)(&a, &b);
-    ba = H3_EXPORT(pointDistRads)(&b, &a);
+    ab = H3_EXPORT(distanceRads)(&a, &b);
+    ba = H3_EXPORT(distanceRads)(&b, &a);
     t_assert(ab > 0, pos);
     t_assert(ab == ba, comm);
 
-    ab = H3_EXPORT(pointDistKm)(&a, &b);
-    ba = H3_EXPORT(pointDistKm)(&b, &a);
+    ab = H3_EXPORT(distanceKm)(&a, &b);
+    ba = H3_EXPORT(distanceKm)(&b, &a);
     t_assert(ab > 0, pos);
     t_assert(ab == ba, comm);
 
-    ab = H3_EXPORT(pointDistM)(&a, &b);
-    ba = H3_EXPORT(pointDistM)(&b, &a);
+    ab = H3_EXPORT(distanceM)(&a, &b);
+    ba = H3_EXPORT(distanceM)(&b, &a);
     t_assert(ab > 0, pos);
     t_assert(ab == ba, comm);
 
-    t_assert(H3_EXPORT(pointDistKm)(&a, &b) > H3_EXPORT(pointDistRads)(&a, &b),
+    t_assert(H3_EXPORT(distanceKm)(&a, &b) > H3_EXPORT(distanceRads)(&a, &b),
              "measurement in kilometers should be greater than in radians");
-    t_assert(H3_EXPORT(pointDistM)(&a, &b) > H3_EXPORT(pointDistKm)(&a, &b),
+    t_assert(H3_EXPORT(distanceM)(&a, &b) > H3_EXPORT(distanceKm)(&a, &b),
              "measurement in meters should be greater than in kilometers");
 }
 

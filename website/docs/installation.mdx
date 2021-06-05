@@ -134,7 +134,7 @@ apk add cmake make gcc libtool musl-dev
 </TabItem>
 <TabItem value="debian">
 
-```bash     
+```bash
 # Installing the bare build requirements
 sudo apt install cmake make gcc libtool
 # Installing useful tools for development
@@ -181,5 +181,5 @@ ctest
 By default, the filter applications are built when you build H3. You can confirm they are working by running:
 
 ```
-./bin/geoToH3 --lat 14 --lon -42 --resolution 2
+./bin/latLngToCell --lat 14 --lng -42 --resolution 2
 ```

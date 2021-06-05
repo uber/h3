@@ -725,12 +725,12 @@ H3Index _faceIjkToH3(const FaceIJK* fijk, int res) {
  * @param out The encoded H3Index.
  * @returns E_SUCCESS (0) on success, another value otherwise
  */
-H3Error H3_EXPORT(pointToCell)(const GeoPoint* g, int res, H3Index* out) {
+H3Error H3_EXPORT(latLngToCell)(const LatLng* g, int res, H3Index* out) {
     if (res < 0 || res > MAX_H3_RES) {
         return E_RES_DOMAIN;
     }
-    if (!isfinite(g->lat) || !isfinite(g->lon)) {
-        return E_LATLON_DOMAIN;
+    if (!isfinite(g->lat) || !isfinite(g->lng)) {
+        return E_LATLNG_DOMAIN;
     }
 
     FaceIJK fijk;
@@ -838,7 +838,7 @@ H3Error _h3ToFaceIjk(H3Index h, FaceIJK* fijk) {
  * @param h3 The H3 index.
  * @param g The spherical coordinates of the H3 cell center.
  */
-H3Error H3_EXPORT(cellToPoint)(H3Index h3, GeoPoint* g) {
+H3Error H3_EXPORT(cellToLatLng)(H3Index h3, LatLng* g) {
     FaceIJK fijk;
     H3Error e = _h3ToFaceIjk(h3, &fijk);
     if (e) {

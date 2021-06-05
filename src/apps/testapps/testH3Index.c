@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018, 2020 Uber Technologies, Inc.
+ * Copyright 2017-2018, 2020-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,18 +29,18 @@
 #include "utility.h"
 
 SUITE(h3Index) {
-    TEST(pointToCellExtremeCoordinates) {
+    TEST(latLngToCellExtremeCoordinates) {
         H3Index h;
         // Check that none of these cause crashes.
-        GeoPoint g = {0, 1E45};
-        t_assertSuccess(H3_EXPORT(pointToCell)(&g, 14, &h));
+        LatLng g = {0, 1E45};
+        t_assertSuccess(H3_EXPORT(latLngToCell)(&g, 14, &h));
 
-        GeoPoint g2 = {1E46, 1E45};
-        t_assertSuccess(H3_EXPORT(pointToCell)(&g2, 15, &h));
+        LatLng g2 = {1E46, 1E45};
+        t_assertSuccess(H3_EXPORT(latLngToCell)(&g2, 15, &h));
 
-        GeoPoint g4;
+        LatLng g4;
         setGeoDegs(&g4, 2, -3E39);
-        t_assertSuccess(H3_EXPORT(pointToCell)(&g4, 0, &h));
+        t_assertSuccess(H3_EXPORT(latLngToCell)(&g4, 0, &h));
     }
 
     TEST(faceIjkToH3ExtremeCoordinates) {
@@ -68,9 +68,9 @@ SUITE(h3Index) {
 
     TEST(isValidCellAtResolution) {
         for (int i = 0; i <= MAX_H3_RES; i++) {
-            GeoPoint GeoPoint = {0, 0};
+            LatLng g = {0, 0};
             H3Index h3;
-            t_assertSuccess(H3_EXPORT(pointToCell)(&GeoPoint, i, &h3));
+            t_assertSuccess(H3_EXPORT(latLngToCell)(&g, i, &h3));
             char failureMessage[BUFF_SIZE];
             sprintf(failureMessage, "isValidCell failed on resolution %d", i);
             t_assert(H3_EXPORT(isValidCell)(h3), failureMessage);
@@ -78,9 +78,9 @@ SUITE(h3Index) {
     }
 
     TEST(isValidCellDigits) {
-        GeoPoint GeoPoint = {0, 0};
+        LatLng g = {0, 0};
         H3Index h3;
-        t_assertSuccess(H3_EXPORT(pointToCell)(&GeoPoint, 1, &h3));
+        t_assertSuccess(H3_EXPORT(latLngToCell)(&g, 1, &h3));
         // Set a bit for an unused digit to something else.
         h3 ^= 1;
         t_assert(!H3_EXPORT(isValidCell)(h3),
@@ -205,10 +205,10 @@ SUITE(h3Index) {
     }
 
     TEST(isResClassIII) {
-        GeoPoint coord = {0, 0};
+        LatLng coord = {0, 0};
         for (int i = 0; i <= MAX_H3_RES; i++) {
             H3Index h;
-            t_assertSuccess(H3_EXPORT(pointToCell)(&coord, i, &h));
+            t_assertSuccess(H3_EXPORT(latLngToCell)(&coord, i, &h));
             t_assert(H3_EXPORT(isResClassIII)(h) == isResolutionClassIII(i),
                      "matches existing definition");
         }

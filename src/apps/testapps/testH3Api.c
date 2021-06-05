@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018, 2020 Uber Technologies, Inc.
+ * Copyright 2017-2018, 2020-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,35 +21,35 @@
 
 #include <math.h>
 
-#include "geoPoint.h"
 #include "h3Index.h"
 #include "h3api.h"
+#include "latLng.h"
 #include "test.h"
 #include "utility.h"
 
 SUITE(h3Api) {
-    TEST(pointToCell_res) {
+    TEST(latLngToCell_res) {
         H3Index h;
-        GeoPoint anywhere = {0, 0};
+        LatLng anywhere = {0, 0};
 
-        t_assert(H3_EXPORT(pointToCell)(&anywhere, -1, &h) == E_RES_DOMAIN,
+        t_assert(H3_EXPORT(latLngToCell)(&anywhere, -1, &h) == E_RES_DOMAIN,
                  "resolution below 0 is invalid");
-        t_assert(H3_EXPORT(pointToCell)(&anywhere, 16, &h) == E_RES_DOMAIN,
+        t_assert(H3_EXPORT(latLngToCell)(&anywhere, 16, &h) == E_RES_DOMAIN,
                  "resolution above 15 is invalid");
     }
 
-    TEST(pointToCell_coord) {
+    TEST(latLngToCell_coord) {
         H3Index h;
-        GeoPoint invalidLat = {NAN, 0};
-        GeoPoint invalidLon = {0, NAN};
-        GeoPoint invalidLatLon = {INFINITY, -INFINITY};
+        LatLng invalidLat = {NAN, 0};
+        LatLng invalidLng = {0, NAN};
+        LatLng invalidLatLng = {INFINITY, -INFINITY};
 
-        t_assert(H3_EXPORT(pointToCell)(&invalidLat, 1, &h) == E_LATLON_DOMAIN,
+        t_assert(H3_EXPORT(latLngToCell)(&invalidLat, 1, &h) == E_LATLNG_DOMAIN,
                  "invalid latitude is rejected");
-        t_assert(H3_EXPORT(pointToCell)(&invalidLon, 1, &h) == E_LATLON_DOMAIN,
+        t_assert(H3_EXPORT(latLngToCell)(&invalidLng, 1, &h) == E_LATLNG_DOMAIN,
                  "invalid longitude is rejected");
         t_assert(
-            H3_EXPORT(pointToCell)(&invalidLatLon, 1, &h) == E_LATLON_DOMAIN,
+            H3_EXPORT(latLngToCell)(&invalidLatLng, 1, &h) == E_LATLNG_DOMAIN,
             "coordinates with infinity are rejected");
     }
 
@@ -84,7 +84,7 @@ SUITE(h3Api) {
         t_assertBoundary(h3, &boundary);
     }
 
-    TEST(cellToBoundary_coslonConstrain) {
+    TEST(cellToBoundary_coslngConstrain) {
         // Bug test for https://github.com/uber/h3/issues/212
         H3Index h3 = 0x87dc6d364ffffffL;
         CellBoundary boundary;
@@ -112,9 +112,9 @@ SUITE(h3Api) {
                  "cellToBoundary fails on invalid index");
     }
 
-    TEST(h3ToGeoInvalid) {
-        GeoPoint coord;
-        H3_EXPORT(cellToPoint)(0x7fffffffffffffff, &coord);
+    TEST(cellToLatLngInvalid) {
+        LatLng coord;
+        H3_EXPORT(cellToLatLng)(0x7fffffffffffffff, &coord);
         // Test is this should not crash (should return an error in the future)
     }
 

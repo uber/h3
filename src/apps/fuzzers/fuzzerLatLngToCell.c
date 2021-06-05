@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /** @file
- * @brief Fuzzer program for pointToCell
+ * @brief Fuzzer program for latLngToCell
  */
 
 #include "h3api.h"
@@ -28,7 +28,7 @@ int main(int argc, char* argv[]) {
     FILE* fp = fopen(filename, "rb");
     struct args {
         double lat;
-        double lon;
+        double lng;
         int res;
     } args;
     if (fread(&args, sizeof(args), 1, fp) != 1) {
@@ -36,9 +36,9 @@ int main(int argc, char* argv[]) {
     }
     fclose(fp);
 
-    GeoPoint g = {.lat = args.lat, .lon = args.lon};
+    LatLng g = {.lat = args.lat, .lng = args.lng};
     H3Index h;
-    H3Error e = H3_EXPORT(pointToCell)(&g, args.res, &h);
+    H3Error e = H3_EXPORT(latLngToCell)(&g, args.res, &h);
 
     h3Println(e);
     h3Println(h);

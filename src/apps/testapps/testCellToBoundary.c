@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017, 2020 Uber Technologies, Inc.
+ * Copyright 2016-2017, 2020-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,8 @@
 #include <stdlib.h>
 
 #include "baseCells.h"
-#include "geoPoint.h"
 #include "h3Index.h"
+#include "latLng.h"
 #include "test.h"
 #include "utility.h"
 
@@ -79,13 +79,13 @@ int readBoundary(FILE* f, CellBoundary* b) {
             return -5;
         }
 
-        double latDegs, lonDegs;
-        if (sscanf(buff, "%lf %lf", &latDegs, &lonDegs) != 2) {
+        double latDegs, lngDegs;
+        if (sscanf(buff, "%lf %lf", &latDegs, &lngDegs) != 2) {
             printf("parsing CellBoundary from input");
             return -6;
         }
 
-        setGeoDegs(&b->verts[b->numVerts], latDegs, lonDegs);
+        setGeoDegs(&b->verts[b->numVerts], latDegs, lngDegs);
         b->numVerts++;
     }
 

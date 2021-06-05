@@ -25,8 +25,8 @@
 #include "algos.h"
 #include "baseCells.h"
 #include "faceijk.h"
-#include "geoPoint.h"
 #include "h3Index.h"
+#include "latLng.h"
 
 #define DIRECTION_INDEX_OFFSET 2
 
@@ -285,7 +285,7 @@ void H3_EXPORT(cellToVertexes)(H3Index cell, H3Index* vertexes) {
  * @param vertex H3 index describing a vertex
  * @param coord  Output geo coordinate
  */
-void H3_EXPORT(vertexToPoint)(H3Index vertex, GeoPoint* coord) {
+void H3_EXPORT(vertexToLatLng)(H3Index vertex, LatLng* coord) {
     // Get the vertex number and owner from the vertex
     int vertexNum = H3_GET_RESERVED_BITS(vertex);
     H3Index owner = vertex;

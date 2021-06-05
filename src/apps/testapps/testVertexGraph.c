@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018, 2020 Uber Technologies, Inc.
+ * Copyright 2017-2018, 2020-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,19 +17,19 @@
 #include <assert.h>
 #include <stdio.h>
 
-#include "geoPoint.h"
 #include "h3api.h"
+#include "latLng.h"
 #include "test.h"
 #include "vertexGraph.h"
 
 // Fixtures
-static GeoPoint center;
-static GeoPoint vertex1;
-static GeoPoint vertex2;
-static GeoPoint vertex3;
-static GeoPoint vertex4;
-static GeoPoint vertex5;
-static GeoPoint vertex6;
+static LatLng center;
+static LatLng vertex1;
+static LatLng vertex2;
+static LatLng vertex3;
+static LatLng vertex4;
+static LatLng vertex5;
+static LatLng vertex6;
 
 SUITE(vertexGraph) {
     setGeoDegs(&center, 37.77362016769341, -122.41673772517154);
@@ -56,7 +56,8 @@ SUITE(vertexGraph) {
         int numBuckets = 1000;
 
         for (int res = 0; res < 11; res++) {
-            t_assertSuccess(H3_EXPORT(pointToCell)(&center, res, &centerIndex));
+            t_assertSuccess(
+                H3_EXPORT(latLngToCell)(&center, res, &centerIndex));
             H3_EXPORT(cellToBoundary)(centerIndex, &outline);
             for (int i = 0; i < outline.numVerts; i++) {
                 hash1 = _hashVertex(&outline.verts[i], res, numBuckets);

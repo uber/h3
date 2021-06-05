@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2018, 2020 Uber Technologies, Inc.
+ * Copyright 2016-2018, 2020-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 /** @file coordijk.c
  * @brief   Hex IJK coordinate systems functions including conversions to/from
- * lat/lon.
+ * lat/lng.
  */
 
 #include "coordijk.h"
@@ -26,7 +26,7 @@
 #include <string.h>
 
 #include "constants.h"
-#include "geoPoint.h"
+#include "latLng.h"
 #include "mathExtensions.h"
 
 /**

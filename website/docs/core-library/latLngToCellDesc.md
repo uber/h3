@@ -1,11 +1,11 @@
 ---
-id: geoToH3desc
+id: latLngToCellDesc
 title: Conversion from latitude/longitude to containing H3 cell index
 sidebar_label: Conversion from latitude/longitude to containing H3 cell index
-slug: /core-library/geoToH3desc
+slug: /core-library/latLngToCellDesc
 ---
 
-This operation is performed by function `geoToH3`. See the comments in the function for more detail.
+This operation is performed by function `latLngToCell`. See the comments in the function for more detail.
 
 The conversion is performed as a series of coordinate system conversions described below. See the page [Coordinate Systems used by the H3 Core Library](/docs/core-library/coordsystems) for more information on each of these coordinate systems.
 

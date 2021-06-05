@@ -68,9 +68,9 @@ module.exports = {
         type: "category",
         label: "Algorithms",
         items: [
-          "core-library/geoToH3desc",
-          "core-library/h3ToGeoDesc",
-          "core-library/h3ToGeoBoundaryDesc",
+          "core-library/latLngToCellDesc",
+          "core-library/cellToLatLngDesc",
+          "core-library/cellToBoundaryDesc",
         ],
       },
     ],

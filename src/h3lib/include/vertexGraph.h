@@ -1,5 +1,5 @@
 /*
- * Copyright 2017, 2020 Uber Technologies, Inc.
+ * Copyright 2017, 2020-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,15 +23,15 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "geoPoint.h"
+#include "latLng.h"
 
 /** @struct VertexNode
  *  @brief A single node in a vertex graph, part of a linked list
  */
 typedef struct VertexNode VertexNode;
 struct VertexNode {
-    GeoPoint from;
-    GeoPoint to;
+    LatLng from;
+    LatLng to;
     VertexNode* next;
 };
 
@@ -49,22 +49,21 @@ void initVertexGraph(VertexGraph* graph, int numBuckets, int res);
 
 void destroyVertexGraph(VertexGraph* graph);
 
-VertexNode* addVertexNode(VertexGraph* graph, const GeoPoint* fromVtx,
-                          const GeoPoint* toVtx);
+VertexNode* addVertexNode(VertexGraph* graph, const LatLng* fromVtx,
+                          const LatLng* toVtx);
 
 int removeVertexNode(VertexGraph* graph, VertexNode* node);
 
-VertexNode* findNodeForEdge(const VertexGraph* graph, const GeoPoint* fromVtx,
-                            const GeoPoint* toVtx);
+VertexNode* findNodeForEdge(const VertexGraph* graph, const LatLng* fromVtx,
+                            const LatLng* toVtx);
 
-VertexNode* findNodeForVertex(const VertexGraph* graph,
-                              const GeoPoint* fromVtx);
+VertexNode* findNodeForVertex(const VertexGraph* graph, const LatLng* fromVtx);
 
 VertexNode* firstVertexNode(const VertexGraph* graph);
 
 // Internal functions
-uint32_t _hashVertex(const GeoPoint* vertex, int res, int numBuckets);
-void _initVertexNode(VertexNode* node, const GeoPoint* fromVtx,
-                     const GeoPoint* toVtx);
+uint32_t _hashVertex(const LatLng* vertex, int res, int numBuckets);
+void _initVertexNode(VertexNode* node, const LatLng* fromVtx,
+                     const LatLng* toVtx);
 
 #endif

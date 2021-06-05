@@ -17,7 +17,7 @@ This code example checks for an error when calling an H3 function and prints a m
 H3Error err;
 H3Index result;
 
-err = geoToH3(lat, lon, res, &result);
+err = latLngToCell(lat, lng, res, &result);
 if (err) {
     fprintf(stderr, "Error: %d", err);
 }
@@ -41,7 +41,7 @@ The type returned by most H3 functions is `H3Error`, a 32 bit integer type with 
 | 0     | E_SUCCESS            | Success (no error)
 | 1     | E_FAILED             | The operation failed but a more specific error is not available
 | 2     | E_DOMAIN             | Argument was outside of acceptable range (when a more specific error code is not available)
-| 3     | E_LATLON_DOMAIN      | Latitude or longitude arguments were outside of acceptable range
+| 3     | E_LATLNG_DOMAIN      | Latitude or longitude arguments were outside of acceptable range
 | 4     | E_RES_DOMAIN         | Resolution argument was outside of acceptable range
 | 5     | E_CELL_INVALID       | `H3Index` cell argument was not valid
 | 6     | E_DIR_EDGE_INVALID   | `H3Index` directed edge argument was not valid

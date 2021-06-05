@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2020 Uber Technologies, Inc.
+ * Copyright 2019-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,22 +22,22 @@
 
 SUITE(cellToCenterChild) {
     H3Index baseHex;
-    GeoPoint baseCentroid;
+    LatLng baseCentroid;
     setH3Index(&baseHex, 8, 4, 2);
-    H3_EXPORT(cellToPoint)(baseHex, &baseCentroid);
+    H3_EXPORT(cellToLatLng)(baseHex, &baseCentroid);
 
     TEST(propertyTests) {
         for (int res = 0; res <= MAX_H3_RES - 1; res++) {
             for (int childRes = res + 1; childRes <= MAX_H3_RES; childRes++) {
-                GeoPoint centroid;
+                LatLng centroid;
                 H3Index h3Index;
                 t_assertSuccess(
-                    H3_EXPORT(pointToCell)(&baseCentroid, res, &h3Index));
-                H3_EXPORT(cellToPoint)(h3Index, &centroid);
+                    H3_EXPORT(latLngToCell)(&baseCentroid, res, &h3Index));
+                H3_EXPORT(cellToLatLng)(h3Index, &centroid);
 
                 H3Index geoChild;
                 t_assertSuccess(
-                    H3_EXPORT(pointToCell)(&centroid, childRes, &geoChild));
+                    H3_EXPORT(latLngToCell)(&centroid, childRes, &geoChild));
                 H3Index centerChild =
                     H3_EXPORT(cellToCenterChild)(h3Index, childRes);
 

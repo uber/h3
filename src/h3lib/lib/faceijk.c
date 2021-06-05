@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 Uber Technologies, Inc.
+ * Copyright 2016-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,15 +28,15 @@
 
 #include "constants.h"
 #include "coordijk.h"
-#include "geoPoint.h"
 #include "h3Index.h"
+#include "latLng.h"
 #include "vec3d.h"
 
 /** square root of 7 */
 #define M_SQRT7 2.6457513110645905905016157536392604257102L
 
-/** @brief icosahedron face centers in lat/lon radians */
-const GeoPoint faceCenterGeo[NUM_ICOSA_FACES] = {
+/** @brief icosahedron face centers in lat/lng radians */
+const LatLng faceCenterGeo[NUM_ICOSA_FACES] = {
     {0.803582649718989942, 1.248397419617396099},    // face  0
     {1.307747883455638156, 2.536945009877921159},    // face  1
     {1.054751253523952054, -1.347517358900396623},   // face  2
@@ -368,7 +368,7 @@ static const int unitScaleByCIIres[] = {
  * @param res The desired H3 resolution for the encoding.
  * @param h The FaceIJK address of the containing cell at resolution res.
  */
-void _geoToFaceIjk(const GeoPoint* g, int res, FaceIJK* h) {
+void _geoToFaceIjk(const LatLng* g, int res, FaceIJK* h) {
     // first convert to hex2d
     Vec2d v;
     _geoToHex2d(g, res, &h->face, &v);
@@ -386,7 +386,7 @@ void _geoToFaceIjk(const GeoPoint* g, int res, FaceIJK* h) {
  * @param face The icosahedral face containing the spherical coordinates.
  * @param v The 2D hex coordinates of the cell containing the point.
  */
-void _geoToHex2d(const GeoPoint* g, int res, int* face, Vec2d* v) {
+void _geoToHex2d(const LatLng* g, int res, int* face, Vec2d* v) {
     Vec3d v3d;
     _geoToVec3d(g, &v3d);
 
@@ -444,8 +444,7 @@ void _geoToHex2d(const GeoPoint* g, int res, int* face, Vec2d* v) {
  *        grid relative to the specified resolution.
  * @param g The spherical coordinates of the cell center point.
  */
-void _hex2dToGeo(const Vec2d* v, int face, int res, int substrate,
-                 GeoPoint* g) {
+void _hex2dToGeo(const Vec2d* v, int face, int res, int substrate, LatLng* g) {
     // calculate (r, theta) in hex2d
     double r = _v2dMag(v);
 
@@ -490,7 +489,7 @@ void _hex2dToGeo(const Vec2d* v, int face, int res, int substrate,
  * @param res The H3 resolution of the cell.
  * @param g The spherical coordinates of the cell center point.
  */
-void _faceIjkToGeo(const FaceIJK* h, int res, GeoPoint* g) {
+void _faceIjkToGeo(const FaceIJK* h, int res, LatLng* g) {
     Vec2d v;
     _ijkToHex2d(&h->coord, &v);
     _hex2dToGeo(&v, h->face, res, 0, g);
@@ -517,7 +516,7 @@ void _faceIjkPentToCellBoundary(const FaceIJK* h, int res, int start,
     // of a distortion vertex on the last edge
     int additionalIteration = length == NUM_PENT_VERTS ? 1 : 0;
 
-    // convert each vertex to lat/lon
+    // convert each vertex to lat/lng
     // adjust the face of each vertex as appropriate and introduce
     // edge-crossing vertices as needed
     g->numVerts = 0;
@@ -585,7 +584,7 @@ void _faceIjkPentToCellBoundary(const FaceIJK* h, int res, int start,
                     break;
             }
 
-            // find the intersection and add the lat/lon point to the result
+            // find the intersection and add the lat/lng point to the result
             Vec2d inter;
             _v2dIntersect(&orig2d0, &orig2d1, edge0, edge1, &inter);
             _hex2dToGeo(&inter, tmpFijk.face, adjRes, 1,
@@ -593,7 +592,7 @@ void _faceIjkPentToCellBoundary(const FaceIJK* h, int res, int start,
             g->numVerts++;
         }
 
-        // convert vertex to lat/lon and add to the result
+        // convert vertex to lat/lng and add to the result
         // vert == start + NUM_PENT_VERTS is only used to test for possible
         // intersection on last edge
         if (vert < start + NUM_PENT_VERTS) {
@@ -690,7 +689,7 @@ void _faceIjkToCellBoundary(const FaceIJK* h, int res, int start, int length,
     // of a distortion vertex on the last edge
     int additionalIteration = length == NUM_HEX_VERTS ? 1 : 0;
 
-    // convert each vertex to lat/lon
+    // convert each vertex to lat/lng
     // adjust the face of each vertex as appropriate and introduce
     // edge-crossing vertices as needed
     g->numVerts = 0;
@@ -750,7 +749,7 @@ void _faceIjkToCellBoundary(const FaceIJK* h, int res, int start, int length,
                     break;
             }
 
-            // find the intersection and add the lat/lon point to the result
+            // find the intersection and add the lat/lng point to the result
             Vec2d inter;
             _v2dIntersect(&orig2d0, &orig2d1, edge0, edge1, &inter);
             /*
@@ -767,7 +766,7 @@ void _faceIjkToCellBoundary(const FaceIJK* h, int res, int start, int length,
             }
         }
 
-        // convert vertex to lat/lon and add to the result
+        // convert vertex to lat/lng and add to the result
         // vert == start + NUM_HEX_VERTS is only used to test for possible
         // intersection on last edge
         if (vert < start + NUM_HEX_VERTS) {
