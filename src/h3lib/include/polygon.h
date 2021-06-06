@@ -41,9 +41,9 @@
 #define IS_EMPTY_GEOFENCE(geoloop) geoloop->numVerts == 0
 
 // Defined directly in polygon.c:
-void bboxesFromGeoPolygon(const GeoPolygon* polygon, BBox* bboxes);
-bool pointInsidePolygon(const GeoPolygon* geoPolygon, const BBox* bboxes,
-                        const LatLng* coord);
+void bboxesFromGeoPolygon(const GeoPolygon *polygon, BBox *bboxes);
+bool pointInsidePolygon(const GeoPolygon *geoPolygon, const BBox *bboxes,
+                        const LatLng *coord);
 
 // The following functions are created via macro in polygonAlgos.h,
 // so their signatures are documented here:
@@ -53,7 +53,7 @@ bool pointInsidePolygon(const GeoPolygon* geoPolygon, const BBox* bboxes,
  * @param geoloop Input GeoLoop
  * @param bbox     Output bbox
  */
-void bboxFromGeoLoop(const GeoLoop* loop, BBox* bbox);
+void bboxFromGeoLoop(const GeoLoop *loop, BBox *bbox);
 
 /**
  * Take a given GeoLoop data structure and check if it
@@ -63,14 +63,14 @@ void bboxFromGeoLoop(const GeoLoop* loop, BBox* bbox);
  * @param coord         The coordinate to check
  * @return              Whether the point is contained
  */
-bool pointInsideGeoLoop(const GeoLoop* loop, const BBox* bbox,
-                        const LatLng* coord);
+bool pointInsideGeoLoop(const GeoLoop *loop, const BBox *bbox,
+                        const LatLng *coord);
 
 /**
  * Whether the winding order of a given GeoLoop is clockwise
  * @param loop  The loop to check
  * @return      Whether the loop is clockwise
  */
-bool isClockwiseGeoLoop(const GeoLoop* geoloop);
+bool isClockwiseGeoLoop(const GeoLoop *geoloop);
 
 #endif

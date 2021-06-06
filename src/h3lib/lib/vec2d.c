@@ -27,7 +27,7 @@
  * @param v The 2D cartesian vector.
  * @return The magnitude of the vector.
  */
-double _v2dMag(const Vec2d* v) { return sqrt(v->x * v->x + v->y * v->y); }
+double _v2dMag(const Vec2d *v) { return sqrt(v->x * v->x + v->y * v->y); }
 
 /**
  * Finds the intersection between two lines. Assumes that the lines intersect
@@ -38,8 +38,8 @@ double _v2dMag(const Vec2d* v) { return sqrt(v->x * v->x + v->y * v->y); }
  * @param p3 The second endpoint of the second line.
  * @param inter The intersection point.
  */
-void _v2dIntersect(const Vec2d* p0, const Vec2d* p1, const Vec2d* p2,
-                   const Vec2d* p3, Vec2d* inter) {
+void _v2dIntersect(const Vec2d *p0, const Vec2d *p1, const Vec2d *p2,
+                   const Vec2d *p3, Vec2d *inter) {
     Vec2d s1, s2;
     s1.x = p1->x - p0->x;
     s1.y = p1->y - p0->y;
@@ -61,6 +61,6 @@ void _v2dIntersect(const Vec2d* p0, const Vec2d* p1, const Vec2d* p2,
  * @param v2 Second vector to compare
  * @return Whether the vectors are equal
  */
-bool _v2dEquals(const Vec2d* v1, const Vec2d* v2) {
+bool _v2dEquals(const Vec2d *v1, const Vec2d *v2) {
     return v1->x == v2->x && v1->y == v2->y;
 }

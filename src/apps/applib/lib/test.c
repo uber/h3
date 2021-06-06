@@ -25,10 +25,10 @@
 // Assert
 
 int globalTestCount = 0;
-const char* currentSuiteName = "";
-const char* currentTestName = "";
+const char *currentSuiteName = "";
+const char *currentTestName = "";
 
-void t_assertBoundary(H3Index h3, const CellBoundary* b1) {
+void t_assertBoundary(H3Index h3, const CellBoundary *b1) {
     // Generate cell boundary for the h3 index
     CellBoundary b2;
     H3_EXPORT(cellToBoundary)(h3, &b2);

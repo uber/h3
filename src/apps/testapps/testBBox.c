@@ -23,8 +23,8 @@
 #include "polygon.h"
 #include "test.h"
 
-void assertBBox(const GeoLoop* geoloop, const BBox* expected,
-                const LatLng* inside, const LatLng* outside) {
+void assertBBox(const GeoLoop *geoloop, const BBox *expected,
+                const LatLng *inside, const LatLng *outside) {
     BBox result;
 
     bboxFromGeoLoop(geoloop, &result);

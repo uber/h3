@@ -176,7 +176,7 @@ int H3_EXPORT(maxGridDiskSize)(int k) { return 3 * k * (k + 1) + 1; }
  * @param  k        k >= 0
  * @param  out      zero-filled array which must be of size maxGridDiskSize(k)
  */
-void H3_EXPORT(gridDisk)(H3Index origin, int k, H3Index* out) {
+void H3_EXPORT(gridDisk)(H3Index origin, int k, H3Index *out) {
     H3_EXPORT(gridDiskDistances)(origin, k, out, NULL);
 }
 
@@ -197,8 +197,8 @@ void H3_EXPORT(gridDisk)(H3Index origin, int k, H3Index* out) {
  * @param  distances   NULL or a zero-filled array which must be of size
  *                     maxGridDiskSize(k)
  */
-void H3_EXPORT(gridDiskDistances)(H3Index origin, int k, H3Index* out,
-                                  int* distances) {
+void H3_EXPORT(gridDiskDistances)(H3Index origin, int k, H3Index *out,
+                                  int *distances) {
     // Optimistically try the faster gridDiskUnsafe algorithm first
     const bool failed =
         H3_EXPORT(gridDiskDistancesUnsafe)(origin, k, out, distances);
@@ -240,8 +240,8 @@ void H3_EXPORT(gridDiskDistances)(H3Index origin, int k, H3Index* out,
  * maxGridDiskSize(k))
  * @param  curK        Current distance from the origin
  */
-void _gridDiskDistancesInternal(H3Index origin, int k, H3Index* out,
-                                int* distances, int maxIdx, int curK) {
+void _gridDiskDistancesInternal(H3Index origin, int k, H3Index *out,
+                                int *distances, int maxIdx, int curK) {
     if (origin == 0) return;
 
     // Put origin in the output array. out is used as a hash set.
@@ -284,8 +284,8 @@ void _gridDiskDistancesInternal(H3Index origin, int k, H3Index* out,
  *                     Elements indicate ijk distance from the origin cell to
  *                     the output cell
  */
-void H3_EXPORT(gridDiskDistancesSafe)(H3Index origin, int k, H3Index* out,
-                                      int* distances) {
+void H3_EXPORT(gridDiskDistancesSafe)(H3Index origin, int k, H3Index *out,
+                                      int *distances) {
     int maxIdx = H3_EXPORT(maxGridDiskSize)(k);
     _gridDiskDistancesInternal(origin, k, out, distances, maxIdx, 0);
 }
@@ -305,7 +305,7 @@ void H3_EXPORT(gridDiskDistancesSafe)(H3Index origin, int k, H3Index* out,
  * @return H3Index of the specified neighbor or H3_NULL if deleted k-subsequence
  *         distortion is encountered.
  */
-H3Index h3NeighborRotations(H3Index origin, Direction dir, int* rotations) {
+H3Index h3NeighborRotations(H3Index origin, Direction dir, int *rotations) {
     H3Index out = origin;
 
     for (int i = 0; i < *rotations; i++) {
@@ -481,7 +481,7 @@ Direction directionForNeighbor(H3Index origin, H3Index destination) {
  * @param out Array which must be of size maxGridDiskSize(k).
  * @return 0 if no pentagon or pentagonal distortion area was encountered.
  */
-int H3_EXPORT(gridDiskUnsafe)(H3Index origin, int k, H3Index* out) {
+int H3_EXPORT(gridDiskUnsafe)(H3Index origin, int k, H3Index *out) {
     return H3_EXPORT(gridDiskDistancesUnsafe)(origin, k, out, NULL);
 }
 
@@ -503,8 +503,8 @@ int H3_EXPORT(gridDiskUnsafe)(H3Index origin, int k, H3Index* out) {
  * @param distances Null or array which must be of size maxGridDiskSize(k).
  * @return 0 if no pentagon or pentagonal distortion area was encountered.
  */
-int H3_EXPORT(gridDiskDistancesUnsafe)(H3Index origin, int k, H3Index* out,
-                                       int* distances) {
+int H3_EXPORT(gridDiskDistancesUnsafe)(H3Index origin, int k, H3Index *out,
+                                       int *distances) {
     // Return codes:
     // 1 Pentagon was encountered
     // 2 Pentagon distortion (deleted k subsequence) was encountered
@@ -597,10 +597,10 @@ int H3_EXPORT(gridDiskDistancesUnsafe)(H3Index origin, int k, H3Index* out,
  *            The memory block should be equal to maxGridDiskSize(k) * length
  * @return 0 if no pentagon is encountered. Cannot trust output otherwise
  */
-int H3_EXPORT(gridDisksUnsafe)(H3Index* h3Set, int length, int k,
-                               H3Index* out) {
+int H3_EXPORT(gridDisksUnsafe)(H3Index *h3Set, int length, int k,
+                               H3Index *out) {
     int success = 0;
-    H3Index* segment;
+    H3Index *segment;
     int segmentSize = H3_EXPORT(maxGridDiskSize)(k);
     for (int i = 0; i < length; i++) {
         // Determine the appropriate segment of the output array to operate on
@@ -624,7 +624,7 @@ int H3_EXPORT(gridDisksUnsafe)(H3Index* h3Set, int length, int k,
  * @param out Array which must be of size 6 * k (or 1 if k == 0)
  * @return 0 if successful; nonzero otherwise.
  */
-int H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index* out) {
+int H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index *out) {
     // Short-circuit on 'identity' ring
     if (k == 0) {
         out[0] = origin;
@@ -703,7 +703,7 @@ int H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index* out) {
  * @param res Hexagon resolution (0-15)
  * @return number of hexagons to allocate for
  */
-int H3_EXPORT(maxPolygonToCellsSize)(const GeoPolygon* geoPolygon, int res) {
+int H3_EXPORT(maxPolygonToCellsSize)(const GeoPolygon *geoPolygon, int res) {
     // Get the bounding box for the GeoJSON-like struct
     BBox bbox;
     const GeoLoop geoloop = geoPolygon->geoloop;
@@ -739,8 +739,8 @@ int H3_EXPORT(maxPolygonToCellsSize)(const GeoPolygon* geoPolygon, int res) {
  * @param res The Hexagon resolution (0-15)
  * @param out The slab of zeroed memory to write to. Assumed to be big enough.
  */
-void H3_EXPORT(polygonToCells)(const GeoPolygon* geoPolygon, int res,
-                               H3Index* out) {
+void H3_EXPORT(polygonToCells)(const GeoPolygon *geoPolygon, int res,
+                               H3Index *out) {
     // TODO: Eliminate this wrapper with the H3 4.0.0 release
     int failure = _polygonToCellsInternal(geoPolygon, res, out);
     // The polygonToCells algorithm can theoretically fail if the allocated
@@ -772,8 +772,8 @@ void H3_EXPORT(polygonToCells)(const GeoPolygon* geoPolygon, int res,
  * @return An error code if the hash function cannot insert a found hexagon
  *         into the found array.
  */
-int _getEdgeHexagons(const GeoLoop* geoloop, int numHexagons, int res,
-                     int* numSearchHexes, H3Index* search, H3Index* found) {
+int _getEdgeHexagons(const GeoLoop *geoloop, int numHexagons, int res,
+                     int *numSearchHexes, H3Index *search, H3Index *found) {
     for (int i = 0; i < geoloop->numVerts; i++) {
         LatLng origin = geoloop->verts[i];
         LatLng destination = i == geoloop->numVerts - 1 ? geoloop->verts[0]
@@ -836,8 +836,8 @@ int _getEdgeHexagons(const GeoLoop* geoloop, int numHexagons, int res,
  * @return An error code if any of the hash operations fails to insert a hexagon
  *         into an array of memory.
  */
-int _polygonToCellsInternal(const GeoPolygon* geoPolygon, int res,
-                            H3Index* out) {
+int _polygonToCellsInternal(const GeoPolygon *geoPolygon, int res,
+                            H3Index *out) {
     // One of the goals of the polygonToCells algorithm is that two adjacent
     // polygons with zero overlap have zero overlapping hexagons. That the
     // hexagons are uniquely assigned. There are a few approaches to take here,
@@ -856,15 +856,15 @@ int _polygonToCellsInternal(const GeoPolygon* geoPolygon, int res,
     // This first part is identical to the maxPolygonToCellsSize above.
 
     // Get the bounding boxes for the polygon and any holes
-    BBox* bboxes = H3_MEMORY(malloc)((geoPolygon->numHoles + 1) * sizeof(BBox));
+    BBox *bboxes = H3_MEMORY(malloc)((geoPolygon->numHoles + 1) * sizeof(BBox));
     assert(bboxes != NULL);
     bboxesFromGeoPolygon(geoPolygon, bboxes);
 
     // Get the estimated number of hexagons and allocate some temporary memory
     // for the hexagons
     int numHexagons = H3_EXPORT(maxPolygonToCellsSize)(geoPolygon, res);
-    H3Index* search = H3_MEMORY(calloc)(numHexagons, sizeof(H3Index));
-    H3Index* found = H3_MEMORY(calloc)(numHexagons, sizeof(H3Index));
+    H3Index *search = H3_MEMORY(calloc)(numHexagons, sizeof(H3Index));
+    H3Index *found = H3_MEMORY(calloc)(numHexagons, sizeof(H3Index));
 
     // Some metadata for tracking the state of the search and found memory
     // blocks
@@ -895,7 +895,7 @@ int _polygonToCellsInternal(const GeoPolygon* geoPolygon, int res,
     // we're done here, otherwise we'd have to scan the whole set on each insert
     // to make sure there's no duplicates, which is very inefficient.
     for (int i = 0; i < geoPolygon->numHoles; i++) {
-        GeoLoop* hole = &(geoPolygon->holes[i]);
+        GeoLoop *hole = &(geoPolygon->holes[i]);
         failure = _getEdgeHexagons(hole, numHexagons, res, &numSearchHexes,
                                    search, found);
         // If this branch is reached, we have exceeded the maximum number of
@@ -979,7 +979,7 @@ int _polygonToCellsInternal(const GeoPolygon* geoPolygon, int res,
 
         // Swap the search and found pointers, copy the found hex count to the
         // search hex count, and zero everything related to the found memory.
-        H3Index* temp = search;
+        H3Index *temp = search;
         search = found;
         found = temp;
         for (int j = 0; j < numSearchHexes; j++) found[j] = 0;
@@ -1003,12 +1003,12 @@ int _polygonToCellsInternal(const GeoPolygon* geoPolygon, int res,
  * @param numHexes Number of hexagons in the set
  * @param graph    Output graph
  */
-void h3SetToVertexGraph(const H3Index* h3Set, const int numHexes,
-                        VertexGraph* graph) {
+void h3SetToVertexGraph(const H3Index *h3Set, const int numHexes,
+                        VertexGraph *graph) {
     CellBoundary vertices;
-    LatLng* fromVtx;
-    LatLng* toVtx;
-    VertexNode* edge;
+    LatLng *fromVtx;
+    LatLng *toVtx;
+    VertexNode *edge;
     if (numHexes < 1) {
         // We still need to init the graph, or calls to destroyVertexGraph will
         // fail
@@ -1049,10 +1049,10 @@ void h3SetToVertexGraph(const H3Index* h3Set, const int numHexes,
  * @param graph Input graph
  * @param out   Output polygon
  */
-void _vertexGraphToLinkedGeo(VertexGraph* graph, LinkedGeoPolygon* out) {
+void _vertexGraphToLinkedGeo(VertexGraph *graph, LinkedGeoPolygon *out) {
     *out = (LinkedGeoPolygon){0};
-    LinkedGeoLoop* loop;
-    VertexNode* edge;
+    LinkedGeoLoop *loop;
+    VertexNode *edge;
     LatLng nextVtx;
     // Find the next unused entry point
     while ((edge = firstVertexNode(graph)) != NULL) {
@@ -1086,8 +1086,8 @@ void _vertexGraphToLinkedGeo(VertexGraph* graph, LinkedGeoPolygon* out) {
  * @param numHexes Number of hexagons in set
  * @param out      Output polygon
  */
-void H3_EXPORT(h3SetToLinkedGeo)(const H3Index* h3Set, const int numHexes,
-                                 LinkedGeoPolygon* out) {
+void H3_EXPORT(h3SetToLinkedGeo)(const H3Index *h3Set, const int numHexes,
+                                 LinkedGeoPolygon *out) {
     VertexGraph graph;
     h3SetToVertexGraph(h3Set, numHexes, &graph);
     _vertexGraphToLinkedGeo(&graph, out);

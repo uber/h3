@@ -48,12 +48,12 @@ typedef struct {
     int ret2;
 } TestOutput;
 
-void doCell(H3Index h, int maxK, TestOutput* testOutput) {
+void doCell(H3Index h, int maxK, TestOutput *testOutput) {
     for (int k = 0; k < maxK; k++) {
         int maxSz = H3_EXPORT(maxGridDiskSize)(k);
-        H3Index* gridDiskInternalOutput = calloc(sizeof(H3Index), maxSz);
-        H3Index* gridDiskUnsafeOutput = calloc(sizeof(H3Index), maxSz);
-        int* gridDiskInternalDistances = calloc(sizeof(int), maxSz);
+        H3Index *gridDiskInternalOutput = calloc(sizeof(H3Index), maxSz);
+        H3Index *gridDiskUnsafeOutput = calloc(sizeof(H3Index), maxSz);
+        int *gridDiskInternalDistances = calloc(sizeof(int), maxSz);
 
         H3_EXPORT(gridDiskDistancesSafe)
         (h, k, gridDiskInternalOutput, gridDiskInternalDistances);
@@ -121,7 +121,7 @@ void doCell(H3Index h, int maxK, TestOutput* testOutput) {
 }
 
 void recursiveH3IndexToGeo(H3Index h, int res, int maxK,
-                           TestOutput* testOutput) {
+                           TestOutput *testOutput) {
     for (int d = 0; d < 7; d++) {
         H3_SET_INDEX_DIGIT(h, res, d);
 
@@ -140,7 +140,7 @@ void recursiveH3IndexToGeo(H3Index h, int res, int maxK,
     }
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     // check command line args
     if (argc != 2 && argc != 3) {
         fprintf(stderr, "usage: %s resolution [maxK]\n", argv[0]);

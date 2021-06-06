@@ -38,7 +38,7 @@
  * Assumes `f` is open and ready for reading.
  * @return 0 on success, EOF on EOF
  */
-int readBoundary(FILE* f, CellBoundary* b) {
+int readBoundary(FILE *f, CellBoundary *b) {
     char buff[BUFF_SIZE];
 
     // get the first line, which should be a "{"
@@ -92,7 +92,7 @@ int readBoundary(FILE* f, CellBoundary* b) {
     return 0;
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     // check command line args
     if (argc > 1) {
         fprintf(stderr, "usage: %s\n", argv[0]);

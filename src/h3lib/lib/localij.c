@@ -128,7 +128,7 @@ const bool FAILED_DIRECTIONS[7][7] = {
  * @param out ijk+ coordinates of the index will be placed here on success
  * @return 0 on success, or another value on failure.
  */
-int h3ToLocalIjk(H3Index origin, H3Index h3, CoordIJK* out) {
+int h3ToLocalIjk(H3Index origin, H3Index h3, CoordIJK *out) {
     int res = H3_GET_RESOLUTION(origin);
 
     if (res != H3_GET_RESOLUTION(h3)) {
@@ -287,7 +287,7 @@ int h3ToLocalIjk(H3Index origin, H3Index h3, CoordIJK* out) {
  * @param out The index will be placed here on success
  * @return 0 on success, or another value on failure.
  */
-int localIjkToH3(H3Index origin, const CoordIJK* ijk, H3Index* out) {
+int localIjkToH3(H3Index origin, const CoordIJK *ijk, H3Index *out) {
     int res = H3_GET_RESOLUTION(origin);
     int originBaseCell = H3_GET_BASE_CELL(origin);
     if (originBaseCell < 0 ||  // LCOV_EXCL_BR_LINE
@@ -486,7 +486,7 @@ int localIjkToH3(H3Index origin, const CoordIJK* ijk, H3Index* out) {
  * @return 0 on success, or another value on failure.
  */
 int H3_EXPORT(experimentalH3ToLocalIj)(H3Index origin, H3Index h3,
-                                       CoordIJ* out) {
+                                       CoordIJ *out) {
     // This function is currently experimental. Once ready to be part of the
     // non-experimental API, this function (with the experimental prefix) will
     // be marked as deprecated and to be removed in the next major version. It
@@ -519,8 +519,8 @@ int H3_EXPORT(experimentalH3ToLocalIj)(H3Index origin, H3Index h3,
  * @param index Index will be placed here on success.
  * @return 0 on success, or another value on failure.
  */
-int H3_EXPORT(experimentalLocalIjToH3)(H3Index origin, const CoordIJ* ij,
-                                       H3Index* out) {
+int H3_EXPORT(experimentalLocalIjToH3)(H3Index origin, const CoordIJ *ij,
+                                       H3Index *out) {
     // This function is currently experimental. Once ready to be part of the
     // non-experimental API, this function (with the experimental prefix) will
     // be marked as deprecated and to be removed in the next major version. It
@@ -580,7 +580,7 @@ int H3_EXPORT(gridPathCellsSize)(H3Index start, H3Index end) {
  * @param k   Floating-point K coord
  * @param ijk IJK coord struct, modified in place
  */
-static void cubeRound(double i, double j, double k, CoordIJK* ijk) {
+static void cubeRound(double i, double j, double k, CoordIJK *ijk) {
     int ri = round(i);
     int rj = round(j);
     int rk = round(k);
@@ -624,7 +624,7 @@ static void cubeRound(double i, double j, double k, CoordIJK* ijk) {
  * @param out Output array, which must be of size gridPathCellsSize(start, end)
  * @return 0 on success, or another value on failure.
  */
-int H3_EXPORT(gridPathCells)(H3Index start, H3Index end, H3Index* out) {
+int H3_EXPORT(gridPathCells)(H3Index start, H3Index end, H3Index *out) {
     int distance = H3_EXPORT(gridDistance)(start, end);
     // Early exit if we can't calculate the line
     if (distance < 0) {

@@ -20,12 +20,12 @@
 #include "h3api.h"
 #include "utility.h"
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     if (argc != 2) {
         error("Should have one argument (test case file)\n");
     }
-    const char* filename = argv[1];
-    FILE* fp = fopen(filename, "rb");
+    const char *filename = argv[1];
+    FILE *fp = fopen(filename, "rb");
     struct {
         H3Index index;
         int k;
@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
     fclose(fp);
 
     int sz = H3_EXPORT(maxGridDiskSize)(args.k);
-    H3Index* results = calloc(sizeof(H3Index), sz);
+    H3Index *results = calloc(sizeof(H3Index), sz);
     if (results != NULL) {
         H3_EXPORT(gridDisk)(args.index, args.k, results);
         h3Println(results[0]);

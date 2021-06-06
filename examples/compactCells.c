@@ -23,7 +23,7 @@
 #include <inttypes.h>
 #include <stdio.h>
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     H3Index input[] = {
         // All with the same parent index
         0x8a2a1072b587fffL, 0x8a2a1072b5b7fffL, 0x8a2a1072b597fffL,
@@ -34,7 +34,7 @@ int main(int argc, char* argv[]) {
     int inputSize = sizeof(input) / sizeof(H3Index);
     printf("Starting with %d indexes.\n", inputSize);
 
-    H3Index* compacted = calloc(inputSize, sizeof(H3Index));
+    H3Index *compacted = calloc(inputSize, sizeof(H3Index));
     H3Error err = compactCells(input, compacted, inputSize);
     // An error case can occur on e.g. duplicate input.
     assert(err == E_SUCCESS);
@@ -54,7 +54,7 @@ int main(int argc, char* argv[]) {
     H3Error err2 = uncompactCellsSize(compacted, inputSize, uncompactRes,
                                       &uncompactedSize);
     assert(err2 == E_SUCCESS);
-    H3Index* uncompacted = calloc(uncompactedSize, sizeof(H3Index));
+    H3Index *uncompacted = calloc(uncompactedSize, sizeof(H3Index));
     int err3 = uncompactCells(compacted, compactedCount, uncompacted,
                               uncompactedSize, uncompactRes);
     // An error case could happen if the output array is too small, or indexes

@@ -47,7 +47,7 @@ void doCell(H3Index h, H3Index origin) {
     }
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     H3Index origin = 0;
 
     Arg helpArg = ARG_HELP;
@@ -61,9 +61,9 @@ int main(int argc, char* argv[]) {
             "Origin (anchoring index) for the local coordinate system."};
     DEFINE_INDEX_ARG(index, indexArg);
 
-    Arg* args[] = {&helpArg, &originArg, &indexArg};
+    Arg *args[] = {&helpArg, &originArg, &indexArg};
     const int numArgs = 3;
-    const char* helpText = "Converts H3 indexes to local IJ coordinates";
+    const char *helpText = "Converts H3 indexes to local IJ coordinates";
 
     if (parseArgs(argc, argv, numArgs, args, &helpArg, helpText)) {
         return helpArg.found ? 0 : 1;

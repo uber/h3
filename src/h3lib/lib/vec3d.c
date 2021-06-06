@@ -36,7 +36,7 @@ double _square(double x) { return x * x; }
  * @param v2 The second 3D coordinate.
  * @return The square of the distance between the given points.
  */
-double _pointSquareDist(const Vec3d* v1, const Vec3d* v2) {
+double _pointSquareDist(const Vec3d *v1, const Vec3d *v2) {
     return _square(v1->x - v2->x) + _square(v1->y - v2->y) +
            _square(v1->z - v2->z);
 }
@@ -47,7 +47,7 @@ double _pointSquareDist(const Vec3d* v1, const Vec3d* v2) {
  * @param geo The latitude and longitude of the point.
  * @param v The 3D coordinate of the point.
  */
-void _geoToVec3d(const LatLng* geo, Vec3d* v) {
+void _geoToVec3d(const LatLng *geo, Vec3d *v) {
     double r = cos(geo->lat);
 
     v->z = sin(geo->lat);

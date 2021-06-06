@@ -40,7 +40,7 @@ int ring2PentCount = 16;
 
 BEGIN_BENCHMARKS();
 
-H3Index* vertexes = calloc(6, sizeof(H3Index));
+H3Index *vertexes = calloc(6, sizeof(H3Index));
 
 BENCHMARK(cellToVertexes, 10000, { H3_EXPORT(cellToVertexes)(hex, vertexes); });
 

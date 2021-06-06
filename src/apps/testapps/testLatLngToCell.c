@@ -32,7 +32,7 @@
 #include "test.h"
 #include "utility.h"
 
-static void assertExpected(H3Index h1, const LatLng* g1) {
+static void assertExpected(H3Index h1, const LatLng *g1) {
     // convert lat/lng to H3 and verify
     int res = H3_EXPORT(getResolution)(h1);
     H3Index h2;
@@ -40,7 +40,7 @@ static void assertExpected(H3Index h1, const LatLng* g1) {
     t_assert(h1 == h2, "got expected latLngToCell output");
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     // check command line args
     if (argc > 1) {
         fprintf(stderr, "usage: %s\n", argv[0]);

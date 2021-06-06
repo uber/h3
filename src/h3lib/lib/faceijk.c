@@ -368,7 +368,7 @@ static const int unitScaleByCIIres[] = {
  * @param res The desired H3 resolution for the encoding.
  * @param h The FaceIJK address of the containing cell at resolution res.
  */
-void _geoToFaceIjk(const LatLng* g, int res, FaceIJK* h) {
+void _geoToFaceIjk(const LatLng *g, int res, FaceIJK *h) {
     // first convert to hex2d
     Vec2d v;
     _geoToHex2d(g, res, &h->face, &v);
@@ -386,7 +386,7 @@ void _geoToFaceIjk(const LatLng* g, int res, FaceIJK* h) {
  * @param face The icosahedral face containing the spherical coordinates.
  * @param v The 2D hex coordinates of the cell containing the point.
  */
-void _geoToHex2d(const LatLng* g, int res, int* face, Vec2d* v) {
+void _geoToHex2d(const LatLng *g, int res, int *face, Vec2d *v) {
     Vec3d v3d;
     _geoToVec3d(g, &v3d);
 
@@ -444,7 +444,7 @@ void _geoToHex2d(const LatLng* g, int res, int* face, Vec2d* v) {
  *        grid relative to the specified resolution.
  * @param g The spherical coordinates of the cell center point.
  */
-void _hex2dToGeo(const Vec2d* v, int face, int res, int substrate, LatLng* g) {
+void _hex2dToGeo(const Vec2d *v, int face, int res, int substrate, LatLng *g) {
     // calculate (r, theta) in hex2d
     double r = _v2dMag(v);
 
@@ -489,7 +489,7 @@ void _hex2dToGeo(const Vec2d* v, int face, int res, int substrate, LatLng* g) {
  * @param res The H3 resolution of the cell.
  * @param g The spherical coordinates of the cell center point.
  */
-void _faceIjkToGeo(const FaceIJK* h, int res, LatLng* g) {
+void _faceIjkToGeo(const FaceIJK *h, int res, LatLng *g) {
     Vec2d v;
     _ijkToHex2d(&h->coord, &v);
     _hex2dToGeo(&v, h->face, res, 0, g);
@@ -505,8 +505,8 @@ void _faceIjkToGeo(const FaceIJK* h, int res, LatLng* g) {
  * @param length The number of topological vertexes to return.
  * @param g The spherical coordinates of the cell boundary.
  */
-void _faceIjkPentToCellBoundary(const FaceIJK* h, int res, int start,
-                                int length, CellBoundary* g) {
+void _faceIjkPentToCellBoundary(const FaceIJK *h, int res, int start,
+                                int length, CellBoundary *g) {
     int adjRes = res;
     FaceIJK centerIJK = *h;
     FaceIJK fijkVerts[NUM_PENT_VERTS];
@@ -542,11 +542,11 @@ void _faceIjkPentToCellBoundary(const FaceIJK* h, int res, int start,
 
             int currentToLastDir = adjacentFaceDir[tmpFijk.face][lastFijk.face];
 
-            const FaceOrientIJK* fijkOrient =
+            const FaceOrientIJK *fijkOrient =
                 &faceNeighbors[tmpFijk.face][currentToLastDir];
 
             tmpFijk.face = fijkOrient->face;
-            CoordIJK* ijk = &tmpFijk.coord;
+            CoordIJK *ijk = &tmpFijk.coord;
 
             // rotate and translate for adjacent face
             for (int i = 0; i < fijkOrient->ccwRot60; i++) _ijkRotate60ccw(ijk);
@@ -565,8 +565,8 @@ void _faceIjkPentToCellBoundary(const FaceIJK* h, int res, int start,
             Vec2d v1 = {-1.5 * maxDim, 3.0 * M_SQRT3_2 * maxDim};
             Vec2d v2 = {-1.5 * maxDim, -3.0 * M_SQRT3_2 * maxDim};
 
-            Vec2d* edge0;
-            Vec2d* edge1;
+            Vec2d *edge0;
+            Vec2d *edge1;
             switch (adjacentFaceDir[tmpFijk.face][fijk.face]) {
                 case IJ:
                     edge0 = &v0;
@@ -614,7 +614,7 @@ void _faceIjkPentToCellBoundary(const FaceIJK* h, int res, int start,
  *            necessary for the substrate grid resolution.
  * @param fijkVerts Output array for the vertices
  */
-void _faceIjkPentToVerts(FaceIJK* fijk, int* res, FaceIJK* fijkVerts) {
+void _faceIjkPentToVerts(FaceIJK *fijk, int *res, FaceIJK *fijkVerts) {
     // the vertexes of an origin-centered pentagon in a Class II resolution on a
     // substrate grid with aperture sequence 33r. The aperture 3 gets us the
     // vertices, and the 3r gets us back to Class II.
@@ -640,7 +640,7 @@ void _faceIjkPentToVerts(FaceIJK* fijk, int* res, FaceIJK* fijkVerts) {
     };
 
     // get the correct set of substrate vertices for this resolution
-    CoordIJK* verts;
+    CoordIJK *verts;
     if (isResolutionClassIII(*res))
         verts = vertsCIII;
     else
@@ -678,8 +678,8 @@ void _faceIjkPentToVerts(FaceIJK* fijk, int* res, FaceIJK* fijkVerts) {
  * @param length The number of topological vertexes to return.
  * @param g The spherical coordinates of the cell boundary.
  */
-void _faceIjkToCellBoundary(const FaceIJK* h, int res, int start, int length,
-                            CellBoundary* g) {
+void _faceIjkToCellBoundary(const FaceIJK *h, int res, int start, int length,
+                            CellBoundary *g) {
     int adjRes = res;
     FaceIJK centerIJK = *h;
     FaceIJK fijkVerts[NUM_HEX_VERTS];
@@ -730,8 +730,8 @@ void _faceIjkToCellBoundary(const FaceIJK* h, int res, int start, int length,
             Vec2d v2 = {-1.5 * maxDim, -3.0 * M_SQRT3_2 * maxDim};
 
             int face2 = ((lastFace == centerIJK.face) ? fijk.face : lastFace);
-            Vec2d* edge0;
-            Vec2d* edge1;
+            Vec2d *edge0;
+            Vec2d *edge1;
             switch (adjacentFaceDir[centerIJK.face][face2]) {
                 case IJ:
                     edge0 = &v0;
@@ -789,7 +789,7 @@ void _faceIjkToCellBoundary(const FaceIJK* h, int res, int start, int length,
  *            necessary for the substrate grid resolution.
  * @param fijkVerts Output array for the vertices
  */
-void _faceIjkToVerts(FaceIJK* fijk, int* res, FaceIJK* fijkVerts) {
+void _faceIjkToVerts(FaceIJK *fijk, int *res, FaceIJK *fijkVerts) {
     // the vertexes of an origin-centered cell in a Class II resolution on a
     // substrate grid with aperture sequence 33r. The aperture 3 gets us the
     // vertices, and the 3r gets us back to Class II.
@@ -817,7 +817,7 @@ void _faceIjkToVerts(FaceIJK* fijk, int* res, FaceIJK* fijkVerts) {
     };
 
     // get the correct set of substrate vertices for this resolution
-    CoordIJK* verts;
+    CoordIJK *verts;
     if (isResolutionClassIII(*res))
         verts = vertsCIII;
     else
@@ -857,11 +857,11 @@ void _faceIjkToVerts(FaceIJK* fijk, int* res, FaceIJK* fijkVerts) {
  * @return 0 if on original face (no overage); 1 if on face edge (only occurs
  *         on substrate grids); 2 if overage on new face interior
  */
-Overage _adjustOverageClassII(FaceIJK* fijk, int res, int pentLeading4,
+Overage _adjustOverageClassII(FaceIJK *fijk, int res, int pentLeading4,
                               int substrate) {
     Overage overage = NO_OVERAGE;
 
-    CoordIJK* ijk = &fijk->coord;
+    CoordIJK *ijk = &fijk->coord;
 
     // get the maximum dimension value; scale if a substrate grid
     int maxDim = maxDimByCIIres[res];
@@ -874,7 +874,7 @@ Overage _adjustOverageClassII(FaceIJK* fijk, int res, int pentLeading4,
     {
         overage = NEW_FACE;
 
-        const FaceOrientIJK* fijkOrient;
+        const FaceOrientIJK *fijkOrient;
         if (ijk->k > 0) {
             if (ijk->j > 0)  // jk "quadrant"
                 fijkOrient = &faceNeighbors[fijk->face][JK];
@@ -926,7 +926,7 @@ Overage _adjustOverageClassII(FaceIJK* fijk, int res, int pentLeading4,
  * @param fijk The FaceIJK address of the cell.
  * @param res The H3 resolution of the cell.
  */
-Overage _adjustPentVertOverage(FaceIJK* fijk, int res) {
+Overage _adjustPentVertOverage(FaceIJK *fijk, int res) {
     int pentLeading4 = 0;
     Overage overage;
     do {

@@ -22,13 +22,13 @@
 #include <inttypes.h>
 #include <stdio.h>
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     H3Index indexed = 0x8a2a1072b59ffffL;
     // Distance away from the origin to find:
     int k = 2;
 
     int maxNeighboring = maxGridDiskSize(k);
-    H3Index* neighboring = calloc(maxNeighboring, sizeof(H3Index));
+    H3Index *neighboring = calloc(maxNeighboring, sizeof(H3Index));
     gridDisk(indexed, k, neighboring);
 
     printf("Neighbors:\n");

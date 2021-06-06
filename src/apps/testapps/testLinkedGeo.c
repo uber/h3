@@ -35,9 +35,9 @@ SUITE(linkedGeo) {
     setGeoDegs(&vertex4, 87.369975080, 166.233115768);
 
     TEST(createLinkedGeo) {
-        LinkedGeoPolygon* polygon = calloc(1, sizeof(LinkedGeoPolygon));
-        LinkedGeoLoop* loop;
-        LinkedLatLng* coord;
+        LinkedGeoPolygon *polygon = calloc(1, sizeof(LinkedGeoPolygon));
+        LinkedGeoLoop *loop;
+        LinkedLatLng *coord;
 
         loop = addNewLinkedLoop(polygon);
         t_assert(loop != NULL, "Loop created");
@@ -62,7 +62,7 @@ SUITE(linkedGeo) {
         t_assert(countLinkedCoords(polygon->last) == 2,
                  "Coord count 2 correct");
 
-        LinkedGeoPolygon* nextPolygon = addNewLinkedPolygon(polygon);
+        LinkedGeoPolygon *nextPolygon = addNewLinkedPolygon(polygon);
         t_assert(nextPolygon != NULL, "polygon created");
 
         t_assert(countLinkedPolygons(polygon) == 2, "Polygon count correct");

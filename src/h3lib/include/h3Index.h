@@ -164,14 +164,14 @@
             (((uint64_t)(digit))                                            \
              << ((MAX_H3_RES - (res)) * H3_PER_DIGIT_OFFSET)))
 
-void setH3Index(H3Index* h, int res, int baseCell, Direction initDigit);
+void setH3Index(H3Index *h, int res, int baseCell, Direction initDigit);
 int isResolutionClassIII(int r);
 
 // Internal functions
 
-int _h3ToFaceIjkWithInitializedFijk(H3Index h, FaceIJK* fijk);
-H3Error _h3ToFaceIjk(H3Index h, FaceIJK* fijk);
-H3Index _faceIjkToH3(const FaceIJK* fijk, int res);
+int _h3ToFaceIjkWithInitializedFijk(H3Index h, FaceIJK *fijk);
+H3Error _h3ToFaceIjk(H3Index h, FaceIJK *fijk);
+H3Index _faceIjkToH3(const FaceIJK *fijk, int res);
 Direction _h3LeadingNonZeroDigit(H3Index h);
 H3Index _h3RotatePent60ccw(H3Index h);
 H3Index _h3RotatePent60cw(H3Index h);

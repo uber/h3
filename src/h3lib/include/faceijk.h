@@ -72,18 +72,18 @@ typedef enum {
 
 // Internal functions
 
-void _geoToFaceIjk(const LatLng* g, int res, FaceIJK* h);
-void _geoToHex2d(const LatLng* g, int res, int* face, Vec2d* v);
-void _faceIjkToGeo(const FaceIJK* h, int res, LatLng* g);
-void _faceIjkToCellBoundary(const FaceIJK* h, int res, int start, int length,
-                            CellBoundary* g);
-void _faceIjkPentToCellBoundary(const FaceIJK* h, int res, int start,
-                                int length, CellBoundary* g);
-void _faceIjkToVerts(FaceIJK* fijk, int* res, FaceIJK* fijkVerts);
-void _faceIjkPentToVerts(FaceIJK* fijk, int* res, FaceIJK* fijkVerts);
-void _hex2dToGeo(const Vec2d* v, int face, int res, int substrate, LatLng* g);
-Overage _adjustOverageClassII(FaceIJK* fijk, int res, int pentLeading4,
+void _geoToFaceIjk(const LatLng *g, int res, FaceIJK *h);
+void _geoToHex2d(const LatLng *g, int res, int *face, Vec2d *v);
+void _faceIjkToGeo(const FaceIJK *h, int res, LatLng *g);
+void _faceIjkToCellBoundary(const FaceIJK *h, int res, int start, int length,
+                            CellBoundary *g);
+void _faceIjkPentToCellBoundary(const FaceIJK *h, int res, int start,
+                                int length, CellBoundary *g);
+void _faceIjkToVerts(FaceIJK *fijk, int *res, FaceIJK *fijkVerts);
+void _faceIjkPentToVerts(FaceIJK *fijk, int *res, FaceIJK *fijkVerts);
+void _hex2dToGeo(const Vec2d *v, int face, int res, int substrate, LatLng *g);
+Overage _adjustOverageClassII(FaceIJK *fijk, int res, int pentLeading4,
                               int substrate);
-Overage _adjustPentVertOverage(FaceIJK* fijk, int res);
+Overage _adjustPentVertOverage(FaceIJK *fijk, int res);
 
 #endif
