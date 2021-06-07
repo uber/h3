@@ -21,8 +21,8 @@ The H3 Core Library implements the H3 grid system. It includes functions for con
 
 ##Comparisons
 
-* [S2](/docs/comparisons/s2), an open source, hierarchical, discrete, and global grid system.
+* [S2](/docs/comparisons/s2), an open source, hierarchical, discrete, and global grid system using square cells.
 * [Geohash](/docs/comparisons/geohash), a system for encoding locations using a string of characters, creating a hierarchical, square grid system (a quadtree).
 * [Hexbin](/docs/comparisons/hexbin), the process of taking coordinates and binning them into hexagonal cells in analytics or mapping software.
-* [Admin Boundaries](/docs/comparisons/admin), used for aggregating and analyzing data.
-* [Placekey](/docs/comparisons/placekey), a system for encoding points of interest (POIs), and incorporates H3 in its POI identifier.
+* [Admin Boundaries](/docs/comparisons/admin), officially designated areas used for aggregating and analyzing data.
+* [Placekey](/docs/comparisons/placekey), a system for encoding points of interest (POIs) which incorporates H3 in its POI identifier.
