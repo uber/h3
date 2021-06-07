@@ -13,11 +13,11 @@ The H3 Core Library implements the H3 grid system. It includes functions for con
 
 ## Highlights
 
+* H3 is a hierarchical [geospatial index](/docs/highlights/indexing).
 * H3 was developed to address the [challenges of Uber's data science needs](/docs/highlights/aggregation).
 * H3 can be used to [join disparate data sets](/docs/highlights/joining).
 * In addition to the benefits of the hexagonal grid shape, H3 includes features for [modeling flow](/docs/highlights/flowmodel).
 * H3 is well suited to apply [ML to geospatial data](/docs/highlights/ml).
-* H3 is a hierarchical [geospatial index](/docs/highlights/indexing).
 
 ##Comparisons
 
