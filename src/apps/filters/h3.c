@@ -77,9 +77,7 @@ bool latLngToCellCmd(int argc, char *argv[]) {
                   .scanFormat = "%lf",
                   .valueName = "lat",
                   .value = &lat,
-                  .helpText =
-                      "Latitude in degrees. If not specified, \"latitude "
-                      "longitude\" pairs will be read from standard input."};
+                  .helpText = "Latitude in degrees."};
     Arg lngArg = {.names = {"--lng", "--longitude"},
                   .required = true,
                   .scanFormat = "%lf",
