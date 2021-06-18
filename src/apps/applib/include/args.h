@@ -100,6 +100,14 @@ int _parseArgsList(int argc, char *argv[], int numArgs, Arg *args[],
         .value = &varName,                 \
         .helpText =                        \
             "Index, or not specified to read indexes from standard input."}
+#define DEFINE_CELL_ARG(varName, argName)     \
+    H3Index varName = 0;                      \
+    Arg argName = {.names = {"-c", "--cell"}, \
+                   .required = true,          \
+                   .scanFormat = "%" PRIx64,  \
+                   .valueName = "index",      \
+                   .value = &varName,         \
+                   .helpText = "H3 Cell"}
 #define ARG_KML \
     { .names = {"-k", "--kml"}, .helpText = "Print output in KML format." }
 #define DEFINE_KML_NAME_ARG(varName, argName)      \
