@@ -22,9 +22,26 @@ module.exports = {
       },
       items: [
         {
-          to: 'docs/',
-          activeBasePath: 'docs',
-          label: 'Docs',
+          to: 'docs',
+          activeBaseRegex: 'docs(/)$',
+          label: 'Intro',
+          position: 'left',
+        },
+        {
+          to: 'docs/api/indexing',
+          activeBasePath: 'docs/api',
+          label: 'API',
+          position: 'left',
+        },
+        {
+          to: 'docs/community/bindings',
+          activeBasePath: 'docs/community',
+          label: 'Bindings',
+          position: 'left',
+        },
+        {
+          to: 'docs/core-library/restable',
+          label: 'Resolutions',
           position: 'left',
         },
         {
