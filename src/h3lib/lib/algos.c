@@ -794,8 +794,8 @@ H3Error H3_EXPORT(polygonToCells)(const GeoPolygon* geoPolygon, int res,
 
     // Some metadata for tracking the state of the search and found memory
     // blocks
-    int numSearchHexes = 0;
-    int numFoundHexes = 0;
+    int64_t numSearchHexes = 0;
+    int64_t numFoundHexes = 0;
 
     // 1. Trace the hexagons along the polygon defining the outer geoloop and
     // add them to the search hash. The hexagon containing the geoloop point
@@ -844,8 +844,8 @@ H3Error H3_EXPORT(polygonToCells)(const GeoPolygon* geoPolygon, int res,
         // Iterate through all hexagons in the current search hash, then loop
         // through all neighbors and test Point-in-Poly, if point-in-poly
         // succeeds, add to out and found hashes if not already there.
-        int currentSearchNum = 0;
-        int i = 0;
+        int64_t currentSearchNum = 0;
+        int64_t i = 0;
         while (currentSearchNum < numSearchHexes) {
             H3Index ring[MAX_ONE_RING_SIZE] = {0};
             H3Index searchHex = search[i];
@@ -861,8 +861,8 @@ H3Error H3_EXPORT(polygonToCells)(const GeoPolygon* geoPolygon, int res,
                 // A simple hash to store the hexagon, or move to another place
                 // if needed. This MUST be done before the point-in-poly check
                 // since that's far more expensive
-                int loc = (int)(hex % numHexagons);
-                int loopCount = 0;
+                int64_t loc = (int64_t)(hex % numHexagons);
+                int64_t loopCount = 0;
                 while (out[loc] != 0) {
                     // If this branch is reached, we have exceeded the maximum
                     // number of hexagons possible and need to clean up the
@@ -908,7 +908,7 @@ H3Error H3_EXPORT(polygonToCells)(const GeoPolygon* geoPolygon, int res,
         H3Index* temp = search;
         search = found;
         found = temp;
-        for (int j = 0; j < numSearchHexes; j++) found[j] = 0;
+        for (int64_t j = 0; j < numSearchHexes; j++) found[j] = 0;
         numSearchHexes = numFoundHexes;
         numFoundHexes = 0;
         // Repeat until no new hexagons are found
@@ -938,8 +938,9 @@ H3Error H3_EXPORT(polygonToCells)(const GeoPolygon* geoPolygon, int res,
  * @return An error code if the hash function cannot insert a found hexagon
  *         into the found array.
  */
-H3Error _getEdgeHexagons(const GeoLoop* geoloop, int numHexagons, int res,
-                         int* numSearchHexes, H3Index* search, H3Index* found) {
+H3Error _getEdgeHexagons(const GeoLoop* geoloop, int64_t numHexagons, int res,
+                         int64_t* numSearchHexes, H3Index* search,
+                         H3Index* found) {
     for (int i = 0; i < geoloop->numVerts; i++) {
         GeoPoint origin = geoloop->verts[i];
         GeoPoint destination = i == geoloop->numVerts - 1
@@ -962,8 +963,8 @@ H3Error _getEdgeHexagons(const GeoLoop* geoloop, int numHexagons, int res,
             }
             // A simple hash to store the hexagon, or move to another place if
             // needed
-            int loc = (int)(pointHex % numHexagons);
-            int loopCount = 0;
+            int64_t loc = (int64_t)(pointHex % numHexagons);
+            int64_t loopCount = 0;
             while (found[loc] != 0) {
                 // If this conditional is reached, the `found` memory block is
                 // too small for the given polygon. This should not happen.

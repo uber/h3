@@ -118,7 +118,7 @@ southernGeoLoop.numVerts = 23;
 southernGeoLoop.verts = southernVerts;
 southernGeoPolygon.geoloop = southernGeoLoop;
 
-int numHexagons;
+int64_t numHexagons;
 H3Index* hexagons;
 
 BENCHMARK(polygonToCellsSF, 500, {

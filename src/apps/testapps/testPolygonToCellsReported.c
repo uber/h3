@@ -39,7 +39,7 @@ SUITE(polygonToCells_reported) {
         GeoPolygon worldGeoPolygon2 = {.geoloop = worldGeoLoop2, .numHoles = 0};
 
         for (int res = 0; res < 3; res++) {
-            int polygonToCellsSize;
+            int64_t polygonToCellsSize;
             t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(
                 &worldGeoPolygon, res, &polygonToCellsSize));
             H3Index* polygonToCellsOut =
