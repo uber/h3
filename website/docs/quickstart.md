@@ -7,7 +7,7 @@ slug: /quickstart
 
 This page shows you how to get started with the functions in H3 that convert points to cell identifiers, and from cell identifiers back to geometry. These are the core indexing functions used in many applications of H3.
 
-You can run the code in this page directly in your browser. The page uses the JavaScript bindings for H3 to run the code. you can also follow along with the same API in [your preferred programming language](/docs/community/bindings).
+You can run the code on this page directly in your browser. The page uses the JavaScript bindings for H3 to run the code, or follow along with the same API in [your preferred programming language](/docs/community/bindings).
 
 ## Point / cell
 
