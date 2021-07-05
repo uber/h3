@@ -78,48 +78,101 @@ void H3_EXPORT(h3ToString)(H3Index h, char *str, size_t sz) {
     sprintf(str, "%" PRIx64, h);
 }
 
+// don't even need to mask it! nice!
+// Get Top t bits from h
+#define GT(h, t) ((h) >> (64 - (t)))
+
+#define NUM_BITS_HIGH 1
+#define NUM_BITS_MODE 4
+#define NUM_BITS_RESERVED 3
+#define NUM_BITS_RESOLUTION 4
+#define NUM_BITS_BC 7
+#define NUM_BITS_DIGIT 3
+
+// if (_isBaseCellPentagon(baseCell)) { // might be just as fast as
+// lookup... ehhh. looking a little slower on release build
+static const bool isBCP[128] = {
+    [4] = 1,  [14] = 1, [24] = 1, [38] = 1, [49] = 1,  [58] = 1,
+    [63] = 1, [72] = 1, [83] = 1, [97] = 1, [107] = 1, [117] = 1};
+
+// loop is slower!
+// for (; r <= 15; r++) {
+//     if (GT(h, 3) != 7) return 0;
+//     h <<= 3;
+// }
+
+// int shift = (15 - res) * 3;
+// uint64_t m = 0;
+// m = ~m;
+// m >>= shift;
+// m = ~m;
+static const uint64_t remaining_masks[16] = {
+    0b1111111111111111111111111111111111111111111110000000000000000000,
+    0b1111111111111111111111111111111111111111110000000000000000000000,
+    0b1111111111111111111111111111111111111110000000000000000000000000,
+    0b1111111111111111111111111111111111110000000000000000000000000000,
+    0b1111111111111111111111111111111110000000000000000000000000000000,
+    0b1111111111111111111111111111110000000000000000000000000000000000,
+    0b1111111111111111111111111110000000000000000000000000000000000000,
+    0b1111111111111111111111110000000000000000000000000000000000000000,
+    0b1111111111111111111110000000000000000000000000000000000000000000,
+    0b1111111111111111110000000000000000000000000000000000000000000000,
+    0b1111111111111110000000000000000000000000000000000000000000000000,
+    0b1111111111110000000000000000000000000000000000000000000000000000,
+    0b1111111110000000000000000000000000000000000000000000000000000000,
+    0b1111110000000000000000000000000000000000000000000000000000000000,
+    0b1110000000000000000000000000000000000000000000000000000000000000,
+    0b0};
+
 /**
  * Returns whether or not an H3 index is a valid cell (hexagon or pentagon).
  * @param h The H3 index to validate.
  * @return 1 if the H3 index if valid, and 0 if it is not.
  */
 int H3_EXPORT(isValidCell)(H3Index h) {
-    if (H3_GET_HIGH_BIT(h) != 0) return 0;
+    // // single high bit
+    // if (GT(h, NUM_BITS_HIGH) != 0) return 0;
+    // h <<= NUM_BITS_HIGH;
 
-    if (H3_GET_MODE(h) != H3_HEXAGON_MODE) return 0;
+    // if (GT(h, NUM_BITS_MODE) != H3_HEXAGON_MODE) return 0;
+    // h <<= NUM_BITS_MODE;
 
-    if (H3_GET_RESERVED_BITS(h) != 0) return 0;
+    // if (GT(h, NUM_BITS_RESERVED) != 0) return 0;
+    // h <<= NUM_BITS_RESERVED;
 
-    int baseCell = H3_GET_BASE_CELL(h);
-    if (baseCell < 0 || baseCell >= NUM_BASE_CELLS) {  // LCOV_EXCL_BR_LINE
-        // Base cells less than zero can not be represented in an index
-        return 0;
-    }
+    // top 8 bits should look like
+    if (GT(h, 8) != 0b00001000) return 0;
+    h <<= 8;
 
-    int res = H3_GET_RESOLUTION(h);
-    if (res < 0 || res > MAX_H3_RES) {  // LCOV_EXCL_BR_LINE
-        // Resolutions less than zero can not be represented in an index
-        return 0;
-    }
+    // no need to check resolution; it is always valid
+    const int res = GT(h, NUM_BITS_RESOLUTION);
+    h <<= NUM_BITS_RESOLUTION;
 
-    bool foundFirstNonZeroDigit = false;
-    for (int r = 1; r <= res; r++) {
-        Direction digit = H3_GET_INDEX_DIGIT(h, r);
+    const int baseCell = GT(h, NUM_BITS_BC);
+    h <<= NUM_BITS_BC;
+    if (baseCell >= NUM_BASE_CELLS) return 0;
 
-        if (!foundFirstNonZeroDigit && digit != CENTER_DIGIT) {
-            foundFirstNonZeroDigit = true;
-            if (_isBaseCellPentagon(baseCell) && digit == K_AXES_DIGIT) {
+    int r = 1;
+    if (isBCP[baseCell]) {
+        for (; r <= res; r++) {
+            int d = GT(h, NUM_BITS_DIGIT);
+            if (d == 0) {
+                h <<= NUM_BITS_DIGIT;
+            } else if (d == 1) {
                 return 0;
+            } else {
+                break;
             }
         }
-
-        if (digit < CENTER_DIGIT || digit >= NUM_DIGITS) return 0;
     }
 
-    for (int r = res + 1; r <= MAX_H3_RES; r++) {
-        Direction digit = H3_GET_INDEX_DIGIT(h, r);
-        if (digit != INVALID_DIGIT) return 0;
+    for (; r <= res; r++) {
+        if (GT(h, NUM_BITS_DIGIT) == 7) return 0;
+        h <<= NUM_BITS_DIGIT;
     }
+
+    const uint64_t m = remaining_masks[res];  // mask *might* be faster...
+    if (h != m) return 0;                     // gotta be all 7's
 
     return 1;
 }
