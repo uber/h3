@@ -176,6 +176,47 @@ int H3_EXPORT(isValidCell)(H3Index h) {
     return 1;
 }
 
+// int H3_EXPORT(isValidCell)(H3Index h) {
+//     if (H3_GET_HIGH_BIT(h) != 0) return 0;
+
+//     if (H3_GET_MODE(h) != H3_HEXAGON_MODE) return 0;
+
+//     if (H3_GET_RESERVED_BITS(h) != 0) return 0;
+
+//     int baseCell = H3_GET_BASE_CELL(h);
+//     if (baseCell < 0 || baseCell >= NUM_BASE_CELLS) {  // LCOV_EXCL_BR_LINE
+//         // Base cells less than zero can not be represented in an index
+//         return 0;
+//     }
+
+//     int res = H3_GET_RESOLUTION(h);
+//     if (res < 0 || res > MAX_H3_RES) {  // LCOV_EXCL_BR_LINE
+//         // Resolutions less than zero can not be represented in an index
+//         return 0;
+//     }
+
+//     bool foundFirstNonZeroDigit = false;
+//     for (int r = 1; r <= res; r++) {
+//         Direction digit = H3_GET_INDEX_DIGIT(h, r);
+
+//         if (!foundFirstNonZeroDigit && digit != CENTER_DIGIT) {
+//             foundFirstNonZeroDigit = true;
+//             if (_isBaseCellPentagon(baseCell) && digit == K_AXES_DIGIT) {
+//                 return 0;
+//             }
+//         }
+
+//         if (digit < CENTER_DIGIT || digit >= NUM_DIGITS) return 0;
+//     }
+
+//     for (int r = res + 1; r <= MAX_H3_RES; r++) {
+//         Direction digit = H3_GET_INDEX_DIGIT(h, r);
+//         if (digit != INVALID_DIGIT) return 0;
+//     }
+
+//     return 1;
+// }
+
 /**
  * Initializes an H3 index.
  * @param hp The H3 index to initialize.

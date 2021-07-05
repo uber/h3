@@ -18,24 +18,44 @@
 
 H3Index p = 0x80c3fffffffffff;  // res 0 pentagon
 
-int parentRes = 8;
-int childRes = 14;
+int parentRes;
+int childRes;
+
+int64_t N;
+H3Index *cells;
 
 BEGIN_BENCHMARKS();
 
+// pentagon 8->14
+parentRes = 8;
+childRes = 14;
 p = H3_EXPORT(cellToCenterChild)(p, parentRes);
+N = H3_EXPORT(cellToChildrenSize)(p, childRes);
 
-int64_t N = H3_EXPORT(cellToChildrenSize)(p, childRes);
-
-H3Index *cells = calloc(N, sizeof(H3Index));
+cells = calloc(N, sizeof(H3Index));
 H3_EXPORT(cellToChildren)(p, childRes, cells);
 
-BENCHMARK(hexagonChildren, 1000, {
+BENCHMARK(pentagonChildren_8_14, 1000, {
     for (int64_t i = 0; i < N; i++) {
         H3_EXPORT(isValidCell)(cells[i]);
     }
 });
+free(cells);
 
+// pentagon 2->8
+parentRes = 2;
+childRes = 8;
+p = H3_EXPORT(cellToCenterChild)(p, parentRes);
+N = H3_EXPORT(cellToChildrenSize)(p, childRes);
+
+cells = calloc(N, sizeof(H3Index));
+H3_EXPORT(cellToChildren)(p, childRes, cells);
+
+BENCHMARK(pentagonChildren_2_8, 1000, {
+    for (int64_t i = 0; i < N; i++) {
+        H3_EXPORT(isValidCell)(cells[i]);
+    }
+});
 free(cells);
 
 END_BENCHMARKS();
