@@ -16,29 +16,28 @@
 #include "benchmark.h"
 #include "h3api.h"
 
-H3Index h = 0x89283080ddbffff;
-H3Index p = 0x89080000003ffff;
+H3Index h = 0x8035fffffffffff;  // res 0 hexagon
+H3Index p = 0x80c3fffffffffff;  // res 0 pentagon
 
-DECLSPEC int64_t H3_EXPORT(cellToChildrenSize)(H3Index h, int childRes);
-
-/** @brief provides the children (or grandchildren, etc) of the given cell */
-DECLSPEC void H3_EXPORT(cellToChildren)(H3Index h, int childRes,
-                                        H3Index *children);
+int parentRes = 8;
+int childRes = 14;
 
 BEGIN_BENCHMARKS();
 
-int childRes = 14;
-int64_t numChildren = H3_EXPORT(cellToChildrenSize)(h, childRes);
+h = H3_EXPORT(cellToCenterChild)(h, parentRes);
+p = H3_EXPORT(cellToCenterChild)(p, parentRes);
 
-H3Index *children = calloc(numChildren, sizeof(H3Index));
-H3_EXPORT(cellToChildren)(h, childRes, children);
+int64_t N = H3_EXPORT(cellToChildrenSize)(h, childRes);
 
-BENCHMARK(hexagonChildren, 10, {
-    for (int64_t i = 0; i < numChildren; i++) {
-        H3_EXPORT(isValidCell)(children[i]);
+H3Index *cells = calloc(N, sizeof(H3Index));
+H3_EXPORT(cellToChildren)(h, childRes, cells);
+
+BENCHMARK(hexagonChildren, 1000, {
+    for (int64_t i = 0; i < N; i++) {
+        H3_EXPORT(isValidCell)(cells[i]);
     }
 });
 
-free(children);
+free(cells);
 
 END_BENCHMARKS();
