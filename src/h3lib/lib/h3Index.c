@@ -82,12 +82,12 @@ void H3_EXPORT(h3ToString)(H3Index h, char *str, size_t sz) {
 // Get Top t bits from h
 #define GT(h, t) ((h) >> (64 - (t)))
 
-#define NUM_BITS_HIGH 1
-#define NUM_BITS_MODE 4
-#define NUM_BITS_RESERVED 3
-#define NUM_BITS_RESOLUTION 4
-#define NUM_BITS_BC 7
-#define NUM_BITS_DIGIT 3
+#define NB_HIGH 1
+#define NB_MODE 4
+#define NB_RESERVED 3
+#define NB_RESOLUTION 4
+#define NB_BC 7
+#define NB_DIGIT 3
 
 // if (_isBaseCellPentagon(baseCell)) { // might be just as fast as
 // lookup... ehhh. looking a little slower on release build
@@ -131,33 +131,33 @@ static const uint64_t remaining_masks[16] = {
  */
 int H3_EXPORT(isValidCell)(H3Index h) {
     // // single high bit
-    // if (GT(h, NUM_BITS_HIGH) != 0) return 0;
-    // h <<= NUM_BITS_HIGH;
+    // if (GT(h, NB_HIGH) != 0) return 0;
+    // h <<= NB_HIGH;
 
-    // if (GT(h, NUM_BITS_MODE) != H3_HEXAGON_MODE) return 0;
-    // h <<= NUM_BITS_MODE;
+    // if (GT(h, NB_MODE) != H3_HEXAGON_MODE) return 0;
+    // h <<= NB_MODE;
 
-    // if (GT(h, NUM_BITS_RESERVED) != 0) return 0;
-    // h <<= NUM_BITS_RESERVED;
+    // if (GT(h, NB_RESERVED) != 0) return 0;
+    // h <<= NB_RESERVED;
 
     // top 8 bits should look like
     if (GT(h, 8) != 0b00001000) return 0;
     h <<= 8;
 
     // no need to check resolution; it is always valid
-    const int res = GT(h, NUM_BITS_RESOLUTION);
-    h <<= NUM_BITS_RESOLUTION;
+    const int res = GT(h, NB_RESOLUTION);
+    h <<= NB_RESOLUTION;
 
-    const int baseCell = GT(h, NUM_BITS_BC);
-    h <<= NUM_BITS_BC;
+    const int baseCell = GT(h, NB_BC);
+    h <<= NB_BC;
     if (baseCell >= NUM_BASE_CELLS) return 0;
 
     int r = 1;
     if (isBCP[baseCell]) {
         for (; r <= res; r++) {
-            int d = GT(h, NUM_BITS_DIGIT);
+            int d = GT(h, NB_DIGIT);
             if (d == 0) {
-                h <<= NUM_BITS_DIGIT;
+                h <<= NB_DIGIT;
             } else if (d == 1) {
                 return 0;
             } else {
@@ -167,8 +167,8 @@ int H3_EXPORT(isValidCell)(H3Index h) {
     }
 
     for (; r <= res; r++) {
-        if (GT(h, NUM_BITS_DIGIT) == 7) return 0;
-        h <<= NUM_BITS_DIGIT;
+        if (GT(h, NB_DIGIT) == 7) return 0;
+        h <<= NB_DIGIT;
     }
 
     const uint64_t m = remaining_masks[res];  // mask *might* be faster...
