@@ -710,7 +710,7 @@ configure_package_config_file(
 install(
     TARGETS ${INSTALL_TARGETS}
     EXPORT "${TARGETS_EXPORT_NAME}"
-    RUNTIME DESTINATION "bin"
+    DESTINATION "bin"
     COMPONENT h3
 )
 
