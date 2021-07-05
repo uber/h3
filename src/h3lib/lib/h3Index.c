@@ -106,7 +106,7 @@ static const bool isBCP[128] = {
 // m = ~m;
 // m >>= shift;
 // m = ~m;
-static const uint64_t remaining_masks[16] = {
+static const uint64_t m7s[16] = {
     0b1111111111111111111111111111111111111111111110000000000000000000,
     0b1111111111111111111111111111111111111111110000000000000000000000,
     0b1111111111111111111111111111111111111110000000000000000000000000,
@@ -171,8 +171,7 @@ int H3_EXPORT(isValidCell)(H3Index h) {
         h <<= NB_DIGIT;
     }
 
-    const uint64_t m = remaining_masks[res];  // mask *might* be faster...
-    if (h != m) return 0;                     // gotta be all 7's
+    if (h != m7s[res]) return 0;  // gotta be all 7's
 
     return 1;
 }
