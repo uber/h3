@@ -89,23 +89,11 @@ void H3_EXPORT(h3ToString)(H3Index h, char *str, size_t sz) {
 #define NB_BC 7
 #define NB_DIGIT 3
 
-// if (_isBaseCellPentagon(baseCell)) { // might be just as fast as
-// lookup... ehhh. looking a little slower on release build
+// if (_isBaseCellPentagon(baseCell)) {  // not as fast as this lookup table
 static const bool isBCP[128] = {
     [4] = 1,  [14] = 1, [24] = 1, [38] = 1, [49] = 1,  [58] = 1,
     [63] = 1, [72] = 1, [83] = 1, [97] = 1, [107] = 1, [117] = 1};
 
-// loop is slower!
-// for (; r <= 15; r++) {
-//     if (GT(h, 3) != 7) return 0;
-//     h <<= 3;
-// }
-
-// int shift = (15 - res) * 3;
-// uint64_t m = 0;
-// m = ~m;
-// m >>= shift;
-// m = ~m;
 static const uint64_t m7s[16] = {
     0b1111111111111111111111111111111111111111111110000000000000000000,
     0b1111111111111111111111111111111111111111110000000000000000000000,
@@ -145,12 +133,13 @@ int H3_EXPORT(isValidCell)(H3Index h) {
     h <<= 8;
 
     // no need to check resolution; it is always valid
+    // any 4-bit number is a valid resolution
     const int res = GT(h, NB_RESOLUTION);
     h <<= NB_RESOLUTION;
 
     const int baseCell = GT(h, NB_BC);
-    h <<= NB_BC;
     if (baseCell >= NUM_BASE_CELLS) return 0;
+    h <<= NB_BC;
 
     int r = 1;
     if (isBCP[baseCell]) {
@@ -171,7 +160,16 @@ int H3_EXPORT(isValidCell)(H3Index h) {
         h <<= NB_DIGIT;
     }
 
-    if (h != m7s[res]) return 0;  // gotta be all 7's
+    // if (h != m7s[res]) return 0;  // gotta be all 7's
+
+    // shifting here seems to be faster than the lookup table
+    // looping through is the slowest
+    int shift = (15 - res) * 3;
+    uint64_t m = 0;
+    m = ~m;
+    m >>= shift;
+    m = ~m;
+    if (h != m) return 0;  // gotta be all 7's
 
     return 1;
 }
