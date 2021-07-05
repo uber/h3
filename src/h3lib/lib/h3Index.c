@@ -86,7 +86,7 @@ void H3_EXPORT(h3ToString)(H3Index h, char *str, size_t sz) {
 int H3_EXPORT(isValidCell)(H3Index h) {
     if (H3_GET_HIGH_BIT(h) != 0) return 0;
 
-    if (H3_GET_MODE(h) != H3_HEXAGON_MODE) return 0;
+    if (H3_GET_MODE(h) != H3_CELL_MODE) return 0;
 
     if (H3_GET_RESERVED_BITS(h) != 0) return 0;
 
@@ -133,7 +133,7 @@ int H3_EXPORT(isValidCell)(H3Index h) {
  */
 void setH3Index(H3Index *hp, int res, int baseCell, Direction initDigit) {
     H3Index h = H3_INIT;
-    H3_SET_MODE(h, H3_HEXAGON_MODE);
+    H3_SET_MODE(h, H3_CELL_MODE);
     H3_SET_RESOLUTION(h, res);
     H3_SET_BASE_CELL(h, baseCell);
     for (int r = 1; r <= res; r++) H3_SET_INDEX_DIGIT(h, r, initDigit);
@@ -631,7 +631,7 @@ H3Index _h3Rotate60cw(H3Index h) {
 H3Index _faceIjkToH3(const FaceIJK *fijk, int res) {
     // initialize the index
     H3Index h = H3_INIT;
-    H3_SET_MODE(h, H3_HEXAGON_MODE);
+    H3_SET_MODE(h, H3_CELL_MODE);
     H3_SET_RESOLUTION(h, res);
 
     // check for res 0/base cell

@@ -289,7 +289,7 @@ void H3_EXPORT(vertexToLatLng)(H3Index vertex, LatLng *coord) {
     // Get the vertex number and owner from the vertex
     int vertexNum = H3_GET_RESERVED_BITS(vertex);
     H3Index owner = vertex;
-    H3_SET_MODE(owner, H3_HEXAGON_MODE);
+    H3_SET_MODE(owner, H3_CELL_MODE);
     H3_SET_RESERVED_BITS(owner, 0);
 
     // Get the single vertex from the boundary
@@ -320,7 +320,7 @@ int H3_EXPORT(isValidVertex)(H3Index vertex) {
 
     int vertexNum = H3_GET_RESERVED_BITS(vertex);
     H3Index owner = vertex;
-    H3_SET_MODE(owner, H3_HEXAGON_MODE);
+    H3_SET_MODE(owner, H3_CELL_MODE);
     H3_SET_RESERVED_BITS(owner, 0);
 
     if (!H3_EXPORT(isValidCell)(owner)) {

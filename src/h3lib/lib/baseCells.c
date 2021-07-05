@@ -930,7 +930,7 @@ int H3_EXPORT(res0CellCount)() { return NUM_BASE_CELLS; }
 void H3_EXPORT(getRes0Cells)(H3Index *out) {
     for (int bc = 0; bc < NUM_BASE_CELLS; bc++) {
         H3Index baseCell = H3_INIT;
-        H3_SET_MODE(baseCell, H3_HEXAGON_MODE);
+        H3_SET_MODE(baseCell, H3_CELL_MODE);
         H3_SET_BASE_CELL(baseCell, bc);
         out[bc] = baseCell;
     }
