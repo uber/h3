@@ -78,7 +78,7 @@ void H3_EXPORT(h3ToString)(H3Index h, char *str, size_t sz) {
     sprintf(str, "%" PRIx64, h);
 }
 
-// don't even need to mask it! nice!
+
 // Get Top t bits from h
 #define GT(h, t) ((h) >> (64 - (t)))
 
@@ -112,12 +112,7 @@ static const uint64_t m7s[16] = {
     0b1110000000000000000000000000000000000000000000000000000000000000,
     0b0};
 
-/**
- * Returns whether or not an H3 index is a valid cell (hexagon or pentagon).
- * @param h The H3 index to validate.
- * @return 1 if the H3 index if valid, and 0 if it is not.
- */
-int H3_EXPORT(isValidCell)(H3Index h) {
+
     // // single high bit
     // if (GT(h, NB_HIGH) != 0) return 0;
     // h <<= NB_HIGH;
@@ -127,6 +122,16 @@ int H3_EXPORT(isValidCell)(H3Index h) {
 
     // if (GT(h, NB_RESERVED) != 0) return 0;
     // h <<= NB_RESERVED;
+
+
+/**
+ * Determines whether an H3 index is a valid cell (hexagon or pentagon).
+ *
+ * @param   h  H3 index to test.
+ *
+ * @return     1 if the H3 index if valid, and 0 if it is not.
+ */
+int H3_EXPORT(isValidCell)(H3Index h) {
 
     // top 8 bits should look like
     if (GT(h, 8) != 0b00001000) return 0;
