@@ -16,11 +16,24 @@
 #include "benchmark.h"
 #include "h3api.h"
 
-H3Index p = 0x80c3fffffffffff;  // res 0 pentagon
+H3Index pentagonAtRes(int res) {
+    H3Index p = 0x80c3fffffffffff;  // res 0 pentagon
+    p = H3_EXPORT(cellToCenterChild)(p, res);
+
+    return p;
+}
+
+H3Index hexagonAtRes(int res) {
+    H3Index h = 0x808bfffffffffff;  // res 0 hexagon
+    h = H3_EXPORT(cellToCenterChild)(h, res);
+
+    return h;
+}
 
 int parentRes;
 int childRes;
 
+H3Index p;
 int64_t N;
 H3Index *cells;
 
@@ -29,7 +42,8 @@ BEGIN_BENCHMARKS();
 // pentagon 8->14
 parentRes = 8;
 childRes = 14;
-p = H3_EXPORT(cellToCenterChild)(p, parentRes);
+
+p = pentagonAtRes(parentRes);
 N = H3_EXPORT(cellToChildrenSize)(p, childRes);
 
 cells = calloc(N, sizeof(H3Index));
@@ -45,7 +59,7 @@ free(cells);
 // pentagon 2->8
 parentRes = 2;
 childRes = 8;
-p = H3_EXPORT(cellToCenterChild)(p, parentRes);
+p = pentagonAtRes(parentRes);
 N = H3_EXPORT(cellToChildrenSize)(p, childRes);
 
 cells = calloc(N, sizeof(H3Index));
