@@ -21,17 +21,22 @@
 
 #include <string.h>
 
+#ifdef _WIN32
+
+#define strcasecmp _stricmp
+
+#else
+
+#include <strings.h>
+
+#endif
+
 #include "args.h"
 #include "h3Index.h"
 #include "utility.h"
 
-bool has(char *subcommand, int argc, char *argv[]) {
-    for (int i = 0; i < argc; i++) {
-        if (strcmp(subcommand, argv[i]) == 0) {
-            return true;
-        }
-    }
-    return false;
+bool has(char *subcommand, int level, char *argv[]) {
+    return strcasecmp(subcommand, argv[level]) == 0;
 }
 
 bool cellToLatLngCmd(int argc, char *argv[]) {
@@ -125,10 +130,10 @@ bool generalHelp(int argc, char *argv[]) {
 }
 
 int main(int argc, char *argv[]) {
-    if (has("cellToLatLng", argc, argv) && cellToLatLngCmd(argc, argv)) {
+    if (has("cellToLatLng", 1, argv) && cellToLatLngCmd(argc, argv)) {
         return 0;
     }
-    if (has("latLngToCell", argc, argv) && latLngToCellCmd(argc, argv)) {
+    if (has("latLngToCell", 1, argv) && latLngToCellCmd(argc, argv)) {
         return 0;
     }
     if (generalHelp(argc, argv)) {
