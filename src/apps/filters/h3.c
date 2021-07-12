@@ -130,6 +130,10 @@ bool generalHelp(int argc, char *argv[]) {
 }
 
 int main(int argc, char *argv[]) {
+    if (argc <= 1) {
+        printf("Please use h3 --help to see how to use this command.\n");
+        return 1;
+    }
     if (has("cellToLatLng", 1, argv) && cellToLatLngCmd(argc, argv)) {
         return 0;
     }
