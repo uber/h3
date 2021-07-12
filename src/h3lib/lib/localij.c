@@ -300,7 +300,7 @@ int localIjkToH3(H3Index origin, const CoordIJK *ijk, H3Index *out) {
     // This logic is very similar to faceIjkToH3
     // initialize the index
     *out = H3_INIT;
-    H3_SET_MODE(*out, H3_HEXAGON_MODE);
+    H3_SET_MODE(*out, H3_CELL_MODE);
     H3_SET_RESOLUTION(*out, res);
 
     // check for res 0/base cell

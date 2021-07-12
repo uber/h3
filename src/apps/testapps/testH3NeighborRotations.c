@@ -160,7 +160,7 @@ int main(int argc, char *argv[]) {
     // generate the test cases
     for (int bc = 0; bc < NUM_BASE_CELLS; bc++) {
         H3Index rootCell = H3_INIT;
-        H3_SET_MODE(rootCell, H3_HEXAGON_MODE);
+        H3_SET_MODE(rootCell, H3_CELL_MODE);
         H3_SET_BASE_CELL(rootCell, bc);
 
         if (res == 0) {

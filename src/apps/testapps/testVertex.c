@@ -130,7 +130,7 @@ SUITE(Vertex) {
 
         // Assert that origin does not own the vertex
         H3Index owner = vert;
-        H3_SET_MODE(owner, H3_HEXAGON_MODE);
+        H3_SET_MODE(owner, H3_CELL_MODE);
         H3_SET_RESERVED_BITS(owner, 0);
 
         t_assert(origin != owner, "origin does not own the canonical vertex");
