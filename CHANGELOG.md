@@ -7,6 +7,9 @@ The public API of this library consists of the functions declared in file
 
 ## [Unreleased]
 
+### Fixed
+- `gridDisk` of invalid indexes should not crash. (#498)
+
 ### Added
 - Vertex mode and associated functions:
     - `cellToVertex(cell, vertexNum)`

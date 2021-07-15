@@ -360,7 +360,16 @@ SUITE(gridDisk) {
         int k = 1000;
         int kSz = H3_EXPORT(maxGridDiskSize)(k);
         H3Index *neighbors = calloc(kSz, sizeof(H3Index));
-        H3_EXPORT(gridDisk)(0x7fffffffffffffff, 1000, neighbors);
+        H3_EXPORT(gridDisk)(0x7fffffffffffffff, k, neighbors);
+        // Assertion is should not crash - should return an error in the future
+        free(neighbors);
+    }
+
+    TEST(gridDiskInvalidDigit) {
+        int k = 2;
+        int kSz = H3_EXPORT(maxGridDiskSize)(k);
+        H3Index *neighbors = calloc(kSz, sizeof(H3Index));
+        H3_EXPORT(gridDisk)(0x4d4b00fe5c5c3030, k, neighbors);
         // Assertion is should not crash - should return an error in the future
         free(neighbors);
     }
