@@ -7,6 +7,10 @@ The public API of this library consists of the functions declared in file
 
 ## [Unreleased]
 
+## [3.7.2] - 2021-07-15
+### Fixed
+- `gridDisk` of invalid indexes should not crash. (#498)
+
 ## [3.7.1] - 2020-10-05
 ### Fixed
 - Finding invalid edge boundaries should not crash. (#399)

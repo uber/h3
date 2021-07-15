@@ -317,7 +317,10 @@ H3Index h3NeighborRotations(H3Index origin, Direction dir, int* rotations) {
         } else {
             Direction oldDigit = H3_GET_INDEX_DIGIT(out, r + 1);
             Direction nextDir;
-            if (isResClassIII(r + 1)) {
+            if (oldDigit == INVALID_DIGIT) {
+                // Only possible on invalid input
+                return H3_NULL;
+            } else if (isResClassIII(r + 1)) {
                 H3_SET_INDEX_DIGIT(out, r + 1, NEW_DIGIT_II[oldDigit][dir]);
                 nextDir = NEW_ADJUSTMENT_II[oldDigit][dir];
             } else {
