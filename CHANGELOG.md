@@ -7,9 +7,6 @@ The public API of this library consists of the functions declared in file
 
 ## [Unreleased]
 
-### Fixed
-- `gridDisk` of invalid indexes should not crash. (#498)
-
 ### Added
 - Vertex mode and associated functions:
     - `cellToVertex(cell, vertexNum)`
@@ -27,6 +24,10 @@ The public API of this library consists of the functions declared in file
 
 ### Other changes
 - generally use `lng` instead of `lon`
+
+## [3.7.2] - 2021-07-15
+### Fixed
+- `gridDisk` of invalid indexes should not crash. (#498)
 
 ## [3.7.1] - 2020-10-05
 ### Fixed
