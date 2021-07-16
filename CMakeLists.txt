@@ -156,6 +156,7 @@ set(EXAMPLE_SOURCE_FILES
     examples/compactCells.c
     examples/edge.c)
 set(OTHER_SOURCE_FILES
+    src/apps/filters/h3.c
     src/apps/filters/cellToLatLng.c
     src/apps/filters/h3ToLocalIj.c
     src/apps/filters/localIjToH3.c
@@ -380,6 +381,8 @@ if(BUILD_FILTERS)
         list(APPEND INSTALL_TARGETS ${name})
     endmacro()
 
+    add_h3_filter(h3_bin src/apps/filters/h3.c ${APP_SOURCE_FILES})
+    set_target_properties(h3_bin PROPERTIES OUTPUT_NAME h3) # Special logic for the `h3` executable
     add_h3_filter(latLngToCell src/apps/filters/latLngToCell.c ${APP_SOURCE_FILES})
     add_h3_filter(h3ToComponents src/apps/filters/h3ToComponents.c ${APP_SOURCE_FILES})
     add_h3_filter(cellToLatLng src/apps/filters/cellToLatLng.c ${APP_SOURCE_FILES})
