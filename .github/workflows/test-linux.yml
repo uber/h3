@@ -2,9 +2,9 @@ name: test-linux
 
 on:
   push:
-    branches: [master]
+    branches: [master, stable-*]
   pull_request:
-    branches: [master]
+    branches: [master, stable-*]
 
 jobs:
   tests:
@@ -23,7 +23,7 @@ jobs:
       - name: Install Doxygen
         run: |
           sudo apt update
-          sudo apt-get install doxygen graphviz
+          sudo apt-get install doxygen graphviz clang-format-9
 
       - name: Configure build
         run: cmake -Bbuild -DWARNINGS_AS_ERRORS=ON .

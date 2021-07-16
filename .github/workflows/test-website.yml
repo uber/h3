@@ -2,9 +2,9 @@ name: test-website
 
 on:
   push:
-    branches: [master]
+    branches: [master, stable-*]
   pull_request:
-    branches: [master]
+    branches: [master, stable-*]
 
 jobs:
   tests:
@@ -16,7 +16,7 @@ jobs:
 
       - uses: actions/setup-node@v1
         with:
-          node-version: 10.x
+          node-version: 12.x
 
       - name: Install FOSSA
         run: |

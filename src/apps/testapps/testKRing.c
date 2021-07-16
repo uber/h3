@@ -351,4 +351,22 @@ SUITE(kRing) {
             }
         }
     }
+
+    TEST(kRingInvalid) {
+        int k = 1000;
+        int kSz = H3_EXPORT(maxKringSize)(k);
+        H3Index *neighbors = calloc(kSz, sizeof(H3Index));
+        H3_EXPORT(kRing)(0x7fffffffffffffff, k, neighbors);
+        // Assertion is should not crash - should return an error in the future
+        free(neighbors);
+    }
+
+    TEST(kRingInvalidDigit) {
+        int k = 2;
+        int kSz = H3_EXPORT(maxKringSize)(k);
+        H3Index *neighbors = calloc(kSz, sizeof(H3Index));
+        H3_EXPORT(kRing)(0x4d4b00fe5c5c3030, k, neighbors);
+        // Assertion is should not crash - should return an error in the future
+        free(neighbors);
+    }
 }
