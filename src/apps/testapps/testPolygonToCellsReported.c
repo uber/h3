@@ -157,4 +157,31 @@ SUITE(polygonToCells_reported) {
         t_assert(actualNumIndexes == 4353, "got expected polygonToCells size");
         free(hexagons);
     }
+
+    TEST(h3pg_56) {
+        LatLng testVerts[] = {{H3_EXPORT(degsToRads)(72.1254917),
+                               H3_EXPORT(degsToRads)(-110.0018386)},
+                              {H3_EXPORT(degsToRads)(72.5810473),
+                               H3_EXPORT(degsToRads)(-110.0018638)},
+                              {H3_EXPORT(degsToRads)(72.108825),
+                               H3_EXPORT(degsToRads)(-110.0018377)},
+                              {H3_EXPORT(degsToRads)(72.1254917),
+                               H3_EXPORT(degsToRads)(-110.0018386)}};
+        GeoLoop testGeoLoop = {.numVerts = 4, .verts = testVerts};
+        GeoPolygon testPolygon;
+        testPolygon.geoloop = testGeoLoop;
+        testPolygon.numHoles = 0;
+
+        int res = 8;
+        int numHexagons = H3_EXPORT(maxPolygonToCellsSize)(&testPolygon, res);
+        t_assert(numHexagons == 153382344,
+                 "number of hexagons estimated is very large");
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+
+        H3_EXPORT(polygonToCells)(&testPolygon, res, hexagons);
+        int actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
+
+        t_assert(actualNumIndexes == 0, "actual number of cells is zero");
+        free(hexagons);
+    }
 }
