@@ -732,6 +732,73 @@ H3Error H3_EXPORT(maxPolygonToCellsSize)(const GeoPolygon *geoPolygon, int res,
 }
 
 /**
+ * _getEdgeHexagons takes a given geoloop ring (either the main geoloop or
+ * one of the holes) and traces it with hexagons and updates the search and
+ * found memory blocks. This is used for determining the initial hexagon set
+ * for the polygonToCells algorithm to execute on.
+ *
+ * @param geoloop The geoloop (or hole) to be traced
+ * @param numHexagons The maximum number of hexagons possible for the geoloop
+ *                    (also the bounds of the search and found arrays)
+ * @param res The hexagon resolution (0-15)
+ * @param numSearchHexes The number of hexagons found so far to be searched
+ * @param search The block of memory containing the hexagons to search from
+ * @param found The block of memory containing the hexagons found from the
+ * search
+ *
+ * @return An error code if the hash function cannot insert a found hexagon
+ *         into the found array.
+ */
+H3Error _getEdgeHexagons(const GeoLoop *geoloop, int64_t numHexagons, int res,
+                         int64_t *numSearchHexes, H3Index *search,
+                         H3Index *found) {
+    for (int i = 0; i < geoloop->numVerts; i++) {
+        LatLng origin = geoloop->verts[i];
+        LatLng destination = i == geoloop->numVerts - 1 ? geoloop->verts[0]
+                                                        : geoloop->verts[i + 1];
+        const int64_t numHexesEstimate =
+            lineHexEstimate(&origin, &destination, res);
+        for (int64_t j = 0; j < numHexesEstimate; j++) {
+            LatLng interpolate;
+            interpolate.lat =
+                (origin.lat * (numHexesEstimate - j) / numHexesEstimate) +
+                (destination.lat * j / numHexesEstimate);
+            interpolate.lng =
+                (origin.lng * (numHexesEstimate - j) / numHexesEstimate) +
+                (destination.lng * j / numHexesEstimate);
+            H3Index pointHex;
+            H3Error e = H3_EXPORT(latLngToCell)(&interpolate, res, &pointHex);
+            if (e) {
+                return e;
+            }
+            // A simple hash to store the hexagon, or move to another place if
+            // needed
+            int64_t loc = (int64_t)(pointHex % numHexagons);
+            int64_t loopCount = 0;
+            while (found[loc] != 0) {
+                // If this conditional is reached, the `found` memory block is
+                // too small for the given polygon. This should not happen.
+                if (loopCount > numHexagons)
+                    return HEX_HASH_OVERFLOW;  // LCOV_EXCL_LINE
+                if (found[loc] == pointHex)
+                    break;  // At least two points of the geoloop index to the
+                            // same cell
+                loc = (loc + 1) % numHexagons;
+                loopCount++;
+            }
+            if (found[loc] == pointHex)
+                continue;  // Skip this hex, already exists in the found hash
+            // Otherwise, set it in the found hash for now
+            found[loc] = pointHex;
+
+            search[*numSearchHexes] = pointHex;
+            (*numSearchHexes)++;
+        }
+    }
+    return E_SUCCESS;
+}
+
+/**
  * polygonToCells takes a given GeoJSON-like data structure and preallocated,
  * zeroed memory, and fills it with the hexagons that are contained by
  * the GeoJSON-like data structure.
@@ -917,73 +984,6 @@ H3Error H3_EXPORT(polygonToCells)(const GeoPolygon *geoPolygon, int res,
     H3_MEMORY(free)(bboxes);
     H3_MEMORY(free)(search);
     H3_MEMORY(free)(found);
-    return E_SUCCESS;
-}
-
-/**
- * _getEdgeHexagons takes a given geoloop ring (either the main geoloop or
- * one of the holes) and traces it with hexagons and updates the search and
- * found memory blocks. This is used for determining the initial hexagon set
- * for the polygonToCells algorithm to execute on.
- *
- * @param geoloop The geoloop (or hole) to be traced
- * @param numHexagons The maximum number of hexagons possible for the geoloop
- *                    (also the bounds of the search and found arrays)
- * @param res The hexagon resolution (0-15)
- * @param numSearchHexes The number of hexagons found so far to be searched
- * @param search The block of memory containing the hexagons to search from
- * @param found The block of memory containing the hexagons found from the
- * search
- *
- * @return An error code if the hash function cannot insert a found hexagon
- *         into the found array.
- */
-H3Error _getEdgeHexagons(const GeoLoop *geoloop, int64_t numHexagons, int res,
-                         int64_t *numSearchHexes, H3Index *search,
-                         H3Index *found) {
-    for (int i = 0; i < geoloop->numVerts; i++) {
-        LatLng origin = geoloop->verts[i];
-        LatLng destination = i == geoloop->numVerts - 1 ? geoloop->verts[0]
-                                                        : geoloop->verts[i + 1];
-        const int64_t numHexesEstimate =
-            lineHexEstimate(&origin, &destination, res);
-        for (int64_t j = 0; j < numHexesEstimate; j++) {
-            LatLng interpolate;
-            interpolate.lat =
-                (origin.lat * (numHexesEstimate - j) / numHexesEstimate) +
-                (destination.lat * j / numHexesEstimate);
-            interpolate.lng =
-                (origin.lng * (numHexesEstimate - j) / numHexesEstimate) +
-                (destination.lng * j / numHexesEstimate);
-            H3Index pointHex;
-            H3Error e = H3_EXPORT(latLngToCell)(&interpolate, res, &pointHex);
-            if (e) {
-                return e;
-            }
-            // A simple hash to store the hexagon, or move to another place if
-            // needed
-            int64_t loc = (int64_t)(pointHex % numHexagons);
-            int64_t loopCount = 0;
-            while (found[loc] != 0) {
-                // If this conditional is reached, the `found` memory block is
-                // too small for the given polygon. This should not happen.
-                if (loopCount > numHexagons)
-                    return HEX_HASH_OVERFLOW;  // LCOV_EXCL_LINE
-                if (found[loc] == pointHex)
-                    break;  // At least two points of the geoloop index to the
-                            // same cell
-                loc = (loc + 1) % numHexagons;
-                loopCount++;
-            }
-            if (found[loc] == pointHex)
-                continue;  // Skip this hex, already exists in the found hash
-            // Otherwise, set it in the found hash for now
-            found[loc] = pointHex;
-
-            search[*numSearchHexes] = pointHex;
-            (*numSearchHexes)++;
-        }
-    }
     return E_SUCCESS;
 }
 
