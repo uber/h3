@@ -73,7 +73,7 @@ int main(int argc, char *argv[]) {
             error("parsing input (should be \"H3Index lat lng\")");
 
         H3Index h3;
-        h3 = H3_EXPORT(stringToH3)(h3Str);
+        t_assertSuccess(H3_EXPORT(stringToH3)(h3Str, &h3));
 
         LatLng coord;
         setGeoDegs(&coord, latDegs, lngDegs);

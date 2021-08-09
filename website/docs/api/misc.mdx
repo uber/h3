@@ -739,7 +739,7 @@ This function exists for memory management and is not exposed.
 
 Number of resolution 0 H3 indexes.
 
-## getPentagonIndexes
+## getPentagons
 
 <Tabs
   groupId="language"
@@ -754,35 +754,35 @@ Number of resolution 0 H3 indexes.
 <TabItem value="c">
 
 ```c
-void getPentagonIndexes(int res, H3Index *out);
+H3Error getPentagons(int res, H3Index *out);
 ```
 
 </TabItem>
 <TabItem value="python">
 
 ```py
-h3.get_pentagon_indexes(res)
+h3.get_pentagons(res)
 ```
 
 </TabItem>
 <TabItem value="java">
 
 ```java
-Collection<Long> getPentagonIndexes(int res);
-Collection<String> h3.getPentagonIndexesAddresses(int res);
+Collection<Long> h3.getPentagons(int res);
+Collection<String> h3.getPentagonsAddresses(int res);
 ```
 
 </TabItem>
 <TabItem value="javascript">
 
 ```js
-h3.getPentagonIndexes(res)
+h3.getPentagons(res)
 ```
 
 ```js live
 function example() {
   const res = 5;
-  return h3.getPentagonIndexes(res);
+  return h3.getPentagons(res);
 }
 ```
 
@@ -791,6 +791,8 @@ function example() {
 
 All the pentagon H3 indexes at the specified resolution.
 `out` must be an array of at least size `pentagonIndexCount()`.
+
+Returns 0 (`E_SUCCESS`) on success.
 
 ## pentagonIndexCount
 

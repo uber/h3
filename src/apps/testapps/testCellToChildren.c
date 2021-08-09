@@ -63,11 +63,17 @@ static void assertSetsEqual(H3Index *set1, int len1, H3Index *set2, int len2) {
     assertSubset(set2, len2, set1, len1);
 }
 
-static void checkChildren(H3Index h, int res, H3Index *expected,
-                          int numExpected) {
-    int64_t numChildren = H3_EXPORT(cellToChildrenSize)(h, res);
+static void checkChildren(H3Index h, int res, H3Error expectedError,
+                          H3Index *expected, int numExpected) {
+    int64_t numChildren;
+    H3Error numChildrenError =
+        H3_EXPORT(cellToChildrenSize)(h, res, &numChildren);
+    t_assert(numChildrenError == expectedError, "Expected error code");
+    if (expectedError != E_SUCCESS) {
+        return;
+    }
     H3Index *children = calloc(numChildren, sizeof(H3Index));
-    H3_EXPORT(cellToChildren)(h, res, children);
+    t_assertSuccess(H3_EXPORT(cellToChildren)(h, res, children));
 
     assertSetsEqual(children, numChildren, expected, numExpected);
 
@@ -84,7 +90,8 @@ SUITE(cellToChildren_new) {
                               0x89283080dd3ffff, 0x89283080dd7ffff,
                               0x89283080ddbffff};
 
-        checkChildren(h, res, expected, sizeof(expected) / sizeof(H3Index));
+        checkChildren(h, res, E_SUCCESS, expected,
+                      sizeof(expected) / sizeof(H3Index));
     }
 
     TEST(multipleResSteps) {
@@ -110,7 +117,8 @@ SUITE(cellToChildren_new) {
             0x8a283080dc1ffff, 0x8a283080dd0ffff, 0x8a283080dc2ffff,
             0x8a283080dd67fff};
 
-        checkChildren(h, res, expected, sizeof(expected) / sizeof(H3Index));
+        checkChildren(h, res, E_SUCCESS, expected,
+                      sizeof(expected) / sizeof(H3Index));
     }
 
     TEST(sameRes) {
@@ -119,7 +127,8 @@ SUITE(cellToChildren_new) {
 
         H3Index expected[] = {h};
 
-        checkChildren(h, res, expected, sizeof(expected) / sizeof(H3Index));
+        checkChildren(h, res, E_SUCCESS, expected,
+                      sizeof(expected) / sizeof(H3Index));
     }
 
     TEST(childResTooCoarse) {
@@ -128,7 +137,8 @@ SUITE(cellToChildren_new) {
 
         H3Index expected[] = {0};  // empty set; zeros are ignored
 
-        checkChildren(h, res, expected, sizeof(expected) / sizeof(H3Index));
+        checkChildren(h, res, E_RES_DOMAIN, expected,
+                      sizeof(expected) / sizeof(H3Index));
     }
 
     TEST(childResTooFine) {
@@ -137,7 +147,8 @@ SUITE(cellToChildren_new) {
 
         H3Index expected[] = {0};  // empty set; zeros are ignored
 
-        checkChildren(h, res, expected, sizeof(expected) / sizeof(H3Index));
+        checkChildren(h, res, E_RES_DOMAIN, expected,
+                      sizeof(expected) / sizeof(H3Index));
     }
 
     TEST(pentagonChildren) {
@@ -160,6 +171,7 @@ SUITE(cellToChildren_new) {
             0x830832fffffffff, 0x830833fffffffff, 0x830834fffffffff,
             0x830835fffffffff, 0x830836fffffffff};
 
-        checkChildren(h, res, expected, sizeof(expected) / sizeof(H3Index));
+        checkChildren(h, res, E_SUCCESS, expected,
+                      sizeof(expected) / sizeof(H3Index));
     }
 }

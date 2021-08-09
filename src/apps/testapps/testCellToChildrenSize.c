@@ -23,33 +23,37 @@ SUITE(cellToChildrenSize) {
     TEST(cellToChildrenSize_hexagon) {
         H3Index h = 0x87283080dffffff;  // res 7 *hexagon*
 
-        t_assert(H3_EXPORT(cellToChildrenSize)(h, 3) == 0,
+        int64_t sz;
+        t_assert(H3_EXPORT(cellToChildrenSize)(h, 3, &sz) == E_RES_DOMAIN,
                  "got expected size for coarser res");
-        t_assert(H3_EXPORT(cellToChildrenSize)(h, 7) == 1,
-                 "got expected size for same res");
-        t_assert(H3_EXPORT(cellToChildrenSize)(h, 8) == 7,
-                 "got expected size for child res");
-        t_assert(H3_EXPORT(cellToChildrenSize)(h, 9) == 7 * 7,
-                 "got expected size for grandchild res");
+        t_assertSuccess(H3_EXPORT(cellToChildrenSize)(h, 7, &sz));
+        t_assert(sz == 1, "got expected size for same res");
+        t_assertSuccess(H3_EXPORT(cellToChildrenSize)(h, 8, &sz));
+        t_assert(sz == 7, "got expected size for child res");
+        t_assertSuccess(H3_EXPORT(cellToChildrenSize)(h, 9, &sz));
+        t_assert(sz == 7 * 7, "got expected size for grandchild res");
     }
 
     TEST(cellToChildrenSize_pentagon) {
         H3Index h = 0x870800000ffffff;  // res 7 *pentagon*
 
-        t_assert(H3_EXPORT(cellToChildrenSize)(h, 3) == 0,
+        int64_t sz;
+        t_assert(H3_EXPORT(cellToChildrenSize)(h, 3, &sz) == E_RES_DOMAIN,
                  "got expected size for coarser res");
-        t_assert(H3_EXPORT(cellToChildrenSize)(h, 7) == 1,
-                 "got expected size for same res");
-        t_assert(H3_EXPORT(cellToChildrenSize)(h, 8) == 6,
-                 "got expected size for child res");
-        t_assert(H3_EXPORT(cellToChildrenSize)(h, 9) == (5 * 7) + (1 * 6),
+        t_assertSuccess(H3_EXPORT(cellToChildrenSize)(h, 7, &sz));
+        t_assert(sz == 1, "got expected size for same res");
+        t_assertSuccess(H3_EXPORT(cellToChildrenSize)(h, 8, &sz));
+        t_assert(sz == 6, "got expected size for child res");
+        t_assertSuccess(H3_EXPORT(cellToChildrenSize)(h, 9, &sz));
+        t_assert(sz == (5 * 7) + (1 * 6),
                  "got expected size for grandchild res");
     }
 
     TEST(cellToChildrenSize_largest_hexagon) {
         H3Index h = 0x806dfffffffffff;      // res 0 *hexagon*
         int64_t expected = 4747561509943L;  // 7^15
-        int64_t out = H3_EXPORT(cellToChildrenSize)(h, 15);
+        int64_t out;
+        t_assertSuccess(H3_EXPORT(cellToChildrenSize)(h, 15, &out));
 
         t_assert(out == expected,
                  "got right size for children 15 levels below");
@@ -58,7 +62,8 @@ SUITE(cellToChildrenSize) {
     TEST(cellToChildrenSize_largest_pentagon) {
         H3Index h = 0x8009fffffffffff;      // res 0 *pentagon*
         int64_t expected = 3956301258286L;  // 1 + 5*(7^15 - 1)/6
-        int64_t out = H3_EXPORT(cellToChildrenSize)(h, 15);
+        int64_t out;
+        t_assertSuccess(H3_EXPORT(cellToChildrenSize)(h, 15, &out));
 
         t_assert(out == expected,
                  "got right size for children 15 levels below");

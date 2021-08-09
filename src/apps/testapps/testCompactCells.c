@@ -163,10 +163,12 @@ SUITE(compactCells) {
         // Arbitrary index
         setH3Index(&h3, res, 0, 2);
 
-        int64_t arrSize = H3_EXPORT(cellToChildrenSize)(h3, res + 1) + 1;
+        int64_t arrSize;
+        t_assertSuccess(H3_EXPORT(cellToChildrenSize)(h3, res + 1, &arrSize));
+        arrSize++;
         H3Index *children = calloc(arrSize, sizeof(H3Index));
 
-        H3_EXPORT(cellToChildren)(h3, res + 1, children);
+        t_assertSuccess(H3_EXPORT(cellToChildren)(h3, res + 1, children));
         // duplicate one index
         children[arrSize - 1] = children[0];
 
@@ -188,10 +190,12 @@ SUITE(compactCells) {
         // Arbitrary pentagon parent cell
         setH3Index(&h3, res, 4, 0);
 
-        int64_t arrSize = H3_EXPORT(cellToChildrenSize)(h3, res + 1) + 1;
+        int64_t arrSize;
+        t_assertSuccess(H3_EXPORT(cellToChildrenSize)(h3, res + 1, &arrSize));
+        arrSize++;
         H3Index *children = calloc(arrSize, sizeof(H3Index));
 
-        H3_EXPORT(cellToChildren)(h3, res + 1, children);
+        t_assertSuccess(H3_EXPORT(cellToChildren)(h3, res + 1, children));
         // duplicate one index
         children[arrSize - 1] = H3_EXPORT(cellToCenterChild)(h3, res + 1);
 
@@ -215,10 +219,11 @@ SUITE(compactCells) {
         // Arbitrary index
         setH3Index(&h3, res, 0, 2);
 
-        int64_t arrSize = H3_EXPORT(cellToChildrenSize)(h3, res + 1);
+        int64_t arrSize;
+        t_assertSuccess(H3_EXPORT(cellToChildrenSize)(h3, res + 1, &arrSize));
         H3Index *children = calloc(arrSize, sizeof(H3Index));
 
-        H3_EXPORT(cellToChildren)(h3, res + 1, children);
+        t_assertSuccess(H3_EXPORT(cellToChildren)(h3, res + 1, children));
         // duplicate one index
         children[arrSize - 1] = children[0];
 

@@ -99,7 +99,8 @@ int main(int argc, char *argv[]) {
                     error("reading H3 index from stdin");
             }
 
-            H3Index h3 = H3_EXPORT(stringToH3)(buff);
+            H3Index h3;
+            H3_EXPORT(stringToH3)(buff, &h3);
             doCell(h3, k, printDistancesArg.found);
         }
     }

@@ -129,7 +129,7 @@ Returns the base cell number of the index.
 <TabItem value="c">
 
 ```c
-H3Index stringToH3(const char *str);
+H3Error stringToH3(const char *str, H3Index *out);
 ```
 
 </TabItem>
@@ -156,7 +156,7 @@ The H3 JavaScript binding supports only the string representation of an H3 index
 
 Converts the string representation to `H3Index` (`uint64_t`) representation.
 
-Returns 0 on error.
+Returns 0 (`E_SUCCESS`) on success.
 
 ## h3ToString
 
@@ -173,7 +173,7 @@ Returns 0 on error.
 <TabItem value="c">
 
 ```c
-void h3ToString(H3Index h, char *str, size_t sz);
+H3Error h3ToString(H3Index h, char *str, size_t sz);
 ```
 
 </TabItem>
@@ -199,6 +199,8 @@ The H3 JavaScript binding supports only the string representation of an H3 index
 </Tabs>
 
 Converts the `H3Index` representation of the index to the string representation. `str` must be at least of length 17.
+
+Returns 0 (`E_SUCCESS`) on success.
 
 ## h3IsValid
 
@@ -356,7 +358,7 @@ function example() {
 
 Returns non-zero if this index represents a pentagonal cell.
 
-## h3GetFaces
+## getIcosahedronFaces
 
 <Tabs
   groupId="language"
@@ -371,35 +373,35 @@ Returns non-zero if this index represents a pentagonal cell.
 <TabItem value="c">
 
 ```c
-void h3GetFaces(H3Index h, int* out);
+H3Error getIcosahedronFaces(H3Index h, int* out);
 ```
 
 </TabItem>
 <TabItem value="python">
 
 ```py
-h3.h3_get_faces(h)
+h3.get_icosahedron_faces(h)
 ```
 
 </TabItem>
 <TabItem value="java">
 
 ```java
-Collection<Integer> h3GetFaces(long h3);
-Collection<Integer> h3GetFaces(String h3Address);
+Collection<Integer> getIcosahedronFaces(long h3);
+Collection<Integer> getIcosahedronFaces(String h3Address);
 ```
 
 </TabItem>
 <TabItem value="javascript">
 
 ```js
-h3.h3GetFaces(h)
+h3.getIcosahedronFaces(h)
 ```
 
 ```js live
 function example() {
   const h = '85283473fffffff';
-  return h3.h3GetFaces(h);
+  return h3.getIcosahedronFaces(h);
 }
 ```
 
@@ -409,6 +411,8 @@ function example() {
 Find all icosahedron faces intersected by a given H3 index and places them in the array `out`. `out` must be at least length of `maxFaceCount(h)`.
 
 Faces are represented as integers from 0-19, inclusive. The array is sparse, and empty (no intersection) array values are represented by -1.
+
+Returns 0 (`E_SUCCESS`) on success.
 
 ## maxFaceCount
 
