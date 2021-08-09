@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Uber Technologies, Inc.
+ * Copyright 2020-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,9 @@
 #include <math.h>
 #include <string.h>
 
-#include "geoPoint.h"
 #include "h3Index.h"
 #include "h3api.h"
+#include "latLng.h"
 #include "test.h"
 #include "utility.h"
 
@@ -44,7 +44,7 @@ void resetMemoryCounters(int permitted) {
     permittedAllocCalls = permitted;
 }
 
-void* test_prefix_malloc(size_t size) {
+void *test_prefix_malloc(size_t size) {
     actualAllocCalls++;
     if (permittedAllocCalls && actualAllocCalls > permittedAllocCalls) {
         failAlloc = true;
@@ -55,7 +55,7 @@ void* test_prefix_malloc(size_t size) {
     return malloc(size);
 }
 
-void* test_prefix_calloc(size_t num, size_t size) {
+void *test_prefix_calloc(size_t num, size_t size) {
     actualAllocCalls++;
     if (permittedAllocCalls && actualAllocCalls > permittedAllocCalls) {
         failAlloc = true;
@@ -66,7 +66,7 @@ void* test_prefix_calloc(size_t num, size_t size) {
     return calloc(num, size);
 }
 
-void* test_prefix_realloc(void* ptr, size_t size) {
+void *test_prefix_realloc(void *ptr, size_t size) {
     actualAllocCalls++;
     if (permittedAllocCalls && actualAllocCalls > permittedAllocCalls) {
         failAlloc = true;
@@ -77,7 +77,7 @@ void* test_prefix_realloc(void* ptr, size_t size) {
     return realloc(ptr, size);
 }
 
-void test_prefix_free(void* ptr) {
+void test_prefix_free(void *ptr) {
     actualFreeCalls++;
     return free(ptr);
 }
@@ -85,7 +85,7 @@ void test_prefix_free(void* ptr) {
 H3Index sunnyvale = 0x89283470c27ffff;
 H3Index pentagon = 0x89080000003ffff;
 
-static GeoPoint sfVerts[] = {
+static LatLng sfVerts[] = {
     {0.659966917655, -2.1364398519396},  {0.6595011102219, -2.1359434279405},
     {0.6583348114025, -2.1354884206045}, {0.6581220034068, -2.1382437718946},
     {0.6594479998527, -2.1384597563896}, {0.6599990002976, -2.1376771158464}};
@@ -96,7 +96,7 @@ SUITE(h3Memory) {
     TEST(gridDisk) {
         int k = 2;
         int hexCount = H3_EXPORT(maxGridDiskSize)(k);
-        H3Index* gridDiskOutput = calloc(hexCount, sizeof(H3Index));
+        H3Index *gridDiskOutput = calloc(hexCount, sizeof(H3Index));
 
         resetMemoryCounters(0);
         H3_EXPORT(gridDisk)(sunnyvale, k, gridDiskOutput);
@@ -129,13 +129,13 @@ SUITE(h3Memory) {
         int expectedCompactCount = 73;
 
         // Generate a set of hexagons to compact
-        H3Index* sunnyvaleExpanded = calloc(hexCount, sizeof(H3Index));
+        H3Index *sunnyvaleExpanded = calloc(hexCount, sizeof(H3Index));
         resetMemoryCounters(0);
         H3_EXPORT(gridDisk)(sunnyvale, k, sunnyvaleExpanded);
         t_assert(actualAllocCalls == 0, "gridDisk did not call alloc");
         t_assert(actualFreeCalls == 0, "gridDisk did not call free");
 
-        H3Index* compressed = calloc(hexCount, sizeof(H3Index));
+        H3Index *compressed = calloc(hexCount, sizeof(H3Index));
 
         resetMemoryCounters(0);
         failAlloc = true;
@@ -185,10 +185,10 @@ SUITE(h3Memory) {
         sfGeoPolygon.geoloop = sfGeoLoop;
         sfGeoPolygon.numHoles = 0;
 
-        int numHexagons;
+        int64_t numHexagons;
         t_assertSuccess(
             H3_EXPORT(maxPolygonToCellsSize)(&sfGeoPolygon, 9, &numHexagons));
-        H3Index* hexagons = calloc(numHexagons, sizeof(H3Index));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         resetMemoryCounters(0);
         failAlloc = true;
@@ -215,7 +215,7 @@ SUITE(h3Memory) {
         t_assert(actualAllocCalls == 3, "alloc called three times");
         t_assert(actualFreeCalls == 3, "free called three times");
 
-        int actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
+        int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
         t_assert(actualNumIndexes == 1253, "got expected polygonToCells size");
         free(hexagons);
     }

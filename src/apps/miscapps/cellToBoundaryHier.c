@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017, 2019-2020 Uber Technologies, Inc.
+ * Copyright 2016-2017, 2019-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
  *
  *  See `cellToBoundaryHier` for usage.
  *
- *  The program generates the cell boundaries in lat/lon coordinates for all
+ *  The program generates the cell boundaries in lat/lng coordinates for all
  *  hierarchical children of H3Index at the specified resolution. If the
  *  specified resolution is less than or equal to the resolution of H3Index
  *  the single cell H3Index is processed.
@@ -34,7 +34,7 @@
  *  ---------
  *
  *     `cellToBoundaryHier --parent 836e9bfffffffff`
- *        - outputs the cell boundary in lat/lon for cell `836e9bfffffffff` as
+ *        - outputs the cell boundary in lat/lng for cell `836e9bfffffffff` as
  *          plain text
  *
  *     `cellToBoundaryHier --parent 820ceffffffffff --resolution 4 --kml >

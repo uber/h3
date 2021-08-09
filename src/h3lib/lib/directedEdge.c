@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018, 2020 Uber Technologies, Inc.
+ * Copyright 2017-2018, 2020-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,8 @@
 #include "algos.h"
 #include "constants.h"
 #include "coordijk.h"
-#include "geoPoint.h"
 #include "h3Index.h"
+#include "latLng.h"
 #include "vertex.h"
 
 /**
@@ -35,8 +35,8 @@
  */
 int H3_EXPORT(areNeighborCells)(H3Index origin, H3Index destination) {
     // Make sure they're hexagon indexes
-    if (H3_GET_MODE(origin) != H3_HEXAGON_MODE ||
-        H3_GET_MODE(destination) != H3_HEXAGON_MODE) {
+    if (H3_GET_MODE(origin) != H3_CELL_MODE ||
+        H3_GET_MODE(destination) != H3_CELL_MODE) {
         return 0;
     }
 
@@ -127,7 +127,7 @@ H3Index H3_EXPORT(getDirectedEdgeOrigin)(H3Index edge) {
         return H3_NULL;
     }
     H3Index origin = edge;
-    H3_SET_MODE(origin, H3_HEXAGON_MODE);
+    H3_SET_MODE(origin, H3_CELL_MODE);
     H3_SET_RESERVED_BITS(origin, 0);
     return origin;
 }
@@ -177,7 +177,7 @@ int H3_EXPORT(isValidDirectedEdge)(H3Index edge) {
  * @param originDestination Pointer to memory to store origin and destination
  * IDs
  */
-void H3_EXPORT(directedEdgeToCells)(H3Index edge, H3Index* originDestination) {
+void H3_EXPORT(directedEdgeToCells)(H3Index edge, H3Index *originDestination) {
     originDestination[0] = H3_EXPORT(getDirectedEdgeOrigin)(edge);
     originDestination[1] = H3_EXPORT(getDirectedEdgeDestination)(edge);
 }
@@ -187,7 +187,7 @@ void H3_EXPORT(directedEdgeToCells)(H3Index edge, H3Index* originDestination) {
  * @param origin The origin hexagon H3Index to find edges for.
  * @param edges The memory to store all of the edges inside.
  */
-void H3_EXPORT(originToDirectedEdges)(H3Index origin, H3Index* edges) {
+void H3_EXPORT(originToDirectedEdges)(H3Index origin, H3Index *edges) {
     // Determine if the origin is a pentagon and special treatment needed.
     int isPent = H3_EXPORT(isPentagon)(origin);
 
@@ -210,7 +210,7 @@ void H3_EXPORT(originToDirectedEdges)(H3Index origin, H3Index* edges) {
  * @param edge The directed edge H3Index
  * @param cb The cellboundary object to store the edge coordinates.
  */
-void H3_EXPORT(directedEdgeToBoundary)(H3Index edge, CellBoundary* cb) {
+void H3_EXPORT(directedEdgeToBoundary)(H3Index edge, CellBoundary *cb) {
     // Get the origin and neighbor direction from the edge
     Direction direction = H3_GET_RESERVED_BITS(edge);
     H3Index origin = H3_EXPORT(getDirectedEdgeOrigin)(edge);

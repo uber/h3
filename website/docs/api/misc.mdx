@@ -842,7 +842,7 @@ This function exists for memory management and is not exposed.
 
 Number of pentagon H3 indexes per resolution. This is always 12, but provided as a convenience.
 
-## pointDistKm
+## distanceKm
 
 <Tabs
   groupId="language"
@@ -857,35 +857,35 @@ Number of pentagon H3 indexes per resolution. This is always 12, but provided as
 <TabItem value="c">
 
 ```c
-double pointDistKm(const GeoCoord *a, const GeoCoord *b);
+double distanceKm(const LatLng *a, const LatLng *b);
 ```
 
 </TabItem>
 <TabItem value="python">
 
 ```py
-h3.point_dist(point1, point2, unit='km')
+h3.distance(point1, point2, unit='km')
 ```
 
 </TabItem>
 <TabItem value="java">
 
 ```java
-double pointDist(GeoCoord point1, GeoCoord point2, LengthUnit unit);
+double distance(LatLng point1, LatLng point2, LengthUnit unit);
 ```
 
 </TabItem>
 <TabItem value="javascript">
 
 ```js
-h3.pointDist(point1, point2, h3.UNITS.km)
+h3.distance(point1, point2, h3.UNITS.km)
 ```
 
 ```js live
 function example() {
   const point1 = [-10, 0];
   const point2 = [10, 0];
-  return h3.pointDist(point1, point2, h3.UNITS.km)
+  return h3.distance(point1, point2, h3.UNITS.km)
 }
 ```
 
@@ -893,9 +893,9 @@ function example() {
 </Tabs>
 
 Gives the "great circle" or "haversine" distance between pairs of
-GeoCoord points (lat/lng pairs) in kilometers.
+LatLng points (lat/lng pairs) in kilometers.
 
-## pointDistM
+## distanceM
 
 <Tabs
   groupId="language"
@@ -910,35 +910,35 @@ GeoCoord points (lat/lng pairs) in kilometers.
 <TabItem value="c">
 
 ```c
-double pointDistM(const GeoCoord *a, const GeoCoord *b);
+double distanceM(const LatLng *a, const LatLng *b);
 ```
 
 </TabItem>
 <TabItem value="python">
 
 ```py
-h3.point_dist(point1, point2, unit='m')
+h3.distance(point1, point2, unit='m')
 ```
 
 </TabItem>
 <TabItem value="java">
 
 ```java
-double pointDist(GeoCoord point1, GeoCoord point2, LengthUnit unit);
+double distance(LatLng point1, LatLng point2, LengthUnit unit);
 ```
 
 </TabItem>
 <TabItem value="javascript">
 
 ```js
-h3.pointDist(point1, point2, h3.UNITS.m)
+h3.distance(point1, point2, h3.UNITS.m)
 ```
 
 ```js live
 function example() {
   const point1 = [-10, 0];
   const point2 = [10, 0];
-  return h3.pointDist(point1, point2, h3.UNITS.m)
+  return h3.distance(point1, point2, h3.UNITS.m)
 }
 ```
 
@@ -946,9 +946,9 @@ function example() {
 </Tabs>
 
 Gives the "great circle" or "haversine" distance between pairs of
-GeoCoord points (lat/lng pairs) in meters.
+LatLng points (lat/lng pairs) in meters.
 
-## pointDistRads
+## distanceRads
 
 <Tabs
   groupId="language"
@@ -963,35 +963,35 @@ GeoCoord points (lat/lng pairs) in meters.
 <TabItem value="c">
 
 ```c
-double pointDistRads(const GeoCoord *a, const GeoCoord *b);
+double distanceRads(const LatLng *a, const LatLng *b);
 ```
 
 </TabItem>
 <TabItem value="python">
 
 ```py
-h3.point_dist(point1, point2, unit='rads')
+h3.distance(point1, point2, unit='rads')
 ```
 
 </TabItem>
 <TabItem value="java">
 
 ```java
-double pointDist(GeoCoord point1, GeoCoord point2, LengthUnit unit);
+double distance(LatLng point1, LatLng point2, LengthUnit unit);
 ```
 
 </TabItem>
 <TabItem value="javascript">
 
 ```js
-h3.pointDist(point1, point2, h3.UNITS.rads)
+h3.distance(point1, point2, h3.UNITS.rads)
 ```
 
 ```js live
 function example() {
   const point1 = [-10, 0];
   const point2 = [10, 0];
-  return h3.pointDist(point1, point2, h3.UNITS.rads)
+  return h3.distance(point1, point2, h3.UNITS.rads)
 }
 ```
 
@@ -999,4 +999,4 @@ function example() {
 </Tabs>
 
 Gives the "great circle" or "haversine" distance between pairs of
-GeoCoord points (lat/lng pairs) in radians.
+LatLng points (lat/lng pairs) in radians.

@@ -16,8 +16,18 @@ The public API of this library consists of the functions declared in file
 - closed-form implementation of `numHexagons`
 
 ### Breaking changes
-- rename `maxH3ToChildrenSize` to `cellToChildrenSize`
+- rename functions according to the terminology RFC (#403, #466)
 - `cellToChildrenSize` to output `int64_t` instead of `int`
+- `pointDistRads` to `distanceRads`
+- `pointDistKm` to `distanceKm`
+- `pointDistM` to `distanceM`
+
+### Other changes
+- generally use `lng` instead of `lon`
+
+## [3.7.2] - 2021-07-15
+### Fixed
+- `gridDisk` of invalid indexes should not crash. (#498)
 
 ## [3.7.1] - 2020-10-05
 ### Fixed

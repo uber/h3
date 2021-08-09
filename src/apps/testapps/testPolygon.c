@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Uber Technologies, Inc.
+ * Copyright 2017-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,20 +19,19 @@
 
 #include "bbox.h"
 #include "constants.h"
-#include "geoPoint.h"
 #include "h3Index.h"
+#include "latLng.h"
 #include "linkedGeo.h"
 #include "polygon.h"
 #include "test.h"
 
 // Fixtures
-static GeoPoint sfVerts[] = {
+static LatLng sfVerts[] = {
     {0.659966917655, -2.1364398519396},  {0.6595011102219, -2.1359434279405},
     {0.6583348114025, -2.1354884206045}, {0.6581220034068, -2.1382437718946},
     {0.6594479998527, -2.1384597563896}, {0.6599990002976, -2.1376771158464}};
 
-static void createLinkedLoop(LinkedGeoLoop* loop, GeoPoint* verts,
-                             int numVerts) {
+static void createLinkedLoop(LinkedGeoLoop *loop, LatLng *verts, int numVerts) {
     *loop = (LinkedGeoLoop){0};
     for (int i = 0; i < numVerts; i++) {
         addLinkedCoord(loop, verts++);
@@ -43,8 +42,8 @@ SUITE(polygon) {
     TEST(pointInsideGeoLoop) {
         GeoLoop geoloop = {.numVerts = 6, .verts = sfVerts};
 
-        GeoPoint inside = {0.659, -2.136};
-        GeoPoint somewhere = {1, 2};
+        LatLng inside = {0.659, -2.136};
+        LatLng somewhere = {1, 2};
 
         BBox bbox;
         bboxFromGeoLoop(&geoloop, &bbox);
@@ -60,16 +59,16 @@ SUITE(polygon) {
     }
 
     TEST(pointInsideGeoLoopTransmeridian) {
-        GeoPoint verts[] = {{0.01, -M_PI + 0.01},
-                            {0.01, M_PI - 0.01},
-                            {-0.01, M_PI - 0.01},
-                            {-0.01, -M_PI + 0.01}};
+        LatLng verts[] = {{0.01, -M_PI + 0.01},
+                          {0.01, M_PI - 0.01},
+                          {-0.01, M_PI - 0.01},
+                          {-0.01, -M_PI + 0.01}};
         GeoLoop transMeridianGeoLoop = {.numVerts = 4, .verts = verts};
 
-        GeoPoint eastPoint = {0.001, -M_PI + 0.001};
-        GeoPoint eastPointOutside = {0.001, -M_PI + 0.1};
-        GeoPoint westPoint = {0.001, M_PI - 0.001};
-        GeoPoint westPointOutside = {0.001, M_PI - 0.1};
+        LatLng eastPoint = {0.001, -M_PI + 0.001};
+        LatLng eastPointOutside = {0.001, -M_PI + 0.1};
+        LatLng westPoint = {0.001, M_PI - 0.001};
+        LatLng westPointOutside = {0.001, M_PI - 0.1};
 
         BBox bbox;
         bboxFromGeoLoop(&transMeridianGeoLoop, &bbox);
@@ -89,8 +88,8 @@ SUITE(polygon) {
     }
 
     TEST(pointInsideLinkedGeoLoop) {
-        GeoPoint somewhere = {1, 2};
-        GeoPoint inside = {0.659, -2.136};
+        LatLng somewhere = {1, 2};
+        LatLng inside = {0.659, -2.136};
 
         LinkedGeoLoop loop;
         createLinkedLoop(&loop, &sfVerts[0], 6);
@@ -107,7 +106,7 @@ SUITE(polygon) {
     }
 
     TEST(bboxFromGeoLoop) {
-        GeoPoint verts[] = {{0.8, 0.3}, {0.7, 0.6}, {1.1, 0.7}, {1.0, 0.2}};
+        LatLng verts[] = {{0.8, 0.3}, {0.7, 0.6}, {1.1, 0.7}, {1.0, 0.2}};
         GeoLoop geoloop = {.numVerts = 4, .verts = verts};
 
         const BBox expected = {1.1, 0.7, 0.7, 0.2};
@@ -118,9 +117,9 @@ SUITE(polygon) {
     }
 
     TEST(bboxFromGeoLoopTransmeridian) {
-        GeoPoint verts[] = {{0.1, -M_PI + 0.1},  {0.1, M_PI - 0.1},
-                            {0.05, M_PI - 0.2},  {-0.1, M_PI - 0.1},
-                            {-0.1, -M_PI + 0.1}, {-0.05, -M_PI + 0.2}};
+        LatLng verts[] = {{0.1, -M_PI + 0.1},  {0.1, M_PI - 0.1},
+                          {0.05, M_PI - 0.2},  {-0.1, M_PI - 0.1},
+                          {-0.1, -M_PI + 0.1}, {-0.05, -M_PI + 0.2}};
         GeoLoop geoloop = {.numVerts = 6, .verts = verts};
 
         const BBox expected = {0.1, -0.1, -M_PI + 0.2, M_PI - 0.2};
@@ -145,13 +144,13 @@ SUITE(polygon) {
     }
 
     TEST(bboxesFromGeoPolygon) {
-        GeoPoint verts[] = {{0.8, 0.3}, {0.7, 0.6}, {1.1, 0.7}, {1.0, 0.2}};
+        LatLng verts[] = {{0.8, 0.3}, {0.7, 0.6}, {1.1, 0.7}, {1.0, 0.2}};
         GeoLoop geoloop = {.numVerts = 4, .verts = verts};
         GeoPolygon polygon = {.geoloop = geoloop, .numHoles = 0};
 
         const BBox expected = {1.1, 0.7, 0.7, 0.2};
 
-        BBox* result = calloc(sizeof(BBox), 1);
+        BBox *result = calloc(sizeof(BBox), 1);
         bboxesFromGeoPolygon(&polygon, result);
         t_assert(bboxEquals(&result[0], &expected), "Got expected bbox");
 
@@ -159,11 +158,11 @@ SUITE(polygon) {
     }
 
     TEST(bboxesFromGeoPolygonHole) {
-        GeoPoint verts[] = {{0.8, 0.3}, {0.7, 0.6}, {1.1, 0.7}, {1.0, 0.2}};
+        LatLng verts[] = {{0.8, 0.3}, {0.7, 0.6}, {1.1, 0.7}, {1.0, 0.2}};
         GeoLoop geoloop = {.numVerts = 4, .verts = verts};
 
         // not a real hole, but doesn't matter for the test
-        GeoPoint holeVerts[] = {{0.9, 0.3}, {0.9, 0.5}, {1.0, 0.7}, {0.9, 0.3}};
+        LatLng holeVerts[] = {{0.9, 0.3}, {0.9, 0.5}, {1.0, 0.7}, {0.9, 0.3}};
         GeoLoop holeGeoLoop = {.numVerts = 4, .verts = holeVerts};
 
         GeoPolygon polygon = {
@@ -172,7 +171,7 @@ SUITE(polygon) {
         const BBox expected = {1.1, 0.7, 0.7, 0.2};
         const BBox expectedHole = {1.0, 0.9, 0.7, 0.3};
 
-        BBox* result = calloc(sizeof(BBox), 2);
+        BBox *result = calloc(sizeof(BBox), 2);
         bboxesFromGeoPolygon(&polygon, result);
         t_assert(bboxEquals(&result[0], &expected), "Got expected bbox");
         t_assert(bboxEquals(&result[1], &expectedHole),
@@ -182,7 +181,7 @@ SUITE(polygon) {
     }
 
     TEST(bboxFromLinkedGeoLoop) {
-        GeoPoint verts[] = {{0.8, 0.3}, {0.7, 0.6}, {1.1, 0.7}, {1.0, 0.2}};
+        LatLng verts[] = {{0.8, 0.3}, {0.7, 0.6}, {1.1, 0.7}, {1.0, 0.2}};
 
         LinkedGeoLoop loop;
         createLinkedLoop(&loop, &verts[0], 4);
@@ -210,7 +209,7 @@ SUITE(polygon) {
     }
 
     TEST(isClockwiseGeoLoop) {
-        GeoPoint verts[] = {{0, 0}, {0.1, 0.1}, {0, 0.1}};
+        LatLng verts[] = {{0, 0}, {0.1, 0.1}, {0, 0.1}};
         GeoLoop geoloop = {.numVerts = 3, .verts = verts};
 
         t_assert(isClockwiseGeoLoop(&geoloop),
@@ -218,7 +217,7 @@ SUITE(polygon) {
     }
 
     TEST(isClockwiseLinkedGeoLoop) {
-        GeoPoint verts[] = {{0.1, 0.1}, {0.2, 0.2}, {0.1, 0.2}};
+        LatLng verts[] = {{0.1, 0.1}, {0.2, 0.2}, {0.1, 0.2}};
         LinkedGeoLoop loop;
         createLinkedLoop(&loop, &verts[0], 3);
 
@@ -229,7 +228,7 @@ SUITE(polygon) {
     }
 
     TEST(isNotClockwiseLinkedGeoLoop) {
-        GeoPoint verts[] = {{0, 0}, {0, 0.4}, {0.4, 0.4}, {0.4, 0}};
+        LatLng verts[] = {{0, 0}, {0, 0.4}, {0.4, 0.4}, {0.4, 0}};
         LinkedGeoLoop loop;
         createLinkedLoop(&loop, &verts[0], 4);
 
@@ -240,10 +239,10 @@ SUITE(polygon) {
     }
 
     TEST(isClockwiseGeoLoopTransmeridian) {
-        GeoPoint verts[] = {{0.4, M_PI - 0.1},
-                            {0.4, -M_PI + 0.1},
-                            {-0.4, -M_PI + 0.1},
-                            {-0.4, M_PI - 0.1}};
+        LatLng verts[] = {{0.4, M_PI - 0.1},
+                          {0.4, -M_PI + 0.1},
+                          {-0.4, -M_PI + 0.1},
+                          {-0.4, M_PI - 0.1}};
         GeoLoop geoloop = {.numVerts = 4, .verts = verts};
 
         t_assert(isClockwiseGeoLoop(&geoloop),
@@ -251,10 +250,10 @@ SUITE(polygon) {
     }
 
     TEST(isClockwiseLinkedGeoLoopTransmeridian) {
-        GeoPoint verts[] = {{0.4, M_PI - 0.1},
-                            {0.4, -M_PI + 0.1},
-                            {-0.4, -M_PI + 0.1},
-                            {-0.4, M_PI - 0.1}};
+        LatLng verts[] = {{0.4, M_PI - 0.1},
+                          {0.4, -M_PI + 0.1},
+                          {-0.4, -M_PI + 0.1},
+                          {-0.4, M_PI - 0.1}};
         LinkedGeoLoop loop;
         createLinkedLoop(&loop, &verts[0], 4);
 
@@ -265,10 +264,10 @@ SUITE(polygon) {
     }
 
     TEST(isNotClockwiseLinkedGeoLoopTransmeridian) {
-        GeoPoint verts[] = {{0.4, M_PI - 0.1},
-                            {-0.4, M_PI - 0.1},
-                            {-0.4, -M_PI + 0.1},
-                            {0.4, -M_PI + 0.1}};
+        LatLng verts[] = {{0.4, M_PI - 0.1},
+                          {-0.4, M_PI - 0.1},
+                          {-0.4, -M_PI + 0.1},
+                          {0.4, -M_PI + 0.1}};
         LinkedGeoLoop loop;
         createLinkedLoop(&loop, &verts[0], 4);
 
@@ -279,9 +278,9 @@ SUITE(polygon) {
     }
 
     TEST(normalizeMultiPolygonSingle) {
-        GeoPoint verts[] = {{0, 0}, {0, 1}, {1, 1}};
+        LatLng verts[] = {{0, 0}, {0, 1}, {1, 1}};
 
-        LinkedGeoLoop* outer = malloc(sizeof(*outer));
+        LinkedGeoLoop *outer = malloc(sizeof(*outer));
         assert(outer != NULL);
         createLinkedLoop(outer, &verts[0], 3);
 
@@ -300,15 +299,15 @@ SUITE(polygon) {
     }
 
     TEST(normalizeMultiPolygonTwoOuterLoops) {
-        GeoPoint verts1[] = {{0, 0}, {0, 1}, {1, 1}};
+        LatLng verts1[] = {{0, 0}, {0, 1}, {1, 1}};
 
-        LinkedGeoLoop* outer1 = malloc(sizeof(*outer1));
+        LinkedGeoLoop *outer1 = malloc(sizeof(*outer1));
         assert(outer1 != NULL);
         createLinkedLoop(outer1, &verts1[0], 3);
 
-        GeoPoint verts2[] = {{2, 2}, {2, 3}, {3, 3}};
+        LatLng verts2[] = {{2, 2}, {2, 3}, {3, 3}};
 
-        LinkedGeoLoop* outer2 = malloc(sizeof(*outer2));
+        LinkedGeoLoop *outer2 = malloc(sizeof(*outer2));
         assert(outer2 != NULL);
         createLinkedLoop(outer2, &verts2[0], 3);
 
@@ -330,15 +329,15 @@ SUITE(polygon) {
     }
 
     TEST(normalizeMultiPolygonOneHole) {
-        GeoPoint verts[] = {{0, 0}, {0, 3}, {3, 3}, {3, 0}};
+        LatLng verts[] = {{0, 0}, {0, 3}, {3, 3}, {3, 0}};
 
-        LinkedGeoLoop* outer = malloc(sizeof(*outer));
+        LinkedGeoLoop *outer = malloc(sizeof(*outer));
         assert(outer != NULL);
         createLinkedLoop(outer, &verts[0], 4);
 
-        GeoPoint verts2[] = {{1, 1}, {2, 2}, {1, 2}};
+        LatLng verts2[] = {{1, 1}, {2, 2}, {1, 2}};
 
-        LinkedGeoLoop* inner = malloc(sizeof(*inner));
+        LinkedGeoLoop *inner = malloc(sizeof(*inner));
         assert(inner != NULL);
         createLinkedLoop(inner, &verts2[0], 3);
 
@@ -360,21 +359,21 @@ SUITE(polygon) {
     }
 
     TEST(normalizeMultiPolygonTwoHoles) {
-        GeoPoint verts[] = {{0, 0}, {0, 0.4}, {0.4, 0.4}, {0.4, 0}};
+        LatLng verts[] = {{0, 0}, {0, 0.4}, {0.4, 0.4}, {0.4, 0}};
 
-        LinkedGeoLoop* outer = malloc(sizeof(*outer));
+        LinkedGeoLoop *outer = malloc(sizeof(*outer));
         assert(outer != NULL);
         createLinkedLoop(outer, &verts[0], 4);
 
-        GeoPoint verts2[] = {{0.1, 0.1}, {0.2, 0.2}, {0.1, 0.2}};
+        LatLng verts2[] = {{0.1, 0.1}, {0.2, 0.2}, {0.1, 0.2}};
 
-        LinkedGeoLoop* inner1 = malloc(sizeof(*inner1));
+        LinkedGeoLoop *inner1 = malloc(sizeof(*inner1));
         assert(inner1 != NULL);
         createLinkedLoop(inner1, &verts2[0], 3);
 
-        GeoPoint verts3[] = {{0.2, 0.2}, {0.3, 0.3}, {0.2, 0.3}};
+        LatLng verts3[] = {{0.2, 0.2}, {0.3, 0.3}, {0.2, 0.3}};
 
-        LinkedGeoLoop* inner2 = malloc(sizeof(*inner2));
+        LinkedGeoLoop *inner2 = malloc(sizeof(*inner2));
         assert(inner2 != NULL);
         createLinkedLoop(inner2, &verts3[0], 3);
 
@@ -397,23 +396,23 @@ SUITE(polygon) {
     }
 
     TEST(normalizeMultiPolygonTwoDonuts) {
-        GeoPoint verts[] = {{0, 0}, {0, 3}, {3, 3}, {3, 0}};
-        LinkedGeoLoop* outer = malloc(sizeof(*outer));
+        LatLng verts[] = {{0, 0}, {0, 3}, {3, 3}, {3, 0}};
+        LinkedGeoLoop *outer = malloc(sizeof(*outer));
         assert(outer != NULL);
         createLinkedLoop(outer, &verts[0], 4);
 
-        GeoPoint verts2[] = {{1, 1}, {2, 2}, {1, 2}};
-        LinkedGeoLoop* inner = malloc(sizeof(*inner));
+        LatLng verts2[] = {{1, 1}, {2, 2}, {1, 2}};
+        LinkedGeoLoop *inner = malloc(sizeof(*inner));
         assert(inner != NULL);
         createLinkedLoop(inner, &verts2[0], 3);
 
-        GeoPoint verts3[] = {{0, 0}, {0, -3}, {-3, -3}, {-3, 0}};
-        LinkedGeoLoop* outer2 = malloc(sizeof(*outer));
+        LatLng verts3[] = {{0, 0}, {0, -3}, {-3, -3}, {-3, 0}};
+        LinkedGeoLoop *outer2 = malloc(sizeof(*outer));
         assert(outer2 != NULL);
         createLinkedLoop(outer2, &verts3[0], 4);
 
-        GeoPoint verts4[] = {{-1, -1}, {-2, -2}, {-1, -2}};
-        LinkedGeoLoop* inner2 = malloc(sizeof(*inner));
+        LatLng verts4[] = {{-1, -1}, {-2, -2}, {-1, -2}};
+        LinkedGeoLoop *inner2 = malloc(sizeof(*inner));
         assert(inner2 != NULL);
         createLinkedLoop(inner2, &verts4[0], 3);
 
@@ -445,26 +444,23 @@ SUITE(polygon) {
     }
 
     TEST(normalizeMultiPolygonNestedDonuts) {
-        GeoPoint verts[] = {{0.2, 0.2}, {0.2, -0.2}, {-0.2, -0.2}, {-0.2, 0.2}};
-        LinkedGeoLoop* outer = malloc(sizeof(*outer));
+        LatLng verts[] = {{0.2, 0.2}, {0.2, -0.2}, {-0.2, -0.2}, {-0.2, 0.2}};
+        LinkedGeoLoop *outer = malloc(sizeof(*outer));
         assert(outer != NULL);
         createLinkedLoop(outer, &verts[0], 4);
 
-        GeoPoint verts2[] = {
-            {0.1, 0.1}, {-0.1, 0.1}, {-0.1, -0.1}, {0.1, -0.1}};
-        LinkedGeoLoop* inner = malloc(sizeof(*inner));
+        LatLng verts2[] = {{0.1, 0.1}, {-0.1, 0.1}, {-0.1, -0.1}, {0.1, -0.1}};
+        LinkedGeoLoop *inner = malloc(sizeof(*inner));
         assert(inner != NULL);
         createLinkedLoop(inner, &verts2[0], 4);
 
-        GeoPoint verts3[] = {
-            {0.6, 0.6}, {0.6, -0.6}, {-0.6, -0.6}, {-0.6, 0.6}};
-        LinkedGeoLoop* outerBig = malloc(sizeof(*outerBig));
+        LatLng verts3[] = {{0.6, 0.6}, {0.6, -0.6}, {-0.6, -0.6}, {-0.6, 0.6}};
+        LinkedGeoLoop *outerBig = malloc(sizeof(*outerBig));
         assert(outerBig != NULL);
         createLinkedLoop(outerBig, &verts3[0], 4);
 
-        GeoPoint verts4[] = {
-            {0.5, 0.5}, {-0.5, 0.5}, {-0.5, -0.5}, {0.5, -0.5}};
-        LinkedGeoLoop* innerBig = malloc(sizeof(*innerBig));
+        LatLng verts4[] = {{0.5, 0.5}, {-0.5, 0.5}, {-0.5, -0.5}, {0.5, -0.5}};
+        LinkedGeoLoop *innerBig = malloc(sizeof(*innerBig));
         assert(innerBig != NULL);
         createLinkedLoop(innerBig, &verts4[0], 4);
 
@@ -492,15 +488,15 @@ SUITE(polygon) {
     }
 
     TEST(normalizeMultiPolygonNoOuterLoops) {
-        GeoPoint verts1[] = {{0, 0}, {1, 1}, {0, 1}};
+        LatLng verts1[] = {{0, 0}, {1, 1}, {0, 1}};
 
-        LinkedGeoLoop* outer1 = malloc(sizeof(*outer1));
+        LinkedGeoLoop *outer1 = malloc(sizeof(*outer1));
         assert(outer1 != NULL);
         createLinkedLoop(outer1, &verts1[0], 3);
 
-        GeoPoint verts2[] = {{2, 2}, {3, 3}, {2, 3}};
+        LatLng verts2[] = {{2, 2}, {3, 3}, {2, 3}};
 
-        LinkedGeoLoop* outer2 = malloc(sizeof(*outer2));
+        LinkedGeoLoop *outer2 = malloc(sizeof(*outer2));
         assert(outer2 != NULL);
         createLinkedLoop(outer2, &verts2[0], 3);
 
@@ -521,21 +517,21 @@ SUITE(polygon) {
     }
 
     TEST(normalizeMultiPolygonAlreadyNormalized) {
-        GeoPoint verts1[] = {{0, 0}, {0, 1}, {1, 1}};
+        LatLng verts1[] = {{0, 0}, {0, 1}, {1, 1}};
 
-        LinkedGeoLoop* outer1 = malloc(sizeof(*outer1));
+        LinkedGeoLoop *outer1 = malloc(sizeof(*outer1));
         assert(outer1 != NULL);
         createLinkedLoop(outer1, &verts1[0], 3);
 
-        GeoPoint verts2[] = {{2, 2}, {2, 3}, {3, 3}};
+        LatLng verts2[] = {{2, 2}, {2, 3}, {3, 3}};
 
-        LinkedGeoLoop* outer2 = malloc(sizeof(*outer2));
+        LinkedGeoLoop *outer2 = malloc(sizeof(*outer2));
         assert(outer2 != NULL);
         createLinkedLoop(outer2, &verts2[0], 3);
 
         LinkedGeoPolygon polygon = {0};
         addLinkedLoop(&polygon, outer1);
-        LinkedGeoPolygon* next = addNewLinkedPolygon(&polygon);
+        LinkedGeoPolygon *next = addNewLinkedPolygon(&polygon);
         addLinkedLoop(next, outer2);
 
         // Should be a no-op
@@ -556,15 +552,15 @@ SUITE(polygon) {
     }
 
     TEST(normalizeMultiPolygon_unassignedHole) {
-        GeoPoint verts[] = {{0, 0}, {0, 1}, {1, 1}, {1, 0}};
+        LatLng verts[] = {{0, 0}, {0, 1}, {1, 1}, {1, 0}};
 
-        LinkedGeoLoop* outer = malloc(sizeof(*outer));
+        LinkedGeoLoop *outer = malloc(sizeof(*outer));
         assert(outer != NULL);
         createLinkedLoop(outer, &verts[0], 4);
 
-        GeoPoint verts2[] = {{2, 2}, {3, 3}, {2, 3}};
+        LatLng verts2[] = {{2, 2}, {3, 3}, {2, 3}};
 
-        LinkedGeoLoop* inner = malloc(sizeof(*inner));
+        LinkedGeoLoop *inner = malloc(sizeof(*inner));
         assert(inner != NULL);
         createLinkedLoop(inner, &verts2[0], 3);
 

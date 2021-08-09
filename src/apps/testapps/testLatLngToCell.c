@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017, 2020 Uber Technologies, Inc.
+ * Copyright 2016-2018, 2020-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,49 +14,40 @@
  * limitations under the License.
  */
 /** @file
- * @brief tests H3 function `cellToPoint`
+ * @brief tests H3 function `latLngToCell`
  *
- *  usage: `testCellToPoint`
+ *  usage: `testLatLngToCell`
  *
- *  The program reads lines containing H3 indexes and lat/lon center
- *  point pairs from stdin until EOF is encountered. For each input line,
- *  the program calls `cellToPoint` to convert H3 index to a lat/lng, then
- *  validates against the input lat/lng within a given threshold
+ *  The program reads lines containing H3 indexes and lat/lng  pairs from
+ *  stdin until EOF is encountered. For each input line, it calls `latLngToCell`
+ *  to convert the input lat/lng to an H3 index, and then validates the
+ *  index against the original input index.
  */
 
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "constants.h"
-#include "geoPoint.h"
 #include "h3Index.h"
+#include "latLng.h"
 #include "test.h"
 #include "utility.h"
 
-void assertExpected(H3Index h1, const GeoPoint* g1) {
-    const double epsilon = 0.000001 * M_PI_180;
-    // convert H3 to lat/lon and verify
-    GeoPoint g2;
-    H3_EXPORT(cellToPoint)(h1, &g2);
-
-    t_assert(geoAlmostEqualThreshold(&g2, g1, epsilon),
-             "got expected cellToPoint output");
-
-    // Convert back to H3 to verify
+static void assertExpected(H3Index h1, const LatLng *g1) {
+    // convert lat/lng to H3 and verify
     int res = H3_EXPORT(getResolution)(h1);
     H3Index h2;
-    t_assertSuccess(H3_EXPORT(pointToCell)(&g2, res, &h2));
-    t_assert(h1 == h2, "got expected geoToH3 output");
+    t_assertSuccess(H3_EXPORT(latLngToCell)(g1, res, &h2));
+    t_assert(h1 == h2, "got expected latLngToCell output");
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     // check command line args
     if (argc > 1) {
         fprintf(stderr, "usage: %s\n", argv[0]);
         exit(1);
     }
 
-    // process the indexes and lat/lons on stdin
+    // process the indexes and lat/lngs on stdin
     char buff[BUFF_SIZE];
     char h3Str[BUFF_SIZE];
     while (1) {
@@ -68,15 +59,15 @@ int main(int argc, char* argv[]) {
                 error("reading input from stdin");
         }
 
-        double latDegs, lonDegs;
-        if (sscanf(buff, "%s %lf %lf", h3Str, &latDegs, &lonDegs) != 3)
-            error("parsing input (should be \"H3Index lat lon\")");
+        double latDegs, lngDegs;
+        if (sscanf(buff, "%s %lf %lf", h3Str, &latDegs, &lngDegs) != 3)
+            error("parsing input (should be \"H3Index lat lng\")");
 
         H3Index h3;
         h3 = H3_EXPORT(stringToH3)(h3Str);
 
-        GeoPoint coord;
-        setGeoDegs(&coord, latDegs, lonDegs);
+        LatLng coord;
+        setGeoDegs(&coord, latDegs, lngDegs);
 
         assertExpected(h3, &coord);
     }

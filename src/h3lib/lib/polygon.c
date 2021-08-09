@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2020 Uber Technologies, Inc.
+ * Copyright 2018-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@
 
 #include "bbox.h"
 #include "constants.h"
-#include "geoPoint.h"
 #include "h3api.h"
+#include "latLng.h"
 #include "linkedGeo.h"
 
 // Define macros used in polygon algos for GeoLoop
@@ -47,7 +47,7 @@
  * @param polygon Input GeoPolygon
  * @param bboxes  Output bboxes, one for the outer loop and one for each hole
  */
-void bboxesFromGeoPolygon(const GeoPolygon* polygon, BBox* bboxes) {
+void bboxesFromGeoPolygon(const GeoPolygon *polygon, BBox *bboxes) {
     bboxFromGeoLoop(&polygon->geoloop, &bboxes[0]);
     for (int i = 0; i < polygon->numHoles; i++) {
         bboxFromGeoLoop(&polygon->holes[i], &bboxes[i + 1]);
@@ -63,8 +63,8 @@ void bboxesFromGeoPolygon(const GeoPolygon* polygon, BBox* bboxes) {
  * @param coord      The coordinate to check
  * @return           Whether the point is contained
  */
-bool pointInsidePolygon(const GeoPolygon* geoPolygon, const BBox* bboxes,
-                        const GeoPoint* coord) {
+bool pointInsidePolygon(const GeoPolygon *geoPolygon, const BBox *bboxes,
+                        const LatLng *coord) {
     // Start with contains state of primary geoloop
     bool contains =
         pointInsideGeoLoop(&(geoPolygon->geoloop), &bboxes[0], coord);

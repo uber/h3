@@ -67,11 +67,11 @@
 
 #endif
 
-#define BEGIN_BENCHMARKS() int main(int argc, char* argv[]) {
+#define BEGIN_BENCHMARKS() int main(int argc, char *argv[]) {
 #define BENCHMARK(NAME, ITERATIONS, BODY)                                   \
     do {                                                                    \
         const int iterations = ITERATIONS;                                  \
-        const char* name = #NAME;                                           \
+        const char *name = #NAME;                                           \
         START_TIMER;                                                        \
         for (int i = 0; i < iterations; i++) {                              \
             BODY;                                                           \

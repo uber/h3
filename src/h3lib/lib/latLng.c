@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 Uber Technologies, Inc.
+ * Copyright 2016-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** @file geoPoint.c
- * @brief   Functions for working with lat/lon coordinates.
+/** @file latLng.c
+ * @brief   Functions for working with lat/lng coordinates.
  */
 
-#include "geoPoint.h"
+#include "latLng.h"
 
 #include <math.h>
 #include <stdbool.h>
@@ -48,10 +48,10 @@ double _posAngleRads(double rads) {
  * @return Whether or not the two coordinates are within the threshold distance
  *         of each other.
  */
-bool geoAlmostEqualThreshold(const GeoPoint *p1, const GeoPoint *p2,
+bool geoAlmostEqualThreshold(const LatLng *p1, const LatLng *p2,
                              double threshold) {
     return fabs(p1->lat - p2->lat) < threshold &&
-           fabs(p1->lon - p2->lon) < threshold;
+           fabs(p1->lng - p2->lng) < threshold;
 }
 
 /**
@@ -63,7 +63,7 @@ bool geoAlmostEqualThreshold(const GeoPoint *p1, const GeoPoint *p2,
  * @return Whether or not the two coordinates are within the epsilon distance
  *         of each other.
  */
-bool geoAlmostEqual(const GeoPoint *p1, const GeoPoint *p2) {
+bool geoAlmostEqual(const LatLng *p1, const LatLng *p2) {
     return geoAlmostEqualThreshold(p1, p2, EPSILON_RAD);
 }
 
@@ -72,11 +72,11 @@ bool geoAlmostEqual(const GeoPoint *p1, const GeoPoint *p2) {
  *
  * @param p The spherical coordinates.
  * @param latDegs The desired latitude in decimal degrees.
- * @param lonDegs The desired longitude in decimal degrees.
+ * @param lngDegs The desired longitude in decimal degrees.
  */
-void setGeoDegs(GeoPoint *p, double latDegs, double lonDegs) {
+void setGeoDegs(LatLng *p, double latDegs, double lngDegs) {
     _setGeoRads(p, H3_EXPORT(degsToRads)(latDegs),
-                H3_EXPORT(degsToRads)(lonDegs));
+                H3_EXPORT(degsToRads)(lngDegs));
 }
 
 /**
@@ -84,11 +84,11 @@ void setGeoDegs(GeoPoint *p, double latDegs, double lonDegs) {
  *
  * @param p The spherical coordinates.
  * @param latRads The desired latitude in decimal radians.
- * @param lonRads The desired longitude in decimal radians.
+ * @param lngRads The desired longitude in decimal radians.
  */
-void _setGeoRads(GeoPoint *p, double latRads, double lonRads) {
+void _setGeoRads(LatLng *p, double latRads, double lngRads) {
     p->lat = latRads;
-    p->lon = lonRads;
+    p->lng = lngRads;
 }
 
 /**
@@ -149,9 +149,9 @@ double constrainLng(double lng) {
  *
  * @return    the great circle distance in radians between a and b
  */
-double H3_EXPORT(pointDistRads)(const GeoPoint *a, const GeoPoint *b) {
+double H3_EXPORT(distanceRads)(const LatLng *a, const LatLng *b) {
     double sinLat = sin((b->lat - a->lat) / 2.0);
-    double sinLng = sin((b->lon - a->lon) / 2.0);
+    double sinLng = sin((b->lng - a->lng) / 2.0);
 
     double A = sinLat * sinLat + cos(a->lat) * cos(b->lat) * sinLng * sinLng;
 
@@ -161,15 +161,15 @@ double H3_EXPORT(pointDistRads)(const GeoPoint *a, const GeoPoint *b) {
 /**
  * The great circle distance in kilometers between two spherical coordinates.
  */
-double H3_EXPORT(pointDistKm)(const GeoPoint *a, const GeoPoint *b) {
-    return H3_EXPORT(pointDistRads)(a, b) * EARTH_RADIUS_KM;
+double H3_EXPORT(distanceKm)(const LatLng *a, const LatLng *b) {
+    return H3_EXPORT(distanceRads)(a, b) * EARTH_RADIUS_KM;
 }
 
 /**
  * The great circle distance in meters between two spherical coordinates.
  */
-double H3_EXPORT(pointDistM)(const GeoPoint *a, const GeoPoint *b) {
-    return H3_EXPORT(pointDistKm)(a, b) * 1000;
+double H3_EXPORT(distanceM)(const LatLng *a, const LatLng *b) {
+    return H3_EXPORT(distanceKm)(a, b) * 1000;
 }
 
 /**
@@ -179,10 +179,10 @@ double H3_EXPORT(pointDistM)(const GeoPoint *a, const GeoPoint *b) {
  * @param p2 The second spherical coordinates.
  * @return The azimuth in radians from p1 to p2.
  */
-double _geoAzimuthRads(const GeoPoint *p1, const GeoPoint *p2) {
-    return atan2(cos(p2->lat) * sin(p2->lon - p1->lon),
+double _geoAzimuthRads(const LatLng *p1, const LatLng *p2) {
+    return atan2(cos(p2->lat) * sin(p2->lng - p1->lng),
                  cos(p1->lat) * sin(p2->lat) -
-                     sin(p1->lat) * cos(p2->lat) * cos(p2->lon - p1->lon));
+                     sin(p1->lat) * cos(p2->lat) * cos(p2->lng - p1->lng));
 }
 
 /**
@@ -195,14 +195,14 @@ double _geoAzimuthRads(const GeoPoint *p1, const GeoPoint *p2) {
  * @param p2 The spherical coordinates at the desired azimuth and distance from
  * p1.
  */
-void _geoAzDistanceRads(const GeoPoint *p1, double az, double distance,
-                        GeoPoint *p2) {
+void _geoAzDistanceRads(const LatLng *p1, double az, double distance,
+                        LatLng *p2) {
     if (distance < EPSILON) {
         *p2 = *p1;
         return;
     }
 
-    double sinlat, sinlon, coslon;
+    double sinlat, sinlng, coslng;
 
     az = _posAngleRads(az);
 
@@ -216,13 +216,13 @@ void _geoAzDistanceRads(const GeoPoint *p1, double az, double distance,
         if (fabs(p2->lat - M_PI_2) < EPSILON)  // north pole
         {
             p2->lat = M_PI_2;
-            p2->lon = 0.0;
+            p2->lng = 0.0;
         } else if (fabs(p2->lat + M_PI_2) < EPSILON)  // south pole
         {
             p2->lat = -M_PI_2;
-            p2->lon = 0.0;
+            p2->lng = 0.0;
         } else
-            p2->lon = constrainLng(p1->lon);
+            p2->lng = constrainLng(p1->lng);
     } else  // not due north or south
     {
         sinlat = sin(p1->lat) * cos(distance) +
@@ -233,20 +233,20 @@ void _geoAzDistanceRads(const GeoPoint *p1, double az, double distance,
         if (fabs(p2->lat - M_PI_2) < EPSILON)  // north pole
         {
             p2->lat = M_PI_2;
-            p2->lon = 0.0;
+            p2->lng = 0.0;
         } else if (fabs(p2->lat + M_PI_2) < EPSILON)  // south pole
         {
             p2->lat = -M_PI_2;
-            p2->lon = 0.0;
+            p2->lng = 0.0;
         } else {
-            sinlon = sin(az) * sin(distance) / cos(p2->lat);
-            coslon = (cos(distance) - sin(p1->lat) * sin(p2->lat)) /
+            sinlng = sin(az) * sin(distance) / cos(p2->lat);
+            coslng = (cos(distance) - sin(p1->lat) * sin(p2->lat)) /
                      cos(p1->lat) / cos(p2->lat);
-            if (sinlon > 1.0) sinlon = 1.0;
-            if (sinlon < -1.0) sinlon = -1.0;
-            if (coslon > 1.0) coslon = 1.0;
-            if (coslon < -1.0) coslon = -1.0;
-            p2->lon = constrainLng(p1->lon + atan2(sinlon, coslon));
+            if (sinlng > 1.0) sinlng = 1.0;
+            if (sinlng < -1.0) sinlng = -1.0;
+            if (coslng > 1.0) coslng = 1.0;
+            if (coslng < -1.0) coslng = -1.0;
+            p2->lng = constrainLng(p1->lng + atan2(sinlng, coslng));
         }
     }
 }
@@ -329,10 +329,10 @@ double triangleEdgeLengthsToArea(double a, double b, double c) {
  *
  * @return     area of triangle on unit sphere, in radians^2
  */
-double triangleArea(const GeoPoint *a, const GeoPoint *b, const GeoPoint *c) {
-    return triangleEdgeLengthsToArea(H3_EXPORT(pointDistRads)(a, b),
-                                     H3_EXPORT(pointDistRads)(b, c),
-                                     H3_EXPORT(pointDistRads)(c, a));
+double triangleArea(const LatLng *a, const LatLng *b, const LatLng *c) {
+    return triangleEdgeLengthsToArea(H3_EXPORT(distanceRads)(a, b),
+                                     H3_EXPORT(distanceRads)(b, c),
+                                     H3_EXPORT(distanceRads)(c, a));
 }
 
 /**
@@ -349,9 +349,9 @@ double triangleArea(const GeoPoint *a, const GeoPoint *b, const GeoPoint *c) {
  * @return        cell area in radians^2
  */
 double H3_EXPORT(cellAreaRads2)(H3Index cell) {
-    GeoPoint c;
+    LatLng c;
     CellBoundary cb;
-    H3_EXPORT(cellToPoint)(cell, &c);
+    H3_EXPORT(cellToLatLng)(cell, &c);
     H3_EXPORT(cellToBoundary)(cell, &cb);
 
     double area = 0.0;
@@ -391,7 +391,7 @@ double H3_EXPORT(exactEdgeLengthRads)(H3Index edge) {
 
     double length = 0.0;
     for (int i = 0; i < cb.numVerts - 1; i++) {
-        length += H3_EXPORT(pointDistRads)(&cb.verts[i], &cb.verts[i + 1]);
+        length += H3_EXPORT(distanceRads)(&cb.verts[i], &cb.verts[i + 1]);
     }
 
     return length;

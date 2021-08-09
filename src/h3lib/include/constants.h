@@ -78,7 +78,7 @@
 #define NUM_PENTAGONS 12
 
 /** H3 index modes */
-#define H3_HEXAGON_MODE 1
+#define H3_CELL_MODE 1
 #define H3_DIRECTEDEDGE_MODE 2
 #define H3_EDGE_MODE 3
 #define H3_VERTEX_MODE 4

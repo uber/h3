@@ -17,6 +17,8 @@ cmake_minimum_required(VERSION 3.1)
 set(H3_PREFIX "" CACHE STRING "Prefix for exported symbols")
 set(H3_ALLOC_PREFIX "" CACHE STRING "Prefix for allocation functions")
 
+# Do not try to append extensions to source files
+cmake_policy(SET CMP0115 NEW)
 # Needed due to CMP0042
 set(CMAKE_MACOSX_RPATH 1)
 # YCM needs compilation database
@@ -106,7 +108,7 @@ set(LIB_SOURCE_FILES
     src/h3lib/include/polygonAlgos.h
     src/h3lib/include/h3Index.h
     src/h3lib/include/directedEdge.h
-    src/h3lib/include/geoPoint.h
+    src/h3lib/include/latLng.h
     src/h3lib/include/vec2d.h
     src/h3lib/include/vec3d.h
     src/h3lib/include/linkedGeo.h
@@ -129,7 +131,7 @@ set(LIB_SOURCE_FILES
     src/h3lib/lib/vertex.c
     src/h3lib/lib/linkedGeo.c
     src/h3lib/lib/localij.c
-    src/h3lib/lib/geoPoint.c
+    src/h3lib/lib/latLng.c
     src/h3lib/lib/directedEdge.c
     src/h3lib/lib/mathExtensions.c
     src/h3lib/lib/iterators.c
@@ -154,11 +156,12 @@ set(EXAMPLE_SOURCE_FILES
     examples/compactCells.c
     examples/edge.c)
 set(OTHER_SOURCE_FILES
-    src/apps/filters/cellToPoint.c
+    src/apps/filters/h3.c
+    src/apps/filters/cellToLatLng.c
     src/apps/filters/h3ToLocalIj.c
     src/apps/filters/localIjToH3.c
     src/apps/filters/h3ToComponents.c
-    src/apps/filters/pointToCell.c
+    src/apps/filters/latLngToCell.c
     src/apps/filters/cellToBoundary.c
     src/apps/filters/gridDisk.c
     src/apps/filters/gridDiskUnsafe.c
@@ -172,15 +175,15 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testCellToParent.c
     src/apps/testapps/testH3Index.c
     src/apps/testapps/mkRandGeoBoundary.c
-    src/apps/testapps/testPointToCell.c
+    src/apps/testapps/testLatLngToCell.c
     src/apps/testapps/testH3NeighborRotations.c
     src/apps/testapps/testCellToChildrenSize.c
     src/apps/testapps/testGridDisksUnsafe.c
-    src/apps/testapps/testCellToPoint.c
+    src/apps/testapps/testCellToLatLng.c
     src/apps/testapps/testCellToCenterChild.c
     src/apps/testapps/testCellToChildren.c
     src/apps/testapps/testGetIcosahedronFaces.c
-    src/apps/testapps/testGeoPoint.c
+    src/apps/testapps/testLatLng.c
     src/apps/testapps/testGridRingUnsafe.c
     src/apps/testapps/testH3SetToVertexGraph.c
     src/apps/testapps/testBBox.c
@@ -208,13 +211,13 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testH3Memory.c
     src/apps/testapps/testH3Iterators.c
     src/apps/miscapps/cellToBoundaryHier.c
-    src/apps/miscapps/cellToPointHier.c
+    src/apps/miscapps/cellToLatLngHier.c
     src/apps/miscapps/generateBaseCellNeighbors.c
     src/apps/miscapps/generatePentagonDirectionFaces.c
     src/apps/miscapps/generateFaceCenterPoint.c
     src/apps/miscapps/h3ToHier.c
-    src/apps/fuzzers/fuzzerPointToCell.c
-    src/apps/fuzzers/fuzzerCellToPoint.c
+    src/apps/fuzzers/fuzzerLatLngToCell.c
+    src/apps/fuzzers/fuzzerCellToLatLng.c
     src/apps/fuzzers/fuzzerGridDisk.c
     src/apps/benchmarks/benchmarkPolygonToCells.c
     src/apps/benchmarks/benchmarkPolygon.c
@@ -378,16 +381,18 @@ if(BUILD_FILTERS)
         list(APPEND INSTALL_TARGETS ${name})
     endmacro()
 
-    add_h3_filter(pointToCell src/apps/filters/pointToCell.c ${APP_SOURCE_FILES})
+    add_h3_filter(h3_bin src/apps/filters/h3.c ${APP_SOURCE_FILES})
+    set_target_properties(h3_bin PROPERTIES OUTPUT_NAME h3) # Special logic for the `h3` executable
+    add_h3_filter(latLngToCell src/apps/filters/latLngToCell.c ${APP_SOURCE_FILES})
     add_h3_filter(h3ToComponents src/apps/filters/h3ToComponents.c ${APP_SOURCE_FILES})
-    add_h3_filter(cellToPoint src/apps/filters/cellToPoint.c ${APP_SOURCE_FILES})
+    add_h3_filter(cellToLatLng src/apps/filters/cellToLatLng.c ${APP_SOURCE_FILES})
     add_h3_filter(h3ToLocalIj src/apps/filters/h3ToLocalIj.c ${APP_SOURCE_FILES})
     add_h3_filter(localIjToH3 src/apps/filters/localIjToH3.c ${APP_SOURCE_FILES})
     add_h3_filter(cellToBoundary src/apps/filters/cellToBoundary.c ${APP_SOURCE_FILES})
     add_h3_filter(gridDiskUnsafe src/apps/filters/gridDiskUnsafe.c ${APP_SOURCE_FILES})
     add_h3_filter(gridDisk src/apps/filters/gridDisk.c ${APP_SOURCE_FILES})
     add_h3_filter(cellToBoundaryHier src/apps/miscapps/cellToBoundaryHier.c ${APP_SOURCE_FILES})
-    add_h3_filter(cellToPointHier src/apps/miscapps/cellToPointHier.c ${APP_SOURCE_FILES})
+    add_h3_filter(cellToLatLngHier src/apps/miscapps/cellToLatLngHier.c ${APP_SOURCE_FILES})
     add_h3_filter(h3ToHier src/apps/miscapps/h3ToHier.c ${APP_SOURCE_FILES})
 
     # Generate KML files for visualizing the H3 grid
@@ -405,7 +410,7 @@ if(BUILD_FILTERS)
             VERBATIM
             DEPENDS create-kml-dir)
         add_custom_target(kml_centers_${resolution}
-            COMMAND ${SHELL} "$<TARGET_FILE:h3ToHier> -r ${resolution} | $<TARGET_FILE:cellToPoint> --kml --kml-name res${resolution}centers.kml --kml-description \"Res ${resolution} Centers\" > KML/res${resolution}centers.kml"
+            COMMAND ${SHELL} "$<TARGET_FILE:h3ToHier> -r ${resolution} | $<TARGET_FILE:cellToLatLng> --kml --kml-name res${resolution}centers.kml --kml-description \"Res ${resolution} Centers\" > KML/res${resolution}centers.kml"
             VERBATIM
             DEPENDS create-kml-dir)
         add_dependencies(kml
@@ -550,17 +555,17 @@ if(H3_IS_ROOT_PROJECT AND BUILD_TESTING)
     # Add each individual test
     file(GLOB all_centers tests/inputfiles/bc*centers.txt)
     foreach(file ${all_centers})
-        add_h3_test_with_file(testPointToCell src/apps/testapps/testPointToCell.c ${file})
+        add_h3_test_with_file(testLatLngToCell src/apps/testapps/testLatLngToCell.c ${file})
     endforeach()
 
     file(GLOB all_ic_files tests/inputfiles/res*ic.txt)
     foreach(file ${all_ic_files})
-        add_h3_test_with_file(testCellToPoint src/apps/testapps/testCellToPoint.c ${file})
+        add_h3_test_with_file(testCellToLatLng src/apps/testapps/testCellToLatLng.c ${file})
     endforeach()
 
     file(GLOB all_centers tests/inputfiles/rand*centers.txt)
     foreach(file ${all_centers})
-        add_h3_test_with_file(testPointToCell src/apps/testapps/testPointToCell.c ${file})
+        add_h3_test_with_file(testLatLngToCell src/apps/testapps/testLatLngToCell.c ${file})
     endforeach()
 
     file(GLOB all_cells tests/inputfiles/*cells.txt)
@@ -586,7 +591,7 @@ if(H3_IS_ROOT_PROJECT AND BUILD_TESTING)
     add_h3_test(testPolygonToCellsReported src/apps/testapps/testPolygonToCellsReported.c)
     add_h3_test(testVertexGraph src/apps/testapps/testVertexGraph.c)
     add_h3_test(testDirectedEdge src/apps/testapps/testDirectedEdge.c)
-    add_h3_test(testGeoPoint src/apps/testapps/testGeoPoint.c)
+    add_h3_test(testLatLng src/apps/testapps/testLatLng.c)
     add_h3_test(testBBox src/apps/testapps/testBBox.c)
     add_h3_test(testVertex src/apps/testapps/testVertex.c)
     add_h3_test(testPolygon src/apps/testapps/testPolygon.c)
@@ -632,8 +637,8 @@ if(BUILD_FUZZERS)
         add_dependencies(fuzzers ${name})
     endmacro()
 
-    add_h3_fuzzer(fuzzerPointToCell src/apps/fuzzers/fuzzerPointToCell.c)
-    add_h3_fuzzer(fuzzerCellToPoint src/apps/fuzzers/fuzzerCellToPoint.c)
+    add_h3_fuzzer(fuzzerLatLngToCell src/apps/fuzzers/fuzzerLatLngToCell.c)
+    add_h3_fuzzer(fuzzerCellToLatLng src/apps/fuzzers/fuzzerCellToLatLng.c)
     add_h3_fuzzer(fuzzerGridDisk src/apps/fuzzers/fuzzerGridDisk.c)
 endif()
 
@@ -708,7 +713,7 @@ configure_package_config_file(
 install(
     TARGETS ${INSTALL_TARGETS}
     EXPORT "${TARGETS_EXPORT_NAME}"
-    RUNTIME DESTINATION "bin"
+    DESTINATION "bin"
     COMPONENT h3
 )
 

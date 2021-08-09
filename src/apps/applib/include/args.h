@@ -38,7 +38,7 @@ typedef struct {
      * Both short and long names of the argument. A name may be null, but the
      * first name must be non-null.
      */
-    const char* const names[NUM_ARG_NAMES];
+    const char *const names[NUM_ARG_NAMES];
 
     /**
      * If true, this argument must be specified. If the argument is not
@@ -50,18 +50,18 @@ typedef struct {
      * Scan format for the argument, which will be passed to sscanf. May be null
      * to indicate the argument does not take a value.
      */
-    const char* const scanFormat;
+    const char *const scanFormat;
 
     /**
      * Name to present the value as when printing help.
      */
-    const char* const valueName;
+    const char *const valueName;
 
     /**
      * Value will be placed here if the argument is present and scanFormat is
      * not null.
      */
-    void* const value;
+    void *const value;
 
     /**
      * Will be set to true if the argument is present. Should be false when
@@ -72,20 +72,20 @@ typedef struct {
     /**
      * Help text for this argument.
      */
-    const char* const helpText;
+    const char *const helpText;
 } Arg;
 
 // prototypes
 
-int parseArgs(int argc, char* argv[], int numArgs, Arg* args[],
-              const Arg* helpArg, const char* helpText);
-void printHelp(FILE* out, const char* programName, const char* helpText,
-               int numArgs, Arg* args[], const char* errorMessage,
-               const char* errorDetails);
+int parseArgs(int argc, char *argv[], int numArgs, Arg *args[],
+              const Arg *helpArg, const char *helpText);
+void printHelp(FILE *out, const char *programName, const char *helpText,
+               int numArgs, Arg *args[], const char *errorMessage,
+               const char *errorDetails);
 
-int _parseArgsList(int argc, char* argv[], int numArgs, Arg* args[],
-                   const Arg* helpArg, const char** errorMessage,
-                   const char** errorDetail);
+int _parseArgsList(int argc, char *argv[], int numArgs, Arg *args[],
+                   const Arg *helpArg, const char **errorMessage,
+                   const char **errorDetail);
 
 // common arguments
 
@@ -100,6 +100,14 @@ int _parseArgsList(int argc, char* argv[], int numArgs, Arg* args[],
         .value = &varName,                 \
         .helpText =                        \
             "Index, or not specified to read indexes from standard input."}
+#define DEFINE_CELL_ARG(varName, argName)     \
+    H3Index varName = 0;                      \
+    Arg argName = {.names = {"-c", "--cell"}, \
+                   .required = true,          \
+                   .scanFormat = "%" PRIx64,  \
+                   .valueName = "index",      \
+                   .value = &varName,         \
+                   .helpText = "H3 Cell"}
 #define ARG_KML \
     { .names = {"-k", "--kml"}, .helpText = "Print output in KML format." }
 #define DEFINE_KML_NAME_ARG(varName, argName)      \

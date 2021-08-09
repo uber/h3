@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018, 2020 Uber Technologies, Inc.
+ * Copyright 2017-2018, 2020-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,9 +75,9 @@ static void gridDisk_equals_gridDiskDistancesSafe_assertions(H3Index h3) {
 
 SUITE(gridDisk) {
     TEST(gridDisk0) {
-        GeoPoint sf = {0.659966917655, 2 * 3.14159 - 2.1364398519396};
+        LatLng sf = {0.659966917655, 2 * 3.14159 - 2.1364398519396};
         H3Index sfHex0;
-        t_assertSuccess(H3_EXPORT(pointToCell)(&sf, 0, &sfHex0));
+        t_assertSuccess(H3_EXPORT(latLngToCell)(&sf, 0, &sfHex0));
 
         H3Index k1[] = {0, 0, 0, 0, 0, 0, 0};
         int k1Dist[] = {0, 0, 0, 0, 0, 0, 0};
@@ -360,7 +360,16 @@ SUITE(gridDisk) {
         int k = 1000;
         int kSz = H3_EXPORT(maxGridDiskSize)(k);
         H3Index *neighbors = calloc(kSz, sizeof(H3Index));
-        H3_EXPORT(gridDisk)(0x7fffffffffffffff, 1000, neighbors);
+        H3_EXPORT(gridDisk)(0x7fffffffffffffff, k, neighbors);
+        // Assertion is should not crash - should return an error in the future
+        free(neighbors);
+    }
+
+    TEST(gridDiskInvalidDigit) {
+        int k = 2;
+        int kSz = H3_EXPORT(maxGridDiskSize)(k);
+        H3Index *neighbors = calloc(kSz, sizeof(H3Index));
+        H3_EXPORT(gridDisk)(0x4d4b00fe5c5c3030, k, neighbors);
         // Assertion is should not crash - should return an error in the future
         free(neighbors);
     }

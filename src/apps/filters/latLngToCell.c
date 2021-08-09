@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017, 2019-2020 Uber Technologies, Inc.
+ * Copyright 2016-2017, 2019-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 /** @file
- * @brief stdin/stdout filter that converts from lat/lon coordinates to integer
+ * @brief stdin/stdout filter that converts from lat/lng coordinates to integer
  * H3 indexes
  *
- *  See `pointToCell --help` for usage.
+ *  See `latLngToCell --help` for usage.
  *
- *  The program reads lat/lon pairs from stdin until EOF is encountered. For
- *  each lat/lon the program outputs to stdout the integer H3 index of the
+ *  The program reads lat/lng pairs from stdin until EOF is encountered. For
+ *  each lat/lng the program outputs to stdout the integer H3 index of the
  *  containing cell at the specified resolution.
  *
- *  The stdin input should have the following format (lat/lon in decimal
+ *  The stdin input should have the following format (lat/lng in decimal
  *  degrees):
  *
- *       lat0 lon0
- *       lat1 lon1
+ *       lat0 lng0
+ *       lat1 lng1
  *       ...
- *       latN lonN
+ *       latN lngN
  */
 
 #include "args.h"
@@ -40,15 +40,15 @@
  * Convert coordinates to cell and print it.
  *
  * @param lat Degrees latitude
- * @param lon Degrees longitude
+ * @param lng Degrees longitude
  * @param res Resolution
  */
-void doCoords(double lat, double lon, int res) {
-    GeoPoint g = {.lat = H3_EXPORT(degsToRads)(lat),
-                  .lon = H3_EXPORT(degsToRads)(lon)};
+void doCoords(double lat, double lng, int res) {
+    LatLng g = {.lat = H3_EXPORT(degsToRads)(lat),
+                .lng = H3_EXPORT(degsToRads)(lng)};
 
     H3Index h;
-    H3Error e = H3_EXPORT(pointToCell)(&g, res, &h);
+    H3Error e = H3_EXPORT(latLngToCell)(&g, res, &h);
 
     if (e == E_SUCCESS) {
         h3Println(h);
@@ -57,10 +57,10 @@ void doCoords(double lat, double lon, int res) {
     }
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     int res = 0;
     double lat = 0;
-    double lon = 0;
+    double lng = 0;
 
     Arg helpArg = ARG_HELP;
     Arg resArg = {.names = {"-r", "--resolution"},
@@ -76,22 +76,22 @@ int main(int argc, char* argv[]) {
                   .helpText =
                       "Latitude in degrees. If not specified, \"latitude "
                       "longitude\" pairs will be read from standard input."};
-    Arg lonArg = {.names = {"--lon", "--longitude"},
+    Arg lngArg = {.names = {"--lng", "--longitude"},
                   .scanFormat = "%lf",
-                  .valueName = "lon",
-                  .value = &lon,
+                  .valueName = "lng",
+                  .value = &lng,
                   .helpText = "Longitude in degrees."};
 
-    Arg* args[] = {&helpArg, &resArg, &latArg, &lonArg};
+    Arg *args[] = {&helpArg, &resArg, &latArg, &lngArg};
     const int numArgs = 4;
-    const char* helpText =
+    const char *helpText =
         "Convert degrees latitude/longitude coordinates to H3 indexes.";
 
     if (parseArgs(argc, argv, numArgs, args, &helpArg, helpText)) {
         return helpArg.found ? 0 : 1;
     }
 
-    if (latArg.found != lonArg.found) {
+    if (latArg.found != lngArg.found) {
         // One is found but the other is not.
         printHelp(stderr, argv[0], helpText, numArgs, args,
                   "Latitude and longitude must both be specified.", NULL);
@@ -99,24 +99,24 @@ int main(int argc, char* argv[]) {
     }
 
     if (latArg.found) {
-        doCoords(lat, lon, res);
+        doCoords(lat, lng, res);
     } else {
-        // process the lat/lon's on stdin
+        // process the lat/lng's on stdin
         char buff[BUFF_SIZE];
         while (1) {
-            // get a lat/lon from stdin
+            // get a lat/lng from stdin
             if (!fgets(buff, BUFF_SIZE, stdin)) {
                 if (feof(stdin))
                     break;
                 else
-                    error("reading lat/lon");
+                    error("reading lat/lng");
             }
 
-            if (sscanf(buff, "%lf %lf", &lat, &lon) != 2)
-                error("parsing lat/lon");
+            if (sscanf(buff, "%lf %lf", &lat, &lng) != 2)
+                error("parsing lat/lng");
 
             // convert to H3
-            doCoords(lat, lon, res);
+            doCoords(lat, lng, res);
         }
     }
 }

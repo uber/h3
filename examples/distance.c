@@ -1,5 +1,5 @@
 /*
- * Copyright 2018, 2020 Uber Technologies, Inc.
+ * Copyright 2018, 2020-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,18 +52,18 @@ int main(int argc, char *argv[]) {
     // 555 Market St @ resolution 15
     H3Index h3HQ2 = stringToH3("8f283082a30e623");
 
-    GeoPoint geoHQ1, geoHQ2;
-    cellToPoint(h3HQ1, &geoHQ1);
-    cellToPoint(h3HQ2, &geoHQ2);
+    LatLng geoHQ1, geoHQ2;
+    cellToLatLng(h3HQ1, &geoHQ1);
+    cellToLatLng(h3HQ2, &geoHQ2);
 
     printf(
         "origin: (%lf, %lf)\n"
         "destination: (%lf, %lf)\n"
         "grid distance: %d\n"
         "distance in km: %lfkm\n",
-        radsToDegs(geoHQ1.lat), radsToDegs(geoHQ1.lon), radsToDegs(geoHQ2.lat),
-        radsToDegs(geoHQ2.lon), gridDistance(h3HQ1, h3HQ2),
-        haversineDistance(geoHQ1.lat, geoHQ1.lon, geoHQ2.lat, geoHQ2.lon));
+        radsToDegs(geoHQ1.lat), radsToDegs(geoHQ1.lng), radsToDegs(geoHQ2.lat),
+        radsToDegs(geoHQ2.lng), gridDistance(h3HQ1, h3HQ2),
+        haversineDistance(geoHQ1.lat, geoHQ1.lng, geoHQ2.lat, geoHQ2.lng));
     // Output:
     // origin: (37.775236, -122.419755)
     // destination: (37.789991, -122.402121)

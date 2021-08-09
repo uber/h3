@@ -27,8 +27,8 @@ The following function and structure names changed from 3.x to 4.0.0:
 | `h3GetResolution`             | `getResolution`       |
 | *DNE*                         | `getMode`             |
 | `h3GetFaces`                  | `getIcosahedronFaces` |
-| `geoToH3`                     | `pointToCell`         |
-| `h3ToGeo`                     | `cellToPoint`         |
+| `geoToH3`                     | `latLngToCell`         |
+| `h3ToGeo`                     | `cellToLatLng`         |
 | `compact`                     | `compactCells`        |
 | `uncompact`                   | `uncompactCells`      |
 | `polyfill`                    | `polygonToCells`      |
@@ -138,9 +138,9 @@ the passed-in cell.
 
 |      3.x name     |    4.0.0 name     |               Notes               |
 |-------------------|-------------------|-----------------------------------|
-| `GeoBoundary`     | `CellBoundary`    | <= 10 stack-allocated `GeoPoint`s |
-| `GeoCoord`        | `GeoPoint`        |                                   |
-| `Geofence`        | `GeoLoop`         | heap-allocated `GeoPoint`s        |
+| `GeoBoundary`     | `CellBoundary`    | <= 10 stack-allocated `LatLng`s |
+| `GeoCoord`        | `LatLng`        |                                   |
+| `Geofence`        | `GeoLoop`         | heap-allocated `LatLng`s        |
 | `GeoPolygon`      | `GeoPolygon`      |                                   |
 | `GeoMultiPolygon` | `GeoMultiPolygon` | currently not used                |
 

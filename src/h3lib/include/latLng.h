@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 Uber Technologies, Inc.
+ * Copyright 2016-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** @file geoPoint.h
- * @brief   Geodetic (lat/lon) functions.
+/** @file latLng.h
+ * @brief   Geodetic (lat/lng) functions.
  */
 
 #ifndef GEOPOINT_H
@@ -32,20 +32,20 @@
 /** epsilon of ~0.1mm in radians */
 #define EPSILON_RAD (EPSILON_DEG * M_PI_180)
 
-void setGeoDegs(GeoPoint* p, double latDegs, double lonDegs);
+void setGeoDegs(LatLng *p, double latDegs, double lngDegs);
 double constrainLat(double lat);
 double constrainLng(double lng);
 
-bool geoAlmostEqual(const GeoPoint* p1, const GeoPoint* p2);
-bool geoAlmostEqualThreshold(const GeoPoint* p1, const GeoPoint* p2,
+bool geoAlmostEqual(const LatLng *p1, const LatLng *p2);
+bool geoAlmostEqualThreshold(const LatLng *p1, const LatLng *p2,
                              double threshold);
 
 // Internal functions
 
 double _posAngleRads(double rads);
-void _setGeoRads(GeoPoint* p, double latRads, double lonRads);
-double _geoAzimuthRads(const GeoPoint* p1, const GeoPoint* p2);
-void _geoAzDistanceRads(const GeoPoint* p1, double az, double distance,
-                        GeoPoint* p2);
+void _setGeoRads(LatLng *p, double latRads, double lngRads);
+double _geoAzimuthRads(const LatLng *p1, const LatLng *p2);
+void _geoAzDistanceRads(const LatLng *p1, double az, double distance,
+                        LatLng *p2);
 
 #endif

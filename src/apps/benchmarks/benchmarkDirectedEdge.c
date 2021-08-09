@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Uber Technologies, Inc.
+ * Copyright 2020-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 #include "benchmark.h"
-#include "geoPoint.h"
 #include "h3api.h"
+#include "latLng.h"
 
 // Fixtures (arbitrary res 9 hexagon)
 H3Index edges[6] = {0};

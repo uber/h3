@@ -38,7 +38,7 @@
 
 void doCell(H3Index h, int k) {
     int maxSize = H3_EXPORT(maxGridDiskSize)(k);
-    H3Index* rings = calloc(maxSize, sizeof(H3Index));
+    H3Index *rings = calloc(maxSize, sizeof(H3Index));
 
     if (!H3_EXPORT(gridDiskUnsafe)(h, k, rings)) {
         for (int i = 0; i < maxSize; i++) {
@@ -51,7 +51,7 @@ void doCell(H3Index h, int k) {
     free(rings);
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     int k = 0;
     H3Index origin = 0;
 
@@ -70,7 +70,7 @@ int main(int argc, char* argv[]) {
         .helpText =
             "Origin, or not specified to read origins from standard input."};
     const int numArgs = 3;
-    Arg* args[] = {&helpArg, &kArg, &originArg};
+    Arg *args[] = {&helpArg, &kArg, &originArg};
 
     if (parseArgs(argc, argv, numArgs, args, &helpArg,
                   "Print indexes k distance away from the origin")) {

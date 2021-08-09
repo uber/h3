@@ -1,5 +1,5 @@
 /*
- * Copyright 2018, 2020 Uber Technologies, Inc.
+ * Copyright 2018, 2020-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
     for (int v = 0; v < boundary.numVerts; v++) {
         printf("Edge vertex #%d: %lf, %lf\n", v,
                radsToDegs(boundary.verts[v].lat),
-               radsToDegs(boundary.verts[v].lon));
+               radsToDegs(boundary.verts[v].lng));
     }
     // Output:
     // The edge is 16a2a1072b59ffff

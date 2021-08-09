@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018, 2020 Uber Technologies, Inc.
+ * Copyright 2017-2018, 2020-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,10 @@
 #include "test.h"
 
 SUITE(gridDisksUnsafe) {
-    GeoPoint sf = {0.659966917655, 2 * 3.14159 - 2.1364398519396};
+    LatLng sf = {0.659966917655, 2 * 3.14159 - 2.1364398519396};
     H3Index sfHex;
-    t_assertSuccess(H3_EXPORT(pointToCell)(&sf, 9, &sfHex));
-    H3Index* sfHexPtr = &sfHex;
+    t_assertSuccess(H3_EXPORT(latLngToCell)(&sf, 9, &sfHex));
+    H3Index *sfHexPtr = &sfHex;
 
     H3Index k1[] = {0x89283080ddbffff, 0x89283080c37ffff, 0x89283080c27ffff,
                     0x89283080d53ffff, 0x89283080dcfffff, 0x89283080dc3ffff};
@@ -61,7 +61,7 @@ SUITE(gridDisksUnsafe) {
 
     TEST(ring2of1) {
         int err;
-        H3Index* allKrings2 = calloc(6 * (1 + 6 + 12), sizeof(H3Index));
+        H3Index *allKrings2 = calloc(6 * (1 + 6 + 12), sizeof(H3Index));
         err = H3_EXPORT(gridDisksUnsafe)(k1, 6, 2, allKrings2);
 
         t_assert(err == 0, "No error on gridDisksUnsafe");
@@ -80,7 +80,7 @@ SUITE(gridDisksUnsafe) {
 
     TEST(failed) {
         int err;
-        H3Index* allKrings = calloc(2 * (1 + 6), sizeof(H3Index));
+        H3Index *allKrings = calloc(2 * (1 + 6), sizeof(H3Index));
         err = H3_EXPORT(gridDisksUnsafe)(withPentagon, 2, 1, allKrings);
 
         t_assert(err != 0, "Expected error on gridDisksUnsafe");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Uber Technologies, Inc.
+ * Copyright 2020-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,10 +35,10 @@ static const double areasKm2[] = {
 
 SUITE(h3CellArea) {
     TEST(specific_cell_area) {
-        GeoPoint gc = {0.0, 0.0};
+        LatLng gc = {0.0, 0.0};
         for (int res = 0; res <= MAX_H3_RES - 1; res++) {
             H3Index cell;
-            t_assertSuccess(H3_EXPORT(pointToCell)(&gc, res, &cell));
+            t_assertSuccess(H3_EXPORT(latLngToCell)(&gc, res, &cell));
             double area = H3_EXPORT(cellAreaKm2)(cell);
 
             t_assert(fabs(area - areasKm2[res]) < 1e-8,

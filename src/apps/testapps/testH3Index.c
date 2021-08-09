@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018, 2020 Uber Technologies, Inc.
+ * Copyright 2017-2018, 2020-2021 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,18 +29,18 @@
 #include "utility.h"
 
 SUITE(h3Index) {
-    TEST(pointToCellExtremeCoordinates) {
+    TEST(latLngToCellExtremeCoordinates) {
         H3Index h;
         // Check that none of these cause crashes.
-        GeoPoint g = {0, 1E45};
-        t_assertSuccess(H3_EXPORT(pointToCell)(&g, 14, &h));
+        LatLng g = {0, 1E45};
+        t_assertSuccess(H3_EXPORT(latLngToCell)(&g, 14, &h));
 
-        GeoPoint g2 = {1E46, 1E45};
-        t_assertSuccess(H3_EXPORT(pointToCell)(&g2, 15, &h));
+        LatLng g2 = {1E46, 1E45};
+        t_assertSuccess(H3_EXPORT(latLngToCell)(&g2, 15, &h));
 
-        GeoPoint g4;
+        LatLng g4;
         setGeoDegs(&g4, 2, -3E39);
-        t_assertSuccess(H3_EXPORT(pointToCell)(&g4, 0, &h));
+        t_assertSuccess(H3_EXPORT(latLngToCell)(&g4, 0, &h));
     }
 
     TEST(faceIjkToH3ExtremeCoordinates) {
@@ -68,9 +68,9 @@ SUITE(h3Index) {
 
     TEST(isValidCellAtResolution) {
         for (int i = 0; i <= MAX_H3_RES; i++) {
-            GeoPoint GeoPoint = {0, 0};
+            LatLng g = {0, 0};
             H3Index h3;
-            t_assertSuccess(H3_EXPORT(pointToCell)(&GeoPoint, i, &h3));
+            t_assertSuccess(H3_EXPORT(latLngToCell)(&g, i, &h3));
             char failureMessage[BUFF_SIZE];
             sprintf(failureMessage, "isValidCell failed on resolution %d", i);
             t_assert(H3_EXPORT(isValidCell)(h3), failureMessage);
@@ -78,9 +78,9 @@ SUITE(h3Index) {
     }
 
     TEST(isValidCellDigits) {
-        GeoPoint GeoPoint = {0, 0};
+        LatLng g = {0, 0};
         H3Index h3;
-        t_assertSuccess(H3_EXPORT(pointToCell)(&GeoPoint, 1, &h3));
+        t_assertSuccess(H3_EXPORT(latLngToCell)(&g, 1, &h3));
         // Set a bit for an unused digit to something else.
         h3 ^= 1;
         t_assert(!H3_EXPORT(isValidCell)(h3),
@@ -90,7 +90,7 @@ SUITE(h3Index) {
     TEST(isValidCellBaseCell) {
         for (int i = 0; i < NUM_BASE_CELLS; i++) {
             H3Index h = H3_INIT;
-            H3_SET_MODE(h, H3_HEXAGON_MODE);
+            H3_SET_MODE(h, H3_CELL_MODE);
             H3_SET_BASE_CELL(h, i);
             char failureMessage[BUFF_SIZE];
             sprintf(failureMessage, "isValidCell failed on base cell %d", i);
@@ -103,7 +103,7 @@ SUITE(h3Index) {
 
     TEST(isValidCellBaseCellInvalid) {
         H3Index hWrongBaseCell = H3_INIT;
-        H3_SET_MODE(hWrongBaseCell, H3_HEXAGON_MODE);
+        H3_SET_MODE(hWrongBaseCell, H3_CELL_MODE);
         H3_SET_BASE_CELL(hWrongBaseCell, NUM_BASE_CELLS);
         t_assert(!H3_EXPORT(isValidCell)(hWrongBaseCell),
                  "isValidCell failed on invalid base cell");
@@ -113,7 +113,7 @@ SUITE(h3Index) {
         for (int i = 0; i <= 0xf; i++) {
             H3Index h = H3_INIT;
             H3_SET_MODE(h, i);
-            if (i == H3_HEXAGON_MODE) {
+            if (i == H3_CELL_MODE) {
                 t_assert(H3_EXPORT(isValidCell)(h),
                          "isValidCell succeeds on valid mode");
             } else {
@@ -127,7 +127,7 @@ SUITE(h3Index) {
     TEST(isValidCellReservedBits) {
         for (int i = 0; i < 8; i++) {
             H3Index h = H3_INIT;
-            H3_SET_MODE(h, H3_HEXAGON_MODE);
+            H3_SET_MODE(h, H3_CELL_MODE);
             H3_SET_RESERVED_BITS(h, i);
             if (i == 0) {
                 t_assert(H3_EXPORT(isValidCell)(h),
@@ -143,7 +143,7 @@ SUITE(h3Index) {
 
     TEST(isValidCellHighBit) {
         H3Index h = H3_INIT;
-        H3_SET_MODE(h, H3_HEXAGON_MODE);
+        H3_SET_MODE(h, H3_CELL_MODE);
         H3_SET_HIGH_BIT(h, 1);
         t_assert(!H3_EXPORT(isValidCell)(h), "isValidCell failed on high bit");
     }
@@ -151,7 +151,7 @@ SUITE(h3Index) {
     TEST(h3BadDigitInvalid) {
         H3Index h = H3_INIT;
         // By default the first index digit is out of range.
-        H3_SET_MODE(h, H3_HEXAGON_MODE);
+        H3_SET_MODE(h, H3_CELL_MODE);
         H3_SET_RESOLUTION(h, 1);
         t_assert(!H3_EXPORT(isValidCell)(h),
                  "isValidCell failed on too large digit");
@@ -193,7 +193,7 @@ SUITE(h3Index) {
         setH3Index(&h, 5, 12, 1);
         t_assert(H3_GET_RESOLUTION(h) == 5, "resolution as expected");
         t_assert(H3_GET_BASE_CELL(h) == 12, "base cell as expected");
-        t_assert(H3_GET_MODE(h) == H3_HEXAGON_MODE, "mode as expected");
+        t_assert(H3_GET_MODE(h) == H3_CELL_MODE, "mode as expected");
         for (int i = 1; i <= 5; i++) {
             t_assert(H3_GET_INDEX_DIGIT(h, i) == 1, "digit as expected");
         }
@@ -205,10 +205,10 @@ SUITE(h3Index) {
     }
 
     TEST(isResClassIII) {
-        GeoPoint coord = {0, 0};
+        LatLng coord = {0, 0};
         for (int i = 0; i <= MAX_H3_RES; i++) {
             H3Index h;
-            t_assertSuccess(H3_EXPORT(pointToCell)(&coord, i, &h));
+            t_assertSuccess(H3_EXPORT(latLngToCell)(&coord, i, &h));
             t_assert(H3_EXPORT(isResClassIII)(h) == isResolutionClassIII(i),
                      "matches existing definition");
         }

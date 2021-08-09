@@ -25,8 +25,8 @@
 #include "algos.h"
 #include "baseCells.h"
 #include "faceijk.h"
-#include "geoPoint.h"
 #include "h3Index.h"
+#include "latLng.h"
 
 #define DIRECTION_INDEX_OFFSET 2
 
@@ -272,7 +272,7 @@ H3Index H3_EXPORT(cellToVertex)(H3Index cell, int vertexNum) {
  * @param cell      Cell to get the vertexes for
  * @param vertexes  Array to hold vertex output. Must have length >= 6.
  */
-void H3_EXPORT(cellToVertexes)(H3Index cell, H3Index* vertexes) {
+void H3_EXPORT(cellToVertexes)(H3Index cell, H3Index *vertexes) {
     // Get all vertexes. If the cell is a pentagon, will fill the final slot
     // with H3_NULL.
     for (int i = 0; i < NUM_HEX_VERTS; i++) {
@@ -285,11 +285,11 @@ void H3_EXPORT(cellToVertexes)(H3Index cell, H3Index* vertexes) {
  * @param vertex H3 index describing a vertex
  * @param coord  Output geo coordinate
  */
-void H3_EXPORT(vertexToPoint)(H3Index vertex, GeoPoint* coord) {
+void H3_EXPORT(vertexToLatLng)(H3Index vertex, LatLng *coord) {
     // Get the vertex number and owner from the vertex
     int vertexNum = H3_GET_RESERVED_BITS(vertex);
     H3Index owner = vertex;
-    H3_SET_MODE(owner, H3_HEXAGON_MODE);
+    H3_SET_MODE(owner, H3_CELL_MODE);
     H3_SET_RESERVED_BITS(owner, 0);
 
     // Get the single vertex from the boundary
@@ -320,7 +320,7 @@ int H3_EXPORT(isValidVertex)(H3Index vertex) {
 
     int vertexNum = H3_GET_RESERVED_BITS(vertex);
     H3Index owner = vertex;
-    H3_SET_MODE(owner, H3_HEXAGON_MODE);
+    H3_SET_MODE(owner, H3_CELL_MODE);
     H3_SET_RESERVED_BITS(owner, 0);
 
     if (!H3_EXPORT(isValidCell)(owner)) {
