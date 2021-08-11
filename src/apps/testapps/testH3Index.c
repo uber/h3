@@ -168,24 +168,26 @@ SUITE(h3Index) {
     TEST(h3ToString) {
         const size_t bufSz = 17;
         char buf[17] = {0};
-        H3_EXPORT(h3ToString)(0x1234, buf, bufSz - 1);
-        // Buffer should be unmodified because the size was too small
-        t_assert(buf[0] == 0, "h3ToString failed on buffer too small");
-        H3_EXPORT(h3ToString)(0xcafe, buf, bufSz);
+        t_assert(
+            H3_EXPORT(h3ToString)(0x1234, buf, bufSz - 1) == E_MEMORY_BOUNDS,
+            "h3ToString failed on buffer too small");
+        t_assertSuccess(H3_EXPORT(h3ToString)(0xcafe, buf, bufSz));
         t_assert(strcmp(buf, "cafe") == 0,
                  "h3ToString failed to produce base 16 results");
-        H3_EXPORT(h3ToString)(0xffffffffffffffff, buf, bufSz);
+        t_assertSuccess(H3_EXPORT(h3ToString)(0xffffffffffffffff, buf, bufSz));
         t_assert(strcmp(buf, "ffffffffffffffff") == 0,
                  "h3ToString failed on large input");
         t_assert(buf[bufSz - 1] == 0, "didn't null terminate");
     }
 
     TEST(stringToH3) {
-        t_assert(H3_EXPORT(stringToH3)("") == 0, "got an index from nothing");
-        t_assert(H3_EXPORT(stringToH3)("**") == 0, "got an index from junk");
-        t_assert(
-            H3_EXPORT(stringToH3)("ffffffffffffffff") == 0xffffffffffffffff,
-            "failed on large input");
+        H3Index h3;
+        t_assert(H3_EXPORT(stringToH3)("", &h3) == E_FAILED,
+                 "no index from nothing");
+        t_assert(H3_EXPORT(stringToH3)("**", &h3) == E_FAILED,
+                 "no index from junk");
+        t_assertSuccess(H3_EXPORT(stringToH3)("ffffffffffffffff", &h3));
+        t_assert(h3 == 0xffffffffffffffff, "got expected on large input");
     }
 
     TEST(setH3Index) {

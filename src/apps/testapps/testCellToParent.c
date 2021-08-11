@@ -30,7 +30,8 @@ SUITE(cellToParent) {
         for (int res = 1; res < 15; res++) {
             for (int step = 0; step < res; step++) {
                 t_assertSuccess(H3_EXPORT(latLngToCell)(&sf, res, &child));
-                parent = H3_EXPORT(cellToParent)(child, res - step);
+                t_assertSuccess(
+                    H3_EXPORT(cellToParent)(child, res - step, &parent));
                 t_assertSuccess(H3_EXPORT(latLngToCell)(&sf, res - step,
                                                         &comparisonParent));
 
@@ -43,13 +44,14 @@ SUITE(cellToParent) {
         H3Index child;
         t_assertSuccess(H3_EXPORT(latLngToCell)(&sf, 5, &child));
 
-        t_assert(H3_EXPORT(cellToParent)(child, 6) == 0,
+        H3Index parent;
+        t_assert(H3_EXPORT(cellToParent)(child, 6, &parent) == E_RES_MISMATCH,
                  "Higher resolution fails");
-        t_assert(H3_EXPORT(cellToParent)(child, -1) == 0,
+        t_assert(H3_EXPORT(cellToParent)(child, -1, &parent) == E_RES_DOMAIN,
                  "Invalid resolution fails");
-        t_assert(H3_EXPORT(cellToParent)(child, 15) == 0,
+        t_assert(H3_EXPORT(cellToParent)(child, 15, &parent) == E_RES_MISMATCH,
                  "Invalid resolution fails");
-        t_assert(H3_EXPORT(cellToParent)(child, 16) == 0,
+        t_assert(H3_EXPORT(cellToParent)(child, 16, &parent) == E_RES_DOMAIN,
                  "Invalid resolution fails");
     }
 }

@@ -27,7 +27,7 @@ SUITE(getPentagons) {
 
         for (int res = 0; res <= 15; res++) {
             H3Index h3Indexes[PADDED_COUNT] = {0};
-            H3_EXPORT(getPentagons)(res, h3Indexes);
+            t_assertSuccess(H3_EXPORT(getPentagons)(res, h3Indexes));
 
             int numFound = 0;
 

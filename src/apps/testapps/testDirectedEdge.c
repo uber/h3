@@ -131,7 +131,7 @@ SUITE(directedEdge) {
         H3Index edge;
 
         for (int res = 0; res < MAX_H3_RES; res++) {
-            H3_EXPORT(getPentagons)(res, pentagons);
+            t_assertSuccess(H3_EXPORT(getPentagons)(res, pentagons));
             for (int p = 0; p < NUM_PENTAGONS; p++) {
                 pentagon = pentagons[p];
                 H3_EXPORT(gridDisk)(pentagon, 1, ring);

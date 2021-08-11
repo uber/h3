@@ -63,7 +63,7 @@ SUITE(h3Api) {
         H3Index h3;
         CellBoundary b;
         for (int i = 0; i < numHexes; i++) {
-            h3 = H3_EXPORT(stringToH3)(hexes[i]);
+            t_assertSuccess(H3_EXPORT(stringToH3)(hexes[i], &h3));
             H3_EXPORT(cellToBoundary)(h3, &b);
             t_assert(b.numVerts == 7, "got expected vertex count");
         }
@@ -71,7 +71,8 @@ SUITE(h3Api) {
 
     TEST(cellToBoundary_classIIIEdgeVertex_exact) {
         // Bug test for https://github.com/uber/h3/issues/45
-        H3Index h3 = H3_EXPORT(stringToH3)("894cc536537ffff");
+        H3Index h3;
+        t_assertSuccess(H3_EXPORT(stringToH3)("894cc536537ffff", &h3));
         CellBoundary boundary;
         boundary.numVerts = 7;
         setGeoDegs(&boundary.verts[0], 18.043333154, -66.27836523500002);

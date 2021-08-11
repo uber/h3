@@ -444,7 +444,7 @@ DECLSPEC void H3_EXPORT(getRes0Cells)(H3Index *out);
 DECLSPEC int H3_EXPORT(pentagonCount)();
 
 /** @brief generates all pentagons at the specified resolution */
-DECLSPEC void H3_EXPORT(getPentagons)(int res, H3Index *out);
+DECLSPEC H3Error H3_EXPORT(getPentagons)(int res, H3Index *out);
 /** @} */
 
 /** @defgroup getResolution getResolution
@@ -472,7 +472,7 @@ DECLSPEC int H3_EXPORT(getBaseCellNumber)(H3Index h);
  * @{
  */
 /** @brief converts the canonical string format to H3Index format */
-DECLSPEC H3Index H3_EXPORT(stringToH3)(const char *str);
+DECLSPEC H3Error H3_EXPORT(stringToH3)(const char *str, H3Index *out);
 /** @} */
 
 /** @defgroup h3ToString h3ToString
@@ -480,7 +480,7 @@ DECLSPEC H3Index H3_EXPORT(stringToH3)(const char *str);
  * @{
  */
 /** @brief converts an H3Index to a canonical string */
-DECLSPEC void H3_EXPORT(h3ToString)(H3Index h, char *str, size_t sz);
+DECLSPEC H3Error H3_EXPORT(h3ToString)(H3Index h, char *str, size_t sz);
 /** @} */
 
 /** @defgroup isValidCell isValidCell
@@ -499,7 +499,8 @@ DECLSPEC int H3_EXPORT(isValidCell)(H3Index h);
  */
 /** @brief returns the parent (or grandparent, etc) cell of the given cell
  */
-DECLSPEC H3Index H3_EXPORT(cellToParent)(H3Index h, int parentRes);
+DECLSPEC H3Error H3_EXPORT(cellToParent)(H3Index h, int parentRes,
+                                         H3Index *parent);
 /** @} */
 
 /** @defgroup cellToChildren cellToChildren
@@ -508,11 +509,12 @@ DECLSPEC H3Index H3_EXPORT(cellToParent)(H3Index h, int parentRes);
  */
 /** @brief determines the exact number of children (or grandchildren, etc)
  * that would be returned for the given cell */
-DECLSPEC int64_t H3_EXPORT(cellToChildrenSize)(H3Index h, int childRes);
+DECLSPEC H3Error H3_EXPORT(cellToChildrenSize)(H3Index h, int childRes,
+                                               int64_t *out);
 
 /** @brief provides the children (or grandchildren, etc) of the given cell */
-DECLSPEC void H3_EXPORT(cellToChildren)(H3Index h, int childRes,
-                                        H3Index *children);
+DECLSPEC H3Error H3_EXPORT(cellToChildren)(H3Index h, int childRes,
+                                           H3Index *children);
 /** @} */
 
 /** @defgroup cellToCenterChild cellToCenterChild
@@ -572,10 +574,10 @@ DECLSPEC int H3_EXPORT(isPentagon)(H3Index h);
  * @{
  */
 /** @brief Max number of icosahedron faces intersected by an index */
-DECLSPEC int H3_EXPORT(maxFaceCount)(H3Index h3);
+DECLSPEC H3Error H3_EXPORT(maxFaceCount)(H3Index h3, int *out);
 
 /** @brief Find all icosahedron faces intersected by a given H3 index */
-DECLSPEC void H3_EXPORT(getIcosahedronFaces)(H3Index h3, int *out);
+DECLSPEC H3Error H3_EXPORT(getIcosahedronFaces)(H3Index h3, int *out);
 /** @} */
 
 /** @defgroup areNeighborCells areNeighborCells

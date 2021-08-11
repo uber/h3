@@ -56,27 +56,34 @@ int H3_EXPORT(areNeighborCells)(H3Index origin, H3Index destination) {
     // of origin and destination parents and then a lookup table of the children
     // is a super-cheap way to possibly determine they are neighbors.
     int parentRes = H3_GET_RESOLUTION(origin) - 1;
-    if (parentRes > 0 && (H3_EXPORT(cellToParent)(origin, parentRes) ==
-                          H3_EXPORT(cellToParent)(destination, parentRes))) {
-        Direction originResDigit = H3_GET_INDEX_DIGIT(origin, parentRes + 1);
-        Direction destinationResDigit =
-            H3_GET_INDEX_DIGIT(destination, parentRes + 1);
-        if (originResDigit == CENTER_DIGIT ||
-            destinationResDigit == CENTER_DIGIT) {
-            return 1;
-        }
-        // These sets are the relevant neighbors in the clockwise
-        // and counter-clockwise
-        const Direction neighborSetClockwise[] = {
-            CENTER_DIGIT,  JK_AXES_DIGIT, IJ_AXES_DIGIT, J_AXES_DIGIT,
-            IK_AXES_DIGIT, K_AXES_DIGIT,  I_AXES_DIGIT};
-        const Direction neighborSetCounterclockwise[] = {
-            CENTER_DIGIT,  IK_AXES_DIGIT, JK_AXES_DIGIT, K_AXES_DIGIT,
-            IJ_AXES_DIGIT, I_AXES_DIGIT,  J_AXES_DIGIT};
-        if (neighborSetClockwise[originResDigit] == destinationResDigit ||
-            neighborSetCounterclockwise[originResDigit] ==
-                destinationResDigit) {
-            return 1;
+    if (parentRes > 0) {
+        // TODO: Return error codes here
+        H3Index originParent;
+        H3_EXPORT(cellToParent)(origin, parentRes, &originParent);
+        H3Index destinationParent;
+        H3_EXPORT(cellToParent)(destination, parentRes, &destinationParent);
+        if (originParent == destinationParent) {
+            Direction originResDigit =
+                H3_GET_INDEX_DIGIT(origin, parentRes + 1);
+            Direction destinationResDigit =
+                H3_GET_INDEX_DIGIT(destination, parentRes + 1);
+            if (originResDigit == CENTER_DIGIT ||
+                destinationResDigit == CENTER_DIGIT) {
+                return 1;
+            }
+            // These sets are the relevant neighbors in the clockwise
+            // and counter-clockwise
+            const Direction neighborSetClockwise[] = {
+                CENTER_DIGIT,  JK_AXES_DIGIT, IJ_AXES_DIGIT, J_AXES_DIGIT,
+                IK_AXES_DIGIT, K_AXES_DIGIT,  I_AXES_DIGIT};
+            const Direction neighborSetCounterclockwise[] = {
+                CENTER_DIGIT,  IK_AXES_DIGIT, JK_AXES_DIGIT, K_AXES_DIGIT,
+                IJ_AXES_DIGIT, I_AXES_DIGIT,  J_AXES_DIGIT};
+            if (neighborSetClockwise[originResDigit] == destinationResDigit ||
+                neighborSetCounterclockwise[originResDigit] ==
+                    destinationResDigit) {
+                return 1;
+            }
         }
     }
 
