@@ -39,23 +39,26 @@ SUITE(polygonToCells_reported) {
         GeoPolygon worldGeoPolygon2 = {.geoloop = worldGeoLoop2, .numHoles = 0};
 
         for (int res = 0; res < 3; res++) {
-            int polygonToCellsSize =
-                H3_EXPORT(maxPolygonToCellsSize)(&worldGeoPolygon, res);
+            int64_t polygonToCellsSize;
+            t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(
+                &worldGeoPolygon, res, &polygonToCellsSize));
             H3Index *polygonToCellsOut =
                 calloc(polygonToCellsSize, sizeof(H3Index));
 
-            H3_EXPORT(polygonToCells)(&worldGeoPolygon, res, polygonToCellsOut);
-            int actualNumIndexes =
+            t_assertSuccess(H3_EXPORT(polygonToCells)(&worldGeoPolygon, res,
+                                                      polygonToCellsOut));
+            int64_t actualNumIndexes =
                 countNonNullIndexes(polygonToCellsOut, polygonToCellsSize);
 
-            int polygonToCellsSize2 =
-                H3_EXPORT(maxPolygonToCellsSize)(&worldGeoPolygon2, res);
+            int64_t polygonToCellsSize2;
+            t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(
+                &worldGeoPolygon2, res, &polygonToCellsSize2));
             H3Index *polygonToCellsOut2 =
                 calloc(polygonToCellsSize2, sizeof(H3Index));
 
-            H3_EXPORT(polygonToCells)
-            (&worldGeoPolygon2, res, polygonToCellsOut2);
-            int actualNumIndexes2 =
+            t_assertSuccess(H3_EXPORT(polygonToCells)(&worldGeoPolygon2, res,
+                                                      polygonToCellsOut2));
+            int64_t actualNumIndexes2 =
                 countNonNullIndexes(polygonToCellsOut2, polygonToCellsSize2);
 
             t_assert(actualNumIndexes + actualNumIndexes2 ==
@@ -99,11 +102,13 @@ SUITE(polygonToCells_reported) {
         testPolygon.numHoles = 0;
 
         int res = 7;
-        int numHexagons = H3_EXPORT(maxPolygonToCellsSize)(&testPolygon, res);
+        int64_t numHexagons;
+        t_assertSuccess(
+            H3_EXPORT(maxPolygonToCellsSize)(&testPolygon, res, &numHexagons));
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
-        H3_EXPORT(polygonToCells)(&testPolygon, res, hexagons);
-        int actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
+        t_assertSuccess(H3_EXPORT(polygonToCells)(&testPolygon, res, hexagons));
+        int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         t_assert(actualNumIndexes == 4499,
                  "got expected polygonToCells size (h3-js#67)");
@@ -125,11 +130,13 @@ SUITE(polygonToCells_reported) {
         testPolygon.numHoles = 0;
 
         int res = 7;
-        int numHexagons = H3_EXPORT(maxPolygonToCellsSize)(&testPolygon, res);
+        int64_t numHexagons;
+        t_assertSuccess(
+            H3_EXPORT(maxPolygonToCellsSize)(&testPolygon, res, &numHexagons));
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
-        H3_EXPORT(polygonToCells)(&testPolygon, res, hexagons);
-        int actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
+        t_assertSuccess(H3_EXPORT(polygonToCells)(&testPolygon, res, hexagons));
+        int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         t_assert(actualNumIndexes == 4609,
                  "got expected polygonToCells size (h3-js#67, 2nd case)");
@@ -148,11 +155,13 @@ SUITE(polygonToCells_reported) {
         testPolygon.numHoles = 0;
 
         int res = 13;
-        int numHexagons = H3_EXPORT(maxPolygonToCellsSize)(&testPolygon, res);
+        int64_t numHexagons;
+        t_assertSuccess(
+            H3_EXPORT(maxPolygonToCellsSize)(&testPolygon, res, &numHexagons));
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
-        H3_EXPORT(polygonToCells)(&testPolygon, res, hexagons);
-        int actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
+        t_assertSuccess(H3_EXPORT(polygonToCells)(&testPolygon, res, hexagons));
+        int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         t_assert(actualNumIndexes == 4353, "got expected polygonToCells size");
         free(hexagons);

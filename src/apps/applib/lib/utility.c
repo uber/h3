@@ -186,8 +186,8 @@ void randomGeo(LatLng *g) {
 /**
  * Returns the number of non-invalid indexes in the array.
  */
-int countNonNullIndexes(H3Index *indexes, int numCells) {
-    int nonNullIndexes = 0;
+int64_t countNonNullIndexes(H3Index *indexes, int64_t numCells) {
+    int64_t nonNullIndexes = 0;
     for (int i = 0; i < numCells; i++) {
         if (indexes[i] != H3_NULL) {
             nonNullIndexes++;

@@ -56,6 +56,6 @@ void iterateBaseCellIndexesAtRes(int res, void (*callback)(H3Index),
                                  int baseCell);
 void iterateAllDirectedEdgesAtRes(int res, void (*callback)(H3Index));
 
-int countNonNullIndexes(H3Index *indexes, int numCells);
+int64_t countNonNullIndexes(H3Index *indexes, int64_t numCells);
 
 #endif

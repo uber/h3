@@ -97,7 +97,7 @@ double _hexRadiusKm(H3Index h3Index) {
  * @param res the resolution of the H3 hexagons to fill the bounding box
  * @return the estimated number of hexagons to fill the bounding box
  */
-int bboxHexEstimate(const BBox *bbox, int res) {
+int64_t bboxHexEstimate(const BBox *bbox, int res) {
     // Get the area of the pentagon as the maximally-distorted area possible
     H3Index pentagons[12] = {0};
     H3_EXPORT(getPentagons)(res, pentagons);
@@ -122,7 +122,7 @@ int bboxHexEstimate(const BBox *bbox, int res) {
     double a = d * d / fmin(3.0, fabs((p1.lng - p2.lng) / (p1.lat - p2.lat)));
 
     // Divide the two to get an estimate of the number of hexagons needed
-    int estimate = (int)ceil(a / pentagonAreaKm2);
+    int64_t estimate = (int64_t)ceil(a / pentagonAreaKm2);
     if (estimate == 0) estimate = 1;
     return estimate;
 }
@@ -136,14 +136,15 @@ int bboxHexEstimate(const BBox *bbox, int res) {
  *  @param res the resolution of the H3 hexagons to trace the line
  *  @return the estimated number of hexagons required to trace the line
  */
-int lineHexEstimate(const LatLng *origin, const LatLng *destination, int res) {
+int64_t lineHexEstimate(const LatLng *origin, const LatLng *destination,
+                        int res) {
     // Get the area of the pentagon as the maximally-distorted area possible
     H3Index pentagons[12] = {0};
     H3_EXPORT(getPentagons)(res, pentagons);
     double pentagonRadiusKm = _hexRadiusKm(pentagons[0]);
 
     double dist = H3_EXPORT(distanceKm)(origin, destination);
-    int estimate = (int)ceil(dist / (2 * pentagonRadiusKm));
+    int64_t estimate = (int64_t)ceil(dist / (2 * pentagonRadiusKm));
     if (estimate == 0) estimate = 1;
     return estimate;
 }
