@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
     stringToH3("8f2830828052d25", &h3HQ1);
     // 555 Market St @ resolution 15
     H3Index h3HQ2;
-    stringToH3("8f283082a30e623", &h2HQ2);
+    stringToH3("8f283082a30e623", &h3HQ2);
 
     LatLng geoHQ1, geoHQ2;
     cellToLatLng(h3HQ1, &geoHQ1);
