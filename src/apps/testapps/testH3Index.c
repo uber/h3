@@ -183,7 +183,7 @@ SUITE(h3Index) {
     TEST(stringToH3) {
         H3Index h3;
         t_assert(H3_EXPORT(stringToH3)("", &h3) == E_FAILED,
-                 "got an index from nothing");
+                 "no index from nothing");
         t_assert(H3_EXPORT(stringToH3)("**", &h3) == E_FAILED,
                  "got an index from junk");
         t_assertSuccess(H3_EXPORT(stringToH3)("ffffffffffffffff", &h3));
