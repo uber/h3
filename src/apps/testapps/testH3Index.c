@@ -187,7 +187,7 @@ SUITE(h3Index) {
         t_assert(H3_EXPORT(stringToH3)("**", &h3) == E_FAILED,
                  "no index from junk");
         t_assertSuccess(H3_EXPORT(stringToH3)("ffffffffffffffff", &h3));
-        t_assert(h3 == 0xffffffffffffffff, "failed on large input");
+        t_assert(h3 == 0xffffffffffffffff, "got expected on large input");
     }
 
     TEST(setH3Index) {
