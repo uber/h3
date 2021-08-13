@@ -87,7 +87,7 @@ static void gridPathCells_gridDisk_assertions(H3Index h3) {
     }
 
     H3Index *neighbors = calloc(sz, sizeof(H3Index));
-    H3_EXPORT(gridDisk)(h3, maxK, neighbors);
+    t_assertSuccess(H3_EXPORT(gridDisk)(h3, maxK, neighbors));
 
     for (int i = 0; i < sz; i++) {
         if (neighbors[i] == 0) {

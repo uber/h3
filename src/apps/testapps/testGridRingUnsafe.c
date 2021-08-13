@@ -27,25 +27,17 @@ SUITE(gridRingUnsafe) {
     t_assertSuccess(H3_EXPORT(latLngToCell)(&sf, 9, &sfHex));
 
     TEST(identityGridRing) {
-        int err;
-
         H3Index k0[] = {0};
-        err = H3_EXPORT(gridRingUnsafe)(sfHex, 0, k0);
-
-        t_assert(err == 0, "No error on gridRingUnsafe");
+        t_assertSuccess(H3_EXPORT(gridRingUnsafe)(sfHex, 0, k0));
         t_assert(k0[0] == sfHex, "generated identity k-ring");
     }
 
     TEST(ring1) {
-        int err;
-
         H3Index k1[] = {0, 0, 0, 0, 0, 0};
         H3Index expectedK1[] = {0x89283080ddbffff, 0x89283080c37ffff,
                                 0x89283080c27ffff, 0x89283080d53ffff,
                                 0x89283080dcfffff, 0x89283080dc3ffff};
-        err = H3_EXPORT(gridRingUnsafe)(sfHex, 1, k1);
-
-        t_assert(err == 0, "No error on gridRingUnsafe");
+        t_assertSuccess(H3_EXPORT(gridRingUnsafe)(sfHex, 1, k1));
 
         for (int i = 0; i < 6; i++) {
             t_assert(k1[i] != 0, "index is populated");
@@ -60,17 +52,13 @@ SUITE(gridRingUnsafe) {
     }
 
     TEST(ring2) {
-        int err;
-
         H3Index k2[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
         H3Index expectedK2[] = {
             0x89283080ca7ffff, 0x89283080cafffff, 0x89283080c33ffff,
             0x89283080c23ffff, 0x89283080c2fffff, 0x89283080d5bffff,
             0x89283080d43ffff, 0x89283080d57ffff, 0x89283080d1bffff,
             0x89283080dc7ffff, 0x89283080dd7ffff, 0x89283080dd3ffff};
-        err = H3_EXPORT(gridRingUnsafe)(sfHex, 2, k2);
-
-        t_assert(err == 0, "No error on gridRingUnsafe");
+        t_assertSuccess(H3_EXPORT(gridRingUnsafe)(sfHex, 2, k2));
 
         for (int i = 0; i < 12; i++) {
             t_assert(k2[i] != 0, "index is populated");
@@ -85,34 +73,24 @@ SUITE(gridRingUnsafe) {
     }
 
     TEST(nearPentagonRing1) {
-        int err;
-
         H3Index nearPentagon = 0x837405fffffffff;
         H3Index kp1[] = {0, 0, 0, 0, 0, 0};
-        err = H3_EXPORT(gridRingUnsafe)(nearPentagon, 1, kp1);
-
-        t_assert(err != 0, "Should return an error when hitting a pentagon");
+        t_assert(H3_EXPORT(gridRingUnsafe)(nearPentagon, 1, kp1) == E_PENTAGON,
+                 "Should return an error when hitting a pentagon");
     }
 
     TEST(nearPentagonRing2) {
-        int err;
-
         H3Index nearPentagon = 0x837405fffffffff;
         H3Index kp2[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-        err = H3_EXPORT(gridRingUnsafe)(nearPentagon, 2, kp2);
-
-        t_assert(err != 0, "Should return an error when hitting a pentagon");
+        t_assert(H3_EXPORT(gridRingUnsafe)(nearPentagon, 2, kp2) == E_PENTAGON,
+                 "Should return an error when hitting a pentagon");
     }
 
     TEST(onPentagon) {
-        int err;
-
         H3Index nearPentagon;
         setH3Index(&nearPentagon, 0, 4, 0);
         H3Index kp2[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-        err = H3_EXPORT(gridRingUnsafe)(nearPentagon, 2, kp2);
-
-        t_assert(err != 0,
+        t_assert(H3_EXPORT(gridRingUnsafe)(nearPentagon, 2, kp2) == E_PENTAGON,
                  "Should return an error when starting at a pentagon");
     }
 
@@ -138,16 +116,16 @@ SUITE(gridRingUnsafe) {
                         int kSz = H3_EXPORT(maxGridDiskSize)(k);
 
                         H3Index *ring = calloc(ringSz, sizeof(H3Index));
-                        int failed =
+                        H3Error failed =
                             H3_EXPORT(gridRingUnsafe)(children[j], k, ring);
 
                         if (!failed) {
                             H3Index *internalNeighbors =
                                 calloc(kSz, sizeof(H3Index));
                             int *internalDistances = calloc(kSz, sizeof(int));
-                            H3_EXPORT(gridDiskDistancesSafe)
-                            (children[j], k, internalNeighbors,
-                             internalDistances);
+                            t_assertSuccess(H3_EXPORT(gridDiskDistancesSafe)(
+                                children[j], k, internalNeighbors,
+                                internalDistances));
 
                             int found = 0;
                             int internalFound = 0;

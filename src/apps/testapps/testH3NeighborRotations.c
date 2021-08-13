@@ -57,13 +57,14 @@ void doCell(H3Index h, int maxK, TestOutput *testOutput) {
 
         H3_EXPORT(gridDiskDistancesSafe)
         (h, k, gridDiskInternalOutput, gridDiskInternalDistances);
-        int gridDiskUnsafeFailed =
+        H3Error gridDiskUnsafeFailed =
             H3_EXPORT(gridDiskUnsafe)(h, k, gridDiskUnsafeOutput);
 
-        if (gridDiskUnsafeFailed == 2) {
+        if (gridDiskUnsafeFailed == E_FAILED) {
+            // TODO: Unreachable
             testOutput->ret2++;
             continue;
-        } else if (gridDiskUnsafeFailed == 0) {
+        } else if (gridDiskUnsafeFailed == E_SUCCESS) {
             testOutput->ret0++;
             int startIdx = 0;
             // i is the current ring number
@@ -95,7 +96,7 @@ void doCell(H3Index h, int maxK, TestOutput *testOutput) {
 
                 startIdx += n;
             }
-        } else if (gridDiskUnsafeFailed == 1) {
+        } else if (gridDiskUnsafeFailed == E_PENTAGON) {
             testOutput->ret1++;
             int foundPent = 0;
             for (int i = 0; i < maxSz; i++) {

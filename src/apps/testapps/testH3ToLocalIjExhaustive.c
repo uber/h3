@@ -135,7 +135,8 @@ void localIjToH3_gridDisk_assertions(H3Index h3) {
     H3Index *neighbors = calloc(sz, sizeof(H3Index));
     int *distances = calloc(sz, sizeof(int));
 
-    H3_EXPORT(gridDiskDistances)(h3, maxK, neighbors, distances);
+    t_assertSuccess(
+        H3_EXPORT(gridDiskDistances)(h3, maxK, neighbors, distances));
 
     for (int i = 0; i < sz; i++) {
         if (neighbors[i] == 0) {

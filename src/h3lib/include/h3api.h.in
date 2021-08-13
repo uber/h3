@@ -229,25 +229,26 @@ DECLSPEC H3Error H3_EXPORT(cellToBoundary)(H3Index h3, CellBoundary *gp);
 DECLSPEC int H3_EXPORT(maxGridDiskSize)(int k);
 
 /** @brief hexagons neighbors in all directions, assuming no pentagons */
-DECLSPEC int H3_EXPORT(gridDiskUnsafe)(H3Index origin, int k, H3Index *out);
+DECLSPEC H3Error H3_EXPORT(gridDiskUnsafe)(H3Index origin, int k, H3Index *out);
 /** @} */
 
 /** @brief hexagons neighbors in all directions, assuming no pentagons,
  * reporting distance from origin */
-DECLSPEC int H3_EXPORT(gridDiskDistancesUnsafe)(H3Index origin, int k,
-                                                H3Index *out, int *distances);
+DECLSPEC H3Error H3_EXPORT(gridDiskDistancesUnsafe)(H3Index origin, int k,
+                                                    H3Index *out,
+                                                    int *distances);
 
 /** @brief hexagons neighbors in all directions reporting distance from origin
  */
-DECLSPEC void H3_EXPORT(gridDiskDistancesSafe)(H3Index origin, int k,
-                                               H3Index *out, int *distances);
+DECLSPEC H3Error H3_EXPORT(gridDiskDistancesSafe)(H3Index origin, int k,
+                                                  H3Index *out, int *distances);
 
 /** @brief collection of hex rings sorted by ring for all given hexagons */
-DECLSPEC int H3_EXPORT(gridDisksUnsafe)(H3Index *h3Set, int length, int k,
-                                        H3Index *out);
+DECLSPEC H3Error H3_EXPORT(gridDisksUnsafe)(H3Index *h3Set, int length, int k,
+                                            H3Index *out);
 
 /** @brief hexagon neighbors in all directions */
-DECLSPEC void H3_EXPORT(gridDisk)(H3Index origin, int k, H3Index *out);
+DECLSPEC H3Error H3_EXPORT(gridDisk)(H3Index origin, int k, H3Index *out);
 /** @} */
 
 /** @defgroup gridDiskDistances gridDiskDistances
@@ -256,8 +257,8 @@ DECLSPEC void H3_EXPORT(gridDisk)(H3Index origin, int k, H3Index *out);
  */
 /** @brief hexagon neighbors in all directions, reporting distance from origin
  */
-DECLSPEC void H3_EXPORT(gridDiskDistances)(H3Index origin, int k, H3Index *out,
-                                           int *distances);
+DECLSPEC H3Error H3_EXPORT(gridDiskDistances)(H3Index origin, int k,
+                                              H3Index *out, int *distances);
 /** @} */
 
 /** @defgroup gridRingUnsafe gridRingUnsafe
@@ -265,7 +266,7 @@ DECLSPEC void H3_EXPORT(gridDiskDistances)(H3Index origin, int k, H3Index *out,
  * @{
  */
 /** @brief hollow hexagon ring at some origin */
-DECLSPEC int H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index *out);
+DECLSPEC H3Error H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index *out);
 /** @} */
 
 /** @defgroup polygonToCells polygonToCells
@@ -286,9 +287,9 @@ DECLSPEC H3Error H3_EXPORT(polygonToCells)(const GeoPolygon *geoPolygon,
  * @{
  */
 /** @brief Create a LinkedGeoPolygon from a set of contiguous hexagons */
-DECLSPEC void H3_EXPORT(h3SetToLinkedGeo)(const H3Index *h3Set,
-                                          const int numHexes,
-                                          LinkedGeoPolygon *out);
+DECLSPEC H3Error H3_EXPORT(h3SetToLinkedGeo)(const H3Index *h3Set,
+                                             const int numHexes,
+                                             LinkedGeoPolygon *out);
 
 /** @brief Free all memory created for a LinkedGeoPolygon */
 DECLSPEC void H3_EXPORT(destroyLinkedPolygon)(LinkedGeoPolygon *polygon);

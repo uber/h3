@@ -33,12 +33,13 @@ static void gridDisk_equals_gridDiskDistancesSafe_assertions(H3Index h3) {
 
         H3Index *neighbors = calloc(kSz, sizeof(H3Index));
         int *distances = calloc(kSz, sizeof(int));
-        H3_EXPORT(gridDiskDistances)(h3, k, neighbors, distances);
+        t_assertSuccess(
+            H3_EXPORT(gridDiskDistances)(h3, k, neighbors, distances));
 
         H3Index *internalNeighbors = calloc(kSz, sizeof(H3Index));
         int *internalDistances = calloc(kSz, sizeof(int));
-        H3_EXPORT(gridDiskDistancesSafe)
-        (h3, k, internalNeighbors, internalDistances);
+        t_assertSuccess(H3_EXPORT(gridDiskDistancesSafe)(
+            h3, k, internalNeighbors, internalDistances));
 
         int found = 0;
         int internalFound = 0;
@@ -85,7 +86,7 @@ SUITE(gridDisk) {
                                 0x8013fffffffffff, 0x8027fffffffffff,
                                 0x8049fffffffffff, 0x8051fffffffffff,
                                 0x8037fffffffffff};
-        H3_EXPORT(gridDiskDistances)(sfHex0, 1, k1, k1Dist);
+        t_assertSuccess(H3_EXPORT(gridDiskDistances)(sfHex0, 1, k1, k1Dist));
 
         for (int i = 0; i < 7; i++) {
             t_assert(k1[i] != 0, "index is populated");
@@ -113,7 +114,7 @@ SUITE(gridDisk) {
                                 0x801ffffffffffff,
                                 0x8019fffffffffff,
                                 0};
-        H3_EXPORT(gridDiskDistances)(polar, 1, k2, k2Dist);
+        t_assertSuccess(H3_EXPORT(gridDiskDistances)(polar, 1, k2, k2Dist));
 
         int k2present = 0;
         for (int i = 0; i < 7; i++) {
@@ -145,7 +146,7 @@ SUITE(gridDisk) {
                                 0x8108bffffffffff,
                                 0x8109bffffffffff,
                                 0};
-        H3_EXPORT(gridDiskDistances)(polar, 1, k2, k2Dist);
+        t_assertSuccess(H3_EXPORT(gridDiskDistances)(polar, 1, k2, k2Dist));
 
         int k2present = 0;
         for (int i = 0; i < 7; i++) {
@@ -210,7 +211,7 @@ SUITE(gridDisk) {
         int expectedK2Dist[37] = {2, 3, 2, 1, 3, 3, 3, 2, 2, 3, 1, 3, 0,
                                   2, 3, 3, 2, 2, 3, 1, 3, 3, 2, 2, 3, 1,
                                   2, 3, 1, 3, 3, 0, 0, 0, 0, 0, 0};
-        H3_EXPORT(gridDiskDistances)(polar, 3, k2, k2Dist);
+        t_assertSuccess(H3_EXPORT(gridDiskDistances)(polar, 3, k2, k2Dist));
 
         int k2present = 0;
         for (int i = 0; i < 37; i++) {
@@ -288,7 +289,7 @@ SUITE(gridDisk) {
                                   0x81137ffffffffff,
                                   0,
                                   0};
-        H3_EXPORT(gridDiskDistances)(pent, 4, k2, k2Dist);
+        t_assertSuccess(H3_EXPORT(gridDiskDistances)(pent, 4, k2, k2Dist));
 
         int k2present = 0;
         for (int i = 0; i < 61; i++) {
@@ -360,7 +361,7 @@ SUITE(gridDisk) {
         int k = 1000;
         int kSz = H3_EXPORT(maxGridDiskSize)(k);
         H3Index *neighbors = calloc(kSz, sizeof(H3Index));
-        H3_EXPORT(gridDisk)(0x7fffffffffffffff, k, neighbors);
+        t_assertSuccess(H3_EXPORT(gridDisk)(0x7fffffffffffffff, k, neighbors));
         // Assertion is should not crash - should return an error in the future
         free(neighbors);
     }
@@ -369,7 +370,7 @@ SUITE(gridDisk) {
         int k = 2;
         int kSz = H3_EXPORT(maxGridDiskSize)(k);
         H3Index *neighbors = calloc(kSz, sizeof(H3Index));
-        H3_EXPORT(gridDisk)(0x4d4b00fe5c5c3030, k, neighbors);
+        t_assertSuccess(H3_EXPORT(gridDisk)(0x4d4b00fe5c5c3030, k, neighbors));
         // Assertion is should not crash - should return an error in the future
         free(neighbors);
     }

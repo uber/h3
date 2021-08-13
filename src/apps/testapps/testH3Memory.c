@@ -99,19 +99,20 @@ SUITE(h3Memory) {
         H3Index *gridDiskOutput = calloc(hexCount, sizeof(H3Index));
 
         resetMemoryCounters(0);
-        H3_EXPORT(gridDisk)(sunnyvale, k, gridDiskOutput);
+        t_assertSuccess(H3_EXPORT(gridDisk)(sunnyvale, k, gridDiskOutput));
         t_assert(actualAllocCalls == 0, "gridDisk did not call alloc");
         t_assert(actualFreeCalls == 0, "gridDisk did not call free");
 
         resetMemoryCounters(0);
-        H3_EXPORT(gridDisk)(pentagon, k, gridDiskOutput);
+        t_assertSuccess(H3_EXPORT(gridDisk)(pentagon, k, gridDiskOutput));
         t_assert(actualAllocCalls == 1, "gridDisk called alloc");
         t_assert(actualFreeCalls == 1, "gridDisk called free");
 
         resetMemoryCounters(0);
         failAlloc = true;
         memset(gridDiskOutput, 0, hexCount * sizeof(H3Index));
-        H3_EXPORT(gridDisk)(pentagon, k, gridDiskOutput);
+        t_assert(H3_EXPORT(gridDisk)(pentagon, k, gridDiskOutput) == E_MEMORY,
+                 "gridDisk returns E_MEMORY");
         t_assert(actualAllocCalls == 1, "gridDisk called alloc");
         t_assert(actualFreeCalls == 0, "gridDisk did not call free");
 
@@ -131,7 +132,7 @@ SUITE(h3Memory) {
         // Generate a set of hexagons to compact
         H3Index *sunnyvaleExpanded = calloc(hexCount, sizeof(H3Index));
         resetMemoryCounters(0);
-        H3_EXPORT(gridDisk)(sunnyvale, k, sunnyvaleExpanded);
+        t_assertSuccess(H3_EXPORT(gridDisk)(sunnyvale, k, sunnyvaleExpanded));
         t_assert(actualAllocCalls == 0, "gridDisk did not call alloc");
         t_assert(actualFreeCalls == 0, "gridDisk did not call free");
 
