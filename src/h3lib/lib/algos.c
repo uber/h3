@@ -42,7 +42,6 @@
  */
 
 #define MAX_ONE_RING_SIZE 7
-#define HEX_HASH_OVERFLOW -1
 #define POLYGON_TO_CELLS_BUFFER 12
 
 /**
@@ -208,7 +207,6 @@ H3Error H3_EXPORT(gridDiskDistances)(H3Index origin, int k, H3Index *out,
         if (distances == NULL) {
             distances = H3_MEMORY(calloc)(maxIdx, sizeof(int));
             if (!distances) {
-                // TODO: Return an error code when this is not void
                 return E_MEMORY;
             }
             H3Error result = _gridDiskDistancesInternal(origin, k, out,
@@ -809,8 +807,7 @@ H3Error _getEdgeHexagons(const GeoLoop *geoloop, int64_t numHexagons, int res,
             while (found[loc] != 0) {
                 // If this conditional is reached, the `found` memory block is
                 // too small for the given polygon. This should not happen.
-                if (loopCount > numHexagons)
-                    return HEX_HASH_OVERFLOW;  // LCOV_EXCL_LINE
+                if (loopCount > numHexagons) return E_FAILED;  // LCOV_EXCL_LINE
                 if (found[loc] == pointHex)
                     break;  // At least two points of the geoloop index to the
                             // same cell
@@ -1115,9 +1112,9 @@ H3Error H3_EXPORT(h3SetToLinkedGeo)(const H3Index *h3Set, const int numHexes,
     VertexGraph graph;
     h3SetToVertexGraph(h3Set, numHexes, &graph);
     _vertexGraphToLinkedGeo(&graph, out);
-    // TODO: The return value, possibly indicating an error, is discarded here -
-    // we should use this when we update the API to return a value
-    normalizeMultiPolygon(out);
+    if (normalizeMultiPolygon(out)) {
+        return E_FAILED;
+    }
     destroyVertexGraph(&graph);
     return E_SUCCESS;
 }

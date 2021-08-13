@@ -144,7 +144,7 @@ Returns 0 (`E_SUCCESS`) on success.
 <TabItem value="c">
 
 ```c
-void h3SetToLinkedGeo(const H3Index *h3Set, const int numHexes, LinkedGeoPolygon *out);
+H3Error h3SetToLinkedGeo(const H3Index *h3Set, const int numHexes, LinkedGeoPolygon *out);
 ```
 
 </TabItem>
@@ -191,6 +191,8 @@ It is expected that all hexagons in the set have the same resolution and
 that the set contains no duplicates. Behavior is undefined if duplicates
 or multiple resolutions are present, and the algorithm may produce
 unexpected or invalid output.
+
+Returns 0 (`E_SUCCESS`) on success.
 
 ## destroyLinkedPolygon
 
