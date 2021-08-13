@@ -150,8 +150,9 @@ H3Index H3_EXPORT(getDirectedEdgeDestination)(H3Index edge) {
     }
     Direction direction = H3_GET_RESERVED_BITS(edge);
     int rotations = 0;
-    H3Index destination = h3NeighborRotations(
-        H3_EXPORT(getDirectedEdgeOrigin)(edge), direction, &rotations);
+    H3Index destination;
+    h3NeighborRotations(H3_EXPORT(getDirectedEdgeOrigin)(edge), direction,
+                        &rotations, &destination);
     return destination;
 }
 

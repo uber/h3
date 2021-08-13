@@ -212,7 +212,8 @@ H3Index H3_EXPORT(cellToVertex)(H3Index cell, int vertexNum) {
         // This case should be unreachable; invalid verts fail earlier
         if (left == INVALID_DIGIT) return H3_NULL;  // LCOV_EXCL_LINE
         int lRotations = 0;
-        H3Index leftNeighbor = h3NeighborRotations(cell, left, &lRotations);
+        H3Index leftNeighbor;
+        h3NeighborRotations(cell, left, &lRotations, &leftNeighbor);
         // Set to owner if lowest index
         if (leftNeighbor < owner) owner = leftNeighbor;
 
@@ -225,8 +226,8 @@ H3Index H3_EXPORT(cellToVertex)(H3Index cell, int vertexNum) {
             // This case should be unreachable; invalid verts fail earlier
             if (right == INVALID_DIGIT) return H3_NULL;  // LCOV_EXCL_LINE
             int rRotations = 0;
-            H3Index rightNeighbor =
-                h3NeighborRotations(cell, right, &rRotations);
+            H3Index rightNeighbor;
+            h3NeighborRotations(cell, right, &rRotations, &rightNeighbor);
             // Set to owner if lowest index
             if (rightNeighbor < owner) {
                 owner = rightNeighbor;

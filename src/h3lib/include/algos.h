@@ -27,7 +27,8 @@
 #include "vertexGraph.h"
 
 // neighbor along the ijk coordinate system of the current face, rotated
-H3Index h3NeighborRotations(H3Index origin, Direction dir, int *rotations);
+H3Error h3NeighborRotations(H3Index origin, Direction dir, int *rotations,
+                            H3Index *out);
 
 // IJK direction of neighbor
 Direction directionForNeighbor(H3Index origin, H3Index destination);

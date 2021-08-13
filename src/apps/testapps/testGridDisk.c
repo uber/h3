@@ -322,9 +322,10 @@ SUITE(gridDisk) {
         // This is undefined behavior, but it's helpful for it to make sense.
         H3Index origin = 0x811d7ffffffffffL;
         int rotations = 0;
-        t_assert(
-            h3NeighborRotations(origin, CENTER_DIGIT, &rotations) == origin,
-            "Moving to self goes to self");
+        H3Index out;
+        t_assertSuccess(
+            h3NeighborRotations(origin, CENTER_DIGIT, &rotations, &out));
+        t_assert(out == origin, "Moving to self goes to self");
     }
 
     TEST(cwOffsetPent) {
@@ -361,8 +362,9 @@ SUITE(gridDisk) {
         int k = 1000;
         int kSz = H3_EXPORT(maxGridDiskSize)(k);
         H3Index *neighbors = calloc(kSz, sizeof(H3Index));
-        t_assertSuccess(H3_EXPORT(gridDisk)(0x7fffffffffffffff, k, neighbors));
-        // Assertion is should not crash - should return an error in the future
+        t_assert(H3_EXPORT(gridDisk)(0x7fffffffffffffff, k, neighbors) ==
+                     E_CELL_INVALID,
+                 "gridDisk returns error for invalid input");
         free(neighbors);
     }
 
@@ -370,8 +372,9 @@ SUITE(gridDisk) {
         int k = 2;
         int kSz = H3_EXPORT(maxGridDiskSize)(k);
         H3Index *neighbors = calloc(kSz, sizeof(H3Index));
-        t_assertSuccess(H3_EXPORT(gridDisk)(0x4d4b00fe5c5c3030, k, neighbors));
-        // Assertion is should not crash - should return an error in the future
+        t_assert(H3_EXPORT(gridDisk)(0x4d4b00fe5c5c3030, k, neighbors) ==
+                     E_CELL_INVALID,
+                 "gridDisk returns error for invalid input");
         free(neighbors);
     }
 }
