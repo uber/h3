@@ -545,14 +545,15 @@ H3Error H3_EXPORT(experimentalLocalIjToH3)(H3Index origin, const CoordIJ *ij,
  */
 H3Error H3_EXPORT(gridDistance)(H3Index origin, H3Index h3, int64_t *out) {
     CoordIJK originIjk, h3Ijk;
-    if (h3ToLocalIjk(origin, origin, &originIjk)) {
+    H3Error originError = h3ToLocalIjk(origin, origin, &originIjk);
+    if (originError) {
         // Currently there are no tests that would cause getting the coordinates
         // for an index the same as the origin to fail.
-        return E_FAILED;  // LCOV_EXCL_LINE
+        return originError;  // LCOV_EXCL_LINE
     }
-    H3Error h3ToLocalIjkError = h3ToLocalIjk(origin, h3, &h3Ijk);
-    if (h3ToLocalIjkError) {
-        return h3ToLocalIjkError;
+    H3Error destError = h3ToLocalIjk(origin, h3, &h3Ijk);
+    if (destError) {
+        return destError;
     }
 
     *out = ijkDistance(&originIjk, &h3Ijk);
@@ -648,11 +649,13 @@ H3Error H3_EXPORT(gridPathCells)(H3Index start, H3Index end, H3Index *out) {
     // Convert H3 addresses to IJK coords
     H3Error startError = h3ToLocalIjk(start, start, &startIjk);
     if (startError) {
-        return startError;
+        // Unreachable because this was called as part of gridDistance
+        return startError;  // LCOV_EXCL_LINE
     }
     H3Error endError = h3ToLocalIjk(start, end, &endIjk);
     if (endError) {
-        return endError;
+        // Unreachable because this was called as part of gridDistance
+        return endError;  // LCOV_EXCL_LINE
     }
 
     // Convert IJK to cube coordinates suitable for linear interpolation
@@ -667,7 +670,7 @@ H3Error H3_EXPORT(gridPathCells)(H3Index start, H3Index end, H3Index *out) {
         distance ? (double)(endIjk.k - startIjk.k) / (double)distance : 0;
 
     CoordIJK currentIjk = {startIjk.i, startIjk.j, startIjk.k};
-    for (int n = 0; n <= distance; n++) {
+    for (int64_t n = 0; n <= distance; n++) {
         cubeRound((double)startIjk.i + iStep * n,
                   (double)startIjk.j + jStep * n,
                   (double)startIjk.k + kStep * n, &currentIjk);

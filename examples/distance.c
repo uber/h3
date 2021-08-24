@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
     cellToLatLng(h3HQ2, &geoHQ2);
 
     int64_t distance;
-    gridDistance(h3HQ1, h3HQ2, &distance);
+    assert(gridDistance(h3HQ1, h3HQ2, &distance) == E_SUCCESS);
 
     printf(
         "origin: (%lf, %lf)\n"
