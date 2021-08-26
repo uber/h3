@@ -22,6 +22,7 @@
 #define R 6371.0088
 
 #include <h3/h3api.h>
+#include <assert.h>
 #include <math.h>
 #include <stdio.h>
 
