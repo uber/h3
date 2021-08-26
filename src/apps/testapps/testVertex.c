@@ -89,13 +89,14 @@ SUITE(Vertex) {
     TEST(cellToVertex_badVerts) {
         H3Index origin = 0x823d6ffffffffff;
 
-        t_assert(H3_EXPORT(cellToVertex)(origin, -1) == H3_NULL,
+        H3Index vert;
+        t_assert(H3_EXPORT(cellToVertex)(origin, -1, &vert) == E_FAILED,
                  "negative vertex should return null index");
-        t_assert(H3_EXPORT(cellToVertex)(origin, 6) == H3_NULL,
+        t_assert(H3_EXPORT(cellToVertex)(origin, 6, &vert) == E_FAILED,
                  "invalid vertex should return null index");
 
         H3Index pentagon = 0x823007fffffffff;
-        t_assert(H3_EXPORT(cellToVertex)(pentagon, 5) == H3_NULL,
+        t_assert(H3_EXPORT(cellToVertex)(pentagon, 5, &vert) == E_FAILED,
                  "invalid pent vertex should return null index");
     }
 
@@ -106,7 +107,7 @@ SUITE(Vertex) {
         t_assert(H3_EXPORT(isValidVertex)(vert), "known vertex is valid");
 
         for (int i = 0; i < NUM_HEX_VERTS; i++) {
-            vert = H3_EXPORT(cellToVertex)(origin, i);
+            t_assertSuccess(H3_EXPORT(cellToVertex)(origin, i, &vert));
             t_assert(H3_EXPORT(isValidVertex)(vert), "vertex is valid");
         }
     }
@@ -114,7 +115,8 @@ SUITE(Vertex) {
     TEST(isValidVertex_invalidOwner) {
         H3Index origin = 0x823d6ffffffffff;
         int vertexNum = 0;
-        H3Index vert = H3_EXPORT(cellToVertex)(origin, vertexNum);
+        H3Index vert;
+        t_assertSuccess(H3_EXPORT(cellToVertex)(origin, vertexNum, &vert));
 
         // Set a bit for an unused digit to something else.
         vert ^= 1;
@@ -126,7 +128,8 @@ SUITE(Vertex) {
     TEST(isValidVertex_wrongOwner) {
         H3Index origin = 0x823d6ffffffffff;
         int vertexNum = 0;
-        H3Index vert = H3_EXPORT(cellToVertex)(origin, vertexNum);
+        H3Index vert;
+        t_assertSuccess(H3_EXPORT(cellToVertex)(origin, vertexNum, &vert));
 
         // Assert that origin does not own the vertex
         H3Index owner = vert;
@@ -152,15 +155,24 @@ SUITE(Vertex) {
         t_assert(H3_EXPORT(isValidVertex)(fakeEdge) == 0,
                  "edge mode is not valid");
 
-        H3Index vert = H3_EXPORT(cellToVertex)(origin, 0);
+        H3Index vert;
+        t_assertSuccess(H3_EXPORT(cellToVertex)(origin, 0, &vert));
         H3_SET_RESERVED_BITS(vert, 6);
         t_assert(H3_EXPORT(isValidVertex)(vert) == 0,
                  "invalid vertexNum is not valid");
 
         H3Index pentagon = 0x823007fffffffff;
-        H3Index vert2 = H3_EXPORT(cellToVertex)(pentagon, 0);
+        H3Index vert2;
+        t_assertSuccess(H3_EXPORT(cellToVertex)(pentagon, 0, &vert2));
         H3_SET_RESERVED_BITS(vert2, 5);
         t_assert(H3_EXPORT(isValidVertex)(vert2) == 0,
                  "invalid pentagon vertexNum is not valid");
+    }
+
+    TEST(vertexToLatLng_invalid) {
+        H3Index invalid = 0xFFFFFFFFFFFFFFFF;
+        LatLng latLng;
+        t_assert(H3_EXPORT(vertexToLatLng)(invalid, &latLng) != E_SUCCESS,
+                 "Invalid vertex returns error");
     }
 }

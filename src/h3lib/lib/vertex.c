@@ -189,13 +189,13 @@ static const int revNeighborDirectionsHex[NUM_DIGITS] = {
  * @param cell    Cell to get the vertex for
  * @param vertexNum Number (index) of the vertex to calculate
  */
-H3Index H3_EXPORT(cellToVertex)(H3Index cell, int vertexNum) {
+H3Error H3_EXPORT(cellToVertex)(H3Index cell, int vertexNum, H3Index *out) {
     int cellIsPentagon = H3_EXPORT(isPentagon)(cell);
     int cellNumVerts = cellIsPentagon ? NUM_PENT_VERTS : NUM_HEX_VERTS;
     int res = H3_GET_RESOLUTION(cell);
 
     // Check for invalid vertexes
-    if (vertexNum < 0 || vertexNum > cellNumVerts - 1) return H3_NULL;
+    if (vertexNum < 0 || vertexNum > cellNumVerts - 1) return E_FAILED;
 
     // Default the owner and vertex number to the input cell
     H3Index owner = cell;
@@ -210,7 +210,7 @@ H3Index H3_EXPORT(cellToVertex)(H3Index cell, int vertexNum) {
         // Get the left neighbor of the vertex, with its rotations
         Direction left = directionForVertexNum(cell, vertexNum);
         // This case should be unreachable; invalid verts fail earlier
-        if (left == INVALID_DIGIT) return H3_NULL;  // LCOV_EXCL_LINE
+        if (left == INVALID_DIGIT) return E_FAILED;  // LCOV_EXCL_LINE
         int lRotations = 0;
         H3Index leftNeighbor = h3NeighborRotations(cell, left, &lRotations);
         // Set to owner if lowest index
@@ -223,7 +223,7 @@ H3Index H3_EXPORT(cellToVertex)(H3Index cell, int vertexNum) {
             Direction right = directionForVertexNum(
                 cell, (vertexNum - 1 + cellNumVerts) % cellNumVerts);
             // This case should be unreachable; invalid verts fail earlier
-            if (right == INVALID_DIGIT) return H3_NULL;  // LCOV_EXCL_LINE
+            if (right == INVALID_DIGIT) return E_FAILED;  // LCOV_EXCL_LINE
             int rRotations = 0;
             H3Index rightNeighbor =
                 h3NeighborRotations(cell, right, &rRotations);
@@ -263,8 +263,9 @@ H3Index H3_EXPORT(cellToVertex)(H3Index cell, int vertexNum) {
     H3Index vertex = owner;
     H3_SET_MODE(vertex, H3_VERTEX_MODE);
     H3_SET_RESERVED_BITS(vertex, ownerVertexNum);
+    *out = vertex;
 
-    return vertex;
+    return E_SUCCESS;
 }
 
 /**
@@ -272,12 +273,21 @@ H3Index H3_EXPORT(cellToVertex)(H3Index cell, int vertexNum) {
  * @param cell      Cell to get the vertexes for
  * @param vertexes  Array to hold vertex output. Must have length >= 6.
  */
-void H3_EXPORT(cellToVertexes)(H3Index cell, H3Index *vertexes) {
+H3Error H3_EXPORT(cellToVertexes)(H3Index cell, H3Index *vertexes) {
     // Get all vertexes. If the cell is a pentagon, will fill the final slot
     // with H3_NULL.
+    bool isPent = H3_EXPORT(isPentagon)(cell);
     for (int i = 0; i < NUM_HEX_VERTS; i++) {
-        vertexes[i] = H3_EXPORT(cellToVertex)(cell, i);
+        if (i == 5 && isPent) {
+            vertexes[i] = H3_NULL;
+        } else {
+            H3Error cellError = H3_EXPORT(cellToVertex)(cell, i, &vertexes[i]);
+            if (cellError) {
+                return cellError;
+            }
+        }
     }
+    return E_SUCCESS;
 }
 
 /**
@@ -285,7 +295,7 @@ void H3_EXPORT(cellToVertexes)(H3Index cell, H3Index *vertexes) {
  * @param vertex H3 index describing a vertex
  * @param coord  Output geo coordinate
  */
-void H3_EXPORT(vertexToLatLng)(H3Index vertex, LatLng *coord) {
+H3Error H3_EXPORT(vertexToLatLng)(H3Index vertex, LatLng *coord) {
     // Get the vertex number and owner from the vertex
     int vertexNum = H3_GET_RESERVED_BITS(vertex);
     H3Index owner = vertex;
@@ -295,7 +305,10 @@ void H3_EXPORT(vertexToLatLng)(H3Index vertex, LatLng *coord) {
     // Get the single vertex from the boundary
     CellBoundary gb;
     FaceIJK fijk;
-    _h3ToFaceIjk(owner, &fijk);
+    H3Error fijkError = _h3ToFaceIjk(owner, &fijk);
+    if (fijkError) {
+        return fijkError;
+    }
     int res = H3_GET_RESOLUTION(owner);
 
     if (H3_EXPORT(isPentagon)(owner)) {
@@ -306,6 +319,7 @@ void H3_EXPORT(vertexToLatLng)(H3Index vertex, LatLng *coord) {
 
     // Copy from boundary to output coord
     *coord = gb.verts[0];
+    return E_SUCCESS;
 }
 
 /**
@@ -329,7 +343,10 @@ int H3_EXPORT(isValidVertex)(H3Index vertex) {
 
     // The easiest way to ensure that the owner + vertex number is valid,
     // and that the vertex is canonical, is to recreate and compare.
-    H3Index canonical = H3_EXPORT(cellToVertex)(owner, vertexNum);
+    H3Index canonical;
+    if (H3_EXPORT(cellToVertex)(owner, vertexNum, &canonical)) {
+        return 0;
+    }
 
     return vertex == canonical ? 1 : 0;
 }
