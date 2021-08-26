@@ -21,8 +21,8 @@
 // mean Earth radius
 #define R 6371.0088
 
-#include <h3/h3api.h>
 #include <assert.h>
+#include <h3/h3api.h>
 #include <math.h>
 #include <stdio.h>
 
