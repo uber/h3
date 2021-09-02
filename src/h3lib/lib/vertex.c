@@ -195,7 +195,7 @@ H3Error H3_EXPORT(cellToVertex)(H3Index cell, int vertexNum, H3Index *out) {
     int res = H3_GET_RESOLUTION(cell);
 
     // Check for invalid vertexes
-    if (vertexNum < 0 || vertexNum > cellNumVerts - 1) return E_FAILED;
+    if (vertexNum < 0 || vertexNum > cellNumVerts - 1) return E_DOMAIN;
 
     // Default the owner and vertex number to the input cell
     H3Index owner = cell;

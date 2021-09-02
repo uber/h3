@@ -90,13 +90,13 @@ SUITE(Vertex) {
         H3Index origin = 0x823d6ffffffffff;
 
         H3Index vert;
-        t_assert(H3_EXPORT(cellToVertex)(origin, -1, &vert) == E_FAILED,
+        t_assert(H3_EXPORT(cellToVertex)(origin, -1, &vert) == E_DOMAIN,
                  "negative vertex should return null index");
-        t_assert(H3_EXPORT(cellToVertex)(origin, 6, &vert) == E_FAILED,
+        t_assert(H3_EXPORT(cellToVertex)(origin, 6, &vert) == E_DOMAIN,
                  "invalid vertex should return null index");
 
         H3Index pentagon = 0x823007fffffffff;
-        t_assert(H3_EXPORT(cellToVertex)(pentagon, 5, &vert) == E_FAILED,
+        t_assert(H3_EXPORT(cellToVertex)(pentagon, 5, &vert) == E_DOMAIN,
                  "invalid pent vertex should return null index");
     }
 
