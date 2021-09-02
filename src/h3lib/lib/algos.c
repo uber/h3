@@ -267,12 +267,12 @@ H3Error _gridDiskDistancesInternal(H3Index origin, int k, H3Index *out,
         H3Index nextNeighbor;
         H3Error neighborResult = h3NeighborRotations(origin, DIRECTIONS[i],
                                                      &rotations, &nextNeighbor);
-        if (neighborResult != E_SUCCESS) {
+        if (neighborResult) {
             return neighborResult;
         }
         neighborResult = _gridDiskDistancesInternal(
             nextNeighbor, k, out, distances, maxIdx, curK + 1);
-        if (neighborResult != E_SUCCESS) {
+        if (neighborResult) {
             return neighborResult;
         }
     }
@@ -311,8 +311,7 @@ H3Error H3_EXPORT(gridDiskDistancesSafe)(H3Index origin, int k, H3Index *out,
  * @param rotations Number of ccw rotations to perform to reorient the
  *                  translation vector. Will be modified to the new number of
  *                  rotations to perform (such as when crossing a face edge.)
- * @param out H3Index of the specified neighbor or H3_NULL if deleted
- * k-subsequence distortion is encountered.
+ * @param out H3Index of the specified neighbor if succesful
  * @return E_SUCCESS on success
  */
 H3Error h3NeighborRotations(H3Index origin, Direction dir, int *rotations,
@@ -475,8 +474,9 @@ Direction directionForNeighbor(H3Index origin, H3Index destination) {
          direction < NUM_DIGITS; direction++) {
         H3Index neighbor;
         int rotations = 0;
-        h3NeighborRotations(origin, direction, &rotations, &neighbor);
-        if (neighbor == destination) {
+        H3Error neighborError =
+            h3NeighborRotations(origin, direction, &rotations, &neighbor);
+        if (!neighborError && neighbor == destination) {
             return direction;
         }
     }
@@ -562,11 +562,6 @@ H3Error H3_EXPORT(gridDiskDistancesUnsafe)(H3Index origin, int k, H3Index *out,
             if (neighborResult) {
                 return neighborResult;
             }
-            if (origin == H3_NULL) {  // LCOV_EXCL_BR_LINE
-                // Should not be possible because `origin` would have to be a
-                // pentagon
-                return E_PENTAGON;  // LCOV_EXCL_LINE
-            }
 
             if (H3_EXPORT(isPentagon)(origin)) {
                 // Pentagon was encountered; bail out as user doesn't want this.
@@ -578,11 +573,6 @@ H3Error H3_EXPORT(gridDiskDistancesUnsafe)(H3Index origin, int k, H3Index *out,
             origin, DIRECTIONS[direction], &rotations, &origin);
         if (neighborResult) {
             return neighborResult;
-        }
-        if (origin == H3_NULL) {  // LCOV_EXCL_BR_LINE
-            // Should not be possible because `origin` would have to be a
-            // pentagon
-            return E_PENTAGON;  // LCOV_EXCL_LINE
         }
         out[idx] = origin;
         if (distances) {
@@ -670,11 +660,6 @@ H3Error H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index *out) {
         if (neighborResult) {
             return neighborResult;
         }
-        if (origin == H3_NULL) {  // LCOV_EXCL_BR_LINE
-            // Should not be possible because `origin` would have to be a
-            // pentagon
-            return E_PENTAGON;  // LCOV_EXCL_LINE
-        }
 
         if (H3_EXPORT(isPentagon)(origin)) {
             return E_PENTAGON;
@@ -692,11 +677,6 @@ H3Error H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index *out) {
                 origin, DIRECTIONS[direction], &rotations, &origin);
             if (neighborResult) {
                 return neighborResult;
-            }
-            if (origin == H3_NULL) {  // LCOV_EXCL_BR_LINE
-                // Should not be possible because `origin` would have to be a
-                // pentagon
-                return E_PENTAGON;  // LCOV_EXCL_LINE
             }
 
             // Skip the very last index, it was already added. We do
