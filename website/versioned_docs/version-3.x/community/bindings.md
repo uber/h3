@@ -7,6 +7,10 @@ slug: /community/bindings
 
 As a C library, bindings can be made to call H3 functions from different programming languages. This page lists different bindings currently available. Contributions to this list are welcome, please feel free to open a [pull request](https://github.com/uber/h3/tree/master/website/docs/community/bindings.md).
 
+## Athena
+
+- [daniel-cortez-stevenson/aws-athena-udfs-h3](https://github.com/daniel-cortez-stevenson/aws-athena-udfs-h3)
+
 ## BigQuery
 
 - [cartodb/bigquery-jslibs](https://github.com/CartoDB/bigquery-jslibs)
@@ -15,6 +19,7 @@ As a C library, bindings can be made to call H3 functions from different program
 
 - [entrepreneur-interet-general/h3.standard](https://github.com/entrepreneur-interet-general/H3.Standard)
 - [richardvasquez/h3net](https://github.com/RichardVasquez/h3net) - A translation instead of a binding
+- [pocketken/H3.net](https://github.com/pocketken/H3.net) - A translation instead of a binding
 
 ## ClickHouse
 
@@ -54,6 +59,10 @@ As a C library, bindings can be made to call H3 functions from different program
 
 - [travisbrady/ocaml-h3](https://github.com/travisbrady/ocaml-h3)
 
+## Perl
+
+- [mrdvt92/perl-Geo-H3](https://metacpan.org/pod/Geo::H3)
+
 ## PHP
 
 - [neatlife/php-h3](https://github.com/neatlife/php-h3)
@@ -66,6 +75,7 @@ As a C library, bindings can be made to call H3 functions from different program
 ## Python
 
 - [uber/h3-py](https://github.com/uber/h3-py)
+- [DahnJ/H3-Pandas](https://github.com/DahnJ/H3-Pandas)
 
 ## R
 

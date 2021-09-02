@@ -42,8 +42,9 @@ static void cellToVertex_point_assertions(H3Index h3) {
 
     LatLng coord;
     for (int i = 0; i < numVerts; i++) {
-        H3Index vertex = H3_EXPORT(cellToVertex)(h3, i);
-        H3_EXPORT(vertexToLatLng)(vertex, &coord);
+        H3Index vertex;
+        t_assertSuccess(H3_EXPORT(cellToVertex)(h3, i, &vertex));
+        t_assertSuccess(H3_EXPORT(vertexToLatLng)(vertex, &coord));
         int almostEqual =
             geoAlmostEqualThreshold(&gb.verts[i], &coord, 0.000001);
         t_assert(almostEqual, "Vertex coordinates match boundary vertex");
@@ -52,7 +53,7 @@ static void cellToVertex_point_assertions(H3Index h3) {
 
 static void cellToVertex_uniqueness_assertions(H3Index h3) {
     H3Index originVerts[NUM_HEX_VERTS] = {0};
-    H3_EXPORT(cellToVertexes)(h3, originVerts);
+    t_assertSuccess(H3_EXPORT(cellToVertexes)(h3, originVerts));
 
     for (int v1 = 0; v1 < NUM_HEX_VERTS - 1; v1++) {
         for (int v2 = v1 + 1; v2 < NUM_HEX_VERTS; v2++) {
@@ -65,7 +66,7 @@ static void cellToVertex_uniqueness_assertions(H3Index h3) {
 
 static void cellToVertex_validity_assertions(H3Index h3) {
     H3Index verts[NUM_HEX_VERTS] = {0};
-    H3_EXPORT(cellToVertexes)(h3, verts);
+    t_assertSuccess(H3_EXPORT(cellToVertexes)(h3, verts));
 
     for (int i = 0; i < NUM_HEX_VERTS - 1; i++) {
         if (verts[i] != H3_NULL) {
@@ -80,12 +81,12 @@ static void cellToVertex_neighbor_assertions(H3Index h3) {
     H3Index neighborVerts[NUM_HEX_VERTS] = {0};
 
     t_assertSuccess(H3_EXPORT(gridDisk)(h3, 1, neighbors));
-    H3_EXPORT(cellToVertexes)(h3, originVerts);
+    t_assertSuccess(H3_EXPORT(cellToVertexes)(h3, originVerts));
 
     for (int i = 0; i < 7; i++) {
         H3Index neighbor = neighbors[i];
         if (neighbor == H3_NULL || neighbor == h3) continue;
-        H3_EXPORT(cellToVertexes)(neighbor, neighborVerts);
+        t_assertSuccess(H3_EXPORT(cellToVertexes)(neighbor, neighborVerts));
 
         // calculate the set intersection
         int intersection = 0;
