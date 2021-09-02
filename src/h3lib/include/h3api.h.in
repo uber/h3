@@ -660,7 +660,8 @@ DECLSPEC void H3_EXPORT(directedEdgeToBoundary)(H3Index edge, CellBoundary *gb);
  * @{
  */
 /** @brief Returns a single vertex for a given cell, as an H3 index */
-DECLSPEC H3Index H3_EXPORT(cellToVertex)(H3Index origin, int vertexNum);
+DECLSPEC H3Error H3_EXPORT(cellToVertex)(H3Index origin, int vertexNum,
+                                         H3Index *out);
 /** @} */
 
 /** @defgroup cellToVertexes cellToVertexes
@@ -668,7 +669,7 @@ DECLSPEC H3Index H3_EXPORT(cellToVertex)(H3Index origin, int vertexNum);
  * @{
  */
 /** @brief Returns all vertexes for a given cell, as H3 indexes */
-DECLSPEC void H3_EXPORT(cellToVertexes)(H3Index origin, H3Index *vertexes);
+DECLSPEC H3Error H3_EXPORT(cellToVertexes)(H3Index origin, H3Index *vertexes);
 /** @} */
 
 /** @defgroup vertexToLatLng vertexToLatLng
@@ -676,7 +677,7 @@ DECLSPEC void H3_EXPORT(cellToVertexes)(H3Index origin, H3Index *vertexes);
  * @{
  */
 /** @brief Returns a single vertex for a given cell, as an H3 index */
-DECLSPEC void H3_EXPORT(vertexToLatLng)(H3Index vertex, LatLng *point);
+DECLSPEC H3Error H3_EXPORT(vertexToLatLng)(H3Index vertex, LatLng *point);
 /** @} */
 
 /** @defgroup isValidVertex isValidVertex
