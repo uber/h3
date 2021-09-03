@@ -21,6 +21,7 @@
 // mean Earth radius
 #define R 6371.0088
 
+#include <assert.h>
 #include <h3/h3api.h>
 #include <math.h>
 #include <stdio.h>
@@ -58,13 +59,16 @@ int main(int argc, char *argv[]) {
     cellToLatLng(h3HQ1, &geoHQ1);
     cellToLatLng(h3HQ2, &geoHQ2);
 
+    int64_t distance;
+    assert(gridDistance(h3HQ1, h3HQ2, &distance) == E_SUCCESS);
+
     printf(
         "origin: (%lf, %lf)\n"
         "destination: (%lf, %lf)\n"
         "grid distance: %d\n"
         "distance in km: %lfkm\n",
         radsToDegs(geoHQ1.lat), radsToDegs(geoHQ1.lng), radsToDegs(geoHQ2.lat),
-        radsToDegs(geoHQ2.lng), gridDistance(h3HQ1, h3HQ2),
+        radsToDegs(geoHQ2.lng), distance,
         haversineDistance(geoHQ1.lat, geoHQ1.lng, geoHQ2.lat, geoHQ2.lng));
     // Output:
     // origin: (37.775236, -122.419755)

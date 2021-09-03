@@ -402,7 +402,7 @@ Produces the hollow hexagonal ring centered at origin with sides of length k.
 
 Returns 0 if no pentagonal distortion was encountered.
 
-## h3Line
+## gridPathCells
 
 <Tabs
   groupId="language"
@@ -417,36 +417,36 @@ Returns 0 if no pentagonal distortion was encountered.
 <TabItem value="c">
 
 ```c
-int h3Line(H3Index start, H3Index end, H3Index* out);
+H3Error gridPathCells(H3Index start, H3Index end, H3Index* out);
 ```
 
 </TabItem>
 <TabItem value="python">
 
 ```py
-h3.h3_line(start, end)
+h3.grid_path_cells(start, end)
 ```
 
 </TabItem>
 <TabItem value="java">
 
 ```java
-List<Long> h3Line(long start, long end) throws LineUndefinedException
-List<String> h3Line(String startAddress, String endAddress) throws LineUndefinedException
+List<Long> gridPathCells(long start, long end) throws LineUndefinedException
+List<String> gridPathCells(String startAddress, String endAddress) throws LineUndefinedException
 ```
 
 </TabItem>
 <TabItem value="javascript">
 
 ```js
-h3.h3Line(start, end)
+h3.gridPathCells(start, end)
 ```
 
 ```js live
 function example() {
   const start = '85283473fffffff';
   const end = '8528342bfffffff';
-  return h3.h3Line(start, end);
+  return h3.gridPathCells(start, end);
 }
 ```
 
@@ -469,7 +469,7 @@ distances for indexes on opposite sides of a pentagon.
  * Lines are drawn in grid space, and may not correspond exactly to either
    Cartesian lines or great arcs.
 
-## h3LineSize
+## gridPathCellsSize
 
 <Tabs
   groupId="language"
@@ -484,7 +484,7 @@ distances for indexes on opposite sides of a pentagon.
 <TabItem value="c">
 
 ```c
-int h3LineSize(H3Index start, H3Index end);
+H3Error gridPathCellsSize(H3Index start, H3Index end, int64_t* size);
 ```
 
 </TabItem>
@@ -518,10 +518,11 @@ This function exists for memory management and is not exposed.
 </Tabs>
 
 Number of indexes in a line from the start index to the end index,
-to be used for allocating memory. Returns a negative number if the
-line cannot be computed.
+to be used for allocating memory.
 
-## h3Distance
+Returns 0 (`E_SUCCESS`) on success, or an error if the line cannot be computed.
+
+## gridDistance
 
 <Tabs
   groupId="language"
@@ -536,47 +537,48 @@ line cannot be computed.
 <TabItem value="c">
 
 ```c
-int h3Distance(H3Index origin, H3Index h3);
+H3Error gridDistance(H3Index origin, H3Index h3, int64_t *distance);
 ```
 
 </TabItem>
 <TabItem value="python">
 
 ```py
-h3.h3_distance(h1, h2)
+h3.grid_distance(h1, h2)
 ```
 
 </TabItem>
 <TabItem value="java">
 
 ```java
-int h3Distance(long a, long b) throws DistanceUndefinedException;
-int h3Distance(String a, String b) throws DistanceUndefinedException;
+long gridDistance(long a, long b) throws DistanceUndefinedException;
+long gridDistance(String a, String b) throws DistanceUndefinedException;
 ```
 
 </TabItem>
 <TabItem value="javascript">
 
 ```js
-h3.h3Distance(a, b)
+h3.gridDistance(a, b)
 ```
 
 ```js live
 function example() {
   const start = '85283473fffffff';
   const end = '8528342bfffffff';
-  return h3.h3Distance(start, end);
+  return h3.gridDistance(start, end);
 }
 ```
 
 </TabItem>
 </Tabs>
 
-Returns the distance in grid cells between the two indexes.
+Provides the distance in grid cells between the two indexes.
 
-Returns a negative number if finding the distance failed. Finding the distance can fail because the two
-indexes are not comparable (different resolutions), too far apart, or are separated by pentagonal
-distortion. This is the same set of limitations as the local IJ coordinate space functions.
+Returns 0 (`E_SUCCESS`) on success, or an error if finding the distance failed. Finding the distance
+can fail because the two indexes are not comparable (different resolutions), too far apart, or are
+separated by pentagonal distortion. This is the same set of limitations as the local IJ coordinate
+space functions.
 
 ## experimentalH3ToLocalIj
 
@@ -593,7 +595,7 @@ distortion. This is the same set of limitations as the local IJ coordinate space
 <TabItem value="c">
 
 ```c
-int experimentalH3ToLocalIj(H3Index origin, H3Index h3, CoordIJ *out);
+H3Error experimentalH3ToLocalIj(H3Index origin, H3Index h3, CoordIJ *out);
 ```
 
 </TabItem>
@@ -650,7 +652,7 @@ to be compatible across different versions of H3.
 <TabItem value="c">
 
 ```c
-int experimentalLocalIjToH3(H3Index origin, const CoordIJ *ij, H3Index *out);
+H3Error experimentalLocalIjToH3(H3Index origin, const CoordIJ *ij, H3Index *out);
 ```
 
 </TabItem>
