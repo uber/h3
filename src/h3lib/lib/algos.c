@@ -559,8 +559,10 @@ H3Error H3_EXPORT(gridDiskDistancesUnsafe)(H3Index origin, int k, H3Index *out,
             // the end of this ring.
             H3Error neighborResult = h3NeighborRotations(
                 origin, NEXT_RING_DIRECTION, &rotations, &origin);
-            if (neighborResult) {
-                return neighborResult;
+            if (neighborResult) { // LCOV_EXCL_BR_LINE
+                // Should not be possible because `origin` would have to be a
+                // pentagon
+                return neighborResult; // LCOV_EXCL_LINE
             }
 
             if (H3_EXPORT(isPentagon)(origin)) {
@@ -657,8 +659,10 @@ H3Error H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index *out) {
     for (int ring = 0; ring < k; ring++) {
         H3Error neighborResult = h3NeighborRotations(
             origin, NEXT_RING_DIRECTION, &rotations, &origin);
-        if (neighborResult) {
-            return neighborResult;
+        if (neighborResult) { // LCOV_EXCL_BR_LINE
+            // Should not be possible because `origin` would have to be a
+            // pentagon
+            return neighborResult; // LCOV_EXCL_LINE
         }
 
         if (H3_EXPORT(isPentagon)(origin)) {
@@ -675,8 +679,10 @@ H3Error H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index *out) {
         for (int pos = 0; pos < k; pos++) {
             H3Error neighborResult = h3NeighborRotations(
                 origin, DIRECTIONS[direction], &rotations, &origin);
-            if (neighborResult) {
-                return neighborResult;
+            if (neighborResult) { // LCOV_EXCL_BR_LINE
+                // Should not be possible because `origin` would have to be a
+                // pentagon
+                return neighborResult; // LCOV_EXCL_LINE
             }
 
             // Skip the very last index, it was already added. We do
