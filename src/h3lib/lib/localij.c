@@ -646,12 +646,12 @@ H3Error H3_EXPORT(gridPathCells)(H3Index start, H3Index end, H3Index *out) {
 
     // Convert H3 addresses to IJK coords
     H3Error startError = h3ToLocalIjk(start, start, &startIjk);
-    if (startError) {
+    if (startError) {  // LCOV_EXCL_BR_LINE
         // Unreachable because this was called as part of gridDistance
         return startError;  // LCOV_EXCL_LINE
     }
     H3Error endError = h3ToLocalIjk(start, end, &endIjk);
-    if (endError) {
+    if (endError) {  // LCOV_EXCL_BR_LINE
         // Unreachable because this was called as part of gridDistance
         return endError;  // LCOV_EXCL_LINE
     }
@@ -675,7 +675,7 @@ H3Error H3_EXPORT(gridPathCells)(H3Index start, H3Index end, H3Index *out) {
         // Convert cube -> ijk -> h3 index
         cubeToIjk(&currentIjk);
         H3Error currentError = localIjkToH3(start, &currentIjk, &out[n]);
-        if (currentError) {
+        if (currentError) {  // LCOV_EXCL_BR_LINE
             // Expected to be unreachable since cells between `start` and `end`
             // should have valid local IJK coordinates.
             return currentError;  // LCOV_EXCL_LINE
