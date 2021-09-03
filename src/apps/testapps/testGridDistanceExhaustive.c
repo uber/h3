@@ -35,7 +35,9 @@
 static const int MAX_DISTANCES[] = {1, 2, 5, 12, 19, 26};
 
 static void gridDistance_identity_assertions(H3Index h3) {
-    t_assert(H3_EXPORT(gridDistance)(h3, h3) == 0, "distance to self is 0");
+    int64_t distance;
+    t_assertSuccess(H3_EXPORT(gridDistance)(h3, h3, &distance));
+    t_assert(distance == 0, "distance to self is 0");
 }
 
 static void gridDistance_gridDisk_assertions(H3Index h3) {
@@ -55,12 +57,16 @@ static void gridDistance_gridDisk_assertions(H3Index h3) {
             continue;
         }
 
-        int calculatedDistance = H3_EXPORT(gridDistance)(h3, neighbors[i]);
+        int64_t calculatedDistance;
+        H3Error calculatedError =
+            H3_EXPORT(gridDistance)(h3, neighbors[i], &calculatedDistance);
 
         // Don't consider indexes where gridDistance reports failure to
         // generate
-        t_assert(calculatedDistance == distances[i] || calculatedDistance == -1,
-                 "gridDiskDistances matches gridDistance");
+        if (calculatedError == E_SUCCESS) {
+            t_assert(calculatedDistance == distances[i],
+                     "gridDiskDistances matches gridDistance");
+        }
     }
 
     free(distances);

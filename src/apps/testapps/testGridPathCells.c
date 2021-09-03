@@ -34,7 +34,9 @@ SUITE(gridPathCells) {
         H3Index start = 0x85285aa7fffffff;
         H3Index end = 0x851d9b1bfffffff;
 
-        int lineSz = H3_EXPORT(gridPathCellsSize)(start, end);
-        t_assert(lineSz < 0, "Line not computable across multiple icosa faces");
+        int64_t size;
+        H3Error lineError = H3_EXPORT(gridPathCellsSize)(start, end, &size);
+        t_assert(lineError == E_FAILED,
+                 "Line not computable across multiple icosa faces");
     }
 }

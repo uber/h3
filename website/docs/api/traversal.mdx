@@ -486,7 +486,7 @@ distances for indexes on opposite sides of a pentagon.
 <TabItem value="c">
 
 ```c
-H3Error gridPathCellsSize(H3Index start, H3Index end, int *size);
+H3Error gridPathCellsSize(H3Index start, H3Index end, int64_t* size);
 ```
 
 </TabItem>
@@ -520,8 +520,9 @@ This function exists for memory management and is not exposed.
 </Tabs>
 
 Number of indexes in a line from the start index to the end index,
-to be used for allocating memory. Returns a negative number if the
-line cannot be computed.
+to be used for allocating memory.
+
+Returns 0 (`E_SUCCESS`) on success, or an error if the line cannot be computed.
 
 ## gridDistance
 
@@ -538,7 +539,7 @@ line cannot be computed.
 <TabItem value="c">
 
 ```c
-H3Error gridDistance(H3Index origin, H3Index h3, int *distance);
+H3Error gridDistance(H3Index origin, H3Index h3, int64_t *distance);
 ```
 
 </TabItem>
@@ -552,8 +553,8 @@ h3.grid_distance(h1, h2)
 <TabItem value="java">
 
 ```java
-int gridDistance(long a, long b) throws DistanceUndefinedException;
-int gridDistance(String a, String b) throws DistanceUndefinedException;
+long gridDistance(long a, long b) throws DistanceUndefinedException;
+long gridDistance(String a, String b) throws DistanceUndefinedException;
 ```
 
 </TabItem>
@@ -574,11 +575,12 @@ function example() {
 </TabItem>
 </Tabs>
 
-Returns the distance in grid cells between the two indexes.
+Provides the distance in grid cells between the two indexes.
 
-Returns a negative number if finding the distance failed. Finding the distance can fail because the two
-indexes are not comparable (different resolutions), too far apart, or are separated by pentagonal
-distortion. This is the same set of limitations as the local IJ coordinate space functions.
+Returns 0 (`E_SUCCESS`) on success, or an error if finding the distance failed. Finding the distance
+can fail because the two indexes are not comparable (different resolutions), too far apart, or are
+separated by pentagonal distortion. This is the same set of limitations as the local IJ coordinate
+space functions.
 
 ## experimentalH3ToLocalIj
 
@@ -595,7 +597,7 @@ distortion. This is the same set of limitations as the local IJ coordinate space
 <TabItem value="c">
 
 ```c
-int experimentalH3ToLocalIj(H3Index origin, H3Index h3, CoordIJ *out);
+H3Error experimentalH3ToLocalIj(H3Index origin, H3Index h3, CoordIJ *out);
 ```
 
 </TabItem>
@@ -652,7 +654,7 @@ to be compatible across different versions of H3.
 <TabItem value="c">
 
 ```c
-int experimentalLocalIjToH3(H3Index origin, const CoordIJ *ij, H3Index *out);
+H3Error experimentalLocalIjToH3(H3Index origin, const CoordIJ *ij, H3Index *out);
 ```
 
 </TabItem>

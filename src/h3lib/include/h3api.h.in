@@ -694,7 +694,8 @@ DECLSPEC int H3_EXPORT(isValidVertex)(H3Index vertex);
  * @{
  */
 /** @brief Returns grid distance between two indexes */
-DECLSPEC int H3_EXPORT(gridDistance)(H3Index origin, H3Index h3);
+DECLSPEC H3Error H3_EXPORT(gridDistance)(H3Index origin, H3Index h3,
+                                         int64_t *distance);
 /** @} */
 
 /** @defgroup gridPathCells gridPathCells
@@ -702,10 +703,12 @@ DECLSPEC int H3_EXPORT(gridDistance)(H3Index origin, H3Index h3);
  * @{
  */
 /** @brief Number of indexes in a line connecting two indexes */
-DECLSPEC int H3_EXPORT(gridPathCellsSize)(H3Index start, H3Index end);
+DECLSPEC H3Error H3_EXPORT(gridPathCellsSize)(H3Index start, H3Index end,
+                                              int64_t *size);
 
 /** @brief Line of h3 indexes connecting two indexes */
-DECLSPEC int H3_EXPORT(gridPathCells)(H3Index start, H3Index end, H3Index *out);
+DECLSPEC H3Error H3_EXPORT(gridPathCells)(H3Index start, H3Index end,
+                                          H3Index *out);
 /** @} */
 
 /** @defgroup experimentalH3ToLocalIj experimentalH3ToLocalIj
@@ -713,8 +716,8 @@ DECLSPEC int H3_EXPORT(gridPathCells)(H3Index start, H3Index end, H3Index *out);
  * @{
  */
 /** @brief Returns two dimensional coordinates for the given index */
-DECLSPEC int H3_EXPORT(experimentalH3ToLocalIj)(H3Index origin, H3Index h3,
-                                                CoordIJ *out);
+DECLSPEC H3Error H3_EXPORT(experimentalH3ToLocalIj)(H3Index origin, H3Index h3,
+                                                    CoordIJ *out);
 /** @} */
 
 /** @defgroup experimentalLocalIjToH3 experimentalLocalIjToH3
@@ -722,9 +725,9 @@ DECLSPEC int H3_EXPORT(experimentalH3ToLocalIj)(H3Index origin, H3Index h3,
  * @{
  */
 /** @brief Returns index for the given two dimensional coordinates */
-DECLSPEC int H3_EXPORT(experimentalLocalIjToH3)(H3Index origin,
-                                                const CoordIJ *ij,
-                                                H3Index *out);
+DECLSPEC H3Error H3_EXPORT(experimentalLocalIjToH3)(H3Index origin,
+                                                    const CoordIJ *ij,
+                                                    H3Index *out);
 /** @} */
 
 #ifdef __cplusplus
