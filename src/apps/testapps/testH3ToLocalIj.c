@@ -50,7 +50,7 @@ SUITE(h3ToLocalIj) {
 
     TEST(ijkBaseCells) {
         CoordIJK ijk;
-        t_assert(h3ToLocalIjk(pent1, bc1, &ijk) == 0,
+        t_assert(h3ToLocalIjk(pent1, bc1, &ijk) == E_SUCCESS,
                  "got ijk for base cells 4 and 15");
         t_assert(_ijkMatches(&ijk, &UNIT_VECS[2]) == 1,
                  "neighboring base cell at 0,1,0");
@@ -60,30 +60,30 @@ SUITE(h3ToLocalIj) {
         CoordIJ ij = {.i = 0, .j = 0};
         H3Index origin = 0x8029fffffffffff;
         H3Index retrieved;
-        t_assert(
-            H3_EXPORT(experimentalLocalIjToH3)(origin, &ij, &retrieved) == 0,
-            "got origin back");
+        t_assert(H3_EXPORT(experimentalLocalIjToH3)(origin, &ij, &retrieved) ==
+                     E_SUCCESS,
+                 "got origin back");
         t_assert(retrieved == 0x8029fffffffffff, "origin matches self");
         ij.i = 1;
-        t_assert(
-            H3_EXPORT(experimentalLocalIjToH3)(origin, &ij, &retrieved) == 0,
-            "got offset index");
+        t_assert(H3_EXPORT(experimentalLocalIjToH3)(origin, &ij, &retrieved) ==
+                     E_SUCCESS,
+                 "got offset index");
         t_assert(retrieved == 0x8051fffffffffff,
                  "modified index matches expected");
         ij.i = 2;
-        t_assert(
-            H3_EXPORT(experimentalLocalIjToH3)(origin, &ij, &retrieved) != 0,
-            "out of range base cell (1)");
+        t_assert(H3_EXPORT(experimentalLocalIjToH3)(origin, &ij, &retrieved) ==
+                     E_FAILED,
+                 "out of range base cell (1)");
         ij.i = 0;
         ij.j = 2;
-        t_assert(
-            H3_EXPORT(experimentalLocalIjToH3)(origin, &ij, &retrieved) != 0,
-            "out of range base cell (2)");
+        t_assert(H3_EXPORT(experimentalLocalIjToH3)(origin, &ij, &retrieved) ==
+                     E_FAILED,
+                 "out of range base cell (2)");
         ij.i = -2;
         ij.j = -2;
-        t_assert(
-            H3_EXPORT(experimentalLocalIjToH3)(origin, &ij, &retrieved) != 0,
-            "out of range base cell (3)");
+        t_assert(H3_EXPORT(experimentalLocalIjToH3)(origin, &ij, &retrieved) ==
+                     E_FAILED,
+                 "out of range base cell (3)");
     }
 
     TEST(ijOutOfRange) {
@@ -126,30 +126,32 @@ SUITE(h3ToLocalIj) {
         t_assert(H3_EXPORT(experimentalH3ToLocalIj)(bc1, bc3, &ij) == 0,
                  "found IJ (4)");
         t_assert(ij.i == -1 && ij.j == 0, "ij correct (4)");
-        t_assert(H3_EXPORT(experimentalH3ToLocalIj)(pent1, bc3, &ij) != 0,
-                 "found IJ (5)");
+        t_assert(
+            H3_EXPORT(experimentalH3ToLocalIj)(pent1, bc3, &ij) == E_FAILED,
+            "found IJ (5)");
     }
 
     TEST(experimentalH3ToLocalIjInvalid) {
         CoordIJ ij;
         H3Index invalidIndex = 0x7fffffffffffffff;
         H3_SET_RESOLUTION(invalidIndex, H3_GET_RESOLUTION(bc1));
-        t_assert(
-            H3_EXPORT(experimentalH3ToLocalIj)(bc1, invalidIndex, &ij) != 0,
-            "invalid index");
+        t_assert(H3_EXPORT(experimentalH3ToLocalIj)(bc1, invalidIndex, &ij) ==
+                     E_CELL_INVALID,
+                 "invalid index");
         t_assert(H3_EXPORT(experimentalH3ToLocalIj)(0x7fffffffffffffff, bc1,
-                                                    &ij) != 0,
+                                                    &ij) == E_RES_MISMATCH,
                  "invalid origin");
-        t_assert(H3_EXPORT(experimentalH3ToLocalIj)(
-                     0x7fffffffffffffff, 0x7fffffffffffffff, &ij) != 0,
-                 "invalid origin and index");
+        t_assert(
+            H3_EXPORT(experimentalH3ToLocalIj)(
+                0x7fffffffffffffff, 0x7fffffffffffffff, &ij) == E_CELL_INVALID,
+            "invalid origin and index");
     }
 
     TEST(experimentalLocalIjToH3Invalid) {
         CoordIJ ij = {0, 0};
         H3Index index;
         t_assert(H3_EXPORT(experimentalLocalIjToH3)(0x7fffffffffffffff, &ij,
-                                                    &index) != 0,
+                                                    &index) == E_CELL_INVALID,
                  "invalid origin for ijToH3");
     }
 

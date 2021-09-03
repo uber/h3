@@ -152,4 +152,16 @@ SUITE(gridDistance) {
         t_assertSuccess(H3_EXPORT(gridDistance)(dest, edge, &distance));
         t_assert(distance == 1, "destination has distance to edge");
     }
+
+    TEST(gridDistanceInvalid) {
+        H3Index invalid = 0xffffffffffffffff;
+        int64_t distance;
+        t_assert(H3_EXPORT(gridDistance)(invalid, invalid, &distance) ==
+                     E_CELL_INVALID,
+                 "distance from invalid cell");
+
+        t_assert(
+            H3_EXPORT(gridDistance)(bc1, invalid, &distance) == E_RES_MISMATCH,
+            "distance to invalid cell");
+    }
 }

@@ -547,9 +547,7 @@ H3Error H3_EXPORT(gridDistance)(H3Index origin, H3Index h3, int64_t *out) {
     CoordIJK originIjk, h3Ijk;
     H3Error originError = h3ToLocalIjk(origin, origin, &originIjk);
     if (originError) {
-        // Currently there are no tests that would cause getting the coordinates
-        // for an index the same as the origin to fail.
-        return originError;  // LCOV_EXCL_LINE
+        return originError;
     }
     H3Error destError = h3ToLocalIjk(origin, h3, &h3Ijk);
     if (destError) {
@@ -678,7 +676,9 @@ H3Error H3_EXPORT(gridPathCells)(H3Index start, H3Index end, H3Index *out) {
         cubeToIjk(&currentIjk);
         H3Error currentError = localIjkToH3(start, &currentIjk, &out[n]);
         if (currentError) {
-            return currentError;
+            // Expected to be unreachable since cells between `start` and `end`
+            // should have valid local IJK coordinates.
+            return currentError;  // LCOV_EXCL_LINE
         }
     }
 
