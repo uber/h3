@@ -44,11 +44,11 @@ static void haversine_assert(H3Index edge) {
     LatLng a, b;
     H3Index origin, destination;
 
-    origin = H3_EXPORT(getDirectedEdgeOrigin)(edge);
-    H3_EXPORT(cellToLatLng)(origin, &a);
+    t_assertSuccess(H3_EXPORT(getDirectedEdgeOrigin)(edge, &origin));
+    t_assertSuccess(H3_EXPORT(cellToLatLng)(origin, &a));
 
-    destination = H3_EXPORT(getDirectedEdgeDestination)(edge);
-    H3_EXPORT(cellToLatLng)(destination, &b);
+    t_assertSuccess(H3_EXPORT(getDirectedEdgeDestination)(edge, &destination));
+    t_assertSuccess(H3_EXPORT(cellToLatLng)(destination, &b));
 
     char pos[] = "distance between cell centers should be positive";
     char comm[] = "pairwise cell distances should be commutative";

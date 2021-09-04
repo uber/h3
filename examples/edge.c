@@ -26,7 +26,8 @@ int main(int argc, char *argv[]) {
     H3Index origin = 0x8a2a1072b59ffffL;
     H3Index destination = 0x8a2a1072b597fffL;  // north of the origin
 
-    H3Index edge = cellsToDirectedEdge(origin, destination);
+    H3Index edge;
+    cellsToDirectedEdge(origin, destination, &edge);
     printf("The edge is %" PRIx64 "\n", edge);
 
     CellBoundary boundary;
