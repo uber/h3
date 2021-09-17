@@ -749,7 +749,10 @@ H3Error H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index *out) {
  * @return 0 (E_SUCCESS) on success.
  */
 H3Error H3_EXPORT(maxPolygonToCellsSize)(const GeoPolygon *geoPolygon, int res,
-                                         int64_t *out) {
+                                         uint32_t flags, int64_t *out) {
+    if (flags != 0) {
+        return E_FAILED;
+    }
     // Get the bounding box for the GeoJSON-like struct
     BBox bbox;
     const GeoLoop geoloop = geoPolygon->geoloop;
@@ -853,7 +856,10 @@ H3Error _getEdgeHexagons(const GeoLoop *geoloop, int64_t numHexagons, int res,
  * @param out The slab of zeroed memory to write to. Assumed to be big enough.
  */
 H3Error H3_EXPORT(polygonToCells)(const GeoPolygon *geoPolygon, int res,
-                                  H3Index *out) {
+                                  uint32_t flags, H3Index *out) {
+    if (flags != 0) {
+        return E_FAILED;
+    }
     // One of the goals of the polygonToCells algorithm is that two adjacent
     // polygons with zero overlap have zero overlapping hexagons. That the
     // hexagons are uniquely assigned. There are a few approaches to take here,
@@ -882,7 +888,7 @@ H3Error H3_EXPORT(polygonToCells)(const GeoPolygon *geoPolygon, int res,
     // for the hexagons
     int64_t numHexagons;
     H3Error numHexagonsError =
-        H3_EXPORT(maxPolygonToCellsSize)(geoPolygon, res, &numHexagons);
+        H3_EXPORT(maxPolygonToCellsSize)(geoPolygon, res, flags, &numHexagons);
     if (numHexagonsError) {
         H3_MEMORY(free)(bboxes);
         return numHexagonsError;
