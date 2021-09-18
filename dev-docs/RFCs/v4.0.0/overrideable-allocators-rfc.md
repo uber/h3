@@ -2,7 +2,7 @@
 
 * **Authors**: Isaac Brodsky (@isaacbrodsky)
 * **Date**: February 7, 2020
-* **Status**: Draft
+* **Status**: Implemented
 
 ## Overview
 
