@@ -14,7 +14,7 @@ H3 is a hierarchical geospatial index. H3 indexes refer to cells by the spatial 
 
 Hexagons do not cleanly subdivide into seven finer hexagons. However, by alternating the orientation of grids a subdivision into seven cells can be approximated. This makes it possible to truncate the precision within a fixed margin of error of an H3 index. It is also possible to determine all the children of a parent H3 index.
 
-Approximate containment only applies when truncating the precision of an H3 index. The borders of hexagons indexed at a specific resolution are not approximate and not effected by these considerations. For example, indexing points to cells at a certain resolution and finding those cell's neighbors is not effected by approximate containment.
+Approximate containment only applies when truncating the precision of an H3 index. The borders of hexagons indexed at a specific resolution are not approximate and not affected by these considerations. For example, indexing points to cells at a certain resolution and finding those cell's neighbors is not affected by approximate containment.
 
 While geographic containment is approximate, logical containment in the index is exact. It is possible to use H3 as an exact logical index on top of data indexed at a specific resolution.
 
