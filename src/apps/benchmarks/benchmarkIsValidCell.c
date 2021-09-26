@@ -16,18 +16,12 @@
 #include "benchmark.h"
 #include "h3api.h"
 
+// return a pentagon at the given resolution
 H3Index pentagonAtRes(int res) {
     H3Index p = 0x80c3fffffffffff;  // res 0 pentagon
     p = H3_EXPORT(cellToCenterChild)(p, res);
 
     return p;
-}
-
-H3Index hexagonAtRes(int res) {
-    H3Index h = 0x808bfffffffffff;  // res 0 hexagon
-    h = H3_EXPORT(cellToCenterChild)(h, res);
-
-    return h;
 }
 
 int parentRes;
@@ -40,6 +34,9 @@ H3Index *cells;
 BEGIN_BENCHMARKS();
 
 // pentagon 8->14
+//
+// Starting with a parent *pentagon* cell of resolution 8,
+// loop through all its children at resolution 14, applying `isValidCell`
 parentRes = 8;
 childRes = 14;
 
@@ -57,6 +54,9 @@ BENCHMARK(pentagonChildren_8_14, 1000, {
 free(cells);
 
 // pentagon 2->8
+//
+// Starting with a parent *pentagon* cell of resolution 2,
+// loop through all its children at resolution 8, applying `isValidCell`
 parentRes = 2;
 childRes = 8;
 p = pentagonAtRes(parentRes);
