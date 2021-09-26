@@ -85,14 +85,48 @@ static const bool isBaseCellPentagonArr[128] = {
     [4] = 1,  [14] = 1, [24] = 1, [38] = 1, [49] = 1,  [58] = 1,
     [63] = 1, [72] = 1, [83] = 1, [97] = 1, [107] = 1, [117] = 1};
 
-/**
- * Determines whether an H3 index is a valid cell (hexagon or pentagon).
- *
- * @param   h  H3 index to test.
- *
- * @return     1 if the H3 index if valid, and 0 if it is not.
- */
-int H3_EXPORT(isValidCell)(H3Index h) {
+int _isValidCell_old(H3Index h) {
+    if (H3_GET_HIGH_BIT(h) != 0) return 0;
+
+    if (H3_GET_MODE(h) != H3_HEXAGON_MODE) return 0;
+
+    if (H3_GET_RESERVED_BITS(h) != 0) return 0;
+
+    int baseCell = H3_GET_BASE_CELL(h);
+    if (baseCell < 0 || baseCell >= NUM_BASE_CELLS) {  // LCOV_EXCL_BR_LINE
+        // Base cells less than zero can not be represented in an index
+        return 0;
+    }
+
+    int res = H3_GET_RESOLUTION(h);
+    if (res < 0 || res > MAX_H3_RES) {  // LCOV_EXCL_BR_LINE
+        // Resolutions less than zero can not be represented in an index
+        return 0;
+    }
+
+    bool foundFirstNonZeroDigit = false;
+    for (int r = 1; r <= res; r++) {
+        Direction digit = H3_GET_INDEX_DIGIT(h, r);
+
+        if (!foundFirstNonZeroDigit && digit != CENTER_DIGIT) {
+            foundFirstNonZeroDigit = true;
+            if (_isBaseCellPentagon(baseCell) && digit == K_AXES_DIGIT) {
+                return 0;
+            }
+        }
+
+        if (digit < CENTER_DIGIT || digit >= NUM_DIGITS) return 0;
+    }
+
+    for (int r = res + 1; r <= MAX_H3_RES; r++) {
+        Direction digit = H3_GET_INDEX_DIGIT(h, r);
+        if (digit != INVALID_DIGIT) return 0;
+    }
+
+    return 1;
+}
+
+int _isValidCell_pop(H3Index h) {
     // Implementation strategy:
     //
     // Walk from high to low bits, checking validity of
@@ -114,7 +148,7 @@ int H3_EXPORT(isValidCell)(H3Index h) {
     // | ...        |    ... |
     // | Digit 15   |      3 |
     //
-    // Additionally, we try to group operations and void loops when possible.
+    // Additionally, we try to group operations and avoid loops when possible.
 
     // The 1 high bit should be 0b0
     // The 4 mode bits should be 0b0001 (H3_CELL_MODE)
@@ -126,9 +160,9 @@ int H3_EXPORT(isValidCell)(H3Index h) {
     // Number of bits in each of the resolution, base cell, and digit regions.
     const int nBitsRes = 4;
     const int nBitsBaseCell = 7;
-    const int nBitsDigit = H3_PER_DIGIT_OFFSET;
+    const int nBitsDigit = H3_PER_DIGIT_OFFSET;  // ... == 3
 
-    // No need to check resolution; any 4-bit number is a valid resolution.
+    // No need to check resolution; any 4 bits give a valid resolution.
     const int res = GT(h, nBitsRes);
     h <<= nBitsRes;
 
@@ -136,6 +170,10 @@ int H3_EXPORT(isValidCell)(H3Index h) {
     const int bc = GT(h, nBitsBaseCell);
     if (bc >= NUM_BASE_CELLS) return 0;
     h <<= nBitsBaseCell;
+
+    // six shifts up at this point. can reduce with masking? is that faster?
+    // make input const!? instead: mask-equals, mask-shift, mask-shift easy test
+    // to see what might be faster, mask vs shift?
 
     // Now check that each resolution digit is valid.
     // Let `r` denote the resolution we're currently checking.
@@ -147,9 +185,11 @@ int H3_EXPORT(isValidCell)(H3Index h) {
     // Test for pentagon base cell first to avoid this loop if possible.
     if (isBaseCellPentagonArr[bc]) {
         for (; r <= res; r++) {
-            int d = GT(h, nBitsDigit);
+            int d = GT(
+                h, nBitsDigit);  // idea: could do david's masking thing here.
+                                 // makes this loop not mutate anything...
             if (d == 0) {
-                h <<= nBitsDigit;
+                h <<= nBitsDigit;  // nice because this just becomes `continue`
             } else if (d == 1) {
                 return 0;
             } else {
@@ -168,19 +208,161 @@ int H3_EXPORT(isValidCell)(H3Index h) {
         h <<= nBitsDigit;
     }
 
-    // Now check that all the unused digits after `res` are
-    // set to 7 (INVALID_DIGIT).
-    // Bit shift operations allow us to avoid looping through digits;
-    // this saves time in benchmarks.
+    // if we make it const h, then we can move this code up front, to loops
+    // happen last Now check that all the unused digits after `res` are set to 7
+    // (INVALID_DIGIT). Bit shift operations allow us to avoid looping through
+    // digits; this saves time in benchmarks.
     int shift = (15 - res) * 3;
     uint64_t m = 0;
     m = ~m;
-    m >>= shift;
+    m >>= shift;  // can i do this by shifting left and avoid the next negation?
     m = ~m;
     if (h != m) return 0;
 
+    // add the timing code to the main repo in a PR before landing this, so its
+    // easy to get comparison times
+
     // If no flaws were identified above, then the index is a valid H3 cell.
     return 1;
+}
+
+int _isValidCell_const(const H3Index h) {
+    // Implementation strategy:
+    //
+    // Walk from high to low bits, checking validity of
+    // groups of bits as we go. After each check, shift bits off
+    // to the left, so that the next relevant group is at the
+    // highest bit location in the H3 Index, which we can
+    // easily read off with the `GT` macro. This strategy helps
+    // us avoid re-computing shifts and masks for each group.
+    //
+    // |   Region   | # bits |
+    // |------------|--------|
+    // | High       |      1 |
+    // | Mode       |      4 |
+    // | Reserved   |      3 |
+    // | Resolution |      4 |
+    // | Base Cell  |      7 |
+    // | Digit 1    |      3 |
+    // | Digit 2    |      3 |
+    // | ...        |    ... |
+    // | Digit 15   |      3 |
+    //
+    // Additionally, we try to group operations and avoid loops when possible.
+
+    // The 1 high bit should be 0b0
+    // The 4 mode bits should be 0b0001 (H3_CELL_MODE)
+    // The 3 reserved bits should be 0b000
+    // In total, the top 8 bits should be 0b00001000
+    if (GT(h, 8) != 0b00001000)
+        return 0;  // could do this without the shift if we wanted...
+
+    // No need to check resolution; any 4 bits give a valid resolution.
+    const int res = H3_GET_RESOLUTION(h);
+
+    // Check that base cell number is valid.
+    const int bc = H3_GET_BASE_CELL(h);
+    if (bc >= NUM_BASE_CELLS) return 0;
+
+    // six shifts up at this point. can reduce with masking? is that faster?
+    // make input const!? instead: mask-equals, mask-shift, mask-shift easy test
+    // to see what might be faster, mask vs shift?
+
+    // Now check that each resolution digit is valid.
+    // Let `r` denote the resolution we're currently checking.
+    int r = 1;
+
+    static const uint64_t digit_masks[16] = {
+        0b0,
+        0b111000000000000000000000000000000000000000000,
+        0b111000000000000000000000000000000000000000,
+        0b111000000000000000000000000000000000000,
+        0b111000000000000000000000000000000000,
+        0b111000000000000000000000000000000,
+        0b111000000000000000000000000000,
+        0b111000000000000000000000000,
+        0b111000000000000000000000,
+        0b111000000000000000000,
+        0b111000000000000000,
+        0b111000000000000,
+        0b111000000000,
+        0b111000000,
+        0b111000,
+        0b111};
+
+    static const uint64_t digit_ones[16] = {
+        0b0,
+        0b1000000000000000000000000000000000000000000,
+        0b1000000000000000000000000000000000000000,
+        0b1000000000000000000000000000000000000,
+        0b1000000000000000000000000000000000,
+        0b1000000000000000000000000000000,
+        0b1000000000000000000000000000,
+        0b1000000000000000000000000,
+        0b1000000000000000000000,
+        0b1000000000000000000,
+        0b1000000000000000,
+        0b1000000000000,
+        0b1000000000,
+        0b1000000,
+        0b1000,
+        0b1,
+    };
+
+    // Pentagon cells start with a sequence of 0's (CENTER_DIGIT's).
+    // The first nonzero digit can't be a 1 (i.e., "deleted subsequence",
+    // PENTAGON_SKIPPED_DIGIT, or K_AXES_DIGIT).
+    // Test for pentagon base cell first to avoid this loop if possible.
+    if (isBaseCellPentagonArr[bc]) {
+        for (; r <= res; r++) {
+            uint64_t d = h & digit_masks[r];
+            if (d == 0) {
+                continue;
+            } else if (d == digit_ones[r]) {
+                return 0;
+            } else {
+                break;
+                // But don't increment `r`, since we still need to
+                // check that it isn't a 7.
+            }
+        }
+    }
+
+    // After (possibly) taking care of pentagon logic, check that
+    // the remaining digits up to `res` are not 7 (INVALID_DIGIT).
+    for (; r <= res; r++) {
+        if ((h & digit_masks[r]) == digit_masks[r]) return 0;
+    }
+
+    // if we make it const h, then we can move this code up front, to loops
+    // happen last Now check that all the unused digits after `res` are set to 7
+    // (INVALID_DIGIT). Bit shift operations allow us to avoid looping through
+    // digits; this saves time in benchmarks.
+    int shift = (15 - res) * 3;
+    uint64_t m = 0;
+    m = ~m;
+    m <<= shift;  // shift right and avoid the next negation?
+    m = ~m;
+    if ((h & m) != m) return 0;
+
+    // add the timing code to the main repo in a PR before landing this, so its
+    // easy to get comparison times
+
+    // If no flaws were identified above, then the index is a valid H3 cell.
+    return 1;
+}
+
+/**
+ * Determines whether an H3 index is a valid cell (hexagon or pentagon).
+ *
+ * @param   h  H3 index to test.
+ *
+ * @return     1 if the H3 index if valid, and 0 if it is not.
+ */
+int H3_EXPORT(isValidCell)(H3Index h) {
+    // return _isValidCell_old(h);
+    // return _isValidCell_pop(h);
+    return _isValidCell_const(h);
 }
 
 /**
