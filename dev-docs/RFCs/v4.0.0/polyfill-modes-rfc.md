@@ -40,31 +40,50 @@ There is no convenient function to index a polygon into the H3 grid for analytic
 
 * Spherical geometry consistency
 
+Most of the H3 library uses spherical geoemtry. For example, cell boundaries are spherical hexagons
+and pentagons. The `polyfill` function is different that it assumes Cartesian geometry. For
+consistency with the rest of the library, the `polyfill` functions should be able to use the same
+cell boundaries.
+
+* Very large polygons
+
+Polyfills of very large polygons requires allocating large blocks of memory, and spending large
+amounts of time in a library function without progress information being available to the caller.
+(To be determiend if this is in scope for this RFC or for another.)
+
 ## Approaches
 
 *What are the various options to address this issue?*
 
-### S2
+On an API level, we will need to expose the containment mode and spherical/Cartesian choice as
+options to the caller.
+
+Internally, we would like to reuse the same implementation as much as possible, but change the
+exact inclusion check used for each mode.
+
+### Comparisons
+
+#### S2
 
 Contains separate functions for [intersection and containment](http://s2geometry.io/devguide/basic_types#s2polygon)
 
-### GeoHash
+#### GeoHash
 
-### Turf library
+#### Turf library
 
 Contains separate functions for [intersection](http://turfjs.org/docs/#booleanIntersects), [containment](http://turfjs.org/docs/#booleanContains), etc.
 
-### PostGIS
+#### PostGIS
 
 Contains separate functions for [intersection](https://postgis.net/docs/ST_Intersects.html), [containment](https://postgis.net/docs/ST_Contains.html), etc.
 
 See also [https://www.ogc.org/standards/sfs](Simple Feature Access - SQL).
 
-### QGIS
+#### QGIS
 
-### JTS
+#### JTS
 
-### GeoPandas
+#### GeoPandas
 
 ## Proposal
 
