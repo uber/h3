@@ -34,35 +34,6 @@ H3Index *cells;
 
 BEGIN_BENCHMARKS();
 
-// pentagon 8->14; H3_NULL every 100
-//
-// Starting with a parent *pentagon* cell of resolution 8,
-// and write an array of all its children at resolution 14.
-// Modify the array to have H3_NULL every 100 indices.
-// Apply `isValidCell` to the resulting array.
-//
-// Note: `isValidCell` should return False on H3_NULL values.
-parentRes = 8;
-childRes = 14;
-nullEvery = 100;
-
-p = pentagonAtRes(parentRes);
-H3_EXPORT(cellToChildrenSize)(p, childRes, &N);
-
-cells = calloc(N, sizeof(H3Index));
-H3_EXPORT(cellToChildren)(p, childRes, cells);
-
-for (int64_t i = 0; i < N; i += nullEvery) {
-    cells[i] = H3_NULL;
-}
-
-BENCHMARK(pentagonChildren_8_14_null_100, 1000, {
-    for (int64_t i = 0; i < N; i++) {
-        H3_EXPORT(isValidCell)(cells[i]);
-    }
-});
-free(cells);
-
 // pentagon 8->14
 //
 // Starting with a parent *pentagon* cell of resolution 8,
