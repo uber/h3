@@ -44,7 +44,7 @@ H3_EXPORT(uncompactCellsSize)(base_cells, N_base, res, &N);
 cells = calloc(N, sizeof(H3Index));
 H3_EXPORT(uncompactCells)(base_cells, N_base, cells, N, res);
 
-BENCHMARK(allCellsAtRes3, 1000, {
+BENCHMARK(allCellsAtRes4, 1000, {
     for (int64_t i = 0; i < N; i++) {
         H3_EXPORT(isValidCell)(cells[i]);
     }
