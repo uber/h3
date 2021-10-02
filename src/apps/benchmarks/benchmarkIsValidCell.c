@@ -34,6 +34,24 @@ H3Index *cells;
 
 BEGIN_BENCHMARKS();
 
+int64_t N_base = H3_EXPORT(res0CellCount)();
+H3Index *base_cells = calloc(N_base, sizeof(H3Index));
+H3_EXPORT(getRes0Cells)(base_cells);
+
+int res = 4;
+
+H3_EXPORT(uncompactCellsSize)(base_cells, N_base, res, &N);
+cells = calloc(N, sizeof(H3Index));
+H3_EXPORT(uncompactCells)(base_cells, N_base, cells, N, res);
+
+BENCHMARK(allCellsAtRes3, 1000, {
+    for (int64_t i = 0; i < N; i++) {
+        H3_EXPORT(isValidCell)(cells[i]);
+    }
+});
+free(cells);
+free(base_cells);
+
 // pentagon 8->14
 //
 // Starting with a parent *pentagon* cell of resolution 8,
