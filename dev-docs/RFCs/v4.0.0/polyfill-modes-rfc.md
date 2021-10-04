@@ -36,7 +36,7 @@ public boolean polygonContainsPoint(double latitude, double longitude) {
 
 * Analytics
 
-There is no convenient function to index a polygon into the H3 grid for analytics purposes. Polygons that are small enough, or shaped in specific ways, will not be converted into points, requiring workarouns in order to use them.
+There is no convenient function to index a polygon into the H3 grid for analytics purposes. Polygons that are small enough or shaped in specific ways will not be converted into cells, requiring workarounds in order to use them.
 
 * Spherical geometry consistency
 
@@ -47,9 +47,9 @@ cell boundaries.
 
 * Very large polygons
 
-Polyfills of very large polygons requires allocating large blocks of memory, and spending large
+Polyfills of very large polygons require allocating large blocks of memory, and spending large
 amounts of time in a library function without progress information being available to the caller.
-(To be determiend if this is in scope for this RFC or for another.)
+(To be determined if this is in scope for this RFC or for another.)
 
 ## Approaches
 
