@@ -57,6 +57,7 @@ CellArray ca;
 
 BEGIN_BENCHMARKS();
 
+// cool; only the new test fails on runtime error
 int *a = NULL;
 *a = -4520;
 
