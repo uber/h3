@@ -64,7 +64,7 @@ free(ca.cells);
 
 // pentagon 8->14
 ca = pentagonSetup(8, 14, 0);
-BENCHMARK(pentagonChildren_8_14, 1000, { runValidation(ca); })
+BENCHMARK(pentagonChildren_8_14, 1000, { runValidation(ca); });
 free(ca.cells);
 
 // pentagon 8->14; H3_NULL every 2
