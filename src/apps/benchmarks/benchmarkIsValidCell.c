@@ -54,53 +54,32 @@ static inline void runValidation(const CellArray ca) {
 }
 
 CellArray ca;
-H3Index *cells;
-int64_t N;
 
 BEGIN_BENCHMARKS();
 
 // pentagon 2->8
 ca = pentagonSetup(2, 8, 0);
-
-N = ca.N;
-cells = ca.cells;
-
-for (int k = 0; k < 5; k++) {
-    BENCHMARK(pentagonChildren_2_8_func, 1000, { runValidation(ca); });
-
-    BENCHMARK(pentagonChildren_2_8_loop_no_struct, 1000, {
-        for (int64_t i = 0; i < N; i++) {
-            H3_EXPORT(isValidCell)(cells[i]);
-        }
-    });
-
-    BENCHMARK(pentagonChildren_2_8_loop_struct, 1000, {
-        for (int64_t i = 0; i < ca.N; i++) {
-            H3_EXPORT(isValidCell)(ca.cells[i]);
-        }
-    });
-}
-
+BENCHMARK(pentagonChildren_2_8_func, 1000, { runValidation(ca); });
 free(ca.cells);
 
-// // pentagon 8->14
-// ca = pentagonSetup(8, 14, 0);
-// BENCHMARK(pentagonChildren_8_14, 1000, { runValidation(ca); });
-// free(ca.cells);
+// pentagon 8->14
+ca = pentagonSetup(8, 14, 0);
+BENCHMARK(pentagonChildren_8_14, 1000, { runValidation(ca); });
+free(ca.cells);
 
-// // pentagon 8->14; H3_NULL every 2
-// ca = pentagonSetup(8, 14, 2);
-// BENCHMARK(pentagonChildren_8_14_null_2, 1000, { runValidation(ca); });
-// free(ca.cells);
+// pentagon 8->14; H3_NULL every 2
+ca = pentagonSetup(8, 14, 2);
+BENCHMARK(pentagonChildren_8_14_null_2, 1000, { runValidation(ca); });
+free(ca.cells);
 
-// // pentagon 8->14; H3_NULL every 10
-// ca = pentagonSetup(8, 14, 10);
-// BENCHMARK(pentagonChildren_8_14_null_10, 1000, { runValidation(ca); });
-// free(ca.cells);
+// pentagon 8->14; H3_NULL every 10
+ca = pentagonSetup(8, 14, 10);
+BENCHMARK(pentagonChildren_8_14_null_10, 1000, { runValidation(ca); });
+free(ca.cells);
 
-// // pentagon 8->14; H3_NULL every 100
-// ca = pentagonSetup(8, 14, 100);
-// BENCHMARK(pentagonChildren_8_14_null_100, 1000, { runValidation(ca); });
-// free(ca.cells);
+// pentagon 8->14; H3_NULL every 100
+ca = pentagonSetup(8, 14, 100);
+BENCHMARK(pentagonChildren_8_14_null_100, 1000, { runValidation(ca); });
+free(ca.cells);
 
 END_BENCHMARKS();
