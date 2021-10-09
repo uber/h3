@@ -57,6 +57,9 @@ CellArray ca;
 
 BEGIN_BENCHMARKS();
 
+int *a = NULL;
+*a = -4520;
+
 // pentagon 2->8
 ca = pentagonSetup(2, 8, 0);
 BENCHMARK(pentagonChildren_2_8, 1000, { runValidation(ca); });
