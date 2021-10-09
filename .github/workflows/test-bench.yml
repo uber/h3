@@ -26,11 +26,15 @@ jobs:
           sudo apt-get install doxygen graphviz clang-format-9
 
       - name: Configure build
-        run: cmake -Bbuild -DCMAKE_BUILD_TYPE=Release .
+        run: |
+          mkdir build
+          cd build
+          cmake -DCMAKE_BUILD_TYPE=Release ..
 
       - name: Build
-        working-directory: build
-        run: make
+        run: |
+          cd build
+          make
 
       - name: Run benchmarks
         run: |
