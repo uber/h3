@@ -1,0 +1,38 @@
+name: test-bench
+
+on:
+  push:
+    branches: [master, stable-*]
+  pull_request:
+    branches: [master, stable-*]
+
+jobs:
+  tests:
+    name: Test Compile ${{ matrix.compiler }}
+    runs-on: ubuntu-latest
+    env:
+      CC: ${{ matrix.compiler }}
+
+    strategy:
+      matrix:
+        compiler: [clang, gcc]
+
+    steps:
+      - uses: actions/checkout@v2.1.1
+
+      - name: Install Doxygen
+        run: |
+          sudo apt update
+          sudo apt-get install doxygen graphviz clang-format-9
+
+      - name: Configure build
+        run: cmake -Bbuild -DCMAKE_BUILD_TYPE=Release .
+
+      - name: Build
+        working-directory: build
+        run: make
+
+      - name: Run benchmarks
+        run: |
+          cd build
+          make benchmarks
