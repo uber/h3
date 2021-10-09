@@ -57,10 +57,6 @@ CellArray ca;
 
 BEGIN_BENCHMARKS();
 
-// cool; only the new test fails on runtime error
-int *a = NULL;
-*a = -4520;
-
 // pentagon 2->8
 ca = pentagonSetup(2, 8, 0);
 BENCHMARK(pentagonChildren_2_8, 1000, { runValidation(ca); });
