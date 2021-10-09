@@ -59,7 +59,7 @@ BEGIN_BENCHMARKS();
 
 // pentagon 2->8
 ca = pentagonSetup(2, 8, 0);
-BENCHMARK(pentagonChildren_2_8_func, 1000, { runValidation(ca); });
+BENCHMARK(pentagonChildren_2_8, 1000, { runValidation(ca); });
 free(ca.cells);
 
 // pentagon 8->14
