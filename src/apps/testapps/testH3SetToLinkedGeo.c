@@ -24,7 +24,7 @@ SUITE(h3SetToLinkedGeo) {
     TEST(empty) {
         LinkedGeoPolygon polygon;
 
-        H3_EXPORT(h3SetToLinkedGeo)(NULL, 0, &polygon);
+        t_assertSuccess(H3_EXPORT(h3SetToLinkedGeo)(NULL, 0, &polygon));
 
         t_assert(countLinkedLoops(&polygon) == 0, "No loops added to polygon");
 
@@ -36,7 +36,7 @@ SUITE(h3SetToLinkedGeo) {
         H3Index set[] = {0x890dab6220bffff};
         int numHexes = ARRAY_SIZE(set);
 
-        H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon);
+        t_assertSuccess(H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon));
 
         t_assert(countLinkedLoops(&polygon) == 1, "1 loop added to polygon");
         t_assert(countLinkedCoords(polygon.first) == 6,
@@ -50,7 +50,7 @@ SUITE(h3SetToLinkedGeo) {
         H3Index set[] = {0x8928308291bffff, 0x89283082957ffff};
         int numHexes = ARRAY_SIZE(set);
 
-        H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon);
+        t_assertSuccess(H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon));
 
         t_assert(countLinkedLoops(&polygon) == 1, "1 loop added to polygon");
         t_assert(countLinkedCoords(polygon.first) == 10,
@@ -67,7 +67,7 @@ SUITE(h3SetToLinkedGeo) {
         H3Index set[] = {0x8928308291bffff, 0x89283082943ffff};
         int numHexes = ARRAY_SIZE(set);
 
-        H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon);
+        t_assertSuccess(H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon));
 
         t_assert(countLinkedPolygons(&polygon) == 2, "2 polygons added");
         t_assert(countLinkedLoops(&polygon) == 1,
@@ -88,7 +88,7 @@ SUITE(h3SetToLinkedGeo) {
                          0x8928308289bffff};
         int numHexes = ARRAY_SIZE(set);
 
-        H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon);
+        t_assertSuccess(H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon));
 
         t_assert(countLinkedLoops(&polygon) == 1, "1 loop added to polygon");
         t_assert(countLinkedCoords(polygon.first) == 12,
@@ -120,7 +120,7 @@ SUITE(h3SetToLinkedGeo) {
         H3Index set[] = {0x851c0003fffffff};
         int numHexes = ARRAY_SIZE(set);
 
-        H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon);
+        t_assertSuccess(H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon));
 
         t_assert(countLinkedLoops(&polygon) == 1, "1 loop added to polygon");
         t_assert(countLinkedCoords(polygon.first) == 10,
@@ -129,7 +129,7 @@ SUITE(h3SetToLinkedGeo) {
         H3_EXPORT(destroyLinkedPolygon)(&polygon);
     }
 
-    TEST(2Ring) {
+    TEST(twoRing) {
         LinkedGeoPolygon polygon;
         // 2-ring, in order returned by k-ring algo
         H3Index set[] = {
@@ -142,7 +142,7 @@ SUITE(h3SetToLinkedGeo) {
             0x89300628303ffff};
         int numHexes = ARRAY_SIZE(set);
 
-        H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon);
+        t_assertSuccess(H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon));
 
         t_assert(countLinkedLoops(&polygon) == 1, "1 loop added to polygon");
         t_assert(countLinkedCoords(polygon.first) == (6 * (2 * 2 + 1)),
@@ -151,7 +151,7 @@ SUITE(h3SetToLinkedGeo) {
         H3_EXPORT(destroyLinkedPolygon)(&polygon);
     }
 
-    TEST(2RingUnordered) {
+    TEST(twoRingUnordered) {
         LinkedGeoPolygon polygon;
         // 2-ring in random order
         H3Index set[] = {
@@ -164,7 +164,7 @@ SUITE(h3SetToLinkedGeo) {
             0x893006283c7ffff};
         int numHexes = ARRAY_SIZE(set);
 
-        H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon);
+        t_assertSuccess(H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon));
 
         t_assert(countLinkedLoops(&polygon) == 1, "1 loop added to polygon");
         t_assert(countLinkedCoords(polygon.first) == (6 * (2 * 2 + 1)),
@@ -187,7 +187,7 @@ SUITE(h3SetToLinkedGeo) {
             0x892830828b3ffff, 0x89283082887ffff, 0x89283082883ffff};
         int numHexes = ARRAY_SIZE(set);
 
-        H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon);
+        t_assertSuccess(H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon));
 
         // Note that the polygon order here is arbitrary, making this test
         // somewhat brittle, but it's difficult to assert correctness otherwise
@@ -222,7 +222,7 @@ SUITE(h3SetToLinkedGeo) {
             0x897eb572287ffff, 0x897eb572283ffff, 0x897eb57229bffff};
         int numHexes = ARRAY_SIZE(set);
 
-        H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon);
+        t_assertSuccess(H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon));
 
         // Note that the polygon order here is arbitrary, making this test
         // somewhat brittle, but it's difficult to assert correctness otherwise
@@ -248,7 +248,7 @@ SUITE(h3SetToLinkedGeo) {
         H3Index set[] = {0x894cc5365afffff, 0x894cc536537ffff};
         int numHexes = ARRAY_SIZE(set);
 
-        H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon);
+        t_assertSuccess(H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon));
 
         t_assert(countLinkedLoops(&polygon) == 1, "1 loop added to polygon");
         t_assert(countLinkedCoords(polygon.first) == 12,
@@ -261,7 +261,7 @@ SUITE(h3SetToLinkedGeo) {
         LinkedGeoPolygon polygon;
         H3Index set[] = {0x88ad36c547fffff, 0x88ad36c467fffff};
         int numHexes = ARRAY_SIZE(set);
-        H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon);
+        t_assertSuccess(H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon));
 
         t_assert(countLinkedPolygons(&polygon) == 2, "2 polygons added");
         t_assert(countLinkedLoops(&polygon) == 1,

@@ -103,7 +103,8 @@ void h3ToLocalIj_neighbors_assertions(H3Index h3) {
         }
 
         int rotations = 0;
-        H3Index offset = h3NeighborRotations(h3, d, &rotations);
+        H3Index offset;
+        t_assertSuccess(h3NeighborRotations(h3, d, &rotations, &offset));
 
         CoordIJ ij = {0};
         t_assert(H3_EXPORT(experimentalH3ToLocalIj)(h3, offset, &ij) == 0,
@@ -135,7 +136,8 @@ void localIjToH3_gridDisk_assertions(H3Index h3) {
     H3Index *neighbors = calloc(sz, sizeof(H3Index));
     int *distances = calloc(sz, sizeof(int));
 
-    H3_EXPORT(gridDiskDistances)(h3, maxK, neighbors, distances);
+    t_assertSuccess(
+        H3_EXPORT(gridDiskDistances)(h3, maxK, neighbors, distances));
 
     for (int i = 0; i < sz; i++) {
         if (neighbors[i] == 0) {
