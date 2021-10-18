@@ -80,7 +80,7 @@ static void cellToVertex_neighbor_assertions(H3Index h3) {
     H3Index originVerts[NUM_HEX_VERTS] = {0};
     H3Index neighborVerts[NUM_HEX_VERTS] = {0};
 
-    H3_EXPORT(gridDisk)(h3, 1, neighbors);
+    t_assertSuccess(H3_EXPORT(gridDisk)(h3, 1, neighbors));
     t_assertSuccess(H3_EXPORT(cellToVertexes)(h3, originVerts));
 
     for (int i = 0; i < 7; i++) {

@@ -9,7 +9,7 @@ The H3 geospatial indexing system is a discrete global grid system (see [Sahr et
 
 The hexagonal grid system is created on the planar faces of a sphere-circumscribed icosahedron, and the grid cells are then projected to the surface of the sphere using an inverse face-centered polyhedral gnomonic projection. The coordinate reference system (CRS) is spherical coordinates with the [WGS84](https://en.wikipedia.org/wiki/WGS84)/[EPSG:4326](https://epsg.io/4326) authalic radius. It is common to use WGS84 CRS data with the H3 library.
 
-The icosahedron is fixed relative to the sphere using a *Dymaxion* orientation (due to R. Buckminster Fuller). This is the only known orientation of a spherical icosahedron that places all 12 icosahedron vertices in the ocean.
+The icosahedron is fixed relative to the sphere using a *Dymaxion* orientation (due to R. Buckminster Fuller). This orientation of a spherical icosahedron places all 12 icosahedron vertices in the ocean. (At the time of H3's development, this was the only known orientation with this property. [Others have since been found](https://richard.science/sci/2019_barnes_dgg_published.pdf).)
 
 The H3 grid is constructed on the icosahedron by recursively creating increasingly higher precision hexagon grids until the desired resolution is achieved. Note that it is impossible to tile the sphere/icosahedron completely with hexagons; each resolution of an icosahedral hexagon grid must contain exactly 12 pentagons at every resolution, with one pentagon centered on each of the icosahedron vertices.
 

@@ -159,9 +159,7 @@ H3Error H3_EXPORT(getDirectedEdgeDestination)(H3Index edge, H3Index *out) {
         // TODO: Not coverable
         return originResult;
     }
-    H3Index destination = h3NeighborRotations(origin, direction, &rotations);
-    *out = destination;
-    return E_SUCCESS;
+    return h3NeighborRotations(origin, direction, &rotations, out);
 }
 
 /**

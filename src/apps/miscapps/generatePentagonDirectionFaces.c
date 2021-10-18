@@ -44,7 +44,8 @@ static void generate() {
         FaceIJK fijk;
         for (Direction dir = J_AXES_DIGIT; dir < NUM_DIGITS; dir++) {
             int r = 0;
-            H3Index neighbor = h3NeighborRotations(pentagon, dir, &r);
+            H3Index neighbor;
+            h3NeighborRotations(pentagon, dir, &r, &neighbor);
             _h3ToFaceIjk(neighbor, &fijk);
 
             if (dir > J_AXES_DIGIT) printf(", ");

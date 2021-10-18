@@ -19,7 +19,7 @@ The H3 Core Library implements the H3 grid system. It includes functions for con
 * In addition to the benefits of the hexagonal grid shape, H3 includes features for [modeling flow](/docs/highlights/flowmodel).
 * H3 is well suited to apply [ML to geospatial data](/docs/highlights/ml).
 
-##Comparisons
+## Comparisons
 
 * [S2](/docs/comparisons/s2), an open source, hierarchical, discrete, and global grid system using square cells.
 * [Geohash](/docs/comparisons/geohash), a system for encoding locations using a string of characters, creating a hierarchical, square grid system (a quadtree).

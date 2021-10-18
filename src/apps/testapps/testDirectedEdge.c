@@ -35,7 +35,7 @@ SUITE(directedEdge) {
         H3Index sf;
         t_assertSuccess(H3_EXPORT(latLngToCell)(&sfGeo, 9, &sf));
         H3Index ring[7] = {0};
-        H3_EXPORT(gridRingUnsafe)(sf, 1, ring);
+        t_assertSuccess(H3_EXPORT(gridRingUnsafe)(sf, 1, ring));
 
         t_assert(H3_EXPORT(areNeighborCells)(sf, sf) == 0,
                  "an index does not neighbor itself");
@@ -50,7 +50,7 @@ SUITE(directedEdge) {
                  "got the expected number of neighbors from a k-ring of 1");
 
         H3Index largerRing[19] = {0};
-        H3_EXPORT(gridRingUnsafe)(sf, 2, largerRing);
+        t_assertSuccess(H3_EXPORT(gridRingUnsafe)(sf, 2, largerRing));
 
         neighbors = 0;
         for (int i = 0; i < H3_EXPORT(maxGridDiskSize)(2); i++) {
@@ -82,7 +82,7 @@ SUITE(directedEdge) {
         H3Index sf;
         t_assertSuccess(H3_EXPORT(latLngToCell)(&sfGeo, 9, &sf));
         H3Index ring[7] = {0};
-        H3_EXPORT(gridRingUnsafe)(sf, 1, ring);
+        t_assertSuccess(H3_EXPORT(gridRingUnsafe)(sf, 1, ring));
         H3Index sf2 = ring[0];
 
         H3Index edge;
@@ -105,7 +105,7 @@ SUITE(directedEdge) {
                  "got the destination last in the pair request");
 
         H3Index largerRing[19] = {0};
-        H3_EXPORT(gridRingUnsafe)(sf, 2, largerRing);
+        t_assertSuccess(H3_EXPORT(gridRingUnsafe)(sf, 2, largerRing));
         H3Index sf3 = largerRing[0];
 
         H3Index notEdge;
@@ -148,7 +148,7 @@ SUITE(directedEdge) {
             t_assertSuccess(H3_EXPORT(getPentagons)(res, pentagons));
             for (int p = 0; p < NUM_PENTAGONS; p++) {
                 pentagon = pentagons[p];
-                H3_EXPORT(gridDisk)(pentagon, 1, ring);
+                t_assertSuccess(H3_EXPORT(gridDisk)(pentagon, 1, ring));
 
                 for (int i = 0; i < 7; i++) {
                     H3Index neighbor = ring[i];
@@ -170,7 +170,7 @@ SUITE(directedEdge) {
         H3Index sf;
         t_assertSuccess(H3_EXPORT(latLngToCell)(&sfGeo, 9, &sf));
         H3Index ring[7] = {0};
-        H3_EXPORT(gridRingUnsafe)(sf, 1, ring);
+        t_assertSuccess(H3_EXPORT(gridRingUnsafe)(sf, 1, ring));
         H3Index sf2 = ring[0];
 
         H3Index edge;
