@@ -368,13 +368,13 @@ DECLSPEC double H3_EXPORT(getHexagonEdgeLengthAvgM)(int res);
  * @{
  */
 /** @brief exact length for a specific directed edge in radians*/
-double H3_EXPORT(exactEdgeLengthRads)(H3Index edge);
+H3Error H3_EXPORT(exactEdgeLengthRads)(H3Index edge, double *length);
 
 /** @brief exact length for a specific directed edge in kilometers*/
-double H3_EXPORT(exactEdgeLengthKm)(H3Index edge);
+H3Error H3_EXPORT(exactEdgeLengthKm)(H3Index edge, double *length);
 
 /** @brief exact length for a specific directed edge in meters*/
-double H3_EXPORT(exactEdgeLengthM)(H3Index edge);
+H3Error H3_EXPORT(exactEdgeLengthM)(H3Index edge, double *length);
 /** @} */
 
 /** @defgroup getNumCells getNumCells

@@ -444,7 +444,7 @@ Average hexagon edge length in meters at the given resolution.
 <TabItem value="c">
 
 ```c
-double exactEdgeLengthKm(H3Index edge);
+H3Error exactEdgeLengthKm(H3Index edge, double *length);
 ```
 
 </TabItem>
@@ -496,7 +496,7 @@ Exact edge length of specific unidirectional edge in kilometers.
 <TabItem value="c">
 
 ```c
-double exactEdgeLengthM(H3Index edge);
+H3Error exactEdgeLengthM(H3Index edge, double *length);
 ```
 
 </TabItem>
@@ -548,7 +548,7 @@ Exact edge length of specific unidirectional edge in meters.
 <TabItem value="c">
 
 ```c
-double exactEdgeLengthRads(H3Index edge);
+H3Error exactEdgeLengthRads(H3Index edge, double *length);
 ```
 
 </TabItem>

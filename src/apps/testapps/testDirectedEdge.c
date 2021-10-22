@@ -360,13 +360,16 @@ SUITE(directedEdge) {
     }
 
     TEST(exactEdgeLength_invalid) {
+        double length;
         // Test that invalid inputs do not cause crashes.
-        t_assert(H3_EXPORT(exactEdgeLengthRads)(0) == 0,
-                 "Invalid edge has zero length");
+        t_assert(
+            H3_EXPORT(exactEdgeLengthRads)(0, &length) == E_DIR_EDGE_INVALID,
+            "Invalid edge has zero length");
         LatLng zero = {0, 0};
         H3Index h3;
         t_assertSuccess(H3_EXPORT(latLngToCell)(&zero, 0, &h3));
-        t_assert(H3_EXPORT(exactEdgeLengthRads)(h3) == 0,
-                 "Non-edge (cell) has zero edge length");
+        t_assert(
+            H3_EXPORT(exactEdgeLengthRads)(h3, &length) == E_DIR_EDGE_INVALID,
+            "Non-edge (cell) has zero edge length");
     }
 }

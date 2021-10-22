@@ -88,9 +88,13 @@ static void haversine_assert(H3Index edge) {
 static void edge_length_assert(H3Index edge) {
     char msg[] = "edge has positive length";
 
-    t_assert(H3_EXPORT(exactEdgeLengthRads)(edge) > 0, msg);
-    t_assert(H3_EXPORT(exactEdgeLengthKm)(edge) > 0, msg);
-    t_assert(H3_EXPORT(exactEdgeLengthM)(edge) > 0, msg);
+    double length;
+    t_assertSuccess(H3_EXPORT(exactEdgeLengthRads)(edge, &length));
+    t_assert(length > 0, msg);
+    t_assertSuccess(H3_EXPORT(exactEdgeLengthKm)(edge, &length));
+    t_assert(length > 0, msg);
+    t_assertSuccess(H3_EXPORT(exactEdgeLengthM)(edge, &length));
+    t_assert(length > 0, msg);
 }
 
 /**
