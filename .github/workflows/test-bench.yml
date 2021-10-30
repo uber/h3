@@ -20,11 +20,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2.1.1
 
-      - name: Install Doxygen
-        run: |
-          sudo apt update
-          sudo apt-get install clang-format-9
-
       - name: Configure build
         run: |
           mkdir build
