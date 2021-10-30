@@ -8,7 +8,7 @@ on:
 
 jobs:
   tests:
-    name: Test Compile ${{ matrix.compiler }}
+    name: Benchmark ${{ matrix.compiler }}
     runs-on: ubuntu-latest
     env:
       CC: ${{ matrix.compiler }}
