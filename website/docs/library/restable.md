@@ -5,7 +5,7 @@ sidebar_label: Table of cell areas
 slug: /core-library/restable
 ---
 
-## Hexagon and pentagon cell areas
+## Cell areas in km<sup>2</sup>
 
 |   Res |   Average <ins>Hexagon</ins><br></br>Area (km<sup>2</sup>) |   Pentagon Area* (km<sup>2</sup>) |   (P/H) Ratio |
 |------:|-----------------------------------------------------------:|----------------------------------:|--------------:|
@@ -27,6 +27,11 @@ slug: /core-library/restable
 |    15 |                                                0.000000895 |                       0.000000452 |        0.5046 |
 
 *: Within a given resolution, all pentagons have the same area.
+
+
+## Cell areas in m<sup>2</sup>
+
+TODO
 
 
 ## Cell counts
