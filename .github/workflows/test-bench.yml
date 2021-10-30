@@ -23,7 +23,7 @@ jobs:
       - name: Install Doxygen
         run: |
           sudo apt update
-          sudo apt-get install doxygen graphviz clang-format-9
+          sudo apt-get install clang-format-9
 
       - name: Configure build
         run: |
