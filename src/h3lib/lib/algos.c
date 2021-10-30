@@ -41,11 +41,7 @@
  * Return codes from gridDiskUnsafe and related functions.
  */
 
-#define HEX_RANGE_SUCCESS 0
-#define HEX_RANGE_PENTAGON 1
-#define HEX_RANGE_K_SUBSEQUENCE 2
 #define MAX_ONE_RING_SIZE 7
-#define HEX_HASH_OVERFLOW -1
 #define POLYGON_TO_CELLS_BUFFER 12
 
 /**
@@ -176,8 +172,8 @@ int H3_EXPORT(maxGridDiskSize)(int k) { return 3 * k * (k + 1) + 1; }
  * @param  k        k >= 0
  * @param  out      zero-filled array which must be of size maxGridDiskSize(k)
  */
-void H3_EXPORT(gridDisk)(H3Index origin, int k, H3Index *out) {
-    H3_EXPORT(gridDiskDistances)(origin, k, out, NULL);
+H3Error H3_EXPORT(gridDisk)(H3Index origin, int k, H3Index *out) {
+    return H3_EXPORT(gridDiskDistances)(origin, k, out, NULL);
 }
 
 /**
@@ -197,10 +193,10 @@ void H3_EXPORT(gridDisk)(H3Index origin, int k, H3Index *out) {
  * @param  distances   NULL or a zero-filled array which must be of size
  *                     maxGridDiskSize(k)
  */
-void H3_EXPORT(gridDiskDistances)(H3Index origin, int k, H3Index *out,
-                                  int *distances) {
+H3Error H3_EXPORT(gridDiskDistances)(H3Index origin, int k, H3Index *out,
+                                     int *distances) {
     // Optimistically try the faster gridDiskUnsafe algorithm first
-    const bool failed =
+    const H3Error failed =
         H3_EXPORT(gridDiskDistancesUnsafe)(origin, k, out, distances);
     if (failed) {
         const int maxIdx = H3_EXPORT(maxGridDiskSize)(k);
@@ -211,15 +207,19 @@ void H3_EXPORT(gridDiskDistances)(H3Index origin, int k, H3Index *out,
         if (distances == NULL) {
             distances = H3_MEMORY(calloc)(maxIdx, sizeof(int));
             if (!distances) {
-                // TODO: Return an error code when this is not void
-                return;
+                return E_MEMORY;
             }
-            _gridDiskDistancesInternal(origin, k, out, distances, maxIdx, 0);
+            H3Error result = _gridDiskDistancesInternal(origin, k, out,
+                                                        distances, maxIdx, 0);
             H3_MEMORY(free)(distances);
+            return result;
         } else {
             memset(distances, 0, maxIdx * sizeof(int));
-            _gridDiskDistancesInternal(origin, k, out, distances, maxIdx, 0);
+            return _gridDiskDistancesInternal(origin, k, out, distances, maxIdx,
+                                              0);
         }
+    } else {
+        return E_SUCCESS;
     }
 }
 
@@ -240,10 +240,8 @@ void H3_EXPORT(gridDiskDistances)(H3Index origin, int k, H3Index *out,
  * maxGridDiskSize(k))
  * @param  curK        Current distance from the origin
  */
-void _gridDiskDistancesInternal(H3Index origin, int k, H3Index *out,
-                                int *distances, int maxIdx, int curK) {
-    if (origin == 0) return;
-
+H3Error _gridDiskDistancesInternal(H3Index origin, int k, H3Index *out,
+                                   int *distances, int maxIdx, int curK) {
     // Put origin in the output array. out is used as a hash set.
     int off = origin % maxIdx;
     while (out[off] != 0 && out[off] != origin) {
@@ -253,21 +251,34 @@ void _gridDiskDistancesInternal(H3Index origin, int k, H3Index *out,
     // We either got a free slot in the hash set or hit a duplicate
     // We might need to process the duplicate anyways because we got
     // here on a longer path before.
-    if (out[off] == origin && distances[off] <= curK) return;
+    if (out[off] == origin && distances[off] <= curK) return E_SUCCESS;
 
     out[off] = origin;
     distances[off] = curK;
 
     // Base case: reached an index k away from the origin.
-    if (curK >= k) return;
+    if (curK >= k) return E_SUCCESS;
 
     // Recurse to all neighbors in no particular order.
     for (int i = 0; i < 6; i++) {
         int rotations = 0;
-        _gridDiskDistancesInternal(
-            h3NeighborRotations(origin, DIRECTIONS[i], &rotations), k, out,
-            distances, maxIdx, curK + 1);
+        H3Index nextNeighbor;
+        H3Error neighborResult = h3NeighborRotations(origin, DIRECTIONS[i],
+                                                     &rotations, &nextNeighbor);
+        if (neighborResult != E_PENTAGON) {
+            // E_PENTAGON is an expected case when trying to traverse off of
+            // pentagons.
+            if (neighborResult != E_SUCCESS) {
+                return neighborResult;
+            }
+            neighborResult = _gridDiskDistancesInternal(
+                nextNeighbor, k, out, distances, maxIdx, curK + 1);
+            if (neighborResult) {
+                return neighborResult;
+            }
+        }
     }
+    return E_SUCCESS;
 }
 
 /**
@@ -284,10 +295,10 @@ void _gridDiskDistancesInternal(H3Index origin, int k, H3Index *out,
  *                     Elements indicate ijk distance from the origin cell to
  *                     the output cell
  */
-void H3_EXPORT(gridDiskDistancesSafe)(H3Index origin, int k, H3Index *out,
-                                      int *distances) {
+H3Error H3_EXPORT(gridDiskDistancesSafe)(H3Index origin, int k, H3Index *out,
+                                         int *distances) {
     int maxIdx = H3_EXPORT(maxGridDiskSize)(k);
-    _gridDiskDistancesInternal(origin, k, out, distances, maxIdx, 0);
+    return _gridDiskDistancesInternal(origin, k, out, distances, maxIdx, 0);
 }
 
 /**
@@ -302,58 +313,60 @@ void H3_EXPORT(gridDiskDistancesSafe)(H3Index origin, int k, H3Index *out,
  * @param rotations Number of ccw rotations to perform to reorient the
  *                  translation vector. Will be modified to the new number of
  *                  rotations to perform (such as when crossing a face edge.)
- * @return H3Index of the specified neighbor or H3_NULL if deleted k-subsequence
- *         distortion is encountered.
+ * @param out H3Index of the specified neighbor if succesful
+ * @return E_SUCCESS on success
  */
-H3Index h3NeighborRotations(H3Index origin, Direction dir, int *rotations) {
-    H3Index out = origin;
+H3Error h3NeighborRotations(H3Index origin, Direction dir, int *rotations,
+                            H3Index *out) {
+    H3Index current = origin;
 
     for (int i = 0; i < *rotations; i++) {
         dir = _rotate60ccw(dir);
     }
 
     int newRotations = 0;
-    int oldBaseCell = H3_GET_BASE_CELL(out);
+    int oldBaseCell = H3_GET_BASE_CELL(current);
     if (oldBaseCell < 0 ||
         oldBaseCell >= NUM_BASE_CELLS) {  // LCOV_EXCL_BR_LINE
         // Base cells less than zero can not be represented in an index
-        return H3_NULL;
+        return E_CELL_INVALID;
     }
-    Direction oldLeadingDigit = _h3LeadingNonZeroDigit(out);
+    Direction oldLeadingDigit = _h3LeadingNonZeroDigit(current);
 
     // Adjust the indexing digits and, if needed, the base cell.
-    int r = H3_GET_RESOLUTION(out) - 1;
+    int r = H3_GET_RESOLUTION(current) - 1;
     while (true) {
         if (r == -1) {
-            H3_SET_BASE_CELL(out, baseCellNeighbors[oldBaseCell][dir]);
+            H3_SET_BASE_CELL(current, baseCellNeighbors[oldBaseCell][dir]);
             newRotations = baseCellNeighbor60CCWRots[oldBaseCell][dir];
 
-            if (H3_GET_BASE_CELL(out) == INVALID_BASE_CELL) {
+            if (H3_GET_BASE_CELL(current) == INVALID_BASE_CELL) {
                 // Adjust for the deleted k vertex at the base cell level.
                 // This edge actually borders a different neighbor.
-                H3_SET_BASE_CELL(out,
+                H3_SET_BASE_CELL(current,
                                  baseCellNeighbors[oldBaseCell][IK_AXES_DIGIT]);
                 newRotations =
                     baseCellNeighbor60CCWRots[oldBaseCell][IK_AXES_DIGIT];
 
                 // perform the adjustment for the k-subsequence we're skipping
                 // over.
-                out = _h3Rotate60ccw(out);
+                current = _h3Rotate60ccw(current);
                 *rotations = *rotations + 1;
             }
 
             break;
         } else {
-            Direction oldDigit = H3_GET_INDEX_DIGIT(out, r + 1);
+            Direction oldDigit = H3_GET_INDEX_DIGIT(current, r + 1);
             Direction nextDir;
             if (oldDigit == INVALID_DIGIT) {
                 // Only possible on invalid input
-                return H3_NULL;
+                return E_CELL_INVALID;
             } else if (isResolutionClassIII(r + 1)) {
-                H3_SET_INDEX_DIGIT(out, r + 1, NEW_DIGIT_II[oldDigit][dir]);
+                H3_SET_INDEX_DIGIT(current, r + 1, NEW_DIGIT_II[oldDigit][dir]);
                 nextDir = NEW_ADJUSTMENT_II[oldDigit][dir];
             } else {
-                H3_SET_INDEX_DIGIT(out, r + 1, NEW_DIGIT_III[oldDigit][dir]);
+                H3_SET_INDEX_DIGIT(current, r + 1,
+                                   NEW_DIGIT_III[oldDigit][dir]);
                 nextDir = NEW_ADJUSTMENT_III[oldDigit][dir];
             }
 
@@ -367,12 +380,12 @@ H3Index h3NeighborRotations(H3Index origin, Direction dir, int *rotations) {
         }
     }
 
-    int newBaseCell = H3_GET_BASE_CELL(out);
+    int newBaseCell = H3_GET_BASE_CELL(current);
     if (_isBaseCellPentagon(newBaseCell)) {
         int alreadyAdjustedKSubsequence = 0;
 
         // force rotation out of missing k-axes sub-sequence
-        if (_h3LeadingNonZeroDigit(out) == K_AXES_DIGIT) {
+        if (_h3LeadingNonZeroDigit(current) == K_AXES_DIGIT) {
             if (oldBaseCell != newBaseCell) {
                 // in this case, we traversed into the deleted
                 // k subsequence of a pentagon base cell.
@@ -382,11 +395,11 @@ H3Index h3NeighborRotations(H3Index origin, Direction dir, int *rotations) {
 
                 if (_baseCellIsCwOffset(
                         newBaseCell, baseCellData[oldBaseCell].homeFijk.face)) {
-                    out = _h3Rotate60cw(out);
+                    current = _h3Rotate60cw(current);
                 } else {
                     // See cwOffsetPent in testGridDisk.c for why this is
                     // unreachable.
-                    out = _h3Rotate60ccw(out);  // LCOV_EXCL_LINE
+                    current = _h3Rotate60ccw(current);  // LCOV_EXCL_LINE
                 }
                 alreadyAdjustedKSubsequence = 1;
             } else {
@@ -395,27 +408,28 @@ H3Index h3NeighborRotations(H3Index origin, Direction dir, int *rotations) {
                 // base cell.
                 if (oldLeadingDigit == CENTER_DIGIT) {
                     // Undefined: the k direction is deleted from here
-                    return H3_NULL;
+                    return E_PENTAGON;
                 } else if (oldLeadingDigit == JK_AXES_DIGIT) {
                     // Rotate out of the deleted k subsequence
                     // We also need an additional change to the direction we're
                     // moving in
-                    out = _h3Rotate60ccw(out);
+                    current = _h3Rotate60ccw(current);
                     *rotations = *rotations + 1;
                 } else if (oldLeadingDigit == IK_AXES_DIGIT) {
                     // Rotate out of the deleted k subsequence
                     // We also need an additional change to the direction we're
                     // moving in
-                    out = _h3Rotate60cw(out);
+                    current = _h3Rotate60cw(current);
                     *rotations = *rotations + 5;
                 } else {
                     // Should never occur
-                    return H3_NULL;  // LCOV_EXCL_LINE
+                    return E_FAILED;  // LCOV_EXCL_LINE
                 }
             }
         }
 
-        for (int i = 0; i < newRotations; i++) out = _h3RotatePent60ccw(out);
+        for (int i = 0; i < newRotations; i++)
+            current = _h3RotatePent60ccw(current);
 
         // Account for differing orientation of the base cells (this edge
         // might not follow properties of some other edges.)
@@ -424,10 +438,10 @@ H3Index h3NeighborRotations(H3Index origin, Direction dir, int *rotations) {
                 // 'polar' base cells behave differently because they have all
                 // i neighbors.
                 if (oldBaseCell != 118 && oldBaseCell != 8 &&
-                    _h3LeadingNonZeroDigit(out) != JK_AXES_DIGIT) {
+                    _h3LeadingNonZeroDigit(current) != JK_AXES_DIGIT) {
                     *rotations = *rotations + 1;
                 }
-            } else if (_h3LeadingNonZeroDigit(out) == IK_AXES_DIGIT &&
+            } else if (_h3LeadingNonZeroDigit(current) == IK_AXES_DIGIT &&
                        !alreadyAdjustedKSubsequence) {
                 // account for distortion introduced to the 5 neighbor by the
                 // deleted k subsequence.
@@ -435,12 +449,14 @@ H3Index h3NeighborRotations(H3Index origin, Direction dir, int *rotations) {
             }
         }
     } else {
-        for (int i = 0; i < newRotations; i++) out = _h3Rotate60ccw(out);
+        for (int i = 0; i < newRotations; i++)
+            current = _h3Rotate60ccw(current);
     }
 
     *rotations = (*rotations + newRotations) % 6;
+    *out = current;
 
-    return out;
+    return E_SUCCESS;
 }
 
 /**
@@ -456,12 +472,13 @@ Direction directionForNeighbor(H3Index origin, H3Index destination) {
     // Checks each neighbor, in order, to determine which direction the
     // destination neighbor is located. Skips CENTER_DIGIT since that
     // would be the origin; skips deleted K direction for pentagons.
-    H3Index neighbor;
     for (Direction direction = isPent ? J_AXES_DIGIT : K_AXES_DIGIT;
          direction < NUM_DIGITS; direction++) {
+        H3Index neighbor;
         int rotations = 0;
-        neighbor = h3NeighborRotations(origin, direction, &rotations);
-        if (neighbor == destination) {
+        H3Error neighborError =
+            h3NeighborRotations(origin, direction, &rotations, &neighbor);
+        if (!neighborError && neighbor == destination) {
             return direction;
         }
     }
@@ -484,7 +501,7 @@ Direction directionForNeighbor(H3Index origin, H3Index destination) {
  * @param out Array which must be of size maxGridDiskSize(k).
  * @return 0 if no pentagon or pentagonal distortion area was encountered.
  */
-int H3_EXPORT(gridDiskUnsafe)(H3Index origin, int k, H3Index *out) {
+H3Error H3_EXPORT(gridDiskUnsafe)(H3Index origin, int k, H3Index *out) {
     return H3_EXPORT(gridDiskDistancesUnsafe)(origin, k, out, NULL);
 }
 
@@ -506,8 +523,8 @@ int H3_EXPORT(gridDiskUnsafe)(H3Index origin, int k, H3Index *out) {
  * @param distances Null or array which must be of size maxGridDiskSize(k).
  * @return 0 if no pentagon or pentagonal distortion area was encountered.
  */
-int H3_EXPORT(gridDiskDistancesUnsafe)(H3Index origin, int k, H3Index *out,
-                                       int *distances) {
+H3Error H3_EXPORT(gridDiskDistancesUnsafe)(H3Index origin, int k, H3Index *out,
+                                           int *distances) {
     // Return codes:
     // 1 Pentagon was encountered
     // 2 Pentagon distortion (deleted k subsequence) was encountered
@@ -525,7 +542,7 @@ int H3_EXPORT(gridDiskDistancesUnsafe)(H3Index origin, int k, H3Index *out,
 
     if (H3_EXPORT(isPentagon)(origin)) {
         // Pentagon was encountered; bail out as user doesn't want this.
-        return HEX_RANGE_PENTAGON;
+        return E_PENTAGON;
     }
 
     // 0 < ring <= k, current ring
@@ -542,25 +559,24 @@ int H3_EXPORT(gridDiskDistancesUnsafe)(H3Index origin, int k, H3Index *out,
         if (direction == 0 && i == 0) {
             // Not putting in the output set as it will be done later, at
             // the end of this ring.
-            origin =
-                h3NeighborRotations(origin, NEXT_RING_DIRECTION, &rotations);
-            if (origin == 0) {  // LCOV_EXCL_BR_LINE
+            H3Error neighborResult = h3NeighborRotations(
+                origin, NEXT_RING_DIRECTION, &rotations, &origin);
+            if (neighborResult) {  // LCOV_EXCL_BR_LINE
                 // Should not be possible because `origin` would have to be a
                 // pentagon
-                return HEX_RANGE_K_SUBSEQUENCE;  // LCOV_EXCL_LINE
+                return neighborResult;  // LCOV_EXCL_LINE
             }
 
             if (H3_EXPORT(isPentagon)(origin)) {
                 // Pentagon was encountered; bail out as user doesn't want this.
-                return HEX_RANGE_PENTAGON;
+                return E_PENTAGON;
             }
         }
 
-        origin = h3NeighborRotations(origin, DIRECTIONS[direction], &rotations);
-        if (origin == 0) {  // LCOV_EXCL_BR_LINE
-            // Should not be possible because `origin` would have to be a
-            // pentagon
-            return HEX_RANGE_K_SUBSEQUENCE;  // LCOV_EXCL_LINE
+        H3Error neighborResult = h3NeighborRotations(
+            origin, DIRECTIONS[direction], &rotations, &origin);
+        if (neighborResult) {
+            return neighborResult;
         }
         out[idx] = origin;
         if (distances) {
@@ -582,10 +598,10 @@ int H3_EXPORT(gridDiskDistancesUnsafe)(H3Index origin, int k, H3Index *out,
 
         if (H3_EXPORT(isPentagon)(origin)) {
             // Pentagon was encountered; bail out as user doesn't want this.
-            return HEX_RANGE_PENTAGON;
+            return E_PENTAGON;
         }
     }
-    return HEX_RANGE_SUCCESS;
+    return E_SUCCESS;
 }
 
 /**
@@ -600,18 +616,17 @@ int H3_EXPORT(gridDiskDistancesUnsafe)(H3Index origin, int k, H3Index *out,
  *            The memory block should be equal to maxGridDiskSize(k) * length
  * @return 0 if no pentagon is encountered. Cannot trust output otherwise
  */
-int H3_EXPORT(gridDisksUnsafe)(H3Index *h3Set, int length, int k,
-                               H3Index *out) {
-    int success = 0;
+H3Error H3_EXPORT(gridDisksUnsafe)(H3Index *h3Set, int length, int k,
+                                   H3Index *out) {
     H3Index *segment;
     int segmentSize = H3_EXPORT(maxGridDiskSize)(k);
     for (int i = 0; i < length; i++) {
         // Determine the appropriate segment of the output array to operate on
         segment = out + i * segmentSize;
-        success = H3_EXPORT(gridDiskUnsafe)(h3Set[i], k, segment);
-        if (success != 0) return success;
+        H3Error failed = H3_EXPORT(gridDiskUnsafe)(h3Set[i], k, segment);
+        if (failed) return failed;
     }
-    return 0;
+    return E_SUCCESS;
 }
 
 /**
@@ -627,11 +642,11 @@ int H3_EXPORT(gridDisksUnsafe)(H3Index *h3Set, int length, int k,
  * @param out Array which must be of size 6 * k (or 1 if k == 0)
  * @return 0 if successful; nonzero otherwise.
  */
-int H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index *out) {
+H3Error H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index *out) {
     // Short-circuit on 'identity' ring
     if (k == 0) {
         out[0] = origin;
-        return 0;
+        return E_SUCCESS;
     }
     int idx = 0;
     // Number of 60 degree ccw rotations to perform on the direction (based on
@@ -640,19 +655,20 @@ int H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index *out) {
     // Scratch structure for checking for pentagons
     if (H3_EXPORT(isPentagon)(origin)) {
         // Pentagon was encountered; bail out as user doesn't want this.
-        return HEX_RANGE_PENTAGON;
+        return E_PENTAGON;
     }
 
     for (int ring = 0; ring < k; ring++) {
-        origin = h3NeighborRotations(origin, NEXT_RING_DIRECTION, &rotations);
-        if (origin == 0) {  // LCOV_EXCL_BR_LINE
+        H3Error neighborResult = h3NeighborRotations(
+            origin, NEXT_RING_DIRECTION, &rotations, &origin);
+        if (neighborResult) {  // LCOV_EXCL_BR_LINE
             // Should not be possible because `origin` would have to be a
             // pentagon
-            return HEX_RANGE_K_SUBSEQUENCE;  // LCOV_EXCL_LINE
+            return neighborResult;  // LCOV_EXCL_LINE
         }
 
         if (H3_EXPORT(isPentagon)(origin)) {
-            return HEX_RANGE_PENTAGON;
+            return E_PENTAGON;
         }
     }
 
@@ -663,12 +679,12 @@ int H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index *out) {
 
     for (int direction = 0; direction < 6; direction++) {
         for (int pos = 0; pos < k; pos++) {
-            origin =
-                h3NeighborRotations(origin, DIRECTIONS[direction], &rotations);
-            if (origin == 0) {  // LCOV_EXCL_BR_LINE
+            H3Error neighborResult = h3NeighborRotations(
+                origin, DIRECTIONS[direction], &rotations, &origin);
+            if (neighborResult) {  // LCOV_EXCL_BR_LINE
                 // Should not be possible because `origin` would have to be a
                 // pentagon
-                return HEX_RANGE_K_SUBSEQUENCE;  // LCOV_EXCL_LINE
+                return neighborResult;  // LCOV_EXCL_LINE
             }
 
             // Skip the very last index, it was already added. We do
@@ -679,7 +695,7 @@ int H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index *out) {
                 idx++;
 
                 if (H3_EXPORT(isPentagon)(origin)) {
-                    return HEX_RANGE_PENTAGON;
+                    return E_PENTAGON;
                 }
             }
         }
@@ -689,9 +705,9 @@ int H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index *out) {
     // it indicates pentagonal distortion occurred and we should report
     // failure.
     if (lastIndex != origin) {
-        return HEX_RANGE_PENTAGON;
+        return E_PENTAGON;
     } else {
-        return HEX_RANGE_SUCCESS;
+        return E_SUCCESS;
     }
 }
 
@@ -778,8 +794,7 @@ H3Error _getEdgeHexagons(const GeoLoop *geoloop, int64_t numHexagons, int res,
             while (found[loc] != 0) {
                 // If this conditional is reached, the `found` memory block is
                 // too small for the given polygon. This should not happen.
-                if (loopCount > numHexagons)
-                    return HEX_HASH_OVERFLOW;  // LCOV_EXCL_LINE
+                if (loopCount > numHexagons) return E_FAILED;  // LCOV_EXCL_LINE
                 if (found[loc] == pointHex)
                     break;  // At least two points of the geoloop index to the
                             // same cell
@@ -1079,13 +1094,14 @@ void _vertexGraphToLinkedGeo(VertexGraph *graph, LinkedGeoPolygon *out) {
  * @param numHexes Number of hexagons in set
  * @param out      Output polygon
  */
-void H3_EXPORT(h3SetToLinkedGeo)(const H3Index *h3Set, const int numHexes,
-                                 LinkedGeoPolygon *out) {
+H3Error H3_EXPORT(h3SetToLinkedGeo)(const H3Index *h3Set, const int numHexes,
+                                    LinkedGeoPolygon *out) {
     VertexGraph graph;
     h3SetToVertexGraph(h3Set, numHexes, &graph);
     _vertexGraphToLinkedGeo(&graph, out);
-    // TODO: The return value, possibly indicating an error, is discarded here -
-    // we should use this when we update the API to return a value
-    normalizeMultiPolygon(out);
+    if (normalizeMultiPolygon(out)) {
+        return E_FAILED;
+    }
     destroyVertexGraph(&graph);
+    return E_SUCCESS;
 }
