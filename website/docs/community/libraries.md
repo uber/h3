@@ -13,7 +13,7 @@ The following libraries use H3 via one of its bindings. Contributions to this li
 
 ## Python
 
-- [nmandery/h3ron/h3ronpy](https://github.com/nmandery/h3ron/tree/master/h3ronpy) - Raster to H3 conversion, smoothing of linked polygons.
+- [nmandery/h3ronpy](https://github.com/nmandery/h3ronpy/tree/master) - Raster to H3 conversion, smoothing of linked polygons.
 
 ## Rust
 
