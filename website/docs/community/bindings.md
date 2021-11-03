@@ -7,6 +7,10 @@ slug: /community/bindings
 
 As a C library, bindings can be made to call H3 functions from different programming languages. This page lists different bindings currently available. Contributions to this list are welcome, please feel free to open a [pull request](https://github.com/uber/h3/tree/master/website/docs/community/bindings.md).
 
+## Azure Data Explorer
+
+- [Functions for Working with H3 Indexes](https://docs.microsoft.com/en-us/azure/data-explorer/kusto/query/geo-point-to-h3cell-function)
+
 ## Athena
 
 - [daniel-cortez-stevenson/aws-athena-udfs-h3](https://github.com/daniel-cortez-stevenson/aws-athena-udfs-h3)
