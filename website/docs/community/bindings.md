@@ -80,6 +80,7 @@ As a C library, bindings can be made to call H3 functions from different program
 
 - [uber/h3-py](https://github.com/uber/h3-py)
 - [DahnJ/H3-Pandas](https://github.com/DahnJ/H3-Pandas)
+- [h3-py on Conda Forge](https://anaconda.org/conda-forge/h3-py) ([conda-forge/h3-py-feedstock](https://github.com/conda-forge/h3-py-feedstock))
 
 ## R
 
