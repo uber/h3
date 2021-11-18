@@ -7,11 +7,7 @@ slug: /core-library/restable
 
 ## Cell counts
 
-give me the math
-
-$$
-I = \int_0^{2\pi} \sin(x) dx
-$$
+TODO: link to appendix below (or methodology described elsewhere)
 
 
 |   Res |   Total number of cells |   Number of hexagons |   Number of pentagons |
@@ -37,7 +33,9 @@ $$
 
 ## Cell areas
 
-## Average cell area
+### Average area in km<sup>2</sup>
+
+We also show the pentagon to hexagon area ratio.
 
 |   Res |   Average <ins>Hexagon</ins> Area (km<sup>2</sup>) |   Pentagon Area* (km<sup>2</sup>) |   (P/H) Ratio |
 |------:|---------------------------------------------------:|----------------------------------:|--------------:|
@@ -58,7 +56,12 @@ $$
 |    14 |                                        0.000006267 |                       0.000003162 |        0.5046 |
 |    15 |                                        0.000000895 |                       0.000000452 |        0.5046 |
 
+*: Within a given resolution, all pentagons have the same area.
 
+
+### Average area in m<sup>2</sup>
+
+TODO: link to methodology
 
 |   Res |   Average <ins>Hexagon</ins> Area (m<sup>2</sup>) |   Pentagon Area* (m<sup>2</sup>) |
 |------:|--------------------------------------------------:|---------------------------------:|
@@ -82,8 +85,9 @@ $$
 *: Within a given resolution, all pentagons have the same area.
 
 
-
 ### Hexagon min/max areas
+
+TODO: link to methodology
 
 |   Res |   Min <ins>Hexagon</ins> Area (km^2) |   Max <ins>Hexagon</ins> Area (km^2) |   Ratio (max/min) |
 |------:|-------------------------------------:|-------------------------------------:|------------------:|
@@ -104,6 +108,84 @@ $$
 |    14 |                          0.000003795 |                          0.000007562 |          1.992805 |
 |    15 |                          0.000000542 |                          0.000001080 |          1.992805 |
 
-## Edge length
 
-TODO
+## Edge lengths
+
+TODO: link to methodology
+
+## Appendix
+
+<div align="center">
+  <img src="/images/pentagon_hexagon_children.png" style={{width:'800px'}} /><br />
+  <i>Hexagons have 7 hexagon children; pentagons have 6 hexagon children and 1 pentagon child.</i>
+</div>
+
+### Cell counts
+
+By definition, resolution `0` has `110` **hexagons** and `12` **pentagons**,
+for a total of `122` **cells**.
+
+In fact, *every* H3 resolution has exactly 12 **pentagons**, which are always
+centered at the icosahedron vertices; the number of **hexagons** increases
+with each resolution.
+
+Accounting for both **hexagons** and **pentagons**,
+the total number of **cells** at resolution $r$ is
+
+$$
+c(r) = 2 + 120 \cdot 7^r.
+$$
+
+#### Derivation of the cell count formula
+
+We can derive this formula with the following steps:
+
+First, let `h(n)` be the number of
+children $n \geq 0$ resolution levels below any single **hexagaon**.
+Any **hexagon** has `7` immediate children, so recursion gives us
+that
+
+$$
+h(n) = 7^n.
+$$
+
+Next, let `p(n)` be the number of children $n \geq 0$ resolution levels below
+any single **pentagon**.
+Any **pentagon** has `5` hexagonal immediate children and `1` pentagonal
+immediate child.
+Thus, `p(0) = 1` and `p(1) = 6`.
+
+For $n \geq 1$, we get the general recurrence relation
+ 
+$$
+\begin{aligned}
+p(n) &= 5 \cdot  h(n-1) + p(n-1) \\
+     &= 5 \cdot 7^{n-1} + p(n-1).
+\end{aligned}
+$$
+
+For $n \geq 0$, after working through the recurrence, we get that
+
+$$
+\begin{aligned}
+p(n) &= 1 + 5 \cdot \sum_{k=1}^n\ 7^{k-1} \\
+     &= 1 + 5 \cdot \frac{7^n - 1}{6},
+\end{aligned}
+$$
+
+using the closed form for a
+[geometric series](https://en.wikipedia.org/wiki/Geometric_series).
+
+
+Finally, using the closed forms for `h(n)` and `p(n)`,
+and the fact that (by definition) resolution `0` has
+`12` **pentagons** and `110` **hexagons**,
+we get the closed form for the total number of **cells**
+at resolution `r` as
+
+$$
+\begin{aligned}
+c(r) &= 12 \cdot p(r) + 110 \cdot h(r) \\
+     &= 2 + 120 \cdot 7^r.
+\end{aligned}
+$$
