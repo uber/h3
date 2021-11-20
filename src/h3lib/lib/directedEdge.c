@@ -148,15 +148,12 @@ H3Error H3_EXPORT(getDirectedEdgeOrigin)(H3Index edge, H3Index *out) {
  * @return The destination H3 hexagon index, or H3_NULL on failure
  */
 H3Error H3_EXPORT(getDirectedEdgeDestination)(H3Index edge, H3Index *out) {
-    if (H3_GET_MODE(edge) != H3_DIRECTEDEDGE_MODE) {
-        return E_DIR_EDGE_INVALID;
-    }
     Direction direction = H3_GET_RESERVED_BITS(edge);
     int rotations = 0;
     H3Index origin;
+    // Note: This call is also checking for H3_DIRECTEDEDGE_MODE
     H3Error originResult = H3_EXPORT(getDirectedEdgeOrigin)(edge, &origin);
     if (originResult) {
-        // TODO: Not coverable
         return originResult;
     }
     return h3NeighborRotations(origin, direction, &rotations, out);
@@ -168,19 +165,15 @@ H3Error H3_EXPORT(getDirectedEdgeDestination)(H3Index edge, H3Index *out) {
  * @return 1 if it is a directed edge H3Index, otherwise 0.
  */
 int H3_EXPORT(isValidDirectedEdge)(H3Index edge) {
-    if (H3_GET_MODE(edge) != H3_DIRECTEDEDGE_MODE) {
-        return 0;
-    }
-
     Direction neighborDirection = H3_GET_RESERVED_BITS(edge);
     if (neighborDirection <= CENTER_DIGIT || neighborDirection >= NUM_DIGITS) {
         return 0;
     }
 
     H3Index origin;
+    // Note: This call is also checking for H3_DIRECTEDEDGE_MODE
     H3Error originResult = H3_EXPORT(getDirectedEdgeOrigin)(edge, &origin);
     if (originResult) {
-        // TODO: Unreachable
         return 0;
     }
     if (H3_EXPORT(isPentagon)(origin) && neighborDirection == K_AXES_DIGIT) {
