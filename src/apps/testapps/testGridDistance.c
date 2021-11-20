@@ -138,7 +138,8 @@ SUITE(gridDistance) {
     TEST(gridDistanceEdge) {
         H3Index origin = 0x832830fffffffffL;
         H3Index dest = 0x832834fffffffffL;
-        H3Index edge = H3_EXPORT(cellsToDirectedEdge)(origin, dest);
+        H3Index edge;
+        t_assertSuccess(H3_EXPORT(cellsToDirectedEdge)(origin, dest, &edge));
 
         t_assert(0 != edge, "test edge is valid");
         int64_t distance;
