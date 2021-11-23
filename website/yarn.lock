@@ -2050,9 +2050,9 @@ ajv@^6.1.0, ajv@^6.12.4, ajv@^6.12.5:
     uri-js "^4.2.2"
 
 algoliasearch-helper@^3.3.4:
-  version "3.4.5"
-  resolved "https://registry.yarnpkg.com/algoliasearch-helper/-/algoliasearch-helper-3.4.5.tgz#f907494cf7057f9fc4f91e7dee9a40fee789ac5c"
-  integrity sha512-CrVoQE1i7jL1vmTx7Eus+ZS+f4gYUzGbswi2GR26xUtS9kVjjiZZVBaIXmCQJIV/NJIH1GJoJ3GoM6CKDabcRg==
+  version "3.6.2"
+  resolved "https://registry.yarnpkg.com/algoliasearch-helper/-/algoliasearch-helper-3.6.2.tgz#45e19b12589cfa0c611b573287f65266ea2cc14a"
+  integrity sha512-Xx0NOA6k4ySn+R2l3UMSONAaMkyfmrZ3AP1geEMo32MxDJQJesZABZYsldO9fa6FKQxH91afhi4hO1G0Zc2opg==
   dependencies:
     events "^1.1.1"
 
