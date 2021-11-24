@@ -60,7 +60,7 @@ The H3 library may always add additional error messages. Error messages not reco
 
 Bindings translate error codes into the error handling mechanism appropriate to their language. For example, Java will convert error codes into Java Exceptions.
 
-When possible, it is preferrable to retain the error code. When this is not possible it is fine to elide them. Language bindings should include error messages that are formatted as is usual in their language.
+When possible, it is preferable to retain the error code. When this is not possible it is fine to elide them. Language bindings should include error messages that are formatted as is usual in their language.
 
 ## References
 

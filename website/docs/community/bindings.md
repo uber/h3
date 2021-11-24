@@ -11,6 +11,10 @@ As a C library, bindings can be made to call H3 functions from different program
 
 - [daniel-cortez-stevenson/aws-athena-udfs-h3](https://github.com/daniel-cortez-stevenson/aws-athena-udfs-h3)
 
+## Azure Data Explorer
+
+- [Functions for Working with H3 Indexes](https://docs.microsoft.com/en-us/azure/data-explorer/kusto/query/geo-point-to-h3cell-function)
+
 ## BigQuery
 
 - [cartodb/bigquery-jslibs](https://github.com/CartoDB/bigquery-jslibs)
