@@ -14,9 +14,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2.1.1
 
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2.4.1
         with:
-          node-version: 12.x
+          node-version: '14'
 
       - name: Install FOSSA
         run: |
