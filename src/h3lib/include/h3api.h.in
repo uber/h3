@@ -368,13 +368,13 @@ DECLSPEC double H3_EXPORT(getHexagonEdgeLengthAvgM)(int res);
  * @{
  */
 /** @brief exact length for a specific directed edge in radians*/
-double H3_EXPORT(exactEdgeLengthRads)(H3Index edge);
+H3Error H3_EXPORT(exactEdgeLengthRads)(H3Index edge, double *length);
 
 /** @brief exact length for a specific directed edge in kilometers*/
-double H3_EXPORT(exactEdgeLengthKm)(H3Index edge);
+H3Error H3_EXPORT(exactEdgeLengthKm)(H3Index edge, double *length);
 
 /** @brief exact length for a specific directed edge in meters*/
-double H3_EXPORT(exactEdgeLengthM)(H3Index edge);
+H3Error H3_EXPORT(exactEdgeLengthM)(H3Index edge, double *length);
 /** @} */
 
 /** @defgroup getNumCells getNumCells
@@ -561,8 +561,9 @@ DECLSPEC int H3_EXPORT(areNeighborCells)(H3Index origin, H3Index destination);
  */
 /** @brief returns the directed edge H3Index for the specified origin and
  * destination */
-DECLSPEC H3Index H3_EXPORT(cellsToDirectedEdge)(H3Index origin,
-                                                H3Index destination);
+DECLSPEC H3Error H3_EXPORT(cellsToDirectedEdge)(H3Index origin,
+                                                H3Index destination,
+                                                H3Index *out);
 /** @} */
 
 /** @defgroup isValidDirectedEdge isValidDirectedEdge
@@ -580,7 +581,7 @@ DECLSPEC int H3_EXPORT(isValidDirectedEdge)(H3Index edge);
  */
 /** @brief Returns the origin hexagon H3Index from the directed edge
  * H3Index */
-DECLSPEC H3Index H3_EXPORT(getDirectedEdgeOrigin)(H3Index edge);
+DECLSPEC H3Error H3_EXPORT(getDirectedEdgeOrigin)(H3Index edge, H3Index *out);
 /** @} */
 
 /** @defgroup getDirectedEdgeDestination \
@@ -590,7 +591,8 @@ DECLSPEC H3Index H3_EXPORT(getDirectedEdgeOrigin)(H3Index edge);
  */
 /** @brief Returns the destination hexagon H3Index from the directed edge
  * H3Index */
-DECLSPEC H3Index H3_EXPORT(getDirectedEdgeDestination)(H3Index edge);
+DECLSPEC H3Error H3_EXPORT(getDirectedEdgeDestination)(H3Index edge,
+                                                       H3Index *out);
 /** @} */
 
 /** @defgroup directedEdgeToCells \
@@ -600,8 +602,8 @@ DECLSPEC H3Index H3_EXPORT(getDirectedEdgeDestination)(H3Index edge);
  */
 /** @brief Returns the origin and destination hexagons from the directed
  * edge H3Index */
-DECLSPEC void H3_EXPORT(directedEdgeToCells)(H3Index edge,
-                                             H3Index *originDestination);
+DECLSPEC H3Error H3_EXPORT(directedEdgeToCells)(H3Index edge,
+                                                H3Index *originDestination);
 /** @} */
 
 /** @defgroup originToDirectedEdges \
@@ -611,7 +613,8 @@ DECLSPEC void H3_EXPORT(directedEdgeToCells)(H3Index edge,
  */
 /** @brief Returns the 6 (or 5 for pentagons) edges associated with the H3Index
  */
-DECLSPEC void H3_EXPORT(originToDirectedEdges)(H3Index origin, H3Index *edges);
+DECLSPEC H3Error H3_EXPORT(originToDirectedEdges)(H3Index origin,
+                                                  H3Index *edges);
 /** @} */
 
 /** @defgroup directedEdgeToBoundary directedEdgeToBoundary
@@ -619,7 +622,8 @@ DECLSPEC void H3_EXPORT(originToDirectedEdges)(H3Index origin, H3Index *edges);
  * @{
  */
 /** @brief Returns the CellBoundary containing the coordinates of the edge */
-DECLSPEC void H3_EXPORT(directedEdgeToBoundary)(H3Index edge, CellBoundary *gb);
+DECLSPEC H3Error H3_EXPORT(directedEdgeToBoundary)(H3Index edge,
+                                                   CellBoundary *gb);
 /** @} */
 
 /** @defgroup cellToVertex cellToVertex

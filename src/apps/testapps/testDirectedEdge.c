@@ -85,14 +85,20 @@ SUITE(directedEdge) {
         t_assertSuccess(H3_EXPORT(gridRingUnsafe)(sf, 1, ring));
         H3Index sf2 = ring[0];
 
-        H3Index edge = H3_EXPORT(cellsToDirectedEdge)(sf, sf2);
-        t_assert(sf == H3_EXPORT(getDirectedEdgeOrigin)(edge),
-                 "can retrieve the origin from the edge");
-        t_assert(sf2 == H3_EXPORT(getDirectedEdgeDestination)(edge),
+        H3Index edge;
+        t_assertSuccess(H3_EXPORT(cellsToDirectedEdge)(sf, sf2, &edge));
+        H3Index edgeOrigin;
+        t_assertSuccess(H3_EXPORT(getDirectedEdgeOrigin)(edge, &edgeOrigin));
+        t_assert(sf == edgeOrigin, "can retrieve the origin from the edge");
+        H3Index edgeDestination;
+        t_assertSuccess(
+            H3_EXPORT(getDirectedEdgeDestination)(edge, &edgeDestination));
+        t_assert(sf2 == edgeDestination,
                  "can retrieve the destination from the edge");
 
         H3Index originDestination[2] = {0};
-        H3_EXPORT(directedEdgeToCells)(edge, originDestination);
+        t_assertSuccess(
+            H3_EXPORT(directedEdgeToCells)(edge, originDestination));
         t_assert(originDestination[0] == sf,
                  "got the origin first in the pair request");
         t_assert(originDestination[1] == sf2,
@@ -102,25 +108,33 @@ SUITE(directedEdge) {
         t_assertSuccess(H3_EXPORT(gridRingUnsafe)(sf, 2, largerRing));
         H3Index sf3 = largerRing[0];
 
-        H3Index notEdge = H3_EXPORT(cellsToDirectedEdge)(sf, sf3);
-        t_assert(notEdge == 0, "Non-neighbors can't have edges");
+        H3Index notEdge;
+        t_assert(H3_EXPORT(cellsToDirectedEdge)(sf, sf3, &notEdge) ==
+                     E_NOT_NEIGHBORS,
+                 "Non-neighbors can't have edges");
     }
 
     TEST(getDirectedEdgeOriginBadInput) {
         H3Index hexagon = 0x891ea6d6533ffff;
 
-        t_assert(H3_EXPORT(getDirectedEdgeOrigin)(hexagon) == 0,
-                 "getting the origin from a hexagon index returns 0");
-        t_assert(H3_EXPORT(getDirectedEdgeOrigin)(0) == 0,
-                 "getting the origin from a null index returns 0");
+        H3Index out;
+        t_assert(H3_EXPORT(getDirectedEdgeOrigin)(hexagon, &out) ==
+                     E_DIR_EDGE_INVALID,
+                 "getting the origin from a hexagon index returns error");
+        t_assert(
+            H3_EXPORT(getDirectedEdgeOrigin)(0, &out) == E_DIR_EDGE_INVALID,
+            "getting the origin from a null index returns error");
     }
 
     TEST(getDirectedEdgeDestination) {
         H3Index hexagon = 0x891ea6d6533ffff;
 
-        t_assert(H3_EXPORT(getDirectedEdgeDestination)(hexagon) == 0,
+        H3Index out;
+        t_assert(H3_EXPORT(getDirectedEdgeDestination)(hexagon, &out) ==
+                     E_DIR_EDGE_INVALID,
                  "getting the destination from a hexagon index returns 0");
-        t_assert(H3_EXPORT(getDirectedEdgeDestination)(0) == 0,
+        t_assert(H3_EXPORT(getDirectedEdgeDestination)(0, &out) ==
+                     E_DIR_EDGE_INVALID,
                  "getting the destination from a null index returns 0");
     }
 
@@ -139,10 +153,12 @@ SUITE(directedEdge) {
                 for (int i = 0; i < 7; i++) {
                     H3Index neighbor = ring[i];
                     if (neighbor == pentagon || neighbor == H3_NULL) continue;
-                    edge = H3_EXPORT(cellsToDirectedEdge)(pentagon, neighbor);
+                    t_assertSuccess(H3_EXPORT(cellsToDirectedEdge)(
+                        pentagon, neighbor, &edge));
                     t_assert(H3_EXPORT(isValidDirectedEdge)(edge),
                              "pentagon-to-neighbor is a valid edge");
-                    edge = H3_EXPORT(cellsToDirectedEdge)(neighbor, pentagon);
+                    t_assertSuccess(H3_EXPORT(cellsToDirectedEdge)(
+                        neighbor, pentagon, &edge));
                     t_assert(H3_EXPORT(isValidDirectedEdge)(edge),
                              "neighbor-to-pentagon is a valid edge");
                 }
@@ -157,7 +173,8 @@ SUITE(directedEdge) {
         t_assertSuccess(H3_EXPORT(gridRingUnsafe)(sf, 1, ring));
         H3Index sf2 = ring[0];
 
-        H3Index edge = H3_EXPORT(cellsToDirectedEdge)(sf, sf2);
+        H3Index edge;
+        t_assertSuccess(H3_EXPORT(cellsToDirectedEdge)(sf, sf2, &edge));
         t_assert(H3_EXPORT(isValidDirectedEdge)(edge) == 1,
                  "edges validate correctly");
         t_assert(H3_EXPORT(isValidDirectedEdge)(sf) == 0,
@@ -195,22 +212,26 @@ SUITE(directedEdge) {
         H3Index sf;
         t_assertSuccess(H3_EXPORT(latLngToCell)(&sfGeo, 9, &sf));
         H3Index edges[6] = {0};
-        H3_EXPORT(originToDirectedEdges)(sf, edges);
+        t_assertSuccess(H3_EXPORT(originToDirectedEdges)(sf, edges));
 
         for (int i = 0; i < 6; i++) {
             t_assert(H3_EXPORT(isValidDirectedEdge)(edges[i]) == 1,
                      "edge is an edge");
-            t_assert(sf == H3_EXPORT(getDirectedEdgeOrigin)(edges[i]),
-                     "origin is correct");
-            t_assert(sf != H3_EXPORT(getDirectedEdgeDestination)(edges[i]),
-                     "destination is not origin");
+            H3Index origin;
+            t_assertSuccess(
+                H3_EXPORT(getDirectedEdgeOrigin)(edges[i], &origin));
+            t_assert(sf == origin, "origin is correct");
+            H3Index destination;
+            t_assertSuccess(
+                H3_EXPORT(getDirectedEdgeDestination)(edges[i], &destination));
+            t_assert(sf != destination, "destination is not origin");
         }
     }
 
     TEST(getH3DirectedEdgesFromPentagon) {
         H3Index pentagon = 0x821c07fffffffff;
         H3Index edges[6] = {0};
-        H3_EXPORT(originToDirectedEdges)(pentagon, edges);
+        t_assertSuccess(H3_EXPORT(originToDirectedEdges)(pentagon, edges));
 
         int missingEdgeCount = 0;
         for (int i = 0; i < 6; i++) {
@@ -219,11 +240,14 @@ SUITE(directedEdge) {
             } else {
                 t_assert(H3_EXPORT(isValidDirectedEdge)(edges[i]) == 1,
                          "edge is an edge");
-                t_assert(pentagon == H3_EXPORT(getDirectedEdgeOrigin)(edges[i]),
-                         "origin is correct");
-                t_assert(
-                    pentagon != H3_EXPORT(getDirectedEdgeDestination)(edges[i]),
-                    "destination is not origin");
+                H3Index origin;
+                t_assertSuccess(
+                    H3_EXPORT(getDirectedEdgeOrigin)(edges[i], &origin));
+                t_assert(pentagon == origin, "origin is correct");
+                H3Index destination;
+                t_assertSuccess(H3_EXPORT(getDirectedEdgeDestination)(
+                    edges[i], &destination));
+                t_assert(pentagon != destination, "destination is not origin");
             }
         }
         t_assert(missingEdgeCount == 1,
@@ -241,12 +265,12 @@ SUITE(directedEdge) {
 
         for (int res = 0; res < MAX_H3_RES; res++) {
             t_assertSuccess(H3_EXPORT(latLngToCell)(&sfGeo, res, &sf));
-            H3_EXPORT(cellToBoundary)(sf, &boundary);
-            H3_EXPORT(originToDirectedEdges)(sf, edges);
+            t_assertSuccess(H3_EXPORT(cellToBoundary)(sf, &boundary));
+            t_assertSuccess(H3_EXPORT(originToDirectedEdges)(sf, edges));
 
             for (int i = 0; i < 6; i++) {
-                H3_EXPORT(directedEdgeToBoundary)
-                (edges[i], &edgeBoundary);
+                t_assertSuccess(
+                    H3_EXPORT(directedEdgeToBoundary)(edges[i], &edgeBoundary));
                 t_assert(edgeBoundary.numVerts == 2,
                          "Got the expected number of vertices back");
                 for (int j = 0; j < edgeBoundary.numVerts; j++) {
@@ -270,16 +294,16 @@ SUITE(directedEdge) {
 
         for (int res = 1; res < MAX_H3_RES; res += 2) {
             setH3Index(&pentagon, res, 24, 0);
-            H3_EXPORT(cellToBoundary)(pentagon, &boundary);
-            H3_EXPORT(originToDirectedEdges)(pentagon, edges);
+            t_assertSuccess(H3_EXPORT(cellToBoundary)(pentagon, &boundary));
+            t_assertSuccess(H3_EXPORT(originToDirectedEdges)(pentagon, edges));
 
             int missingEdgeCount = 0;
             for (int i = 0; i < 6; i++) {
                 if (edges[i] == 0) {
                     missingEdgeCount++;
                 } else {
-                    H3_EXPORT(directedEdgeToBoundary)
-                    (edges[i], &edgeBoundary);
+                    t_assertSuccess(H3_EXPORT(directedEdgeToBoundary)(
+                        edges[i], &edgeBoundary));
                     t_assert(edgeBoundary.numVerts == 3,
                              "Got the expected number of vertices back for a "
                              "Class III "
@@ -308,15 +332,16 @@ SUITE(directedEdge) {
 
         for (int res = 0; res < MAX_H3_RES; res += 2) {
             setH3Index(&pentagon, res, 24, 0);
-            H3_EXPORT(cellToBoundary)(pentagon, &boundary);
-            H3_EXPORT(originToDirectedEdges)(pentagon, edges);
+            t_assertSuccess(H3_EXPORT(cellToBoundary)(pentagon, &boundary));
+            t_assertSuccess(H3_EXPORT(originToDirectedEdges)(pentagon, edges));
 
             int missingEdgeCount = 0;
             for (int i = 0; i < 6; i++) {
                 if (edges[i] == 0) {
                     missingEdgeCount++;
                 } else {
-                    H3_EXPORT(directedEdgeToBoundary)(edges[i], &edgeBoundary);
+                    t_assertSuccess(H3_EXPORT(directedEdgeToBoundary)(
+                        edges[i], &edgeBoundary));
                     t_assert(edgeBoundary.numVerts == 2,
                              "Got the expected number of vertices back for a "
                              "Class II "
@@ -335,13 +360,16 @@ SUITE(directedEdge) {
     }
 
     TEST(exactEdgeLength_invalid) {
+        double length;
         // Test that invalid inputs do not cause crashes.
-        t_assert(H3_EXPORT(exactEdgeLengthRads)(0) == 0,
-                 "Invalid edge has zero length");
+        t_assert(
+            H3_EXPORT(exactEdgeLengthRads)(0, &length) == E_DIR_EDGE_INVALID,
+            "Invalid edge has zero length");
         LatLng zero = {0, 0};
         H3Index h3;
         t_assertSuccess(H3_EXPORT(latLngToCell)(&zero, 0, &h3));
-        t_assert(H3_EXPORT(exactEdgeLengthRads)(h3) == 0,
-                 "Non-edge (cell) has zero edge length");
+        t_assert(
+            H3_EXPORT(exactEdgeLengthRads)(h3, &length) == E_DIR_EDGE_INVALID,
+            "Non-edge (cell) has zero edge length");
     }
 }

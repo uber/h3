@@ -1,0 +1,33 @@
+name: deploy-website
+
+on:
+  push:
+    branches:
+      - master
+
+# This job installs dependencies, builds the website, and pushes it to `gh-pages`
+jobs:
+  deploy-website:
+    name: Deploy website
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2.4.0
+
+      - uses: actions/setup-node@v2.4.1
+        with:
+          node-version: '16'
+
+      - name: Website Build
+        working-directory: website
+        run: |
+          yarn
+          yarn build
+
+      # Deploy the book's HTML to gh-pages branch
+      - name: GitHub Pages action
+        uses: peaceiris/actions-gh-pages@v3.8.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: website/build
+          cname: h3geo.org
