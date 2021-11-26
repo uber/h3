@@ -18,11 +18,14 @@ yarn start
 
 You will then be able to open http://localhost:3000 in your browser.
 
+You can also test a production-ready build with:
+
+```
+yarn build
+```
+
 ## Updating the H3 Website
 
-Deployment is done via [Docusaurus](https://docusaurus.io/docs/deployment#deploy). You will need
-to set `GIT_USER` to your Github username, and then run:
-
-```
-USE_SSH=true yarn deploy
-```
+[Website deployment](https://docusaurus.io/docs/deployment#deploy) happens
+automatically via GitHub Actions whenever changes are landed to
+the `master` branch. 

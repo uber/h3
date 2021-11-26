@@ -1,3 +1,6 @@
+const math = require('remark-math');
+const katex = require('rehype-katex');
+
 /** @type {import('@docusaurus/types').DocusaurusConfig} */
 module.exports = {
   title: 'H3',
@@ -107,6 +110,8 @@ module.exports = {
       '@docusaurus/preset-classic',
       {
         docs: {
+          remarkPlugins: [math],
+          rehypePlugins: [katex],
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl: ({docPath}) => {
             // Per docusaurus, apply changes to the "next" version, not the current one
@@ -123,5 +128,12 @@ module.exports = {
         },
       },
     ],
+  ],
+  stylesheets: [
+      {
+          href: "https://cdn.jsdelivr.net/npm/katex@0.13.11/dist/katex.min.css",
+          integrity: "sha384-Um5gpz1odJg5Z4HAmzPtgZKdTBHZdw8S29IecapCSB31ligYPhHQZMIlWLYQGVoc",
+          crossorigin: "anonymous",
+      },
   ],
 };

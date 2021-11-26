@@ -18,7 +18,7 @@ jobs:
         compiler: [clang, gcc]
 
     steps:
-      - uses: actions/checkout@v2.1.1
+      - uses: actions/checkout@v2.4.0
 
       - name: Install Doxygen
         run: |
@@ -69,7 +69,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2.1.1
+      - uses: actions/checkout@v2.4.0
 
       - name: Install Valgrind
         run: |
@@ -96,7 +96,7 @@ jobs:
       CC: gcc
 
     steps:
-      - uses: actions/checkout@v2.1.1
+      - uses: actions/checkout@v2.4.0
 
       - name: Install lcov
         run: |
