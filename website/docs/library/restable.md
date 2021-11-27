@@ -33,6 +33,13 @@ We list the number of hexagons and pentagons at each H3 resolution.
 
 ## Cell areas
 
+:::caution
+Cell areas are computed with a **spherical** model of the earth using the
+[authalic radius](https://en.wikipedia.org/wiki/Earth_radius#Authalic_radius)
+given by
+[WGS84](https://en.wikipedia.org/wiki/WGS84)/[EPSG:4326](https://epsg.io/4326).
+:::
+
 ### Average area in km<sup>2</sup>
 
 The area of an H3 cell varies based on its position relative to the
@@ -119,6 +126,13 @@ the pentagons) at each resolution, and show their ratio.
 
 ## Edge lengths
 
+:::caution
+Edge lengths are computed with a **spherical** model of the earth using the
+[authalic radius](https://en.wikipedia.org/wiki/Earth_radius#Authalic_radius)
+given by
+[WGS84](https://en.wikipedia.org/wiki/WGS84)/[EPSG:4326](https://epsg.io/4326).
+:::
+
 TODO
 
 
@@ -138,12 +152,14 @@ In fact, *every* H3 resolution has exactly $12$ **pentagons**, which are always
 centered at the icosahedron vertices; the number of **hexagons** increases
 with each resolution.
 
+:::tip Formula
 Accounting for both **hexagons** and **pentagons**,
 the total number of **cells** at resolution $r$ is
 
 $$
 c(r) = 2 + 120 \cdot 7^r.
 $$
+:::
 
 #### Derivation of the cell count formula
 
