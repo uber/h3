@@ -216,9 +216,23 @@ c(r) &= 12 \cdot p(r) + 110 \cdot h(r) \\
 \end{aligned}
 $$
 
+#### Jupyter notebook
+
+A notebook to produce the cell count table above can be
+[found here](https://github.com/uber/h3-py-notebooks/blob/master/notebooks/stats_tables/cell_counts.ipynb).
+
 ### Cell areas
 
-todo
+Cell areas are computed with a **spherical** model of the earth using the
+[authalic radius](https://en.wikipedia.org/wiki/Earth_radius#Authalic_radius)
+given by
+[WGS84](https://en.wikipedia.org/wiki/WGS84)/[EPSG:4326](https://epsg.io/4326).
+
+The [`h3-py-notebooks` repo](https://github.com/uber/h3-py-notebooks)
+has notebooks for producing the
+[average cell area table](https://github.com/uber/h3-py-notebooks/blob/master/notebooks/stats_tables/avg_area_table.ipynb)
+and the
+[min/max area table](https://github.com/uber/h3-py-notebooks/blob/master/notebooks/stats_tables/extreme_hex_area.ipynb).
 
 ### Edge lengths
 
