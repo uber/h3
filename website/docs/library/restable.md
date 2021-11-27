@@ -7,7 +7,9 @@ slug: /core-library/restable
 
 ## Cell counts
 
-TODO: link to appendix below (or methodology described elsewhere)
+We show the number of hexagons and pentagons at each resolution.
+Note that there are always exactly $12$ pentagons at every resolution.
+(Methodology)
 
 
 |   Res |   Total number of cells |   Number of hexagons |   Number of pentagons |
@@ -30,12 +32,12 @@ TODO: link to appendix below (or methodology described elsewhere)
 |    15 |     569,707,381,193,162 |  569,707,381,193,150 |                    12 |
 
 
-
 ## Cell areas
 
 ### Average area in km<sup>2</sup>
 
-We also show the pentagon to hexagon area ratio.
+
+We also show the pentagon to hexagon area ratio. (Methodology)
 
 |   Res |   Average <ins>Hexagon</ins> Area (km<sup>2</sup>) |   Pentagon Area* (km<sup>2</sup>) |   (P/H) Ratio |
 |------:|---------------------------------------------------:|----------------------------------:|--------------:|
@@ -117,13 +119,13 @@ TODO: link to methodology
 
 <div align="center">
   <img src="/images/pentagon_hexagon_children.png" style={{width:'800px'}} /><br />
-  <i>Hexagons have 7 hexagon children; pentagons have 6 hexagon children and 1 pentagon child.</i>
+  <i>Hexagons have 7 hexagon children. Pentagons have 6 hexagon children and 1 pentagon child.</i>
 </div>
 
 ### Cell counts
 
-By definition, resolution `0` has `110` **hexagons** and `12` **pentagons**,
-for a total of `122` **cells**.
+By definition, resolution `0` has $110$ **hexagons** and $12$ **pentagons**,
+for a total of $122$ **cells**.
 
 In fact, *every* H3 resolution has exactly 12 **pentagons**, which are always
 centered at the icosahedron vertices; the number of **hexagons** increases
@@ -140,20 +142,20 @@ $$
 
 We can derive this formula with the following steps:
 
-First, let `h(n)` be the number of
+First, let $h(n)$ be the number of
 children $n \geq 0$ resolution levels below any single **hexagaon**.
-Any **hexagon** has `7` immediate children, so recursion gives us
+Any **hexagon** has $7$ immediate children, so recursion gives us
 that
 
 $$
 h(n) = 7^n.
 $$
 
-Next, let `p(n)` be the number of children $n \geq 0$ resolution levels below
+Next, let $p(n)$ be the number of children $n \geq 0$ resolution levels below
 any single **pentagon**.
-Any **pentagon** has `5` hexagonal immediate children and `1` pentagonal
+Any **pentagon** has $5$ hexagonal immediate children and $1$ pentagonal
 immediate child.
-Thus, `p(0) = 1` and `p(1) = 6`.
+Thus, $p(0) = 1$ and $p(1) = 6$.
 
 For $n \geq 1$, we get the general recurrence relation
  
@@ -177,11 +179,11 @@ using the closed form for a
 [geometric series](https://en.wikipedia.org/wiki/Geometric_series).
 
 
-Finally, using the closed forms for `h(n)` and `p(n)`,
+Finally, using the closed forms for $h(n)$ and $p(n)$,
 and the fact that (by definition) resolution `0` has
-`12` **pentagons** and `110` **hexagons**,
+$12$ **pentagons** and $110$ **hexagons**,
 we get the closed form for the total number of **cells**
-at resolution `r` as
+at resolution $r$ as
 
 $$
 \begin{aligned}
