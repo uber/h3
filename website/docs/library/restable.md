@@ -7,9 +7,8 @@ slug: /core-library/restable
 
 ## Cell counts
 
-We show the number of hexagons and pentagons at each resolution.
-Note that there are always exactly $12$ pentagons at every resolution.
-(Methodology)
+We list the number of hexagons and pentagons at each H3 resolution.
+[There are always exactly $12$ pentagons at every resolution](../core-library/overview.md).
 
 
 |   Res |   Total number of cells |   Number of hexagons |   Number of pentagons |
@@ -36,10 +35,13 @@ Note that there are always exactly $12$ pentagons at every resolution.
 
 ### Average area in km<sup>2</sup>
 
+The area of an H3 cell varies based on its position relative to the
+[icosahedron vertices](../core-library/overview.md).
+We show the **average** hexagon areas for each resolution.
+All pentagons within a resolution have the same area.
 
-We also show the pentagon to hexagon area ratio. (Methodology)
 
-|   Res |   Average <ins>Hexagon</ins> Area (km<sup>2</sup>) |   Pentagon Area* (km<sup>2</sup>) |   (P/H) Ratio |
+|   Res |   Average <ins>Hexagon</ins> Area (km<sup>2</sup>) |   Pentagon Area* (km<sup>2</sup>) |   Ratio (P/H) |
 |------:|---------------------------------------------------:|----------------------------------:|--------------:|
 |     0 |                                4,357,449.416078381 |               2,562,182.162955496 |        0.5880 |
 |     1 |                                  609,788.441794133 |                 328,434.586246469 |        0.5386 |
@@ -63,7 +65,7 @@ We also show the pentagon to hexagon area ratio. (Methodology)
 
 ### Average area in m<sup>2</sup>
 
-TODO: link to methodology
+Here are the same areas, but in m<sup>2</sup>.
 
 |   Res |   Average <ins>Hexagon</ins> Area (m<sup>2</sup>) |   Pentagon Area* (m<sup>2</sup>) |
 |------:|--------------------------------------------------:|---------------------------------:|
@@ -87,9 +89,13 @@ TODO: link to methodology
 *: Within a given resolution, all pentagons have the same area.
 
 
-### Hexagon min/max areas
+### Hexagon min and max areas
 
-TODO: link to methodology
+The area of an H3 cell varies based on its position relative to the
+[icosahedron vertices](../core-library/overview.md).
+We compute the minimum and maximum values for the **hexagon** areas (excluding
+the pentagons) at each resolution, and show their ratio.
+
 
 |   Res |   Min <ins>Hexagon</ins> Area (km^2) |   Max <ins>Hexagon</ins> Area (km^2) |   Ratio (max/min) |
 |------:|-------------------------------------:|-------------------------------------:|------------------:|
@@ -113,9 +119,10 @@ TODO: link to methodology
 
 ## Edge lengths
 
-TODO: link to methodology
+TODO
 
-## Appendix
+
+## Appendix: Methodology
 
 <div align="center">
   <img src="/images/pentagon_hexagon_children.png" style={{width:'800px'}} /><br />
@@ -124,10 +131,10 @@ TODO: link to methodology
 
 ### Cell counts
 
-By definition, resolution `0` has $110$ **hexagons** and $12$ **pentagons**,
-for a total of $122$ **cells**.
+[By definition](../core-library/overview.md), resolution `0` has $110$
+**hexagons** and $12$ **pentagons**, for a total of $122$ **cells**.
 
-In fact, *every* H3 resolution has exactly 12 **pentagons**, which are always
+In fact, *every* H3 resolution has exactly $12$ **pentagons**, which are always
 centered at the icosahedron vertices; the number of **hexagons** increases
 with each resolution.
 
@@ -140,7 +147,7 @@ $$
 
 #### Derivation of the cell count formula
 
-We can derive this formula with the following steps:
+We can derive the formula above with the following steps.
 
 First, let $h(n)$ be the number of
 children $n \geq 0$ resolution levels below any single **hexagaon**.
@@ -180,7 +187,8 @@ using the closed form for a
 
 
 Finally, using the closed forms for $h(n)$ and $p(n)$,
-and the fact that (by definition) resolution `0` has
+and the fact that ([by definition](../core-library/overview.md))
+resolution `0` has
 $12$ **pentagons** and $110$ **hexagons**,
 we get the closed form for the total number of **cells**
 at resolution $r$ as
@@ -191,3 +199,11 @@ c(r) &= 12 \cdot p(r) + 110 \cdot h(r) \\
      &= 2 + 120 \cdot 7^r.
 \end{aligned}
 $$
+
+### Cell areas
+
+todo
+
+### Edge lengths
+
+todo
