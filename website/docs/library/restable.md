@@ -140,7 +140,7 @@ TODO
 
 <div align="center">
   <img src="/images/pentagon_hexagon_children.png" style={{width:'800px'}} /><br />
-  <i>Hexagons have 7 hexagon children. Pentagons have 6 hexagon children and 1 pentagon child.</i>
+  <i>Hexagons have 7 hexagon children. Pentagons have 6 children: 5 hexagons and 1 pentagon.</i>
 </div>
 
 ### Cell counts
