@@ -67,8 +67,6 @@ exact inclusion check used for each mode.
 
 Contains separate functions for [intersection and containment](http://s2geometry.io/devguide/basic_types#s2polygon)
 
-#### GeoHash
-
 #### Turf library
 
 Contains separate functions for [intersection](http://turfjs.org/docs/#booleanIntersects), [containment](http://turfjs.org/docs/#booleanContains), etc.
@@ -77,14 +75,52 @@ Contains separate functions for [intersection](http://turfjs.org/docs/#booleanIn
 
 Contains separate functions for [intersection](https://postgis.net/docs/ST_Intersects.html), [containment](https://postgis.net/docs/ST_Contains.html), etc.
 
-See also [https://www.ogc.org/standards/sfs](Simple Feature Access - SQL).
-
-#### QGIS
+See also [Simple Feature Access - SQL](https://www.ogc.org/standards/sfs).
 
 #### JTS
 
+Separate predicatess. (Reference: [JTS Developer Guide](https://github.com/locationtech/jts/blob/master/doc/JTS%20Developer%20Guide.pdf))
+
 #### GeoPandas
+
+Contains separate functions for [intersection](https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoSeries.intersection.html), [containment](https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoSeries.contains.html), etc.
 
 ## Proposal
 
 *What is the recommended approach?*
+
+The signature for `polygonToCells` and `maxPolygonToCellsSize` would be changed as follows:
+
+```
+/** @brief maximum number of hexagons that could be in the geoloop */
+DECLSPEC H3Error H3_EXPORT(maxPolygonToCellsSize)(const GeoPolygon *geoPolygon,
+                                                  int res, uint32_t flags, int64_t *out);
+
+/** @brief hexagons within the given geopolygon */
+DECLSPEC H3Error H3_EXPORT(polygonToCells)(const GeoPolygon *geoPolygon,
+                                           int res, uint32_t flags, H3Index *out);
+```
+
+`flags` would have the following possible bit layout:
+
+|       Bits | Meaning
+| ---------- | -------
+| 1-2 (LSB)  | If 0, containment mode centroid.<br>If 1, containment mode cover.<br>If 2, containment mode intersects.<br>3 is a reserved value.
+| 3          | If 0, spherical containment.<br>If 1, cartesian containment (same as H3 version 3).
+| All others | Reserved and must be set to 0.
+
+The same value used for `maxPolygonToCellsSize` must be used for the subsequent call to `polygonToCells`, just as the `GeoPolygon` and `res` must be the same.
+
+In bindings, this could be expressed using enums, for example:
+
+```python
+polygon_to_cells(polygon, res=res, cartesian=True, containment=h3.Containment.CENTROID)
+```
+
+```js
+polygonToCells(polygon, {res: res, cartesian: true, containment: h3.Containment.CENTROID})
+```
+
+```java
+polygon(polygon).cartesian(true).containment(h3.Containment.CENTROID).toCells(res)
+```
