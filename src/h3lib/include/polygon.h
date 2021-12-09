@@ -44,6 +44,15 @@
 void bboxesFromGeoPolygon(const GeoPolygon *polygon, BBox *bboxes);
 bool pointInsidePolygon(const GeoPolygon *geoPolygon, const BBox *bboxes,
                         const LatLng *coord);
+bool boundaryContainedByGeoLoop(const GeoLoop *loop, const BBox *bbox,
+                                const CellBoundary *boundary);
+bool boundaryContainedByPolygon(const GeoPolygon *geoPolygon,
+                                const BBox *bboxes,
+                                const CellBoundary *boundary);
+bool boundaryIntersectsGeoLoop(const GeoLoop *loop, const BBox *bbox,
+                               const CellBoundary *boundary);
+bool boundaryIntersectsPolygon(const GeoPolygon *geoPolygon, const BBox *bboxes,
+                               const CellBoundary *boundary);
 
 // The following functions are created via macro in polygonAlgos.h,
 // so their signatures are documented here:

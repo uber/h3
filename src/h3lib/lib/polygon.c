@@ -83,3 +83,94 @@ bool pointInsidePolygon(const GeoPolygon *geoPolygon, const BBox *bboxes,
 
     return contains;
 }
+
+bool boundaryContainedByGeoLoop(const GeoLoop *loop, const BBox *bbox,
+                                const CellBoundary *boundary) {
+    bool contains = false;
+    for (int i = 0; i < boundary->numVerts; i++) {
+        if (bboxContains(bbox, &boundary->verts[i])) {
+            contains = true;
+            break;
+        }
+    }
+    if (contains) {
+        for (int i = 0; i < boundary->numVerts; i++) {
+            // TODO: Check intersection of (boundary->verts[i],
+            // boundary->verts[i + 1]) with the geoloop Must be completed
+            // contained with no intersection point.
+        }
+    }
+    return contains;
+}
+
+/**
+ * boundaryContainedByPolygon takes a given GeoPolygon data structure and
+ * checks if it completely contains a given cell boundary.
+ *
+ * @param geoPolygon The geoloop and holes defining the relevant area
+ * @param bboxes     The bboxes for the main geoloop and each of its holes
+ * @param boundary   The cell boundary to check
+ * @return           Whether the point is contained
+ */
+bool boundaryContainedByPolygon(const GeoPolygon *geoPolygon,
+                                const BBox *bboxes,
+                                const CellBoundary *boundary) {
+    bool contains =
+        boundaryContainedByGeoLoop(&geoPolygon->geoloop, &bboxes[0], boundary);
+    if (contains && geoPolygon->numHoles > 0) {
+        // If the boundary is completely contained within a hole, exclude it.
+        for (int i = 0; i < geoPolygon->numHoles; i++) {
+            if (boundaryContainedByGeoLoop(&geoPolygon->holes[i],
+                                           &bboxes[i + 1], boundary)) {
+                return false;
+            }
+        }
+    }
+
+    return contains;
+}
+
+bool boundaryIntersectsGeoLoop(const GeoLoop *loop, const BBox *bbox,
+                               const CellBoundary *boundary) {
+    bool intersects = false;
+    for (int i = 0; i < boundary->numVerts; i++) {
+        if (bboxContains(bbox, &boundary->verts[i])) {
+            intersects = true;
+            break;
+        }
+    }
+    if (intersects) {
+        for (int i = 0; i < boundary->numVerts; i++) {
+            // TODO: Check intersection of (boundary->verts[i],
+            // boundary->verts[i + 1]) with the geoloop.
+            // Must be contained or have an intersection point.
+        }
+    }
+    return intersects;
+}
+
+/**
+ * boundaryIntersectsPolygon takes a given GeoPolygon data structure and
+ * checks if it intersects a given cell boundary.
+ *
+ * @param geoPolygon The geoloop and holes defining the relevant area
+ * @param bboxes     The bboxes for the main geoloop and each of its holes
+ * @param boundary   The cell boundary to check
+ * @return           Whether the point is contained
+ */
+bool boundaryIntersectsPolygon(const GeoPolygon *geoPolygon, const BBox *bboxes,
+                               const CellBoundary *boundary) {
+    bool intersects =
+        boundaryIntersectsGeoLoop(&geoPolygon->geoloop, &bboxes[0], boundary);
+    if (intersects && geoPolygon->numHoles > 0) {
+        // If the boundary is completely contained within a hole, exclude it.
+        for (int i = 0; i < geoPolygon->numHoles; i++) {
+            if (boundaryContainedByGeoLoop(&geoPolygon->holes[i],
+                                           &bboxes[i + 1], boundary)) {
+                return false;
+            }
+        }
+    }
+
+    return intersects;
+}

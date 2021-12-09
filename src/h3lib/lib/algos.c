@@ -37,9 +37,11 @@
 #include "polygon.h"
 #include "vertexGraph.h"
 
-/*
- * Return codes from gridDiskUnsafe and related functions.
+/**
+ * TODO: Move to h3api.h.in
+ * TODO: Use correct codes from RFC
  */
+#define FLAG_INTERSECTS 1
 
 #define MAX_ONE_RING_SIZE 7
 #define POLYGON_TO_CELLS_BUFFER 12
@@ -720,11 +722,12 @@ H3Error H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index *out) {
  *
  * @param geoPolygon A GeoJSON-like data structure indicating the poly to fill
  * @param res Hexagon resolution (0-15)
+ * @param flags
  * @param out number of cells to allocate for
  * @return 0 (E_SUCCESS) on success.
  */
 H3Error H3_EXPORT(maxPolygonToCellsSize)(const GeoPolygon *geoPolygon, int res,
-                                         int64_t *out) {
+                                         uint32_t flags, int64_t *out) {
     // Get the bounding box for the GeoJSON-like struct
     BBox bbox;
     const GeoLoop geoloop = geoPolygon->geoloop;
@@ -825,10 +828,11 @@ H3Error _getEdgeHexagons(const GeoLoop *geoloop, int64_t numHexagons, int res,
  *
  * @param geoPolygon The geoloop and holes defining the relevant area
  * @param res The Hexagon resolution (0-15)
+ * @param flags
  * @param out The slab of zeroed memory to write to. Assumed to be big enough.
  */
 H3Error H3_EXPORT(polygonToCells)(const GeoPolygon *geoPolygon, int res,
-                                  H3Index *out) {
+                                  uint32_t flags, H3Index *out) {
     // One of the goals of the polygonToCells algorithm is that two adjacent
     // polygons with zero overlap have zero overlapping hexagons. That the
     // hexagons are uniquely assigned. There are a few approaches to take here,
@@ -857,7 +861,7 @@ H3Error H3_EXPORT(polygonToCells)(const GeoPolygon *geoPolygon, int res,
     // for the hexagons
     int64_t numHexagons;
     H3Error numHexagonsError =
-        H3_EXPORT(maxPolygonToCellsSize)(geoPolygon, res, &numHexagons);
+        H3_EXPORT(maxPolygonToCellsSize)(geoPolygon, res, flags, &numHexagons);
     if (numHexagonsError) {
         H3_MEMORY(free)(bboxes);
         return numHexagonsError;
@@ -965,13 +969,23 @@ H3Error H3_EXPORT(polygonToCells)(const GeoPolygon *geoPolygon, int res,
                     continue;  // Skip this hex, already exists in the out hash
                 }
 
-                // Check if the hexagon is in the polygon or not
-                LatLng hexCenter;
-                H3_EXPORT(cellToLatLng)(hex, &hexCenter);
+                if ((flags & FLAG_INTERSECTS) == FLAG_INTERSECTS) {
+                    CellBoundary hexBoundary;
+                    H3_EXPORT(cellToBoundary)(hex, &hexBoundary);
 
-                // If not, skip
-                if (!pointInsidePolygon(geoPolygon, bboxes, &hexCenter)) {
-                    continue;
+                    if (!boundaryIntersectsPolygon(geoPolygon, bboxes,
+                                                   &hexBoundary)) {
+                        continue;
+                    }
+                } else {  // Centroid containment
+                    // Check if the hexagon is in the polygon or not
+                    LatLng hexCenter;
+                    H3_EXPORT(cellToLatLng)(hex, &hexCenter);
+
+                    // If not, skip
+                    if (!pointInsidePolygon(geoPolygon, bboxes, &hexCenter)) {
+                        continue;
+                    }
                 }
 
                 // Otherwise set it in the output array
