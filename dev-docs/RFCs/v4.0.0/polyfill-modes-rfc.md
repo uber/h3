@@ -108,8 +108,8 @@ DECLSPEC H3Error H3_EXPORT(polygonToCells)(const GeoPolygon *geoPolygon,
 
 |       Bits | Meaning
 | ---------- | -------
-| 1-2 (LSB)  | If 0, containment mode centroid.<br>If 1, containment mode cover.<br>If 2, containment mode intersects.<br>3 is a reserved value.
-| 3          | If 0, spherical containment.<br>If 1, cartesian containment (same as H3 version 3).
+| 1 (LSB)    | If 0, spherical containment.<br>If 1, cartesian containment (same as H3 version 3).
+| 2-4 (LSB)  | If 0, containment mode centroid.<br>If 1, containment mode cover.<br>If 2, containment mode intersects.<br>3 is a reserved value.
 | All others | Reserved and must be set to 0.
 
 The same value used for `maxPolygonToCellsSize` must be used for the subsequent call to `polygonToCells`, just as the `GeoPolygon` and `res` must be the same.
