@@ -45,6 +45,9 @@ and pentagons. The `polyfill` function is different that it assumes Cartesian ge
 consistency with the rest of the library, the `polyfill` functions should be able to use the same
 cell boundaries.
 
+Maintaing a Cartesian option is useful for cases where polygons have been drawn on a projected map
+and the boundaries should be the same.
+
 * Very large polygons
 
 Polyfills of very large polygons require allocating large blocks of memory, and spending large
@@ -118,7 +121,7 @@ polygon_to_cells(polygon, res=res, cartesian=True, containment=h3.Containment.CE
 ```
 
 ```js
-polygonToCells(polygon, {res: res, cartesian: true, containment: h3.Containment.CENTROID})
+polygonToCells(polygon, {res, cartesian: true, containment: h3.Containment.CENTROID})
 ```
 
 ```java
