@@ -76,7 +76,6 @@ As a C library, bindings can be made to call H3 functions from different program
 
 - [uber/h3-py](https://github.com/uber/h3-py)
 - [DahnJ/H3-Pandas](https://github.com/DahnJ/H3-Pandas)
-- [kevinschaich/h3-pyspark](https://github.com/kevinschaich/h3-pyspark)
 
 ## R
 
@@ -93,7 +92,3 @@ As a C library, bindings can be made to call H3 functions from different program
 - [rustyconover/libh3-sys](https://github.com/rustyconover/libh3-sys)
 - [rustyconover/libh3](https://github.com/rustyconover/libh3)
 - [nmandery/h3ron](https://github.com/nmandery/h3ron)
-
-## Spark
-
-- [kevinschaich/h3-pyspark](https://github.com/kevinschaich/h3-pyspark)
