@@ -31,7 +31,8 @@ static void test_number(int res) {
         count++;
     }
 
-    int64_t expected = H3_EXPORT(getNumCells)(res);
+    int64_t expected;
+    t_assertSuccess(H3_EXPORT(getNumCells)(res, &expected));
 
     t_assert(count == expected,
              "expect the correct number of cells from the iterator");

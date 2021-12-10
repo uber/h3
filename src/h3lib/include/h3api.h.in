@@ -379,7 +379,6 @@ H3Error H3_EXPORT(exactEdgeLengthKm)(H3Index edge, double *length);
 H3Error H3_EXPORT(exactEdgeLengthM)(H3Index edge, double *length);
 /** @} */
 
-// TODO: Add H3Error
 /** @defgroup getNumCells getNumCells
  * Functions for getNumCells
  * @{
@@ -426,7 +425,7 @@ H3Error H3_EXPORT(exactEdgeLengthM)(H3Index edge, double *length);
  *
  * @return       number of cells at resolution `res`
  */
-DECLSPEC int64_t H3_EXPORT(getNumCells)(int res);
+DECLSPEC H3Error H3_EXPORT(getNumCells)(int res, int64_t *out);
 /** @} */
 
 /** @defgroup getRes0Cells getRes0Cells
@@ -436,9 +435,8 @@ DECLSPEC int64_t H3_EXPORT(getNumCells)(int res);
 /** @brief returns the number of resolution 0 cells (hexagons and pentagons) */
 DECLSPEC int H3_EXPORT(res0CellCount)();
 
-// TODO: Add H3Error
 /** @brief provides all base cells in H3Index format*/
-DECLSPEC void H3_EXPORT(getRes0Cells)(H3Index *out);
+DECLSPEC H3Error H3_EXPORT(getRes0Cells)(H3Index *out);
 /** @} */
 
 /** @defgroup getPentagons getPentagons

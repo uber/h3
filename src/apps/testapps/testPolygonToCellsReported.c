@@ -61,8 +61,9 @@ SUITE(polygonToCells_reported) {
             int64_t actualNumIndexes2 =
                 countNonNullIndexes(polygonToCellsOut2, polygonToCellsSize2);
 
-            t_assert(actualNumIndexes + actualNumIndexes2 ==
-                         H3_EXPORT(getNumCells)(res),
+            int64_t expectedTotalWorld;
+            t_assertSuccess(H3_EXPORT(getNumCells)(res, &expectedTotalWorld));
+            t_assert(actualNumIndexes + actualNumIndexes2 == expectedTotalWorld,
                      "got expected polygonToCells size (entire world)");
 
             // Sets should be disjoint

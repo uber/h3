@@ -244,10 +244,18 @@ SUITE(latLng) {
         int64_t last = 0;
         int64_t next;
         for (int i = 0; i <= MAX_H3_RES; i++) {
-            next = H3_EXPORT(getNumCells)(i);
+            t_assertSuccess(H3_EXPORT(getNumCells)(i, &next));
             t_assert(next > last, "getNumCells ordering");
             last = next;
         }
+    }
+
+    TEST(intConstantsErrors) {
+        uint64_t out;
+        t_assert(getNumCells(-1, &out) == E_RES_DOMAIN,
+                 "getNumCells resolution negative");
+        t_assert(getNumCells(16, &out) == E_RES_DOMAIN,
+                 "getNumCells resolution too high");
     }
 
     TEST(numHexagons) {
@@ -270,7 +278,8 @@ SUITE(latLng) {
                                            569707381193162L};
 
         for (int r = 0; r <= MAX_H3_RES; r++) {
-            int64_t num = H3_EXPORT(getNumCells)(r);
+            int64_t num;
+            t_assertSuccess(H3_EXPORT(getNumCells)(r, &num));
             t_assert(num == expected[r], "incorrect numHexagons count");
         }
     }

@@ -311,7 +311,13 @@ H3Error H3_EXPORT(getHexagonEdgeLengthAvgM)(int res, double *out) {
     return E_SUCCESS;
 }
 
-int64_t H3_EXPORT(getNumCells)(int res) { return 2 + 120 * _ipow(7, res); }
+H3Error H3_EXPORT(getNumCells)(int res, int64_t *out) {
+    if (res < 0 || res > MAX_H3_RES) {
+        return E_RES_DOMAIN;
+    }
+    *out = 2 + 120 * _ipow(7, res);
+    return E_SUCCESS;
+}
 
 /**
  * Surface area in radians^2 of spherical triangle on unit sphere.
