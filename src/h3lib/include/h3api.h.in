@@ -225,6 +225,7 @@ DECLSPEC H3Error H3_EXPORT(cellToBoundary)(H3Index h3, CellBoundary *gp);
  * Functions for gridDisk
  * @{
  */
+// TODO: Add H3Error
 /** @brief maximum number of hexagons in k-ring */
 DECLSPEC int H3_EXPORT(maxGridDiskSize)(int k);
 
@@ -326,6 +327,7 @@ double H3_EXPORT(distanceKm)(const LatLng *a, const LatLng *b);
 double H3_EXPORT(distanceM)(const LatLng *a, const LatLng *b);
 /** @} */
 
+// TODO: Add H3Error
 /** @defgroup getHexagonAreaAvg getHexagonAreaAvg
  * Functions for getHexagonAreaAvg
  * @{
@@ -337,6 +339,7 @@ DECLSPEC double H3_EXPORT(getHexagonAreaAvgKm2)(int res);
 DECLSPEC double H3_EXPORT(getHexagonAreaAvgM2)(int res);
 /** @} */
 
+// TODO: Add DECLSPEC, add H3Error
 /** @defgroup cellArea cellArea
  * Functions for cellArea
  * @{
@@ -352,6 +355,7 @@ double H3_EXPORT(cellAreaKm2)(H3Index h);
 double H3_EXPORT(cellAreaM2)(H3Index h);
 /** @} */
 
+// TODO: Add H3Error
 /** @defgroup getHexagonEdgeLengthAvg getHexagonEdgeLengthAvg
  * Functions for getHexagonEdgeLengthAvg
  * @{
@@ -377,6 +381,7 @@ H3Error H3_EXPORT(exactEdgeLengthKm)(H3Index edge, double *length);
 H3Error H3_EXPORT(exactEdgeLengthM)(H3Index edge, double *length);
 /** @} */
 
+// TODO: Add H3Error
 /** @defgroup getNumCells getNumCells
  * Functions for getNumCells
  * @{
@@ -433,6 +438,7 @@ DECLSPEC int64_t H3_EXPORT(getNumCells)(int res);
 /** @brief returns the number of resolution 0 cells (hexagons and pentagons) */
 DECLSPEC int H3_EXPORT(res0CellCount)();
 
+// TODO: Add H3Error
 /** @brief provides all base cells in H3Index format*/
 DECLSPEC void H3_EXPORT(getRes0Cells)(H3Index *out);
 /** @} */
@@ -581,6 +587,7 @@ DECLSPEC H3Error H3_EXPORT(maxFaceCount)(H3Index h3, int *out);
 DECLSPEC H3Error H3_EXPORT(getIcosahedronFaces)(H3Index h3, int *out);
 /** @} */
 
+// TODO: Add H3Error
 /** @defgroup areNeighborCells areNeighborCells
  * Functions for areNeighborCells
  * @{
