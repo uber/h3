@@ -251,7 +251,7 @@ SUITE(latLng) {
     }
 
     TEST(intConstantsErrors) {
-        uint64_t out;
+        int64_t out;
         t_assert(getNumCells(-1, &out) == E_RES_DOMAIN,
                  "getNumCells resolution negative");
         t_assert(getNumCells(16, &out) == E_RES_DOMAIN,
