@@ -31,23 +31,26 @@
  * Returns whether or not the provided H3Indexes are neighbors.
  * @param origin The origin H3 index.
  * @param destination The destination H3 index.
- * @return 1 if the indexes are neighbors, 0 otherwise;
+ * @param out Set to 1 if the indexes are neighbors, 0 otherwise
+ * @return Error code if the origin or destination are invalid or incomparable.
  */
-int H3_EXPORT(areNeighborCells)(H3Index origin, H3Index destination) {
+H3Error H3_EXPORT(areNeighborCells)(H3Index origin, H3Index destination,
+                                    int *out) {
     // Make sure they're hexagon indexes
     if (H3_GET_MODE(origin) != H3_CELL_MODE ||
         H3_GET_MODE(destination) != H3_CELL_MODE) {
-        return 0;
+        return E_CELL_INVALID;
     }
 
     // Hexagons cannot be neighbors with themselves
     if (origin == destination) {
-        return 0;
+        *out = 0;
+        return E_SUCCESS;
     }
 
     // Only hexagons in the same resolution can be neighbors
     if (H3_GET_RESOLUTION(origin) != H3_GET_RESOLUTION(destination)) {
-        return 0;
+        return E_RES_MISMATCH;
     }
 
     // H3 Indexes that share the same parent are very likely to be neighbors
@@ -69,7 +72,8 @@ int H3_EXPORT(areNeighborCells)(H3Index origin, H3Index destination) {
                 H3_GET_INDEX_DIGIT(destination, parentRes + 1);
             if (originResDigit == CENTER_DIGIT ||
                 destinationResDigit == CENTER_DIGIT) {
-                return 1;
+                *out = 1;
+                return E_SUCCESS;
             }
             // These sets are the relevant neighbors in the clockwise
             // and counter-clockwise
@@ -82,7 +86,8 @@ int H3_EXPORT(areNeighborCells)(H3Index origin, H3Index destination) {
             if (neighborSetClockwise[originResDigit] == destinationResDigit ||
                 neighborSetCounterclockwise[originResDigit] ==
                     destinationResDigit) {
-                return 1;
+                *out = 1;
+                return E_SUCCESS;
             }
         }
     }
@@ -92,12 +97,14 @@ int H3_EXPORT(areNeighborCells)(H3Index origin, H3Index destination) {
     H3_EXPORT(gridDisk)(origin, 1, neighborRing);
     for (int i = 0; i < 7; i++) {
         if (neighborRing[i] == destination) {
-            return 1;
+            *out = 1;
+            return E_SUCCESS;
         }
     }
 
     // Made it here, they definitely aren't neighbors
-    return 0;
+    *out = 0;
+    return E_SUCCESS;
 }
 
 /**

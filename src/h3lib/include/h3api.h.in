@@ -587,13 +587,13 @@ DECLSPEC H3Error H3_EXPORT(maxFaceCount)(H3Index h3, int *out);
 DECLSPEC H3Error H3_EXPORT(getIcosahedronFaces)(H3Index h3, int *out);
 /** @} */
 
-// TODO: Add H3Error
 /** @defgroup areNeighborCells areNeighborCells
  * Functions for areNeighborCells
  * @{
  */
 /** @brief returns whether or not the provided hexagons border */
-DECLSPEC int H3_EXPORT(areNeighborCells)(H3Index origin, H3Index destination);
+DECLSPEC H3Error H3_EXPORT(areNeighborCells)(H3Index origin,
+                                             H3Index destination, int *out);
 /** @} */
 
 /** @defgroup cellsToDirectedEdge cellsToDirectedEdge
