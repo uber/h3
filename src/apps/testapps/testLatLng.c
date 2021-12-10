@@ -35,12 +35,12 @@
  * @param function
  * @param message
  */
-static void testDecreasingFunction(double (*function)(int),
+static void testDecreasingFunction(H3Error (*function)(int, double *),
                                    const char *message) {
     double last = 0;
     double next;
     for (int i = MAX_H3_RES; i >= 0; i--) {
-        next = function(i);
+        t_assertSuccess(function(i, &next));
         t_assert(next > last, message);
         last = next;
     }
@@ -217,6 +217,26 @@ SUITE(latLng) {
                                "getHexagonEdgeLengthAvgKm ordering");
         testDecreasingFunction(H3_EXPORT(getHexagonEdgeLengthAvgM),
                                "getHexagonEdgeLengthAvgM ordering");
+    }
+
+    TEST(doubleConstantsErrors) {
+        double out;
+        t_assert(getHexagonAreaAvgKm2(-1, &out) == E_RES_DOMAIN,
+                 "getHexagonAreaAvgKm2 resolution negative");
+        t_assert(getHexagonAreaAvgKm2(16, &out) == E_RES_DOMAIN,
+                 "getHexagonAreaAvgKm2 resolution too high");
+        t_assert(getHexagonAreaAvgM2(-1, &out) == E_RES_DOMAIN,
+                 "getHexagonAreaAvgM2 resolution negative");
+        t_assert(getHexagonAreaAvgM2(16, &out) == E_RES_DOMAIN,
+                 "getHexagonAreaAvgM2 resolution too high");
+        t_assert(getHexagonEdgeLengthAvgKm(-1, &out) == E_RES_DOMAIN,
+                 "getHexagonEdgeLengthAvgKm resolution negative");
+        t_assert(getHexagonEdgeLengthAvgKm(16, &out) == E_RES_DOMAIN,
+                 "getHexagonEdgeLengthAvgKm resolution too high");
+        t_assert(getHexagonEdgeLengthAvgM(-1, &out) == E_RES_DOMAIN,
+                 "getHexagonEdgeLengthAvgM resolution negative");
+        t_assert(getHexagonEdgeLengthAvgM(16, &out) == E_RES_DOMAIN,
+                 "getHexagonEdgeLengthAvgM resolution too high");
     }
 
     TEST(intConstants) {

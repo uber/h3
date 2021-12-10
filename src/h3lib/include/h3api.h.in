@@ -327,16 +327,15 @@ double H3_EXPORT(distanceKm)(const LatLng *a, const LatLng *b);
 double H3_EXPORT(distanceM)(const LatLng *a, const LatLng *b);
 /** @} */
 
-// TODO: Add H3Error
 /** @defgroup getHexagonAreaAvg getHexagonAreaAvg
  * Functions for getHexagonAreaAvg
  * @{
  */
 /** @brief average hexagon area in square kilometers (excludes pentagons) */
-DECLSPEC double H3_EXPORT(getHexagonAreaAvgKm2)(int res);
+DECLSPEC H3Error H3_EXPORT(getHexagonAreaAvgKm2)(int res, double *out);
 
 /** @brief average hexagon area in square meters (excludes pentagons) */
-DECLSPEC double H3_EXPORT(getHexagonAreaAvgM2)(int res);
+DECLSPEC H3Error H3_EXPORT(getHexagonAreaAvgM2)(int res, double *out);
 /** @} */
 
 // TODO: Add DECLSPEC, add H3Error
@@ -355,16 +354,15 @@ double H3_EXPORT(cellAreaKm2)(H3Index h);
 double H3_EXPORT(cellAreaM2)(H3Index h);
 /** @} */
 
-// TODO: Add H3Error
 /** @defgroup getHexagonEdgeLengthAvg getHexagonEdgeLengthAvg
  * Functions for getHexagonEdgeLengthAvg
  * @{
  */
 /** @brief average hexagon edge length in kilometers (excludes pentagons) */
-DECLSPEC double H3_EXPORT(getHexagonEdgeLengthAvgKm)(int res);
+DECLSPEC H3Error H3_EXPORT(getHexagonEdgeLengthAvgKm)(int res, double *out);
 
 /** @brief average hexagon edge length in meters (excludes pentagons) */
-DECLSPEC double H3_EXPORT(getHexagonEdgeLengthAvgM)(int res);
+DECLSPEC H3Error H3_EXPORT(getHexagonEdgeLengthAvgM)(int res, double *out);
 /** @} */
 
 /** @defgroup exactEdgeLength exactEdgeLength
