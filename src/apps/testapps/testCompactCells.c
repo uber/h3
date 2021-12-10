@@ -30,7 +30,8 @@ H3Index uncompactableWithZero[] = {0x89283470803ffff, 0x8928347081bffff, 0,
 SUITE(compactCells) {
     TEST(roundtrip) {
         int k = 9;
-        int hexCount = H3_EXPORT(maxGridDiskSize)(k);
+        int64_t hexCount;
+        t_assertSuccess(H3_EXPORT(maxGridDiskSize)(k, &hexCount));
         int expectedCompactCount = 73;
 
         // Generate a set of hexagons to compact
@@ -42,7 +43,7 @@ SUITE(compactCells) {
             H3_EXPORT(compactCells)(sunnyvaleExpanded, compressed, hexCount));
 
         int count = 0;
-        for (int i = 0; i < hexCount; i++) {
+        for (int64_t i = 0; i < hexCount; i++) {
             if (compressed[i] != 0) {
                 count++;
             }

@@ -35,7 +35,8 @@ int main(int argc, char *argv[]) {
     }
     fclose(fp);
 
-    int sz = H3_EXPORT(maxGridDiskSize)(args.k);
+    int64_t sz;
+    H3_EXPORT(maxGridDiskSize)(args.k, &sz);
     H3Index *results = calloc(sizeof(H3Index), sz);
     if (results != NULL) {
         H3_EXPORT(gridDisk)(args.index, args.k, results);
