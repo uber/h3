@@ -367,14 +367,22 @@ double triangleArea(const LatLng *a, const LatLng *b, const LatLng *c) {
  * todo: optimize the computation by re-using the edges shared between triangles
  *
  * @param   cell  H3 cell
- *
- * @return        cell area in radians^2
+ * @param    out  cell area in radians^2
+ * @return        E_SUCCESS on success, or an error code otherwise
  */
-double H3_EXPORT(cellAreaRads2)(H3Index cell) {
+H3Error H3_EXPORT(cellAreaRads2)(H3Index cell, double *out) {
     LatLng c;
     CellBoundary cb;
-    H3_EXPORT(cellToLatLng)(cell, &c);
-    H3_EXPORT(cellToBoundary)(cell, &cb);
+    H3Error err = H3_EXPORT(cellToLatLng)(cell, &c);
+    if (err) {
+        return err;
+    }
+    err = H3_EXPORT(cellToBoundary)(cell, &cb);
+    if (err) {
+        // TODO: Uncoverable because cellToLatLng will have returned an error
+        // already
+        return err;
+    }
 
     double area = 0.0;
     for (int i = 0; i < cb.numVerts; i++) {
@@ -382,21 +390,30 @@ double H3_EXPORT(cellAreaRads2)(H3Index cell) {
         area += triangleArea(&cb.verts[i], &cb.verts[j], &c);
     }
 
-    return area;
+    *out = area;
+    return E_SUCCESS;
 }
 
 /**
  * Area of H3 cell in kilometers^2.
  */
-double H3_EXPORT(cellAreaKm2)(H3Index h) {
-    return H3_EXPORT(cellAreaRads2)(h) * EARTH_RADIUS_KM * EARTH_RADIUS_KM;
+H3Error H3_EXPORT(cellAreaKm2)(H3Index cell, double *out) {
+    H3Error err = H3_EXPORT(cellAreaRads2)(cell, out);
+    if (!err) {
+        *out = *out * EARTH_RADIUS_KM * EARTH_RADIUS_KM;
+    }
+    return err;
 }
 
 /**
  * Area of H3 cell in meters^2.
  */
-double H3_EXPORT(cellAreaM2)(H3Index h) {
-    return H3_EXPORT(cellAreaKm2)(h) * 1000 * 1000;
+H3Error H3_EXPORT(cellAreaM2)(H3Index cell, double *out) {
+    H3Error err = H3_EXPORT(cellAreaKm2)(cell, out);
+    if (!err) {
+        *out = *out * 1000 * 1000;
+    }
+    return err;
 }
 
 /**

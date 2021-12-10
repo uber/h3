@@ -338,20 +338,19 @@ DECLSPEC H3Error H3_EXPORT(getHexagonAreaAvgKm2)(int res, double *out);
 DECLSPEC H3Error H3_EXPORT(getHexagonAreaAvgM2)(int res, double *out);
 /** @} */
 
-// TODO: Add DECLSPEC, add H3Error
 /** @defgroup cellArea cellArea
  * Functions for cellArea
  * @{
  */
 /** @brief exact area for a specific cell (hexagon or pentagon) in radians^2 */
-double H3_EXPORT(cellAreaRads2)(H3Index h);
+DECLSPEC H3Error H3_EXPORT(cellAreaRads2)(H3Index h, double *out);
 
 /** @brief exact area for a specific cell (hexagon or pentagon) in kilometers^2
  */
-double H3_EXPORT(cellAreaKm2)(H3Index h);
+DECLSPEC H3Error H3_EXPORT(cellAreaKm2)(H3Index h, double *out);
 
 /** @brief exact area for a specific cell (hexagon or pentagon) in meters^2 */
-double H3_EXPORT(cellAreaM2)(H3Index h);
+DECLSPEC H3Error H3_EXPORT(cellAreaM2)(H3Index h, double *out);
 /** @} */
 
 /** @defgroup getHexagonEdgeLengthAvg getHexagonEdgeLengthAvg
@@ -370,13 +369,13 @@ DECLSPEC H3Error H3_EXPORT(getHexagonEdgeLengthAvgM)(int res, double *out);
  * @{
  */
 /** @brief exact length for a specific directed edge in radians*/
-H3Error H3_EXPORT(exactEdgeLengthRads)(H3Index edge, double *length);
+DECLSPEC H3Error H3_EXPORT(exactEdgeLengthRads)(H3Index edge, double *length);
 
 /** @brief exact length for a specific directed edge in kilometers*/
-H3Error H3_EXPORT(exactEdgeLengthKm)(H3Index edge, double *length);
+DECLSPEC H3Error H3_EXPORT(exactEdgeLengthKm)(H3Index edge, double *length);
 
 /** @brief exact length for a specific directed edge in meters*/
-H3Error H3_EXPORT(exactEdgeLengthM)(H3Index edge, double *length);
+DECLSPEC H3Error H3_EXPORT(exactEdgeLengthM)(H3Index edge, double *length);
 /** @} */
 
 /** @defgroup getNumCells getNumCells
