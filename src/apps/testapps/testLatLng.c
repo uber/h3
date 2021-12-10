@@ -221,21 +221,21 @@ SUITE(latLng) {
 
     TEST(doubleConstantsErrors) {
         double out;
-        t_assert(getHexagonAreaAvgKm2(-1, &out) == E_RES_DOMAIN,
+        t_assert(H3_EXPORT(getHexagonAreaAvgKm2)(-1, &out) == E_RES_DOMAIN,
                  "getHexagonAreaAvgKm2 resolution negative");
-        t_assert(getHexagonAreaAvgKm2(16, &out) == E_RES_DOMAIN,
+        t_assert(H3_EXPORT(getHexagonAreaAvgKm2)(16, &out) == E_RES_DOMAIN,
                  "getHexagonAreaAvgKm2 resolution too high");
-        t_assert(getHexagonAreaAvgM2(-1, &out) == E_RES_DOMAIN,
+        t_assert(H3_EXPORT(getHexagonAreaAvgM2)(-1, &out) == E_RES_DOMAIN,
                  "getHexagonAreaAvgM2 resolution negative");
-        t_assert(getHexagonAreaAvgM2(16, &out) == E_RES_DOMAIN,
+        t_assert(H3_EXPORT(getHexagonAreaAvgM2)(16, &out) == E_RES_DOMAIN,
                  "getHexagonAreaAvgM2 resolution too high");
-        t_assert(getHexagonEdgeLengthAvgKm(-1, &out) == E_RES_DOMAIN,
+        t_assert(H3_EXPORT(getHexagonEdgeLengthAvgKm)(-1, &out) == E_RES_DOMAIN,
                  "getHexagonEdgeLengthAvgKm resolution negative");
-        t_assert(getHexagonEdgeLengthAvgKm(16, &out) == E_RES_DOMAIN,
+        t_assert(H3_EXPORT(getHexagonEdgeLengthAvgKm)(16, &out) == E_RES_DOMAIN,
                  "getHexagonEdgeLengthAvgKm resolution too high");
-        t_assert(getHexagonEdgeLengthAvgM(-1, &out) == E_RES_DOMAIN,
+        t_assert(H3_EXPORT(getHexagonEdgeLengthAvgM)(-1, &out) == E_RES_DOMAIN,
                  "getHexagonEdgeLengthAvgM resolution negative");
-        t_assert(getHexagonEdgeLengthAvgM(16, &out) == E_RES_DOMAIN,
+        t_assert(H3_EXPORT(getHexagonEdgeLengthAvgM)(16, &out) == E_RES_DOMAIN,
                  "getHexagonEdgeLengthAvgM resolution too high");
     }
 
@@ -252,9 +252,9 @@ SUITE(latLng) {
 
     TEST(intConstantsErrors) {
         int64_t out;
-        t_assert(getNumCells(-1, &out) == E_RES_DOMAIN,
+        t_assert(H3_EXPORT(getNumCells)(-1, &out) == E_RES_DOMAIN,
                  "getNumCells resolution negative");
-        t_assert(getNumCells(16, &out) == E_RES_DOMAIN,
+        t_assert(H3_EXPORT(getNumCells)(16, &out) == E_RES_DOMAIN,
                  "getNumCells resolution too high");
     }
 
