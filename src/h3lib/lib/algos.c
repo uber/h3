@@ -546,6 +546,9 @@ H3Error H3_EXPORT(gridDiskDistancesUnsafe)(H3Index origin, int k, H3Index *out,
     // Pentagon being encountered is not itself a problem; really the deleted
     // k-subsequence is the problem, but for compatibility reasons we fail on
     // the pentagon.
+    if (k < 0) {
+        return E_DOMAIN;
+    }
 
     // k must be >= 0, so origin is always needed
     int idx = 0;

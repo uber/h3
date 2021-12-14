@@ -380,4 +380,29 @@ SUITE(gridDisk) {
                  "gridDisk returns error for invalid input");
         free(neighbors);
     }
+
+    TEST(gridDiskDistances_invalidK) {
+        H3Index index = 0x811d7ffffffffff;
+        t_assert(
+            H3_EXPORT(gridDiskDistances)(index, -1, NULL, NULL) == E_DOMAIN,
+            "gridDiskDistances invalid k");
+        t_assert(H3_EXPORT(gridDiskDistancesUnsafe)(index, -1, NULL, NULL) ==
+                     E_DOMAIN,
+                 "gridDiskDistancesUnsafe invaldi k");
+        t_assert(
+            H3_EXPORT(gridDiskDistancesSafe)(index, -1, NULL, NULL) == E_DOMAIN,
+            "gridDiskDistancesSafe invaldi k");
+    }
+
+    TEST(maxGridDiskSize_invalid) {
+        int64_t sz;
+        t_assert(H3_EXPORT(maxGridDiskSize)(-1, &sz) == E_DOMAIN,
+                 "negative k is invalid");
+    }
+
+    TEST(maxGridDiskSize_large) {
+        int64_t sz;
+        t_assertSuccess(H3_EXPORT(maxGridDiskSize)(26755, &sz));
+        t_assert(sz == 2147570341, "large (> 32 bit signed int) k works");
+    }
 }
