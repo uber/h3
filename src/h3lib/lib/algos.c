@@ -155,9 +155,16 @@ static const Direction NEW_ADJUSTMENT_III[7][7] = {
  * Maximum number of cells that result from the gridDisk algorithm with the
  * given k. Formula source and proof: https://oeis.org/A003215
  *
- * @param  k   k value, k >= 0.
+ * @param   k   k value, k >= 0.
+ * @param out   size in indexes
  */
-int H3_EXPORT(maxGridDiskSize)(int k) { return 3 * k * (k + 1) + 1; }
+H3Error H3_EXPORT(maxGridDiskSize)(int k, int64_t *out) {
+    if (k < 0) {
+        return E_DOMAIN;
+    }
+    *out = 3 * k * (k + 1) + 1;
+    return E_SUCCESS;
+}
 
 /**
  * Produce cells within grid distance k of the origin cell.
@@ -199,7 +206,11 @@ H3Error H3_EXPORT(gridDiskDistances)(H3Index origin, int k, H3Index *out,
     const H3Error failed =
         H3_EXPORT(gridDiskDistancesUnsafe)(origin, k, out, distances);
     if (failed) {
-        const int maxIdx = H3_EXPORT(maxGridDiskSize)(k);
+        int64_t maxIdx;
+        H3Error err = H3_EXPORT(maxGridDiskSize)(k, &maxIdx);
+        if (err) {
+            return err;
+        }
         // Fast algo failed, fall back to slower, correct algo
         // and also wipe out array because contents untrustworthy
         memset(out, 0, maxIdx * sizeof(H3Index));
@@ -241,9 +252,9 @@ H3Error H3_EXPORT(gridDiskDistances)(H3Index origin, int k, H3Index *out,
  * @param  curK        Current distance from the origin
  */
 H3Error _gridDiskDistancesInternal(H3Index origin, int k, H3Index *out,
-                                   int *distances, int maxIdx, int curK) {
+                                   int *distances, int64_t maxIdx, int curK) {
     // Put origin in the output array. out is used as a hash set.
-    int off = origin % maxIdx;
+    int64_t off = origin % maxIdx;
     while (out[off] != 0 && out[off] != origin) {
         off = (off + 1) % maxIdx;
     }
@@ -297,7 +308,11 @@ H3Error _gridDiskDistancesInternal(H3Index origin, int k, H3Index *out,
  */
 H3Error H3_EXPORT(gridDiskDistancesSafe)(H3Index origin, int k, H3Index *out,
                                          int *distances) {
-    int maxIdx = H3_EXPORT(maxGridDiskSize)(k);
+    int64_t maxIdx;
+    H3Error err = H3_EXPORT(maxGridDiskSize)(k, &maxIdx);
+    if (err) {
+        return err;
+    }
     return _gridDiskDistancesInternal(origin, k, out, distances, maxIdx, 0);
 }
 
@@ -619,7 +634,11 @@ H3Error H3_EXPORT(gridDiskDistancesUnsafe)(H3Index origin, int k, H3Index *out,
 H3Error H3_EXPORT(gridDisksUnsafe)(H3Index *h3Set, int length, int k,
                                    H3Index *out) {
     H3Index *segment;
-    int segmentSize = H3_EXPORT(maxGridDiskSize)(k);
+    int64_t segmentSize;
+    H3Error err = H3_EXPORT(maxGridDiskSize)(k, &segmentSize);
+    if (err) {
+        return err;
+    }
     for (int i = 0; i < length; i++) {
         // Determine the appropriate segment of the output array to operate on
         segment = out + i * segmentSize;

@@ -41,7 +41,9 @@ SUITE(directedEdge) {
                  "an index does not neighbor itself");
 
         int neighbors = 0;
-        for (int i = 0; i < H3_EXPORT(maxGridDiskSize)(1); i++) {
+        int64_t neighborsSize;
+        t_assertSuccess(H3_EXPORT(maxGridDiskSize)(1, &neighborsSize));
+        for (int64_t i = 0; i < neighborsSize; i++) {
             if (ring[i] != 0 && H3_EXPORT(areNeighborCells)(sf, ring[i])) {
                 neighbors++;
             }
@@ -53,7 +55,8 @@ SUITE(directedEdge) {
         t_assertSuccess(H3_EXPORT(gridRingUnsafe)(sf, 2, largerRing));
 
         neighbors = 0;
-        for (int i = 0; i < H3_EXPORT(maxGridDiskSize)(2); i++) {
+        t_assertSuccess(H3_EXPORT(maxGridDiskSize)(2, &neighborsSize));
+        for (int64_t i = 0; i < neighborsSize; i++) {
             if (largerRing[i] != 0 &&
                 H3_EXPORT(areNeighborCells)(sf, largerRing[i])) {
                 neighbors++;
