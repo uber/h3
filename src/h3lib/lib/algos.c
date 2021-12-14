@@ -162,7 +162,7 @@ H3Error H3_EXPORT(maxGridDiskSize)(int k, int64_t *out) {
     if (k < 0) {
         return E_DOMAIN;
     }
-    *out = 3 * k * (k + 1) + 1;
+    *out = 3 * (int64_t)k * ((int64_t)k + 1) + 1;
     return E_SUCCESS;
 }
 
