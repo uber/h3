@@ -225,7 +225,6 @@ DECLSPEC H3Error H3_EXPORT(cellToBoundary)(H3Index h3, CellBoundary *gp);
  * Functions for gridDisk
  * @{
  */
-// TODO: Add H3Error
 /** @brief maximum number of hexagons in k-ring */
 DECLSPEC int H3_EXPORT(maxGridDiskSize)(int k);
 
