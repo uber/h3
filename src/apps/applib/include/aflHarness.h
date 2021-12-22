@@ -20,10 +20,34 @@
 #define AFLHARNESS_H
 
 #include "utility.h"
+#include <strings.h>
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size);
 
+/**
+ * Generate a AFL++ test case file of the right size initialized to all zeroes.
+ * 
+ * @param filename 
+ * @param expectedSize 
+ * @return int 
+ */
+int generateTestCase(const char *filename, size_t expectedSize) {
+    FILE *fp = fopen(filename, "wb");
+    uint8_t zero = 0;
+    if (fwrite(&zero, sizeof(zero), expectedSize, fp) != expectedSize) {
+        error("Error writing\n");
+    }
+    fclose(fp);
+    return 0;
+}
+
 #define AFL_HARNESS_MAIN(expectedSize) int main(int argc, char *argv[]) {\
+    if (argc == 3) {\
+        if (strcmp(argv[1], "--generate") != 0) {\
+            error("Invalid option (should be --generate, otherwise look at aflHarness.h to see options)");\
+        }\
+        return generateTestCase(argv[2], expectedSize);\
+    }\
     if (argc != 2) {\
         error("Should have one argument (test case file)\n");\
     }\
