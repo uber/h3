@@ -34,7 +34,7 @@ jobs:
       - name: Run fuzzers once
         run: |
           cd build
-          for fuzzer in `ls bin/fuzzers*`; do
+          for fuzzer in bin/fuzzer*; do
             echo $fuzzer
             $fuzzer --generate inputData
             $fuzzer inputData
