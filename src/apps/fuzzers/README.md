@@ -32,13 +32,13 @@ Generate a blank (zeroed) test case file. This will not be very interesting test
 for having files of the right size.
 
 ```
-fuzzerLatLngToCell --generate bytes16
+fuzzerLatLngToCell --generate bytes24
 ```
 
 An individual fuzzer run is invoked as follows. The argument is a file containing the number of bytes needed.
 
 ```
-fuzzerLatLngToCell bytes16
+fuzzerLatLngToCell bytes24
 ```
 
 To begin running the fuzzer, run the following. The testcase directory (`testcase_dir`) should contain a file

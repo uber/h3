@@ -1,0 +1,42 @@
+name: test-fuzzer
+
+on:
+  push:
+    branches: [master, stable-*]
+  pull_request:
+    branches: [master, stable-*]
+
+jobs:
+  tests:
+    name: Fuzzer Compilation ${{ matrix.compiler }}
+    runs-on: ubuntu-latest
+    env:
+      CC: ${{ matrix.compiler }}
+
+    strategy:
+      matrix:
+        compiler: [clang, gcc]
+
+    steps:
+      - uses: actions/checkout@v2.4.0
+
+      - name: Configure build
+        run: |
+          mkdir build
+          cd build
+          cmake -DCMAKE_BUILD_TYPE=Release ..
+
+      - name: Build
+        run: |
+          cd build
+          make fuzzers
+
+      - name: Run fuzzers once
+        run: |
+          cd build
+          for fuzzer in bin/fuzzers*; do
+            echo $fuzzer
+            $fuzzer --generate inputData
+            $fuzzer inputData
+          done
+          make benchmarks
