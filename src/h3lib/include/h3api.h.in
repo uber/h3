@@ -734,6 +734,15 @@ DECLSPEC H3Error H3_EXPORT(experimentalLocalIjToH3)(H3Index origin,
                                                     H3Index *out);
 /** @} */
 
+int isLow52Sorted(const H3Index *cells, const int64_t N);
+H3Error low52Sort(H3Index *cells, const int64_t N);
+
+int isCanonicalCells(const H3Index *cells, const int64_t N);
+H3Error canonicalizeCells(H3Index *cells, const int64_t numBefore,
+                          int64_t *numAfter);
+
+int lower52bsearch(H3Index *cells, int64_t N, H3Index h);
+
 #ifdef __cplusplus
 }  // extern "C"
 #endif
