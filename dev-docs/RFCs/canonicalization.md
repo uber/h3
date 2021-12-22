@@ -39,14 +39,7 @@ The canonical form also suggests a new "in-memory" cell compaction algorithm,
 which avoids any dynamic memory allocation. This new compact algorithm
 has the added benefit of returning cell arrays already in canonical form.
 
-
-## Approaches
-
-
-
-
-
-## Proposal
+## Terminology
 
 We propose a canonical form based on the "lower 52 bit" ordering, that is,
 the ordering you would get if you only considered the lower 52 bits of the
@@ -133,4 +126,6 @@ A compacted and canonical H3 set is just what it sounds like.
 
 Many of the fast spatial join operations will work on canonical sets, but
 will be faster on compacted canonical sets.
+
+## Proposal
 
