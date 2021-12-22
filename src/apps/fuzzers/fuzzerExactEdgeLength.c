@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /** @file
- * @brief Fuzzer program for h3SetToLinkedGeo
+ * @brief Fuzzer program for exactEdgeLengthRads
  */
 
 #include "aflHarness.h"
@@ -22,8 +22,7 @@
 #include "utility.h"
 
 typedef struct {
-    H3Index h3Set[1024];
-    int sz;
+    H3Index index;
 } inputArgs;
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
@@ -31,15 +30,15 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         return 0;
     }
     const inputArgs *args = (const inputArgs *)data;
-    if (args->sz >= 1024) {
-        return 0;
-    }
 
-    LinkedGeoPolygon polygon;
-    H3Error err = H3_EXPORT(h3SetToLinkedGeo)(args->h3Set, args->sz, &polygon);
-    if (!err) {
-        H3_EXPORT(destroyLinkedPolygon)(&polygon);
-    }
+    double distance;
+    H3_EXPORT(exactEdgeLengthRads)(args->index, &distance);
+    printf("%f", distance);
+    H3_EXPORT(exactEdgeLengthKm)(args->index, &distance);
+    printf("%f", distance);
+    H3_EXPORT(exactEdgeLengthM)(args->index, &distance);
+    printf("%f", distance);
+
     return 0;
 }
 

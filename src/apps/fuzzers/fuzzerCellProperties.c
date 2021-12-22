@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /** @file
- * @brief Fuzzer program for h3SetToLinkedGeo
+ * @brief Fuzzer program for cell property functions
  */
 
 #include "aflHarness.h"
@@ -22,8 +22,7 @@
 #include "utility.h"
 
 typedef struct {
-    H3Index h3Set[1024];
-    int sz;
+    H3Index index;
 } inputArgs;
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
@@ -31,15 +30,22 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         return 0;
     }
     const inputArgs *args = (const inputArgs *)data;
-    if (args->sz >= 1024) {
-        return 0;
+
+    printf("%d", H3_EXPORT(getResolution)(args->index));
+    printf("%d", H3_EXPORT(getBaseCellNumber)(args->index));
+    printf("%d", H3_EXPORT(isValidCell)(args->index));
+    printf("%d", H3_EXPORT(isPentagon)(args->index));
+    printf("%d", H3_EXPORT(isResClassIII)(args->index));
+
+    int faceCount;
+    H3Error err = H3_EXPORT(maxFaceCount)(args->index, &faceCount);
+    if (!err && faceCount > 0) {
+        int *out = calloc(faceCount, sizeof(int));
+        H3_EXPORT(getIcosahedronFaces)(args->index, out);
+        printf("%d", out[0]);
+        free(out);
     }
 
-    LinkedGeoPolygon polygon;
-    H3Error err = H3_EXPORT(h3SetToLinkedGeo)(args->h3Set, args->sz, &polygon);
-    if (!err) {
-        H3_EXPORT(destroyLinkedPolygon)(&polygon);
-    }
     return 0;
 }
 

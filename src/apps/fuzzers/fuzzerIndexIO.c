@@ -14,32 +14,35 @@
  * limitations under the License.
  */
 /** @file
- * @brief Fuzzer program for h3SetToLinkedGeo
+ * @brief Fuzzer program for h3ToString and stringToH3
  */
 
 #include "aflHarness.h"
 #include "h3api.h"
 #include "utility.h"
 
+#define STRING_LENGTH 1024
+
 typedef struct {
-    H3Index h3Set[1024];
-    int sz;
+    H3Index index;
+    char str[1024];
 } inputArgs;
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     if (size < sizeof(inputArgs)) {
         return 0;
     }
-    const inputArgs *args = (const inputArgs *)data;
-    if (args->sz >= 1024) {
-        return 0;
+    inputArgs *args = (inputArgs *)data;
+    args->str[STRING_LENGTH - 1] = 0;
+
+    char str[STRING_LENGTH];
+    h3Println(H3_EXPORT(h3ToString)(&args->index, str, STRING_LENGTH));
+    H3Index index;
+    H3Error err = H3_EXPORT(stringToH3)(&args->str, &index);
+    if (!err) {
+        h3Println(index);
     }
 
-    LinkedGeoPolygon polygon;
-    H3Error err = H3_EXPORT(h3SetToLinkedGeo)(args->h3Set, args->sz, &polygon);
-    if (!err) {
-        H3_EXPORT(destroyLinkedPolygon)(&polygon);
-    }
     return 0;
 }
 
