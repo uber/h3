@@ -13,32 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** @file
- * @brief Fuzzer program for gridDisk
+/** @file aflHarness.h
+ * @brief   Adapter from LLVM fuzzer to AFL++
  */
+#ifndef AFLHARNESS_H
+#define AFLHARNESS_H
 
-#include "aflHarness.h"
-#include "h3api.h"
 #include "utility.h"
 
-typedef struct {
-    H3Index index;
-    int64_t k;
-} inputArgs;
+int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size);
 
-int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
-    if (size < sizeof(inputArgs)) {
-        return 0;
-    }
-    const inputArgs *args = (const inputArgs *)data;
-    int64_t sz = H3_EXPORT(maxGridDiskSize)(args->k);
-    H3Index *results = calloc(sizeof(H3Index), sz);
-    if (results != NULL) {
-        H3_EXPORT(gridDisk)(args->index, args->k, results);
-        h3Println(results[0]);
-    }
-    free(results);
-    return 0;
+#define AFL_HARNESS_MAIN(expectedSize) int main(int argc, char *argv[]) {\
+    if (argc != 2) {\
+        error("Should have one argument (test case file)\n");\
+    }\
+    const char *filename = argv[1];\
+    FILE *fp = fopen(filename, "rb");\
+    uint8_t data[expectedSize];\
+    if (fread(&data, expectedSize, 1, fp) != 1) {\
+        error("Error reading\n");\
+    }\
+    fclose(fp);\
+    return LLVMFuzzerTestOneInput(data, expectedSize);\
 }
 
-AFL_HARNESS_MAIN(sizeof(inputArgs));
+#endif // AFLHARNESS_H
