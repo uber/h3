@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 /** @file
- * @brief Fuzzer program for cellToParent and cellToChildren functions
+ * @brief Fuzzer program for cellToVertex and related functions
  */
 
 #include "aflHarness.h"
 #include "h3api.h"
 #include "utility.h"
 
-#define MAX_CHILDREN_DIFF 10
-
 typedef struct {
     H3Index index;
-    int parentRes;
-    int childRes;
+    int vertexNum;
 } inputArgs;
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
@@ -35,26 +32,16 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     }
     const inputArgs *args = (const inputArgs *)data;
 
-    H3Index parent;
-    H3_EXPORT(cellToParent)(args->index, args->parentRes, &parent);
-    h3Println(parent);
-
-    // TODO: Update with new API
-    H3Index child = H3_EXPORT(cellToCenterChild)(args->index, args->childRes);
-    h3Println(child);
-
-    int resDiff = args->childRes - H3_EXPORT(getResolution)(args->index);
-    if (resDiff < MAX_CHILDREN_DIFF) {
-        int64_t childrenSize;
-        H3Error err = H3_EXPORT(cellToChildrenSize)(args->index, args->childRes,
-                                                    &childrenSize);
-        if (!err) {
-            H3Index *children = calloc(childrenSize, sizeof(H3Index));
-            H3_EXPORT(cellToChildren)(args->index, args->childRes, children);
-            h3Println(children[0]);
-            free(children);
-        }
-    }
+    H3Index out;
+    H3_EXPORT(cellToVertex)(args->index, args->vertexNum, &out);
+    h3Println(out);
+    H3Index outArr[6];
+    H3_EXPORT(cellToVertexes)(args->index, outArr);
+    h3Println(outArr[0]);
+    LatLng geo;
+    H3_EXPORT(vertexToLatLng)(args->index, &geo);
+    printf("%lf %lf\n", geo.lat, geo.lng);
+    printf("%d\n", H3_EXPORT(isValidVertex)(args->index));
     return 0;
 }
 

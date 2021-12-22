@@ -41,10 +41,10 @@ This file is an index to where all the functions in the H3 public API are fuzzed
 | directedEdgeToCells | 
 | originToDirectedEdges | 
 | directedEdgeToBoundary | 
-| cellToVertex | 
-| cellToVertexes | 
-| vertexToLatLng | 
-| isValidVertex | 
+| cellToVertex | [fuzzerVertexes](./fuzzerVertexes.c)
+| cellToVertexes | [fuzzerVertexes](./fuzzerVertexes.c)
+| vertexToLatLng | [fuzzerVertexes](./fuzzerVertexes.c)
+| isValidVertex | [fuzzerVertexes](./fuzzerVertexes.c)
 | gridDistance | 
 | gridPathCells | 
 | experimentalH3ToLocalIj | 
