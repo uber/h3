@@ -90,6 +90,47 @@ defined so that:
 - `cmpCanon(a, b) == -2` if `a` < `b` in the low52 ordering, but they are not related
 - `cmpCanon(a, b) == +2` if `b` < `a` ...
 
+Note that these two functions produce the same ordering when given to
+the C standard library's `qsort`.
 
+### Array classifications
 
+Given these comparison functions, we can define 3 increasingly strict properties
+on arrays of H3 cells:
+
+1. "lower 52" ordered
+2. canonical
+3. compacted and canonical
+
+#### Low52 ordered
+
+An H3 cell array `a` is "low52 ordered" if its elements are such that
+
+- `cmpLow52(a[i-1], a[i]) <= 0` or, equivalently,
+- `cmpCanon(a[i-1], a[i]) <= 0`.
+
+Note that in this classification, arrays can have duplicated cell. We can also
+have the parents, children, ancestors, or descendants of other cells in
+the array.
+
+### Canonical
+
+We'll define a "canonical" H3 cell array to be one that is low52 ordered and
+has the additional property that no duplicates, parents, children, ancestors,
+or descendants of other cells are in the array.
+
+We can check this property by ensuring that
+
+```c
+cmpCanon(a[i-1], a[i]) == -2
+```
+
+for each adjacent pair of cells in the array.
+
+### Compacted and canonical
+
+A compacted and canonical H3 set is just what it sounds like.
+
+Many of the fast spatial join operations will work on canonical sets, but
+will be faster on compacted canonical sets.
 
