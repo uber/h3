@@ -20,7 +20,7 @@
 #define AFLHARNESS_H
 
 #include "utility.h"
-#include <strings.h>
+#include <string.h>
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size);
 
