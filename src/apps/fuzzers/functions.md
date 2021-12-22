@@ -15,19 +15,19 @@ This file is an index to where all the functions in the H3 public API are fuzzed
 | distance | [fuzzerDistances](./fuzzerDistances.c)
 | getHexagonAreaAvg | Trivial
 | cellArea | [fuzzerCellArea](./fuzzerCellArea.c)
-| getHexagonEdgeLengthAvg | 
+| getHexagonEdgeLengthAvg | Trivial
 | exactEdgeLength | [fuzzerExactEdgeLength](./fuzzerExactEdgeLength.c)
 | getNumCells | Trivial
 | getRes0Cells | Trivial
-| getPentagons | 
+| getPentagons | [fuzzerResolutions](./fuzzerResolutions.c)
 | getResolution | [fuzzerCellProperties](./fuzzerCellProperties.c)
 | getBaseCellNumber | [fuzzerCellProperties](./fuzzerCellProperties.c)
 | stringToH3 | [fuzzerIndexIO](./fuzzerIndexIO.c)
 | h3ToString | [fuzzerIndexIO](./fuzzerIndexIO.c)
 | isValidCell | [fuzzerCellProperties](./fuzzerCellProperties.c)
-| cellToParent | 
-| cellToChildren | 
-| cellToCenterChild | 
+| cellToParent | [fuzzerHierarchy](./fuzzerHierarchy.c)
+| cellToChildren | [fuzzerHierarchy](./fuzzerHierarchy.c)
+| cellToCenterChild | [fuzzerHierarchy](./fuzzerHierarchy.c)
 | compactCells | 
 | uncompactCells | 
 | isResClassIII | [fuzzerCellProperties](./fuzzerCellProperties.c)

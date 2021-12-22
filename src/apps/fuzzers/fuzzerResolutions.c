@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /** @file
- * @brief Fuzzer program for cellAreaRads2
+ * @brief Fuzzer program for resolution specific functions
  */
 
 #include "aflHarness.h"
@@ -22,7 +22,7 @@
 #include "utility.h"
 
 typedef struct {
-    H3Index index;
+    int res;
 } inputArgs;
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
@@ -31,9 +31,16 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     }
     const inputArgs *args = (const inputArgs *)data;
 
-    printf("%f", H3_EXPORT(cellAreaRads2)(args->index));
-    printf("%f", H3_EXPORT(cellAreaKm2)(args->index));
-    printf("%f", H3_EXPORT(cellAreaM2)(args->index));
+    // Do not perform bound checks
+    // printf("%f", H3_EXPORT(getHexagonAreaAvgKm2)(args->res));
+    // printf("%f", H3_EXPORT(getHexagonAreaAvgM2)(args->res));
+    // printf("%f", H3_EXPORT(getHexagonEdgeLengthAvgKm)(args->res));
+    // printf("%f", H3_EXPORT(getHexagonEdgeLengthAvgM)(args->res));
+    // printf("%llx", H3_EXPORT(getNumCells)(args->res));
+
+    H3Index pentagons[12];
+    H3_EXPORT(getPentagons)(args->res, pentagons);
+    h3Println(pentagons[0]);
 
     return 0;
 }

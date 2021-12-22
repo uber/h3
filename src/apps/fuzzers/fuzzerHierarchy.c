@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 /** @file
- * @brief Fuzzer program for cellAreaRads2
+ * @brief Fuzzer program for cellToLatLng and cellToBoundary
  */
 
 #include "aflHarness.h"
 #include "h3api.h"
 #include "utility.h"
 
+#define MAX_CHILDREN_DIFF 10
+
 typedef struct {
     H3Index index;
+    int parentRes;
+    int childRes;
 } inputArgs;
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
@@ -31,10 +35,26 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     }
     const inputArgs *args = (const inputArgs *)data;
 
-    printf("%f", H3_EXPORT(cellAreaRads2)(args->index));
-    printf("%f", H3_EXPORT(cellAreaKm2)(args->index));
-    printf("%f", H3_EXPORT(cellAreaM2)(args->index));
+    H3Index parent;
+    H3_EXPORT(cellToParent)(args->index, args->parentRes, &parent);
+    h3Println(parent);
 
+    // TODO: Update with new API
+    H3Index child = H3_EXPORT(cellToCenterChild)(args->index, args->childRes);
+    h3Println(child);
+
+    int resDiff = args->childRes - H3_EXPORT(getResolution)(args->index);
+    if (resDiff < MAX_CHILDREN_DIFF) {
+        int64_t childrenSize;
+        H3Error err = H3_EXPORT(cellToChildrenSize)(args->index, args->childRes,
+                                                    &childrenSize);
+        if (!err) {
+            H3Index *children = calloc(childrenSize, sizeof(H3Index));
+            H3_EXPORT(cellToChildren)(args->index, args->childRes, children);
+            h3Println(children[0]);
+            free(children);
+        }
+    }
     return 0;
 }
 
