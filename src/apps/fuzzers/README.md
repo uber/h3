@@ -42,14 +42,14 @@ such as the H3 core library.
 | isResClassIII | [fuzzerCellProperties](./fuzzerCellProperties.c)
 | isPentagon | [fuzzerCellProperties](./fuzzerCellProperties.c)
 | getIcosahedronFaces | [fuzzerCellProperties](./fuzzerCellProperties.c)
-| areNeighborCells | 
-| cellsToDirectedEdge | 
-| isValidDirectedEdge | 
-| getDirectedEdgeOrigin | 
-| getDirectedEdgeDestination | 
-| directedEdgeToCells | 
-| originToDirectedEdges | 
-| directedEdgeToBoundary | 
+| areNeighborCells | [fuzzerDirectedEdge](./fuzzerDirectedEdge.c)
+| cellsToDirectedEdge | [fuzzerDirectedEdge](./fuzzerDirectedEdge.c)
+| isValidDirectedEdge | [fuzzerDirectedEdge](./fuzzerDirectedEdge.c)
+| getDirectedEdgeOrigin | [fuzzerDirectedEdge](./fuzzerDirectedEdge.c)
+| getDirectedEdgeDestination | [fuzzerDirectedEdge](./fuzzerDirectedEdge.c)
+| directedEdgeToCells | [fuzzerDirectedEdge](./fuzzerDirectedEdge.c)
+| originToDirectedEdges | [fuzzerDirectedEdge](./fuzzerDirectedEdge.c)
+| directedEdgeToBoundary | [fuzzerDirectedEdge](./fuzzerDirectedEdge.c)
 | cellToVertex | [fuzzerVertexes](./fuzzerVertexes.c)
 | cellToVertexes | [fuzzerVertexes](./fuzzerVertexes.c)
 | vertexToLatLng | [fuzzerVertexes](./fuzzerVertexes.c)
