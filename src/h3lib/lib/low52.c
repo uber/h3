@@ -359,3 +359,30 @@ int intersectTheyDo(const H3Index *_A, const int64_t aN, const H3Index *_B,
 
     return false;
 }
+
+
+/*
+Just for comparison:
+
+This implementation is also **correct**, but I'm guessing it will be slower
+on real data. The implementation above has a few heuristics that I think
+will help with speed.
+ */
+int intersectTheyDo_slow(const H3Index *_A, const int64_t aN, const H3Index *_B,
+                    const int64_t bN) {
+    SearchInterval A = {.cells = _A, .N = aN, .i = 0, .j = aN};
+    SearchInterval B = {.cells = _B, .N = bN, .i = 0, .j = bN};
+
+    while ((A.i < A.j) && (B.i < B.j)) {
+        // take A[i] and see what happens when we look into B[i:j]
+        H3Index h = A.cells[A.i];
+        int64_t k = disjointInsertionPoint(B.cells, B.i, B.j, h);
+
+        if (k == -1) return true;  // they intersect!
+
+        B.i = k;
+        A.i++;
+    }
+
+    return false;
+}
