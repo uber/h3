@@ -150,6 +150,7 @@ set(APP_SOURCE_FILES
     src/apps/applib/include/benchmark.h
     src/apps/applib/include/utility.h
     src/apps/applib/include/args.h
+    src/apps/applib/include/aflHarness.h
     src/apps/applib/lib/kml.c
     src/apps/applib/lib/utility.c
     src/apps/applib/lib/args.c)

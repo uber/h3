@@ -19,8 +19,9 @@
 #ifndef AFLHARNESS_H
 #define AFLHARNESS_H
 
-#include "utility.h"
 #include <string.h>
+
+#include "utility.h"
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size);
 
@@ -28,10 +29,10 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size);
 
 /**
  * Generate a AFL++ test case file of the right size initialized to all zeroes.
- * 
- * @param filename 
- * @param expectedSize 
- * @return int 
+ *
+ * @param filename
+ * @param expectedSize
+ * @return int
  */
 int generateTestCase(const char *filename, size_t expectedSize) {
     FILE *fp = fopen(filename, "wb");
@@ -43,30 +44,33 @@ int generateTestCase(const char *filename, size_t expectedSize) {
     return 0;
 }
 
-#define AFL_HARNESS_MAIN(expectedSize) int main(int argc, char *argv[]) {\
-    if (argc == 3) {\
-        if (strcmp(argv[1], "--generate") != 0) {\
-            error("Invalid option (should be --generate, otherwise look at aflHarness.h to see options)");\
-        }\
-        return generateTestCase(argv[2], expectedSize);\
-    }\
-    if (argc != 2) {\
-        error("Should have one argument (test case file)\n");\
-    }\
-    const char *filename = argv[1];\
-    FILE *fp = fopen(filename, "rb");\
-    uint8_t data[expectedSize];\
-    if (fread(&data, expectedSize, 1, fp) != 1) {\
-        error("Error reading\n");\
-    }\
-    fclose(fp);\
-    return LLVMFuzzerTestOneInput(data, expectedSize);\
-}
+#define AFL_HARNESS_MAIN(expectedSize)                                         \
+    int main(int argc, char *argv[]) {                                         \
+        if (argc == 3) {                                                       \
+            if (strcmp(argv[1], "--generate") != 0) {                          \
+                error(                                                         \
+                    "Invalid option (should be --generate, otherwise look at " \
+                    "aflHarness.h to see options)");                           \
+            }                                                                  \
+            return generateTestCase(argv[2], expectedSize);                    \
+        }                                                                      \
+        if (argc != 2) {                                                       \
+            error("Should have one argument (test case file)\n");              \
+        }                                                                      \
+        const char *filename = argv[1];                                        \
+        FILE *fp = fopen(filename, "rb");                                      \
+        uint8_t data[expectedSize];                                            \
+        if (fread(&data, expectedSize, 1, fp) != 1) {                          \
+            error("Error reading\n");                                          \
+        }                                                                      \
+        fclose(fp);                                                            \
+        return LLVMFuzzerTestOneInput(data, expectedSize);                     \
+    }
 
 #else
 
 #define AFL_HARNESS_MAIN(expectedSize)
 
-#endif // H3_USE_LIBFUZZER
+#endif  // H3_USE_LIBFUZZER
 
-#endif // AFLHARNESS_H
+#endif  // AFLHARNESS_H
