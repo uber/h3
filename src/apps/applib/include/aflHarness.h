@@ -24,6 +24,8 @@
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size);
 
+#ifndef H3_USE_LIBFUZZER
+
 /**
  * Generate a AFL++ test case file of the right size initialized to all zeroes.
  * 
@@ -60,5 +62,11 @@ int generateTestCase(const char *filename, size_t expectedSize) {
     fclose(fp);\
     return LLVMFuzzerTestOneInput(data, expectedSize);\
 }
+
+#else
+
+#define AFL_HARNESS_MAIN(expectedSize)
+
+#endif // H3_USE_LIBFUZZER
 
 #endif // AFLHARNESS_H

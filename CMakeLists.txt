@@ -44,6 +44,9 @@ option(BUILD_BENCHMARKS "Build benchmarking applications." ON)
 option(BUILD_FUZZERS "Build fuzzer applications (for use with afl)." ON)
 option(BUILD_FILTERS "Build filter applications." ON)
 option(BUILD_GENERATORS "Build code generation applications." ON)
+# If ON, libfuzzer settings are used to build the fuzzer harnesses. If OFF, a frontend
+# for afl++ is provided instead.
+option(ENABLE_LIBFUZZER "Build fuzzers with libFuzzer support." OFF)
 
 if(WIN32)
     # Use bash (usually from Git for Windows) for piping results
@@ -88,6 +91,10 @@ if(NOT WIN32)
         # --coverage is not passed to the linker, so this option is needed
         # to fully enable coverage.
         list(APPEND H3_LINK_FLAGS $<$<CONFIG:Debug>:--coverage>)
+    endif()
+    if(ENABLE_LIBFUZZER)
+        list(APPEND H3_COMPILE_FLAGS -fsanitize=fuzzer,address,undefined)
+        list(APPEND H3_LINK_FLAGS -fsanitize=fuzzer,address,undefined)
     endif()
 
     option(WARNINGS_AS_ERRORS "Warnings are treated as errors" OFF)
@@ -645,6 +652,9 @@ if(BUILD_FUZZERS)
 
     macro(add_h3_fuzzer name srcfile)
         add_h3_executable(${name} ${srcfile} ${APP_SOURCE_FILES})
+        if(ENABLE_LIBFUZZER)
+            target_compile_definitions(${name} PRIVATE H3_USE_LIBFUZZER)
+        endif()
         add_dependencies(fuzzers ${name})
     endmacro()
 
