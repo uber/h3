@@ -1,8 +1,10 @@
 # Fuzzer harnesses for H3
 
 This directory contains helper programs for testing the H3 library using the
-''[American fuzzy lop](https://lcamtuf.coredump.cx/afl/)'' or ''libFuzzer'' fuzzers.
-Fuzzering is a technique for discovering crashes and other edge cases in code
+''[American fuzzy lop](https://lcamtuf.coredump.cx/afl/)''/
+''[AFL++](https://github.com/AFLplusplus/AFLplusplus)'' or
+''[libFuzzer](https://www.llvm.org/docs/LibFuzzer.html)'' fuzzers.
+Fuzzing is a technique for discovering crashes and other edge cases in code
 such as the H3 core library.
 
 # Function coverage
@@ -59,13 +61,32 @@ such as the H3 core library.
 
 # libFuzzer Usage
 
-[libFuzzer](https://www.llvm.org/docs/LibFuzzer.html) is one of the supported fuzzing drivers.
+libFuzzer is one of the supported fuzzing drivers.
 
 This is the fuzzer used in [oss-fuzz](https://github.com/google/oss-fuzz/tree/master/projects/h3).
 
+## Build
+
+You must build H3 with Clang and enable support for libFuzzer.
+
+```
+CC=clang cmake -DENABLE_LIBFUZZER=ON .
+make fuzzers
+```
+
+## Run
+
+To begin fuzzing, execute the fuzzer binary:
+
+```
+fuzzerLatLngToCell
+```
+
+For command line options including how to specify a test corpus, consult the [libFuzzer documentation](https://www.llvm.org/docs/LibFuzzer.html#options).
+
 # AFL Usage
 
-[AFL++](https://github.com/AFLplusplus/AFLplusplus) is one of the supported fuzzing drivers.
+AFL/AFL++ are supported fuzzing drivers.
 
 ## Installation
 
@@ -84,7 +105,7 @@ CXX=afl-clang++ CC=afl-clang cmake .
 make fuzzers
 ```
 
-Generate a blank (zeroed) test case file. This will not be very interesting test case but is usedful
+Generate a blank (zeroed) test case file. This will not be very a interesting test case but is usedful
 for having files of the right size.
 
 ```
