@@ -323,7 +323,12 @@ static void ensureASmaller(SearchInterval *A, SearchInterval *B) {
     }
 }
 
-// Yoda naming until we come up with something better
+/*
+Double binary search for a fast intersection test on canonical sets.
+Faster if compact and canonical.
+
+Yoda naming until we come up with something better
+ */
 int intersectTheyDo(const H3Index *_A, const int64_t aN, const H3Index *_B,
                     const int64_t bN) {
     SearchInterval A = {.cells = _A, .N = aN, .i = 0, .j = aN};
