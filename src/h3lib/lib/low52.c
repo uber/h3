@@ -303,14 +303,14 @@ typedef struct {
     int64_t N, i, j;
 } SearchInterval;
 
-typedef enum { LEFT = 0, RIGHT = 1 } Endpoint;
-
 // Yoda naming until we come up with something better
 int intersectTheyDo(const H3Index *_A, const int64_t aN, const H3Index *_B,
                     const int64_t bN) {
     SearchInterval A = {.cells = _A, .N = aN, .i = 0, .j = aN};
     SearchInterval B = {.cells = _B, .N = bN, .i = 0, .j = bN};
     H3Index h;
+
+    // TODO: a quick exit check?
 
     while ((A.i < A.j) && (B.i < B.j)) {
         // ensure A is the smaller of the two sets.
@@ -321,11 +321,11 @@ int intersectTheyDo(const H3Index *_A, const int64_t aN, const H3Index *_B,
         }
 
         // take A[i] or A[j-1] and see what happens when we look into B[i:j]
-        Endpoint ep = (A.i % 2 == 0);
+        bool usingLeft = (A.i % 2 == 0);
 
-        if (ep == LEFT) {
+        if (usingLeft) {
             h = A.cells[A.i];
-        } else if (ep == RIGHT) {
+        } else {
             h = A.cells[A.j - 1];
         }
 
@@ -335,10 +335,10 @@ int intersectTheyDo(const H3Index *_A, const int64_t aN, const H3Index *_B,
             return true;  // they intersect
         }
 
-        if (ep == LEFT) {
+        if (usingLeft) {
             B.i = k;
             A.i++;
-        } else if (ep == RIGHT) {
+        } else {
             B.j = k;
             A.j--;
         }
