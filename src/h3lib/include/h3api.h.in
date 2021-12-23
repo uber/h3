@@ -741,7 +741,9 @@ int isCanonicalCells(const H3Index *cells, const int64_t N);
 H3Error canonicalizeCells(H3Index *cells, const int64_t numBefore,
                           int64_t *numAfter);
 
-int lower52Bsearch(H3Index *cells, int64_t N, H3Index h);
+int canonSearch(const H3Index *cells, const int64_t N, const H3Index h);
+int intersectTheyDo(const H3Index *_A, const int64_t aN, const H3Index *_B,
+                    const int64_t bN);
 
 #ifdef __cplusplus
 }  // extern "C"

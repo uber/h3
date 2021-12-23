@@ -185,28 +185,6 @@ compacted.
 
  */
 
-int lower52Bsearch_slow(H3Index *cells, int64_t N, H3Index h) {
-    int64_t i = 0;
-    int64_t j = N;
-    int64_t k;
-
-    if (N <= 0) {
-        return false;
-    }
-
-    while (j - i != 1) {
-        k = i + (j - i) / 2;
-
-        if (cmpLow52(cells[k - 1], h) < 0) {
-            i = k;
-        } else {
-            j = k;
-        }
-    }
-
-    return isDesc(h, cells[i]);
-}
-
 /*
 
 i = 0
@@ -265,6 +243,8 @@ At each iteration, we can select any k from i to j-1.
 Typically, we'll just select a k midway between i and j.
 This strategy makes us test the endpoints of the array first,
 hoping for an early exit if h is clearly not in the set.
+This is totally a heuristic, but should work well on typical
+"clumps" of geo data.
  */
 static inline int64_t kStrategy(int64_t i, int64_t j, int64_t N) {
     if (i == 0) return 0;
@@ -273,7 +253,7 @@ static inline int64_t kStrategy(int64_t i, int64_t j, int64_t N) {
     return i + (j - i) / 2;
 }
 
-int lower52Bsearch_rich(H3Index *cells, int64_t N, H3Index h) {
+int canonSearch(const H3Index *cells, const int64_t N, const H3Index h) {
     int64_t i = 0;
     int64_t j = N;
 
@@ -292,6 +272,75 @@ int lower52Bsearch_rich(H3Index *cells, int64_t N, H3Index h) {
             // Not true if it is only low 52 sorted.
             // TODO: also provide one that works on just low 52 arrays?
             return false;
+        }
+    }
+
+    return false;
+}
+
+// could also just take in a search interval struct...
+// returns -1 if h intersects with cells[i:j]
+int64_t disjointInsertionPoint(const H3Index *cells, int64_t i, int64_t j,
+                               const H3Index h) {
+    while (i < j) {
+        int64_t k = i + (j - i) / 2;
+        int cmp = cmpCanon(h, cells[k]);
+
+        if (cmp == -2) {
+            j = k;
+        } else if (cmp == +2) {
+            i = k + 1;
+        } else {
+            return -1;  // h intersects with cells!
+        }
+    }
+
+    return i;
+}
+
+typedef struct {
+    H3Index *cells;
+    int64_t N, i, j;
+} SearchInterval;
+
+typedef enum { LEFT = 0, RIGHT = 1 } Endpoint;
+
+// Yoda naming until we come up with something better
+int intersectTheyDo(const H3Index *_A, const int64_t aN, const H3Index *_B,
+                    const int64_t bN) {
+    SearchInterval A = {.cells = _A, .N = aN, .i = 0, .j = aN};
+    SearchInterval B = {.cells = _B, .N = bN, .i = 0, .j = bN};
+    H3Index h;
+
+    while ((A.i < A.j) && (B.i < B.j)) {
+        // ensure A is the smaller of the two sets.
+        if ((B.j - B.i) < (A.j - A.i)) {
+            SearchInterval temp = A;
+            A = B;
+            B = temp;
+        }
+
+        // take A[i] or A[j-1] and see what happens when we look into B[i:j]
+        Endpoint ep = (A.i % 2 == 0);
+
+        if (ep == LEFT) {
+            h = A.cells[A.i];
+        } else if (ep == RIGHT) {
+            h = A.cells[A.j - 1];
+        }
+
+        int64_t k = disjointInsertionPoint(B.cells, B.i, B.j, h);
+
+        if (k == -1) {
+            return true;  // they intersect
+        }
+
+        if (ep == LEFT) {
+            B.i = k;
+            A.i++;
+        } else if (ep == RIGHT) {
+            B.j = k;
+            A.j--;
         }
     }
 
