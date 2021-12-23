@@ -741,7 +741,7 @@ int isCanonicalCells(const H3Index *cells, const int64_t N);
 H3Error canonicalizeCells(H3Index *cells, const int64_t numBefore,
                           int64_t *numAfter);
 
-int lower52bsearch(H3Index *cells, int64_t N, H3Index h);
+int lower52Bsearch(H3Index *cells, int64_t N, H3Index h);
 
 #ifdef __cplusplus
 }  // extern "C"

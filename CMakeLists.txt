@@ -137,7 +137,8 @@ set(LIB_SOURCE_FILES
     src/h3lib/lib/iterators.c
     src/h3lib/lib/vertexGraph.c
     src/h3lib/lib/faceijk.c
-    src/h3lib/lib/baseCells.c)
+    src/h3lib/lib/baseCells.c
+    src/h3lib/lib/low52.c)
 set(APP_SOURCE_FILES
     src/apps/applib/include/kml.h
     src/apps/applib/include/benchmark.h
