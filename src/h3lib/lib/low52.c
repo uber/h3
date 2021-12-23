@@ -312,6 +312,17 @@ static bool wayLessThan(const SearchInterval A, const SearchInterval B) {
     }
 }
 
+static void ensureASmaller(SearchInterval *A, SearchInterval *B) {
+    // ensure A is the smaller of the two sets.
+    SearchInterval temp;
+
+    if ((B->j - B->i) < (A->j - A->i)) {
+        temp = *A;
+        *A = *B;
+        *B = temp;
+    }
+}
+
 // Yoda naming until we come up with something better
 int intersectTheyDo(const H3Index *_A, const int64_t aN, const H3Index *_B,
                     const int64_t bN) {
@@ -323,12 +334,7 @@ int intersectTheyDo(const H3Index *_A, const int64_t aN, const H3Index *_B,
     if (wayLessThan(B, A)) return false;
 
     while ((A.i < A.j) && (B.i < B.j)) {
-        // ensure A is the smaller of the two sets.
-        if ((B.j - B.i) < (A.j - A.i)) {
-            SearchInterval temp = A;
-            A = B;
-            B = temp;
-        }
+        ensureASmaller(&A, &B);
 
         // take A[i] or A[j-1] and see what happens when we look into B[i:j]
         bool usingLeft = (A.i % 2 == 0);
@@ -338,6 +344,8 @@ int intersectTheyDo(const H3Index *_A, const int64_t aN, const H3Index *_B,
         } else {
             h = A.cells[A.j - 1];
         }
+
+        // H3Index h = (usingLeft) ? A.cells[A.i] : A.cells[A.j - 1];
 
         int64_t k = disjointInsertionPoint(B.cells, B.i, B.j, h);
 
