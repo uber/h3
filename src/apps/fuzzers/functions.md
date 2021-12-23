@@ -28,8 +28,8 @@ This file is an index to where all the functions in the H3 public API are fuzzed
 | cellToParent | [fuzzerHierarchy](./fuzzerHierarchy.c)
 | cellToChildren | [fuzzerHierarchy](./fuzzerHierarchy.c)
 | cellToCenterChild | [fuzzerHierarchy](./fuzzerHierarchy.c)
-| compactCells | 
-| uncompactCells | 
+| compactCells | [fuzzerCompact](./fuzzerCompact.c)
+| uncompactCells | [fuzzerCompact](./fuzzerCompact.c)
 | isResClassIII | [fuzzerCellProperties](./fuzzerCellProperties.c)
 | isPentagon | [fuzzerCellProperties](./fuzzerCellProperties.c)
 | getIcosahedronFaces | [fuzzerCellProperties](./fuzzerCellProperties.c)

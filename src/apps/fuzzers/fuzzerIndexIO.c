@@ -21,11 +21,11 @@
 #include "h3api.h"
 #include "utility.h"
 
-#define STRING_LENGTH 1024
+#define STRING_LENGTH 32
 
 typedef struct {
     H3Index index;
-    char str[1024];
+    char str[STRING_LENGTH];
 } inputArgs;
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
