@@ -280,8 +280,8 @@ int canonSearch(const H3Index *cells, const int64_t N, const H3Index h) {
 
 // could also just take in a search interval struct...
 // returns -1 if h intersects with cells[i:j]
-int64_t disjointInsertionPoint(const H3Index *cells, int64_t i, int64_t j,
-                               const H3Index h) {
+static int64_t disjointInsertionPoint(const H3Index *cells, int64_t i,
+                                      int64_t j, const H3Index h) {
     while (i < j) {
         int64_t k = i + (j - i) / 2;
         int cmp = cmpCanon(h, cells[k]);
@@ -291,6 +291,7 @@ int64_t disjointInsertionPoint(const H3Index *cells, int64_t i, int64_t j,
         } else if (cmp == +2) {
             i = k + 1;
         } else {
+            // cmp == -1, +1, or 0
             return -1;  // h intersects with cells!
         }
     }
@@ -299,18 +300,27 @@ int64_t disjointInsertionPoint(const H3Index *cells, int64_t i, int64_t j,
 }
 
 typedef struct {
-    H3Index *cells;
+    const H3Index *cells;
     int64_t N, i, j;
 } SearchInterval;
+
+static bool wayLessThan(const SearchInterval A, const SearchInterval B) {
+    if (A.N > 0 && B.N > 0 && (cmpCanon(A.cells[A.N - 1], B.cells[0]) == -2)) {
+        return true;
+    } else {
+        return false;
+    }
+}
 
 // Yoda naming until we come up with something better
 int intersectTheyDo(const H3Index *_A, const int64_t aN, const H3Index *_B,
                     const int64_t bN) {
     SearchInterval A = {.cells = _A, .N = aN, .i = 0, .j = aN};
     SearchInterval B = {.cells = _B, .N = bN, .i = 0, .j = bN};
-    H3Index h;
 
-    // TODO: a quick exit check?
+    // check for a quick exit
+    if (wayLessThan(A, B)) return false;
+    if (wayLessThan(B, A)) return false;
 
     while ((A.i < A.j) && (B.i < B.j)) {
         // ensure A is the smaller of the two sets.
@@ -322,7 +332,7 @@ int intersectTheyDo(const H3Index *_A, const int64_t aN, const H3Index *_B,
 
         // take A[i] or A[j-1] and see what happens when we look into B[i:j]
         bool usingLeft = (A.i % 2 == 0);
-
+        H3Index h;
         if (usingLeft) {
             h = A.cells[A.i];
         } else {
