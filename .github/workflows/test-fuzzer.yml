@@ -69,6 +69,6 @@ jobs:
           cd build
           for fuzzer in bin/fuzzer*; do
             echo $fuzzer
-            # TODO: Increase
-            $fuzzer -runs 1000
+            # TODO: Increase run count
+            $fuzzer -runs=1000
           done

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 /** @file
- * @brief Fuzzer program for cellsToDirectedEdge and related functions
+ * @brief Fuzzer program for local IJ and related functions (gridDistance,
+ * gridPathCells)
  */
 
 #include "aflHarness.h"
@@ -24,7 +25,21 @@
 typedef struct {
     H3Index index;
     H3Index index2;
+    int i;
+    int j;
 } inputArgs;
+
+void testTwoIndexes(H3Index index, H3Index index2) {
+    int64_t distance;
+    H3_EXPORT(gridDistance)(index, index2, &distance);
+    int64_t size;
+    H3Error err = H3_EXPORT(gridPathCellsSize)(index, index2, &size);
+    if (!err) {
+        H3Index *output = calloc(size, sizeof(H3Index));
+        H3_EXPORT(gridPathCells)(index, index2, output);
+        free(output);
+    }
+}
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     if (size < sizeof(inputArgs)) {
@@ -32,20 +47,17 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     }
     const inputArgs *args = (const inputArgs *)data;
 
-    // Note that index and index2 need to be plausibly neighbors
-    // for most of these
-    H3_EXPORT(areNeighborCells)(args->index, args->index2);
+    // Note that index and index2 need to be in the approximate area for these
+    // tests to make sense.
+    testTwoIndexes(args->index, args->index2);
     H3Index out;
-    H3_EXPORT(cellsToDirectedEdge)(args->index, args->index2, &out);
-    H3_EXPORT(isValidDirectedEdge)(args->index);
-    H3_EXPORT(getDirectedEdgeOrigin)(args->index, &out);
-    H3_EXPORT(getDirectedEdgeDestination)(args->index, &out);
-    H3Index out2[2];
-    H3_EXPORT(directedEdgeToCells)(args->index, &out2);
-    H3Index out6[2];
-    H3_EXPORT(originToDirectedEdges)(args->index, &out6);
-    CellBoundary bndry;
-    H3_EXPORT(directedEdgeToBoundary)(args->index, &bndry);
+    CoordIJ ij = {.i = args->i, .j = args->j};
+    H3Error err = H3_EXPORT(experimentalLocalIjToH3)(args->index, &ij, &out);
+    if (!err) {
+        testTwoIndexes(args->index, out);
+    }
+
+    H3_EXPORT(experimentalH3ToLocalIj)(args->index, args->index2, &ij);
 
     return 0;
 }

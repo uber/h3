@@ -54,10 +54,10 @@ such as the H3 core library.
 | cellToVertexes | [fuzzerVertexes](./fuzzerVertexes.c)
 | vertexToLatLng | [fuzzerVertexes](./fuzzerVertexes.c)
 | isValidVertex | [fuzzerVertexes](./fuzzerVertexes.c)
-| gridDistance | 
-| gridPathCells | 
-| experimentalH3ToLocalIj | 
-| experimentalLocalIjToH3 | 
+| gridDistance | [fuzzerLocalIj](./fuzzerLocalIj.c)
+| gridPathCells | [fuzzerLocalIj](./fuzzerLocalIj.c)
+| experimentalH3ToLocalIj | [fuzzerLocalIj](./fuzzerLocalIj.c)
+| experimentalLocalIjToH3 | [fuzzerLocalIj](./fuzzerLocalIj.c)
 
 # libFuzzer Usage
 
