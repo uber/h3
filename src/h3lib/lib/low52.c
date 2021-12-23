@@ -341,9 +341,7 @@ int intersectTheyDo(const H3Index *_A, const int64_t aN, const H3Index *_B,
         H3Index h = (usingLeft) ? A.cells[A.i] : A.cells[A.j - 1];
         int64_t k = disjointInsertionPoint(B.cells, B.i, B.j, h);
 
-        if (k == -1) {
-            return true;  // they intersect
-        }
+        if (k == -1) return true;  // they intersect!
 
         if (usingLeft) {
             B.i = k;
