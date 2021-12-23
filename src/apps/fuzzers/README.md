@@ -1,15 +1,61 @@
 # Fuzzer harnesses for H3
 
 This directory contains helper programs for testing the H3 library using the
-''[American fuzzy lop](https://lcamtuf.coredump.cx/afl/)'' fuzzer.
+''[American fuzzy lop](https://lcamtuf.coredump.cx/afl/)'' or ''libFuzzer'' fuzzers.
+Fuzzering is a technique for discovering crashes and other edge cases in code
+such as the H3 core library.
 
-# Installation
+# Function coverage
 
-```
-apt install afl-clang
-```
-
-(There is also an afl-cov which looks interesting but isn't necessary.)
+| Function | File or status
+| -------- | --------------
+| latLngToCell | [fuzzerLatLngToCell](./fuzzerLatLngToCell.c)
+| cellToLatLng |  [fuzzerCellToLatLng](./fuzzerCellToLatLng.c)
+| cellToBoundary | [fuzzerCellToLatLng](./fuzzerCellToLatLng.c)
+| gridDisk | [fuzzerGridDisk](./fuzzerGridDisk.c)
+| gridDiskDistances | [fuzzerGridDisk](./fuzzerGridDisk.c)
+| gridRingUnsafe | [fuzzerGridDisk](./fuzzerGridDisk.c)
+| polygonToCells | 
+| h3SetToMultiPolygon | [fuzzerH3SetToLinkedGeo](./fuzzerH3SetToLinkedGeo.c)
+| degsToRads | Trivial
+| radsToDegs | Trivial
+| distance | [fuzzerDistances](./fuzzerDistances.c)
+| getHexagonAreaAvg | Trivial
+| cellArea | [fuzzerCellArea](./fuzzerCellArea.c)
+| getHexagonEdgeLengthAvg | Trivial
+| exactEdgeLength | [fuzzerExactEdgeLength](./fuzzerExactEdgeLength.c)
+| getNumCells | Trivial
+| getRes0Cells | Trivial
+| getPentagons | [fuzzerResolutions](./fuzzerResolutions.c)
+| getResolution | [fuzzerCellProperties](./fuzzerCellProperties.c)
+| getBaseCellNumber | [fuzzerCellProperties](./fuzzerCellProperties.c)
+| stringToH3 | [fuzzerIndexIO](./fuzzerIndexIO.c)
+| h3ToString | [fuzzerIndexIO](./fuzzerIndexIO.c)
+| isValidCell | [fuzzerCellProperties](./fuzzerCellProperties.c)
+| cellToParent | [fuzzerHierarchy](./fuzzerHierarchy.c)
+| cellToChildren | [fuzzerHierarchy](./fuzzerHierarchy.c)
+| cellToCenterChild | [fuzzerHierarchy](./fuzzerHierarchy.c)
+| compactCells | [fuzzerCompact](./fuzzerCompact.c)
+| uncompactCells | [fuzzerCompact](./fuzzerCompact.c)
+| isResClassIII | [fuzzerCellProperties](./fuzzerCellProperties.c)
+| isPentagon | [fuzzerCellProperties](./fuzzerCellProperties.c)
+| getIcosahedronFaces | [fuzzerCellProperties](./fuzzerCellProperties.c)
+| areNeighborCells | 
+| cellsToDirectedEdge | 
+| isValidDirectedEdge | 
+| getDirectedEdgeOrigin | 
+| getDirectedEdgeDestination | 
+| directedEdgeToCells | 
+| originToDirectedEdges | 
+| directedEdgeToBoundary | 
+| cellToVertex | [fuzzerVertexes](./fuzzerVertexes.c)
+| cellToVertexes | [fuzzerVertexes](./fuzzerVertexes.c)
+| vertexToLatLng | [fuzzerVertexes](./fuzzerVertexes.c)
+| isValidVertex | [fuzzerVertexes](./fuzzerVertexes.c)
+| gridDistance | 
+| gridPathCells | 
+| experimentalH3ToLocalIj | 
+| experimentalLocalIjToH3 | 
 
 # libFuzzer Usage
 
@@ -20,6 +66,16 @@ This is the fuzzer used in [oss-fuzz](https://github.com/google/oss-fuzz/tree/ma
 # AFL Usage
 
 [AFL++](https://github.com/AFLplusplus/AFLplusplus) is one of the supported fuzzing drivers.
+
+## Installation
+
+```
+apt install afl-clang
+```
+
+(There is also an afl-cov which looks interesting but isn't necessary.)
+
+## Build
 
 You must compile with the instrumented compiler:
 
@@ -40,6 +96,8 @@ An individual fuzzer run is invoked as follows. The argument is a file containin
 ```
 fuzzerLatLngToCell bytes24
 ```
+
+## Run
 
 To begin running the fuzzer, run the following. The testcase directory (`testcase_dir`) should contain a file
 with at least the right number of bytes that the fuzzer will read (this can be generated using the `--generate`
