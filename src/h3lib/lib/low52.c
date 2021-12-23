@@ -360,7 +360,6 @@ int intersectTheyDo(const H3Index *_A, const int64_t aN, const H3Index *_B,
     return false;
 }
 
-
 /*
 Just for comparison:
 
@@ -369,7 +368,7 @@ on real data. The implementation above has a few heuristics that I think
 will help with speed.
  */
 int intersectTheyDo_slow(const H3Index *_A, const int64_t aN, const H3Index *_B,
-                    const int64_t bN) {
+                         const int64_t bN) {
     SearchInterval A = {.cells = _A, .N = aN, .i = 0, .j = aN};
     SearchInterval B = {.cells = _B, .N = bN, .i = 0, .j = bN};
 
