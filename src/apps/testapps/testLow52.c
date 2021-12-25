@@ -81,6 +81,41 @@ bool doIntersect(CellArray A, CellArray B) {
 bool isLow52(CellArray A) { return isLow52Sorted(A.cells, A.N); }
 bool isCanon(CellArray A) { return isCanonicalCells(A.cells, A.N); }
 
+void diskIntersect(H3Index a, H3Index b, int ka, int kb, bool shouldIntersect) {
+    CellArray A = getDisk(a, ka);
+    CellArray B = getDisk(b, kb);
+
+    doCanon(&A);
+    doCanon(&B);
+
+    t_assert(shouldIntersect == doIntersect(A, B), "");
+    t_assert(shouldIntersect == doIntersect(B, A), "");
+
+    free(A.cells);
+    free(B.cells);
+}
+
+void diskIntersectCompact(H3Index a, H3Index b, int ka, int kb,
+                          bool shouldIntersect) {
+    CellArray A, B, cA, cB;
+
+    A = getDisk(a, ka);
+    B = getDisk(b, kb);
+
+    cA = doCompact(A);
+    cB = doCompact(B);
+    doCanon(&cA);
+    doCanon(&cB);
+
+    t_assert(shouldIntersect == doIntersect(cA, cB), "");
+    t_assert(shouldIntersect == doIntersect(cB, cA), "");
+
+    free(A.cells);
+    free(B.cells);
+    free(cA.cells);
+    free(cB.cells);
+}
+
 // add empty input tests
 // uncompact of a canonical set should give you a canonical set
 
@@ -202,135 +237,31 @@ SUITE(low52tests) {
         free(B.cells);
     }
 
-    TEST(overlap_test_not_compated) {
+    TEST(overlap_test_not_compacted) {
         H3Index a = 0x89283082e73ffff;
         H3Index b = 0x89283095063ffff;
-        CellArray A, B;
 
         int64_t k;
         t_assertSuccess(H3_EXPORT(gridDistance)(a, b, &k));
         t_assert(k == 20, "");
 
-        // not yet
-        A = getDisk(a, 9);
-        B = getDisk(b, 9);
-        doCanon(&A);
-        doCanon(&B);
-
-        t_assert(!doIntersect(A, B), "");
-        t_assert(!doIntersect(B, A), "");
-
-        free(A.cells);
-        free(B.cells);
-
-        // overlap
-        A = getDisk(a, 10);
-        B = getDisk(b, 10);
-        doCanon(&A);
-        doCanon(&B);
-
-        t_assert(doIntersect(A, B), "");
-        t_assert(doIntersect(B, A), "");
-
-        free(A.cells);
-        free(B.cells);
-
-        // more overlap
-        A = getDisk(a, 11);
-        B = getDisk(b, 11);
-        doCanon(&A);
-        doCanon(&B);
-
-        t_assert(doIntersect(A, B), "");
-        t_assert(doIntersect(B, A), "");
-
-        free(A.cells);
-        free(B.cells);
-
-        // just barely disjoint
-        A = getDisk(a, 9);
-        B = getDisk(b, 10);
-        doCanon(&A);
-        doCanon(&B);
-
-        t_assert(!doIntersect(A, B), "");
-        t_assert(!doIntersect(B, A), "");
-
-        free(A.cells);
-        free(B.cells);
+        diskIntersect(a, b, 9, 9, false);   // not yet
+        diskIntersect(a, b, 9, 10, false);  // just barely disjoint
+        diskIntersect(a, b, 10, 10, true);  // overlap
+        diskIntersect(a, b, 11, 11, true);  // more overlap
     }
 
-    TEST(overlap_test_compated) {
+    TEST(overlap_test_compacted) {
         H3Index a = 0x89283082e73ffff;
         H3Index b = 0x89283095063ffff;
-        CellArray A, B, cA, cB;
 
         int64_t k;
         t_assertSuccess(H3_EXPORT(gridDistance)(a, b, &k));
         t_assert(k == 20, "");
 
-        // not yet
-        A = getDisk(a, 9);
-        B = getDisk(b, 9);
-        cA = doCompact(A);
-        cB = doCompact(B);
-        doCanon(&cA);
-        doCanon(&cB);
-
-        t_assert(!doIntersect(cA, cB), "");
-        t_assert(!doIntersect(cB, cA), "");
-
-        free(A.cells);
-        free(B.cells);
-        free(cA.cells);
-        free(cB.cells);
-
-        // overlap
-        A = getDisk(a, 10);
-        B = getDisk(b, 10);
-        cA = doCompact(A);
-        cB = doCompact(B);
-        doCanon(&cA);
-        doCanon(&cB);
-
-        t_assert(doIntersect(cA, cB), "");
-        t_assert(doIntersect(cB, cA), "");
-
-        free(A.cells);
-        free(B.cells);
-        free(cA.cells);
-        free(cB.cells);
-
-        // more overlap
-        A = getDisk(a, 11);
-        B = getDisk(b, 11);
-        cA = doCompact(A);
-        cB = doCompact(B);
-        doCanon(&cA);
-        doCanon(&cB);
-
-        t_assert(doIntersect(cA, cB), "");
-        t_assert(doIntersect(cB, cA), "");
-
-        free(A.cells);
-        free(B.cells);
-        free(cA.cells);
-        free(cB.cells);
-
-        // just barely disjoint
-        A = getDisk(a, 9);
-        B = getDisk(b, 10);
-        cA = doCompact(A);
-        cB = doCompact(B);
-        doCanon(&cA);
-        doCanon(&cB);
-
-        t_assert(!doIntersect(cA, cB), "");
-        t_assert(!doIntersect(cB, cA), "");
-
-        free(A.cells);
-        free(B.cells);
-        free(cA.cells);
-        free(cB.cells);
+        diskIntersectCompact(a, b, 9, 9, false);   // not yet
+        diskIntersectCompact(a, b, 9, 10, false);  // just barely disjoint
+        diskIntersectCompact(a, b, 10, 10, true);  // overlap
+        diskIntersectCompact(a, b, 11, 11, true);  // more overlap
     }
 }
