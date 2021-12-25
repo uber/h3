@@ -187,27 +187,27 @@ SUITE(low52tests) {
         int res = 9;
         int k = 100;
 
-        CellArray u = ca_disk(h, k);  // uncompacted set
-        ca_canon(&u);
+        CellArray U = ca_disk(h, k);  // uncompacted set
+        ca_canon(&U);
 
-        CellArray c = ca_compact(u);  // compacted set
-        ca_canon(&c);
+        CellArray C = ca_compact(U);  // compacted set
+        ca_canon(&C);
 
-        t_isCanon(u, true);
-        t_isCanon(c, true);
+        t_isCanon(U, true);
+        t_isCanon(C, true);
 
-        t_contains(c, h, true);
-        t_intersect(c, c, true);
-        t_intersect(c, u, true);
-        t_intersect(u, c, true);
+        t_contains(C, h, true);
+        t_intersect(C, C, true);
+        t_intersect(C, U, true);
+        t_intersect(U, C, true);
 
         // test that uncompact keeps things canonical
-        CellArray u2 = ca_uncompact(c, res);
-        t_isCanon(u2, true);
+        CellArray U2 = ca_uncompact(C, res);
+        t_isCanon(U2, true);
 
-        free(c.cells);
-        free(u.cells);
-        free(u2.cells);
+        free(C.cells);
+        free(U.cells);
+        free(U2.cells);
     }
 
     TEST(ring_intersect) {
