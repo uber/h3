@@ -532,9 +532,10 @@ DECLSPEC H3Index H3_EXPORT(cellToCenterChild)(H3Index h, int childRes);
  * @{
  */
 /** @brief compacts the given set of hexagons as best as possible */
-DECLSPEC H3Error H3_EXPORT(compactCells)(const H3Index *h3Set,
-                                         H3Index *compactedSet,
-                                         const int64_t numHexes);
+DECLSPEC H3Error H3_EXPORT(compactCells)(
+    const H3Index *h3Set, H3Index *compactedSet,
+    const int64_t
+        numHexes);  // compact should tell you how many cells there are
 /** @} */
 
 /** @defgroup uncompactCells uncompactCells

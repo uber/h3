@@ -25,12 +25,26 @@
 #include "h3Index.h"
 #include "test.h"
 
-static const H3Index h = 0x89283082e73ffff;
+typedef struct {
+    const H3Index *cells;
+    int64_t N;
+} CellArray;
+
+CellArray getDisk(H3Index h, int k) {
+    CellArray arr;
+    arr.N = maxGridDiskSize(k);
+    arr.cells = calloc(arr.N, sizeof(H3Index));
+    gridDisk(h, k, arr.cells);
+
+    return arr;
+}
 
 // add empty input tests
+// uncompact of a canonical set should give you a canonical set
 
 SUITE(low52tests) {
     TEST(basic_low52) {
+        H3Index h = 0x89283082e73ffff;
         int k = 100;
         int N = maxGridDiskSize(k);
         int64_t numAfter;
@@ -55,8 +69,7 @@ SUITE(low52tests) {
         t_assert(!canonSearch(out, 0, h), "h can't be in empty set.");
 
         // intersection
-        t_assert(intersectTheyDo(out, N, out, N),
-                 "Set should intersect itself.");
+        t_assert(intersectTheyDo(out, N, out, N), "");
         t_assert(!intersectTheyDo(out, 0, out, N), "A is empty.");
         t_assert(!intersectTheyDo(out, N, out, 0), "B is empty.");
         t_assert(!intersectTheyDo(out, 0, out, 0), "Both empty.");
@@ -65,6 +78,7 @@ SUITE(low52tests) {
     }
 
     TEST(handling_zeroes) {
+        H3Index h = 0x89283082e73ffff;
         int k = 100;
         int N = maxGridDiskSize(k);
         int64_t numAfter;
@@ -93,5 +107,40 @@ SUITE(low52tests) {
         t_assert(isCanonicalCells(out, numAfter), "");
 
         free(out);
+    }
+
+    TEST(compact_low52) {
+        H3Index h = 0x89283082e73ffff;
+        int res = 9;
+        int k = 100;
+        int64_t numU = maxGridDiskSize(k);
+
+        H3Index *cellsU = calloc(numU, sizeof(H3Index));
+        gridDisk(h, k, cellsU);
+        canonicalizeCells(cellsU, numU, &numU);
+
+        int64_t numC = numU;
+
+        H3Index *cellsC = calloc(numC, sizeof(H3Index));
+
+        compactCells(cellsU, cellsC, numU);
+        canonicalizeCells(cellsC, numC, &numC);
+
+        t_assert(isCanonicalCells(cellsU, numU), "");
+        t_assert(isCanonicalCells(cellsC, numC), "");
+
+        t_assert(canonSearch(cellsC, numC, h), "");
+        t_assert(intersectTheyDo(cellsC, numC, cellsC, numC), "");
+
+        // TODO: macro or function here would be clearer?
+        // test that uncompact keeps things canonical
+        H3Index *newUncompacted = calloc(numU, sizeof(H3Index));
+        t_assertSuccess(
+            uncompactCells(cellsC, numC, newUncompacted, numU, res));
+        t_assert(isCanonicalCells(newUncompacted, numU), "");
+
+        free(cellsU);
+        free(cellsC);
+        free(newUncompacted);
     }
 }
