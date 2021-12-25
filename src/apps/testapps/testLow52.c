@@ -38,15 +38,15 @@ CellArray initCellArray(int64_t N) {
 }
 
 CellArray getDisk(H3Index h, int k) {
-    CellArray arr = initCellArray(maxGridDiskSize(k));
-    gridDisk(h, k, arr.cells);
+    CellArray arr = initCellArray(H3_EXPORT(maxGridDiskSize)(k));
+    H3_EXPORT(gridDisk)(h, k, arr.cells);
 
     return arr;
 }
 
 CellArray getRing(H3Index h, int k) {
     CellArray A = initCellArray(6 * k);
-    gridRingUnsafe(h, k, A.cells);
+    H3_EXPORT(gridRingUnsafe)(h, k, A.cells);
 
     return A;
 }
@@ -59,17 +59,17 @@ void doCanon(CellArray *arr) {
 
 CellArray doCompact(CellArray arr) {
     CellArray packed = initCellArray(arr.N);
-    compactCells(arr.cells, packed.cells, arr.N);
+    H3_EXPORT(compactCells)(arr.cells, packed.cells, arr.N);
 
     return packed;
 }
 
 CellArray doUncompact(CellArray arr, int res) {
     int64_t N;
-    uncompactCellsSize(arr.cells, arr.N, res, &N);
+    H3_EXPORT(uncompactCellsSize)(arr.cells, arr.N, res, &N);
 
     CellArray out = initCellArray(N);
-    uncompactCells(arr.cells, arr.N, out.cells, out.N, res);
+    H3_EXPORT(uncompactCells)(arr.cells, arr.N, out.cells, out.N, res);
 
     return out;
 }
