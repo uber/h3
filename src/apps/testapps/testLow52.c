@@ -26,18 +26,52 @@
 #include "test.h"
 
 typedef struct {
-    const H3Index *cells;
+    H3Index *cells;
     int64_t N;
 } CellArray;
 
+CellArray initCellArray(int64_t N) {
+    CellArray a = {.cells = calloc(N, sizeof(H3Index)), .N = N};
+
+    return a;
+}
+
 CellArray getDisk(H3Index h, int k) {
-    CellArray arr;
-    arr.N = maxGridDiskSize(k);
-    arr.cells = calloc(arr.N, sizeof(H3Index));
+    CellArray arr = initCellArray(maxGridDiskSize(k));
     gridDisk(h, k, arr.cells);
 
     return arr;
 }
+
+void doCanon(CellArray *arr) {
+    int64_t N;
+    canonicalizeCells(arr->cells, arr->N, &N);
+    arr->N = N;
+}
+
+CellArray doCompact(CellArray arr) {
+    CellArray packed = initCellArray(arr.N);
+    compactCells(arr.cells, packed.cells, arr.N);
+
+    return packed;
+}
+
+CellArray doUncompact(CellArray arr, int res) {
+    int64_t N;
+    uncompactCellsSize(arr.cells, arr.N, res, &N);
+
+    CellArray out = initCellArray(N);
+    uncompactCells(arr.cells, arr.N, out.cells, out.N, res);
+
+    return out;
+}
+
+bool doIntersect(CellArray A, CellArray B) {
+    return intersectTheyDo(A.cells, A.N, B.cells, B.N);
+}
+
+bool isLow52(CellArray A) { return isLow52Sorted(A.cells, A.N); }
+bool isCanon(CellArray A) { return isCanonicalCells(A.cells, A.N); }
 
 // add empty input tests
 // uncompact of a canonical set should give you a canonical set
@@ -46,101 +80,87 @@ SUITE(low52tests) {
     TEST(basic_low52) {
         H3Index h = 0x89283082e73ffff;
         int k = 100;
-        int N = maxGridDiskSize(k);
-        int64_t numAfter;
 
-        // create disk
-        H3Index *out = calloc(N, sizeof(H3Index));
-        gridDisk(h, k, out);
+        CellArray A = getDisk(h, k);
 
         // low 52 tests
-        t_assert(!isLow52Sorted(out, N), "Shouldn't be sorted yet");
-        t_assertSuccess(low52Sort(out, N));
-        t_assert(isLow52Sorted(out, N), "Should be sorted now!");
+        t_assert(!isLow52(A), "Shouldn't be sorted yet");
+        t_assertSuccess(low52Sort(A.cells, A.N));
+        t_assert(isLow52(A), "Should be sorted now!");
 
         // canonical tests
-        t_assert(isCanonicalCells(out, N),
-                 "No duplicates, so should already be canon.");
-        t_assertSuccess(canonicalizeCells(out, N, &numAfter));
-        t_assert(N == numAfter, "Expect no change");
+        t_assert(isCanon(A), "No duplicates, so should already be canon.");
+
+        int64_t numBefore = A.N;
+        doCanon(&A);
+        t_assert(A.N == numBefore, "Expect no change from canonicalizing.");
 
         // binary search
-        t_assert(canonSearch(out, N, h), "Needs to be in there!");
-        t_assert(!canonSearch(out, 0, h), "h can't be in empty set.");
+        t_assert(canonSearch(A.cells, A.N, h), "Needs to be in there!");
+        t_assert(!canonSearch(A.cells, 0, h), "h can't be in empty set.");
 
         // intersection
-        t_assert(intersectTheyDo(out, N, out, N), "");
-        t_assert(!intersectTheyDo(out, 0, out, N), "A is empty.");
-        t_assert(!intersectTheyDo(out, N, out, 0), "B is empty.");
-        t_assert(!intersectTheyDo(out, 0, out, 0), "Both empty.");
+        CellArray Z = {.N = 0, .cells = NULL};  // empty cell array
+        t_assert(doIntersect(A, A), "");
+        t_assert(!doIntersect(Z, A), "First is empty.");
+        t_assert(!doIntersect(A, Z), "Second is empty.");
+        t_assert(!doIntersect(Z, Z), "Both are empty.");
 
-        free(out);
+        free(A.cells);
     }
 
     TEST(handling_zeroes) {
         H3Index h = 0x89283082e73ffff;
         int k = 100;
-        int N = maxGridDiskSize(k);
-        int64_t numAfter;
 
-        // create disk
-        H3Index *out = calloc(N, sizeof(H3Index));
-        gridDisk(h, k, out);
-        t_assertSuccess(canonicalizeCells(out, N, &numAfter));
-        t_assert(N == numAfter, "Expect no change");
+        CellArray A = getDisk(h, k);
 
-        t_assert(isLow52Sorted(out, N), "");
-        t_assert(isCanonicalCells(out, N), "");
+        int64_t numBefore = A.N;
+        doCanon(&A);
+        t_assert(A.N == numBefore, "Expect no change from canonicalizing.");
+
+        t_assert(isLow52(A), "");
+        t_assert(isCanon(A), "");
 
         // insert zero at start of array
         // isLow52Sorted is OK with zeros/H3_NULL, but isCanonicalCells is not
-        out[0] = 0;
+        A.cells[0] = 0;
+        t_assert(isLow52(A), "");
+        t_assert(!isCanon(A), "Should not be canon, due to zero.");
 
-        t_assert(isLow52Sorted(out, N), "");
-        t_assert(!isCanonicalCells(out, N),
-                 "Should not be canon, due to zero.");
+        // canonicalizing again should remove the zero
+        doCanon(&A);
+        t_assert(A.N == numBefore - 1, "Lose one cell.");
+        t_assert(isCanon(A), "");
 
-        // canonicalizing should remove the zero!
-        t_assertSuccess(canonicalizeCells(out, N, &numAfter));
-        t_assert(numAfter == N - 1, "Lose one cell.");
-
-        t_assert(isCanonicalCells(out, numAfter), "");
-
-        free(out);
+        free(A.cells);
     }
 
     TEST(compact_low52) {
         H3Index h = 0x89283082e73ffff;
         int res = 9;
         int k = 100;
-        int64_t numU = maxGridDiskSize(k);
 
-        H3Index *cellsU = calloc(numU, sizeof(H3Index));
-        gridDisk(h, k, cellsU);
-        canonicalizeCells(cellsU, numU, &numU);
+        CellArray u = getDisk(h, k);  // uncompacted set
+        doCanon(&u);
 
-        int64_t numC = numU;
+        CellArray c = doCompact(u);  // compacted set
+        doCanon(&c);
 
-        H3Index *cellsC = calloc(numC, sizeof(H3Index));
+        t_assert(isCanon(u), "");
+        t_assert(isCanon(c), "");
 
-        compactCells(cellsU, cellsC, numU);
-        canonicalizeCells(cellsC, numC, &numC);
+        t_assert(canonSearch(c.cells, c.N, h), "");
+        t_assert(doIntersect(c, c), "");
+        t_assert(doIntersect(c, u), "");
+        t_assert(doIntersect(u, c), "");
 
-        t_assert(isCanonicalCells(cellsU, numU), "");
-        t_assert(isCanonicalCells(cellsC, numC), "");
-
-        t_assert(canonSearch(cellsC, numC, h), "");
-        t_assert(intersectTheyDo(cellsC, numC, cellsC, numC), "");
-
-        // TODO: macro or function here would be clearer?
         // test that uncompact keeps things canonical
-        H3Index *newUncompacted = calloc(numU, sizeof(H3Index));
-        t_assertSuccess(
-            uncompactCells(cellsC, numC, newUncompacted, numU, res));
-        t_assert(isCanonicalCells(newUncompacted, numU), "");
+        CellArray u2 = doUncompact(c, res);
+        t_assert(isCanon(u2), "");
 
-        free(cellsU);
-        free(cellsC);
-        free(newUncompacted);
+        free(c.cells);
+        free(u.cells);
+        free(u2.cells);
     }
 }
