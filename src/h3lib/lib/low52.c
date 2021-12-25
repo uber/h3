@@ -72,7 +72,7 @@ appear in both LHS and RHS
  */
 int isCanonicalCells(const H3Index *cells, const int64_t N) {
     for (int64_t i = 0; i < N; i++) {
-        if (!isValidCell(cells[i])) {
+        if (!H3_EXPORT(isValidCell)(cells[i])) {
             return false;
         }
     }
