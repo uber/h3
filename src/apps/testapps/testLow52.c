@@ -74,8 +74,8 @@ CellArray doUncompact(CellArray arr, int res) {
     return out;
 }
 
-bool doIntersect(CellArray A, CellArray B) {
-    return intersectTheyDo(A.cells, A.N, B.cells, B.N);
+void t_intersect(CellArray A, CellArray B, bool result) {
+    t_assert(result == intersectTheyDo(A.cells, A.N, B.cells, B.N), "");
 }
 
 void t_isLow52(CellArray A, bool result) {
@@ -92,8 +92,8 @@ void diskIntersect(H3Index a, H3Index b, int ka, int kb, bool shouldIntersect) {
     doCanon(&A);
     doCanon(&B);
 
-    t_assert(shouldIntersect == doIntersect(A, B), "");
-    t_assert(shouldIntersect == doIntersect(B, A), "");
+    t_intersect(A, B, shouldIntersect);
+    t_intersect(B, A, shouldIntersect);
 
     free(A.cells);
     free(B.cells);
@@ -111,8 +111,8 @@ void diskIntersectCompact(H3Index a, H3Index b, int ka, int kb,
     doCanon(&cA);
     doCanon(&cB);
 
-    t_assert(shouldIntersect == doIntersect(cA, cB), "");
-    t_assert(shouldIntersect == doIntersect(cB, cA), "");
+    t_intersect(cA, cB, shouldIntersect);
+    t_intersect(cB, cA, shouldIntersect);
 
     free(A.cells);
     free(B.cells);
@@ -147,10 +147,11 @@ SUITE(low52tests) {
 
         // intersection
         CellArray Z = {.N = 0, .cells = NULL};  // empty cell array
-        t_assert(doIntersect(A, A), "");
-        t_assert(!doIntersect(Z, A), "First is empty.");
-        t_assert(!doIntersect(A, Z), "Second is empty.");
-        t_assert(!doIntersect(Z, Z), "Both are empty.");
+
+        t_intersect(A, A, true);
+        t_intersect(Z, A, false);  // first is empty
+        t_intersect(A, Z, false);  // second is empty
+        t_intersect(Z, Z, false);  // both are empty
 
         free(A.cells);
     }
@@ -197,9 +198,9 @@ SUITE(low52tests) {
         t_isCanon(c, true);
 
         t_assert(canonSearch(c.cells, c.N, h), "");
-        t_assert(doIntersect(c, c), "");
-        t_assert(doIntersect(c, u), "");
-        t_assert(doIntersect(u, c), "");
+        t_intersect(c, c, true);
+        t_intersect(c, u, true);
+        t_intersect(u, c, true);
 
         // test that uncompact keeps things canonical
         CellArray u2 = doUncompact(c, res);
@@ -224,17 +225,16 @@ SUITE(low52tests) {
 
         t_assert(canonSearch(A.cells, A.N, A.cells[0]), "");
 
-        t_assert(!doIntersect(A, B), "");
-        t_assert(!doIntersect(B, A), "");
-
-        t_assert(doIntersect(A, A), "");
-        t_assert(doIntersect(B, B), "");
+        t_intersect(A, B, false);
+        t_intersect(B, A, false);
+        t_intersect(A, A, true);
+        t_intersect(B, B, true);
 
         // add a cell from A to B, so they now intersect
         B.cells[B.N / 2] = A.cells[A.N / 2];
         doCanon(&B);
-        t_assert(doIntersect(A, B), "");
-        t_assert(doIntersect(B, A), "");
+        t_intersect(A, B, true);
+        t_intersect(A, B, true);
 
         free(A.cells);
         free(B.cells);
