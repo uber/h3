@@ -15,9 +15,10 @@
  */
 
 /** @file
- * @brief tests H3 cell area functions on a few specific cases
+ * @brief tests "lower 52 bit" ordering, canonicalization, and spatial join
+ * algorithms
  *
- *  usage: `testH3CellArea`
+ *  usage: `testLow52`
  */
 
 #include <math.h>
@@ -191,7 +192,145 @@ SUITE(low52tests) {
         t_assert(doIntersect(A, A), "");
         t_assert(doIntersect(B, B), "");
 
+        // add a cell from A to B, so they now intersect
+        B.cells[B.N / 2] = A.cells[A.N / 2];
+        doCanon(&B);
+        t_assert(doIntersect(A, B), "");
+        t_assert(doIntersect(B, A), "");
+
         free(A.cells);
         free(B.cells);
+    }
+
+    TEST(overlap_test_not_compated) {
+        H3Index a = 0x89283082e73ffff;
+        H3Index b = 0x89283095063ffff;
+        CellArray A, B;
+
+        int64_t k;
+        t_assertSuccess(gridDistance(a, b, &k));
+        t_assert(k == 20, "");
+
+        // not yet
+        A = getDisk(a, 9);
+        B = getDisk(b, 9);
+        doCanon(&A);
+        doCanon(&B);
+
+        t_assert(!doIntersect(A, B), "");
+        t_assert(!doIntersect(B, A), "");
+
+        free(A.cells);
+        free(B.cells);
+
+        // overlap
+        A = getDisk(a, 10);
+        B = getDisk(b, 10);
+        doCanon(&A);
+        doCanon(&B);
+
+        t_assert(doIntersect(A, B), "");
+        t_assert(doIntersect(B, A), "");
+
+        free(A.cells);
+        free(B.cells);
+
+        // more overlap
+        A = getDisk(a, 11);
+        B = getDisk(b, 11);
+        doCanon(&A);
+        doCanon(&B);
+
+        t_assert(doIntersect(A, B), "");
+        t_assert(doIntersect(B, A), "");
+
+        free(A.cells);
+        free(B.cells);
+
+        // just barely disjoint
+        A = getDisk(a, 9);
+        B = getDisk(b, 10);
+        doCanon(&A);
+        doCanon(&B);
+
+        t_assert(!doIntersect(A, B), "");
+        t_assert(!doIntersect(B, A), "");
+
+        free(A.cells);
+        free(B.cells);
+    }
+
+    TEST(overlap_test_compated) {
+        H3Index a = 0x89283082e73ffff;
+        H3Index b = 0x89283095063ffff;
+        CellArray A, B, cA, cB;
+
+        int64_t k;
+        t_assertSuccess(gridDistance(a, b, &k));
+        t_assert(k == 20, "");
+
+        // not yet
+        A = getDisk(a, 9);
+        B = getDisk(b, 9);
+        cA = doCompact(A);
+        cB = doCompact(B);
+        doCanon(&cA);
+        doCanon(&cB);
+
+        t_assert(!doIntersect(cA, cB), "");
+        t_assert(!doIntersect(cB, cA), "");
+
+        free(A.cells);
+        free(B.cells);
+        free(cA.cells);
+        free(cB.cells);
+
+        // overlap
+        A = getDisk(a, 10);
+        B = getDisk(b, 10);
+        cA = doCompact(A);
+        cB = doCompact(B);
+        doCanon(&cA);
+        doCanon(&cB);
+
+        t_assert(doIntersect(cA, cB), "");
+        t_assert(doIntersect(cB, cA), "");
+
+        free(A.cells);
+        free(B.cells);
+        free(cA.cells);
+        free(cB.cells);
+
+        // more overlap
+        A = getDisk(a, 11);
+        B = getDisk(b, 11);
+        cA = doCompact(A);
+        cB = doCompact(B);
+        doCanon(&cA);
+        doCanon(&cB);
+
+        t_assert(doIntersect(cA, cB), "");
+        t_assert(doIntersect(cB, cA), "");
+
+        free(A.cells);
+        free(B.cells);
+        free(cA.cells);
+        free(cB.cells);
+
+        // just barely disjoint
+        A = getDisk(a, 9);
+        B = getDisk(b, 10);
+        cA = doCompact(A);
+        cB = doCompact(B);
+        doCanon(&cA);
+        doCanon(&cB);
+
+        t_assert(!doIntersect(cA, cB), "");
+        t_assert(!doIntersect(cB, cA), "");
+
+        free(A.cells);
+        free(B.cells);
+        free(cA.cells);
+        free(cB.cells);
     }
 }
