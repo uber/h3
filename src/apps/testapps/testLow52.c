@@ -208,7 +208,7 @@ SUITE(low52tests) {
         CellArray A, B;
 
         int64_t k;
-        t_assertSuccess(gridDistance(a, b, &k));
+        t_assertSuccess(H3_EXPORT(gridDistance)(a, b, &k));
         t_assert(k == 20, "");
 
         // not yet
@@ -266,7 +266,7 @@ SUITE(low52tests) {
         CellArray A, B, cA, cB;
 
         int64_t k;
-        t_assertSuccess(gridDistance(a, b, &k));
+        t_assertSuccess(H3_EXPORT(gridDistance)(a, b, &k));
         t_assert(k == 20, "");
 
         // not yet
