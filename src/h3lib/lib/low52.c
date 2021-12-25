@@ -2,7 +2,6 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-#include "h3Index.h"
 #include "h3api.h"
 #include "mathExtensions.h"
 
