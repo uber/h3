@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 #include "h3Index.h"
+#include "h3api.h"
 #include "mathExtensions.h"
 
 #define HIGH_BITS(h, t) ((h) >> (64 - (t)))
