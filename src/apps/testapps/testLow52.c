@@ -78,8 +78,12 @@ bool doIntersect(CellArray A, CellArray B) {
     return intersectTheyDo(A.cells, A.N, B.cells, B.N);
 }
 
-bool isLow52(CellArray A) { return isLow52Sorted(A.cells, A.N); }
-bool isCanon(CellArray A) { return isCanonicalCells(A.cells, A.N); }
+void t_isLow52(CellArray A, bool result) {
+    t_assert(result == isLow52Sorted(A.cells, A.N), "");
+}
+void t_isCanon(CellArray A, bool result) {
+    t_assert(result == isCanonicalCells(A.cells, A.N), "");
+}
 
 void diskIntersect(H3Index a, H3Index b, int ka, int kb, bool shouldIntersect) {
     CellArray A = getDisk(a, ka);
@@ -127,13 +131,12 @@ SUITE(low52tests) {
         CellArray A = getDisk(h, k);
 
         // low 52 tests
-        t_assert(!isLow52(A), "Shouldn't be sorted yet");
+        t_isLow52(A, false);  // shouldn't be sorted yet
         t_assertSuccess(low52Sort(A.cells, A.N));
-        t_assert(isLow52(A), "Should be sorted now!");
+        t_isLow52(A, true);  // should be sorted now!
 
         // canonical tests
-        t_assert(isCanon(A), "No duplicates, so should already be canon.");
-
+        t_isCanon(A, true);  // No duplicates, so should already be canon
         int64_t numBefore = A.N;
         doCanon(&A);
         t_assert(A.N == numBefore, "Expect no change from canonicalizing.");
@@ -162,19 +165,19 @@ SUITE(low52tests) {
         doCanon(&A);
         t_assert(A.N == numBefore, "Expect no change from canonicalizing.");
 
-        t_assert(isLow52(A), "");
-        t_assert(isCanon(A), "");
+        t_isLow52(A, true);
+        t_isCanon(A, true);
 
         // insert zero at start of array
         // isLow52Sorted is OK with zeros/H3_NULL, but isCanonicalCells is not
         A.cells[0] = 0;
-        t_assert(isLow52(A), "");
-        t_assert(!isCanon(A), "Should not be canon, due to zero.");
+        t_isLow52(A, true);
+        t_isCanon(A, false);
 
         // canonicalizing again should remove the zero
         doCanon(&A);
         t_assert(A.N == numBefore - 1, "Lose one cell.");
-        t_assert(isCanon(A), "");
+        t_isCanon(A, true);
 
         free(A.cells);
     }
@@ -190,8 +193,8 @@ SUITE(low52tests) {
         CellArray c = doCompact(u);  // compacted set
         doCanon(&c);
 
-        t_assert(isCanon(u), "");
-        t_assert(isCanon(c), "");
+        t_isCanon(u, true);
+        t_isCanon(c, true);
 
         t_assert(canonSearch(c.cells, c.N, h), "");
         t_assert(doIntersect(c, c), "");
@@ -200,7 +203,7 @@ SUITE(low52tests) {
 
         // test that uncompact keeps things canonical
         CellArray u2 = doUncompact(c, res);
-        t_assert(isCanon(u2), "");
+        t_isCanon(u2, true);
 
         free(c.cells);
         free(u.cells);
