@@ -237,7 +237,7 @@ SUITE(low52tests) {
         free(B.cells);
     }
 
-    TEST(overlap_test_not_compacted) {
+    TEST(disk_overlap) {
         H3Index a = 0x89283082e73ffff;
         H3Index b = 0x89283095063ffff;
 
@@ -245,20 +245,13 @@ SUITE(low52tests) {
         t_assertSuccess(H3_EXPORT(gridDistance)(a, b, &k));
         t_assert(k == 20, "");
 
+        // not compacted
         diskIntersect(a, b, 9, 9, false);   // not yet
         diskIntersect(a, b, 9, 10, false);  // just barely disjoint
         diskIntersect(a, b, 10, 10, true);  // overlap
         diskIntersect(a, b, 11, 11, true);  // more overlap
-    }
 
-    TEST(overlap_test_compacted) {
-        H3Index a = 0x89283082e73ffff;
-        H3Index b = 0x89283095063ffff;
-
-        int64_t k;
-        t_assertSuccess(H3_EXPORT(gridDistance)(a, b, &k));
-        t_assert(k == 20, "");
-
+        // compacted
         diskIntersectCompact(a, b, 9, 9, false);   // not yet
         diskIntersectCompact(a, b, 9, 10, false);  // just barely disjoint
         diskIntersectCompact(a, b, 10, 10, true);  // overlap
