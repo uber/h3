@@ -71,6 +71,12 @@ TODO: could maybe speed up by keeping resolution calculation since cells
 appear in both LHS and RHS
  */
 int isCanonicalCells(const H3Index *cells, const int64_t N) {
+    for (int64_t i = 0; i < N; i++) {
+        if (!isValidCell(cells[i])) {
+            return false;
+        }
+    }
+
     // note: returns true if N == 0 or N == 1
     for (int64_t i = 1; i < N; i++) {
         if (cmpCanon(cells[i - 1], cells[i]) == -2) {

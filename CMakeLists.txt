@@ -211,6 +211,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testCoordIjk.c
     src/apps/testapps/testH3Memory.c
     src/apps/testapps/testH3Iterators.c
+    src/apps/testapps/testLow52.c
     src/apps/miscapps/cellToBoundaryHier.c
     src/apps/miscapps/cellToLatLngHier.c
     src/apps/miscapps/generateBaseCellNeighbors.c
@@ -608,6 +609,7 @@ if(H3_IS_ROOT_PROJECT AND BUILD_TESTING)
     add_h3_test(testBaseCells src/apps/testapps/testBaseCells.c)
     add_h3_test(testPentagonIndexes src/apps/testapps/testPentagonIndexes.c)
     add_h3_test(testH3Iterators src/apps/testapps/testH3Iterators.c)
+    add_h3_test(testLow52 src/apps/testapps/testLow52.c)
 
     add_h3_test_with_arg(testH3NeighborRotations src/apps/testapps/testH3NeighborRotations.c 0)
     add_h3_test_with_arg(testH3NeighborRotations src/apps/testapps/testH3NeighborRotations.c 1)
