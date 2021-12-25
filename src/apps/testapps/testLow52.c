@@ -43,6 +43,13 @@ CellArray getDisk(H3Index h, int k) {
     return arr;
 }
 
+CellArray getRing(H3Index h, int k) {
+    CellArray A = initCellArray(6 * k);
+    gridRingUnsafe(h, k, A.cells);
+
+    return A;
+}
+
 void doCanon(CellArray *arr) {
     int64_t N;
     canonicalizeCells(arr->cells, arr->N, &N);
@@ -136,7 +143,7 @@ SUITE(low52tests) {
         free(A.cells);
     }
 
-    TEST(compact_low52) {
+    TEST(compact_canon) {
         H3Index h = 0x89283082e73ffff;
         int res = 9;
         int k = 100;
@@ -162,5 +169,29 @@ SUITE(low52tests) {
         free(c.cells);
         free(u.cells);
         free(u2.cells);
+    }
+
+    TEST(ring_intersect) {
+        H3Index h = 0x89283082e73ffff;
+        int k = 10;
+
+        CellArray A = getRing(h, k);
+        CellArray B = getRing(h, k + 1);
+        doCanon(&A);
+        doCanon(&B);
+
+        t_assert(!canonSearch(A.cells, A.N, h), "");
+        t_assert(!canonSearch(B.cells, B.N, h), "");
+
+        t_assert(canonSearch(A.cells, A.N, A.cells[0]), "");
+
+        t_assert(!doIntersect(A, B), "");
+        t_assert(!doIntersect(B, A), "");
+
+        t_assert(doIntersect(A, A), "");
+        t_assert(doIntersect(B, B), "");
+
+        free(A.cells);
+        free(B.cells);
     }
 }
