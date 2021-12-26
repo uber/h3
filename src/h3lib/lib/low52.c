@@ -344,15 +344,17 @@ int intersectTheyDo(const H3Index *_A, const int64_t aN, const H3Index *_B,
     if (wayLessThan(A, B)) return false;
     if (wayLessThan(B, A)) return false;
 
+    bool usingLeft = true;
+
     while ((A.i < A.j) && (B.i < B.j)) {
         ensureASmaller(&A, &B);
 
         // take A[i] or A[j-1] and see what happens when we look into B[i:j]
-        bool usingLeft = (A.i % 2 == 0);
+        usingLeft = !usingLeft;
         H3Index h = (usingLeft) ? A.cells[A.i] : A.cells[A.j - 1];
         int64_t k = disjointInsertionPoint(B.cells, B.i, B.j, h);
 
-        if (k == -1) return true;  // they intersect!
+        if (k == -1) return true;  // h found in B, so they intersect!
 
         if (usingLeft) {
             B.i = k;
