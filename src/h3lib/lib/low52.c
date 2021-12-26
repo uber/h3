@@ -284,13 +284,19 @@ int canonSearch(const H3Index *cells, const int64_t N, const H3Index h) {
     return false;
 }
 
-// could also just take in a search interval struct...
+typedef struct {
+    const H3Index *cells;
+    int64_t N, i, j;
+} SearchInterval;
+
 // returns -1 if h intersects with cells[i:j]
-static int64_t disjointInsertionPoint(const H3Index *cells, int64_t i,
-                                      int64_t j, const H3Index h) {
+static int64_t disjointInsertionPoint(const SearchInterval A, const H3Index h) {
+    int64_t i = A.i;
+    int64_t j = A.j;
+
     while (i < j) {
         int64_t k = i + (j - i) / 2;
-        int cmp = cmpCanon(h, cells[k]);
+        int cmp = cmpCanon(h, A.cells[k]);
 
         if (cmp == -2) {
             j = k;
@@ -304,11 +310,6 @@ static int64_t disjointInsertionPoint(const H3Index *cells, int64_t i,
 
     return i;
 }
-
-typedef struct {
-    const H3Index *cells;
-    int64_t N, i, j;
-} SearchInterval;
 
 static bool wayLessThan(const SearchInterval A, const SearchInterval B) {
     if (A.N > 0 && B.N > 0 && (cmpCanon(A.cells[A.N - 1], B.cells[0]) == -2)) {
@@ -352,7 +353,7 @@ int intersectTheyDo(const H3Index *_A, const int64_t aN, const H3Index *_B,
         // take A[i] or A[j-1] and see what happens when we look into B[i:j]
         usingLeft = !usingLeft;
         H3Index h = (usingLeft) ? A.cells[A.i] : A.cells[A.j - 1];
-        int64_t k = disjointInsertionPoint(B.cells, B.i, B.j, h);
+        int64_t k = disjointInsertionPoint(B, h);
 
         if (k == -1) return true;  // h found in B, so they intersect!
 
@@ -383,7 +384,7 @@ int intersectTheyDo_slow(const H3Index *_A, const int64_t aN, const H3Index *_B,
     while ((A.i < A.j) && (B.i < B.j)) {
         // take A[i] and see what happens when we look into B[i:j]
         H3Index h = A.cells[A.i];
-        int64_t k = disjointInsertionPoint(B.cells, B.i, B.j, h);
+        int64_t k = disjointInsertionPoint(B, h);
 
         if (k == -1) return true;  // they intersect!
 
