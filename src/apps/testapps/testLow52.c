@@ -37,42 +37,43 @@ CellArray ca_init(int64_t N) {
 
 CellArray ca_disk(H3Index h, int k) {
     CellArray arr = ca_init(H3_EXPORT(maxGridDiskSize)(k));
-    H3_EXPORT(gridDisk)(h, k, arr.cells);
+    t_assertSuccess(H3_EXPORT(gridDisk)(h, k, arr.cells));
 
     return arr;
 }
 
 CellArray ca_ring(H3Index h, int k) {
     CellArray A = ca_init(6 * k);
-    H3_EXPORT(gridRingUnsafe)(h, k, A.cells);
+    t_assertSuccess(H3_EXPORT(gridRingUnsafe)(h, k, A.cells));
 
     return A;
 }
 
 void ca_canon(CellArray *arr) {
     int64_t N;
-    canonicalizeCells(arr->cells, arr->N, &N);
+    t_assertSuccess(canonicalizeCells(arr->cells, arr->N, &N));
     arr->N = N;
 }
 
 CellArray ca_compact(CellArray arr) {
     CellArray packed = ca_init(arr.N);
-    H3_EXPORT(compactCells)(arr.cells, packed.cells, arr.N);
+    t_assertSuccess(H3_EXPORT(compactCells)(arr.cells, packed.cells, arr.N));
 
     return packed;
 }
 
 CellArray ca_uncompact(CellArray arr, int res) {
     int64_t N;
-    H3_EXPORT(uncompactCellsSize)(arr.cells, arr.N, res, &N);
+    t_assertSuccess(H3_EXPORT(uncompactCellsSize)(arr.cells, arr.N, res, &N));
 
     CellArray out = ca_init(N);
-    H3_EXPORT(uncompactCells)(arr.cells, arr.N, out.cells, out.N, res);
+    t_assertSuccess(
+        H3_EXPORT(uncompactCells)(arr.cells, arr.N, out.cells, out.N, res));
 
     return out;
 }
 
-void t_intersect(CellArray A, CellArray B, bool result) {
+void t_intersects(CellArray A, CellArray B, bool result) {
     t_assert(result == intersectTheyDo(A.cells, A.N, B.cells, B.N), "");
 }
 
@@ -95,8 +96,8 @@ void t_diskIntersect(H3Index a, H3Index b, int ka, int kb,
     ca_canon(&A);
     ca_canon(&B);
 
-    t_intersect(A, B, shouldIntersect);
-    t_intersect(B, A, shouldIntersect);
+    t_intersects(A, B, shouldIntersect);
+    t_intersects(B, A, shouldIntersect);
 
     free(A.cells);
     free(B.cells);
@@ -114,8 +115,8 @@ void t_diskIntersectCompact(H3Index a, H3Index b, int ka, int kb,
     ca_canon(&cA);
     ca_canon(&cB);
 
-    t_intersect(cA, cB, shouldIntersect);
-    t_intersect(cB, cA, shouldIntersect);
+    t_intersects(cA, cB, shouldIntersect);
+    t_intersects(cB, cA, shouldIntersect);
 
     free(A.cells);
     free(B.cells);
@@ -147,10 +148,10 @@ SUITE(low52tests) {
         t_contains(Z, h, false);  // h can't be in an empty set
 
         // intersection
-        t_intersect(A, A, true);
-        t_intersect(Z, A, false);  // first is empty
-        t_intersect(A, Z, false);  // second is empty
-        t_intersect(Z, Z, false);  // both are empty
+        t_intersects(A, A, true);
+        t_intersects(Z, A, false);  // first is empty
+        t_intersects(A, Z, false);  // second is empty
+        t_intersects(Z, Z, false);  // both are empty
 
         free(A.cells);
     }
@@ -197,9 +198,9 @@ SUITE(low52tests) {
         t_isCanon(C, true);
 
         t_contains(C, h, true);
-        t_intersect(C, C, true);
-        t_intersect(C, U, true);
-        t_intersect(U, C, true);
+        t_intersects(C, C, true);
+        t_intersects(C, U, true);
+        t_intersects(U, C, true);
 
         // test that uncompact keeps things canonical
         CellArray U2 = ca_uncompact(C, res);
@@ -223,16 +224,16 @@ SUITE(low52tests) {
         t_contains(B, h, false);
         t_contains(A, A.cells[0], true);
 
-        t_intersect(A, B, false);
-        t_intersect(B, A, false);
-        t_intersect(A, A, true);
-        t_intersect(B, B, true);
+        t_intersects(A, B, false);
+        t_intersects(B, A, false);
+        t_intersects(A, A, true);
+        t_intersects(B, B, true);
 
         // add a cell from A to B, so they now intersect
         B.cells[B.N / 2] = A.cells[A.N / 2];
         ca_canon(&B);
-        t_intersect(A, B, true);
-        t_intersect(A, B, true);
+        t_intersects(A, B, true);
+        t_intersects(A, B, true);
 
         free(A.cells);
         free(B.cells);
