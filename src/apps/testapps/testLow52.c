@@ -73,6 +73,55 @@ CellArray ca_uncompact(CellArray arr, int res) {
     return out;
 }
 
+/*
+Return all cells that are distance k1 <= d <= k2 from h.
+
+So:
+
+- ca_thickRing(h, k, k) is the same as gridRing(h, k)
+- ca_thickRing(h, 0, k) is the same as gridDisk(h, k)
+
+ */
+CellArray ca_thickRing(H3Index h, int k1, int k2) {
+    CellArray A = ca_disk(h, k2);
+
+    for (int64_t i = 0; i < A.N; i++) {
+        int64_t d;
+        H3_EXPORT(gridDistance)(h, A.cells[i], &d);
+
+        if (d < k1) {
+            A.cells[i] = 0;
+        }
+    }
+
+    CellArray B = ca_compact(A);
+    ca_canon(&B);
+
+    free(A.cells);
+
+    return B;
+}
+
+CellArray ca_missingRing(H3Index h, int k1, int k2, int K) {
+    CellArray A = ca_disk(h, K);
+
+    for (int64_t i = 0; i < A.N; i++) {
+        int64_t d;
+        H3_EXPORT(gridDistance)(h, A.cells[i], &d);
+
+        if ((k1 <= d) && (d <= k2)) {
+            A.cells[i] = 0;
+        }
+    }
+
+    CellArray B = ca_compact(A);
+    ca_canon(&B);
+
+    free(A.cells);
+
+    return B;
+}
+
 void t_intersects(CellArray A, CellArray B, bool result) {
     t_assert(result == intersectTheyDo(A.cells, A.N, B.cells, B.N), "");
 }
@@ -244,7 +293,7 @@ SUITE(low52tests) {
         H3Index b = 0x89283095063ffff;
 
         int64_t k;
-        t_assertSuccess(H3_EXPORT(gridDistance)(a, b, &k));
+        H3_EXPORT(gridDistance)(a, b, &k);
         t_assert(k == 20, "");
 
         // not compacted
@@ -258,5 +307,35 @@ SUITE(low52tests) {
         t_diskIntersectCompact(a, b, 9, 10, false);  // just barely disjoint
         t_diskIntersectCompact(a, b, 10, 10, true);  // overlap
         t_diskIntersectCompact(a, b, 11, 11, true);  // more overlap
+    }
+
+    TEST(tricky_rings1) {
+        H3Index h = 0x89283082e73ffff;
+        int K = 100;
+        int k1 = 40;
+        int k2 = 60;
+
+        CellArray A = ca_thickRing(h, k1, k2);
+        CellArray B = ca_missingRing(h, k1, k2, K);
+
+        t_intersects(A, B, false);
+
+        free(A.cells);
+        free(B.cells);
+    }
+
+    TEST(tricky_rings2) {
+        H3Index h = 0x89283082e73ffff;
+        int K = 100;
+        int k1 = 40;
+        int k2 = 60;
+
+        CellArray A = ca_thickRing(h, k1, k2 + 1);
+        CellArray B = ca_missingRing(h, k1, k2, K);
+
+        t_intersects(A, B, true);
+
+        free(A.cells);
+        free(B.cells);
     }
 }

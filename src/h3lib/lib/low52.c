@@ -352,7 +352,7 @@ int intersectTheyDo(const H3Index *_A, const int64_t aN, const H3Index *_B,
 
         // take A[i] or A[j-1] and see what happens when we look into B[i:j]
         usingLeft = !usingLeft;
-        H3Index h = (usingLeft) ? A.cells[A.i] : A.cells[A.j - 1];
+        H3Index h = usingLeft ? A.cells[A.i] : A.cells[A.j - 1];
         int64_t k = disjointInsertionPoint(B, h);
 
         if (k == -1) return true;  // h found in B, so they intersect!
