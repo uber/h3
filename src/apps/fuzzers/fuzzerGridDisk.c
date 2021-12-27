@@ -37,14 +37,12 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     H3Index *results = calloc(sizeof(H3Index), sz);
     if (results != NULL) {
         H3_EXPORT(gridDisk)(args->index, args->k, results);
-        h3Println(results[0]);
     }
     free(results);
 
     results = calloc(sizeof(H3Index), sz);
     if (results != NULL) {
         H3_EXPORT(gridDiskUnsafe)(args->index, args->k, results);
-        h3Println(results[0]);
     }
     free(results);
 
@@ -54,7 +52,6 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     if (results != NULL && distances != NULL) {
         H3_EXPORT(gridDiskDistancesUnsafe)
         (args->index, args->k, results, distances);
-        h3Println(results[0]);
     }
     free(results);
     free(distances);
@@ -64,7 +61,6 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     if (results != NULL && distances != NULL) {
         H3_EXPORT(gridDiskDistancesSafe)
         (args->index, args->k, results, distances);
-        h3Println(results[0]);
     }
     free(results);
     free(distances);
@@ -73,7 +69,6 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     results = calloc(sizeof(H3Index), sz);
     if (results != NULL && distances != NULL) {
         H3_EXPORT(gridDiskDistances)(args->index, args->k, results, distances);
-        h3Println(results[0]);
     }
     free(results);
     free(distances);
@@ -81,7 +76,6 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     results = calloc(sizeof(H3Index), sz);
     if (results != NULL) {
         H3_EXPORT(gridRingUnsafe)(args->index, args->k, results);
-        h3Println(results[0]);
     }
     free(results);
     return 0;

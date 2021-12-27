@@ -33,10 +33,8 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     const inputArgs *args = (const inputArgs *)data;
     LatLng g = {.lat = args->lat, .lng = args->lng};
     H3Index h;
-    H3Error e = H3_EXPORT(latLngToCell)(&g, args->res, &h);
+    H3_EXPORT(latLngToCell)(&g, args->res, &h);
 
-    h3Println(e);
-    h3Println(h);
     return 0;
 }
 

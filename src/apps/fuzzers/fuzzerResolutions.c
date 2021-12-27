@@ -40,7 +40,6 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 
     H3Index pentagons[12];
     H3_EXPORT(getPentagons)(args->res, pentagons);
-    h3Println(pentagons[0]);
 
     return 0;
 }

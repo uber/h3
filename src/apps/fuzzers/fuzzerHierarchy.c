@@ -37,11 +37,9 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 
     H3Index parent;
     H3_EXPORT(cellToParent)(args->index, args->parentRes, &parent);
-    h3Println(parent);
 
     // TODO: Update with new API
-    H3Index child = H3_EXPORT(cellToCenterChild)(args->index, args->childRes);
-    h3Println(child);
+    H3_EXPORT(cellToCenterChild)(args->index, args->childRes);
 
     int resDiff = args->childRes - H3_EXPORT(getResolution)(args->index);
     if (resDiff < MAX_CHILDREN_DIFF) {
@@ -51,7 +49,6 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         if (!err) {
             H3Index *children = calloc(childrenSize, sizeof(H3Index));
             H3_EXPORT(cellToChildren)(args->index, args->childRes, children);
-            h3Println(children[0]);
             free(children);
         }
     }
