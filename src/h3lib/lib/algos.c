@@ -818,6 +818,58 @@ H3Error _getEdgeHexagons(const GeoLoop *geoloop, int64_t numHexagons, int res,
 }
 
 /**
+ * Returns true if the given cell is in the polygon using the containment
+ * mode flags.
+ */
+bool cellInPolygon(H3Index hex, const GeoPolygon *geoPolygon,
+                   const BBox *bboxes, uint32_t flags) {
+    if ((flags & FLAG_ANY_VERTEX) == FLAG_ANY_VERTEX) {
+        CellBoundary hexBoundary;
+        H3_EXPORT(cellToBoundary)(hex, &hexBoundary);
+
+        for (int i = 0; i < hexBoundary.numVerts; i++) {
+            if (pointInsidePolygon(geoPolygon, bboxes, &hexBoundary.verts[i])) {
+                return true;
+            }
+        }
+
+        LatLng hexCenter;
+        H3_EXPORT(cellToLatLng)(hex, &hexCenter);
+
+        if (pointInsidePolygon(geoPolygon, bboxes, &hexCenter)) {
+            return true;
+        }
+    } else if ((flags & FLAG_ALL_VERTEXES) == FLAG_ALL_VERTEXES) {
+        CellBoundary hexBoundary;
+        H3_EXPORT(cellToBoundary)(hex, &hexBoundary);
+
+        for (int i = 0; i < hexBoundary.numVerts; i++) {
+            if (!pointInsidePolygon(geoPolygon, bboxes,
+                                    &hexBoundary.verts[i])) {
+                return false;
+            }
+        }
+
+        LatLng hexCenter;
+        H3_EXPORT(cellToLatLng)(hex, &hexCenter);
+
+        if (pointInsidePolygon(geoPolygon, bboxes, &hexCenter)) {
+            return true;
+        }
+    } else {  // Centroid containment
+        // Check if the hexagon is in the polygon or not
+        LatLng hexCenter;
+        H3_EXPORT(cellToLatLng)(hex, &hexCenter);
+
+        // If not, skip
+        if (pointInsidePolygon(geoPolygon, bboxes, &hexCenter)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
  * polygonToCells takes a given GeoJSON-like data structure and preallocated,
  * zeroed memory, and fills it with the hexagons that are contained by
  * the GeoJSON-like data structure.
@@ -970,59 +1022,8 @@ H3Error H3_EXPORT(polygonToCells)(const GeoPolygon *geoPolygon, int res,
                     continue;  // Skip this hex, already exists in the out hash
                 }
 
-                if ((flags & FLAG_ANY_VERTEX) == FLAG_ANY_VERTEX) {
-                    bool anyFound = false;
-                    CellBoundary hexBoundary;
-                    H3_EXPORT(cellToBoundary)(hex, &hexBoundary);
-
-                    for (int i = 0; i < hexBoundary.numVerts; i++) {
-                        if (pointInsidePolygon(geoPolygon, bboxes,
-                                               &hexBoundary.verts[i])) {
-                            anyFound = true;
-                            break;
-                        }
-                    }
-
-                    if (!anyFound) {
-                        LatLng hexCenter;
-                        H3_EXPORT(cellToLatLng)(hex, &hexCenter);
-
-                        if (!pointInsidePolygon(geoPolygon, bboxes,
-                                                &hexCenter)) {
-                            continue;
-                        }
-                    }
-                } else if ((flags & FLAG_ALL_VERTEXES) == FLAG_ALL_VERTEXES) {
-                    CellBoundary hexBoundary;
-                    H3_EXPORT(cellToBoundary)(hex, &hexBoundary);
-
-                    bool anyMissing = false;
-                    for (int i = 0; i < hexBoundary.numVerts; i++) {
-                        if (!pointInsidePolygon(geoPolygon, bboxes,
-                                                &hexBoundary.verts[i])) {
-                            anyMissing = true;
-                            break;
-                        }
-                    }
-                    if (anyMissing) {
-                        continue;
-                    }
-
-                    LatLng hexCenter;
-                    H3_EXPORT(cellToLatLng)(hex, &hexCenter);
-
-                    if (!pointInsidePolygon(geoPolygon, bboxes, &hexCenter)) {
-                        continue;
-                    }
-                } else {  // Centroid containment
-                    // Check if the hexagon is in the polygon or not
-                    LatLng hexCenter;
-                    H3_EXPORT(cellToLatLng)(hex, &hexCenter);
-
-                    // If not, skip
-                    if (!pointInsidePolygon(geoPolygon, bboxes, &hexCenter)) {
-                        continue;
-                    }
+                if (!cellInPolygon(hex, geoPolygon, bboxes, flags)) {
+                    continue;
                 }
 
                 // Otherwise set it in the output array
