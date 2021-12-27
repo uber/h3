@@ -22,13 +22,13 @@
 #include "utility.h"
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
-    if (size < sizeof(H3Index) + 1) {
+    if (size < sizeof(H3Index) * 2) {
         return 0;
     }
 
     uint8_t res = *data;
-    H3Index *input = (H3Index *)(data + 1);
-    size_t inputSize = (size - 1) / sizeof(H3Index);
+    H3Index *input = (H3Index *)(data + sizeof(H3Index));
+    size_t inputSize = (size - sizeof(H3Index)) / sizeof(H3Index);
 
     // fuzz compactCells
     H3Index *compacted = calloc(inputSize, sizeof(H3Index));
@@ -43,7 +43,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         }
     }
     if (compactedCount < 2) {
-        int uncompactRes = 10;
+        int uncompactRes = 9;
         int64_t uncompactedSize;
         H3Error err = H3_EXPORT(uncompactCellsSize)(
             compacted, inputSize, uncompactRes, &uncompactedSize);
@@ -69,6 +69,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         h3Println(uncompacted[0]);
         free(uncompacted);
     }
+    free(compacted);
 
     return 0;
 }

@@ -32,13 +32,14 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     if (size < sizeof(inputArgs)) {
         return 0;
     }
-    inputArgs *args = (inputArgs *)data;
-    args->str[STRING_LENGTH - 1] = 0;
+    inputArgs args;
+    memcpy(&args, data, sizeof(inputArgs));
+    args.str[STRING_LENGTH - 1] = 0;
 
     char str[STRING_LENGTH];
-    h3Println(H3_EXPORT(h3ToString)(args->index, str, STRING_LENGTH));
+    h3Println(H3_EXPORT(h3ToString)(args.index, str, STRING_LENGTH));
     H3Index index;
-    H3Error err = H3_EXPORT(stringToH3)(args->str, &index);
+    H3Error err = H3_EXPORT(stringToH3)(args.str, &index);
     if (!err) {
         h3Println(index);
     }
