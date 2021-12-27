@@ -31,18 +31,17 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     }
     const inputArgs *args = (const inputArgs *)data;
 
-    printf("%d", H3_EXPORT(getResolution)(args->index));
-    printf("%d", H3_EXPORT(getBaseCellNumber)(args->index));
-    printf("%d", H3_EXPORT(isValidCell)(args->index));
-    printf("%d", H3_EXPORT(isPentagon)(args->index));
-    printf("%d", H3_EXPORT(isResClassIII)(args->index));
+    H3_EXPORT(getResolution)(args->index);
+    H3_EXPORT(getBaseCellNumber)(args->index);
+    H3_EXPORT(isValidCell)(args->index);
+    H3_EXPORT(isPentagon)(args->index);
+    H3_EXPORT(isResClassIII)(args->index);
 
     int faceCount;
     H3Error err = H3_EXPORT(maxFaceCount)(args->index, &faceCount);
     if (!err && faceCount > 0) {
         int *out = calloc(faceCount, sizeof(int));
         H3_EXPORT(getIcosahedronFaces)(args->index, out);
-        printf("%d", out[0]);
         free(out);
     }
 

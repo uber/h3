@@ -32,9 +32,9 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     }
     const inputArgs *args = (const inputArgs *)data;
 
-    printf("%f", H3_EXPORT(distanceRads)(&args->a, &args->b));
-    printf("%f", H3_EXPORT(distanceKm)(&args->a, &args->b));
-    printf("%f", H3_EXPORT(distanceM)(&args->a, &args->b));
+    H3_EXPORT(distanceRads)(&args->a, &args->b);
+    H3_EXPORT(distanceKm)(&args->a, &args->b);
+    H3_EXPORT(distanceM)(&args->a, &args->b);
 
     return 0;
 }

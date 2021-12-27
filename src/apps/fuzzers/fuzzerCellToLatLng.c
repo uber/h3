@@ -32,10 +32,8 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     const inputArgs *args = (const inputArgs *)data;
     LatLng geo;
     H3_EXPORT(cellToLatLng)(args->index, &geo);
-    printf("%lf %lf\n", geo.lat, geo.lng);
     CellBoundary cellBoundary;
     H3_EXPORT(cellToBoundary)(args->index, &cellBoundary);
-    printf("%d\n", cellBoundary.numVerts);
     return 0;
 }
 

@@ -33,11 +33,8 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 
     double distance;
     H3_EXPORT(exactEdgeLengthRads)(args->index, &distance);
-    printf("%f", distance);
     H3_EXPORT(exactEdgeLengthKm)(args->index, &distance);
-    printf("%f", distance);
     H3_EXPORT(exactEdgeLengthM)(args->index, &distance);
-    printf("%f", distance);
 
     return 0;
 }

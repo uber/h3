@@ -31,12 +31,12 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     }
     const inputArgs *args = (const inputArgs *)data;
 
-    // Do not perform bound checks
-    // printf("%f", H3_EXPORT(getHexagonAreaAvgKm2)(args->res));
-    // printf("%f", H3_EXPORT(getHexagonAreaAvgM2)(args->res));
-    // printf("%f", H3_EXPORT(getHexagonEdgeLengthAvgKm)(args->res));
-    // printf("%f", H3_EXPORT(getHexagonEdgeLengthAvgM)(args->res));
-    // printf("%llx", H3_EXPORT(getNumCells)(args->res));
+    // TODO: Do not perform bound checks
+    // H3_EXPORT(getHexagonAreaAvgKm2)(args->res);
+    // H3_EXPORT(getHexagonAreaAvgM2)(args->res);
+    // H3_EXPORT(getHexagonEdgeLengthAvgKm)(args->res);
+    // H3_EXPORT(getHexagonEdgeLengthAvgM)(args->res);
+    // H3_EXPORT(getNumCells)(args->res);
 
     H3Index pentagons[12];
     H3_EXPORT(getPentagons)(args->res, pentagons);

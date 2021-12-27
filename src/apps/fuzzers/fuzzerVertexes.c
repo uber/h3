@@ -40,8 +40,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     h3Println(outArr[0]);
     LatLng geo;
     H3_EXPORT(vertexToLatLng)(args->index, &geo);
-    printf("%lf %lf\n", geo.lat, geo.lng);
-    printf("%d\n", H3_EXPORT(isValidVertex)(args->index));
+    H3_EXPORT(isValidVertex)(args->index);
     return 0;
 }
 
