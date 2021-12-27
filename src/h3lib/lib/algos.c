@@ -41,7 +41,8 @@
  * TODO: Move to h3api.h.in
  * TODO: Use correct codes from RFC
  */
-#define FLAG_INTERSECTS 1
+#define FLAG_ANY_VERTEX 1
+#define FLAG_ALL_VERTEXES 2
 
 #define MAX_ONE_RING_SIZE 7
 #define POLYGON_TO_CELLS_BUFFER 12
@@ -969,12 +970,48 @@ H3Error H3_EXPORT(polygonToCells)(const GeoPolygon *geoPolygon, int res,
                     continue;  // Skip this hex, already exists in the out hash
                 }
 
-                if ((flags & FLAG_INTERSECTS) == FLAG_INTERSECTS) {
+                if ((flags & FLAG_ANY_VERTEX) == FLAG_ANY_VERTEX) {
+                    bool anyFound = false;
                     CellBoundary hexBoundary;
                     H3_EXPORT(cellToBoundary)(hex, &hexBoundary);
 
-                    if (!boundaryIntersectsPolygon(geoPolygon, bboxes,
-                                                   &hexBoundary)) {
+                    for (int i = 0; i < hexBoundary.numVerts; i++) {
+                        if (pointInsidePolygon(geoPolygon, bboxes,
+                                               &hexBoundary.verts[i])) {
+                            anyFound = true;
+                            break;
+                        }
+                    }
+
+                    if (!anyFound) {
+                        LatLng hexCenter;
+                        H3_EXPORT(cellToLatLng)(hex, &hexCenter);
+
+                        if (!pointInsidePolygon(geoPolygon, bboxes,
+                                                &hexCenter)) {
+                            continue;
+                        }
+                    }
+                } else if ((flags & FLAG_ALL_VERTEXES) == FLAG_ALL_VERTEXES) {
+                    CellBoundary hexBoundary;
+                    H3_EXPORT(cellToBoundary)(hex, &hexBoundary);
+
+                    bool anyMissing = false;
+                    for (int i = 0; i < hexBoundary.numVerts; i++) {
+                        if (!pointInsidePolygon(geoPolygon, bboxes,
+                                                &hexBoundary.verts[i])) {
+                            anyMissing = true;
+                            break;
+                        }
+                    }
+                    if (anyMissing) {
+                        continue;
+                    }
+
+                    LatLng hexCenter;
+                    H3_EXPORT(cellToLatLng)(hex, &hexCenter);
+
+                    if (!pointInsidePolygon(geoPolygon, bboxes, &hexCenter)) {
                         continue;
                     }
                 } else {  // Centroid containment
@@ -999,8 +1036,9 @@ H3Error H3_EXPORT(polygonToCells)(const GeoPolygon *geoPolygon, int res,
             i++;
         }
 
-        // Swap the search and found pointers, copy the found hex count to the
-        // search hex count, and zero everything related to the found memory.
+        // Swap the search and found pointers, copy the found hex count to
+        // the search hex count, and zero everything related to the found
+        // memory.
         H3Index *temp = search;
         search = found;
         found = temp;
@@ -1032,8 +1070,8 @@ void h3SetToVertexGraph(const H3Index *h3Set, const int numHexes,
     LatLng *toVtx;
     VertexNode *edge;
     if (numHexes < 1) {
-        // We still need to init the graph, or calls to destroyVertexGraph will
-        // fail
+        // We still need to init the graph, or calls to destroyVertexGraph
+        // will fail
         initVertexGraph(graph, 0, 0);
         return;
     }
@@ -1052,8 +1090,8 @@ void h3SetToVertexGraph(const H3Index *h3Set, const int numHexes,
             // If we've seen this edge already, it will be reversed
             edge = findNodeForEdge(graph, toVtx, fromVtx);
             if (edge != NULL) {
-                // If we've seen it, drop it. No edge is shared by more than 2
-                // hexagons, so we'll never see it again.
+                // If we've seen it, drop it. No edge is shared by more than
+                // 2 hexagons, so we'll never see it again.
                 removeVertexNode(graph, edge);
             } else {
                 // Add a new node for this edge
@@ -1065,8 +1103,9 @@ void h3SetToVertexGraph(const H3Index *h3Set, const int numHexes,
 
 /**
  * Internal: Create a LinkedGeoPolygon from a vertex graph. It is the
- * responsibility of the caller to call destroyLinkedPolygon on the populated
- * linked geo structure, or the memory for that structure will not be freed.
+ * responsibility of the caller to call destroyLinkedPolygon on the
+ * populated linked geo structure, or the memory for that structure will not
+ * be freed.
  * @private
  * @param graph Input graph
  * @param out   Output polygon
@@ -1091,12 +1130,13 @@ void _vertexGraphToLinkedGeo(VertexGraph *graph, LinkedGeoPolygon *out) {
 }
 
 /**
- * Create a LinkedGeoPolygon describing the outline(s) of a set of  hexagons.
- * Polygon outlines will follow GeoJSON MultiPolygon order: Each polygon will
- * have one outer loop, which is first in the list, followed by any holes.
+ * Create a LinkedGeoPolygon describing the outline(s) of a set of hexagons.
+ * Polygon outlines will follow GeoJSON MultiPolygon order: Each polygon
+ * will have one outer loop, which is first in the list, followed by any
+ * holes.
  *
- * It is the responsibility of the caller to call destroyLinkedPolygon on the
- * populated linked geo structure, or the memory for that structure will
+ * It is the responsibility of the caller to call destroyLinkedPolygon on
+ * the populated linked geo structure, or the memory for that structure will
  * not be freed.
  *
  * It is expected that all hexagons in the set have the same resolution and
