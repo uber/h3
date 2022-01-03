@@ -239,6 +239,7 @@ set(OTHER_SOURCE_FILES
     src/apps/fuzzers/fuzzerCompact.c
     src/apps/fuzzers/fuzzerDirectedEdge.c
     src/apps/fuzzers/fuzzerLocalIj.c
+    src/apps/fuzzers/fuzzerPolygonToCells.c
     src/apps/benchmarks/benchmarkPolygonToCells.c
     src/apps/benchmarks/benchmarkPolygon.c
     src/apps/benchmarks/benchmarkH3SetToLinkedGeo.c
@@ -676,6 +677,7 @@ if(BUILD_FUZZERS)
     add_h3_fuzzer(fuzzerCompact src/apps/fuzzers/fuzzerCompact.c)
     add_h3_fuzzer(fuzzerDirectedEdge src/apps/fuzzers/fuzzerDirectedEdge.c)
     add_h3_fuzzer(fuzzerLocalIj src/apps/fuzzers/fuzzerLocalIj.c)
+    add_h3_fuzzer(fuzzerPolygonToCells src/apps/fuzzers/fuzzerPolygonToCells.c)
 endif()
 
 if(BUILD_BENCHMARKS)

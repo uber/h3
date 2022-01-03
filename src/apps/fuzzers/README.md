@@ -17,7 +17,7 @@ such as the H3 core library.
 | gridDisk | [fuzzerGridDisk](./fuzzerGridDisk.c)
 | gridDiskDistances | [fuzzerGridDisk](./fuzzerGridDisk.c)
 | gridRingUnsafe | [fuzzerGridDisk](./fuzzerGridDisk.c)
-| polygonToCells | 
+| polygonToCells | [fuzzerPoylgonToCells](./fuzzerPolygonToCells.c)
 | h3SetToMultiPolygon | [fuzzerH3SetToLinkedGeo](./fuzzerH3SetToLinkedGeo.c)
 | degsToRads | Trivial
 | radsToDegs | Trivial

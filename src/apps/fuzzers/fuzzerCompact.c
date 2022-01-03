@@ -21,12 +21,15 @@
 #include "h3api.h"
 #include "utility.h"
 
+const int MAX_UNCOMPACT_RES = 9;
+
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     if (size < sizeof(H3Index) * 2) {
         return 0;
     }
 
     uint8_t res = *data;
+    uint8_t uncompactRes = (*(data + 1)) % (MAX_UNCOMPACT_RES + 1);
     H3Index *input = (H3Index *)(data + sizeof(H3Index));
     size_t inputSize = (size - sizeof(H3Index)) / sizeof(H3Index);
 
@@ -42,7 +45,6 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         }
     }
     if (compactedCount < 2) {
-        int uncompactRes = 9;
         int64_t uncompactedSize;
         H3Error err = H3_EXPORT(uncompactCellsSize)(
             compacted, inputSize, uncompactRes, &uncompactedSize);
