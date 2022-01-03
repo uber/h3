@@ -39,10 +39,22 @@ SUITE(h3CellArea) {
         for (int res = 0; res <= MAX_H3_RES - 1; res++) {
             H3Index cell;
             t_assertSuccess(H3_EXPORT(latLngToCell)(&gc, res, &cell));
-            double area = H3_EXPORT(cellAreaKm2)(cell);
+            double area;
+            t_assertSuccess(H3_EXPORT(cellAreaKm2)(cell, &area));
 
             t_assert(fabs(area - areasKm2[res]) < 1e-8,
                      "cell area should match expectation");
         }
+    }
+
+    TEST(cell_area_invalid) {
+        H3Index invalid = 0xFFFFFFFFFFFFFFFF;
+        double area;
+        t_assert(H3_EXPORT(cellAreaRads2)(invalid, &area) == E_CELL_INVALID,
+                 "cellAreaRads2 invalid input");
+        t_assert(H3_EXPORT(cellAreaKm2)(invalid, &area) == E_CELL_INVALID,
+                 "cellAreaKm2 invalid input");
+        t_assert(H3_EXPORT(cellAreaM2)(invalid, &area) == E_CELL_INVALID,
+                 "cellAreaM2 invalid input");
     }
 }

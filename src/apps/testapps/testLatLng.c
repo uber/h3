@@ -35,12 +35,12 @@
  * @param function
  * @param message
  */
-static void testDecreasingFunction(double (*function)(int),
+static void testDecreasingFunction(H3Error (*function)(int, double *),
                                    const char *message) {
     double last = 0;
     double next;
     for (int i = MAX_H3_RES; i >= 0; i--) {
-        next = function(i);
+        t_assertSuccess(function(i, &next));
         t_assert(next > last, message);
         last = next;
     }
@@ -219,15 +219,43 @@ SUITE(latLng) {
                                "getHexagonEdgeLengthAvgM ordering");
     }
 
+    TEST(doubleConstantsErrors) {
+        double out;
+        t_assert(H3_EXPORT(getHexagonAreaAvgKm2)(-1, &out) == E_RES_DOMAIN,
+                 "getHexagonAreaAvgKm2 resolution negative");
+        t_assert(H3_EXPORT(getHexagonAreaAvgKm2)(16, &out) == E_RES_DOMAIN,
+                 "getHexagonAreaAvgKm2 resolution too high");
+        t_assert(H3_EXPORT(getHexagonAreaAvgM2)(-1, &out) == E_RES_DOMAIN,
+                 "getHexagonAreaAvgM2 resolution negative");
+        t_assert(H3_EXPORT(getHexagonAreaAvgM2)(16, &out) == E_RES_DOMAIN,
+                 "getHexagonAreaAvgM2 resolution too high");
+        t_assert(H3_EXPORT(getHexagonEdgeLengthAvgKm)(-1, &out) == E_RES_DOMAIN,
+                 "getHexagonEdgeLengthAvgKm resolution negative");
+        t_assert(H3_EXPORT(getHexagonEdgeLengthAvgKm)(16, &out) == E_RES_DOMAIN,
+                 "getHexagonEdgeLengthAvgKm resolution too high");
+        t_assert(H3_EXPORT(getHexagonEdgeLengthAvgM)(-1, &out) == E_RES_DOMAIN,
+                 "getHexagonEdgeLengthAvgM resolution negative");
+        t_assert(H3_EXPORT(getHexagonEdgeLengthAvgM)(16, &out) == E_RES_DOMAIN,
+                 "getHexagonEdgeLengthAvgM resolution too high");
+    }
+
     TEST(intConstants) {
         // Simple checks for ordering of values
         int64_t last = 0;
         int64_t next;
         for (int i = 0; i <= MAX_H3_RES; i++) {
-            next = H3_EXPORT(getNumCells)(i);
+            t_assertSuccess(H3_EXPORT(getNumCells)(i, &next));
             t_assert(next > last, "getNumCells ordering");
             last = next;
         }
+    }
+
+    TEST(intConstantsErrors) {
+        int64_t out;
+        t_assert(H3_EXPORT(getNumCells)(-1, &out) == E_RES_DOMAIN,
+                 "getNumCells resolution negative");
+        t_assert(H3_EXPORT(getNumCells)(16, &out) == E_RES_DOMAIN,
+                 "getNumCells resolution too high");
     }
 
     TEST(numHexagons) {
@@ -250,7 +278,8 @@ SUITE(latLng) {
                                            569707381193162L};
 
         for (int r = 0; r <= MAX_H3_RES; r++) {
-            int64_t num = H3_EXPORT(getNumCells)(r);
+            int64_t num;
+            t_assertSuccess(H3_EXPORT(getNumCells)(r, &num));
             t_assert(num == expected[r], "incorrect numHexagons count");
         }
     }

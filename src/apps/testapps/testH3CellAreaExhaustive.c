@@ -109,9 +109,18 @@ static void edge_length_assert(H3Index edge) {
 static void cell_area_assert(H3Index cell) {
     char msg[] = "cell has positive area";
 
-    t_assert(H3_EXPORT(cellAreaRads2)(cell) > 0, msg);
-    t_assert(H3_EXPORT(cellAreaKm2)(cell) > 0, msg);
-    t_assert(H3_EXPORT(cellAreaM2)(cell) > 0, msg);
+    double areaRads;
+    t_assertSuccess(H3_EXPORT(cellAreaRads2)(cell, &areaRads));
+    t_assert(areaRads > 0, msg);
+    double areaKm2;
+    t_assertSuccess(H3_EXPORT(cellAreaKm2)(cell, &areaKm2));
+    t_assert(areaKm2 > 0, msg);
+    double areaM2;
+    t_assertSuccess(H3_EXPORT(cellAreaM2)(cell, &areaM2));
+    t_assert(areaM2 > 0, msg);
+
+    t_assert(areaRads < areaKm2, "area in rads smaller than area in km2");
+    t_assert(areaKm2 < areaM2, "area in km2 smaller than area in m2");
 }
 
 /**
@@ -123,12 +132,14 @@ static void cell_area_assert(H3Index cell) {
  * @param  target     expected earth area in some units
  * @param  tol        error tolerance allowed between expected and actual
  */
-static void earth_area_test(int res, double (*cell_area)(H3Index),
+static void earth_area_test(int res, H3Error (*cell_area)(H3Index, double *),
                             double target, double tol) {
     double area = 0.0;
     for (IterCellsResolution iter = iterInitRes(res); iter.h;
          iterStepRes(&iter)) {
-        area += (*cell_area)(iter.h);
+        double cellArea;
+        t_assertSuccess((*cell_area)(iter.h, &cellArea));
+        area += cellArea;
     }
 
     t_assert(fabs(area - target) < tol,
