@@ -139,6 +139,18 @@ SUITE(getIcosahedronFaces) {
     TEST(invalid) {
         H3Index invalid = 0xFFFFFFFFFFFFFFFF;
         int out;
-        t_assert(H3_EXPORT(getIcosahedronFaces)(invalid, &out) == E_CELL_INVALID, "Invalid cell");
+        t_assert(
+            H3_EXPORT(getIcosahedronFaces)(invalid, &out) == E_CELL_INVALID,
+            "Invalid cell");
+    }
+
+    TEST(invalid2) {
+        H3Index invalid = 0x71330073003f004e;
+        int sz;
+        t_assertSuccess(H3_EXPORT(maxFaceCount)(invalid, &sz));
+        int *faces = calloc(sz, sizeof(int));
+        t_assert(H3_EXPORT(getIcosahedronFaces)(invalid, faces) == E_FAILED,
+                 "Invalid cell");
+        free(faces);
     }
 }

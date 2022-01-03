@@ -986,7 +986,14 @@ H3Error H3_EXPORT(getIcosahedronFaces)(H3Index h3, int *out) {
         int pos = 0;
         // Find the first empty output position, or the first position
         // matching the current face
-        while (out[pos] != INVALID_FACE && out[pos] != face) pos++;
+        while (out[pos] != INVALID_FACE && out[pos] != face) {
+            pos++;
+            if (pos >= faceCount) {
+                // Mismatch between the heuristic used in maxFaceCount and
+                // calculation here - indicates an invalid index.
+                return E_FAILED;
+            }
+        }
         out[pos] = face;
     }
     return E_SUCCESS;
