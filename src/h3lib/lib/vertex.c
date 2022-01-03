@@ -47,12 +47,15 @@ static const PentagonDirectionFaces pentagonDirectionFaces[NUM_PENTAGONS] = {
 /**
  * Get the number of CCW rotations of the cell's vertex numbers
  * compared to the directional layout of its neighbors.
- * @return Number of CCW rotations for the cell
+ * @param out Number of CCW rotations for the cell
  */
-static int vertexRotations(H3Index cell) {
+static H3Error vertexRotations(H3Index cell, int *out) {
     // Get the face and other info for the origin
     FaceIJK fijk;
-    _h3ToFaceIjk(cell, &fijk);
+    H3Error err = _h3ToFaceIjk(cell, &fijk);
+    if (err) {
+        return err;
+    }
     int baseCell = H3_EXPORT(getBaseCellNumber)(cell);
     int cellLeadingDigit = _h3LeadingNonZeroDigit(cell);
 
@@ -94,7 +97,8 @@ static int vertexRotations(H3Index cell) {
             ccwRot60 = (ccwRot60 + 1) % 6;
         }
     }
-    return ccwRot60;
+    *out = ccwRot60;
+    return E_SUCCESS;
 }
 
 /** @brief Hexagon direction to vertex number relationships (same face).
@@ -124,7 +128,11 @@ int vertexNumForDirection(const H3Index origin, const Direction direction) {
         return INVALID_VERTEX_NUM;
 
     // Determine the vertex rotations for this cell
-    int rotations = vertexRotations(origin);
+    int rotations;
+    H3Error err = vertexRotations(origin, &rotations);
+    if (err) {
+        return INVALID_VERTEX_NUM;
+    }
 
     // Find the appropriate vertex, rotating CCW if necessary
     if (isPent) {
@@ -163,7 +171,11 @@ Direction directionForVertexNum(const H3Index origin, const int vertexNum) {
         return INVALID_DIGIT;
 
     // Determine the vertex rotations for this cell
-    int rotations = vertexRotations(origin);
+    int rotations;
+    H3Error err = vertexRotations(origin, &rotations);
+    if (err) {
+        return INVALID_DIGIT;
+    }
 
     // Find the appropriate direction, rotating CW if necessary
     return isPent ? vertexNumToDirectionPent[(vertexNum + rotations) %

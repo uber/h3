@@ -34,8 +34,8 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     }
     inputArgs args;
     // Copy the input data array since we need to modify it on the next line
-    // to ensure it is zero terminated. (We are not interested in non-zero terminated
-    // bugs since that fails the contract.)
+    // to ensure it is zero terminated. (We are not interested in non-zero
+    // terminated bugs since that fails the contract.)
     memcpy(&args, data, sizeof(inputArgs));
     args.str[STRING_LENGTH - 1] = 0;
 
