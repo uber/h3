@@ -95,7 +95,8 @@ static GeoPolygon sfGeoPolygon;
 SUITE(h3Memory) {
     TEST(gridDisk) {
         int k = 2;
-        int hexCount = H3_EXPORT(maxGridDiskSize)(k);
+        int64_t hexCount;
+        t_assertSuccess(H3_EXPORT(maxGridDiskSize)(k, &hexCount));
         H3Index *gridDiskOutput = calloc(hexCount, sizeof(H3Index));
 
         resetMemoryCounters(0);
@@ -116,7 +117,7 @@ SUITE(h3Memory) {
         t_assert(actualAllocCalls == 1, "gridDisk called alloc");
         t_assert(actualFreeCalls == 0, "gridDisk did not call free");
 
-        for (int i = 0; i < hexCount; i++) {
+        for (int64_t i = 0; i < hexCount; i++) {
             t_assert(!gridDiskOutput[i],
                      "gridDisk did not produce output without alloc");
         }
@@ -126,8 +127,9 @@ SUITE(h3Memory) {
 
     TEST(compactCells) {
         int k = 9;
-        int hexCount = H3_EXPORT(maxGridDiskSize)(k);
-        int expectedCompactCount = 73;
+        int64_t hexCount;
+        t_assertSuccess(H3_EXPORT(maxGridDiskSize)(k, &hexCount));
+        int64_t expectedCompactCount = 73;
 
         // Generate a set of hexagons to compact
         H3Index *sunnyvaleExpanded = calloc(hexCount, sizeof(H3Index));
@@ -170,8 +172,8 @@ SUITE(h3Memory) {
         t_assert(actualAllocCalls == 4, "alloc called four times");
         t_assert(actualFreeCalls == 4, "free called four times");
 
-        int count = 0;
-        for (int i = 0; i < hexCount; i++) {
+        int64_t count = 0;
+        for (int64_t i = 0; i < hexCount; i++) {
             if (compressed[i] != 0) {
                 count++;
             }

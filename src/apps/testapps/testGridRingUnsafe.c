@@ -113,7 +113,8 @@ SUITE(gridRingUnsafe) {
 
                     for (int k = 0; k < 3; k++) {
                         int ringSz = k != 0 ? 6 * k : 1;
-                        int kSz = H3_EXPORT(maxGridDiskSize)(k);
+                        int64_t kSz;
+                        t_assertSuccess(H3_EXPORT(maxGridDiskSize)(k, &kSz));
 
                         H3Index *ring = calloc(ringSz, sizeof(H3Index));
                         H3Error failed =
@@ -133,7 +134,7 @@ SUITE(gridRingUnsafe) {
                                 if (ring[iRing] != 0) {
                                     found++;
 
-                                    for (int iInternal = 0; iInternal < kSz;
+                                    for (int64_t iInternal = 0; iInternal < kSz;
                                          iInternal++) {
                                         if (internalNeighbors[iInternal] ==
                                             ring[iRing]) {

@@ -85,7 +85,8 @@ static void gridPathCells_gridDisk_assertions(H3Index h3) {
     t_assert(r <= 5, "resolution supported by test function (gridDisk)");
     int maxK = MAX_DISTANCES[r];
 
-    int sz = H3_EXPORT(maxGridDiskSize)(maxK);
+    int64_t sz;
+    t_assertSuccess(H3_EXPORT(maxGridDiskSize)(maxK, &sz));
 
     if (H3_EXPORT(isPentagon)(h3)) {
         return;
