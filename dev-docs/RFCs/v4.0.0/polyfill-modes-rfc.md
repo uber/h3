@@ -45,7 +45,7 @@ and pentagons. The `polyfill` function is different that it assumes Cartesian ge
 consistency with the rest of the library, the `polyfill` functions should be able to use the same
 cell boundaries.
 
-Maintaing a Cartesian option is useful for cases where polygons have been drawn on a projected map
+Maintaining a Cartesian option is useful for cases where polygons have been drawn on a projected map
 and the boundaries should be the same.
 
 * Very large polygons
