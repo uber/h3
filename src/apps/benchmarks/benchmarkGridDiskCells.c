@@ -24,7 +24,10 @@ H3Index pentagon = 0x89080000003ffff;
 BEGIN_BENCHMARKS();
 
 int64_t outSz;
-H3_EXPORT(maxGridDiskSize)(40, &outSz);
+if (H3_EXPORT(maxGridDiskSize)(40, &outSz)) {
+    printf("Failed\n");
+    return 1;
+}
 H3Index *out = calloc(outSz, sizeof(H3Index));
 
 BENCHMARK(gridDisk10, 10000, { H3_EXPORT(gridDisk)(hex, 10, out); });
