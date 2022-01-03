@@ -533,6 +533,18 @@ if(H3_IS_ROOT_PROJECT AND BUILD_TESTING)
         endif()
     endmacro()
 
+    macro(add_h3_cli_test name h3_args expect_string)
+        add_test(NAME ${name}_test${test_number}
+                 # /usr/bin/sh -c "test \"`./bin/h3 cellToLatLng -c 8928342e20fffff`\" = \"37.5012466151, -122.5003039349\""
+                 COMMAND ${SHELL} "test \"`./bin/h3 ${h3_args}`\" = '${expect_string}'")
+
+        if(PRINT_TEST_FILES)
+            message("${name}_test${test_number} - ${argfile}")
+        endif()
+
+        # No coverage possible for H3 CLI testing
+    endmacro()
+
     macro(add_h3_test_with_arg name srcfile arg)
         add_h3_test_common(${name} ${srcfile})
         add_test(NAME ${name}_test${test_number}
@@ -620,6 +632,9 @@ if(H3_IS_ROOT_PROJECT AND BUILD_TESTING)
     add_h3_test(testGridPathCellsExhaustive src/apps/testapps/testGridPathCellsExhaustive.c)
     add_h3_test(testGridDistanceExhaustive src/apps/testapps/testGridDistanceExhaustive.c)
     add_h3_test(testH3CellAreaExhaustive src/apps/testapps/testH3CellAreaExhaustive.c)
+
+    add_h3_cli_test(testCliCellToLatLng "cellToLatLng -c 8928342e20fffff" "37.5012466151, -122.5003039349")
+    add_h3_cli_test(testCliLatLngToCell "latLngToCell --lat 20 --lng 123 -r 2" "824b9ffffffffff")
 
     if(BUILD_ALLOC_TESTS)
         add_h3_library(h3WithTestAllocators test_prefix_)
