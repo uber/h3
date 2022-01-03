@@ -388,10 +388,10 @@ SUITE(gridDisk) {
             "gridDiskDistances invalid k");
         t_assert(H3_EXPORT(gridDiskDistancesUnsafe)(index, -1, NULL, NULL) ==
                      E_DOMAIN,
-                 "gridDiskDistancesUnsafe invaldi k");
+                 "gridDiskDistancesUnsafe invalid k");
         t_assert(
             H3_EXPORT(gridDiskDistancesSafe)(index, -1, NULL, NULL) == E_DOMAIN,
-            "gridDiskDistancesSafe invaldi k");
+            "gridDiskDistancesSafe invalid k");
     }
 
     TEST(maxGridDiskSize_invalid) {
