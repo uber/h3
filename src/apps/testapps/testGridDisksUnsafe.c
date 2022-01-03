@@ -76,4 +76,9 @@ SUITE(gridDisksUnsafe) {
                  "Expected error on gridDisksUnsafe");
         free(allKrings);
     }
+
+    TEST(invalid_k) {
+        t_assert(H3_EXPORT(gridDisksUnsafe)(k1, 6, -1, NULL) == E_DOMAIN,
+                 "gridDisksUnsafe invalid k");
+    }
 }

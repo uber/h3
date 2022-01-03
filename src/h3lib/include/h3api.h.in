@@ -226,7 +226,7 @@ DECLSPEC H3Error H3_EXPORT(cellToBoundary)(H3Index h3, CellBoundary *gp);
  * @{
  */
 /** @brief maximum number of hexagons in k-ring */
-DECLSPEC int H3_EXPORT(maxGridDiskSize)(int k);
+DECLSPEC H3Error H3_EXPORT(maxGridDiskSize)(int k, int64_t *out);
 
 /** @brief hexagons neighbors in all directions, assuming no pentagons */
 DECLSPEC H3Error H3_EXPORT(gridDiskUnsafe)(H3Index origin, int k, H3Index *out);

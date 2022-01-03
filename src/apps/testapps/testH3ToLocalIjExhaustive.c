@@ -132,14 +132,15 @@ void localIjToH3_gridDisk_assertions(H3Index h3) {
     t_assert(r <= 5, "resolution supported by test function (gridDisk)");
     int maxK = MAX_DISTANCES[r];
 
-    int sz = H3_EXPORT(maxGridDiskSize)(maxK);
+    int64_t sz;
+    t_assertSuccess(H3_EXPORT(maxGridDiskSize)(maxK, &sz));
     H3Index *neighbors = calloc(sz, sizeof(H3Index));
     int *distances = calloc(sz, sizeof(int));
 
     t_assertSuccess(
         H3_EXPORT(gridDiskDistances)(h3, maxK, neighbors, distances));
 
-    for (int i = 0; i < sz; i++) {
+    for (int64_t i = 0; i < sz; i++) {
         if (neighbors[i] == 0) {
             continue;
         }

@@ -22,6 +22,7 @@
 #include "utility.h"
 
 const int MAX_UNCOMPACT_RES = 9;
+const int64_t MAX_UNCOMPACT_SIZE = 4000000;
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     if (size < sizeof(H3Index) * 2) {
@@ -49,7 +50,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
             int64_t uncompactedSize;
             H3Error err = H3_EXPORT(uncompactCellsSize)(
                 compacted, inputSize, uncompactRes, &uncompactedSize);
-            if (!err) {
+            if (!err && uncompactedSize < MAX_UNCOMPACT_SIZE) {
                 H3Index *uncompacted = calloc(uncompactedSize, sizeof(H3Index));
                 H3_EXPORT(uncompactCells)
                 (compacted, compactedCount, uncompacted, uncompactedSize,
@@ -64,7 +65,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     H3Error err =
         H3_EXPORT(uncompactCellsSize)(input, inputSize, res, &uncompactedSize);
 
-    if (!err) {
+    if (!err && uncompactedSize < MAX_UNCOMPACT_SIZE) {
         H3Index *uncompacted = calloc(uncompactedSize, sizeof(H3Index));
         H3_EXPORT(uncompactCells)
         (input, inputSize, uncompacted, uncompactedSize, res);

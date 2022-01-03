@@ -940,7 +940,10 @@ H3Error H3_EXPORT(getIcosahedronFaces)(H3Index h3, int *out) {
 
     // convert to FaceIJK
     FaceIJK fijk;
-    _h3ToFaceIjk(h3, &fijk);
+    H3Error err = _h3ToFaceIjk(h3, &fijk);
+    if (err) {
+        return err;
+    }
 
     // Get all vertices as FaceIJK addresses. For simplicity, always
     // initialize the array with 6 verts, ignoring the last one for pentagons

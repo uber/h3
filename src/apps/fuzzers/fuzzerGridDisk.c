@@ -31,9 +31,13 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         return 0;
     }
     const inputArgs *args = (const inputArgs *)data;
-    int64_t sz = H3_EXPORT(maxGridDiskSize)(args->k);
 
-    // gridDisk
+    int64_t sz;
+    H3Error err = H3_EXPORT(maxGridDiskSize)(args->k, &sz);
+    if (err) {
+        // Can't allocate
+        return 0;
+    }
     H3Index *results = calloc(sizeof(H3Index), sz);
     if (results != NULL) {
         H3_EXPORT(gridDisk)(args->index, args->k, results);

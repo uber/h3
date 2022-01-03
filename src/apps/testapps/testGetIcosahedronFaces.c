@@ -135,4 +135,10 @@ SUITE(getIcosahedronFaces) {
             }
         }
     }
+
+    TEST(invalid) {
+        H3Index invalid = 0xFFFFFFFFFFFFFFFF;
+        int out;
+        t_assert(H3_EXPORT(getIcosahedronFaces)(invalid, &out) == E_CELL_INVALID, "Invalid cell");
+    }
 }
