@@ -35,37 +35,39 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 
     // fuzz compactCells
     H3Index *compacted = calloc(inputSize, sizeof(H3Index));
-    H3_EXPORT(compactCells)(input, compacted, inputSize);
+    H3Error compactErr = H3_EXPORT(compactCells)(input, compacted, inputSize);
 
     // fuzz uncompactCells using output of above
-    int compactedCount = 0;
-    for (int i = 0; i < inputSize; i++) {
-        if (compacted[i] != H3_NULL) {
-            compactedCount++;
+    if (!compactErr) {
+        int compactedCount = 0;
+        for (int i = 0; i < inputSize; i++) {
+            if (compacted[i] != H3_NULL) {
+                compactedCount++;
+            }
         }
-    }
-    if (compactedCount < 2) {
-        int64_t uncompactedSize;
-        H3Error err = H3_EXPORT(uncompactCellsSize)(
-            compacted, inputSize, uncompactRes, &uncompactedSize);
-        if (!err) {
-            H3Index *uncompacted = calloc(uncompactedSize, sizeof(H3Index));
-            H3_EXPORT(uncompactCells)
-            (compacted, compactedCount, uncompacted, uncompactedSize,
-             uncompactRes);
-            free(uncompacted);
+        if (compactedCount < 2) {
+            int64_t uncompactedSize;
+            H3Error err = H3_EXPORT(uncompactCellsSize)(
+                compacted, inputSize, uncompactRes, &uncompactedSize);
+            if (!err) {
+                H3Index *uncompacted = calloc(uncompactedSize, sizeof(H3Index));
+                H3_EXPORT(uncompactCells)
+                (compacted, compactedCount, uncompacted, uncompactedSize,
+                 uncompactRes);
+                free(uncompacted);
+            }
         }
     }
 
     // fuzz uncompactCells using the original input
     int64_t uncompactedSize;
-    H3Error err = H3_EXPORT(uncompactCellsSize)(compacted, inputSize, res,
-                                                &uncompactedSize);
+    H3Error err =
+        H3_EXPORT(uncompactCellsSize)(input, inputSize, res, &uncompactedSize);
 
     if (!err) {
         H3Index *uncompacted = calloc(uncompactedSize, sizeof(H3Index));
         H3_EXPORT(uncompactCells)
-        (compacted, compactedCount, uncompacted, uncompactedSize, res);
+        (input, inputSize, uncompacted, uncompactedSize, res);
         free(uncompacted);
     }
     free(compacted);

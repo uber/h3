@@ -25,6 +25,9 @@ typedef struct {
     int res;
     int numHoles;
     // repeating: num verts, verts
+    // We add a large fixed buffer so our test case generator for AL
+    // knows how large to make the file.
+    uint8_t buffer[1024];
 } inputArgs;
 
 const int MAX_RES = 15;
@@ -52,6 +55,7 @@ void run(GeoPolygon *geoPolygon, int res) {
     H3Error err = H3_EXPORT(maxPolygonToCellsSize)(geoPolygon, res, &sz);
     if (!err && sz < MAX_SZ) {
         if (sz < 0) {
+            // TODO: Check on this once rebased
             printf("Oh no - sz is negative\n");
         }
         H3Index *out = calloc(sz, sizeof(H3Index));
