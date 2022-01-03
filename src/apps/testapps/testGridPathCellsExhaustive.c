@@ -48,11 +48,15 @@ static void gridPathCells_assertions(H3Index start, H3Index end) {
 
     for (int i = 1; i < sz; i++) {
         t_assert(H3_EXPORT(isValidCell)(line[i]), "index is valid");
-        t_assert(H3_EXPORT(areNeighborCells)(line[i], line[i - 1]),
-                 "index is a neighbor of the previous index");
+        int isNeighbor;
+        t_assertSuccess(
+            H3_EXPORT(areNeighborCells)(line[i], line[i - 1], &isNeighbor));
+        t_assert(isNeighbor, "index is a neighbor of the previous index");
         if (i > 1) {
+            t_assertSuccess(
+                H3_EXPORT(areNeighborCells)(line[i], line[i - 2], &isNeighbor));
             t_assert(
-                !H3_EXPORT(areNeighborCells)(line[i], line[i - 2]),
+                !isNeighbor,
                 "index is not a neighbor of the index before the previous");
         }
     }

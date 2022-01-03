@@ -37,15 +37,20 @@ SUITE(directedEdge) {
         H3Index ring[7] = {0};
         t_assertSuccess(H3_EXPORT(gridRingUnsafe)(sf, 1, ring));
 
-        t_assert(H3_EXPORT(areNeighborCells)(sf, sf) == 0,
-                 "an index does not neighbor itself");
+        int isNeighbor;
+        t_assertSuccess(H3_EXPORT(areNeighborCells)(sf, sf, &isNeighbor));
+        t_assert(!isNeighbor, "an index does not neighbor itself");
 
         int neighbors = 0;
         int64_t neighborsSize;
         t_assertSuccess(H3_EXPORT(maxGridDiskSize)(1, &neighborsSize));
         for (int64_t i = 0; i < neighborsSize; i++) {
-            if (ring[i] != 0 && H3_EXPORT(areNeighborCells)(sf, ring[i])) {
-                neighbors++;
+            if (ring[i] != 0) {
+                t_assertSuccess(
+                    H3_EXPORT(areNeighborCells)(sf, ring[i], &isNeighbor));
+                if (isNeighbor) {
+                    neighbors++;
+                }
             }
         }
         t_assert(neighbors == 6,
@@ -57,9 +62,12 @@ SUITE(directedEdge) {
         neighbors = 0;
         t_assertSuccess(H3_EXPORT(maxGridDiskSize)(2, &neighborsSize));
         for (int64_t i = 0; i < neighborsSize; i++) {
-            if (largerRing[i] != 0 &&
-                H3_EXPORT(areNeighborCells)(sf, largerRing[i])) {
-                neighbors++;
+            if (largerRing[i] != 0) {
+                t_assertSuccess(H3_EXPORT(areNeighborCells)(sf, largerRing[i],
+                                                            &isNeighbor));
+                if (isNeighbor) {
+                    neighbors++;
+                }
             }
         }
         t_assert(neighbors == 0,
@@ -67,18 +75,22 @@ SUITE(directedEdge) {
 
         H3Index sfBroken = sf;
         H3_SET_MODE(sfBroken, H3_DIRECTEDEDGE_MODE);
-        t_assert(H3_EXPORT(areNeighborCells)(sf, sfBroken) == 0,
+        t_assert(H3_EXPORT(areNeighborCells)(sf, sfBroken, &isNeighbor) ==
+                     E_CELL_INVALID,
                  "broken H3Indexes can't be neighbors");
-        t_assert(H3_EXPORT(areNeighborCells)(sfBroken, sf) == 0,
+        t_assert(H3_EXPORT(areNeighborCells)(sfBroken, sf, &isNeighbor) ==
+                     E_CELL_INVALID,
                  "broken H3Indexes can't be neighbors (reversed)");
 
         H3Index sfBigger;
         t_assertSuccess(H3_EXPORT(latLngToCell)(&sfGeo, 7, &sfBigger));
-        t_assert(H3_EXPORT(areNeighborCells)(sf, sfBigger) == 0,
+        t_assert(H3_EXPORT(areNeighborCells)(sf, sfBigger, &isNeighbor) ==
+                     E_RES_MISMATCH,
                  "hexagons of different resolution can't be neighbors");
 
-        t_assert(H3_EXPORT(areNeighborCells)(ring[2], ring[1]) == 1,
-                 "hexagons in a ring are neighbors");
+        t_assertSuccess(
+            H3_EXPORT(areNeighborCells)(ring[2], ring[1], &isNeighbor));
+        t_assert(isNeighbor, "hexagons in a ring are neighbors");
     }
 
     TEST(cellsToDirectedEdgeAndFriends) {
