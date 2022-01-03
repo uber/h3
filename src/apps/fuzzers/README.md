@@ -22,11 +22,11 @@ such as the H3 core library.
 | degsToRads | Trivial
 | radsToDegs | Trivial
 | distance | [fuzzerDistances](./fuzzerDistances.c)
-| getHexagonAreaAvg | Trivial
+| getHexagonAreaAvg | [fuzzerResolutions](./fuzzerResolutions.c)
 | cellArea | [fuzzerCellArea](./fuzzerCellArea.c)
-| getHexagonEdgeLengthAvg | Trivial
+| getHexagonEdgeLengthAvg | [fuzzerResolutions](./fuzzerResolutions.c)
 | exactEdgeLength | [fuzzerExactEdgeLength](./fuzzerExactEdgeLength.c)
-| getNumCells | Trivial
+| getNumCells | [fuzzerResolutions](./fuzzerResolutions.c)
 | getRes0Cells | Trivial
 | getPentagons | [fuzzerResolutions](./fuzzerResolutions.c)
 | getResolution | [fuzzerCellProperties](./fuzzerCellProperties.c)

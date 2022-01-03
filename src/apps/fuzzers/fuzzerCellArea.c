@@ -31,9 +31,10 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     }
     const inputArgs *args = (const inputArgs *)data;
 
-    H3_EXPORT(cellAreaRads2)(args->index);
-    H3_EXPORT(cellAreaKm2)(args->index);
-    H3_EXPORT(cellAreaM2)(args->index);
+    double out;
+    H3_EXPORT(cellAreaRads2)(args->index, &out);
+    H3_EXPORT(cellAreaKm2)(args->index, &out);
+    H3_EXPORT(cellAreaM2)(args->index, &out);
 
     return 0;
 }

@@ -34,7 +34,8 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 
     // Note that index and index2 need to be plausibly neighbors
     // for most of these
-    H3_EXPORT(areNeighborCells)(args->index, args->index2);
+    int outBool;
+    H3_EXPORT(areNeighborCells)(args->index, args->index2, &outBool);
     H3Index out;
     H3_EXPORT(cellsToDirectedEdge)(args->index, args->index2, &out);
     H3_EXPORT(isValidDirectedEdge)(args->index);

@@ -316,14 +316,14 @@ DECLSPEC double H3_EXPORT(radsToDegs)(double radians);
  * @{
  */
 /** @brief "great circle distance" between pairs of LatLng points in radians*/
-double H3_EXPORT(distanceRads)(const LatLng *a, const LatLng *b);
+DECLSPEC double H3_EXPORT(distanceRads)(const LatLng *a, const LatLng *b);
 
 /** @brief "great circle distance" between pairs of LatLng points in
  * kilometers*/
-double H3_EXPORT(distanceKm)(const LatLng *a, const LatLng *b);
+DECLSPEC double H3_EXPORT(distanceKm)(const LatLng *a, const LatLng *b);
 
 /** @brief "great circle distance" between pairs of LatLng points in meters*/
-double H3_EXPORT(distanceM)(const LatLng *a, const LatLng *b);
+DECLSPEC double H3_EXPORT(distanceM)(const LatLng *a, const LatLng *b);
 /** @} */
 
 /** @defgroup getHexagonAreaAvg getHexagonAreaAvg
@@ -331,10 +331,10 @@ double H3_EXPORT(distanceM)(const LatLng *a, const LatLng *b);
  * @{
  */
 /** @brief average hexagon area in square kilometers (excludes pentagons) */
-DECLSPEC double H3_EXPORT(getHexagonAreaAvgKm2)(int res);
+DECLSPEC H3Error H3_EXPORT(getHexagonAreaAvgKm2)(int res, double *out);
 
 /** @brief average hexagon area in square meters (excludes pentagons) */
-DECLSPEC double H3_EXPORT(getHexagonAreaAvgM2)(int res);
+DECLSPEC H3Error H3_EXPORT(getHexagonAreaAvgM2)(int res, double *out);
 /** @} */
 
 /** @defgroup cellArea cellArea
@@ -342,14 +342,14 @@ DECLSPEC double H3_EXPORT(getHexagonAreaAvgM2)(int res);
  * @{
  */
 /** @brief exact area for a specific cell (hexagon or pentagon) in radians^2 */
-double H3_EXPORT(cellAreaRads2)(H3Index h);
+DECLSPEC H3Error H3_EXPORT(cellAreaRads2)(H3Index h, double *out);
 
 /** @brief exact area for a specific cell (hexagon or pentagon) in kilometers^2
  */
-double H3_EXPORT(cellAreaKm2)(H3Index h);
+DECLSPEC H3Error H3_EXPORT(cellAreaKm2)(H3Index h, double *out);
 
 /** @brief exact area for a specific cell (hexagon or pentagon) in meters^2 */
-double H3_EXPORT(cellAreaM2)(H3Index h);
+DECLSPEC H3Error H3_EXPORT(cellAreaM2)(H3Index h, double *out);
 /** @} */
 
 /** @defgroup getHexagonEdgeLengthAvg getHexagonEdgeLengthAvg
@@ -357,10 +357,10 @@ double H3_EXPORT(cellAreaM2)(H3Index h);
  * @{
  */
 /** @brief average hexagon edge length in kilometers (excludes pentagons) */
-DECLSPEC double H3_EXPORT(getHexagonEdgeLengthAvgKm)(int res);
+DECLSPEC H3Error H3_EXPORT(getHexagonEdgeLengthAvgKm)(int res, double *out);
 
 /** @brief average hexagon edge length in meters (excludes pentagons) */
-DECLSPEC double H3_EXPORT(getHexagonEdgeLengthAvgM)(int res);
+DECLSPEC H3Error H3_EXPORT(getHexagonEdgeLengthAvgM)(int res, double *out);
 /** @} */
 
 /** @defgroup exactEdgeLength exactEdgeLength
@@ -368,13 +368,13 @@ DECLSPEC double H3_EXPORT(getHexagonEdgeLengthAvgM)(int res);
  * @{
  */
 /** @brief exact length for a specific directed edge in radians*/
-H3Error H3_EXPORT(exactEdgeLengthRads)(H3Index edge, double *length);
+DECLSPEC H3Error H3_EXPORT(exactEdgeLengthRads)(H3Index edge, double *length);
 
 /** @brief exact length for a specific directed edge in kilometers*/
-H3Error H3_EXPORT(exactEdgeLengthKm)(H3Index edge, double *length);
+DECLSPEC H3Error H3_EXPORT(exactEdgeLengthKm)(H3Index edge, double *length);
 
 /** @brief exact length for a specific directed edge in meters*/
-H3Error H3_EXPORT(exactEdgeLengthM)(H3Index edge, double *length);
+DECLSPEC H3Error H3_EXPORT(exactEdgeLengthM)(H3Index edge, double *length);
 /** @} */
 
 /** @defgroup getNumCells getNumCells
@@ -423,7 +423,7 @@ H3Error H3_EXPORT(exactEdgeLengthM)(H3Index edge, double *length);
  *
  * @return       number of cells at resolution `res`
  */
-DECLSPEC int64_t H3_EXPORT(getNumCells)(int res);
+DECLSPEC H3Error H3_EXPORT(getNumCells)(int res, int64_t *out);
 /** @} */
 
 /** @defgroup getRes0Cells getRes0Cells
@@ -434,7 +434,7 @@ DECLSPEC int64_t H3_EXPORT(getNumCells)(int res);
 DECLSPEC int H3_EXPORT(res0CellCount)();
 
 /** @brief provides all base cells in H3Index format*/
-DECLSPEC void H3_EXPORT(getRes0Cells)(H3Index *out);
+DECLSPEC H3Error H3_EXPORT(getRes0Cells)(H3Index *out);
 /** @} */
 
 /** @defgroup getPentagons getPentagons
@@ -586,7 +586,8 @@ DECLSPEC H3Error H3_EXPORT(getIcosahedronFaces)(H3Index h3, int *out);
  * @{
  */
 /** @brief returns whether or not the provided hexagons border */
-DECLSPEC int H3_EXPORT(areNeighborCells)(H3Index origin, H3Index destination);
+DECLSPEC H3Error H3_EXPORT(areNeighborCells)(H3Index origin,
+                                             H3Index destination, int *out);
 /** @} */
 
 /** @defgroup cellsToDirectedEdge cellsToDirectedEdge
