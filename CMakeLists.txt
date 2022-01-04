@@ -1,4 +1,4 @@
-# Copyright 2017-2021 Uber Technologies, Inc.
+# Copyright 2017-2022 Uber Technologies, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.20) # Due to dependency on CMP0115
 
 set(H3_PREFIX "" CACHE STRING "Prefix for exported symbols")
 set(H3_ALLOC_PREFIX "" CACHE STRING "Prefix for allocation functions")
@@ -534,15 +534,21 @@ if(H3_IS_ROOT_PROJECT AND BUILD_TESTING)
     endmacro()
 
     macro(add_h3_cli_test name h3_args expect_string)
-        add_test(NAME ${name}_test${test_number}
-                 # /usr/bin/sh -c "test \"`./bin/h3 cellToLatLng -c 8928342e20fffff`\" = \"37.5012466151, -122.5003039349\""
-                 COMMAND ${SHELL} "test \"`./bin/h3 ${h3_args}`\" = '${expect_string}'")
-
-        if(PRINT_TEST_FILES)
-            message("${name}_test${test_number} - ${argfile}")
+        # Determine the h3 binary name
+        if(WIN32)
+            set(H3CLI ./bin/h3.exe)
+        else()
+            set(H3CLI ./bin/h3)
         endif()
 
-        # No coverage possible for H3 CLI testing
+        add_test(NAME ${name}_test${test_number}
+            COMMAND ${SHELL} "test \"`${H3CLI} ${h3_args}`\" = '${expect_string}'")
+
+        if(PRINT_TEST_FILES)
+            message("${name}_test${test_number} - ${expect_string}")
+        endif()
+
+        # TODO: Build a coverage-enabled variant of the h3 cli app to enable coverage
     endmacro()
 
     macro(add_h3_test_with_arg name srcfile arg)
