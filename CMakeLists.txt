@@ -536,6 +536,8 @@ if(H3_IS_ROOT_PROJECT AND BUILD_TESTING)
     macro(add_h3_cli_test name h3_args expect_string)
         # Determine the h3 binary name
         if(WIN32)
+            # I need to know what the PWD is
+            execute_process(COMMAND pwd)
             set(H3CLI ./build/bin/Release/h3.exe)
         else()
             set(H3CLI ./bin/h3)
