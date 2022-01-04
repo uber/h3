@@ -537,7 +537,9 @@ if(H3_IS_ROOT_PROJECT AND BUILD_TESTING)
         # Determine the h3 binary name
         if(WIN32)
             # I need to know what the PWD is
-            execute_process(COMMAND pwd)
+            add_test(NAME ${name}_test2${test_number}
+                COMMAND ${SHELL} "pwd && exit 1")
+
             set(H3CLI ./build/bin/Release/h3.exe)
         else()
             set(H3CLI ./bin/h3)
