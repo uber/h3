@@ -534,16 +534,8 @@ if(H3_IS_ROOT_PROJECT AND BUILD_TESTING)
     endmacro()
 
     macro(add_h3_cli_test name h3_args expect_string)
-        # Determine the h3 binary name
-        if(WIN32)
-          #set(H3CLI ./bin/$<IF:$<CONFIG:Debug>,Debug,Release>/h3.exe)
-          set(H3CLI $<TARGET_FILE:h3_bin>)
-        else()
-            set(H3CLI ./bin/h3)
-        endif()
-
         add_test(NAME ${name}_test${test_number}
-            COMMAND ${SHELL} "test \"`${H3CLI} ${h3_args}`\" = '${expect_string}'")
+          COMMAND ${SHELL} "test \"`$<TARGET_FILE:h3_bin> ${h3_args}`\" = '${expect_string}'")
 
         if(PRINT_TEST_FILES)
             message("${name}_test${test_number} - ${expect_string}")
