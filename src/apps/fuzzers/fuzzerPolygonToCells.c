@@ -65,8 +65,8 @@ void run(GeoPolygon *geoPolygon, int res) {
 }
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
-    // TODO: It is difficult for the fuzzer to generate inputs that are considered
-    // valid by this fuzzer.
+    // TODO: It is difficult for the fuzzer to generate inputs that are
+    // considered valid by this fuzzer.
     if (size < sizeof(inputArgs)) {
         return 0;
     }
