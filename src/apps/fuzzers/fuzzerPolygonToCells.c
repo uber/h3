@@ -25,7 +25,7 @@ typedef struct {
     int res;
     int numHoles;
     // repeating: num verts, verts
-    // We add a large fixed buffer so our test case generator for AL
+    // We add a large fixed buffer so our test case generator for AFL
     // knows how large to make the file.
     uint8_t buffer[1024];
 } inputArgs;
@@ -65,6 +65,8 @@ void run(GeoPolygon *geoPolygon, int res) {
 }
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
+    // TODO: It is difficult for the fuzzer to generate inputs that are considered
+    // valid by this fuzzer.
     if (size < sizeof(inputArgs)) {
         return 0;
     }
@@ -77,7 +79,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         return 0;
     }
     geoPolygon.holes = calloc(geoPolygon.numHoles, sizeof(GeoLoop));
-    size_t offset = sizeof(inputArgs);
+    size_t offset = sizeof(inputArgs) - sizeof(args->buffer);
     if (populateGeoLoop(&geoPolygon.geoloop, data, &offset, size)) {
         free(geoPolygon.holes);
         return 0;
