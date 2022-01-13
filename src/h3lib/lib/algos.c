@@ -335,6 +335,9 @@ H3Error h3NeighborRotations(H3Index origin, Direction dir, int *rotations,
                             H3Index *out) {
     H3Index current = origin;
 
+    if (dir < CENTER_DIGIT || dir >= INVALID_DIGIT) {
+        return E_FAILED;
+    }
     for (int i = 0; i < *rotations; i++) {
         dir = _rotate60ccw(dir);
     }
