@@ -151,11 +151,12 @@ void h3ToLocalIj_invalid_assertions(H3Index h3) {
         if (H3_EXPORT(experimentalH3ToLocalIj)(h3, neighbors[i], &ij) == 0) {
             for (int j = 0; j < 2; j++) {
                 Direction dir = j == 0 ? INVALID_DIGIT : K_AXES_DIGIT;
-                // Valgrind / fuzzer is used to test these assertions
+                // Valgrind / ASAN / UBSAN are used to test these assertions
                 H3Index h3Invalid = h3;
                 H3_SET_INDEX_DIGIT(h3Invalid, 0, dir);
                 CoordIJ ij2;
-                H3_EXPORT(experimentalH3ToLocalIj)(h3Invalid, neighbors[i], &ij2);
+                H3_EXPORT(experimentalH3ToLocalIj)
+                (h3Invalid, neighbors[i], &ij2);
                 H3Index neighborInvalid = neighbors[i];
                 H3_SET_INDEX_DIGIT(neighborInvalid, 0, dir);
                 H3_EXPORT(experimentalH3ToLocalIj)(h3, neighborInvalid, &ij2);
