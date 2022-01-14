@@ -131,8 +131,6 @@ void h3ToLocalIj_invalid_assertions(H3Index h3) {
     int r = H3_GET_RESOLUTION(h3);
     t_assert(r > 0, "resolution supported by test function (invalid digits)");
     t_assert(r <= 5, "resolution supported by test function (invalid digits)");
-    H3Index h3Invalid = h3;
-    H3_SET_INDEX_DIGIT(h3Invalid, 0, INVALID_DIGIT);
     int maxK = MAX_DISTANCES[r];
 
     int64_t sz;
@@ -151,14 +149,19 @@ void h3ToLocalIj_invalid_assertions(H3Index h3) {
         CoordIJ ij;
         // Don't consider indexes which we can't unfold in the first place
         if (H3_EXPORT(experimentalH3ToLocalIj)(h3, neighbors[i], &ij) == 0) {
-            // Valgrind / fuzzer is used to test these assertions
-            CoordIJ ij2;
-            H3_EXPORT(experimentalH3ToLocalIj)(h3Invalid, neighbors[i], &ij2);
-            H3Index neighborInvalid = neighbors[i];
-            H3_SET_INDEX_DIGIT(neighborInvalid, 0, INVALID_DIGIT);
-            H3_EXPORT(experimentalH3ToLocalIj)(h3, neighborInvalid, &ij2);
-            H3Index out;
-            H3_EXPORT(experimentalLocalIjToH3)(h3Invalid, &ij, &out);
+            for (int j = 0; j < 2; j++) {
+                Direction dir = j == 0 ? INVALID_DIGIT : K_AXES_DIGIT;
+                // Valgrind / fuzzer is used to test these assertions
+                H3Index h3Invalid = h3;
+                H3_SET_INDEX_DIGIT(h3Invalid, 0, dir);
+                CoordIJ ij2;
+                H3_EXPORT(experimentalH3ToLocalIj)(h3Invalid, neighbors[i], &ij2);
+                H3Index neighborInvalid = neighbors[i];
+                H3_SET_INDEX_DIGIT(neighborInvalid, 0, dir);
+                H3_EXPORT(experimentalH3ToLocalIj)(h3, neighborInvalid, &ij2);
+                H3Index out;
+                H3_EXPORT(experimentalLocalIjToH3)(h3Invalid, &ij, &out);
+            }
         }
     }
 
