@@ -1055,6 +1055,8 @@ H3Error h3SetToVertexGraph(const H3Index *h3Set, const int numHexes,
     for (int i = 0; i < numHexes; i++) {
         H3Error boundaryErr = H3_EXPORT(cellToBoundary)(h3Set[i], &vertices);
         if (boundaryErr) {
+            // Destroy vertex graph as caller will not know to do so.
+            destroyVertexGraph(graph);
             return boundaryErr;
         }
         // iterate through every edge
