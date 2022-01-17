@@ -27,6 +27,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 
     LinkedGeoPolygon polygon;
     H3Error err = H3_EXPORT(h3SetToLinkedGeo)(h3Set, sz, &polygon);
+
     if (!err) {
         H3_EXPORT(destroyLinkedPolygon)(&polygon);
     }
