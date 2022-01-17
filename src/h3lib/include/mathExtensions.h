@@ -26,6 +26,7 @@
  * MAX returns the maximum of two values.
  */
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
 // Internal functions
 int64_t _ipow(int64_t base, int64_t exp);
