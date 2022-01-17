@@ -121,7 +121,7 @@ if(H3_IS_ROOT_PROJECT AND BUILD_TESTING)
           COMMAND ${SHELL} "test \"`$<TARGET_FILE:h3_bin> ${h3_args}`\" = '${expect_string}'")
 
         if(PRINT_TEST_FILES)
-            message("${name}_test${test_number} - ${expect_string}")
+            message("${name}_test${test_number} - ${h3_args} - ${expect_string}")
         endif()
 
         # TODO: Build a coverage-enabled variant of the h3 cli app to enable coverage
