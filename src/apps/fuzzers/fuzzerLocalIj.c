@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 /** @file
- * @brief Fuzzer program for cellToLatLng and cellToBoundary
+ * @brief Fuzzer program for local IJ and related functions (gridDistance,
+ * gridPathCells)
  */
 
 #include "aflHarness.h"
@@ -23,17 +24,41 @@
 
 typedef struct {
     H3Index index;
+    H3Index index2;
+    int i;
+    int j;
 } inputArgs;
+
+void testTwoIndexes(H3Index index, H3Index index2) {
+    int64_t distance;
+    H3_EXPORT(gridDistance)(index, index2, &distance);
+    int64_t size;
+    H3Error err = H3_EXPORT(gridPathCellsSize)(index, index2, &size);
+    if (!err) {
+        H3Index *output = calloc(size, sizeof(H3Index));
+        H3_EXPORT(gridPathCells)(index, index2, output);
+        free(output);
+    }
+}
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     if (size < sizeof(inputArgs)) {
         return 0;
     }
     const inputArgs *args = (const inputArgs *)data;
-    LatLng geo;
-    H3_EXPORT(cellToLatLng)(args->index, &geo);
-    CellBoundary cellBoundary;
-    H3_EXPORT(cellToBoundary)(args->index, &cellBoundary);
+
+    // Note that index and index2 need to be in the approximate area for these
+    // tests to make sense.
+    testTwoIndexes(args->index, args->index2);
+    H3Index out;
+    CoordIJ ij = {.i = args->i, .j = args->j};
+    H3Error err = H3_EXPORT(experimentalLocalIjToH3)(args->index, &ij, &out);
+    if (!err) {
+        testTwoIndexes(args->index, out);
+    }
+
+    H3_EXPORT(experimentalH3ToLocalIj)(args->index, args->index2, &ij);
+
     return 0;
 }
 

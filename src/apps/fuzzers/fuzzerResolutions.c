@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 /** @file
- * @brief Fuzzer program for latLngToCell
+ * @brief Fuzzer program for resolution specific functions
  */
 
 #include "aflHarness.h"
 #include "h3api.h"
+#include "utility.h"
 
 typedef struct {
-    double lat;
-    double lng;
     int res;
 } inputArgs;
 
@@ -31,9 +30,18 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         return 0;
     }
     const inputArgs *args = (const inputArgs *)data;
-    LatLng g = {.lat = args->lat, .lng = args->lng};
-    H3Index h;
-    H3_EXPORT(latLngToCell)(&g, args->res, &h);
+
+    double out;
+    H3_EXPORT(getHexagonAreaAvgKm2)(args->res, &out);
+    H3_EXPORT(getHexagonAreaAvgM2)(args->res, &out);
+    H3_EXPORT(getHexagonEdgeLengthAvgKm)(args->res, &out);
+    H3_EXPORT(getHexagonEdgeLengthAvgM)(args->res, &out);
+
+    int64_t outInt;
+    H3_EXPORT(getNumCells)(args->res, &outInt);
+
+    H3Index pentagons[12];
+    H3_EXPORT(getPentagons)(args->res, pentagons);
 
     return 0;
 }

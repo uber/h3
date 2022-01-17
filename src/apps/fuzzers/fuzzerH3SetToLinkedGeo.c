@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 /** @file
- * @brief Fuzzer program for latLngToCell
+ * @brief Fuzzer program for h3SetToLinkedGeo
  */
 
 #include "aflHarness.h"
 #include "h3api.h"
+#include "utility.h"
 
 typedef struct {
-    double lat;
-    double lng;
-    int res;
+    H3Index h3Set[1024];
+    int sz;
 } inputArgs;
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
@@ -31,10 +31,15 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         return 0;
     }
     const inputArgs *args = (const inputArgs *)data;
-    LatLng g = {.lat = args->lat, .lng = args->lng};
-    H3Index h;
-    H3_EXPORT(latLngToCell)(&g, args->res, &h);
+    if (args->sz >= 1024) {
+        return 0;
+    }
 
+    LinkedGeoPolygon polygon;
+    H3Error err = H3_EXPORT(h3SetToLinkedGeo)(args->h3Set, args->sz, &polygon);
+    if (!err) {
+        H3_EXPORT(destroyLinkedPolygon)(&polygon);
+    }
     return 0;
 }
 

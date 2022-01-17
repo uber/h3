@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 /** @file
- * @brief Fuzzer program for latLngToCell
+ * @brief Fuzzer program for distanceRads
  */
 
 #include "aflHarness.h"
 #include "h3api.h"
+#include "utility.h"
 
 typedef struct {
-    double lat;
-    double lng;
-    int res;
+    LatLng a;
+    LatLng b;
 } inputArgs;
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
@@ -31,9 +31,10 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         return 0;
     }
     const inputArgs *args = (const inputArgs *)data;
-    LatLng g = {.lat = args->lat, .lng = args->lng};
-    H3Index h;
-    H3_EXPORT(latLngToCell)(&g, args->res, &h);
+
+    H3_EXPORT(distanceRads)(&args->a, &args->b);
+    H3_EXPORT(distanceKm)(&args->a, &args->b);
+    H3_EXPORT(distanceM)(&args->a, &args->b);
 
     return 0;
 }

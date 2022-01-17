@@ -44,6 +44,9 @@ option(BUILD_BENCHMARKS "Build benchmarking applications." ON)
 option(BUILD_FUZZERS "Build fuzzer applications (for use with afl)." ON)
 option(BUILD_FILTERS "Build filter applications." ON)
 option(BUILD_GENERATORS "Build code generation applications." ON)
+# If ON, libfuzzer settings are used to build the fuzzer harnesses. If OFF, a frontend
+# for afl++ is provided instead.
+option(ENABLE_LIBFUZZER "Build fuzzers with libFuzzer support." OFF)
 
 if(WIN32)
     # Use bash (usually from Git for Windows) for piping results
@@ -88,6 +91,10 @@ if(NOT WIN32)
         # --coverage is not passed to the linker, so this option is needed
         # to fully enable coverage.
         list(APPEND H3_LINK_FLAGS $<$<CONFIG:Debug>:--coverage>)
+    endif()
+    if(ENABLE_LIBFUZZER)
+        list(APPEND H3_COMPILE_FLAGS -fsanitize=fuzzer,address,undefined)
+        list(APPEND H3_LINK_FLAGS -fsanitize=fuzzer,address,undefined)
     endif()
 
     option(WARNINGS_AS_ERRORS "Warnings are treated as errors" OFF)
@@ -143,6 +150,7 @@ set(APP_SOURCE_FILES
     src/apps/applib/include/benchmark.h
     src/apps/applib/include/utility.h
     src/apps/applib/include/args.h
+    src/apps/applib/include/aflHarness.h
     src/apps/applib/lib/kml.c
     src/apps/applib/lib/utility.c
     src/apps/applib/lib/args.c)
@@ -219,6 +227,19 @@ set(OTHER_SOURCE_FILES
     src/apps/fuzzers/fuzzerLatLngToCell.c
     src/apps/fuzzers/fuzzerCellToLatLng.c
     src/apps/fuzzers/fuzzerGridDisk.c
+    src/apps/fuzzers/fuzzerH3SetToLinkedGeo.c
+    src/apps/fuzzers/fuzzerDistances.c
+    src/apps/fuzzers/fuzzerCellArea.c
+    src/apps/fuzzers/fuzzerExactEdgeLength.c
+    src/apps/fuzzers/fuzzerCellProperties.c
+    src/apps/fuzzers/fuzzerIndexIO.c
+    src/apps/fuzzers/fuzzerResolutions.c
+    src/apps/fuzzers/fuzzerHierarchy.c
+    src/apps/fuzzers/fuzzerVertexes.c
+    src/apps/fuzzers/fuzzerCompact.c
+    src/apps/fuzzers/fuzzerDirectedEdge.c
+    src/apps/fuzzers/fuzzerLocalIj.c
+    src/apps/fuzzers/fuzzerPolygonToCells.c
     src/apps/benchmarks/benchmarkPolygonToCells.c
     src/apps/benchmarks/benchmarkPolygon.c
     src/apps/benchmarks/benchmarkH3SetToLinkedGeo.c
@@ -635,12 +656,28 @@ if(BUILD_FUZZERS)
 
     macro(add_h3_fuzzer name srcfile)
         add_h3_executable(${name} ${srcfile} ${APP_SOURCE_FILES})
+        if(ENABLE_LIBFUZZER)
+            target_compile_definitions(${name} PRIVATE H3_USE_LIBFUZZER)
+        endif()
         add_dependencies(fuzzers ${name})
     endmacro()
 
     add_h3_fuzzer(fuzzerLatLngToCell src/apps/fuzzers/fuzzerLatLngToCell.c)
     add_h3_fuzzer(fuzzerCellToLatLng src/apps/fuzzers/fuzzerCellToLatLng.c)
     add_h3_fuzzer(fuzzerGridDisk src/apps/fuzzers/fuzzerGridDisk.c)
+    add_h3_fuzzer(fuzzerH3SetToLinkedGeo src/apps/fuzzers/fuzzerH3SetToLinkedGeo.c)
+    add_h3_fuzzer(fuzzerDistances src/apps/fuzzers/fuzzerDistances.c)
+    add_h3_fuzzer(fuzzerCellArea src/apps/fuzzers/fuzzerCellArea.c)
+    add_h3_fuzzer(fuzzerExactEdgeLength src/apps/fuzzers/fuzzerExactEdgeLength.c)
+    add_h3_fuzzer(fuzzerCellProperties src/apps/fuzzers/fuzzerCellProperties.c)
+    add_h3_fuzzer(fuzzerIndexIO src/apps/fuzzers/fuzzerIndexIO.c)
+    add_h3_fuzzer(fuzzerResolutions src/apps/fuzzers/fuzzerResolutions.c)
+    add_h3_fuzzer(fuzzerHierarchy src/apps/fuzzers/fuzzerHierarchy.c)
+    add_h3_fuzzer(fuzzerVertexes src/apps/fuzzers/fuzzerVertexes.c)
+    add_h3_fuzzer(fuzzerCompact src/apps/fuzzers/fuzzerCompact.c)
+    add_h3_fuzzer(fuzzerDirectedEdge src/apps/fuzzers/fuzzerDirectedEdge.c)
+    add_h3_fuzzer(fuzzerLocalIj src/apps/fuzzers/fuzzerLocalIj.c)
+    add_h3_fuzzer(fuzzerPolygonToCells src/apps/fuzzers/fuzzerPolygonToCells.c)
 endif()
 
 if(BUILD_BENCHMARKS)

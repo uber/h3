@@ -940,7 +940,10 @@ H3Error H3_EXPORT(getIcosahedronFaces)(H3Index h3, int *out) {
 
     // convert to FaceIJK
     FaceIJK fijk;
-    _h3ToFaceIjk(h3, &fijk);
+    H3Error err = _h3ToFaceIjk(h3, &fijk);
+    if (err) {
+        return err;
+    }
 
     // Get all vertices as FaceIJK addresses. For simplicity, always
     // initialize the array with 6 verts, ignoring the last one for pentagons
@@ -983,7 +986,14 @@ H3Error H3_EXPORT(getIcosahedronFaces)(H3Index h3, int *out) {
         int pos = 0;
         // Find the first empty output position, or the first position
         // matching the current face
-        while (out[pos] != INVALID_FACE && out[pos] != face) pos++;
+        while (out[pos] != INVALID_FACE && out[pos] != face) {
+            pos++;
+            if (pos >= faceCount) {
+                // Mismatch between the heuristic used in maxFaceCount and
+                // calculation here - indicates an invalid index.
+                return E_FAILED;
+            }
+        }
         out[pos] = face;
     }
     return E_SUCCESS;

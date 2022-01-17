@@ -41,4 +41,8 @@ SUITE(baseCells) {
         t_assert(_baseCellToCCWrot60(16, -1) == INVALID_ROTATIONS, "should return invalid rotation for invalid face (negative)");
         t_assert(_baseCellToCCWrot60(1, 0) == INVALID_ROTATIONS, "should return invalid rotation for base cell not appearing on face");
     }
+
+    TEST(isBaseCellPentagon_invalid) {
+        t_assert(_isBaseCellPentagon(-1) == false, "isBaseCellPentagon handles negative");
+    }
 }

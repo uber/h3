@@ -14,26 +14,35 @@
  * limitations under the License.
  */
 /** @file
- * @brief Fuzzer program for latLngToCell
+ * @brief Fuzzer program for h3ToString and stringToH3
  */
 
 #include "aflHarness.h"
 #include "h3api.h"
+#include "utility.h"
+
+#define STRING_LENGTH 32
 
 typedef struct {
-    double lat;
-    double lng;
-    int res;
+    H3Index index;
+    char str[STRING_LENGTH];
 } inputArgs;
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     if (size < sizeof(inputArgs)) {
         return 0;
     }
-    const inputArgs *args = (const inputArgs *)data;
-    LatLng g = {.lat = args->lat, .lng = args->lng};
-    H3Index h;
-    H3_EXPORT(latLngToCell)(&g, args->res, &h);
+    inputArgs args;
+    // Copy the input data array since we need to modify it on the next line
+    // to ensure it is zero terminated. (We are not interested in non-zero
+    // terminated bugs since that fails the contract.)
+    memcpy(&args, data, sizeof(inputArgs));
+    args.str[STRING_LENGTH - 1] = 0;
+
+    char str[STRING_LENGTH];
+    H3_EXPORT(h3ToString)(args.index, str, STRING_LENGTH);
+    H3Index index;
+    H3_EXPORT(stringToH3)(args.str, &index);
 
     return 0;
 }

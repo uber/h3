@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 /** @file
- * @brief Fuzzer program for latLngToCell
+ * @brief Fuzzer program for cellToVertex and related functions
  */
 
 #include "aflHarness.h"
 #include "h3api.h"
+#include "utility.h"
 
 typedef struct {
-    double lat;
-    double lng;
-    int res;
+    H3Index index;
+    int vertexNum;
 } inputArgs;
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
@@ -31,10 +31,14 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         return 0;
     }
     const inputArgs *args = (const inputArgs *)data;
-    LatLng g = {.lat = args->lat, .lng = args->lng};
-    H3Index h;
-    H3_EXPORT(latLngToCell)(&g, args->res, &h);
 
+    H3Index out;
+    H3_EXPORT(cellToVertex)(args->index, args->vertexNum, &out);
+    H3Index outArr[6];
+    H3_EXPORT(cellToVertexes)(args->index, outArr);
+    LatLng geo;
+    H3_EXPORT(vertexToLatLng)(args->index, &geo);
+    H3_EXPORT(isValidVertex)(args->index);
     return 0;
 }
 

@@ -100,6 +100,14 @@ SUITE(Vertex) {
                  "invalid pent vertex should return null index");
     }
 
+    TEST(cellToVertex_invalid) {
+        H3Index invalid = 0xFFFFFFFFFFFFFFFF;
+        H3Index vert;
+        // TODO: Assert specific error
+        t_assert(H3_EXPORT(cellToVertex)(invalid, 3, &vert) != E_SUCCESS,
+                 "Invalid cell returns error");
+    }
+
     TEST(isValidVertex_hex) {
         H3Index origin = 0x823d6ffffffffff;
         H3Index vert = 0x2222597fffffffff;

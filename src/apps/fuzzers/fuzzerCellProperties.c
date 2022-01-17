@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 /** @file
- * @brief Fuzzer program for latLngToCell
+ * @brief Fuzzer program for cell property functions
  */
 
 #include "aflHarness.h"
 #include "h3api.h"
+#include "utility.h"
 
 typedef struct {
-    double lat;
-    double lng;
-    int res;
+    H3Index index;
 } inputArgs;
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
@@ -31,9 +30,20 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         return 0;
     }
     const inputArgs *args = (const inputArgs *)data;
-    LatLng g = {.lat = args->lat, .lng = args->lng};
-    H3Index h;
-    H3_EXPORT(latLngToCell)(&g, args->res, &h);
+
+    H3_EXPORT(getResolution)(args->index);
+    H3_EXPORT(getBaseCellNumber)(args->index);
+    H3_EXPORT(isValidCell)(args->index);
+    H3_EXPORT(isPentagon)(args->index);
+    H3_EXPORT(isResClassIII)(args->index);
+
+    int faceCount;
+    H3Error err = H3_EXPORT(maxFaceCount)(args->index, &faceCount);
+    if (!err && faceCount > 0) {
+        int *out = calloc(faceCount, sizeof(int));
+        H3_EXPORT(getIcosahedronFaces)(args->index, out);
+        free(out);
+    }
 
     return 0;
 }
