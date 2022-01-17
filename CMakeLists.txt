@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.9)
 
 set(H3_PREFIX "" CACHE STRING "Prefix for exported symbols")
 set(H3_ALLOC_PREFIX "" CACHE STRING "Prefix for allocation functions")
@@ -23,6 +23,9 @@ cmake_policy(SET CMP0115 NEW)
 set(CMAKE_MACOSX_RPATH 1)
 # YCM needs compilation database
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+# Interprocedural optimization
+cmake_policy(SET CMP0069 NEW)
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cmake/toolchain.cmake"
@@ -81,6 +84,7 @@ if(NOT WIN32)
     # are not correct for MSVC.
     list(APPEND H3_COMPILE_FLAGS -Wall)
 
+    list(APPEND H3_COMPILE_FLAGS $<$<CONFIG:Release>:-O2 -finline-functions>)
     list(APPEND H3_COMPILE_FLAGS $<$<CONFIG:Debug>:-gdwarf-2 -g3 -O0 -fno-inline -fno-eliminate-unused-debug-types>)
 
     if(ENABLE_COVERAGE)
@@ -311,17 +315,17 @@ elseif(NOT CLANG_FORMAT_PATH)
                     "so automatic source code reformatting is disabled")
 endif()
 
-option(ENABLE_LINTING "Run clang-tidy on source files" ON)
-find_program(CLANG_TIDY_PATH "clang-tidy")
-cmake_dependent_option(
-    ENABLE_LINTING "Enable running clang-tidy on sources during compilation" ON
-    "CLANG_TIDY_PATH" OFF)
-if(ENABLE_LINTING)
-    set_target_properties(h3 PROPERTIES C_CLANG_TIDY "${CLANG_TIDY_PATH}")
-elseif(NOT CLANG_TIDY_PATH)
-    message(WARNING "clang-tidy was not detected, "
-                  "so source code linting is disabled")
-endif()
+# option(ENABLE_LINTING "Run clang-tidy on source files" ON)
+# find_program(CLANG_TIDY_PATH "clang-tidy")
+# cmake_dependent_option(
+#     ENABLE_LINTING "Enable running clang-tidy on sources during compilation" ON
+#     "CLANG_TIDY_PATH" OFF)
+# if(ENABLE_LINTING)
+#     set_target_properties(h3 PROPERTIES C_CLANG_TIDY "${CLANG_TIDY_PATH}")
+# elseif(NOT CLANG_TIDY_PATH)
+#     message(WARNING "clang-tidy was not detected, "
+#                   "so source code linting is disabled")
+# endif()
 
 # Docs
 find_package(Doxygen)
