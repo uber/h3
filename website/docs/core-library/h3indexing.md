@@ -48,9 +48,9 @@ An H3 Cell index (mode 1) represents a cell (hexagon or pentagon) in the H3 grid
 
 The three bits for each unused digit are set to 7.
 
-### H3 Unidirectional Edge Index
+### H3 Directed Edge Index
 
-An H3 Undirectional Edge index (mode 2) represents a single directed edge between two cells (an "origin" cell and a neighboring "destination" cell). The components of the H3 Unidirectional Edge index are packed into a 64-bit integer in order, highest bit first, as follows:
+An H3 Directed Edge index (mode 2) represents a single directed edge between two cells (an "origin" cell and a neighboring "destination" cell). The components of the H3 Directed Edge index are packed into a 64-bit integer in order, highest bit first, as follows:
 
 * 1 bit reserved and set to 0,
 * 4 bits to indicate the H3 Unidirectional Edge index mode,
@@ -59,7 +59,7 @@ An H3 Undirectional Edge index (mode 2) represents a single directed edge betwee
 
 ### H3 Vertex Index
 
-An H3 Vertex index (mode 4) represents a single topological vertex in H3 grid system, shared by three cells. Note that this does not include the distortion vertexes occasionally present in a cell's geo boundary. An H3 Vertex is arbitrarily assigned one of the three neighboring cells as its "owner", which is used to calculate the canonical index and geo coordinate for the vertex. The components of the H3 Vertex index are packed into a 64-bit integer in order, highest bit first, as follows:
+An H3 Vertex index (mode 4) represents a single topological vertex in H3 grid system, shared by three cells. Note that this does not include the distortion vertexes occasionally present in a cell's geographic boundary. An H3 Vertex is arbitrarily assigned one of the three neighboring cells as its "owner", which is used to calculate the canonical index and geographic coordinates for the vertex. The components of the H3 Vertex index are packed into a 64-bit integer in order, highest bit first, as follows:
 
 * 1 bit reserved and set to 0,
 * 4 bits to indicate the H3 Vertex index mode,
