@@ -18,3 +18,8 @@ The file `h3api.h.in` is preprocessed into the file `h3api.h` as part of H3's bu
 ## API preconditions
 
 The H3 API expects valid input. Behavior of the library may be undefined when given invalid input. Indexes should be validated with `h3IsValid` or `h3UnidirectionalEdgeIsValid` as appropriate.
+
+## Function renaming
+
+The [`H3_PREFIX`](./compilation-options#H3_PREFIX) exists to rename all functions in the H3 public API with a prefix chosen at compile time. The default is to have no prefix.
+This can be needed when linking multiple copies of the H3 library in order to avoid naming collisions. Internal functions and symbols are not renamed.

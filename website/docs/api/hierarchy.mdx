@@ -237,7 +237,7 @@ Returns the center child (finer) index contained by `cell` at resolution `childR
 <TabItem value="c">
 
 ```c
-H3Error compactCells(const H3Index *cellSet, H3Index *compactedSet, const int numCells);
+H3Error compactCells(const H3Index *cellSet, H3Index *compactedSet, const int64_t numCells);
 ```
 
 </TabItem>
@@ -292,7 +292,7 @@ Returns 0 (`E_SUCCESS`) on success.
 <TabItem value="c">
 
 ```c
-H3Error uncompactCells(const H3Index *compactedSet, const int numCells, H3Index *cellSet, const int maxCells, const int res);
+H3Error uncompactCells(const H3Index *compactedSet, const int64_t numCells, H3Index *cellSet, const int64_t maxCells, const int res);
 ```
 
 </TabItem>

@@ -118,7 +118,7 @@ This function exists for memory management and is not exposed.
 </TabItem>
 </Tabs>
 
-Maximum number of indices that result from the gridDisk algorithm with the given k.
+Maximum number of indices that result from the `gridDisk` algorithm with the given `k`.
 
 ## gridDiskDistances
 
@@ -224,7 +224,7 @@ This function is not exposed.
 </TabItem>
 </Tabs>
 
-gridDiskUnsafe produces indexes within k distance of the origin index.
+`gridDiskUnsafe` produces indexes within `k` distance of the origin index.
 The function returns an error code when one of the returned by this
 function is a pentagon or is in the pentagon distortion area. In this case,
 the output behavior of the `out` array is undefined.
@@ -233,7 +233,7 @@ k-ring 0 is defined as the origin index, k-ring 1 is defined as k-ring 0 and
 all neighboring indexes, and so on.
 
 Output is placed in the provided array in order of increasing distance from
-the origin.
+the origin. The provided array must be of size `maxGridDiskSize(k)`.
 
 Returns 0 (`E_SUCCESS`) if no pentagonal distortion is encountered.
 
@@ -283,7 +283,7 @@ This function is not exposed.
 </TabItem>
 </Tabs>
 
-gridDiskDistancesUnsafe produces indexes within k distance of the origin index.
+`gridDiskDistancesUnsafe` produces indexes within `k` distance of the origin index.
 Output behavior is undefined when one of the indexes returned by this
 function is a pentagon or is in the pentagon distortion area.
 
@@ -292,9 +292,66 @@ all neighboring indexes, and so on.
 
 Output is placed in the provided array in order of increasing distance from
 the origin. The distances in hexagons is placed in the distances array at
-the same offset.
+the same offset. The provided array must be of size `maxGridDiskSize(k)`.
 
 Returns 0 (`E_SUCCESS`) if no pentagonal distortion is encountered.
+
+## gridDiskDistancesSafe
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+H3Error gridDiskDistancesSafe(H3Index origin, int k, H3Index* out, int* distances);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.grid_disk_distances_safe(h, k)
+```
+
+</TabItem>
+<TabItem value="java">
+
+:::note
+
+This function is not exposed because the same functionality is exposed by `gridDiskSafe`
+
+:::
+
+</TabItem>
+<TabItem value="javascript">
+
+:::note
+
+This function is not exposed.
+
+:::
+
+</TabItem>
+</Tabs>
+
+`gridDiskDistancesSafe` produces indexes within `k` distance of the origin index.
+
+k-ring 0 is defined as the origin index, k-ring 1 is defined as k-ring 0 and
+all neighboring indexes, and so on.
+
+Output is placed in the provided array in order of increasing distance from
+the origin. The distances in hexagons is placed in the distances array at
+the same offset. The provided array must be of size `maxGridDiskSize(k)`.
+
+Returns 0 (`E_SUCCESS`) on success.
 
 ## gridDisksUnsafe
 
@@ -342,9 +399,9 @@ This function is not exposed.
 </TabItem>
 </Tabs>
 
-gridDisksUnsafe takes an array of input hex IDs and a max k-ring and returns an
+`gridDisksUnsafe` takes an array of input hex IDs and a max k and returns an
 array of hexagon IDs sorted first by the original hex IDs and then by the
-k-ring (0 to max), with no guaranteed sorting within each k-ring group.
+grid k-ring (0 to max), with no guaranteed sorting within each grid k-ring group.
 
 Returns 0 (`E_SUCCESS`) if no pentagonal distortion was encountered. Otherwise, output
 is undefined
