@@ -21,26 +21,17 @@
 #include "h3api.h"
 #include "utility.h"
 
-typedef struct {
-    H3Index h3Set[1024];
-    int sz;
-} inputArgs;
-
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
-    if (size < sizeof(inputArgs)) {
-        return 0;
-    }
-    const inputArgs *args = (const inputArgs *)data;
-    if (args->sz >= 1024) {
-        return 0;
-    }
+    const H3Index *h3Set = (const H3Index *)data;
+    int sz = size / sizeof(H3Index);
 
     LinkedGeoPolygon polygon;
-    H3Error err = H3_EXPORT(h3SetToLinkedGeo)(args->h3Set, args->sz, &polygon);
+    H3Error err = H3_EXPORT(h3SetToLinkedGeo)(h3Set, sz, &polygon);
+
     if (!err) {
         H3_EXPORT(destroyLinkedPolygon)(&polygon);
     }
     return 0;
 }
 
-AFL_HARNESS_MAIN(sizeof(inputArgs));
+AFL_HARNESS_MAIN(sizeof(H3Index) * 1024);

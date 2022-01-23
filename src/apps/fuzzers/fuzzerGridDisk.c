@@ -26,7 +26,7 @@ typedef struct {
     int64_t k;
 } inputArgs;
 
-const int64_t MAX_GRID_DISK_SIZE = 0x1000000000;
+const int64_t MAX_GRID_DISK_SIZE = 0x10000000;
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     if (size < sizeof(inputArgs)) {

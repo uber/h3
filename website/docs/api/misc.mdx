@@ -120,7 +120,7 @@ function example() {
 
 Converts radians to degrees.
 
-## hexAreaKm2
+## getHexagonAreaAvgKm2
 
 <Tabs
   groupId="language"
@@ -135,43 +135,43 @@ Converts radians to degrees.
 <TabItem value="c">
 
 ```c
-double hexAreaKm2(int res);
+H3Error getHexagonAreaAvgKm2(int res, double *out);
 ```
 
 </TabItem>
 <TabItem value="python">
 
 ```py
-h3.hex_area(res, unit='km^2')
+h3.get_hexagon_area_avg(res, unit='km^2')
 ```
 
 </TabItem>
 <TabItem value="java">
 
 ```java
-double hexArea(int res, AreaUnit unit);
+double getHexagonAreaAvg(int res, AreaUnit unit);
 ```
 
 </TabItem>
 <TabItem value="javascript">
 
 ```js
-h3.hexArea(res, h3.UNITS.km2)
+h3.getHexagonAreaAvg(res, h3.UNITS.km2)
 ```
 
 ```js live
 function example() {
   const res = 5;
-  return h3.hexArea(res, h3.UNITS.km2);
+  return h3.getHexagonAreaAvg(res, h3.UNITS.km2);
 }
 ```
 
 </TabItem>
 </Tabs>
 
-Average hexagon area in square kilometers at the given resolution.
+Average hexagon area in square kilometers at the given resolution. Excludes pentagons.
 
-## hexAreaM2
+## getHexagonAreaAvgM2
 
 <Tabs
   groupId="language"
@@ -186,93 +186,43 @@ Average hexagon area in square kilometers at the given resolution.
 <TabItem value="c">
 
 ```c
-double hexAreaM2(int res);
+H3Error getHexagonAreaAvgM2(int res, double *out);
 ```
 
 </TabItem>
 <TabItem value="python">
 
 ```py
-h3.hex_area(res, unit='m^2')
+h3.get_hexagon_area_avg(res, unit='m^2')
 ```
 
 </TabItem>
 <TabItem value="java">
 
 ```java
-double hexArea(int res, AreaUnit unit);
+double getHexagonAreaAvg(int res, AreaUnit unit);
 ```
 
 </TabItem>
 <TabItem value="javascript">
 
 ```js
-h3.hexArea(res, h3.UNITS.m2)
+h3.getHexagonAreaAvg(res, h3.UNITS.m2)
 ```
 
 ```js live
 function example() {
   const res = 5;
-  return h3.hexArea(res, h3.UNITS.m2);
+  return h3.getHexagonAreaAvg(res, h3.UNITS.m2);
 }
 ```
 
 </TabItem>
 </Tabs>
 
-Average hexagon area in square meters at the given resolution.
+Average hexagon area in square meters at the given resolution. Excludes pentagons.
 
-## cellAreaM2
 
-<Tabs
-  groupId="language"
-  defaultValue="c"
-  values={[
-    {label: 'C', value: 'c'},
-    {label: 'Python', value: 'python'},
-    {label: 'Java', value: 'java'},
-    {label: 'JavaScript (Live)', value: 'javascript'},
-  ]
-}>
-<TabItem value="c">
-
-```c
-double cellAreaM2(H3Index h);
-```
-
-</TabItem>
-<TabItem value="python">
-
-```py
-h3.cell_area(h, unit='m^2')
-```
-
-</TabItem>
-<TabItem value="java">
-
-```java
-double cellArea(long h3, AreaUnit unit);
-int cellArea(String h3Address, AreaUnit unit);
-```
-
-</TabItem>
-<TabItem value="javascript">
-
-```js
-h3.cellArea(h, h3.UNITS.m2)
-```
-
-```js live
-function example() {
-  const h = '85283473fffffff';
-  return h3.cellArea(h, h3.UNITS.m2);
-}
-```
-
-</TabItem>
-</Tabs>
-
-Exact area of specific cell in square meters.
 
 ## cellAreaRads2
 
@@ -289,7 +239,7 @@ Exact area of specific cell in square meters.
 <TabItem value="c">
 
 ```c
-double cellAreaRads2(H3Index h);
+H3Error cellAreaRads2(H3Index h, double *out);
 ```
 
 </TabItem>
@@ -326,7 +276,7 @@ function example() {
 
 Exact area of specific cell in square radians.
 
-## edgeLengthKm
+## cellAreaKm2
 
 <Tabs
   groupId="language"
@@ -341,43 +291,44 @@ Exact area of specific cell in square radians.
 <TabItem value="c">
 
 ```c
-double edgeLengthKm(int res);
+H3Error cellAreaKm2(H3Index h, double *out);
 ```
 
 </TabItem>
 <TabItem value="python">
 
 ```py
-h3.edge_length(res, unit='km')
+h3.cell_area(h, unit='km^2')
 ```
 
 </TabItem>
 <TabItem value="java">
 
 ```java
-double edgeLength(int res, LengthUnit unit);
+double cellArea(long h3, AreaUnit unit);
+int cellArea(String h3Address, AreaUnit unit);
 ```
 
 </TabItem>
 <TabItem value="javascript">
 
 ```js
-h3.edgeLength(res, h3.UNITS.km)
+h3.cellArea(h, h3.UNITS.km2)
 ```
 
 ```js live
 function example() {
-  const res = 5;
-  return h3.edgeLength(res, h3.UNITS.km);
+  const h = '85283473fffffff';
+  return h3.cellArea(h, h3.UNITS.km2);
 }
 ```
 
 </TabItem>
 </Tabs>
 
-Average hexagon edge length in kilometers at the given resolution.
+Exact area of specific cell in square kilometers.
 
-## edgeLengthM
+## cellAreaM2
 
 <Tabs
   groupId="language"
@@ -392,41 +343,144 @@ Average hexagon edge length in kilometers at the given resolution.
 <TabItem value="c">
 
 ```c
-double edgeLengthM(int res);
+H3Error cellAreaM2(H3Index h, double *out);
 ```
 
 </TabItem>
 <TabItem value="python">
 
 ```py
-h3.edge_length(res, unit='m')
+h3.cell_area(h, unit='m^2')
 ```
 
 </TabItem>
 <TabItem value="java">
 
 ```java
-double edgeLength(int res, LengthUnit unit);
+double cellArea(long h3, AreaUnit unit);
+int cellArea(String h3Address, AreaUnit unit);
 ```
 
 </TabItem>
 <TabItem value="javascript">
 
 ```js
-h3.edgeLength(res, h3.UNITS.km)
+h3.cellArea(h, h3.UNITS.m2)
 ```
 
 ```js live
 function example() {
-  const res = 5;
-  return h3.edgeLength(res, h3.UNITS.km);
+  const h = '85283473fffffff';
+  return h3.cellArea(h, h3.UNITS.m2);
 }
 ```
 
 </TabItem>
 </Tabs>
 
-Average hexagon edge length in meters at the given resolution.
+Exact area of specific cell in square meters.
+
+## getHexagonEdgeLengthAvgKm
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+H3Error getHexagonEdgeLengthAvgKm(int res, double *out);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.get_hexagon_edge_length_avg(res, unit='km')
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+double getHexagonEdgeLengthAvg(int res, LengthUnit unit);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.getHexagonEdgeLengthAvg(res, h3.UNITS.km)
+```
+
+```js live
+function example() {
+  const res = 5;
+  return h3.getHexagonEdgeLengthAvg(res, h3.UNITS.km);
+}
+```
+
+</TabItem>
+</Tabs>
+
+Average hexagon edge length in kilometers at the given resolution. Excludes pentagons.
+
+## getHexagonEdgeLengthAvgM
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+H3Error getHexagonEdgeLengthAvgM(int res, double *out);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.get_hexagon_edge_length_avg(res, unit='m')
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+double getHexagonEdgeLengthAvg(int res, LengthUnit unit);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.getHexagonEdgeLengthAvg(res, h3.UNITS.m)
+```
+
+```js live
+function example() {
+  const res = 5;
+  return h3.getHexagonEdgeLengthAvg(res, h3.UNITS.m);
+}
+```
+
+</TabItem>
+</Tabs>
+
+Average hexagon edge length in meters at the given resolution. Excludes pentagons.
 
 
 ## exactEdgeLengthKm
@@ -585,7 +639,7 @@ function example() {
 
 Exact edge length of specific unidirectional edge in radians.
 
-## numHexagons
+## getNumCells
 
 <Tabs
   groupId="language"
@@ -600,34 +654,34 @@ Exact edge length of specific unidirectional edge in radians.
 <TabItem value="c">
 
 ```c
-int64_t numHexagons(int res);
+H3Error getNumCells(int res, int64_t *out);
 ```
 
 </TabItem>
 <TabItem value="python">
 
 ```py
-h3.num_hexagons(res)
+h3.get_num_cells(res)
 ```
 
 </TabItem>
 <TabItem value="java">
 
 ```java
-long numHexagons(int res);
+long getNumCells(int res);
 ```
 
 </TabItem>
 <TabItem value="javascript">
 
 ```js
-h3.numHexagons(res)
+h3.getNumCells(res)
 ```
 
 ```js live
 function example() {
   const res = 5;
-  return h3.numHexagons(res);
+  return h3.getNumCells(res);
 }
 ```
 
@@ -636,7 +690,7 @@ function example() {
 
 Number of unique H3 indexes at the given resolution.
 
-## getRes0Indexes
+## getRes0Cells
 
 <Tabs
   groupId="language"
@@ -651,35 +705,35 @@ Number of unique H3 indexes at the given resolution.
 <TabItem value="c">
 
 ```c
-void getRes0Indexes(H3Index *out);
+H3Error getRes0Cells(H3Index *out);
 ```
 
 </TabItem>
 <TabItem value="python">
 
 ```py
-h3.get_res0_indexes(res)
+h3.get_res0_cells(res)
 ```
 
 </TabItem>
 <TabItem value="java">
 
 ```java
-Collection<Long> getRes0Indexes(int res);
-Collection<String> getRes0IndexesAddresses(int res);
+Collection<Long> getRes0Cells(int res);
+Collection<String> getRes0CellsAddresses(int res);
 ```
 
 </TabItem>
 <TabItem value="javascript">
 
 ```js
-h3.getRes0Indexes(res)
+h3.getRes0Cells(res)
 ```
 
 ```js live
 function example() {
   const res = 5;
-  return h3.getRes0Indexes(res);
+  return h3.getRes0Cells(res);
 }
 ```
 
@@ -687,9 +741,9 @@ function example() {
 </Tabs>
 
 All the resolution 0 H3 indexes.
-`out` must be an array of at least size `res0IndexCount()`.
+`out` must be an array of at least size `res0CellCount()`.
 
-## res0IndexCount
+## res0CellCount
 
 <Tabs
   groupId="language"
@@ -704,7 +758,7 @@ All the resolution 0 H3 indexes.
 <TabItem value="c">
 
 ```c
-int res0IndexCount();
+int res0CellCount();
 ```
 
 </TabItem>
@@ -737,7 +791,7 @@ This function exists for memory management and is not exposed.
 </TabItem>
 </Tabs>
 
-Number of resolution 0 H3 indexes.
+Number of resolution 0 H3 indexes, which is defined as 122.
 
 ## getPentagons
 
@@ -794,7 +848,7 @@ All the pentagon H3 indexes at the specified resolution.
 
 Returns 0 (`E_SUCCESS`) on success.
 
-## pentagonIndexCount
+## pentagonCount
 
 <Tabs
   groupId="language"
@@ -809,7 +863,7 @@ Returns 0 (`E_SUCCESS`) on success.
 <TabItem value="c">
 
 ```c
-int pentagonIndexCount();
+int pentagonCount();
 ```
 
 </TabItem>

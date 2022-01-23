@@ -1,0 +1,224 @@
+---
+id: vertex
+title: Vertex functions
+sidebar_label: Vertexes
+slug: /api/vertex
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+Vertex mode allows encoding the topological vertexes of H3 cells.
+
+## cellToVertex
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+H3Error cellToVertex(H3Index origin, int vertexNum, H3Index *out);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.cell_to_vertex(origin, vertex_num)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+Long cellToVertex(long origin, int vertexNum);
+String cellToVertex(String origin, int vertexNum);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.cellToVertex(origin, vertexNum)
+```
+
+```js live
+function example() {
+  const h = '85283473fffffff';
+  const vertexNum = 2;
+  return h3.cellToVertex(h, vertexNum);
+}
+```
+
+</TabItem>
+</Tabs>
+
+Returns the index for the specified cell vertex. Valid vertex numbers are between 0 and 5 (inclusive)
+for hexagonal cells, and 0 and 4 (inclusive) for pentagonal cells.
+
+## cellToVertexes
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+H3Error cellToVertexes(H3Index origin, H3Index *out);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.cell_to_vertexes(origin)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+List<Long> cellToVertexes(long origin);
+List<String> cellToVertexes(String origin);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.cellToVertexes(origin)
+```
+
+```js live
+function example() {
+  const h = '85283473fffffff';
+  return h3.cellToVertexes(h);
+}
+```
+
+</TabItem>
+</Tabs>
+
+Returns the indexes for all vertexes of the given cell index.
+
+The length of the `out` array must be 6. If the given cell index represents a pentagon, one member of the
+array will be set to `0`.
+
+## vertexToLatLng
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+H3Error vertexToLatLng(H3Index vertex, LatLng *point);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.vertex_to_latlng(vertex)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+LatLng vertexToLatLng(long vertex);
+LatLng vertexToLatLng(String vertex);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.vertexToLatLng(vertex)
+```
+
+```js live
+function example() {
+  const h = '85283473fffffff';
+  return h3.vertexToLatLng(h);
+}
+```
+
+</TabItem>
+</Tabs>
+
+Returns the latitude and longitude coordinates of the given vertex.
+
+## isValidVertex
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+int isValidVertex(H3Index vertex);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.is_valid_vertex(vertex)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+boolean isValidVertex(long vertex);
+boolean isValidVertex(String vertex);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.isValidVertex(vertex)
+```
+
+```js live
+function example() {
+  const h = '85283473fffffff';
+  return h3.isValidVertex(h);
+}
+```
+
+</TabItem>
+</Tabs>
+
+Returns 1 if the given index represents a valid H3 vertex.

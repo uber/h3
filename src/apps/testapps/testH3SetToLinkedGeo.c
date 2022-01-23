@@ -45,6 +45,16 @@ SUITE(h3SetToLinkedGeo) {
         H3_EXPORT(destroyLinkedPolygon)(&polygon);
     }
 
+    TEST(invalid) {
+        LinkedGeoPolygon polygon;
+        H3Index set[] = {0xfffffffffffffff};
+        int numHexes = ARRAY_SIZE(set);
+
+        t_assert(H3_EXPORT(h3SetToLinkedGeo)(set, numHexes, &polygon) ==
+                     E_CELL_INVALID,
+                 "Invalid set fails");
+    }
+
     TEST(contiguous2) {
         LinkedGeoPolygon polygon;
         H3Index set[] = {0x8928308291bffff, 0x89283082957ffff};

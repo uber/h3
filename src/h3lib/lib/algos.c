@@ -335,6 +335,9 @@ H3Error h3NeighborRotations(H3Index origin, Direction dir, int *rotations,
                             H3Index *out) {
     H3Index current = origin;
 
+    if (dir < CENTER_DIGIT || dir >= INVALID_DIGIT) {
+        return E_FAILED;
+    }
     for (int i = 0; i < *rotations; i++) {
         dir = _rotate60ccw(dir);
     }
@@ -352,7 +355,6 @@ H3Error h3NeighborRotations(H3Index origin, Direction dir, int *rotations,
     int r = H3_GET_RESOLUTION(current) - 1;
     while (true) {
         if (r == -1) {
-            // TODO: dir may be invalid here (verify via fuzzerDirectedEdge)
             H3_SET_BASE_CELL(current, baseCellNeighbors[oldBaseCell][dir]);
             newRotations = baseCellNeighbor60CCWRots[oldBaseCell][dir];
 
@@ -1034,8 +1036,8 @@ H3Error H3_EXPORT(polygonToCells)(const GeoPolygon *geoPolygon, int res,
  * @param numHexes Number of hexagons in the set
  * @param graph    Output graph
  */
-void h3SetToVertexGraph(const H3Index *h3Set, const int numHexes,
-                        VertexGraph *graph) {
+H3Error h3SetToVertexGraph(const H3Index *h3Set, const int numHexes,
+                           VertexGraph *graph) {
     CellBoundary vertices;
     LatLng *fromVtx;
     LatLng *toVtx;
@@ -1044,7 +1046,7 @@ void h3SetToVertexGraph(const H3Index *h3Set, const int numHexes,
         // We still need to init the graph, or calls to destroyVertexGraph will
         // fail
         initVertexGraph(graph, 0, 0);
-        return;
+        return E_SUCCESS;
     }
     int res = H3_GET_RESOLUTION(h3Set[0]);
     const int minBuckets = 6;
@@ -1053,7 +1055,12 @@ void h3SetToVertexGraph(const H3Index *h3Set, const int numHexes,
     initVertexGraph(graph, numBuckets, res);
     // Iterate through every hexagon
     for (int i = 0; i < numHexes; i++) {
-        H3_EXPORT(cellToBoundary)(h3Set[i], &vertices);
+        H3Error boundaryErr = H3_EXPORT(cellToBoundary)(h3Set[i], &vertices);
+        if (boundaryErr) {
+            // Destroy vertex graph as caller will not know to do so.
+            destroyVertexGraph(graph);
+            return boundaryErr;
+        }
         // iterate through every edge
         for (int j = 0; j < vertices.numVerts; j++) {
             fromVtx = &vertices.verts[j];
@@ -1070,6 +1077,7 @@ void h3SetToVertexGraph(const H3Index *h3Set, const int numHexes,
             }
         }
     }
+    return E_SUCCESS;
 }
 
 /**
@@ -1120,7 +1128,10 @@ void _vertexGraphToLinkedGeo(VertexGraph *graph, LinkedGeoPolygon *out) {
 H3Error H3_EXPORT(h3SetToLinkedGeo)(const H3Index *h3Set, const int numHexes,
                                     LinkedGeoPolygon *out) {
     VertexGraph graph;
-    h3SetToVertexGraph(h3Set, numHexes, &graph);
+    H3Error err = h3SetToVertexGraph(h3Set, numHexes, &graph);
+    if (err) {
+        return err;
+    }
     _vertexGraphToLinkedGeo(&graph, out);
     if (normalizeMultiPolygon(out)) {
         return E_FAILED;
