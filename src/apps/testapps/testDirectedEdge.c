@@ -141,6 +141,21 @@ SUITE(directedEdge) {
             "getting the origin from a null index returns error");
     }
 
+    TEST(getDirectedEdgeOriginBadInput) {
+        H3Index sf;
+        t_assertSuccess(H3_EXPORT(latLngToCell)(&sfGeo, 9, &sf));
+        H3Index ring[7] = {0};
+        t_assertSuccess(H3_EXPORT(gridRingUnsafe)(sf, 1, ring));
+        H3Index sf2 = ring[0];
+
+        H3Index edge;
+        t_assertSuccess(H3_EXPORT(cellsToDirectedEdge)(sf, sf2, &edge));
+        H3_SET_RESERVED_BITS(edge, INVALID_DIGIT);
+        H3Index out;
+        t_assert(H3_EXPORT(getDirectedEdgeDestination)(edge, &out) == E_FAILED,
+                 "Invalid directed edge fails");
+    }
+
     TEST(getDirectedEdgeDestination) {
         H3Index hexagon = 0x891ea6d6533ffff;
 

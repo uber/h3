@@ -48,6 +48,7 @@ module.exports = {
       "api/hierarchy",
       "api/regions",
       "api/uniedge",
+      "api/vertex",
       "api/misc",
     ],
     Community: [
@@ -61,9 +62,11 @@ module.exports = {
       "core-library/h3Indexing",
       "core-library/coordsystems",
       "core-library/creating-bindings",
+      "core-library/filters",
+      "core-library/compilation-options",
+      "core-library/testing",
       "core-library/custom-alloc",
       "core-library/usage",
-      "core-library/filters",
       {
         type: "category",
         label: "Algorithms",

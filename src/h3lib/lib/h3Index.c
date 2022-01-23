@@ -330,16 +330,27 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
         for (int i = 0; i < numRemainingHexes; i++) {
             H3Index currIndex = remainingHexes[i];
             if (currIndex != 0) {
+                // If the reserved bits were set by the caller, the
+                // algorithm below may encounter undefined behavior
+                // because it expects to have set the reserved bits
+                // itself.
+                if (H3_GET_RESERVED_BITS(currIndex) != 0) {
+                    H3_MEMORY(free)(remainingHexes);
+                    H3_MEMORY(free)(hashSetArray);
+                    return E_CELL_INVALID;
+                }
+
                 H3Index parent;
                 H3Error parentError =
                     H3_EXPORT(cellToParent)(currIndex, parentRes, &parent);
-                // LCOV_EXCL_START
                 // Should never be reachable as a result of the compact
-                // algorithm.
+                // algorithm. Can happen if cellToParent errors e.g.
+                // because of incompatible resolutions.
                 if (parentError) {
+                    H3_MEMORY(free)(remainingHexes);
+                    H3_MEMORY(free)(hashSetArray);
                     return parentError;
                 }
-                // LCOV_EXCL_STOP
                 // Modulus hash the parent into the temp array
                 int loc = (int)(parent % numRemainingHexes);
                 int loopCount = 0;
@@ -432,6 +443,9 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
                 // Should never be reachable as a result of the compact
                 // algorithm.
                 if (parentError) {
+                    // TODO: Determine if this is somehow reachable.
+                    H3_MEMORY(free)(remainingHexes);
+                    H3_MEMORY(free)(hashSetArray);
                     return parentError;
                 }
                 // LCOV_EXCL_STOP
