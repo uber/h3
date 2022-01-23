@@ -28,10 +28,6 @@ void run(GeoPolygon *geoPolygon, int res) {
     int64_t sz;
     H3Error err = H3_EXPORT(maxPolygonToCellsSize)(geoPolygon, res, &sz);
     if (!err && sz < MAX_SZ) {
-        if (sz < 0) {
-            // TODO: Check on this once rebased
-            printf("Oh no - sz is negative\n");
-        }
         H3Index *out = calloc(sz, sizeof(H3Index));
         H3_EXPORT(polygonToCells)(geoPolygon, res, out);
         free(out);
@@ -51,6 +47,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     geoPolygon.numHoles = 0;
     geoPolygon.holes = NULL;
     geoPolygon.geoloop.numVerts = numVerts;
+    // Offset by 1 since *data was used for `res`, above.
     geoPolygon.geoloop.verts = (LatLng *)(data + 1);
 
     run(&geoPolygon, res);
