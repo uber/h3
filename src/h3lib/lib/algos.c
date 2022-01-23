@@ -355,7 +355,6 @@ H3Error h3NeighborRotations(H3Index origin, Direction dir, int *rotations,
     int r = H3_GET_RESOLUTION(current) - 1;
     while (true) {
         if (r == -1) {
-            // TODO: dir may be invalid here (verify via fuzzerDirectedEdge)
             H3_SET_BASE_CELL(current, baseCellNeighbors[oldBaseCell][dir]);
             newRotations = baseCellNeighbor60CCWRots[oldBaseCell][dir];
 
