@@ -30,35 +30,13 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     }
 
     uint8_t res = *data;
-    uint8_t uncompactRes = (*(data + 1)) % (MAX_UNCOMPACT_RES + 1);
     H3Index *input = (H3Index *)(data + sizeof(H3Index));
     size_t inputSize = (size - sizeof(H3Index)) / sizeof(H3Index);
 
     // fuzz compactCells
     H3Index *compacted = calloc(inputSize, sizeof(H3Index));
-    H3Error compactErr = H3_EXPORT(compactCells)(input, compacted, inputSize);
-
-    // fuzz uncompactCells using output of above
-    if (!compactErr) {
-        int compactedCount = 0;
-        for (int i = 0; i < inputSize; i++) {
-            if (compacted[i] != H3_NULL) {
-                compactedCount++;
-            }
-        }
-        if (compactedCount < 2) {
-            int64_t uncompactedSize;
-            H3Error err = H3_EXPORT(uncompactCellsSize)(
-                compacted, inputSize, uncompactRes, &uncompactedSize);
-            if (!err && uncompactedSize < MAX_UNCOMPACT_SIZE) {
-                H3Index *uncompacted = calloc(uncompactedSize, sizeof(H3Index));
-                H3_EXPORT(uncompactCells)
-                (compacted, compactedCount, uncompacted, uncompactedSize,
-                 uncompactRes);
-                free(uncompacted);
-            }
-        }
-    }
+    H3_EXPORT(compactCells)(input, compacted, inputSize);
+    free(compacted);
 
     // fuzz uncompactCells using the original input
     int64_t uncompactedSize;
@@ -71,7 +49,6 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         (input, inputSize, uncompacted, uncompactedSize, res);
         free(uncompacted);
     }
-    free(compacted);
 
     return 0;
 }

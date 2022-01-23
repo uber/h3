@@ -262,6 +262,31 @@ SUITE(compactCells) {
         }
     }
 
+    TEST(compactCells_reservedBitsSet) {
+        const int numHex = 7;
+        H3Index bad[] = {
+            0x0010000000010000, 0x0180c6c6c6c61616, 0x1616ffffffffffff,
+            0xffff8affffffffff, 0xffffffffffffc6c6, 0xffffffffffffffc6,
+            0xc6c6c6c6c66fffe0,
+        };
+        H3Index output[] = {0, 0, 0, 0, 0, 0, 0};
+
+        t_assert(H3_EXPORT(compactCells)(bad, output, numHex) == E_CELL_INVALID,
+                 "compactCells returns E_CELL_INVALID on bad input");
+    }
+
+    TEST(compactCells_parentError) {
+        const int numHex = 3;
+        H3Index bad[] = {0, 0, 0};
+        H3Index output[] = {0, 0, 0};
+        H3_SET_RESOLUTION(bad[0], 10);
+        H3_SET_RESOLUTION(bad[1], 5);
+
+        t_assert(
+            H3_EXPORT(compactCells)(bad, output, numHex) == E_RES_MISMATCH,
+            "compactCells returns E_RES_MISMATCH on bad input (parent error)");
+    }
+
     TEST(uncompactCells_wrongRes) {
         int numHex = 3;
         H3Index someHexagons[] = {0, 0, 0};
