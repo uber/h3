@@ -272,7 +272,7 @@ SUITE(compactCells) {
         H3Index output[] = {0, 0, 0, 0, 0, 0, 0};
 
         t_assert(H3_EXPORT(compactCells)(bad, output, numHex) == E_CELL_INVALID,
-                 "compactCells succeeds on bad input");
+                 "compactCells returns E_CELL_INVALID on bad input");
     }
 
     TEST(compactCells_parentError) {
@@ -283,7 +283,7 @@ SUITE(compactCells) {
         H3_SET_RESOLUTION(bad[1], 5);
 
         t_assert(H3_EXPORT(compactCells)(bad, output, numHex) == E_RES_MISMATCH,
-                 "compactCells succeeds on bad input (parent error)");
+                 "compactCells returns E_RES_MISMATCH on bad input (parent error)");
     }
 
     TEST(uncompactCells_wrongRes) {
