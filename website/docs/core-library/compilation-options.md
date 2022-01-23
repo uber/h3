@@ -6,7 +6,7 @@ slug: /core-library/compilation-options
 ---
 
 A number of options in CMake can be set when compiling the H3 core library. These are relevant for building
-different ways of using and testing the library and do not effect the underlying algorithms.
+different ways of using and testing the library and do not affect the underlying algorithms.
 
 When configuring with CMake, an option may be specified using `-D` on the command line, like so for setting
 `CMAKE_BUILD_TYPE` to `Release`:
