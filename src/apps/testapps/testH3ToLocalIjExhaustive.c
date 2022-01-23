@@ -148,7 +148,7 @@ void h3ToLocalIj_invalid_assertions(H3Index h3) {
 
         CoordIJ ij;
         // Don't consider indexes which we can't unfold in the first place
-        if (H3_EXPORT(experimentalH3ToLocalIj)(h3, neighbors[i], &ij) == 0) {
+        if (H3_EXPORT(experimentalH3ToLocalIj)(h3, neighbors[i], &ij) == E_SUCCESS) {
             for (int j = 0; j < 2; j++) {
                 Direction dir = j == 0 ? INVALID_DIGIT : K_AXES_DIGIT;
                 // Valgrind / ASAN / UBSAN are used to test these assertions
