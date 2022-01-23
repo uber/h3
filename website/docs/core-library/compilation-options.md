@@ -15,6 +15,12 @@ When configuring with CMake, an option may be specified using `-D` on the comman
 cmake .. -DCMAKE_BUILD_TYPE=Release
 ```
 
+Boolean options should be set to `ON` or `OFF`, like so:
+
+```bash
+cmake .. -DBUILD_TESTING=OFF
+```
+
 ## BUILD_ALLOC_TESTS
 
 Whether to build the parts of the [test suite](./testing) that exercise the [H3_ALLOC_PREFIX](./custom-alloc) feature.
@@ -54,7 +60,14 @@ but is rather the documentation for the internal C library functions.
 Whether to enable using clang-format-9 to format source files before building. This should be enabled
 before submitting patches for H3 as continuous integration will fail if the formatting does not match.
 
+Only this version of clang-format should be used to format the sources as new releases of clang-format
+can change defaults, causing unintended churn of source code formatting.
+
 ## ENABLE_LINTING
+
+Whether to enable using clang-tidy to lint source files when building. Only invoked when
+[Makefile or Ninja CMake generators](https://cmake.org/cmake/help/latest/prop_tgt/LANG_CLANG_TIDY.html)
+are used.
 
 ## H3_ALLOC_PREFIX
 
