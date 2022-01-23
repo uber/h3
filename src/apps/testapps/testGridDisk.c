@@ -329,6 +329,19 @@ SUITE(gridDisk) {
         t_assert(out == origin, "Moving to self goes to self");
     }
 
+    TEST(h3NeighborRotations_invalid) {
+        // This is undefined behavior, but it's helpful for it to make sense.
+        H3Index origin = 0x811d7ffffffffffL;
+        int rotations = 0;
+        H3Index out;
+        t_assert(h3NeighborRotations(origin, -1, &rotations, &out) == E_FAILED,
+                 "Invalid direction fails (-1)");
+        t_assert(h3NeighborRotations(origin, 7, &rotations, &out) == E_FAILED,
+                 "Invalid direction fails (7)");
+        t_assert(h3NeighborRotations(origin, 100, &rotations, &out) == E_FAILED,
+                 "Invalid direction fails (100)");
+    }
+
     TEST(cwOffsetPent) {
         // Try to find a case where h3NeighborRotations would not pass the
         // cwOffsetPent check, and would hit a line marked as unreachable.
