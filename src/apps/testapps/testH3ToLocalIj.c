@@ -155,6 +155,9 @@ SUITE(h3ToLocalIj) {
                  "invalid origin for ijToH3");
     }
 
+    /**
+     * Tests for INVALID_DIGIT being detected and failed on in various cases.
+     */
     TEST(indexOnPentInvalid) {
         H3Index onPentInvalid;
         setH3Index(&onPentInvalid, 1, 4, INVALID_DIGIT);
@@ -164,20 +167,28 @@ SUITE(h3ToLocalIj) {
         t_assert(H3_EXPORT(experimentalH3ToLocalIj)(offPent, onPentInvalid,
                                                     &ij) == E_CELL_INVALID,
                  "invalid index on pentagon");
-    }
-
-    TEST(bothOnPentInvalid) {
-        H3Index onPentInvalid;
-        setH3Index(&onPentInvalid, 1, 4, INVALID_DIGIT);
+                 
         H3Index onPentValid;
         setH3Index(&onPentValid, 1, 4, CENTER_DIGIT);
-        CoordIJ ij;
         t_assert(H3_EXPORT(experimentalH3ToLocalIj)(onPentInvalid, onPentValid,
                                                     &ij) == E_CELL_INVALID,
                  "invalid both on pentagon");
         t_assert(H3_EXPORT(experimentalH3ToLocalIj)(onPentValid, onPentInvalid,
                                                     &ij) == E_CELL_INVALID,
                  "invalid both on pentagon");
+
+        ij.i = 0;
+        ij.j = 0;
+        H3Index out;
+        t_assert(H3_EXPORT(experimentalLocalIjToH3)(onPentInvalid, &ij, &out) ==
+                     E_CELL_INVALID,
+                 "invalid both on pentagon");
+
+        ij.i = 3;
+        ij.j = 3;
+        t_assert(H3_EXPORT(experimentalLocalIjToH3)(onPentInvalid, &ij, &out) ==
+                     E_CELL_INVALID,
+                 "invalid origin on pentagon");
     }
 
     /**

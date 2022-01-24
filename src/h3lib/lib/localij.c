@@ -430,9 +430,13 @@ H3Error localIjkToH3(H3Index origin, const CoordIJK *ijk, H3Index *out) {
             }
 
             const Direction indexLeadingDigit = _h3LeadingNonZeroDigit(*out);
+            // This case should be unreachable because this function is building
+            // *out, and should never generate an invalid digit, above.
+            // LCOV_EXCL_START
             if (indexLeadingDigit == INVALID_DIGIT) {
                 return E_CELL_INVALID;
             }
+            // LCOV_EXCL_STOP
             if (_isBaseCellPolarPentagon(baseCell)) {
                 pentagonRotations =
                     PENTAGON_ROTATIONS_REVERSE_POLAR[revDir][indexLeadingDigit];
@@ -441,9 +445,13 @@ H3Error localIjkToH3(H3Index origin, const CoordIJK *ijk, H3Index *out) {
                     PENTAGON_ROTATIONS_REVERSE_NONPOLAR[revDir]
                                                        [indexLeadingDigit];
             }
+            // For this to occur, revDir would need to be 1. Since revDir is
+            // from the index base cell (which is a pentagon) towards the
+            // origin, this should never be the case. LCOV_EXCL_START
             if (pentagonRotations < 0) {
                 return E_CELL_INVALID;
             }
+            // LCOV_EXCL_STOP
 
             for (int i = 0; i < pentagonRotations; i++) {
                 *out = _h3RotatePent60ccw(*out);
