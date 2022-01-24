@@ -167,7 +167,7 @@ SUITE(h3ToLocalIj) {
         t_assert(H3_EXPORT(experimentalH3ToLocalIj)(offPent, onPentInvalid,
                                                     &ij) == E_CELL_INVALID,
                  "invalid index on pentagon");
-                 
+
         H3Index onPentValid;
         setH3Index(&onPentValid, 1, 4, CENTER_DIGIT);
         t_assert(H3_EXPORT(experimentalH3ToLocalIj)(onPentInvalid, onPentValid,
