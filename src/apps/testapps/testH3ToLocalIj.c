@@ -155,6 +155,31 @@ SUITE(h3ToLocalIj) {
                  "invalid origin for ijToH3");
     }
 
+    TEST(indexOnPentInvalid) {
+        H3Index onPentInvalid;
+        setH3Index(&onPentInvalid, 1, 4, INVALID_DIGIT);
+        H3Index offPent;
+        setH3Index(&offPent, 1, 3, CENTER_DIGIT);
+        CoordIJ ij;
+        t_assert(H3_EXPORT(experimentalH3ToLocalIj)(offPent, onPentInvalid,
+                                                    &ij) == E_CELL_INVALID,
+                 "invalid index on pentagon");
+    }
+
+    TEST(bothOnPentInvalid) {
+        H3Index onPentInvalid;
+        setH3Index(&onPentInvalid, 1, 4, INVALID_DIGIT);
+        H3Index onPentValid;
+        setH3Index(&onPentValid, 1, 4, CENTER_DIGIT);
+        CoordIJ ij;
+        t_assert(H3_EXPORT(experimentalH3ToLocalIj)(onPentInvalid, onPentValid,
+                                                    &ij) == E_CELL_INVALID,
+                 "invalid both on pentagon");
+        t_assert(H3_EXPORT(experimentalH3ToLocalIj)(onPentValid, onPentInvalid,
+                                                    &ij) == E_CELL_INVALID,
+                 "invalid both on pentagon");
+    }
+
     /**
      * Test that coming from the same direction outside the pentagon is handled
      * the same as coming from the same direction inside the pentagon.
