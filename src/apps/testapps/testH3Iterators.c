@@ -66,7 +66,20 @@ static void test_ordered(int res) {
     }
 }
 
+static void assert_is_null_iterator(IterCellsChildren iter) {
+    t_assert(iter.h == H3_NULL, "null iterator cell is H3_NULL");
+    t_assert(iter._parentRes == -1, "null iterator parentRes is -1");
+    t_assert(iter._skipDigit == -1, "null iterator skipDigit is -1");
+}
+
 SUITE(h3Iterators) {
+    TEST(iterator_setup_invalid) {
+        assert_is_null_iterator(iterInitBaseCellNum(-1, 0));
+        assert_is_null_iterator(iterInitBaseCellNum(1000, 0));
+        assert_is_null_iterator(iterInitBaseCellNum(0, -1));
+        assert_is_null_iterator(iterInitBaseCellNum(0, 100));
+    }
+
     TEST(iterator_cell_count) {
         test_number(0);
         test_number(1);
