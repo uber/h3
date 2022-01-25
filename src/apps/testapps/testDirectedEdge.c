@@ -119,6 +119,17 @@ SUITE(directedEdge) {
         t_assert(originDestination[1] == sf2,
                  "got the destination last in the pair request");
 
+        t_assert(H3_EXPORT(directedEdgeToCells)(0, originDestination) ==
+                     E_DIR_EDGE_INVALID,
+                 "directedEdgeToCells fails for invalid edges");
+        H3Index invalidEdge;
+        setH3Index(&invalidEdge, 1, 4, 0);
+        H3_SET_RESERVED_BITS(invalidEdge, INVALID_DIGIT);
+        H3_SET_MODE(invalidEdge, H3_DIRECTEDEDGE_MODE);
+        t_assert(H3_EXPORT(directedEdgeToCells)(invalidEdge,
+                                                originDestination) != E_SUCCESS,
+                 "directedEdgeToCells fails for invalid edges");
+
         H3Index largerRing[19] = {0};
         t_assertSuccess(H3_EXPORT(gridRingUnsafe)(sf, 2, largerRing));
         H3Index sf3 = largerRing[0];
@@ -209,6 +220,16 @@ SUITE(directedEdge) {
                  "edges validate correctly");
         t_assert(H3_EXPORT(isValidDirectedEdge)(sf) == 0,
                  "hexagons do not validate");
+
+        H3Index undirectedEdge = edge;
+        H3_SET_MODE(undirectedEdge, H3_EDGE_MODE);
+        t_assert(H3_EXPORT(isValidDirectedEdge)(undirectedEdge) == 0,
+                 "undirected edges do not validate");
+
+        H3Index hexagonWithReserved = sf;
+        H3_SET_RESERVED_BITS(hexagonWithReserved, 1);
+        t_assert(H3_EXPORT(isValidDirectedEdge)(hexagonWithReserved) == 0,
+                 "hexagons with reserved bits do not validate");
 
         H3Index fakeEdge = sf;
         H3_SET_MODE(fakeEdge, H3_DIRECTEDEDGE_MODE);
@@ -387,6 +408,25 @@ SUITE(directedEdge) {
             t_assert(missingEdgeCount == 1,
                      "Only one edge was deleted for the pentagon");
         }
+    }
+
+    TEST(directedEdgeToBoundary_invalid) {
+        H3Index sf;
+        t_assertSuccess(H3_EXPORT(latLngToCell)(&sfGeo, 9, &sf));
+        H3Index invalidEdge = sf;
+        H3_SET_MODE(invalidEdge, H3_DIRECTEDEDGE_MODE);
+        CellBoundary cb;
+        t_assert(H3_EXPORT(directedEdgeToBoundary)(invalidEdge, &cb) ==
+                     E_DIR_EDGE_INVALID,
+                 "directedEdgeToBoundary fails on invalid edge direction");
+
+        H3Index invalidEdge2 = sf;
+        H3_SET_RESERVED_BITS(invalidEdge2, 1);
+        H3_SET_BASE_CELL(invalidEdge2, NUM_BASE_CELLS + 1);
+        H3_SET_MODE(invalidEdge2, H3_DIRECTEDEDGE_MODE);
+        t_assert(
+            H3_EXPORT(directedEdgeToBoundary)(invalidEdge2, &cb) != E_SUCCESS,
+            "directedEdgeToBoundary fails on invalid edge indexing digit");
     }
 
     TEST(exactEdgeLength_invalid) {

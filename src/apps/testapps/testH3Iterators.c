@@ -66,7 +66,39 @@ static void test_ordered(int res) {
     }
 }
 
+static void assert_is_null_iterator(IterCellsChildren iter) {
+    t_assert(iter.h == H3_NULL, "null iterator cell is H3_NULL");
+    t_assert(iter._parentRes == -1, "null iterator parentRes is -1");
+    t_assert(iter._skipDigit == -1, "null iterator skipDigit is -1");
+}
+
 SUITE(h3Iterators) {
+    TEST(iterator_setup_invalid) {
+        assert_is_null_iterator(iterInitBaseCellNum(-1, 0));
+        assert_is_null_iterator(iterInitBaseCellNum(1000, 0));
+        assert_is_null_iterator(iterInitBaseCellNum(0, -1));
+        assert_is_null_iterator(iterInitBaseCellNum(0, 100));
+
+        assert_is_null_iterator(iterInitParent(0, 0));
+        H3Index test = 0x85283473fffffff;
+        assert_is_null_iterator(iterInitParent(test, 0));
+        assert_is_null_iterator(iterInitParent(test, 100));
+    }
+
+    TEST(null_iterator_base_cell) {
+        IterCellsChildren iter = iterInitBaseCellNum(-1, 0);
+        assert_is_null_iterator(iter);
+        iterStepChild(&iter);
+        t_assert(iter.h == H3_NULL, "null iterator returns null");
+    }
+
+    TEST(null_iterator_res) {
+        IterCellsResolution iter = iterInitRes(-1);
+        assert_is_null_iterator(iter._itC);
+        iterStepRes(&iter);
+        t_assert(iter.h == H3_NULL, "null iterator returns null");
+    }
+
     TEST(iterator_cell_count) {
         test_number(0);
         test_number(1);
