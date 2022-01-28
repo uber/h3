@@ -205,7 +205,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testLinkedGeo.c
     src/apps/testapps/mkRandGeo.c
     src/apps/testapps/testH3Api.c
-    src/apps/testapps/testH3SetToLinkedGeo.c
+    src/apps/testapps/testCellsToLinkedMultiPolygon.c
     src/apps/testapps/testH3ToLocalIj.c
     src/apps/testapps/testH3ToLocalIjExhaustive.c
     src/apps/testapps/testGridDistance.c
@@ -227,7 +227,7 @@ set(OTHER_SOURCE_FILES
     src/apps/fuzzers/fuzzerLatLngToCell.c
     src/apps/fuzzers/fuzzerCellToLatLng.c
     src/apps/fuzzers/fuzzerGridDisk.c
-    src/apps/fuzzers/fuzzerH3SetToLinkedGeo.c
+    src/apps/fuzzers/fuzzerCellsToLinkedMultiPolygon.c
     src/apps/fuzzers/fuzzerDistances.c
     src/apps/fuzzers/fuzzerCellArea.c
     src/apps/fuzzers/fuzzerExactEdgeLength.c
@@ -243,7 +243,7 @@ set(OTHER_SOURCE_FILES
     src/apps/fuzzers/fuzzerPolygonToCellsNoHoles.c
     src/apps/benchmarks/benchmarkPolygonToCells.c
     src/apps/benchmarks/benchmarkPolygon.c
-    src/apps/benchmarks/benchmarkH3SetToLinkedGeo.c
+    src/apps/benchmarks/benchmarkCellsToLinkedMultiPolygon.c
     src/apps/benchmarks/benchmarkGridDiskCells.c
     src/apps/benchmarks/benchmarkGridPathCells.c
     src/apps/benchmarks/benchmarkDirectedEdge.c
@@ -469,7 +469,7 @@ if(BUILD_FUZZERS)
     add_h3_fuzzer(fuzzerLatLngToCell src/apps/fuzzers/fuzzerLatLngToCell.c)
     add_h3_fuzzer(fuzzerCellToLatLng src/apps/fuzzers/fuzzerCellToLatLng.c)
     add_h3_fuzzer(fuzzerGridDisk src/apps/fuzzers/fuzzerGridDisk.c)
-    add_h3_fuzzer(fuzzerH3SetToLinkedGeo src/apps/fuzzers/fuzzerH3SetToLinkedGeo.c)
+    add_h3_fuzzer(fuzzerCellsToLinkedMultiPolygon src/apps/fuzzers/fuzzerCellsToLinkedMultiPolygon.c)
     add_h3_fuzzer(fuzzerDistances src/apps/fuzzers/fuzzerDistances.c)
     add_h3_fuzzer(fuzzerCellArea src/apps/fuzzers/fuzzerCellArea.c)
     add_h3_fuzzer(fuzzerExactEdgeLength src/apps/fuzzers/fuzzerExactEdgeLength.c)
@@ -501,7 +501,7 @@ if(BUILD_BENCHMARKS)
     add_h3_benchmark(benchmarkDirectedEdge src/apps/benchmarks/benchmarkDirectedEdge.c)
     add_h3_benchmark(benchmarkVertex src/apps/benchmarks/benchmarkVertex.c)
     add_h3_benchmark(benchmarkIsValidCell src/apps/benchmarks/benchmarkIsValidCell.c)
-    add_h3_benchmark(benchmarkH3SetToLinkedGeo src/apps/benchmarks/benchmarkH3SetToLinkedGeo.c)
+    add_h3_benchmark(benchmarkCellsToLinkedMultiPolygon src/apps/benchmarks/benchmarkCellsToLinkedMultiPolygon.c)
     add_h3_benchmark(benchmarkPolygonToCells src/apps/benchmarks/benchmarkPolygonToCells.c)
     if(ENABLE_REQUIRES_ALL_SYMBOLS)
         add_h3_benchmark(benchmarkPolygon src/apps/benchmarks/benchmarkPolygon.c)

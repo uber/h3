@@ -1082,8 +1082,9 @@ H3Error h3SetToVertexGraph(const H3Index *h3Set, const int numHexes,
 
 /**
  * Internal: Create a LinkedGeoPolygon from a vertex graph. It is the
- * responsibility of the caller to call destroyLinkedPolygon on the populated
- * linked geo structure, or the memory for that structure will not be freed.
+ * responsibility of the caller to call destroyLinkedMultiPolygon on the
+ * populated linked geo structure, or the memory for that structure will not be
+ * freed.
  * @private
  * @param graph Input graph
  * @param out   Output polygon
@@ -1112,9 +1113,9 @@ void _vertexGraphToLinkedGeo(VertexGraph *graph, LinkedGeoPolygon *out) {
  * Polygon outlines will follow GeoJSON MultiPolygon order: Each polygon will
  * have one outer loop, which is first in the list, followed by any holes.
  *
- * It is the responsibility of the caller to call destroyLinkedPolygon on the
- * populated linked geo structure, or the memory for that structure will
- * not be freed.
+ * It is the responsibility of the caller to call destroyLinkedMultiPolygon on
+ * the populated linked geo structure, or the memory for that structure will not
+ * be freed.
  *
  * It is expected that all hexagons in the set have the same resolution and
  * that the set contains no duplicates. Behavior is undefined if duplicates
@@ -1125,8 +1126,9 @@ void _vertexGraphToLinkedGeo(VertexGraph *graph, LinkedGeoPolygon *out) {
  * @param numHexes Number of hexagons in set
  * @param out      Output polygon
  */
-H3Error H3_EXPORT(h3SetToLinkedGeo)(const H3Index *h3Set, const int numHexes,
-                                    LinkedGeoPolygon *out) {
+H3Error H3_EXPORT(cellsToLinkedMultiPolygon)(const H3Index *h3Set,
+                                             const int numHexes,
+                                             LinkedGeoPolygon *out) {
     VertexGraph graph;
     H3Error err = h3SetToVertexGraph(h3Set, numHexes, &graph);
     if (err) {

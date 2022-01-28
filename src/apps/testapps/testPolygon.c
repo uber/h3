@@ -295,7 +295,7 @@ SUITE(polygon) {
         t_assert(countLinkedLoops(&polygon) == 1, "Loop count correct");
         t_assert(polygon.first == outer, "Got expected loop");
 
-        H3_EXPORT(destroyLinkedPolygon)(&polygon);
+        H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
     }
 
     TEST(normalizeMultiPolygonTwoOuterLoops) {
@@ -325,7 +325,7 @@ SUITE(polygon) {
         t_assert(countLinkedLoops(polygon.next) == 1,
                  "Loop count on second polygon correct");
 
-        H3_EXPORT(destroyLinkedPolygon)(&polygon);
+        H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
     }
 
     TEST(normalizeMultiPolygonOneHole) {
@@ -355,7 +355,7 @@ SUITE(polygon) {
         t_assert(polygon.first == outer, "Got expected outer loop");
         t_assert(polygon.first->next == inner, "Got expected inner loop");
 
-        H3_EXPORT(destroyLinkedPolygon)(&polygon);
+        H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
     }
 
     TEST(normalizeMultiPolygonTwoHoles) {
@@ -392,7 +392,7 @@ SUITE(polygon) {
         t_assert(countLinkedLoops(&polygon) == 3,
                  "Loop count on first polygon correct");
 
-        H3_EXPORT(destroyLinkedPolygon)(&polygon);
+        H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
     }
 
     TEST(normalizeMultiPolygonTwoDonuts) {
@@ -440,7 +440,7 @@ SUITE(polygon) {
         t_assert(countLinkedCoords(polygon.next->first->next) == 3,
                  "Got expected inner loop");
 
-        H3_EXPORT(destroyLinkedPolygon)(&polygon);
+        H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
     }
 
     TEST(normalizeMultiPolygonNestedDonuts) {
@@ -484,7 +484,7 @@ SUITE(polygon) {
         t_assert(polygon.next->first == outer, "Got expected outer loop");
         t_assert(polygon.next->first->next == inner, "Got expected inner loop");
 
-        H3_EXPORT(destroyLinkedPolygon)(&polygon);
+        H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
     }
 
     TEST(normalizeMultiPolygonNoOuterLoops) {
@@ -513,7 +513,7 @@ SUITE(polygon) {
         t_assert(countLinkedLoops(&polygon) == 0,
                  "Loop count as expected with invalid input");
 
-        H3_EXPORT(destroyLinkedPolygon)(&polygon);
+        H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
     }
 
     TEST(normalizeMultiPolygonAlreadyNormalized) {
@@ -548,7 +548,7 @@ SUITE(polygon) {
                  "Loop count on second polygon correct");
         t_assert(polygon.next->first == outer2, "Got expected outer loop");
 
-        H3_EXPORT(destroyLinkedPolygon)(&polygon);
+        H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
     }
 
     TEST(normalizeMultiPolygon_unassignedHole) {
@@ -573,6 +573,6 @@ SUITE(polygon) {
         t_assert(result == NORMALIZATION_ERR_UNASSIGNED_HOLES,
                  "Expected error code returned");
 
-        H3_EXPORT(destroyLinkedPolygon)(&polygon);
+        H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
     }
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /** @file
- * @brief Fuzzer program for h3SetToLinkedGeo
+ * @brief Fuzzer program for cellsToLinkedMultiPolygon
  */
 
 #include "aflHarness.h"
@@ -26,10 +26,10 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     int sz = size / sizeof(H3Index);
 
     LinkedGeoPolygon polygon;
-    H3Error err = H3_EXPORT(h3SetToLinkedGeo)(h3Set, sz, &polygon);
+    H3Error err = H3_EXPORT(cellsToLinkedMultiPolygon)(h3Set, sz, &polygon);
 
     if (!err) {
-        H3_EXPORT(destroyLinkedPolygon)(&polygon);
+        H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
     }
     return 0;
 }

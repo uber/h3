@@ -271,10 +271,12 @@ discussion requiring benchmarking, so we will defer that to a
 
 ### Functions
 
-|            Current name           |      Proposed name       |         Notes          |
-|-----------------------------------|--------------------------|------------------------|
-| `h3ToGeoBoundary`                 | `cellToBoundary`         | returns `CellBoundary` |
-| *DNE*                             | `cellToLoop`             | returns `GeoLoop`      |
-| *DNE*                             | `loopToBoundary`         |                        |
-| *DNE*                             | `boundaryToLoop`         |                        |
-| `getH3UnidirectionalEdgeBoundary` | `directedEdgeToBoundary` | returns `CellBoundary` |
+|              3.x name             |       Proposed name         |         Notes              |
+|-----------------------------------|-----------------------------|----------------------------|
+| `h3ToGeoBoundary`                 | `cellToBoundary`            | returns `CellBoundary`     |
+| *DNE*                             | `cellToLoop`                | returns `GeoLoop`          |
+| *DNE*                             | `loopToBoundary`            |                            |
+| *DNE*                             | `boundaryToLoop`            |                            |
+| `getH3UnidirectionalEdgeBoundary` | `directedEdgeToBoundary`    | returns `CellBoundary`     |
+| `h3SetToLinkedGeo`                | `cellsToLinkedMultiPolygon` | returns `LinkedGeoPolygon` |
+| `h3SetToToMultiPolygon`           | `cellsToMultiPolygon`       | bindings only              |
