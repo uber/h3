@@ -282,17 +282,17 @@ DECLSPEC H3Error H3_EXPORT(polygonToCells)(const GeoPolygon *geoPolygon,
                                            int res, H3Index *out);
 /** @} */
 
-/** @defgroup h3SetToMultiPolygon h3SetToMultiPolygon
- * Functions for h3SetToMultiPolygon (currently a binding-only concept)
+/** @defgroup cellsToMultiPolygon cellsToMultiPolygon
+ * Functions for cellsToMultiPolygon (currently a binding-only concept)
  * @{
  */
 /** @brief Create a LinkedGeoPolygon from a set of contiguous hexagons */
-DECLSPEC H3Error H3_EXPORT(h3SetToLinkedGeo)(const H3Index *h3Set,
-                                             const int numHexes,
-                                             LinkedGeoPolygon *out);
+DECLSPEC H3Error H3_EXPORT(cellsToLinkedMultiPolygon)(const H3Index *h3Set,
+                                                      const int numHexes,
+                                                      LinkedGeoPolygon *out);
 
 /** @brief Free all memory created for a LinkedGeoPolygon */
-DECLSPEC void H3_EXPORT(destroyLinkedPolygon)(LinkedGeoPolygon *polygon);
+DECLSPEC void H3_EXPORT(destroyLinkedMultiPolygon)(LinkedGeoPolygon *polygon);
 /** @} */
 
 /** @defgroup degsToRads degsToRads

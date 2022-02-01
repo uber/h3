@@ -147,10 +147,12 @@ the passed-in cell.
 
 ### Functions
 
-|              3.x name             |       4.0.0 name         |         Notes          |
-|-----------------------------------|--------------------------|------------------------|
-| `h3ToGeoBoundary`                 | `cellToBoundary`         | returns `CellBoundary` |
-| *DNE*                             | `cellToLoop`             | returns `GeoLoop`      |
-| *DNE*                             | `loopToBoundary`         |                        |
-| *DNE*                             | `boundaryToLoop`         |                        |
-| `getH3UnidirectionalEdgeBoundary` | `directedEdgeToBoundary` | returns `CellBoundary` |
+|              3.x name             |       4.0.0 name            |         Notes              |
+|-----------------------------------|-----------------------------|----------------------------|
+| `h3ToGeoBoundary`                 | `cellToBoundary`            | returns `CellBoundary`     |
+| *DNE*                             | `cellToLoop`                | returns `GeoLoop`          |
+| *DNE*                             | `loopToBoundary`            |                            |
+| *DNE*                             | `boundaryToLoop`            |                            |
+| `getH3UnidirectionalEdgeBoundary` | `directedEdgeToBoundary`    | returns `CellBoundary`     |
+| `h3SetToLinkedGeo`                | `cellsToLinkedMultiPolygon` | returns `LinkedGeoPolygon` |
+| `h3SetToToMultiPolygon`           | `cellsToMultiPolygon`       | bindings only              |
