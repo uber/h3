@@ -88,6 +88,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         }
     }
 
+    // TODO: Fuzz the `flags` input as well when it has meaningful input
     run(&geoPolygon, 0, res);
     geoPolygon.numHoles = 0;
     run(&geoPolygon, 0, res);
