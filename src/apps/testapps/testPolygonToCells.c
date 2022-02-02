@@ -398,7 +398,7 @@ SUITE(polygonToCells) {
 
     TEST(invalidFlags) {
         int64_t numHexagons;
-        for (uint32_t flags = 0; flags < 32; flags++) {
+        for (uint32_t flags = 1; flags <= 32; flags++) {
             t_assert(
                 H3_EXPORT(maxPolygonToCellsSize)(&sfGeoPolygon, 9, flags,
                                                  &numHexagons) == E_FAILED,
@@ -407,7 +407,7 @@ SUITE(polygonToCells) {
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(&sfGeoPolygon, 9, 0,
                                                          &numHexagons));
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
-        for (uint32_t flags = 0; flags < 32; flags++) {
+        for (uint32_t flags = 1; flags <= 32; flags++) {
             t_assert(H3_EXPORT(polygonToCells)(&sfGeoPolygon, 9, flags,
                                                hexagons) == E_FAILED,
                      "Flags other than 0 are invalid for polygonToCells");
