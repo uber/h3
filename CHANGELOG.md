@@ -7,23 +7,29 @@ The public API of this library consists of the functions declared in file
 
 ## [Unreleased]
 
+## [4.0.0-rc1] - 2022-02-02
+### Breaking changes
+- Rename functions according to the terminology RFC (#571, #403, #466, #495, #466)
+- Functions that can experience errors now have an `H3Error` return value. (#551, #550, #509, #505, #507, #508, #503, #478, #468, #436, #359)
+- Cell count parameters use `int64_t` instead of `int`.
+- `polygonToCells` (previously `polyfill`) accepts a flags argument for future expansion. (#570)
+
 ### Added
-- Vertex mode and associated functions:
+- Vertex mode and associated functions: (#422, #420, #417)
     - `cellToVertex(cell, vertexNum)`
     - `cellToVertexes(cell, out)`
     - `vertexToPoint(vertex, out)` 
     - `isValidVertex(vertex)` 
-- closed-form implementation of `numHexagons`
+- `h3` CLI application. (#556, #497)
 
-### Breaking changes
-- rename functions according to the terminology RFC (#403, #466)
-- `cellToChildrenSize` to output `int64_t` instead of `int`
-- `pointDistRads` to `distanceRads`
-- `pointDistKm` to `distanceKm`
-- `pointDistM` to `distanceM`
+### Fixed
+- A number of issues detected via unit tests and fuzzers were fixed. (#568, #562, #558, #559, #560, #430)
 
 ### Other changes
-- generally use `lng` instead of `lon`
+- Generally use `lng` instead of `lon`
+- Closed-form implementation of `numHexagons`
+- A number of fuzzer harnesses are now included in the H3 core library. (#557, #553, #545, #433)
+- Additional benchmarks are added and benchmarks are regularly run in CI. (#524, #518)
 
 ## [3.7.2] - 2021-07-15
 ### Fixed
