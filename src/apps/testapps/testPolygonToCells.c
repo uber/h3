@@ -409,7 +409,7 @@ SUITE(polygonToCells) {
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
         for (uint32_t flags = 0; flags < 32; flags++) {
             t_assert(H3_EXPORT(polygonToCells)(&sfGeoPolygon, 9, flags,
-                                               &numHexagons) == E_FAILED,
+                                               hexagons) == E_FAILED,
                      "Flags other than 0 are invalid for polygonToCells");
         }
         free(hexagons);
