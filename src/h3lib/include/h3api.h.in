@@ -275,11 +275,13 @@ DECLSPEC H3Error H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index *out);
  */
 /** @brief maximum number of hexagons that could be in the geoloop */
 DECLSPEC H3Error H3_EXPORT(maxPolygonToCellsSize)(const GeoPolygon *geoPolygon,
-                                                  int res, int64_t *out);
+                                                  int res, uint32_t flags,
+                                                  int64_t *out);
 
 /** @brief hexagons within the given geopolygon */
 DECLSPEC H3Error H3_EXPORT(polygonToCells)(const GeoPolygon *geoPolygon,
-                                           int res, H3Index *out);
+                                           int res, uint32_t flags,
+                                           H3Index *out);
 /** @} */
 
 /** @defgroup cellsToMultiPolygon cellsToMultiPolygon

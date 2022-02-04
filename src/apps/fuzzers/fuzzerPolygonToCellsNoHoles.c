@@ -24,12 +24,12 @@
 const int MAX_RES = 15;
 const int MAX_SZ = 4000000;
 
-void run(GeoPolygon *geoPolygon, int res) {
+void run(GeoPolygon *geoPolygon, uint32_t flags, int res) {
     int64_t sz;
-    H3Error err = H3_EXPORT(maxPolygonToCellsSize)(geoPolygon, res, &sz);
+    H3Error err = H3_EXPORT(maxPolygonToCellsSize)(geoPolygon, res, flags, &sz);
     if (!err && sz < MAX_SZ) {
         H3Index *out = calloc(sz, sizeof(H3Index));
-        H3_EXPORT(polygonToCells)(geoPolygon, res, out);
+        H3_EXPORT(polygonToCells)(geoPolygon, res, flags, out);
         free(out);
     }
 }
@@ -50,7 +50,8 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     // Offset by 1 since *data was used for `res`, above.
     geoPolygon.geoloop.verts = (LatLng *)(data + 1);
 
-    run(&geoPolygon, res);
+    // TODO: Fuzz the `flags` input as well when it has meaningful input
+    run(&geoPolygon, 0, res);
 
     return 0;
 }
