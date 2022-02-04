@@ -18,7 +18,7 @@ The public API of this library consists of the functions declared in file
 - Vertex mode and associated functions: (#422, #420, #417)
     - `cellToVertex(cell, vertexNum)`
     - `cellToVertexes(cell, out)`
-    - `vertexToPoint(vertex, out)` 
+    - `vertexToLatLng(vertex, out)`
     - `isValidVertex(vertex)` 
 - `h3` CLI application. (#556, #497)
 
