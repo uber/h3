@@ -7,7 +7,7 @@ The public API of this library consists of the functions declared in file
 
 ## [Unreleased]
 
-## [4.0.0-rc1] - 2022-02-04
+## [4.0.0-rc1] - 2022-02-07
 ### Breaking changes
 - Rename functions according to the terminology RFC (#571, #403, #466, #495, #466)
 - Functions that can experience errors now have an `H3Error` return value. (#551, #550, #509, #505, #507, #508, #503, #478, #468, #436, #359)
