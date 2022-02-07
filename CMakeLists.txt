@@ -64,6 +64,8 @@ endif()
 file(READ VERSION H3_VERSION LIMIT_COUNT 1)
 # Clean any newlines
 string(REPLACE "\n" "" H3_VERSION "${H3_VERSION}")
+# Remove any trailing qualifier
+string(REGEX REPLACE "-.*$" "" H3_VERSION "${H3_VERSION}")
 string(REPLACE "." ";" H3_VERSION_LIST "${H3_VERSION}")
 list(GET H3_VERSION_LIST 0 H3_VERSION_MAJOR)
 list(GET H3_VERSION_LIST 1 H3_VERSION_MINOR)
