@@ -259,102 +259,61 @@ int _isValidCell_const(const H3Index h) {
     // The 4 mode bits should be 0b0001 (H3_CELL_MODE)
     // The 3 reserved bits should be 0b000
     // In total, the top 8 bits should be 0b00001000
-    if (GT(h, 8) != 0b00001000) return 0;
+    if (GT(h, 8) != 0b00001000) return false;
 
     // No need to check resolution; any 4 bits give a valid resolution.
     const int res = H3_GET_RESOLUTION(h);
 
     // Check that base cell number is valid.
     const int bc = H3_GET_BASE_CELL(h);
-    if (bc >= NUM_BASE_CELLS) return 0;
+    if (bc >= NUM_BASE_CELLS) return false;
 
-    // Check that all unused digits after `res` are set to 7 (INVALID_DIGIT).
-    // Bit shift operations allow us to avoid looping through digits.
-    if (res < 15) {
-        int s = 19 + 3 * res;
-        if ((~(h << s)) >> s) return 0;
-    }
-
-    // Now check that each resolution digit is valid.
-    // Let `r` denote the resolution we're currently checking.
-    int r = 1;
-
-    static const uint64_t digit_masks[16] = {
-        0b0,
-        0b111000000000000000000000000000000000000000000,
-        0b111000000000000000000000000000000000000000,
-        0b111000000000000000000000000000000000000,
-        0b111000000000000000000000000000000000,
-        0b111000000000000000000000000000000,
-        0b111000000000000000000000000000,
-        0b111000000000000000000000000,
-        0b111000000000000000000000,
-        0b111000000000000000000,
-        0b111000000000000000,
-        0b111000000000000,
-        0b111000000000,
-        0b111000000,
-        0b111000,
-        0b111};
-
-    static const uint64_t digit_ones[16] = {
-        0b0,
-        0b1000000000000000000000000000000000000000000,
-        0b1000000000000000000000000000000000000000,
-        0b1000000000000000000000000000000000000,
-        0b1000000000000000000000000000000000,
-        0b1000000000000000000000000000000,
-        0b1000000000000000000000000000,
-        0b1000000000000000000000000,
-        0b1000000000000000000000,
-        0b1000000000000000000,
-        0b1000000000000000,
-        0b1000000000000,
-        0b1000000000,
-        0b1000000,
-        0b1000,
-        0b1,
-    };
-
+    // Check that no digit from 1 to `res` is 7 (INVALID_DIGIT).
+    // TODO: prolly deserves some comments...
     {
-        // does seting static make this faster?
+        // does setting static make this faster?
         const uint64_t MLO = 0b001001001001001001001001001001001001001001001;
         const uint64_t MHI = MLO << 2;
 
+        int shift = 3 * (15 - res);
         H3Index g = h;
-        g >>= 3 * (15 - res);
-        g <<= 3 * (15 - res);
+        g >>= shift;
+        g <<= shift;
 
-        if (g & MHI & (~g - MLO)) return 0;
+        if (g & MHI & (~g - MLO)) return false;
     }
 
+    // Check that all unused digits after `res` are set to 7 (INVALID_DIGIT).
+    // Bit shift to avoid looping through digits.
+    if (res < 15) {
+        int shift = 19 + 3 * res;
+        H3Index g = h;
+        g <<= shift;
+        g = ~g;
+        g >>= shift;
+        if (g) return false;
+    }
+
+    // One final validation just for pentagons:
     // Pentagon cells start with a sequence of 0's (CENTER_DIGIT's).
     // The first nonzero digit can't be a 1 (i.e., "deleted subsequence",
     // PENTAGON_SKIPPED_DIGIT, or K_AXES_DIGIT).
     // Test for pentagon base cell first to avoid this loop if possible.
     if (isBaseCellPentagonArr[bc]) {
-        for (; r <= res; r++) {
-            uint64_t d = h & digit_masks[r];
-            if (d == 0) {
-                continue;
-            } else if (d == digit_ones[r]) {
-                return 0;
-            } else {
-                break;
-                // But don't increment `r`, since we still need to
-                // check that it isn't a 7.
-            }
+        H3Index g = h << 19;
+
+        for (int r = 1; r <= res; r++) {
+            uint64_t d = GT(g, 3);
+            g <<= 3;
+
+            if (d == 1) return false;
+            if (d >= 2) break;
+            // if d == 0, just continue with loop
         }
     }
 
-    // After (possibly) taking care of pentagon logic, check that
-    // the remaining digits up to `res` are not 7 (INVALID_DIGIT).
-    // for (; r <= res; r++) {
-    //     if ((h & digit_masks[r]) == digit_masks[r]) return 0;
-    // }
-
     // If no flaws were identified above, then the index is a valid H3 cell.
-    return 1;
+    return true;
 }
 
 /**
