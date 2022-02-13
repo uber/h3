@@ -270,12 +270,10 @@ int _isValidCell_const(const H3Index h) {
 
     // Check that all unused digits after `res` are set to 7 (INVALID_DIGIT).
     // Bit shift operations allow us to avoid looping through digits.
-    int shift = (15 - res) * 3;
-    uint64_t m = 0;
-    m = ~m;
-    m <<= shift;  // todo: shift right and avoid the next negation?
-    m = ~m;
-    if ((h & m) != m) return 0;
+    if (res < 15) {
+        int s = 19 + 3 * res;
+        if ((~(h << s)) >> s) return 0;
+    }
 
     // Now check that each resolution digit is valid.
     // Let `r` denote the resolution we're currently checking.
