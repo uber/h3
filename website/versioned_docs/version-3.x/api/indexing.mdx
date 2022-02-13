@@ -62,7 +62,8 @@ function example() {
 </TabItem>
 </Tabs>
 
-Indexes the location at the specified resolution, returning the index of the cell containing the location.
+Indexes the location at the specified resolution, returning the index of the cell containing the location. This buckets
+the geographic point into the H3 grid. See the [algorithm description](../core-library/geoToH3desc) for more information.
 
 Returns 0 on error.
 
@@ -116,8 +117,14 @@ function example() {
 </TabItem>
 </Tabs>
 
-Finds the coordinates of the centroid of the cell in the projection space. This is approximately the centroid of the cell
-on the sphere, and is centered on the center child of the cell.
+Finds the center of the cell in grid space. See the
+[algorithm description](../core-library/h3ToGeoDesc) for
+more information.
+
+The center will drift versus the centroid
+of the cell on Earth due to distortion from the gnomonic
+projection within the icosahedron face it resides on and its
+distance from the center of the icosahedron face.
 
 ## h3ToGeoBoundary
 
@@ -169,4 +176,6 @@ function example() {
 </TabItem>
 </Tabs>
 
-Finds the boundary of the index.
+Finds the boundary of the cell. See the
+[algorithm description](../core-library/h3ToGeoBoundaryDesc)
+for more information.
