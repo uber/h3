@@ -259,8 +259,7 @@ int _isValidCell_const(const H3Index h) {
     // The 4 mode bits should be 0b0001 (H3_CELL_MODE)
     // The 3 reserved bits should be 0b000
     // In total, the top 8 bits should be 0b00001000
-    if (GT(h, 8) != 0b00001000)
-        return 0;  // could do this without the shift if we wanted...
+    if (GT(h, 8) != 0b00001000) return 0;
 
     // No need to check resolution; any 4 bits give a valid resolution.
     const int res = H3_GET_RESOLUTION(h);
@@ -269,9 +268,14 @@ int _isValidCell_const(const H3Index h) {
     const int bc = H3_GET_BASE_CELL(h);
     if (bc >= NUM_BASE_CELLS) return 0;
 
-    // six shifts up at this point. can reduce with masking? is that faster?
-    // make input const!? instead: mask-equals, mask-shift, mask-shift easy test
-    // to see what might be faster, mask vs shift?
+    // Check that all unused digits after `res` are set to 7 (INVALID_DIGIT).
+    // Bit shift operations allow us to avoid looping through digits.
+    int shift = (15 - res) * 3;
+    uint64_t m = 0;
+    m = ~m;
+    m <<= shift;  // todo: shift right and avoid the next negation?
+    m = ~m;
+    if ((h & m) != m) return 0;
 
     // Now check that each resolution digit is valid.
     // Let `r` denote the resolution we're currently checking.
@@ -338,20 +342,6 @@ int _isValidCell_const(const H3Index h) {
     for (; r <= res; r++) {
         if ((h & digit_masks[r]) == digit_masks[r]) return 0;
     }
-
-    // if we make it const h, then we can move this code up front, to loops
-    // happen last Now check that all the unused digits after `res` are set to 7
-    // (INVALID_DIGIT). Bit shift operations allow us to avoid looping through
-    // digits; this saves time in benchmarks.
-    int shift = (15 - res) * 3;
-    uint64_t m = 0;
-    m = ~m;
-    m <<= shift;  // shift right and avoid the next negation?
-    m = ~m;
-    if ((h & m) != m) return 0;
-
-    // add the timing code to the main repo in a PR before landing this, so its
-    // easy to get comparison times
 
     // If no flaws were identified above, then the index is a valid H3 cell.
     return 1;
