@@ -30,24 +30,18 @@ SUITE(gridDisksUnsafe) {
     H3Index withPentagon[] = {0x8029fffffffffff, 0x801dfffffffffff};
 
     TEST(identityGridDiskCells) {
-        int err;
-
         H3Index k0[] = {0};
-        err = H3_EXPORT(gridDisksUnsafe)(sfHexPtr, 1, 0, k0);
+        t_assertSuccess(H3_EXPORT(gridDisksUnsafe)(sfHexPtr, 1, 0, k0));
 
-        t_assert(err == 0, "No error on gridDisksUnsafe");
         t_assert(k0[0] == sfHex, "generated identity k-ring");
     }
 
     TEST(ring1of1) {
-        int err;
         H3Index allKrings[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-        err = H3_EXPORT(gridDisksUnsafe)(k1, 6, 1, allKrings);
-
-        t_assert(err == 0, "No error on gridDisksUnsafe");
+        t_assertSuccess(H3_EXPORT(gridDisksUnsafe)(k1, 6, 1, allKrings));
 
         for (int i = 0; i < 42; i++) {
             t_assert(allKrings[i] != 0, "index is populated");
@@ -60,11 +54,8 @@ SUITE(gridDisksUnsafe) {
     }
 
     TEST(ring2of1) {
-        int err;
         H3Index *allKrings2 = calloc(6 * (1 + 6 + 12), sizeof(H3Index));
-        err = H3_EXPORT(gridDisksUnsafe)(k1, 6, 2, allKrings2);
-
-        t_assert(err == 0, "No error on gridDisksUnsafe");
+        t_assertSuccess(H3_EXPORT(gridDisksUnsafe)(k1, 6, 2, allKrings2));
 
         for (int i = 0; i < (6 * (1 + 6 + 12)); i++) {
             t_assert(allKrings2[i] != 0, "index is populated");
@@ -79,11 +70,15 @@ SUITE(gridDisksUnsafe) {
     }
 
     TEST(failed) {
-        int err;
         H3Index *allKrings = calloc(2 * (1 + 6), sizeof(H3Index));
-        err = H3_EXPORT(gridDisksUnsafe)(withPentagon, 2, 1, allKrings);
-
-        t_assert(err != 0, "Expected error on gridDisksUnsafe");
+        t_assert(H3_EXPORT(gridDisksUnsafe)(withPentagon, 2, 1, allKrings) ==
+                     E_PENTAGON,
+                 "Expected error on gridDisksUnsafe");
         free(allKrings);
+    }
+
+    TEST(invalid_k) {
+        t_assert(H3_EXPORT(gridDisksUnsafe)(k1, 6, -1, NULL) == E_DOMAIN,
+                 "gridDisksUnsafe invalid k");
     }
 }

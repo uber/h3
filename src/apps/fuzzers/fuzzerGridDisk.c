@@ -17,29 +17,74 @@
  * @brief Fuzzer program for gridDisk
  */
 
+#include "aflHarness.h"
 #include "h3api.h"
 #include "utility.h"
 
-int main(int argc, char *argv[]) {
-    if (argc != 2) {
-        error("Should have one argument (test case file)\n");
-    }
-    const char *filename = argv[1];
-    FILE *fp = fopen(filename, "rb");
-    struct {
-        H3Index index;
-        int k;
-    } args;
-    if (fread(&args, sizeof(args), 1, fp) != 1) {
-        error("Error reading\n");
-    }
-    fclose(fp);
+typedef struct {
+    H3Index index;
+    int64_t k;
+} inputArgs;
 
-    int sz = H3_EXPORT(maxGridDiskSize)(args.k);
+const int64_t MAX_GRID_DISK_SIZE = 0x10000000;
+
+int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
+    if (size < sizeof(inputArgs)) {
+        return 0;
+    }
+    const inputArgs *args = (const inputArgs *)data;
+
+    int64_t sz;
+    H3Error err = H3_EXPORT(maxGridDiskSize)(args->k, &sz);
+    if (err || sz > MAX_GRID_DISK_SIZE) {
+        // Can't allocate
+        return 0;
+    }
     H3Index *results = calloc(sizeof(H3Index), sz);
     if (results != NULL) {
-        H3_EXPORT(gridDisk)(args.index, args.k, results);
-        h3Println(results[0]);
+        H3_EXPORT(gridDisk)(args->index, args->k, results);
     }
     free(results);
+
+    results = calloc(sizeof(H3Index), sz);
+    if (results != NULL) {
+        H3_EXPORT(gridDiskUnsafe)(args->index, args->k, results);
+    }
+    free(results);
+
+    // TODO: use int64_t
+    int *distances = calloc(sizeof(int), sz);
+    results = calloc(sizeof(H3Index), sz);
+    if (results != NULL && distances != NULL) {
+        H3_EXPORT(gridDiskDistancesUnsafe)
+        (args->index, args->k, results, distances);
+    }
+    free(results);
+    free(distances);
+
+    distances = calloc(sizeof(int), sz);
+    results = calloc(sizeof(H3Index), sz);
+    if (results != NULL && distances != NULL) {
+        H3_EXPORT(gridDiskDistancesSafe)
+        (args->index, args->k, results, distances);
+    }
+    free(results);
+    free(distances);
+
+    distances = calloc(sizeof(int), sz);
+    results = calloc(sizeof(H3Index), sz);
+    if (results != NULL && distances != NULL) {
+        H3_EXPORT(gridDiskDistances)(args->index, args->k, results, distances);
+    }
+    free(results);
+    free(distances);
+
+    results = calloc(sizeof(H3Index), sz);
+    if (results != NULL) {
+        H3_EXPORT(gridRingUnsafe)(args->index, args->k, results);
+    }
+    free(results);
+    return 0;
 }
+
+AFL_HARNESS_MAIN(sizeof(inputArgs));

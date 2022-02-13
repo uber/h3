@@ -34,8 +34,7 @@
 static void directedEdge_correctness_assertions(H3Index h3) {
     H3Index edges[6] = {H3_NULL};
     int pentagon = H3_EXPORT(isPentagon)(h3);
-    H3_EXPORT(originToDirectedEdges)(h3, edges);
-    H3Index destination;
+    t_assertSuccess(H3_EXPORT(originToDirectedEdges)(h3, edges));
 
     for (int i = 0; i < 6; i++) {
         if (pentagon && i == 0) {
@@ -44,18 +43,23 @@ static void directedEdge_correctness_assertions(H3Index h3) {
         }
         t_assert(H3_EXPORT(isValidDirectedEdge)(edges[i]) == 1,
                  "edge is an edge");
-        t_assert(H3_EXPORT(getDirectedEdgeOrigin)(edges[i]) == h3,
-                 "origin matches input origin");
+        H3Index origin;
+        t_assertSuccess(H3_EXPORT(getDirectedEdgeOrigin)(edges[i], &origin));
+        t_assert(origin == h3, "origin matches input origin");
 
-        destination = H3_EXPORT(getDirectedEdgeDestination)(edges[i]);
-        t_assert(H3_EXPORT(areNeighborCells)(h3, destination),
-                 "destination is a neighbor");
+        H3Index destination;
+        t_assertSuccess(
+            H3_EXPORT(getDirectedEdgeDestination)(edges[i], &destination));
+        int isNeighbor;
+        t_assertSuccess(
+            H3_EXPORT(areNeighborCells)(h3, destination, &isNeighbor));
+        t_assert(isNeighbor, "destination is a neighbor");
     }
 }
 
 static void directedEdge_boundary_assertions(H3Index h3) {
     H3Index edges[6] = {H3_NULL};
-    H3_EXPORT(originToDirectedEdges)(h3, edges);
+    t_assertSuccess(H3_EXPORT(originToDirectedEdges)(h3, edges));
     H3Index destination;
     H3Index revEdge;
     CellBoundary edgeBoundary;
@@ -63,10 +67,14 @@ static void directedEdge_boundary_assertions(H3Index h3) {
 
     for (int i = 0; i < 6; i++) {
         if (edges[i] == H3_NULL) continue;
-        H3_EXPORT(directedEdgeToBoundary)(edges[i], &edgeBoundary);
-        destination = H3_EXPORT(getDirectedEdgeDestination)(edges[i]);
-        revEdge = H3_EXPORT(cellsToDirectedEdge)(destination, h3);
-        H3_EXPORT(directedEdgeToBoundary)(revEdge, &revEdgeBoundary);
+        t_assertSuccess(
+            H3_EXPORT(directedEdgeToBoundary)(edges[i], &edgeBoundary));
+        t_assertSuccess(
+            H3_EXPORT(getDirectedEdgeDestination)(edges[i], &destination));
+        t_assertSuccess(
+            H3_EXPORT(cellsToDirectedEdge)(destination, h3, &revEdge));
+        t_assertSuccess(
+            H3_EXPORT(directedEdgeToBoundary)(revEdge, &revEdgeBoundary));
 
         t_assert(edgeBoundary.numVerts == revEdgeBoundary.numVerts,
                  "numVerts is equal for edge and reverse");

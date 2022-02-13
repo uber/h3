@@ -10,6 +10,7 @@ import { LiveProvider, LiveEditor, LiveError, LiveContext } from "react-live";
 import clsx from "clsx";
 import Translate from "@docusaurus/Translate";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
+import useIsBrowser from '@docusaurus/useIsBrowser';
 import usePrismTheme from "@theme/hooks/usePrismTheme";
 import styles from "./styles.module.css";
 
@@ -78,8 +79,8 @@ function EditorWithHeader() {
 }
 
 export default function Playground({ children, transformCode, ...props }) {
+  const isClient = useIsBrowser();
   const {
-    isClient,
     siteConfig: {
       themeConfig: {
         liveCodeBlock: { playgroundPosition },

@@ -10,7 +10,7 @@ import TabItem from '@theme/TabItem';
 
 These functions provide metadata about an H3 index, such as its resolution or base cell, and provide utilities for converting into and out of the 64-bit representation of an H3 index.
 
-## h3GetResolution
+## getResolution
 
 <Tabs
   groupId="language"
@@ -25,35 +25,35 @@ These functions provide metadata about an H3 index, such as its resolution or ba
 <TabItem value="c">
 
 ```c
-int h3GetResolution(H3Index h);
+int getResolution(H3Index h);
 ```
 
 </TabItem>
 <TabItem value="python">
 
 ```py
-h3.h3_get_resolution(h)
+h3.get_resolution(h)
 ```
 
 </TabItem>
 <TabItem value="java">
 
 ```java
-int h3GetResolution(long h3);
-int h3GetResolution(String h3Address);
+int getResolution(long h3);
+int getResolution(String h3Address);
 ```
 
 </TabItem>
 <TabItem value="javascript">
 
 ```js
-h3.h3GetResolution(h)
+h3.getResolution(h)
 ```
 
 ```js live
 function example() {
   const h = '85283473fffffff';
-  return h3.h3GetResolution(h);
+  return h3.getResolution(h);
 }
 ```
 
@@ -62,7 +62,7 @@ function example() {
 
 Returns the resolution of the index.
 
-## h3GetBaseCell
+## getBaseCellNumber
 
 <Tabs
   groupId="language"
@@ -77,35 +77,35 @@ Returns the resolution of the index.
 <TabItem value="c">
 
 ```c
-int h3GetBaseCell(H3Index h);
+int getBaseCellNumber(H3Index h);
 ```
 
 </TabItem>
 <TabItem value="python">
 
 ```py
-h3.h3_get_base_cell(h)
+h3.get_base_cell_number(h)
 ```
 
 </TabItem>
 <TabItem value="java">
 
 ```java
-int h3GetBaseCell(long h3);
-int h3GetBaseCell(String h3Address);
+int getBaseCellNumber(long h3);
+int getBaseCellNumber(String h3Address);
 ```
 
 </TabItem>
 <TabItem value="javascript">
 
 ```js
-h3.h3GetBaseCell(h)
+h3.getBaseCellNumber(h)
 ```
 
 ```js live
 function example() {
   const h = '85283473fffffff';
-  return h3.h3GetBaseCell(h);
+  return h3.getBaseCellNumber(h);
 }
 ```
 
@@ -129,7 +129,7 @@ Returns the base cell number of the index.
 <TabItem value="c">
 
 ```c
-H3Index stringToH3(const char *str);
+H3Error stringToH3(const char *str, H3Index *out);
 ```
 
 </TabItem>
@@ -156,7 +156,7 @@ The H3 JavaScript binding supports only the string representation of an H3 index
 
 Converts the string representation to `H3Index` (`uint64_t`) representation.
 
-Returns 0 on error.
+Returns 0 (`E_SUCCESS`) on success.
 
 ## h3ToString
 
@@ -173,7 +173,7 @@ Returns 0 on error.
 <TabItem value="c">
 
 ```c
-void h3ToString(H3Index h, char *str, size_t sz);
+H3Error h3ToString(H3Index h, char *str, size_t sz);
 ```
 
 </TabItem>
@@ -200,7 +200,9 @@ The H3 JavaScript binding supports only the string representation of an H3 index
 
 Converts the `H3Index` representation of the index to the string representation. `str` must be at least of length 17.
 
-## h3IsValid
+Returns 0 (`E_SUCCESS`) on success.
+
+## isValidCell
 
 <Tabs
   groupId="language"
@@ -215,44 +217,44 @@ Converts the `H3Index` representation of the index to the string representation.
 <TabItem value="c">
 
 ```c
-int h3IsValid(H3Index h);
+int isValidCell(H3Index h);
 ```
 
 </TabItem>
 <TabItem value="python">
 
 ```py
-h3.h3_is_valid(h)
+h3.is_valid_cell(h)
 ```
 
 </TabItem>
 <TabItem value="java">
 
 ```java
-boolean h3IsValid(long h3);
-boolean h3IsValid(String h3Address);
+boolean isValidCell(long h3);
+boolean isValidCell(String h3Address);
 ```
 
 </TabItem>
 <TabItem value="javascript">
 
 ```js
-h3.h3IsValid(h)
+h3.isValidCell(h)
 ```
 
 ```js live
 function example() {
   const h = '85283473fffffff';
-  return h3.h3IsValid(h);
+  return h3.isValidCell(h);
 }
 ```
 
 </TabItem>
 </Tabs>
 
-Returns non-zero if this is a valid H3 index.
+Returns non-zero if this is a valid H3 cell index.
 
-## h3IsResClassIII
+## isResClassIII
 
 <Tabs
   groupId="language"
@@ -267,35 +269,35 @@ Returns non-zero if this is a valid H3 index.
 <TabItem value="c">
 
 ```c
-int h3IsResClassIII(H3Index h);
+int isResClassIII(H3Index h);
 ```
 
 </TabItem>
 <TabItem value="python">
 
 ```py
-h3.h3_is_res_class_III(h)
+h3.is_res_class_III(h)
 ```
 
 </TabItem>
 <TabItem value="java">
 
 ```java
-boolean h3IsResClassIII(long h3);
-boolean h3IsResClassIII(String h3Address);
+boolean isResClassIII(long h3);
+boolean isResClassIII(String h3Address);
 ```
 
 </TabItem>
 <TabItem value="javascript">
 
 ```js
-h3.h3IsResClassIII(h)
+h3.isResClassIII(h)
 ```
 
 ```js live
 function example() {
   const h = '85283473fffffff';
-  return h3.h3IsResClassIII(h);
+  return h3.isResClassIII(h);
 }
 ```
 
@@ -304,7 +306,7 @@ function example() {
 
 Returns non-zero if this index has a resolution with Class III orientation.
 
-## h3IsPentagon
+## isPentagon
 
 <Tabs
   groupId="language"
@@ -319,35 +321,35 @@ Returns non-zero if this index has a resolution with Class III orientation.
 <TabItem value="c">
 
 ```c
-int h3IsPentagon(H3Index h);
+int isPentagon(H3Index h);
 ```
 
 </TabItem>
 <TabItem value="python">
 
 ```py
-h3.h3_is_pentagon(h)
+h3.is_pentagon(h)
 ```
 
 </TabItem>
 <TabItem value="java">
 
 ```java
-boolean h3IsPentagon(long h3);
-boolean h3IsPentagon(String h3Address);
+boolean isPentagon(long h3);
+boolean isPentagon(String h3Address);
 ```
 
 </TabItem>
 <TabItem value="javascript">
 
 ```js
-h3.h3IsPentagon(h)
+h3.isPentagon(h)
 ```
 
 ```js live
 function example() {
   const h = '85283473fffffff';
-  return h3.h3IsPentagon(h);
+  return h3.isPentagon(h);
 }
 ```
 
@@ -356,7 +358,7 @@ function example() {
 
 Returns non-zero if this index represents a pentagonal cell.
 
-## h3GetFaces
+## getIcosahedronFaces
 
 <Tabs
   groupId="language"
@@ -371,35 +373,35 @@ Returns non-zero if this index represents a pentagonal cell.
 <TabItem value="c">
 
 ```c
-void h3GetFaces(H3Index h, int* out);
+H3Error getIcosahedronFaces(H3Index h, int* out);
 ```
 
 </TabItem>
 <TabItem value="python">
 
 ```py
-h3.h3_get_faces(h)
+h3.get_icosahedron_faces(h)
 ```
 
 </TabItem>
 <TabItem value="java">
 
 ```java
-Collection<Integer> h3GetFaces(long h3);
-Collection<Integer> h3GetFaces(String h3Address);
+Collection<Integer> getIcosahedronFaces(long h3);
+Collection<Integer> getIcosahedronFaces(String h3Address);
 ```
 
 </TabItem>
 <TabItem value="javascript">
 
 ```js
-h3.h3GetFaces(h)
+h3.getIcosahedronFaces(h)
 ```
 
 ```js live
 function example() {
   const h = '85283473fffffff';
-  return h3.h3GetFaces(h);
+  return h3.getIcosahedronFaces(h);
 }
 ```
 
@@ -409,6 +411,8 @@ function example() {
 Find all icosahedron faces intersected by a given H3 index and places them in the array `out`. `out` must be at least length of `maxFaceCount(h)`.
 
 Faces are represented as integers from 0-19, inclusive. The array is sparse, and empty (no intersection) array values are represented by -1.
+
+Returns 0 (`E_SUCCESS`) on success.
 
 ## maxFaceCount
 
@@ -425,7 +429,7 @@ Faces are represented as integers from 0-19, inclusive. The array is sparse, and
 <TabItem value="c">
 
 ```c
-int maxFaceCount(H3Index h3);
+H3Error maxFaceCount(H3Index h3, int *out);
 ```
 
 </TabItem>

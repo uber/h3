@@ -107,7 +107,7 @@ void destroyLinkedGeoLoop(LinkedGeoLoop *loop) {
  * responsible for freeing memory allocated to input polygon struct.
  * @param polygon Pointer to the first polygon in the structure
  */
-void H3_EXPORT(destroyLinkedPolygon)(LinkedGeoPolygon *polygon) {
+void H3_EXPORT(destroyLinkedMultiPolygon)(LinkedGeoPolygon *polygon) {
     // flag to skip the input polygon
     bool skip = true;
     LinkedGeoPolygon *nextPolygon;
@@ -352,7 +352,7 @@ int normalizeMultiPolygon(LinkedGeoPolygon *root) {
             // If we can't find a polygon (possible with invalid input), then
             // we need to release the memory for the hole, because the loop has
             // been unlinked from the root and the caller will no longer have
-            // a way to destroy it with destroyLinkedPolygon.
+            // a way to destroy it with destroyLinkedMultiPolygon.
             destroyLinkedGeoLoop(innerLoops[i]);
             H3_MEMORY(free)(innerLoops[i]);
             resultCode = NORMALIZATION_ERR_UNASSIGNED_HOLES;

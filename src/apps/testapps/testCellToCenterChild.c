@@ -47,8 +47,11 @@ SUITE(cellToCenterChild) {
                     "resolution");
                 t_assert(H3_EXPORT(getResolution)(centerChild) == childRes,
                          "center child should have correct resolution");
+                H3Index parent;
+                t_assertSuccess(
+                    H3_EXPORT(cellToParent)(centerChild, res, &parent));
                 t_assert(
-                    H3_EXPORT(cellToParent)(centerChild, res) == h3Index,
+                    parent == h3Index,
                     "parent at original resolution should be initial index");
             }
         }

@@ -25,7 +25,7 @@ These functions permit moving between resolutions in the H3 grid system. The fun
 <TabItem value="c">
 
 ```c
-H3Index cellToParent(H3Index cell, int parentRes);
+H3Error cellToParent(H3Index cell, int parentRes, H3Index *parent);
 ```
 
 </TabItem>
@@ -60,7 +60,9 @@ function example() {
 </TabItem>
 </Tabs>
 
-Returns the parent (coarser) index containing `cell`.
+Provides the parent (coarser) index containing `cell`.
+
+Returns 0 (`E_SUCCESS`) on success.
 
 ## cellToChildren
 
@@ -77,7 +79,7 @@ Returns the parent (coarser) index containing `cell`.
 <TabItem value="c">
 
 ```c
-void cellToChildren(H3Index cell, int childRes, H3Index *children);
+H3Error cellToChildren(H3Index cell, int childRes, H3Index *children);
 ```
 
 </TabItem>
@@ -114,6 +116,8 @@ function example() {
 
 Populates `children` with the indexes contained by `cell` at resolution `childRes`. `children` must be an array of at least size `cellToChildrenSize(cell, childRes)`.
 
+Returns 0 (`E_SUCCESS`) on success.
+
 ## cellToChildrenSize
 
 <Tabs
@@ -129,7 +133,7 @@ Populates `children` with the indexes contained by `cell` at resolution `childRe
 <TabItem value="c">
 
 ```c
-int64_t cellToChildrenSize(H3Index cell, int childRes);
+H3Error cellToChildrenSize(H3Index cell, int childRes, int64_t *out);
 ```
 
 </TabItem>
@@ -162,7 +166,9 @@ This function exists for memory management and is not exposed.
 </TabItem>
 </Tabs>
 
-Returns the size of the `children` array needed for the given inputs to `cellToChildren`.
+Provides the size of the `children` array needed for the given inputs to `cellToChildren`.
+
+Returns 0 (`E_SUCCESS`) on success.
 
 ## cellToCenterChild
 
@@ -231,7 +237,7 @@ Returns the center child (finer) index contained by `cell` at resolution `childR
 <TabItem value="c">
 
 ```c
-H3Error compactCells(const H3Index *cellSet, H3Index *compactedSet, const int numCells);
+H3Error compactCells(const H3Index *cellSet, H3Index *compactedSet, const int64_t numCells);
 ```
 
 </TabItem>
@@ -286,7 +292,7 @@ Returns 0 (`E_SUCCESS`) on success.
 <TabItem value="c">
 
 ```c
-H3Error uncompactCells(const H3Index *compactedSet, const int numCells, H3Index *cellSet, const int maxCells, const int res);
+H3Error uncompactCells(const H3Index *compactedSet, const int64_t numCells, H3Index *cellSet, const int64_t maxCells, const int res);
 ```
 
 </TabItem>

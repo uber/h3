@@ -55,11 +55,15 @@ int H3_EXPORT(getBaseCellNumber)(H3Index h) { return H3_GET_BASE_CELL(h); }
  * @return The H3 index corresponding to the string argument, or H3_NULL if
  * invalid.
  */
-H3Index H3_EXPORT(stringToH3)(const char *str) {
+H3Error H3_EXPORT(stringToH3)(const char *str, H3Index *out) {
     H3Index h = H3_NULL;
     // If failed, h will be unmodified and we should return H3_NULL anyways.
-    sscanf(str, "%" PRIx64, &h);
-    return h;
+    int read = sscanf(str, "%" PRIx64, &h);
+    if (read != 1) {
+        return E_FAILED;
+    }
+    *out = h;
+    return E_SUCCESS;
 }
 
 /**
@@ -68,14 +72,15 @@ H3Index H3_EXPORT(stringToH3)(const char *str) {
  * @param str The string representation of the H3 index.
  * @param sz Size of the buffer `str`
  */
-void H3_EXPORT(h3ToString)(H3Index h, char *str, size_t sz) {
+H3Error H3_EXPORT(h3ToString)(H3Index h, char *str, size_t sz) {
     // An unsigned 64 bit integer will be expressed in at most
     // 16 digits plus 1 for the null terminator.
     if (sz < 17) {
         // Buffer is potentially not large enough.
-        return;
+        return E_MEMORY_BOUNDS;
     }
     sprintf(str, "%" PRIx64, h);
+    return E_SUCCESS;
 }
 
 // Get Top t bits from h
@@ -88,7 +93,7 @@ static const bool isBaseCellPentagonArr[128] = {
 int _isValidCell_old(H3Index h) {
     if (H3_GET_HIGH_BIT(h) != 0) return 0;
 
-    if (H3_GET_MODE(h) != H3_HEXAGON_MODE) return 0;
+    if (H3_GET_MODE(h) != H3_CELL_MODE) return 0;
 
     if (H3_GET_RESERVED_BITS(h) != 0) return 0;
 
@@ -374,7 +379,7 @@ int H3_EXPORT(isValidCell)(H3Index h) {
  */
 void setH3Index(H3Index *hp, int res, int baseCell, Direction initDigit) {
     H3Index h = H3_INIT;
-    H3_SET_MODE(h, H3_HEXAGON_MODE);
+    H3_SET_MODE(h, H3_CELL_MODE);
     H3_SET_RESOLUTION(h, res);
     H3_SET_BASE_CELL(h, baseCell);
     for (int r = 1; r <= res; r++) H3_SET_INDEX_DIGIT(h, r, initDigit);
@@ -389,20 +394,22 @@ void setH3Index(H3Index *hp, int res, int baseCell, Direction initDigit) {
  *
  * @return H3Index of the parent, or H3_NULL if you actually asked for a child
  */
-H3Index H3_EXPORT(cellToParent)(H3Index h, int parentRes) {
+H3Error H3_EXPORT(cellToParent)(H3Index h, int parentRes, H3Index *out) {
     int childRes = H3_GET_RESOLUTION(h);
     if (parentRes < 0 || parentRes > MAX_H3_RES) {
-        return H3_NULL;
+        return E_RES_DOMAIN;
     } else if (parentRes > childRes) {
-        return H3_NULL;
+        return E_RES_MISMATCH;
     } else if (parentRes == childRes) {
-        return h;
+        *out = h;
+        return E_SUCCESS;
     }
     H3Index parentH = H3_SET_RESOLUTION(h, parentRes);
     for (int i = parentRes + 1; i <= childRes; i++) {
         H3_SET_INDEX_DIGIT(parentH, i, H3_DIGIT_MASK);
     }
-    return parentH;
+    *out = parentH;
+    return E_SUCCESS;
 }
 
 /**
@@ -432,16 +439,17 @@ static bool _hasChildAtRes(H3Index h, int childRes) {
  * @return int      Exact number of children (handles hexagons and pentagons
  *                  correctly)
  */
-int64_t H3_EXPORT(cellToChildrenSize)(H3Index h, int childRes) {
-    if (!_hasChildAtRes(h, childRes)) return 0;
+H3Error H3_EXPORT(cellToChildrenSize)(H3Index h, int childRes, int64_t *out) {
+    if (!_hasChildAtRes(h, childRes)) return E_RES_DOMAIN;
 
     int n = childRes - H3_GET_RESOLUTION(h);
 
     if (H3_EXPORT(isPentagon)(h)) {
-        return 1 + 5 * (_ipow(7, n) - 1) / 6;
+        *out = 1 + 5 * (_ipow(7, n) - 1) / 6;
     } else {
-        return _ipow(7, n);
+        *out = _ipow(7, n);
     }
+    return E_SUCCESS;
 }
 
 /**
@@ -470,13 +478,14 @@ H3Index makeDirectChild(H3Index h, int cellNumber) {
  * @param childRes int the child level to produce
  * @param children H3Index* the memory to store the resulting addresses in
  */
-void H3_EXPORT(cellToChildren)(H3Index h, int childRes, H3Index *children) {
+H3Error H3_EXPORT(cellToChildren)(H3Index h, int childRes, H3Index *children) {
     int64_t i = 0;
     for (IterCellsChildren iter = iterInitParent(h, childRes); iter.h;
          iterStepChild(&iter)) {
         children[i] = iter.h;
         i++;
     }
+    return E_SUCCESS;
 }
 
 /**
@@ -562,7 +571,27 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
         for (int i = 0; i < numRemainingHexes; i++) {
             H3Index currIndex = remainingHexes[i];
             if (currIndex != 0) {
-                H3Index parent = H3_EXPORT(cellToParent)(currIndex, parentRes);
+                // If the reserved bits were set by the caller, the
+                // algorithm below may encounter undefined behavior
+                // because it expects to have set the reserved bits
+                // itself.
+                if (H3_GET_RESERVED_BITS(currIndex) != 0) {
+                    H3_MEMORY(free)(remainingHexes);
+                    H3_MEMORY(free)(hashSetArray);
+                    return E_CELL_INVALID;
+                }
+
+                H3Index parent;
+                H3Error parentError =
+                    H3_EXPORT(cellToParent)(currIndex, parentRes, &parent);
+                // Should never be reachable as a result of the compact
+                // algorithm. Can happen if cellToParent errors e.g.
+                // because of incompatible resolutions.
+                if (parentError) {
+                    H3_MEMORY(free)(remainingHexes);
+                    H3_MEMORY(free)(hashSetArray);
+                    return parentError;
+                }
                 // Modulus hash the parent into the temp array
                 int loc = (int)(parent % numRemainingHexes);
                 int loopCount = 0;
@@ -648,7 +677,19 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
         for (int i = 0; i < numRemainingHexes; i++) {
             H3Index currIndex = remainingHexes[i];
             if (currIndex != H3_NULL) {
-                H3Index parent = H3_EXPORT(cellToParent)(currIndex, parentRes);
+                H3Index parent;
+                H3Error parentError =
+                    H3_EXPORT(cellToParent)(currIndex, parentRes, &parent);
+                // LCOV_EXCL_START
+                // Should never be reachable as a result of the compact
+                // algorithm.
+                if (parentError) {
+                    // TODO: Determine if this is somehow reachable.
+                    H3_MEMORY(free)(remainingHexes);
+                    H3_MEMORY(free)(hashSetArray);
+                    return parentError;
+                }
+                // LCOV_EXCL_STOP
                 // Modulus hash the parent into the temp array
                 // to determine if this index was included in
                 // the compactableHexes array
@@ -745,10 +786,15 @@ H3Error H3_EXPORT(uncompactCellsSize)(const H3Index *compactedSet,
     int64_t numOut = 0;
     for (int64_t i = 0; i < numCompacted; i++) {
         if (compactedSet[i] == H3_NULL) continue;
-        if (!_hasChildAtRes(compactedSet[i], res))
-            return E_RES_MISMATCH;  // Abort
 
-        numOut += H3_EXPORT(cellToChildrenSize)(compactedSet[i], res);
+        int64_t childrenSize;
+        H3Error childrenError =
+            H3_EXPORT(cellToChildrenSize)(compactedSet[i], res, &childrenSize);
+        if (childrenError) {
+            // The parent res does not contain `res`.
+            return E_RES_MISMATCH;
+        }
+        numOut += childrenSize;
     }
     *out = numOut;
     return E_SUCCESS;
@@ -872,7 +918,7 @@ H3Index _h3Rotate60cw(H3Index h) {
 H3Index _faceIjkToH3(const FaceIJK *fijk, int res) {
     // initialize the index
     H3Index h = H3_INIT;
-    H3_SET_MODE(h, H3_HEXAGON_MODE);
+    H3_SET_MODE(h, H3_CELL_MODE);
     H3_SET_RESOLUTION(h, res);
 
     // check for res 0/base cell
@@ -1117,10 +1163,11 @@ H3Error H3_EXPORT(cellToBoundary)(H3Index h3, CellBoundary *cb) {
  *
  * @return int count of faces
  */
-int H3_EXPORT(maxFaceCount)(H3Index h3) {
+H3Error H3_EXPORT(maxFaceCount)(H3Index h3, int *out) {
     // a pentagon always intersects 5 faces, a hexagon never intersects more
     // than 2 (but may only intersect 1)
-    return H3_EXPORT(isPentagon)(h3) ? 5 : 2;
+    *out = H3_EXPORT(isPentagon)(h3) ? 5 : 2;
+    return E_SUCCESS;
 }
 
 /**
@@ -1132,7 +1179,7 @@ int H3_EXPORT(maxFaceCount)(H3Index h3) {
  * @param h3 The H3 index
  * @param out Output array. Must be of size maxFaceCount(h3).
  */
-void H3_EXPORT(getIcosahedronFaces)(H3Index h3, int *out) {
+H3Error H3_EXPORT(getIcosahedronFaces)(H3Index h3, int *out) {
     int res = H3_GET_RESOLUTION(h3);
     int isPent = H3_EXPORT(isPentagon)(h3);
 
@@ -1143,13 +1190,15 @@ void H3_EXPORT(getIcosahedronFaces)(H3Index h3, int *out) {
         // Note that this would not work for res 15, but this is only run on
         // Class II pentagons, it should never be invoked for a res 15 index.
         H3Index childPentagon = makeDirectChild(h3, 0);
-        H3_EXPORT(getIcosahedronFaces)(childPentagon, out);
-        return;
+        return H3_EXPORT(getIcosahedronFaces)(childPentagon, out);
     }
 
     // convert to FaceIJK
     FaceIJK fijk;
-    _h3ToFaceIjk(h3, &fijk);
+    H3Error err = _h3ToFaceIjk(h3, &fijk);
+    if (err) {
+        return err;
+    }
 
     // Get all vertices as FaceIJK addresses. For simplicity, always
     // initialize the array with 6 verts, ignoring the last one for pentagons
@@ -1166,7 +1215,11 @@ void H3_EXPORT(getIcosahedronFaces)(H3Index h3, int *out) {
 
     // We may not use all of the slots in the output array,
     // so fill with invalid values to indicate unused slots
-    int faceCount = H3_EXPORT(maxFaceCount)(h3);
+    int faceCount;
+    H3Error maxFaceCountError = H3_EXPORT(maxFaceCount)(h3, &faceCount);
+    if (maxFaceCountError != E_SUCCESS) {
+        return maxFaceCountError;
+    }
     for (int i = 0; i < faceCount; i++) {
         out[i] = INVALID_FACE;
     }
@@ -1188,9 +1241,17 @@ void H3_EXPORT(getIcosahedronFaces)(H3Index h3, int *out) {
         int pos = 0;
         // Find the first empty output position, or the first position
         // matching the current face
-        while (out[pos] != INVALID_FACE && out[pos] != face) pos++;
+        while (out[pos] != INVALID_FACE && out[pos] != face) {
+            pos++;
+            if (pos >= faceCount) {
+                // Mismatch between the heuristic used in maxFaceCount and
+                // calculation here - indicates an invalid index.
+                return E_FAILED;
+            }
+        }
         out[pos] = face;
     }
+    return E_SUCCESS;
 }
 
 /**
@@ -1206,7 +1267,10 @@ int H3_EXPORT(pentagonCount)() { return NUM_PENTAGONS; }
  * @param res The resolution to produce pentagons at.
  * @param out Output array. Must be of size pentagonCount().
  */
-void H3_EXPORT(getPentagons)(int res, H3Index *out) {
+H3Error H3_EXPORT(getPentagons)(int res, H3Index *out) {
+    if (res < 0 || res > MAX_H3_RES) {
+        return E_RES_DOMAIN;
+    }
     int i = 0;
     for (int bc = 0; bc < NUM_BASE_CELLS; bc++) {
         if (_isBaseCellPentagon(bc)) {
@@ -1215,6 +1279,7 @@ void H3_EXPORT(getPentagons)(int res, H3Index *out) {
             out[i++] = pentagon;
         }
     }
+    return E_SUCCESS;
 }
 
 /**

@@ -31,23 +31,26 @@
  * Returns whether or not the provided H3Indexes are neighbors.
  * @param origin The origin H3 index.
  * @param destination The destination H3 index.
- * @return 1 if the indexes are neighbors, 0 otherwise;
+ * @param out Set to 1 if the indexes are neighbors, 0 otherwise
+ * @return Error code if the origin or destination are invalid or incomparable.
  */
-int H3_EXPORT(areNeighborCells)(H3Index origin, H3Index destination) {
+H3Error H3_EXPORT(areNeighborCells)(H3Index origin, H3Index destination,
+                                    int *out) {
     // Make sure they're hexagon indexes
-    if (H3_GET_MODE(origin) != H3_HEXAGON_MODE ||
-        H3_GET_MODE(destination) != H3_HEXAGON_MODE) {
-        return 0;
+    if (H3_GET_MODE(origin) != H3_CELL_MODE ||
+        H3_GET_MODE(destination) != H3_CELL_MODE) {
+        return E_CELL_INVALID;
     }
 
     // Hexagons cannot be neighbors with themselves
     if (origin == destination) {
-        return 0;
+        *out = 0;
+        return E_SUCCESS;
     }
 
     // Only hexagons in the same resolution can be neighbors
     if (H3_GET_RESOLUTION(origin) != H3_GET_RESOLUTION(destination)) {
-        return 0;
+        return E_RES_MISMATCH;
     }
 
     // H3 Indexes that share the same parent are very likely to be neighbors
@@ -56,27 +59,36 @@ int H3_EXPORT(areNeighborCells)(H3Index origin, H3Index destination) {
     // of origin and destination parents and then a lookup table of the children
     // is a super-cheap way to possibly determine they are neighbors.
     int parentRes = H3_GET_RESOLUTION(origin) - 1;
-    if (parentRes > 0 && (H3_EXPORT(cellToParent)(origin, parentRes) ==
-                          H3_EXPORT(cellToParent)(destination, parentRes))) {
-        Direction originResDigit = H3_GET_INDEX_DIGIT(origin, parentRes + 1);
-        Direction destinationResDigit =
-            H3_GET_INDEX_DIGIT(destination, parentRes + 1);
-        if (originResDigit == CENTER_DIGIT ||
-            destinationResDigit == CENTER_DIGIT) {
-            return 1;
-        }
-        // These sets are the relevant neighbors in the clockwise
-        // and counter-clockwise
-        const Direction neighborSetClockwise[] = {
-            CENTER_DIGIT,  JK_AXES_DIGIT, IJ_AXES_DIGIT, J_AXES_DIGIT,
-            IK_AXES_DIGIT, K_AXES_DIGIT,  I_AXES_DIGIT};
-        const Direction neighborSetCounterclockwise[] = {
-            CENTER_DIGIT,  IK_AXES_DIGIT, JK_AXES_DIGIT, K_AXES_DIGIT,
-            IJ_AXES_DIGIT, I_AXES_DIGIT,  J_AXES_DIGIT};
-        if (neighborSetClockwise[originResDigit] == destinationResDigit ||
-            neighborSetCounterclockwise[originResDigit] ==
-                destinationResDigit) {
-            return 1;
+    if (parentRes > 0) {
+        // TODO: Return error codes here
+        H3Index originParent;
+        H3_EXPORT(cellToParent)(origin, parentRes, &originParent);
+        H3Index destinationParent;
+        H3_EXPORT(cellToParent)(destination, parentRes, &destinationParent);
+        if (originParent == destinationParent) {
+            Direction originResDigit =
+                H3_GET_INDEX_DIGIT(origin, parentRes + 1);
+            Direction destinationResDigit =
+                H3_GET_INDEX_DIGIT(destination, parentRes + 1);
+            if (originResDigit == CENTER_DIGIT ||
+                destinationResDigit == CENTER_DIGIT) {
+                *out = 1;
+                return E_SUCCESS;
+            }
+            // These sets are the relevant neighbors in the clockwise
+            // and counter-clockwise
+            const Direction neighborSetClockwise[] = {
+                CENTER_DIGIT,  JK_AXES_DIGIT, IJ_AXES_DIGIT, J_AXES_DIGIT,
+                IK_AXES_DIGIT, K_AXES_DIGIT,  I_AXES_DIGIT};
+            const Direction neighborSetCounterclockwise[] = {
+                CENTER_DIGIT,  IK_AXES_DIGIT, JK_AXES_DIGIT, K_AXES_DIGIT,
+                IJ_AXES_DIGIT, I_AXES_DIGIT,  J_AXES_DIGIT};
+            if (neighborSetClockwise[originResDigit] == destinationResDigit ||
+                neighborSetCounterclockwise[originResDigit] ==
+                    destinationResDigit) {
+                *out = 1;
+                return E_SUCCESS;
+            }
         }
     }
 
@@ -85,12 +97,14 @@ int H3_EXPORT(areNeighborCells)(H3Index origin, H3Index destination) {
     H3_EXPORT(gridDisk)(origin, 1, neighborRing);
     for (int i = 0; i < 7; i++) {
         if (neighborRing[i] == destination) {
-            return 1;
+            *out = 1;
+            return E_SUCCESS;
         }
     }
 
     // Made it here, they definitely aren't neighbors
-    return 0;
+    *out = 0;
+    return E_SUCCESS;
 }
 
 /**
@@ -100,13 +114,14 @@ int H3_EXPORT(areNeighborCells)(H3Index origin, H3Index destination) {
  * @param destination The destination H3 hexagon index
  * @return The directed edge H3Index, or H3_NULL on failure.
  */
-H3Index H3_EXPORT(cellsToDirectedEdge)(H3Index origin, H3Index destination) {
+H3Error H3_EXPORT(cellsToDirectedEdge)(H3Index origin, H3Index destination,
+                                       H3Index *out) {
     // Determine the IJK direction from the origin to the destination
     Direction direction = directionForNeighbor(origin, destination);
 
     // The direction will be invalid if the cells are not neighbors
     if (direction == INVALID_DIGIT) {
-        return H3_NULL;
+        return E_NOT_NEIGHBORS;
     }
 
     // Create the edge index for the neighbor direction
@@ -114,7 +129,8 @@ H3Index H3_EXPORT(cellsToDirectedEdge)(H3Index origin, H3Index destination) {
     H3_SET_MODE(output, H3_DIRECTEDEDGE_MODE);
     H3_SET_RESERVED_BITS(output, direction);
 
-    return output;
+    *out = output;
+    return E_SUCCESS;
 }
 
 /**
@@ -122,14 +138,15 @@ H3Index H3_EXPORT(cellsToDirectedEdge)(H3Index origin, H3Index destination) {
  * @param edge The edge H3 index
  * @return The origin H3 hexagon index, or H3_NULL on failure
  */
-H3Index H3_EXPORT(getDirectedEdgeOrigin)(H3Index edge) {
+H3Error H3_EXPORT(getDirectedEdgeOrigin)(H3Index edge, H3Index *out) {
     if (H3_GET_MODE(edge) != H3_DIRECTEDEDGE_MODE) {
-        return H3_NULL;
+        return E_DIR_EDGE_INVALID;
     }
     H3Index origin = edge;
-    H3_SET_MODE(origin, H3_HEXAGON_MODE);
+    H3_SET_MODE(origin, H3_CELL_MODE);
     H3_SET_RESERVED_BITS(origin, 0);
-    return origin;
+    *out = origin;
+    return E_SUCCESS;
 }
 
 /**
@@ -137,15 +154,16 @@ H3Index H3_EXPORT(getDirectedEdgeOrigin)(H3Index edge) {
  * @param edge The edge H3 index
  * @return The destination H3 hexagon index, or H3_NULL on failure
  */
-H3Index H3_EXPORT(getDirectedEdgeDestination)(H3Index edge) {
-    if (H3_GET_MODE(edge) != H3_DIRECTEDEDGE_MODE) {
-        return H3_NULL;
-    }
+H3Error H3_EXPORT(getDirectedEdgeDestination)(H3Index edge, H3Index *out) {
     Direction direction = H3_GET_RESERVED_BITS(edge);
     int rotations = 0;
-    H3Index destination = h3NeighborRotations(
-        H3_EXPORT(getDirectedEdgeOrigin)(edge), direction, &rotations);
-    return destination;
+    H3Index origin;
+    // Note: This call is also checking for H3_DIRECTEDEDGE_MODE
+    H3Error originResult = H3_EXPORT(getDirectedEdgeOrigin)(edge, &origin);
+    if (originResult) {
+        return originResult;
+    }
+    return h3NeighborRotations(origin, direction, &rotations, out);
 }
 
 /**
@@ -154,16 +172,17 @@ H3Index H3_EXPORT(getDirectedEdgeDestination)(H3Index edge) {
  * @return 1 if it is a directed edge H3Index, otherwise 0.
  */
 int H3_EXPORT(isValidDirectedEdge)(H3Index edge) {
-    if (H3_GET_MODE(edge) != H3_DIRECTEDEDGE_MODE) {
-        return 0;
-    }
-
     Direction neighborDirection = H3_GET_RESERVED_BITS(edge);
     if (neighborDirection <= CENTER_DIGIT || neighborDirection >= NUM_DIGITS) {
         return 0;
     }
 
-    H3Index origin = H3_EXPORT(getDirectedEdgeOrigin)(edge);
+    H3Index origin;
+    // Note: This call is also checking for H3_DIRECTEDEDGE_MODE
+    H3Error originResult = H3_EXPORT(getDirectedEdgeOrigin)(edge, &origin);
+    if (originResult) {
+        return 0;
+    }
     if (H3_EXPORT(isPentagon)(origin) && neighborDirection == K_AXES_DIGIT) {
         return 0;
     }
@@ -177,9 +196,19 @@ int H3_EXPORT(isValidDirectedEdge)(H3Index edge) {
  * @param originDestination Pointer to memory to store origin and destination
  * IDs
  */
-void H3_EXPORT(directedEdgeToCells)(H3Index edge, H3Index *originDestination) {
-    originDestination[0] = H3_EXPORT(getDirectedEdgeOrigin)(edge);
-    originDestination[1] = H3_EXPORT(getDirectedEdgeDestination)(edge);
+H3Error H3_EXPORT(directedEdgeToCells)(H3Index edge,
+                                       H3Index *originDestination) {
+    H3Error originResult =
+        H3_EXPORT(getDirectedEdgeOrigin)(edge, &originDestination[0]);
+    if (originResult) {
+        return originResult;
+    }
+    H3Error destinationResult =
+        H3_EXPORT(getDirectedEdgeDestination)(edge, &originDestination[1]);
+    if (destinationResult) {
+        return destinationResult;
+    }
+    return E_SUCCESS;
 }
 
 /**
@@ -187,7 +216,7 @@ void H3_EXPORT(directedEdgeToCells)(H3Index edge, H3Index *originDestination) {
  * @param origin The origin hexagon H3Index to find edges for.
  * @param edges The memory to store all of the edges inside.
  */
-void H3_EXPORT(originToDirectedEdges)(H3Index origin, H3Index *edges) {
+H3Error H3_EXPORT(originToDirectedEdges)(H3Index origin, H3Index *edges) {
     // Determine if the origin is a pentagon and special treatment needed.
     int isPent = H3_EXPORT(isPentagon)(origin);
 
@@ -203,6 +232,7 @@ void H3_EXPORT(originToDirectedEdges)(H3Index origin, H3Index *edges) {
             H3_SET_RESERVED_BITS(edges[i], i + 1);
         }
     }
+    return E_SUCCESS;
 }
 
 /**
@@ -210,10 +240,14 @@ void H3_EXPORT(originToDirectedEdges)(H3Index origin, H3Index *edges) {
  * @param edge The directed edge H3Index
  * @param cb The cellboundary object to store the edge coordinates.
  */
-void H3_EXPORT(directedEdgeToBoundary)(H3Index edge, CellBoundary *cb) {
+H3Error H3_EXPORT(directedEdgeToBoundary)(H3Index edge, CellBoundary *cb) {
     // Get the origin and neighbor direction from the edge
     Direction direction = H3_GET_RESERVED_BITS(edge);
-    H3Index origin = H3_EXPORT(getDirectedEdgeOrigin)(edge);
+    H3Index origin;
+    H3Error originResult = H3_EXPORT(getDirectedEdgeOrigin)(edge, &origin);
+    if (originResult) {
+        return originResult;
+    }
 
     // Get the start vertex for the edge
     int startVertex = vertexNumForDirection(origin, direction);
@@ -221,7 +255,7 @@ void H3_EXPORT(directedEdgeToBoundary)(H3Index edge, CellBoundary *cb) {
         // This is not actually an edge (i.e. no valid direction),
         // so return no vertices.
         cb->numVerts = 0;
-        return;
+        return E_DIR_EDGE_INVALID;
     }
 
     // Get the geo boundary for the appropriate vertexes of the origin. Note
@@ -229,7 +263,10 @@ void H3_EXPORT(directedEdgeToBoundary)(H3Index edge, CellBoundary *cb) {
     // resulting edge boundary may have an additional distortion vertex if it
     // crosses an edge of the icosahedron.
     FaceIJK fijk;
-    _h3ToFaceIjk(origin, &fijk);
+    H3Error fijkResult = _h3ToFaceIjk(origin, &fijk);
+    if (fijkResult) {
+        return fijkResult;
+    }
     int res = H3_GET_RESOLUTION(origin);
     int isPent = H3_EXPORT(isPentagon)(origin);
 
@@ -238,4 +275,5 @@ void H3_EXPORT(directedEdgeToBoundary)(H3Index edge, CellBoundary *cb) {
     } else {
         _faceIjkToCellBoundary(&fijk, res, startVertex, 2, cb);
     }
+    return E_SUCCESS;
 }

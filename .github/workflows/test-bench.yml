@@ -1,0 +1,37 @@
+name: test-bench
+
+on:
+  push:
+    branches: [master, stable-*]
+  pull_request:
+    branches: [master, stable-*]
+
+jobs:
+  tests:
+    name: Benchmark ${{ matrix.compiler }}
+    runs-on: ubuntu-latest
+    env:
+      CC: ${{ matrix.compiler }}
+
+    strategy:
+      matrix:
+        compiler: [clang, gcc]
+
+    steps:
+      - uses: actions/checkout@v2.4.0
+
+      - name: Configure build
+        run: |
+          mkdir build
+          cd build
+          cmake -DCMAKE_BUILD_TYPE=Release ..
+
+      - name: Build
+        run: |
+          cd build
+          make
+
+      - name: Run benchmarks
+        run: |
+          cd build
+          make benchmarks

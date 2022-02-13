@@ -25,7 +25,7 @@ These functions convert H3 indexes to and from polygonal areas.
 <TabItem value="c">
 
 ```c
-void polygonToCells(const GeoPolygon *geoPolygon, int res, H3Index *out);
+H3Error polygonToCells(const GeoPolygon *geoPolygon, int res, H3Index *out);
 ```
 
 </TabItem>
@@ -74,6 +74,8 @@ using the GeoJSON-like data structure, where polygons cover an area
 without overlap, will result in a partitioning in the H3 grid, where
 cells cover the same area without overlap.
 
+Returns 0 (`E_SUCCESS`) on success.
+
 ### maxPolygonToCellsSize
 
 <Tabs
@@ -89,7 +91,7 @@ cells cover the same area without overlap.
 <TabItem value="c">
 
 ```c
-int maxPolygonToCellsSize(const GeoPolygon *geoPolygon, int res);
+H3Error maxPolygonToCellsSize(const GeoPolygon *geoPolygon, int res, int *out);
 ```
 
 </TabItem>
@@ -125,6 +127,8 @@ This function exists for memory management and is not exposed.
 maxPolygonToCellsSize returns the number of hexagons to allocate space for when
 computing `polygonToCells` on the given GeoJSON-like data structure.
 
+Returns 0 (`E_SUCCESS`) on success.
+
 ## h3SetToLinkedGeo / h3SetToMultiPolygon
 
 <Tabs
@@ -140,7 +144,7 @@ computing `polygonToCells` on the given GeoJSON-like data structure.
 <TabItem value="c">
 
 ```c
-void h3SetToLinkedGeo(const H3Index *h3Set, const int numHexes, LinkedGeoPolygon *out);
+H3Error h3SetToLinkedGeo(const H3Index *h3Set, const int numHexes, LinkedGeoPolygon *out);
 ```
 
 </TabItem>
@@ -187,6 +191,8 @@ It is expected that all hexagons in the set have the same resolution and
 that the set contains no duplicates. Behavior is undefined if duplicates
 or multiple resolutions are present, and the algorithm may produce
 unexpected or invalid output.
+
+Returns 0 (`E_SUCCESS`) on success.
 
 ## destroyLinkedPolygon
 

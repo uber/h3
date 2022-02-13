@@ -259,43 +259,69 @@ void _geoAzDistanceRads(const LatLng *p1, double az, double distance,
  * the future.
  */
 
-double H3_EXPORT(getHexagonAreaAvgKm2)(int res) {
+H3Error H3_EXPORT(getHexagonAreaAvgKm2)(int res, double *out) {
     static const double areas[] = {
-        4250546.848, 607220.9782, 86745.85403, 12392.26486,
-        1770.323552, 252.9033645, 36.1290521,  5.1612932,
-        0.7373276,   0.1053325,   0.0150475,   0.0021496,
-        0.0003071,   0.0000439,   0.0000063,   0.0000009};
-    return areas[res];
+        4.357449416078383e+06, 6.097884417941332e+05, 8.680178039899720e+04,
+        1.239343465508816e+04, 1.770347654491307e+03, 2.529038581819449e+02,
+        3.612906216441245e+01, 5.161293359717191e+00, 7.373275975944177e-01,
+        1.053325134272067e-01, 1.504750190766435e-02, 2.149643129451879e-03,
+        3.070918756316060e-04, 4.387026794728296e-05, 6.267181135324313e-06,
+        8.953115907605790e-07};
+    if (res < 0 || res > MAX_H3_RES) {
+        return E_RES_DOMAIN;
+    }
+    *out = areas[res];
+    return E_SUCCESS;
 }
 
-double H3_EXPORT(getHexagonAreaAvgM2)(int res) {
+H3Error H3_EXPORT(getHexagonAreaAvgM2)(int res, double *out) {
     static const double areas[] = {
-        4.25055E+12, 6.07221E+11, 86745854035, 12392264862,
-        1770323552,  252903364.5, 36129052.1,  5161293.2,
-        737327.6,    105332.5,    15047.5,     2149.6,
-        307.1,       43.9,        6.3,         0.9};
-    return areas[res];
+        4.357449416078390e+12, 6.097884417941339e+11, 8.680178039899731e+10,
+        1.239343465508818e+10, 1.770347654491309e+09, 2.529038581819452e+08,
+        3.612906216441250e+07, 5.161293359717198e+06, 7.373275975944188e+05,
+        1.053325134272069e+05, 1.504750190766437e+04, 2.149643129451882e+03,
+        3.070918756316063e+02, 4.387026794728301e+01, 6.267181135324322e+00,
+        8.953115907605802e-01};
+    if (res < 0 || res > MAX_H3_RES) {
+        return E_RES_DOMAIN;
+    }
+    *out = areas[res];
+    return E_SUCCESS;
 }
 
-double H3_EXPORT(getHexagonEdgeLengthAvgKm)(int res) {
+H3Error H3_EXPORT(getHexagonEdgeLengthAvgKm)(int res, double *out) {
     static const double lens[] = {
         1107.712591, 418.6760055, 158.2446558, 59.81085794,
         22.6063794,  8.544408276, 3.229482772, 1.220629759,
         0.461354684, 0.174375668, 0.065907807, 0.024910561,
         0.009415526, 0.003559893, 0.001348575, 0.000509713};
-    return lens[res];
+    if (res < 0 || res > MAX_H3_RES) {
+        return E_RES_DOMAIN;
+    }
+    *out = lens[res];
+    return E_SUCCESS;
 }
 
-double H3_EXPORT(getHexagonEdgeLengthAvgM)(int res) {
+H3Error H3_EXPORT(getHexagonEdgeLengthAvgM)(int res, double *out) {
     static const double lens[] = {
         1107712.591, 418676.0055, 158244.6558, 59810.85794,
         22606.3794,  8544.408276, 3229.482772, 1220.629759,
         461.3546837, 174.3756681, 65.90780749, 24.9105614,
         9.415526211, 3.559893033, 1.348574562, 0.509713273};
-    return lens[res];
+    if (res < 0 || res > MAX_H3_RES) {
+        return E_RES_DOMAIN;
+    }
+    *out = lens[res];
+    return E_SUCCESS;
 }
 
-int64_t H3_EXPORT(getNumCells)(int res) { return 2 + 120 * _ipow(7, res); }
+H3Error H3_EXPORT(getNumCells)(int res, int64_t *out) {
+    if (res < 0 || res > MAX_H3_RES) {
+        return E_RES_DOMAIN;
+    }
+    *out = 2 + 120 * _ipow(7, res);
+    return E_SUCCESS;
+}
 
 /**
  * Surface area in radians^2 of spherical triangle on unit sphere.
@@ -345,14 +371,22 @@ double triangleArea(const LatLng *a, const LatLng *b, const LatLng *c) {
  * todo: optimize the computation by re-using the edges shared between triangles
  *
  * @param   cell  H3 cell
- *
- * @return        cell area in radians^2
+ * @param    out  cell area in radians^2
+ * @return        E_SUCCESS on success, or an error code otherwise
  */
-double H3_EXPORT(cellAreaRads2)(H3Index cell) {
+H3Error H3_EXPORT(cellAreaRads2)(H3Index cell, double *out) {
     LatLng c;
     CellBoundary cb;
-    H3_EXPORT(cellToLatLng)(cell, &c);
-    H3_EXPORT(cellToBoundary)(cell, &cb);
+    H3Error err = H3_EXPORT(cellToLatLng)(cell, &c);
+    if (err) {
+        return err;
+    }
+    err = H3_EXPORT(cellToBoundary)(cell, &cb);
+    if (err) {
+        // TODO: Uncoverable because cellToLatLng will have returned an error
+        // already
+        return err;
+    }
 
     double area = 0.0;
     for (int i = 0; i < cb.numVerts; i++) {
@@ -360,21 +394,30 @@ double H3_EXPORT(cellAreaRads2)(H3Index cell) {
         area += triangleArea(&cb.verts[i], &cb.verts[j], &c);
     }
 
-    return area;
+    *out = area;
+    return E_SUCCESS;
 }
 
 /**
  * Area of H3 cell in kilometers^2.
  */
-double H3_EXPORT(cellAreaKm2)(H3Index h) {
-    return H3_EXPORT(cellAreaRads2)(h) * EARTH_RADIUS_KM * EARTH_RADIUS_KM;
+H3Error H3_EXPORT(cellAreaKm2)(H3Index cell, double *out) {
+    H3Error err = H3_EXPORT(cellAreaRads2)(cell, out);
+    if (!err) {
+        *out = *out * EARTH_RADIUS_KM * EARTH_RADIUS_KM;
+    }
+    return err;
 }
 
 /**
  * Area of H3 cell in meters^2.
  */
-double H3_EXPORT(cellAreaM2)(H3Index h) {
-    return H3_EXPORT(cellAreaKm2)(h) * 1000 * 1000;
+H3Error H3_EXPORT(cellAreaM2)(H3Index cell, double *out) {
+    H3Error err = H3_EXPORT(cellAreaKm2)(cell, out);
+    if (!err) {
+        *out = *out * 1000 * 1000;
+    }
+    return err;
 }
 
 /**
@@ -384,29 +427,36 @@ double H3_EXPORT(cellAreaM2)(H3Index h) {
  *
  * @return        length in radians
  */
-double H3_EXPORT(exactEdgeLengthRads)(H3Index edge) {
+H3Error H3_EXPORT(exactEdgeLengthRads)(H3Index edge, double *length) {
     CellBoundary cb;
 
-    H3_EXPORT(directedEdgeToBoundary)(edge, &cb);
-
-    double length = 0.0;
-    for (int i = 0; i < cb.numVerts - 1; i++) {
-        length += H3_EXPORT(distanceRads)(&cb.verts[i], &cb.verts[i + 1]);
+    H3Error err = H3_EXPORT(directedEdgeToBoundary)(edge, &cb);
+    if (err) {
+        return err;
     }
 
-    return length;
+    *length = 0.0;
+    for (int i = 0; i < cb.numVerts - 1; i++) {
+        *length += H3_EXPORT(distanceRads)(&cb.verts[i], &cb.verts[i + 1]);
+    }
+
+    return E_SUCCESS;
 }
 
 /**
  * Length of a directed edge in kilometers.
  */
-double H3_EXPORT(exactEdgeLengthKm)(H3Index edge) {
-    return H3_EXPORT(exactEdgeLengthRads)(edge) * EARTH_RADIUS_KM;
+H3Error H3_EXPORT(exactEdgeLengthKm)(H3Index edge, double *length) {
+    H3Error err = H3_EXPORT(exactEdgeLengthRads)(edge, length);
+    *length = *length * EARTH_RADIUS_KM;
+    return err;
 }
 
 /**
  * Length of a directed edge in meters.
  */
-double H3_EXPORT(exactEdgeLengthM)(H3Index edge) {
-    return H3_EXPORT(exactEdgeLengthKm)(edge) * 1000;
+H3Error H3_EXPORT(exactEdgeLengthM)(H3Index edge, double *length) {
+    H3Error err = H3_EXPORT(exactEdgeLengthKm)(edge, length);
+    *length = *length * 1000;
+    return err;
 }

@@ -2,7 +2,7 @@
 
 * **Authors**: Isaac Brodsky (@isaacbrodsky)
 * **Date**: June 19, 2020
-* **Status**: Draft
+* **Status**: Accepted
 
 ## Overview
 
@@ -186,7 +186,7 @@ H3Error latLngToCell(double lat, double lng, int res, H3Index *result);
 There are two types of functions returning booleans in the library:
 
 * Validation functions, where the return code can be replaced with an error code. Example: `h3IsValid`
-* Property inspection functions, where the return code would be ambigous between invalid and the property being false. Example: `h3IsResClassIII`
+* Property inspection functions, where the return code would be ambiguous between invalid and the property being false. Example: `h3IsResClassIII`
 
 ### H3Error type
 
@@ -294,7 +294,7 @@ getH3UnidirectionalEdge(AN_INDEX, AN_INDEX_FAR_AWAY, &out) => E_NOT_NEIGHBORS
 
 Bindings should translate error codes into the error handling mechanism appropriate to their language. For example, Java will convert error codes into Java Exceptions.
 
-When possible, it is preferrable to retain the error code. When this is not possible it is fine to elide them. Language bindings should include error messages that are formatted as is usual in their language. An example in Java could be:
+When possible, it is preferable to retain the error code. When this is not possible it is fine to elide them. Language bindings should include error messages that are formatted as is usual in their language. An example in Java could be:
 
 ```
 public class H3Exception extends Exception {

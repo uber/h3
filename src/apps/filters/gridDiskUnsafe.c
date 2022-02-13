@@ -37,11 +37,12 @@
 #include "utility.h"
 
 void doCell(H3Index h, int k) {
-    int maxSize = H3_EXPORT(maxGridDiskSize)(k);
+    int64_t maxSize;
+    H3_EXPORT(maxGridDiskSize)(k, &maxSize);
     H3Index *rings = calloc(maxSize, sizeof(H3Index));
 
     if (!H3_EXPORT(gridDiskUnsafe)(h, k, rings)) {
-        for (int i = 0; i < maxSize; i++) {
+        for (int64_t i = 0; i < maxSize; i++) {
             h3Println(rings[i]);
         }
     } else {
@@ -91,7 +92,8 @@ int main(int argc, char *argv[]) {
                     error("reading H3 index from stdin");
             }
 
-            H3Index h3 = H3_EXPORT(stringToH3)(buff);
+            H3Index h3;
+            H3_EXPORT(stringToH3)(buff, &h3);
             doCell(h3, k);
         }
     }

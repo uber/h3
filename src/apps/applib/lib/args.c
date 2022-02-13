@@ -24,6 +24,16 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef _WIN32
+
+#define strcasecmp _stricmp
+
+#else
+
+#include <strings.h>
+
+#endif
+
 #include "h3api.h"
 
 /*
@@ -113,7 +123,7 @@ int _parseArgsList(int argc, char *argv[], int numArgs, Arg *args[],
             for (int k = 0; k < NUM_ARG_NAMES; k++) {
                 if (args[j]->names[k] == NULL) continue;
 
-                if (strcmp(argv[i], args[j]->names[k]) == 0) {
+                if (strcasecmp(argv[i], args[j]->names[k]) == 0) {
                     argName = args[j]->names[k];
                     break;
                 }

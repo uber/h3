@@ -29,24 +29,26 @@
 
 static void gridDisk_equals_gridDiskDistancesSafe_assertions(H3Index h3) {
     for (int k = 0; k < 3; k++) {
-        int kSz = H3_EXPORT(maxGridDiskSize)(k);
+        int64_t kSz;
+        t_assertSuccess(H3_EXPORT(maxGridDiskSize)(k, &kSz));
 
         H3Index *neighbors = calloc(kSz, sizeof(H3Index));
         int *distances = calloc(kSz, sizeof(int));
-        H3_EXPORT(gridDiskDistances)(h3, k, neighbors, distances);
+        t_assertSuccess(
+            H3_EXPORT(gridDiskDistances)(h3, k, neighbors, distances));
 
         H3Index *internalNeighbors = calloc(kSz, sizeof(H3Index));
         int *internalDistances = calloc(kSz, sizeof(int));
-        H3_EXPORT(gridDiskDistancesSafe)
-        (h3, k, internalNeighbors, internalDistances);
+        t_assertSuccess(H3_EXPORT(gridDiskDistancesSafe)(
+            h3, k, internalNeighbors, internalDistances));
 
         int found = 0;
         int internalFound = 0;
-        for (int iNeighbor = 0; iNeighbor < kSz; iNeighbor++) {
+        for (int64_t iNeighbor = 0; iNeighbor < kSz; iNeighbor++) {
             if (neighbors[iNeighbor] != 0) {
                 found++;
 
-                for (int iInternal = 0; iInternal < kSz; iInternal++) {
+                for (int64_t iInternal = 0; iInternal < kSz; iInternal++) {
                     if (internalNeighbors[iInternal] == neighbors[iNeighbor]) {
                         internalFound++;
 
@@ -85,7 +87,7 @@ SUITE(gridDisk) {
                                 0x8013fffffffffff, 0x8027fffffffffff,
                                 0x8049fffffffffff, 0x8051fffffffffff,
                                 0x8037fffffffffff};
-        H3_EXPORT(gridDiskDistances)(sfHex0, 1, k1, k1Dist);
+        t_assertSuccess(H3_EXPORT(gridDiskDistances)(sfHex0, 1, k1, k1Dist));
 
         for (int i = 0; i < 7; i++) {
             t_assert(k1[i] != 0, "index is populated");
@@ -113,7 +115,7 @@ SUITE(gridDisk) {
                                 0x801ffffffffffff,
                                 0x8019fffffffffff,
                                 0};
-        H3_EXPORT(gridDiskDistances)(polar, 1, k2, k2Dist);
+        t_assertSuccess(H3_EXPORT(gridDiskDistances)(polar, 1, k2, k2Dist));
 
         int k2present = 0;
         for (int i = 0; i < 7; i++) {
@@ -145,7 +147,7 @@ SUITE(gridDisk) {
                                 0x8108bffffffffff,
                                 0x8109bffffffffff,
                                 0};
-        H3_EXPORT(gridDiskDistances)(polar, 1, k2, k2Dist);
+        t_assertSuccess(H3_EXPORT(gridDiskDistances)(polar, 1, k2, k2Dist));
 
         int k2present = 0;
         for (int i = 0; i < 7; i++) {
@@ -210,7 +212,7 @@ SUITE(gridDisk) {
         int expectedK2Dist[37] = {2, 3, 2, 1, 3, 3, 3, 2, 2, 3, 1, 3, 0,
                                   2, 3, 3, 2, 2, 3, 1, 3, 3, 2, 2, 3, 1,
                                   2, 3, 1, 3, 3, 0, 0, 0, 0, 0, 0};
-        H3_EXPORT(gridDiskDistances)(polar, 3, k2, k2Dist);
+        t_assertSuccess(H3_EXPORT(gridDiskDistances)(polar, 3, k2, k2Dist));
 
         int k2present = 0;
         for (int i = 0; i < 37; i++) {
@@ -288,7 +290,7 @@ SUITE(gridDisk) {
                                   0x81137ffffffffff,
                                   0,
                                   0};
-        H3_EXPORT(gridDiskDistances)(pent, 4, k2, k2Dist);
+        t_assertSuccess(H3_EXPORT(gridDiskDistances)(pent, 4, k2, k2Dist));
 
         int k2present = 0;
         for (int i = 0; i < 61; i++) {
@@ -321,9 +323,23 @@ SUITE(gridDisk) {
         // This is undefined behavior, but it's helpful for it to make sense.
         H3Index origin = 0x811d7ffffffffffL;
         int rotations = 0;
-        t_assert(
-            h3NeighborRotations(origin, CENTER_DIGIT, &rotations) == origin,
-            "Moving to self goes to self");
+        H3Index out;
+        t_assertSuccess(
+            h3NeighborRotations(origin, CENTER_DIGIT, &rotations, &out));
+        t_assert(out == origin, "Moving to self goes to self");
+    }
+
+    TEST(h3NeighborRotations_invalid) {
+        // This is undefined behavior, but it's helpful for it to make sense.
+        H3Index origin = 0x811d7ffffffffffL;
+        int rotations = 0;
+        H3Index out;
+        t_assert(h3NeighborRotations(origin, -1, &rotations, &out) == E_FAILED,
+                 "Invalid direction fails (-1)");
+        t_assert(h3NeighborRotations(origin, 7, &rotations, &out) == E_FAILED,
+                 "Invalid direction fails (7)");
+        t_assert(h3NeighborRotations(origin, 100, &rotations, &out) == E_FAILED,
+                 "Invalid direction fails (100)");
     }
 
     TEST(cwOffsetPent) {
@@ -358,10 +374,48 @@ SUITE(gridDisk) {
 
     TEST(gridDiskInvalid) {
         int k = 1000;
-        int kSz = H3_EXPORT(maxGridDiskSize)(k);
+        int64_t kSz;
+        t_assertSuccess(H3_EXPORT(maxGridDiskSize)(k, &kSz));
         H3Index *neighbors = calloc(kSz, sizeof(H3Index));
-        H3_EXPORT(gridDisk)(0x7fffffffffffffff, 1000, neighbors);
-        // Assertion is should not crash - should return an error in the future
+        t_assert(H3_EXPORT(gridDisk)(0x7fffffffffffffff, k, neighbors) ==
+                     E_CELL_INVALID,
+                 "gridDisk returns error for invalid input");
         free(neighbors);
+    }
+
+    TEST(gridDiskInvalidDigit) {
+        int k = 2;
+        int64_t kSz;
+        t_assertSuccess(H3_EXPORT(maxGridDiskSize)(k, &kSz));
+        H3Index *neighbors = calloc(kSz, sizeof(H3Index));
+        t_assert(H3_EXPORT(gridDisk)(0x4d4b00fe5c5c3030, k, neighbors) ==
+                     E_CELL_INVALID,
+                 "gridDisk returns error for invalid input");
+        free(neighbors);
+    }
+
+    TEST(gridDiskDistances_invalidK) {
+        H3Index index = 0x811d7ffffffffff;
+        t_assert(
+            H3_EXPORT(gridDiskDistances)(index, -1, NULL, NULL) == E_DOMAIN,
+            "gridDiskDistances invalid k");
+        t_assert(H3_EXPORT(gridDiskDistancesUnsafe)(index, -1, NULL, NULL) ==
+                     E_DOMAIN,
+                 "gridDiskDistancesUnsafe invalid k");
+        t_assert(
+            H3_EXPORT(gridDiskDistancesSafe)(index, -1, NULL, NULL) == E_DOMAIN,
+            "gridDiskDistancesSafe invalid k");
+    }
+
+    TEST(maxGridDiskSize_invalid) {
+        int64_t sz;
+        t_assert(H3_EXPORT(maxGridDiskSize)(-1, &sz) == E_DOMAIN,
+                 "negative k is invalid");
+    }
+
+    TEST(maxGridDiskSize_large) {
+        int64_t sz;
+        t_assertSuccess(H3_EXPORT(maxGridDiskSize)(26755, &sz));
+        t_assert(sz == 2147570341, "large (> 32 bit signed int) k works");
     }
 }

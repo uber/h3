@@ -43,19 +43,20 @@ int nestedDonutsCount = 24;
 BEGIN_BENCHMARKS();
 LinkedGeoPolygon polygon;
 
-BENCHMARK(h3SetToLinkedGeoRing2, 10000, {
-    H3_EXPORT(h3SetToLinkedGeo)(ring2, ring2Count, &polygon);
-    H3_EXPORT(destroyLinkedPolygon)(&polygon);
+BENCHMARK(cellsToLinkedMultiPolygonRing2, 10000, {
+    H3_EXPORT(cellsToLinkedMultiPolygon)(ring2, ring2Count, &polygon);
+    H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
 });
 
-BENCHMARK(h3SetToLinkedGeoDonut, 10000, {
-    H3_EXPORT(h3SetToLinkedGeo)(donut, donutCount, &polygon);
-    H3_EXPORT(destroyLinkedPolygon)(&polygon);
+BENCHMARK(cellsToLinkedMultiPolygonDonut, 10000, {
+    H3_EXPORT(cellsToLinkedMultiPolygon)(donut, donutCount, &polygon);
+    H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
 });
 
-BENCHMARK(h3SetToLinkedGeoNestedDonuts, 10000, {
-    H3_EXPORT(h3SetToLinkedGeo)(nestedDonuts, nestedDonutsCount, &polygon);
-    H3_EXPORT(destroyLinkedPolygon)(&polygon);
+BENCHMARK(cellsToLinkedMultiPolygonNestedDonuts, 10000, {
+    H3_EXPORT(cellsToLinkedMultiPolygon)
+    (nestedDonuts, nestedDonutsCount, &polygon);
+    H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
 });
 
 END_BENCHMARKS();

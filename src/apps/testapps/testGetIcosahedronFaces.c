@@ -27,11 +27,12 @@
 #include "utility.h"
 
 static int countFaces(H3Index h3, int expectedMax) {
-    int sz = H3_EXPORT(maxFaceCount)(h3);
+    int sz;
+    t_assertSuccess(H3_EXPORT(maxFaceCount)(h3, &sz));
     t_assert(sz == expectedMax, "got expected max face count");
     int *faces = calloc(sz, sizeof(int));
 
-    H3_EXPORT(getIcosahedronFaces)(h3, faces);
+    t_assertSuccess(H3_EXPORT(getIcosahedronFaces)(h3, faces));
 
     int validCount = 0;
     for (int i = 0; i < sz; i++) {
@@ -133,5 +134,23 @@ SUITE(getIcosahedronFaces) {
                 assertPentagonFaces(baseCell);
             }
         }
+    }
+
+    TEST(invalid) {
+        H3Index invalid = 0xFFFFFFFFFFFFFFFF;
+        int out;
+        t_assert(
+            H3_EXPORT(getIcosahedronFaces)(invalid, &out) == E_CELL_INVALID,
+            "Invalid cell");
+    }
+
+    TEST(invalid2) {
+        H3Index invalid = 0x71330073003f004e;
+        int sz;
+        t_assertSuccess(H3_EXPORT(maxFaceCount)(invalid, &sz));
+        int *faces = calloc(sz, sizeof(int));
+        t_assert(H3_EXPORT(getIcosahedronFaces)(invalid, faces) == E_FAILED,
+                 "Invalid cell");
+        free(faces);
     }
 }

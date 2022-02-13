@@ -103,7 +103,8 @@ void h3ToLocalIj_neighbors_assertions(H3Index h3) {
         }
 
         int rotations = 0;
-        H3Index offset = h3NeighborRotations(h3, d, &rotations);
+        H3Index offset;
+        t_assertSuccess(h3NeighborRotations(h3, d, &rotations, &offset));
 
         CoordIJ ij = {0};
         t_assert(H3_EXPORT(experimentalH3ToLocalIj)(h3, offset, &ij) == 0,
@@ -123,6 +124,54 @@ void h3ToLocalIj_neighbors_assertions(H3Index h3) {
 }
 
 /**
+ * Test the the immediate neighbors of an index with invalid digits return
+ * error.
+ */
+void h3ToLocalIj_invalid_assertions(H3Index h3) {
+    int r = H3_GET_RESOLUTION(h3);
+    t_assert(r > 0, "resolution supported by test function (invalid digits)");
+    t_assert(r <= 5, "resolution supported by test function (invalid digits)");
+    int maxK = MAX_DISTANCES[r];
+
+    int64_t sz;
+    t_assertSuccess(H3_EXPORT(maxGridDiskSize)(maxK, &sz));
+    H3Index *neighbors = calloc(sz, sizeof(H3Index));
+    int *distances = calloc(sz, sizeof(int));
+
+    t_assertSuccess(
+        H3_EXPORT(gridDiskDistances)(h3, maxK, neighbors, distances));
+
+    for (int64_t i = 0; i < sz; i++) {
+        if (neighbors[i] == 0) {
+            continue;
+        }
+
+        CoordIJ ij;
+        // Don't consider indexes which we can't unfold in the first place
+        if (H3_EXPORT(experimentalH3ToLocalIj)(h3, neighbors[i], &ij) ==
+            E_SUCCESS) {
+            for (int j = 0; j < 2; j++) {
+                Direction dir = j == 0 ? INVALID_DIGIT : K_AXES_DIGIT;
+                // Valgrind / ASAN / UBSAN are used to test these assertions
+                H3Index h3Invalid = h3;
+                H3_SET_INDEX_DIGIT(h3Invalid, 0, dir);
+                CoordIJ ij2;
+                H3_EXPORT(experimentalH3ToLocalIj)
+                (h3Invalid, neighbors[i], &ij2);
+                H3Index neighborInvalid = neighbors[i];
+                H3_SET_INDEX_DIGIT(neighborInvalid, 0, dir);
+                H3_EXPORT(experimentalH3ToLocalIj)(h3, neighborInvalid, &ij2);
+                H3Index out;
+                H3_EXPORT(experimentalLocalIjToH3)(h3Invalid, &ij, &out);
+            }
+        }
+    }
+
+    free(distances);
+    free(neighbors);
+}
+
+/**
  * Test that the neighbors (k-ring), if they can be found in the local IJ
  * coordinate space, can be converted back to indexes.
  */
@@ -131,13 +180,15 @@ void localIjToH3_gridDisk_assertions(H3Index h3) {
     t_assert(r <= 5, "resolution supported by test function (gridDisk)");
     int maxK = MAX_DISTANCES[r];
 
-    int sz = H3_EXPORT(maxGridDiskSize)(maxK);
+    int64_t sz;
+    t_assertSuccess(H3_EXPORT(maxGridDiskSize)(maxK, &sz));
     H3Index *neighbors = calloc(sz, sizeof(H3Index));
     int *distances = calloc(sz, sizeof(int));
 
-    H3_EXPORT(gridDiskDistances)(h3, maxK, neighbors, distances);
+    t_assertSuccess(
+        H3_EXPORT(gridDiskDistances)(h3, maxK, neighbors, distances));
 
-    for (int i = 0; i < sz; i++) {
+    for (int64_t i = 0; i < sz; i++) {
         if (neighbors[i] == 0) {
             continue;
         }
@@ -243,6 +294,11 @@ SUITE(h3ToLocalIj) {
         iterateAllIndexesAtRes(0, h3ToLocalIj_neighbors_assertions);
         iterateAllIndexesAtRes(1, h3ToLocalIj_neighbors_assertions);
         iterateAllIndexesAtRes(2, h3ToLocalIj_neighbors_assertions);
+    }
+
+    TEST(h3ToLocalIj_invalid) {
+        iterateAllIndexesAtRes(1, h3ToLocalIj_invalid_assertions);
+        iterateAllIndexesAtRes(2, h3ToLocalIj_invalid_assertions);
     }
 
     TEST(localIjToH3_gridDisk) {

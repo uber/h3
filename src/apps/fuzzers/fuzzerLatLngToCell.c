@@ -17,29 +17,25 @@
  * @brief Fuzzer program for latLngToCell
  */
 
+#include "aflHarness.h"
 #include "h3api.h"
-#include "utility.h"
 
-int main(int argc, char *argv[]) {
-    if (argc != 2) {
-        error("Should have one argument (test case file)\n");
-    }
-    const char *filename = argv[1];
-    FILE *fp = fopen(filename, "rb");
-    struct args {
-        double lat;
-        double lng;
-        int res;
-    } args;
-    if (fread(&args, sizeof(args), 1, fp) != 1) {
-        error("Error reading\n");
-    }
-    fclose(fp);
+typedef struct {
+    double lat;
+    double lng;
+    int res;
+} inputArgs;
 
-    LatLng g = {.lat = args.lat, .lng = args.lng};
+int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
+    if (size < sizeof(inputArgs)) {
+        return 0;
+    }
+    const inputArgs *args = (const inputArgs *)data;
+    LatLng g = {.lat = args->lat, .lng = args->lng};
     H3Index h;
-    H3Error e = H3_EXPORT(latLngToCell)(&g, args.res, &h);
+    H3_EXPORT(latLngToCell)(&g, args->res, &h);
 
-    h3Println(e);
-    h3Println(h);
+    return 0;
 }
+
+AFL_HARNESS_MAIN(sizeof(inputArgs));

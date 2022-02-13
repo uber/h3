@@ -110,7 +110,8 @@ int main(int argc, char *argv[]) {
                 error("reading input H3 index from stdin");
         }
 
-        H3Index h3 = H3_EXPORT(stringToH3)(buff);
+        H3Index h3;
+        t_assertSuccess(H3_EXPORT(stringToH3)(buff, &h3));
 
         CellBoundary b;
         readBoundary(stdin, &b);

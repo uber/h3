@@ -24,7 +24,7 @@ SUITE(h3SetToVertexGraph) {
     TEST(empty) {
         VertexGraph graph;
 
-        h3SetToVertexGraph(NULL, 0, &graph);
+        t_assertSuccess(h3SetToVertexGraph(NULL, 0, &graph));
 
         t_assert(graph.size == 0, "No edges added to graph");
 
@@ -36,7 +36,7 @@ SUITE(h3SetToVertexGraph) {
         H3Index set[] = {0x890dab6220bffff};
         int numHexes = ARRAY_SIZE(set);
 
-        h3SetToVertexGraph(set, numHexes, &graph);
+        t_assertSuccess(h3SetToVertexGraph(set, numHexes, &graph));
         t_assert(graph.size == 6, "All edges of one hex added to graph");
 
         destroyVertexGraph(&graph);
@@ -47,7 +47,7 @@ SUITE(h3SetToVertexGraph) {
         H3Index set[] = {0x8928308291bffff, 0x89283082943ffff};
         int numHexes = ARRAY_SIZE(set);
 
-        h3SetToVertexGraph(set, numHexes, &graph);
+        t_assertSuccess(h3SetToVertexGraph(set, numHexes, &graph));
         t_assert(graph.size == 12,
                  "All edges of two non-contiguous hexes added to graph");
 
@@ -59,7 +59,7 @@ SUITE(h3SetToVertexGraph) {
         H3Index set[] = {0x8928308291bffff, 0x89283082957ffff};
         int numHexes = ARRAY_SIZE(set);
 
-        h3SetToVertexGraph(set, numHexes, &graph);
+        t_assertSuccess(h3SetToVertexGraph(set, numHexes, &graph));
         t_assert(graph.size == 10, "All edges except 2 shared added to graph");
 
         destroyVertexGraph(&graph);
@@ -70,7 +70,7 @@ SUITE(h3SetToVertexGraph) {
         H3Index set[] = {0x894cc5365afffff, 0x894cc536537ffff};
         int numHexes = ARRAY_SIZE(set);
 
-        h3SetToVertexGraph(set, numHexes, &graph);
+        t_assertSuccess(h3SetToVertexGraph(set, numHexes, &graph));
         t_assert(graph.size == 12, "All edges except 2 shared added to graph");
 
         destroyVertexGraph(&graph);
@@ -82,7 +82,7 @@ SUITE(h3SetToVertexGraph) {
                          0x8928308289bffff};
         int numHexes = ARRAY_SIZE(set);
 
-        h3SetToVertexGraph(set, numHexes, &graph);
+        t_assertSuccess(h3SetToVertexGraph(set, numHexes, &graph));
         t_assert(graph.size == 3 * 4,
                  "All edges except 6 shared added to graph");
 
@@ -96,7 +96,7 @@ SUITE(h3SetToVertexGraph) {
                          0x8928308288fffff, 0x89283082883ffff};
         int numHexes = ARRAY_SIZE(set);
 
-        h3SetToVertexGraph(set, numHexes, &graph);
+        t_assertSuccess(h3SetToVertexGraph(set, numHexes, &graph));
         t_assert(graph.size == (6 * 3) + 6,
                  "All outer edges and inner hole edges added to graph");
 

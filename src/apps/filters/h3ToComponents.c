@@ -83,7 +83,7 @@ void doCell(H3Index h, bool verboseMode) {
         }
         printf("╚════════════╝\n\n");
     } else {
-        if (h3Mode == H3_HEXAGON_MODE) {
+        if (h3Mode == H3_CELL_MODE) {
             printf("%d:%d:%d:", h3Mode, h3Res, h3BaseCell);
             for (int i = 1; i <= h3Res; i++) {
                 printf("%c", resDigitToChar(H3_GET_INDEX_DIGIT(h, i)));
@@ -129,7 +129,8 @@ int main(int argc, char *argv[]) {
                     error("reading H3 index from stdin");
             }
 
-            H3Index h3 = H3_EXPORT(stringToH3)(buff);
+            H3Index h3;
+            H3_EXPORT(stringToH3)(buff, &h3);
             doCell(h3, verboseArg.found);
         }
     }

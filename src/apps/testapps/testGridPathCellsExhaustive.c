@@ -36,23 +36,27 @@ static const int MAX_DISTANCES[] = {1, 2, 5, 12, 19, 26};
  * Property-based testing of gridPathCells output
  */
 static void gridPathCells_assertions(H3Index start, H3Index end) {
-    int sz = H3_EXPORT(gridPathCellsSize)(start, end);
+    int64_t sz;
+    t_assertSuccess(H3_EXPORT(gridPathCellsSize)(start, end, &sz));
     t_assert(sz > 0, "got valid size");
     H3Index *line = calloc(sz, sizeof(H3Index));
 
-    int err = H3_EXPORT(gridPathCells)(start, end, line);
+    t_assertSuccess(H3_EXPORT(gridPathCells)(start, end, line));
 
-    t_assert(err == 0, "no error on line");
     t_assert(line[0] == start, "line starts with start index");
     t_assert(line[sz - 1] == end, "line ends with end index");
 
     for (int i = 1; i < sz; i++) {
         t_assert(H3_EXPORT(isValidCell)(line[i]), "index is valid");
-        t_assert(H3_EXPORT(areNeighborCells)(line[i], line[i - 1]),
-                 "index is a neighbor of the previous index");
+        int isNeighbor;
+        t_assertSuccess(
+            H3_EXPORT(areNeighborCells)(line[i], line[i - 1], &isNeighbor));
+        t_assert(isNeighbor, "index is a neighbor of the previous index");
         if (i > 1) {
+            t_assertSuccess(
+                H3_EXPORT(areNeighborCells)(line[i], line[i - 2], &isNeighbor));
             t_assert(
-                !H3_EXPORT(areNeighborCells)(line[i], line[i - 2]),
+                !isNeighbor,
                 "index is not a neighbor of the index before the previous");
         }
     }
@@ -64,12 +68,13 @@ static void gridPathCells_assertions(H3Index start, H3Index end) {
  * Tests for invalid gridPathCells input
  */
 static void gridPathCells_invalid_assertions(H3Index start, H3Index end) {
-    int sz = H3_EXPORT(gridPathCellsSize)(start, end);
-    t_assert(sz < 0, "line size marked as invalid");
+    int64_t sz;
+    t_assert(H3_EXPORT(gridPathCellsSize)(start, end, &sz) != E_SUCCESS,
+             "line size marked as invalid");
 
     H3Index *line = {0};
-    int err = H3_EXPORT(gridPathCells)(start, end, line);
-    t_assert(err != 0, "line marked as invalid");
+    H3Error err = H3_EXPORT(gridPathCells)(start, end, line);
+    t_assert(err != E_SUCCESS, "line marked as invalid");
 }
 
 /**
@@ -80,21 +85,24 @@ static void gridPathCells_gridDisk_assertions(H3Index h3) {
     t_assert(r <= 5, "resolution supported by test function (gridDisk)");
     int maxK = MAX_DISTANCES[r];
 
-    int sz = H3_EXPORT(maxGridDiskSize)(maxK);
+    int64_t sz;
+    t_assertSuccess(H3_EXPORT(maxGridDiskSize)(maxK, &sz));
 
     if (H3_EXPORT(isPentagon)(h3)) {
         return;
     }
 
     H3Index *neighbors = calloc(sz, sizeof(H3Index));
-    H3_EXPORT(gridDisk)(h3, maxK, neighbors);
+    t_assertSuccess(H3_EXPORT(gridDisk)(h3, maxK, neighbors));
 
     for (int i = 0; i < sz; i++) {
         if (neighbors[i] == 0) {
             continue;
         }
-        int distance = H3_EXPORT(gridDistance)(h3, neighbors[i]);
-        if (distance >= 0) {
+        int64_t distance;
+        H3Error distanceError =
+            H3_EXPORT(gridDistance)(h3, neighbors[i], &distance);
+        if (distanceError == E_SUCCESS) {
             gridPathCells_assertions(h3, neighbors[i]);
         } else {
             gridPathCells_invalid_assertions(h3, neighbors[i]);

@@ -50,20 +50,22 @@ typedef struct {
 
 void doCell(H3Index h, int maxK, TestOutput *testOutput) {
     for (int k = 0; k < maxK; k++) {
-        int maxSz = H3_EXPORT(maxGridDiskSize)(k);
+        int64_t maxSz;
+        H3_EXPORT(maxGridDiskSize)(k, &maxSz);
         H3Index *gridDiskInternalOutput = calloc(sizeof(H3Index), maxSz);
         H3Index *gridDiskUnsafeOutput = calloc(sizeof(H3Index), maxSz);
         int *gridDiskInternalDistances = calloc(sizeof(int), maxSz);
 
         H3_EXPORT(gridDiskDistancesSafe)
         (h, k, gridDiskInternalOutput, gridDiskInternalDistances);
-        int gridDiskUnsafeFailed =
+        H3Error gridDiskUnsafeFailed =
             H3_EXPORT(gridDiskUnsafe)(h, k, gridDiskUnsafeOutput);
 
-        if (gridDiskUnsafeFailed == 2) {
+        if (gridDiskUnsafeFailed == E_FAILED) {
+            // TODO: Unreachable
             testOutput->ret2++;
             continue;
-        } else if (gridDiskUnsafeFailed == 0) {
+        } else if (gridDiskUnsafeFailed == E_SUCCESS) {
             testOutput->ret0++;
             int startIdx = 0;
             // i is the current ring number
@@ -76,7 +78,7 @@ void doCell(H3Index h, int maxK, TestOutput *testOutput) {
                     H3Index h2 = gridDiskUnsafeOutput[ii + startIdx];
                     int found = 0;
 
-                    for (int iii = 0; iii < maxSz; iii++) {
+                    for (int64_t iii = 0; iii < maxSz; iii++) {
                         if (gridDiskInternalOutput[iii] == h2 &&
                             gridDiskInternalDistances[iii] == i) {
                             found = 1;
@@ -95,10 +97,10 @@ void doCell(H3Index h, int maxK, TestOutput *testOutput) {
 
                 startIdx += n;
             }
-        } else if (gridDiskUnsafeFailed == 1) {
+        } else if (gridDiskUnsafeFailed == E_PENTAGON) {
             testOutput->ret1++;
             int foundPent = 0;
-            for (int i = 0; i < maxSz; i++) {
+            for (int64_t i = 0; i < maxSz; i++) {
                 if (H3_EXPORT(isPentagon)(gridDiskInternalOutput[i])) {
                     foundPent = 1;
                     break;
@@ -160,7 +162,7 @@ int main(int argc, char *argv[]) {
     // generate the test cases
     for (int bc = 0; bc < NUM_BASE_CELLS; bc++) {
         H3Index rootCell = H3_INIT;
-        H3_SET_MODE(rootCell, H3_HEXAGON_MODE);
+        H3_SET_MODE(rootCell, H3_CELL_MODE);
         H3_SET_BASE_CELL(rootCell, bc);
 
         if (res == 0) {

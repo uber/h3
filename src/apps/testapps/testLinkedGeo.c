@@ -67,7 +67,7 @@ SUITE(linkedGeo) {
 
         t_assert(countLinkedPolygons(polygon) == 2, "Polygon count correct");
 
-        H3_EXPORT(destroyLinkedPolygon)(polygon);
+        H3_EXPORT(destroyLinkedMultiPolygon)(polygon);
         free(polygon);
     }
 }

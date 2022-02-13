@@ -44,11 +44,11 @@ static void haversine_assert(H3Index edge) {
     LatLng a, b;
     H3Index origin, destination;
 
-    origin = H3_EXPORT(getDirectedEdgeOrigin)(edge);
-    H3_EXPORT(cellToLatLng)(origin, &a);
+    t_assertSuccess(H3_EXPORT(getDirectedEdgeOrigin)(edge, &origin));
+    t_assertSuccess(H3_EXPORT(cellToLatLng)(origin, &a));
 
-    destination = H3_EXPORT(getDirectedEdgeDestination)(edge);
-    H3_EXPORT(cellToLatLng)(destination, &b);
+    t_assertSuccess(H3_EXPORT(getDirectedEdgeDestination)(edge, &destination));
+    t_assertSuccess(H3_EXPORT(cellToLatLng)(destination, &b));
 
     char pos[] = "distance between cell centers should be positive";
     char comm[] = "pairwise cell distances should be commutative";
@@ -88,9 +88,13 @@ static void haversine_assert(H3Index edge) {
 static void edge_length_assert(H3Index edge) {
     char msg[] = "edge has positive length";
 
-    t_assert(H3_EXPORT(exactEdgeLengthRads)(edge) > 0, msg);
-    t_assert(H3_EXPORT(exactEdgeLengthKm)(edge) > 0, msg);
-    t_assert(H3_EXPORT(exactEdgeLengthM)(edge) > 0, msg);
+    double length;
+    t_assertSuccess(H3_EXPORT(exactEdgeLengthRads)(edge, &length));
+    t_assert(length > 0, msg);
+    t_assertSuccess(H3_EXPORT(exactEdgeLengthKm)(edge, &length));
+    t_assert(length > 0, msg);
+    t_assertSuccess(H3_EXPORT(exactEdgeLengthM)(edge, &length));
+    t_assert(length > 0, msg);
 }
 
 /**
@@ -105,9 +109,18 @@ static void edge_length_assert(H3Index edge) {
 static void cell_area_assert(H3Index cell) {
     char msg[] = "cell has positive area";
 
-    t_assert(H3_EXPORT(cellAreaRads2)(cell) > 0, msg);
-    t_assert(H3_EXPORT(cellAreaKm2)(cell) > 0, msg);
-    t_assert(H3_EXPORT(cellAreaM2)(cell) > 0, msg);
+    double areaRads;
+    t_assertSuccess(H3_EXPORT(cellAreaRads2)(cell, &areaRads));
+    t_assert(areaRads > 0, msg);
+    double areaKm2;
+    t_assertSuccess(H3_EXPORT(cellAreaKm2)(cell, &areaKm2));
+    t_assert(areaKm2 > 0, msg);
+    double areaM2;
+    t_assertSuccess(H3_EXPORT(cellAreaM2)(cell, &areaM2));
+    t_assert(areaM2 > 0, msg);
+
+    t_assert(areaRads < areaKm2, "area in rads smaller than area in km2");
+    t_assert(areaKm2 < areaM2, "area in km2 smaller than area in m2");
 }
 
 /**
@@ -119,12 +132,14 @@ static void cell_area_assert(H3Index cell) {
  * @param  target     expected earth area in some units
  * @param  tol        error tolerance allowed between expected and actual
  */
-static void earth_area_test(int res, double (*cell_area)(H3Index),
+static void earth_area_test(int res, H3Error (*cell_area)(H3Index, double *),
                             double target, double tol) {
     double area = 0.0;
     for (IterCellsResolution iter = iterInitRes(res); iter.h;
          iterStepRes(&iter)) {
-        area += (*cell_area)(iter.h);
+        double cellArea;
+        t_assertSuccess((*cell_area)(iter.h, &cellArea));
+        area += cellArea;
     }
 
     t_assert(fabs(area - target) < tol,

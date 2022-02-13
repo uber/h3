@@ -17,25 +17,24 @@
  * @brief Fuzzer program for cellToLatLng and cellToBoundary
  */
 
+#include "aflHarness.h"
 #include "h3api.h"
 #include "utility.h"
 
-int main(int argc, char *argv[]) {
-    if (argc != 2) {
-        error("Should have one argument (test case file)\n");
-    }
-    const char *filename = argv[1];
-    FILE *fp = fopen(filename, "rb");
+typedef struct {
     H3Index index;
-    if (fread(&index, sizeof(H3Index), 1, fp) != 1) {
-        error("Error reading\n");
-    }
-    fclose(fp);
+} inputArgs;
 
+int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
+    if (size < sizeof(inputArgs)) {
+        return 0;
+    }
+    const inputArgs *args = (const inputArgs *)data;
     LatLng geo;
-    H3_EXPORT(cellToLatLng)(index, &geo);
-    printf("%lf %lf\n", geo.lat, geo.lng);
+    H3_EXPORT(cellToLatLng)(args->index, &geo);
     CellBoundary cellBoundary;
-    H3_EXPORT(cellToBoundary)(index, &cellBoundary);
-    printf("%d\n", cellBoundary.numVerts);
+    H3_EXPORT(cellToBoundary)(args->index, &cellBoundary);
+    return 0;
 }
+
+AFL_HARNESS_MAIN(sizeof(inputArgs));

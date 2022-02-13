@@ -90,7 +90,7 @@ SUITE(h3Index) {
     TEST(isValidCellBaseCell) {
         for (int i = 0; i < NUM_BASE_CELLS; i++) {
             H3Index h = H3_INIT;
-            H3_SET_MODE(h, H3_HEXAGON_MODE);
+            H3_SET_MODE(h, H3_CELL_MODE);
             H3_SET_BASE_CELL(h, i);
             char failureMessage[BUFF_SIZE];
             sprintf(failureMessage, "isValidCell failed on base cell %d", i);
@@ -103,7 +103,7 @@ SUITE(h3Index) {
 
     TEST(isValidCellBaseCellInvalid) {
         H3Index hWrongBaseCell = H3_INIT;
-        H3_SET_MODE(hWrongBaseCell, H3_HEXAGON_MODE);
+        H3_SET_MODE(hWrongBaseCell, H3_CELL_MODE);
         H3_SET_BASE_CELL(hWrongBaseCell, NUM_BASE_CELLS);
         t_assert(!H3_EXPORT(isValidCell)(hWrongBaseCell),
                  "isValidCell failed on invalid base cell");
@@ -113,7 +113,7 @@ SUITE(h3Index) {
         for (int i = 0; i <= 0xf; i++) {
             H3Index h = H3_INIT;
             H3_SET_MODE(h, i);
-            if (i == H3_HEXAGON_MODE) {
+            if (i == H3_CELL_MODE) {
                 t_assert(H3_EXPORT(isValidCell)(h),
                          "isValidCell succeeds on valid mode");
             } else {
@@ -127,7 +127,7 @@ SUITE(h3Index) {
     TEST(isValidCellReservedBits) {
         for (int i = 0; i < 8; i++) {
             H3Index h = H3_INIT;
-            H3_SET_MODE(h, H3_HEXAGON_MODE);
+            H3_SET_MODE(h, H3_CELL_MODE);
             H3_SET_RESERVED_BITS(h, i);
             if (i == 0) {
                 t_assert(H3_EXPORT(isValidCell)(h),
@@ -143,7 +143,7 @@ SUITE(h3Index) {
 
     TEST(isValidCellHighBit) {
         H3Index h = H3_INIT;
-        H3_SET_MODE(h, H3_HEXAGON_MODE);
+        H3_SET_MODE(h, H3_CELL_MODE);
         H3_SET_HIGH_BIT(h, 1);
         t_assert(!H3_EXPORT(isValidCell)(h), "isValidCell failed on high bit");
     }
@@ -151,7 +151,7 @@ SUITE(h3Index) {
     TEST(h3BadDigitInvalid) {
         H3Index h = H3_INIT;
         // By default the first index digit is out of range.
-        H3_SET_MODE(h, H3_HEXAGON_MODE);
+        H3_SET_MODE(h, H3_CELL_MODE);
         H3_SET_RESOLUTION(h, 1);
         t_assert(!H3_EXPORT(isValidCell)(h),
                  "isValidCell failed on too large digit");
@@ -168,24 +168,26 @@ SUITE(h3Index) {
     TEST(h3ToString) {
         const size_t bufSz = 17;
         char buf[17] = {0};
-        H3_EXPORT(h3ToString)(0x1234, buf, bufSz - 1);
-        // Buffer should be unmodified because the size was too small
-        t_assert(buf[0] == 0, "h3ToString failed on buffer too small");
-        H3_EXPORT(h3ToString)(0xcafe, buf, bufSz);
+        t_assert(
+            H3_EXPORT(h3ToString)(0x1234, buf, bufSz - 1) == E_MEMORY_BOUNDS,
+            "h3ToString failed on buffer too small");
+        t_assertSuccess(H3_EXPORT(h3ToString)(0xcafe, buf, bufSz));
         t_assert(strcmp(buf, "cafe") == 0,
                  "h3ToString failed to produce base 16 results");
-        H3_EXPORT(h3ToString)(0xffffffffffffffff, buf, bufSz);
+        t_assertSuccess(H3_EXPORT(h3ToString)(0xffffffffffffffff, buf, bufSz));
         t_assert(strcmp(buf, "ffffffffffffffff") == 0,
                  "h3ToString failed on large input");
         t_assert(buf[bufSz - 1] == 0, "didn't null terminate");
     }
 
     TEST(stringToH3) {
-        t_assert(H3_EXPORT(stringToH3)("") == 0, "got an index from nothing");
-        t_assert(H3_EXPORT(stringToH3)("**") == 0, "got an index from junk");
-        t_assert(
-            H3_EXPORT(stringToH3)("ffffffffffffffff") == 0xffffffffffffffff,
-            "failed on large input");
+        H3Index h3;
+        t_assert(H3_EXPORT(stringToH3)("", &h3) == E_FAILED,
+                 "no index from nothing");
+        t_assert(H3_EXPORT(stringToH3)("**", &h3) == E_FAILED,
+                 "no index from junk");
+        t_assertSuccess(H3_EXPORT(stringToH3)("ffffffffffffffff", &h3));
+        t_assert(h3 == 0xffffffffffffffff, "got expected on large input");
     }
 
     TEST(setH3Index) {
@@ -193,7 +195,7 @@ SUITE(h3Index) {
         setH3Index(&h, 5, 12, 1);
         t_assert(H3_GET_RESOLUTION(h) == 5, "resolution as expected");
         t_assert(H3_GET_BASE_CELL(h) == 12, "base cell as expected");
-        t_assert(H3_GET_MODE(h) == H3_HEXAGON_MODE, "mode as expected");
+        t_assert(H3_GET_MODE(h) == H3_CELL_MODE, "mode as expected");
         for (int i = 1; i <= 5; i++) {
             t_assert(H3_GET_INDEX_DIGIT(h, i) == 1, "digit as expected");
         }

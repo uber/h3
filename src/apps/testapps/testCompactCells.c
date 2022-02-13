@@ -30,19 +30,20 @@ H3Index uncompactableWithZero[] = {0x89283470803ffff, 0x8928347081bffff, 0,
 SUITE(compactCells) {
     TEST(roundtrip) {
         int k = 9;
-        int hexCount = H3_EXPORT(maxGridDiskSize)(k);
+        int64_t hexCount;
+        t_assertSuccess(H3_EXPORT(maxGridDiskSize)(k, &hexCount));
         int expectedCompactCount = 73;
 
         // Generate a set of hexagons to compact
         H3Index *sunnyvaleExpanded = calloc(hexCount, sizeof(H3Index));
-        H3_EXPORT(gridDisk)(sunnyvale, k, sunnyvaleExpanded);
+        t_assertSuccess(H3_EXPORT(gridDisk)(sunnyvale, k, sunnyvaleExpanded));
 
         H3Index *compressed = calloc(hexCount, sizeof(H3Index));
         t_assertSuccess(
             H3_EXPORT(compactCells)(sunnyvaleExpanded, compressed, hexCount));
 
         int count = 0;
-        for (int i = 0; i < hexCount; i++) {
+        for (int64_t i = 0; i < hexCount; i++) {
             if (compressed[i] != 0) {
                 count++;
             }
@@ -163,10 +164,12 @@ SUITE(compactCells) {
         // Arbitrary index
         setH3Index(&h3, res, 0, 2);
 
-        int64_t arrSize = H3_EXPORT(cellToChildrenSize)(h3, res + 1) + 1;
+        int64_t arrSize;
+        t_assertSuccess(H3_EXPORT(cellToChildrenSize)(h3, res + 1, &arrSize));
+        arrSize++;
         H3Index *children = calloc(arrSize, sizeof(H3Index));
 
-        H3_EXPORT(cellToChildren)(h3, res + 1, children);
+        t_assertSuccess(H3_EXPORT(cellToChildren)(h3, res + 1, children));
         // duplicate one index
         children[arrSize - 1] = children[0];
 
@@ -188,10 +191,12 @@ SUITE(compactCells) {
         // Arbitrary pentagon parent cell
         setH3Index(&h3, res, 4, 0);
 
-        int64_t arrSize = H3_EXPORT(cellToChildrenSize)(h3, res + 1) + 1;
+        int64_t arrSize;
+        t_assertSuccess(H3_EXPORT(cellToChildrenSize)(h3, res + 1, &arrSize));
+        arrSize++;
         H3Index *children = calloc(arrSize, sizeof(H3Index));
 
-        H3_EXPORT(cellToChildren)(h3, res + 1, children);
+        t_assertSuccess(H3_EXPORT(cellToChildren)(h3, res + 1, children));
         // duplicate one index
         children[arrSize - 1] = H3_EXPORT(cellToCenterChild)(h3, res + 1);
 
@@ -215,10 +220,11 @@ SUITE(compactCells) {
         // Arbitrary index
         setH3Index(&h3, res, 0, 2);
 
-        int64_t arrSize = H3_EXPORT(cellToChildrenSize)(h3, res + 1);
+        int64_t arrSize;
+        t_assertSuccess(H3_EXPORT(cellToChildrenSize)(h3, res + 1, &arrSize));
         H3Index *children = calloc(arrSize, sizeof(H3Index));
 
-        H3_EXPORT(cellToChildren)(h3, res + 1, children);
+        t_assertSuccess(H3_EXPORT(cellToChildren)(h3, res + 1, children));
         // duplicate one index
         children[arrSize - 1] = children[0];
 
@@ -254,6 +260,31 @@ SUITE(compactCells) {
         for (int i = 0; i < numHex; i++) {
             t_assert(disparate[i] == output[i], "output set equals input set");
         }
+    }
+
+    TEST(compactCells_reservedBitsSet) {
+        const int numHex = 7;
+        H3Index bad[] = {
+            0x0010000000010000, 0x0180c6c6c6c61616, 0x1616ffffffffffff,
+            0xffff8affffffffff, 0xffffffffffffc6c6, 0xffffffffffffffc6,
+            0xc6c6c6c6c66fffe0,
+        };
+        H3Index output[] = {0, 0, 0, 0, 0, 0, 0};
+
+        t_assert(H3_EXPORT(compactCells)(bad, output, numHex) == E_CELL_INVALID,
+                 "compactCells returns E_CELL_INVALID on bad input");
+    }
+
+    TEST(compactCells_parentError) {
+        const int numHex = 3;
+        H3Index bad[] = {0, 0, 0};
+        H3Index output[] = {0, 0, 0};
+        H3_SET_RESOLUTION(bad[0], 10);
+        H3_SET_RESOLUTION(bad[1], 5);
+
+        t_assert(
+            H3_EXPORT(compactCells)(bad, output, numHex) == E_RES_MISMATCH,
+            "compactCells returns E_RES_MISMATCH on bad input (parent error)");
     }
 
     TEST(uncompactCells_wrongRes) {
