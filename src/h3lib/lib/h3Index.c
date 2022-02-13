@@ -308,9 +308,9 @@ int _isValidCell_const(const H3Index h) {
             uint64_t d = GT(g, 3);
             g <<= 3;
 
+            if (d == 0) continue;
             if (d == 1) return false;
             if (d >= 2) break;
-            // if d == 0, just continue with loop
         }
     }
 
