@@ -272,11 +272,12 @@ int _isValidCell_const(const H3Index h) {
     // TODO: prolly deserves some comments...
     {
         // does setting static make this faster?
-        const uint64_t MLO = 0b001001001001001001001001001001001001001001001;
-        const uint64_t MHI = MLO << 2;
+        const uint64_t MHI = 0b100100100100100100100100100100100100100100100;
+        const uint64_t MLO = MHI >> 2;
+
+        H3Index g = h;
 
         int shift = 3 * (15 - res);
-        H3Index g = h;
         g >>= shift;
         g <<= shift;
 
@@ -286,11 +287,12 @@ int _isValidCell_const(const H3Index h) {
     // Check that all unused digits after `res` are set to 7 (INVALID_DIGIT).
     // Bit shift to avoid looping through digits.
     if (res < 15) {
+        H3Index g = ~h;
+
         int shift = 19 + 3 * res;
-        H3Index g = h;
         g <<= shift;
-        g = ~g;
         g >>= shift;
+
         if (g) return false;
     }
 
