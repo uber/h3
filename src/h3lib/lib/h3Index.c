@@ -269,7 +269,32 @@ int _isValidCell_const(const H3Index h) {
     if (bc >= NUM_BASE_CELLS) return false;
 
     // Check that no digit from 1 to `res` is 7 (INVALID_DIGIT).
-    // TODO: prolly deserves some comments...
+    /*
+
+
+    |  d  | d & MHI |  ~d | ~d - MLO | d & MHI & (~d - MLO) |  result |
+    |-----|---------|-----|----------|----------------------|---------|
+    | 000 |     000 |     |          |                  000 | OK      |
+    | 001 |     000 |     |          |                  000 | OK      |
+    | 010 |     000 |     |          |                  000 | OK      |
+    | 011 |     000 |     |          |                  000 | OK      |
+    | 100 |     100 | 011 | 010      |                  000 | OK      |
+    | 101 |     100 | 010 | 001      |                  000 | OK      |
+    | 110 |     100 | 001 | 000      |                  000 | OK      |
+    | 111 |     100 | 000 | 111*     |                  100 | invalid |
+
+    *: carry happened
+
+
+    |    d    | d & MHI |    ~d   | ~d - MLO | d & MHI & (~d - MLO) |  result |
+    |---------|---------|---------|----------|----------------------|---------|
+    | 111.111 | 100.100 | 000.000 | 110.111* |              100.100 | invalid |
+    | 110.111 | 100.100 | 001.000 | 111.111* |              100.100 | invalid |
+    | 110.110 | 100.100 | 001.001 | 000.000  |              000.000 | OK      |
+
+    *: carry happened
+
+    */
     {
         // does setting static make this faster?
         const uint64_t MHI = 0b100100100100100100100100100100100100100100100;
