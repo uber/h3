@@ -316,6 +316,18 @@ int _isValidCell_const(const H3Index h) {
         0b1,
     };
 
+    {
+        // does seting static make this faster?
+        const uint64_t MLO = 0b001001001001001001001001001001001001001001001;
+        const uint64_t MHI = MLO << 2;
+
+        H3Index g = h;
+        g >>= 3 * (15 - res);
+        g <<= 3 * (15 - res);
+
+        if (g & MHI & (~g - MLO)) return 0;
+    }
+
     // Pentagon cells start with a sequence of 0's (CENTER_DIGIT's).
     // The first nonzero digit can't be a 1 (i.e., "deleted subsequence",
     // PENTAGON_SKIPPED_DIGIT, or K_AXES_DIGIT).
@@ -337,9 +349,9 @@ int _isValidCell_const(const H3Index h) {
 
     // After (possibly) taking care of pentagon logic, check that
     // the remaining digits up to `res` are not 7 (INVALID_DIGIT).
-    for (; r <= res; r++) {
-        if ((h & digit_masks[r]) == digit_masks[r]) return 0;
-    }
+    // for (; r <= res; r++) {
+    //     if ((h & digit_masks[r]) == digit_masks[r]) return 0;
+    // }
 
     // If no flaws were identified above, then the index is a valid H3 cell.
     return 1;
