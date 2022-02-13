@@ -271,6 +271,9 @@ int _isValidCell_const(const H3Index h) {
     // Check that no digit from 1 to `res` is 7 (INVALID_DIGIT).
     /*
 
+    MHI = 0b100100100100100100100100100100100100100100100;
+    MLO = MHI >> 2;
+
 
     |  d  | d & MHI |  ~d | ~d - MLO | d & MHI & (~d - MLO) |  result |
     |-----|---------|-----|----------|----------------------|---------|
@@ -283,8 +286,12 @@ int _isValidCell_const(const H3Index h) {
     | 110 |     100 | 001 | 000      |                  000 | OK      |
     | 111 |     100 | 000 | 111*     |                  100 | invalid |
 
-    *: carry happened
+      *: carry happened
 
+
+    Note: only care about identifying the *lowest* 7.
+
+    Examples with multiple digits:
 
     |    d    | d & MHI |    ~d   | ~d - MLO | d & MHI & (~d - MLO) |  result |
     |---------|---------|---------|----------|----------------------|---------|
@@ -292,7 +299,19 @@ int _isValidCell_const(const H3Index h) {
     | 110.111 | 100.100 | 001.000 | 111.111* |              100.100 | invalid |
     | 110.110 | 100.100 | 001.001 | 000.000  |              000.000 | OK      |
 
-    *: carry happened
+      *: carry happened
+
+    In the second example with 110.111, we "misidentify" the 110 as a 7, due
+    to a carry from the lower bits. But this is OK because we correctly
+    identify the lowest (only, in this example) 7 just before it.
+
+    We only have to worry about carries affecting higher bits in the case of
+    a 7; all other digits (0--6) don't cause a carry when computing ~d - MLO.
+    So even though a 7 can affect the results of higher bits, this is OK
+    because we will always correctly identify the lowest 7.
+
+    For further notes, see the discussion here:
+    https://github.com/uber/h3/pull/496#discussion_r795851046
 
     */
     {
