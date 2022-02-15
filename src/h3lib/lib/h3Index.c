@@ -84,7 +84,7 @@ H3Error H3_EXPORT(h3ToString)(H3Index h, char *str, size_t sz) {
 }
 
 // Get Top t bits from h
-#define GT(h, t) ((h) >> (64 - (t)))
+#define TOP_BITS(h, t) ((h) >> (64 - (t)))
 
 static const bool isBaseCellPentagonArr[128] = {
     [4] = 1,  [14] = 1, [24] = 1, [38] = 1, [49] = 1,  [58] = 1,
@@ -138,7 +138,7 @@ int _isValidCell_pop(H3Index h) {
     // groups of bits as we go. After each check, shift bits off
     // to the left, so that the next relevant group is at the
     // highest bit location in the H3 Index, which we can
-    // easily read off with the `GT` macro. This strategy helps
+    // easily read off with the `TOP_BITS` macro. This strategy helps
     // us avoid re-computing shifts and masks for each group.
     //
     // |   Region   | # bits |
@@ -159,7 +159,7 @@ int _isValidCell_pop(H3Index h) {
     // The 4 mode bits should be 0b0001 (H3_CELL_MODE)
     // The 3 reserved bits should be 0b000
     // In total, the top 8 bits should be 0b00001000
-    if (GT(h, 8) != 0b00001000) return 0;
+    if (TOP_BITS(h, 8) != 0b00001000) return 0;
     h <<= 8;
 
     // Number of bits in each of the resolution, base cell, and digit regions.
@@ -168,11 +168,11 @@ int _isValidCell_pop(H3Index h) {
     const int nBitsDigit = H3_PER_DIGIT_OFFSET;  // ... == 3
 
     // No need to check resolution; any 4 bits give a valid resolution.
-    const int res = GT(h, nBitsRes);
+    const int res = TOP_BITS(h, nBitsRes);
     h <<= nBitsRes;
 
     // Check that base cell number is valid.
-    const int bc = GT(h, nBitsBaseCell);
+    const int bc = TOP_BITS(h, nBitsBaseCell);
     if (bc >= NUM_BASE_CELLS) return 0;
     h <<= nBitsBaseCell;
 
@@ -190,7 +190,7 @@ int _isValidCell_pop(H3Index h) {
     // Test for pentagon base cell first to avoid this loop if possible.
     if (isBaseCellPentagonArr[bc]) {
         for (; r <= res; r++) {
-            int d = GT(
+            int d = TOP_BITS(
                 h, nBitsDigit);  // idea: could do david's masking thing here.
                                  // makes this loop not mutate anything...
             if (d == 0) {
@@ -209,7 +209,7 @@ int _isValidCell_pop(H3Index h) {
     // the remaining digits up to `res` are not 7 (INVALID_DIGIT).
     // Don't see a way to avoid this loop :(
     for (; r <= res; r++) {
-        if (GT(h, nBitsDigit) == 7) return 0;
+        if (TOP_BITS(h, nBitsDigit) == 7) return 0;
         h <<= nBitsDigit;
     }
 
@@ -238,7 +238,7 @@ int _isValidCell_const(const H3Index h) {
     // groups of bits as we go. After each check, shift bits off
     // to the left, so that the next relevant group is at the
     // highest bit location in the H3 Index, which we can
-    // easily read off with the `GT` macro. This strategy helps
+    // easily read off with the `TOP_BITS` macro. This strategy helps
     // us avoid re-computing shifts and masks for each group.
     //
     // |   Region   | # bits |
@@ -259,7 +259,7 @@ int _isValidCell_const(const H3Index h) {
     // The 4 mode bits should be 0b0001 (H3_CELL_MODE)
     // The 3 reserved bits should be 0b000
     // In total, the top 8 bits should be 0b00001000
-    if (GT(h, 8) != 0b00001000) return false;
+    if (TOP_BITS(h, 8) != 0b00001000) return false;
 
     // No need to check resolution; any 4 bits give a valid resolution.
     const int res = H3_GET_RESOLUTION(h);
@@ -353,14 +353,16 @@ int _isValidCell_const(const H3Index h) {
 
         // Converting g to a double essentially puts log2(g) into the
         // exponent bits of f (with an offset).
+        // This works up to about 2^53, which is good enough for our purposes.
+        // (It's 2^53 because doubles have 52 bits in the mantissa.)
         double f = g;
 
         // reinterpret the double bits as uint64_t
         g = *(uint64_t *)&f;
 
-        // Take the 11 exponent bits and the 1 sign bit.
+        // Take the sign bit and the 11 exponent bits.
         // The sign bit is guaranteed to be 0 in our case.
-        g = GT(g, 12);
+        g = TOP_BITS(g, 12);
 
         // Subtract the exponent bias.
         g -= 1023;

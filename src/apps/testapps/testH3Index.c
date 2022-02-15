@@ -186,6 +186,26 @@ SUITE(h3Index) {
         }
     }
 
+    TEST(moreDeletedSubsequenceInvalid2) {
+        H3Index p = 0x80c3fffffffffff;  // res 0 pentagon
+        p = H3_EXPORT(cellToCenterChild)(p, 15);
+
+        for (int res = 1; res <= 15; res++) {
+            for (int d = 0; d <= 6; d++) {
+                H3Index h = p;
+
+                H3_SET_INDEX_DIGIT(h, res, d);
+                if (d == 1) {
+                    t_assert(!H3_EXPORT(isValidCell)(h),
+                             "isValidCell failed on deleted subsequence");
+                } else {
+                    t_assert(H3_EXPORT(isValidCell)(h),
+                             "should be a valid cell");
+                }
+            }
+        }
+    }
+
     TEST(h3ToString) {
         const size_t bufSz = 17;
         char buf[17] = {0};
