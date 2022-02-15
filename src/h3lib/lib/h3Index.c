@@ -344,18 +344,31 @@ int _isValidCell_const(const H3Index h) {
     // Pentagon cells start with a sequence of 0's (CENTER_DIGIT's).
     // The first nonzero digit can't be a 1 (i.e., "deleted subsequence",
     // PENTAGON_SKIPPED_DIGIT, or K_AXES_DIGIT).
-    // Test for pentagon base cell first to avoid this loop if possible.
     if (isBaseCellPentagonArr[bc]) {
-        H3Index g = h << 19;
+        H3Index g = h;
+        g <<= 19;
+        g >>= 19;  // at this point, g < 2^45 - 1
 
-        for (int r = 1; r <= res; r++) {
-            uint64_t d = GT(g, 3);
-            g <<= 3;
+        if (g == 0) return true;  // all zeros (res 15 pentagon)
 
-            if (d == 0) continue;
-            if (d == 1) return false;
-            if (d >= 2) break;
-        }
+        // Converting g to a double essentially puts log2(g) into the
+        // exponent bits of f (with an offset).
+        double f = g;
+
+        // reinterpret the double bits as uint64_t
+        g = *(uint64_t *)&f;
+
+        // Take the 11 exponent bits and the 1 sign bit.
+        // The sign bit is guaranteed to be 0 in our case.
+        g = GT(g, 12);
+
+        // Subtract the exponent bias.
+        g -= 1023;
+
+        // g now holds the index of (its previous) first nonzero bit.
+        // The first nonzero digit is a 1 (and thus invalid) if the
+        // first nonzero bit's position is divisible by 3.
+        if (g % 3 == 0) return false;
     }
 
     // If no flaws were identified above, then the index is a valid H3 cell.
