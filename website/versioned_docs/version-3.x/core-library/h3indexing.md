@@ -50,7 +50,7 @@ The three bits for each unused digit are set to 7.
 
 ### H3 Unidirectional Edge Index
 
-An H3 Undirectional Edge index (mode 2) represents a single directed edge between two cells (an "origin" cell and a neighboring "destination" cell). The components of the H3 Unidirectional Edge index are packed into a 64-bit integer in order, highest bit first, as follows:
+An H3 Unidirectional Edge index (mode 2) represents a single directed edge between two cells (an "origin" cell and a neighboring "destination" cell). The components of the H3 Unidirectional Edge index are packed into a 64-bit integer in order, highest bit first, as follows:
 
 * 1 bit reserved and set to 0,
 * 4 bits to indicate the H3 Unidirectional Edge index mode,
