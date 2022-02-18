@@ -32,6 +32,10 @@ As a C library, bindings can be made to call H3 functions from different program
 ## Clojure 
 
 - [Factual/geo](https://github.com/Factual/geo)
+- 
+## Dart 
+
+- [festelo/h3_flutter](https://github.com/festelo/h3_flutter)
 
 ## ECL
 
