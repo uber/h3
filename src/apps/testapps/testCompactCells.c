@@ -198,7 +198,8 @@ SUITE(compactCells) {
 
         t_assertSuccess(H3_EXPORT(cellToChildren)(h3, res + 1, children));
         // duplicate one index
-        children[arrSize - 1] = H3_EXPORT(cellToCenterChild)(h3, res + 1);
+        t_assertSuccess(
+            H3_EXPORT(cellToCenterChild)(h3, res + 1, &children[arrSize - 1]));
 
         H3Index *output = calloc(arrSize, sizeof(H3Index));
 

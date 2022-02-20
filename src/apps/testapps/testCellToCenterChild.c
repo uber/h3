@@ -38,8 +38,9 @@ SUITE(cellToCenterChild) {
                 H3Index geoChild;
                 t_assertSuccess(
                     H3_EXPORT(latLngToCell)(&centroid, childRes, &geoChild));
-                H3Index centerChild =
-                    H3_EXPORT(cellToCenterChild)(h3Index, childRes);
+                H3Index centerChild;
+                t_assertSuccess(H3_EXPORT(cellToCenterChild)(h3Index, childRes,
+                                                             &centerChild));
 
                 t_assert(
                     centerChild == geoChild,
@@ -59,17 +60,23 @@ SUITE(cellToCenterChild) {
 
     TEST(sameRes) {
         int res = H3_EXPORT(getResolution)(baseHex);
-        t_assert(H3_EXPORT(cellToCenterChild)(baseHex, res) == baseHex,
+        H3Index child;
+        t_assertSuccess(H3_EXPORT(cellToCenterChild)(baseHex, res, &child));
+        t_assert(child == baseHex,
                  "center child at same resolution should return self");
     }
 
     TEST(invalidInputs) {
         int res = H3_EXPORT(getResolution)(baseHex);
-        t_assert(H3_EXPORT(cellToCenterChild)(baseHex, res - 1) == 0,
+        H3Index child;
+        t_assert(H3_EXPORT(cellToCenterChild)(baseHex, res - 1, &child) ==
+                     E_RES_DOMAIN,
                  "should fail at coarser resolution");
-        t_assert(H3_EXPORT(cellToCenterChild)(baseHex, -1) == 0,
-                 "should fail for negative resolution");
-        t_assert(H3_EXPORT(cellToCenterChild)(baseHex, MAX_H3_RES + 1) == 0,
+        t_assert(
+            H3_EXPORT(cellToCenterChild)(baseHex, -1, &child) == E_RES_DOMAIN,
+            "should fail for negative resolution");
+        t_assert(H3_EXPORT(cellToCenterChild)(baseHex, MAX_H3_RES + 1,
+                                              &child) == E_RES_DOMAIN,
                  "should fail beyond finest resolution");
     }
 }

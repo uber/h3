@@ -271,17 +271,16 @@ H3Index _zeroIndexDigits(H3Index h, int start, int end) {
  *
  * @param h H3Index to find center child of
  * @param childRes The resolution to switch to
- *
- * @return H3Index of the center child, or H3_NULL if you actually asked for a
- * parent
+ * @param child H3Index of the center child
+ * @return 0 (E_SUCCESS) on success
  */
-H3Index H3_EXPORT(cellToCenterChild)(H3Index h, int childRes) {
-    if (!_hasChildAtRes(h, childRes)) return H3_NULL;
+H3Error H3_EXPORT(cellToCenterChild)(H3Index h, int childRes, H3Index *child) {
+    if (!_hasChildAtRes(h, childRes)) return E_RES_DOMAIN;
 
     h = _zeroIndexDigits(h, H3_GET_RESOLUTION(h) + 1, childRes);
     H3_SET_RESOLUTION(h, childRes);
-
-    return h;
+    *child = h;
+    return E_SUCCESS;
 }
 
 /**

@@ -6,6 +6,8 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+### Breaking changes
+- `cellToCenterChild` (previously `h3ToCenterChild`) returns an error code. (#581)
 
 ## [4.0.0-rc1] - 2022-02-07
 ### Breaking changes
