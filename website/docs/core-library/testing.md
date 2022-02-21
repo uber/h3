@@ -38,6 +38,6 @@ Benchmarks are automatically run on Linux x64 with Clang and GCC compilers for e
 
 ## Fuzzers
 
-H3 uses fuzzers to find novel inputs that crash or result in other undefined behavior.
+H3 uses [fuzzers](https://github.com/uber/h3/tree/master/src/apps/fuzzers) to find novel inputs that crash or result in other undefined behavior.
 
 On each commit, CI is triggered to run [oss-fuzz](https://github.com/google/oss-fuzz/tree/master/projects/h3) for H3.
