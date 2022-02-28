@@ -66,8 +66,7 @@ void h3ToLocalIj_coordinates_assertions(H3Index h3) {
     int r = H3_GET_RESOLUTION(h3);
 
     CoordIJ ij;
-    t_assert(H3_EXPORT(cellToLocalIj)(h3, h3, &ij) == 0,
-             "get ij for origin");
+    t_assert(H3_EXPORT(cellToLocalIj)(h3, h3, &ij) == 0, "get ij for origin");
     CoordIJK ijk;
     ijToIjk(&ij, &ijk);
     if (r == 0) {
@@ -148,8 +147,7 @@ void h3ToLocalIj_invalid_assertions(H3Index h3) {
 
         CoordIJ ij;
         // Don't consider indexes which we can't unfold in the first place
-        if (H3_EXPORT(cellToLocalIj)(h3, neighbors[i], &ij) ==
-            E_SUCCESS) {
+        if (H3_EXPORT(cellToLocalIj)(h3, neighbors[i], &ij) == E_SUCCESS) {
             for (int j = 0; j < 2; j++) {
                 Direction dir = j == 0 ? INVALID_DIGIT : K_AXES_DIGIT;
                 // Valgrind / ASAN / UBSAN are used to test these assertions
@@ -197,9 +195,8 @@ void localIjToH3_gridDisk_assertions(H3Index h3) {
         // Don't consider indexes which we can't unfold in the first place
         if (H3_EXPORT(cellToLocalIj)(h3, neighbors[i], &ij) == 0) {
             H3Index retrieved;
-            t_assert(
-                H3_EXPORT(localIjToCell)(h3, &ij, &retrieved) == 0,
-                "retrieved index for unfolded coordinates");
+            t_assert(H3_EXPORT(localIjToCell)(h3, &ij, &retrieved) == 0,
+                     "retrieved index for unfolded coordinates");
             t_assert(retrieved == neighbors[i],
                      "round trip neighboring index matches expected");
         }
@@ -253,8 +250,8 @@ void localIjToH3_traverse_assertions(H3Index h3) {
                     // pentagon distortion. In that case, the other coordinates
                     // should also belong to the same index.
                     H3Index testTestH3;
-                    t_assert(H3_EXPORT(localIjToCell)(
-                                 h3, &expectedIj, &testTestH3) == 0,
+                    t_assert(H3_EXPORT(localIjToCell)(h3, &expectedIj,
+                                                      &testTestH3) == 0,
                              "converted coordinates again");
                     t_assert(testH3 == testTestH3,
                              "index has normalizable coordinates in "

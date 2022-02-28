@@ -522,8 +522,7 @@ H3Error localIjkToCell(H3Index origin, const CoordIJK *ijk, H3Index *out) {
  * @param out ij coordinates of the index will be placed here on success
  * @return 0 on success, or another value on failure.
  */
-H3Error H3_EXPORT(cellToLocalIj)(H3Index origin, H3Index h3,
-                                           CoordIJ *out) {
+H3Error H3_EXPORT(cellToLocalIj)(H3Index origin, H3Index h3, CoordIJ *out) {
     CoordIJK ijk;
     H3Error failed = cellToLocalIjk(origin, h3, &ijk);
     if (failed) {
@@ -553,7 +552,7 @@ H3Error H3_EXPORT(cellToLocalIj)(H3Index origin, H3Index h3,
  * @return 0 on success, or another value on failure.
  */
 H3Error H3_EXPORT(localIjToCell)(H3Index origin, const CoordIJ *ij,
-                                           H3Index *out) {
+                                 H3Index *out) {
     CoordIJK ijk;
     ijToIjk(ij, &ijk);
 

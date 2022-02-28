@@ -724,7 +724,7 @@ DECLSPEC H3Error H3_EXPORT(gridPathCells)(H3Index start, H3Index end,
  */
 /** @brief Returns two dimensional coordinates for the given index */
 DECLSPEC H3Error H3_EXPORT(cellToLocalIj)(H3Index origin, H3Index h3,
-                                                    CoordIJ *out);
+                                          CoordIJ *out);
 /** @} */
 
 /** @defgroup localIjToCell localIjToCell
@@ -732,9 +732,8 @@ DECLSPEC H3Error H3_EXPORT(cellToLocalIj)(H3Index origin, H3Index h3,
  * @{
  */
 /** @brief Returns index for the given two dimensional coordinates */
-DECLSPEC H3Error H3_EXPORT(localIjToCell)(H3Index origin,
-                                                    const CoordIJ *ij,
-                                                    H3Index *out);
+DECLSPEC H3Error H3_EXPORT(localIjToCell)(H3Index origin, const CoordIJ *ij,
+                                          H3Index *out);
 /** @} */
 
 #ifdef __cplusplus
