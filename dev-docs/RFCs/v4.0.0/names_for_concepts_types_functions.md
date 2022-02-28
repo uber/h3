@@ -213,6 +213,16 @@ We may expose them in the future if a need becomes clear.
 | *DNE*        | `gridRingSafe`   | `gridDiskDistancesSafe`          |
 | *DNE*        | `gridRing`       | `gridRingUnsafe`, `gridRingSafe` |
 
+#### Local IJ
+
+|         3.x name          |   4.0.0 name    |
+|---------------------------|-----------------|
+| `experimentalLocalIjToH3` | `localIjToCell` |
+| `experimentalH3ToLocalIj` | `cellToLocalIj` |
+
+**Note**: The term *experimental* is dropped from the names because the functions
+have been in the H3 API for a significant period of time.
+
 ### H3 Edge Types
 
 Instead of `UnidirectionalEdge`, use the term `DirectedEdge`.
