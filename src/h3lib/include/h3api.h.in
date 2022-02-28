@@ -718,21 +718,21 @@ DECLSPEC H3Error H3_EXPORT(gridPathCells)(H3Index start, H3Index end,
                                           H3Index *out);
 /** @} */
 
-/** @defgroup experimentalH3ToLocalIj experimentalH3ToLocalIj
- * Functions for experimentalH3ToLocalIj
+/** @defgroup cellToLocalIj cellToLocalIj
+ * Functions for cellToLocalIj
  * @{
  */
 /** @brief Returns two dimensional coordinates for the given index */
-DECLSPEC H3Error H3_EXPORT(experimentalH3ToLocalIj)(H3Index origin, H3Index h3,
+DECLSPEC H3Error H3_EXPORT(cellToLocalIj)(H3Index origin, H3Index h3,
                                                     CoordIJ *out);
 /** @} */
 
-/** @defgroup experimentalLocalIjToH3 experimentalLocalIjToH3
- * Functions for experimentalLocalIjToH3
+/** @defgroup localIjToCell localIjToCell
+ * Functions for localIjToCell
  * @{
  */
 /** @brief Returns index for the given two dimensional coordinates */
-DECLSPEC H3Error H3_EXPORT(experimentalLocalIjToH3)(H3Index origin,
+DECLSPEC H3Error H3_EXPORT(localIjToCell)(H3Index origin,
                                                     const CoordIJ *ij,
                                                     H3Index *out);
 /** @} */

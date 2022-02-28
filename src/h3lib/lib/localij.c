@@ -128,7 +128,7 @@ const bool FAILED_DIRECTIONS[7][7] = {
  * @param out ijk+ coordinates of the index will be placed here on success
  * @return 0 on success, or another value on failure.
  */
-H3Error h3ToLocalIjk(H3Index origin, H3Index h3, CoordIJK *out) {
+H3Error cellToLocalIjk(H3Index origin, H3Index h3, CoordIJK *out) {
     int res = H3_GET_RESOLUTION(origin);
 
     if (res != H3_GET_RESOLUTION(h3)) {
@@ -299,7 +299,7 @@ H3Error h3ToLocalIjk(H3Index origin, H3Index h3, CoordIJK *out) {
  * @param out The index will be placed here on success
  * @return 0 on success, or another value on failure.
  */
-H3Error localIjkToH3(H3Index origin, const CoordIJK *ijk, H3Index *out) {
+H3Error localIjkToCell(H3Index origin, const CoordIJK *ijk, H3Index *out) {
     int res = H3_GET_RESOLUTION(origin);
     int originBaseCell = H3_GET_BASE_CELL(origin);
     if (originBaseCell < 0 ||  // LCOV_EXCL_BR_LINE
@@ -490,7 +490,7 @@ H3Error localIjkToH3(H3Index origin, const CoordIJK *ijk, H3Index *out) {
     }
 
     if (indexOnPent) {
-        // TODO: There are cases in h3ToLocalIjk which are failed but not
+        // TODO: There are cases in cellToLocalIjk which are failed but not
         // accounted for here - instead just fail if the recovered index is
         // invalid.
         if (_h3LeadingNonZeroDigit(*out) == K_AXES_DIGIT) {
@@ -514,7 +514,7 @@ H3Error localIjkToH3(H3Index origin, const CoordIJK *ijk, H3Index *out) {
  * Failure may occur if the index is too far away from the origin
  * or if the index is on the other side of a pentagon.
  *
- * This function is experimental, and its output is not guaranteed
+ * This function's output is not guaranteed
  * to be compatible across different versions of H3.
  *
  * @param origin An anchoring index for the ij coordinate system.
@@ -522,14 +522,10 @@ H3Error localIjkToH3(H3Index origin, const CoordIJK *ijk, H3Index *out) {
  * @param out ij coordinates of the index will be placed here on success
  * @return 0 on success, or another value on failure.
  */
-H3Error H3_EXPORT(experimentalH3ToLocalIj)(H3Index origin, H3Index h3,
+H3Error H3_EXPORT(cellToLocalIj)(H3Index origin, H3Index h3,
                                            CoordIJ *out) {
-    // This function is currently experimental. Once ready to be part of the
-    // non-experimental API, this function (with the experimental prefix) will
-    // be marked as deprecated and to be removed in the next major version. It
-    // will be replaced with a non-prefixed function name.
     CoordIJK ijk;
-    H3Error failed = h3ToLocalIjk(origin, h3, &ijk);
+    H3Error failed = cellToLocalIjk(origin, h3, &ijk);
     if (failed) {
         return failed;
     }
@@ -548,7 +544,7 @@ H3Error H3_EXPORT(experimentalH3ToLocalIj)(H3Index origin, H3Index h3,
  * Failure may occur if the index is too far away from the origin
  * or if the index is on the other side of a pentagon.
  *
- * This function is experimental, and its output is not guaranteed
+ * This function's output is not guaranteed
  * to be compatible across different versions of H3.
  *
  * @param origin An anchoring index for the ij coordinate system.
@@ -556,16 +552,12 @@ H3Error H3_EXPORT(experimentalH3ToLocalIj)(H3Index origin, H3Index h3,
  * @param index Index will be placed here on success.
  * @return 0 on success, or another value on failure.
  */
-H3Error H3_EXPORT(experimentalLocalIjToH3)(H3Index origin, const CoordIJ *ij,
+H3Error H3_EXPORT(localIjToCell)(H3Index origin, const CoordIJ *ij,
                                            H3Index *out) {
-    // This function is currently experimental. Once ready to be part of the
-    // non-experimental API, this function (with the experimental prefix) will
-    // be marked as deprecated and to be removed in the next major version. It
-    // will be replaced with a non-prefixed function name.
     CoordIJK ijk;
     ijToIjk(ij, &ijk);
 
-    return localIjkToH3(origin, &ijk, out);
+    return localIjkToCell(origin, &ijk, out);
 }
 
 /**
@@ -582,11 +574,11 @@ H3Error H3_EXPORT(experimentalLocalIjToH3)(H3Index origin, const CoordIJ *ij,
  */
 H3Error H3_EXPORT(gridDistance)(H3Index origin, H3Index h3, int64_t *out) {
     CoordIJK originIjk, h3Ijk;
-    H3Error originError = h3ToLocalIjk(origin, origin, &originIjk);
+    H3Error originError = cellToLocalIjk(origin, origin, &originIjk);
     if (originError) {
         return originError;
     }
-    H3Error destError = h3ToLocalIjk(origin, h3, &h3Ijk);
+    H3Error destError = cellToLocalIjk(origin, h3, &h3Ijk);
     if (destError) {
         return destError;
     }
@@ -682,12 +674,12 @@ H3Error H3_EXPORT(gridPathCells)(H3Index start, H3Index end, H3Index *out) {
     CoordIJK endIjk = {0};
 
     // Convert H3 addresses to IJK coords
-    H3Error startError = h3ToLocalIjk(start, start, &startIjk);
+    H3Error startError = cellToLocalIjk(start, start, &startIjk);
     if (startError) {  // LCOV_EXCL_BR_LINE
         // Unreachable because this was called as part of gridDistance
         return startError;  // LCOV_EXCL_LINE
     }
-    H3Error endError = h3ToLocalIjk(start, end, &endIjk);
+    H3Error endError = cellToLocalIjk(start, end, &endIjk);
     if (endError) {  // LCOV_EXCL_BR_LINE
         // Unreachable because this was called as part of gridDistance
         return endError;  // LCOV_EXCL_LINE
@@ -711,7 +703,7 @@ H3Error H3_EXPORT(gridPathCells)(H3Index start, H3Index end, H3Index *out) {
                   (double)startIjk.k + kStep * n, &currentIjk);
         // Convert cube -> ijk -> h3 index
         cubeToIjk(&currentIjk);
-        H3Error currentError = localIjkToH3(start, &currentIjk, &out[n]);
+        H3Error currentError = localIjkToCell(start, &currentIjk, &out[n]);
         if (currentError) {  // LCOV_EXCL_BR_LINE
             // Expected to be unreachable since cells between `start` and `end`
             // should have valid local IJK coordinates.

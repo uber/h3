@@ -168,8 +168,8 @@ set(EXAMPLE_SOURCE_FILES
 set(OTHER_SOURCE_FILES
     src/apps/filters/h3.c
     src/apps/filters/cellToLatLng.c
-    src/apps/filters/h3ToLocalIj.c
-    src/apps/filters/localIjToH3.c
+    src/apps/filters/cellToLocalIj.c
+    src/apps/filters/localIjToCell.c
     src/apps/filters/h3ToComponents.c
     src/apps/filters/latLngToCell.c
     src/apps/filters/cellToBoundary.c
@@ -208,8 +208,8 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/mkRandGeo.c
     src/apps/testapps/testH3Api.c
     src/apps/testapps/testCellsToLinkedMultiPolygon.c
-    src/apps/testapps/testH3ToLocalIj.c
-    src/apps/testapps/testH3ToLocalIjExhaustive.c
+    src/apps/testapps/testCellToLocalIj.c
+    src/apps/testapps/testCellToLocalIjExhaustive.c
     src/apps/testapps/testGridDistance.c
     src/apps/testapps/testGridDistanceExhaustive.c
     src/apps/testapps/testGridPathCells.c
@@ -411,8 +411,8 @@ if(BUILD_FILTERS)
     add_h3_filter(latLngToCell src/apps/filters/latLngToCell.c ${APP_SOURCE_FILES})
     add_h3_filter(h3ToComponents src/apps/filters/h3ToComponents.c ${APP_SOURCE_FILES})
     add_h3_filter(cellToLatLng src/apps/filters/cellToLatLng.c ${APP_SOURCE_FILES})
-    add_h3_filter(h3ToLocalIj src/apps/filters/h3ToLocalIj.c ${APP_SOURCE_FILES})
-    add_h3_filter(localIjToH3 src/apps/filters/localIjToH3.c ${APP_SOURCE_FILES})
+    add_h3_filter(cellToLocalIj src/apps/filters/cellToLocalIj.c ${APP_SOURCE_FILES})
+    add_h3_filter(localIjToCell src/apps/filters/localIjToCell.c ${APP_SOURCE_FILES})
     add_h3_filter(cellToBoundary src/apps/filters/cellToBoundary.c ${APP_SOURCE_FILES})
     add_h3_filter(gridDiskUnsafe src/apps/filters/gridDiskUnsafe.c ${APP_SOURCE_FILES})
     add_h3_filter(gridDisk src/apps/filters/gridDisk.c ${APP_SOURCE_FILES})

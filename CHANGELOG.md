@@ -6,6 +6,8 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+### Breaking changes
+- `experimentalH3ToLocalIj` and `experimentalLocalIjToH3` renamed to `cellToLocalIj` and `localIjToCell` respectively.
 
 ## [4.0.0-rc1] - 2022-02-07
 ### Breaking changes

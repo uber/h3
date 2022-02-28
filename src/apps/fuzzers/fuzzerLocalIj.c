@@ -52,12 +52,12 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     testTwoIndexes(args->index, args->index2);
     H3Index out;
     CoordIJ ij = {.i = args->i, .j = args->j};
-    H3Error err = H3_EXPORT(experimentalLocalIjToH3)(args->index, &ij, &out);
+    H3Error err = H3_EXPORT(localIjToCell)(args->index, &ij, &out);
     if (!err) {
         testTwoIndexes(args->index, out);
     }
 
-    H3_EXPORT(experimentalH3ToLocalIj)(args->index, args->index2, &ij);
+    H3_EXPORT(cellToLocalIj)(args->index, args->index2, &ij);
 
     return 0;
 }

@@ -56,8 +56,8 @@ such as the H3 core library.
 | isValidVertex | [fuzzerVertexes](./fuzzerVertexes.c)
 | gridDistance | [fuzzerLocalIj](./fuzzerLocalIj.c)
 | gridPathCells | [fuzzerLocalIj](./fuzzerLocalIj.c)
-| experimentalH3ToLocalIj | [fuzzerLocalIj](./fuzzerLocalIj.c)
-| experimentalLocalIjToH3 | [fuzzerLocalIj](./fuzzerLocalIj.c)
+| cellToLocalIj | [fuzzerLocalIj](./fuzzerLocalIj.c)
+| localIjToCell | [fuzzerLocalIj](./fuzzerLocalIj.c)
 
 # libFuzzer Usage
 
