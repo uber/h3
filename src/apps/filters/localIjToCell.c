@@ -40,7 +40,7 @@
 
 void doCell(const CoordIJ *ij, H3Index origin) {
     H3Index h;
-    if (H3_EXPORT(localIjToCell)(origin, ij, &h)) {
+    if (H3_EXPORT(localIjToCell)(origin, ij, 0, &h)) {
         printf("NA\n");
     } else {
         h3Println(h);

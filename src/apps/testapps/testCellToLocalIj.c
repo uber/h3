@@ -60,25 +60,30 @@ SUITE(h3ToLocalIj) {
         CoordIJ ij = {.i = 0, .j = 0};
         H3Index origin = 0x8029fffffffffff;
         H3Index retrieved;
-        t_assert(H3_EXPORT(localIjToCell)(origin, &ij, &retrieved) == E_SUCCESS,
-                 "got origin back");
+        t_assert(
+            H3_EXPORT(localIjToCell)(origin, &ij, 0, &retrieved) == E_SUCCESS,
+            "got origin back");
         t_assert(retrieved == 0x8029fffffffffff, "origin matches self");
         ij.i = 1;
-        t_assert(H3_EXPORT(localIjToCell)(origin, &ij, &retrieved) == E_SUCCESS,
-                 "got offset index");
+        t_assert(
+            H3_EXPORT(localIjToCell)(origin, &ij, 0, &retrieved) == E_SUCCESS,
+            "got offset index");
         t_assert(retrieved == 0x8051fffffffffff,
                  "modified index matches expected");
         ij.i = 2;
-        t_assert(H3_EXPORT(localIjToCell)(origin, &ij, &retrieved) == E_FAILED,
-                 "out of range base cell (1)");
+        t_assert(
+            H3_EXPORT(localIjToCell)(origin, &ij, 0, &retrieved) == E_FAILED,
+            "out of range base cell (1)");
         ij.i = 0;
         ij.j = 2;
-        t_assert(H3_EXPORT(localIjToCell)(origin, &ij, &retrieved) == E_FAILED,
-                 "out of range base cell (2)");
+        t_assert(
+            H3_EXPORT(localIjToCell)(origin, &ij, 0, &retrieved) == E_FAILED,
+            "out of range base cell (2)");
         ij.i = -2;
         ij.j = -2;
-        t_assert(H3_EXPORT(localIjToCell)(origin, &ij, &retrieved) == E_FAILED,
-                 "out of range base cell (3)");
+        t_assert(
+            H3_EXPORT(localIjToCell)(origin, &ij, 0, &retrieved) == E_FAILED,
+            "out of range base cell (3)");
     }
 
     TEST(ijOutOfRange) {
@@ -96,7 +101,7 @@ SUITE(h3ToLocalIj) {
         for (int i = 0; i < numCoords; i++) {
             H3Index result;
             const H3Error err =
-                H3_EXPORT(localIjToCell)(expected[0], &coords[i], &result);
+                H3_EXPORT(localIjToCell)(expected[0], &coords[i], 0, &result);
             if (expected[i] == H3_NULL) {
                 t_assert(err != 0, "coordinates out of range");
             } else {
@@ -109,16 +114,19 @@ SUITE(h3ToLocalIj) {
     TEST(cellToLocalIjFailed) {
         CoordIJ ij;
 
-        t_assert(H3_EXPORT(cellToLocalIj)(bc1, bc1, &ij) == 0, "found IJ (1)");
+        t_assert(H3_EXPORT(cellToLocalIj)(bc1, bc1, 0, &ij) == 0,
+                 "found IJ (1)");
         t_assert(ij.i == 0 && ij.j == 0, "ij correct (1)");
-        t_assert(H3_EXPORT(cellToLocalIj)(bc1, pent1, &ij) == 0,
+        t_assert(H3_EXPORT(cellToLocalIj)(bc1, pent1, 0, &ij) == 0,
                  "found IJ (2)");
         t_assert(ij.i == 1 && ij.j == 0, "ij correct (2)");
-        t_assert(H3_EXPORT(cellToLocalIj)(bc1, bc2, &ij) == 0, "found IJ (3)");
+        t_assert(H3_EXPORT(cellToLocalIj)(bc1, bc2, 0, &ij) == 0,
+                 "found IJ (3)");
         t_assert(ij.i == 0 && ij.j == -1, "ij correct (3)");
-        t_assert(H3_EXPORT(cellToLocalIj)(bc1, bc3, &ij) == 0, "found IJ (4)");
+        t_assert(H3_EXPORT(cellToLocalIj)(bc1, bc3, 0, &ij) == 0,
+                 "found IJ (4)");
         t_assert(ij.i == -1 && ij.j == 0, "ij correct (4)");
-        t_assert(H3_EXPORT(cellToLocalIj)(pent1, bc3, &ij) == E_FAILED,
+        t_assert(H3_EXPORT(cellToLocalIj)(pent1, bc3, 0, &ij) == E_FAILED,
                  "found IJ (5)");
     }
 
@@ -126,14 +134,14 @@ SUITE(h3ToLocalIj) {
         CoordIJ ij;
         H3Index invalidIndex = 0x7fffffffffffffff;
         H3_SET_RESOLUTION(invalidIndex, H3_GET_RESOLUTION(bc1));
-        t_assert(
-            H3_EXPORT(cellToLocalIj)(bc1, invalidIndex, &ij) == E_CELL_INVALID,
-            "invalid index");
-        t_assert(H3_EXPORT(cellToLocalIj)(0x7fffffffffffffff, bc1, &ij) ==
+        t_assert(H3_EXPORT(cellToLocalIj)(bc1, invalidIndex, 0, &ij) ==
+                     E_CELL_INVALID,
+                 "invalid index");
+        t_assert(H3_EXPORT(cellToLocalIj)(0x7fffffffffffffff, bc1, 0, &ij) ==
                      E_RES_MISMATCH,
                  "invalid origin");
         t_assert(
-            H3_EXPORT(cellToLocalIj)(0x7fffffffffffffff, 0x7fffffffffffffff,
+            H3_EXPORT(cellToLocalIj)(0x7fffffffffffffff, 0x7fffffffffffffff, 0,
                                      &ij) == E_CELL_INVALID,
             "invalid origin and index");
     }
@@ -141,7 +149,7 @@ SUITE(h3ToLocalIj) {
     TEST(localIjToCellInvalid) {
         CoordIJ ij = {0, 0};
         H3Index index;
-        t_assert(H3_EXPORT(localIjToCell)(0x7fffffffffffffff, &ij, &index) ==
+        t_assert(H3_EXPORT(localIjToCell)(0x7fffffffffffffff, &ij, 0, &index) ==
                      E_CELL_INVALID,
                  "invalid origin for ijToH3");
     }
@@ -155,29 +163,29 @@ SUITE(h3ToLocalIj) {
         H3Index offPent;
         setH3Index(&offPent, 1, 3, CENTER_DIGIT);
         CoordIJ ij;
-        t_assert(H3_EXPORT(cellToLocalIj)(offPent, onPentInvalid, &ij) ==
+        t_assert(H3_EXPORT(cellToLocalIj)(offPent, onPentInvalid, 0, &ij) ==
                      E_CELL_INVALID,
                  "invalid index on pentagon");
 
         H3Index onPentValid;
         setH3Index(&onPentValid, 1, 4, CENTER_DIGIT);
-        t_assert(H3_EXPORT(cellToLocalIj)(onPentInvalid, onPentValid, &ij) ==
+        t_assert(H3_EXPORT(cellToLocalIj)(onPentInvalid, onPentValid, 0, &ij) ==
                      E_CELL_INVALID,
                  "invalid both on pentagon");
-        t_assert(H3_EXPORT(cellToLocalIj)(onPentValid, onPentInvalid, &ij) ==
+        t_assert(H3_EXPORT(cellToLocalIj)(onPentValid, onPentInvalid, 0, &ij) ==
                      E_CELL_INVALID,
                  "invalid both on pentagon");
 
         ij.i = 0;
         ij.j = 0;
         H3Index out;
-        t_assert(H3_EXPORT(localIjToCell)(onPentInvalid, &ij, &out) ==
+        t_assert(H3_EXPORT(localIjToCell)(onPentInvalid, &ij, 0, &out) ==
                      E_CELL_INVALID,
                  "invalid both on pentagon");
 
         ij.i = 3;
         ij.j = 3;
-        t_assert(H3_EXPORT(localIjToCell)(onPentInvalid, &ij, &out) ==
+        t_assert(H3_EXPORT(localIjToCell)(onPentInvalid, &ij, 0, &out) ==
                      E_CELL_INVALID,
                  "invalid origin on pentagon");
     }
@@ -211,10 +219,10 @@ SUITE(h3ToLocalIj) {
 
                         CoordIJ internalIj;
                         int internalIjFailed = H3_EXPORT(cellToLocalIj)(
-                            internalOrigin, testIndex, &internalIj);
+                            internalOrigin, testIndex, 0, &internalIj);
                         CoordIJ externalIj;
                         int externalIjFailed = H3_EXPORT(cellToLocalIj)(
-                            externalOrigin, testIndex, &externalIj);
+                            externalOrigin, testIndex, 0, &externalIj);
 
                         t_assert(
                             (bool)internalIjFailed == (bool)externalIjFailed,
@@ -226,10 +234,10 @@ SUITE(h3ToLocalIj) {
 
                         H3Index internalIndex;
                         int internalIjFailed2 = H3_EXPORT(localIjToCell)(
-                            internalOrigin, &internalIj, &internalIndex);
+                            internalOrigin, &internalIj, 0, &internalIndex);
                         H3Index externalIndex;
                         int externalIjFailed2 = H3_EXPORT(localIjToCell)(
-                            externalOrigin, &externalIj, &externalIndex);
+                            externalOrigin, &externalIj, 0, &externalIndex);
 
                         t_assert(
                             (bool)internalIjFailed2 == (bool)externalIjFailed2,
@@ -245,6 +253,22 @@ SUITE(h3ToLocalIj) {
                     }
                 }
             }
+        }
+    }
+
+    TEST(invalidFlags) {
+        CoordIJ ij;
+        H3Index cell = 0x85283473fffffff;
+        t_assertSuccess(H3_EXPORT(cellToLocalIj)(cell, cell, 0, &ij));
+
+        for (uint32_t i = 1; i <= 32; i++) {
+            CoordIJ ij2;
+            t_assert(H3_EXPORT(cellToLocalIj)(cell, cell, i, &ij2) == E_FAILED,
+                     "Invalid flags fail for cellToLocalIj");
+            H3Index cell2;
+            t_assert(
+                H3_EXPORT(localIjToCell)(cell, &ij2, i, &cell2) == E_FAILED,
+                "Invalid flags fail for cellToLocalIj");
         }
     }
 }

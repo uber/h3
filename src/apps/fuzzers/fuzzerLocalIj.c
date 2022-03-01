@@ -27,6 +27,7 @@ typedef struct {
     H3Index index2;
     int i;
     int j;
+    uint32_t mode;
 } inputArgs;
 
 void testTwoIndexes(H3Index index, H3Index index2) {
@@ -49,15 +50,26 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 
     // Note that index and index2 need to be in the approximate area for these
     // tests to make sense.
+    // Test with mode set to 0 since that is expected to yield more interesting
+    // results.
     testTwoIndexes(args->index, args->index2);
     H3Index out;
     CoordIJ ij = {.i = args->i, .j = args->j};
-    H3Error err = H3_EXPORT(localIjToCell)(args->index, &ij, &out);
+    H3Error err = H3_EXPORT(localIjToCell)(args->index, &ij, 0, &out);
     if (!err) {
         testTwoIndexes(args->index, out);
     }
 
-    H3_EXPORT(cellToLocalIj)(args->index, args->index2, &ij);
+    H3_EXPORT(cellToLocalIj)(args->index, args->index2, 0, &ij);
+
+    // Test again with mode
+    uint32_t mode = args->mode;
+    err = H3_EXPORT(localIjToCell)(args->index, &ij, mode, &out);
+    if (!err) {
+        testTwoIndexes(args->index, out);
+    }
+
+    H3_EXPORT(cellToLocalIj)(args->index, args->index2, mode, &ij);
 
     return 0;
 }

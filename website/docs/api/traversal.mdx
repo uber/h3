@@ -654,7 +654,7 @@ space functions.
 <TabItem value="c">
 
 ```c
-H3Error cellToLocalIj(H3Index origin, H3Index h3, CoordIJ *out);
+H3Error cellToLocalIj(H3Index origin, H3Index h3, uint32_t flags, CoordIJ *out);
 ```
 
 </TabItem>
@@ -693,8 +693,10 @@ function example() {
 
 Produces local IJ coordinates for an H3 index anchored by an origin.
 
-This function's output is not guaranteed
-to be compatible across different versions of H3.
+`flags` is reserved for future expansion and must be set to `0`.
+
+This function's output is not guaranteed to be compatible across different
+versions of H3.
 
 ## localIjToCell
 
@@ -711,7 +713,7 @@ to be compatible across different versions of H3.
 <TabItem value="c">
 
 ```c
-H3Error localIjToCell(H3Index origin, const CoordIJ *ij, H3Index *out);
+H3Error localIjToCell(H3Index origin, const CoordIJ *ij, uint32_t flags, H3Index *out);
 ```
 
 </TabItem>
@@ -749,5 +751,9 @@ function example() {
 
 Produces an H3 index from local IJ coordinates anchored by an origin.
 
-This function's output is not guaranteed
-to be compatible across different versions of H3.
+`flags` is reserved for future expansion and must be set to `0`.
+
+This function's output is not guaranteed to be compatible across different
+versions of H3.
+
+

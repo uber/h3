@@ -519,10 +519,15 @@ H3Error localIjkToCell(H3Index origin, const CoordIJK *ijk, H3Index *out) {
  *
  * @param origin An anchoring index for the ij coordinate system.
  * @param index Index to find the coordinates of
+ * @param flags Mode flags, must be 0
  * @param out ij coordinates of the index will be placed here on success
  * @return 0 on success, or another value on failure.
  */
-H3Error H3_EXPORT(cellToLocalIj)(H3Index origin, H3Index h3, CoordIJ *out) {
+H3Error H3_EXPORT(cellToLocalIj)(H3Index origin, H3Index h3, uint32_t flags,
+                                 CoordIJ *out) {
+    if (flags != 0) {
+        return E_FAILED;
+    }
     CoordIJK ijk;
     H3Error failed = cellToLocalIjk(origin, h3, &ijk);
     if (failed) {
@@ -548,11 +553,15 @@ H3Error H3_EXPORT(cellToLocalIj)(H3Index origin, H3Index h3, CoordIJ *out) {
  *
  * @param origin An anchoring index for the ij coordinate system.
  * @param out ij coordinates to index.
+ * @param flags Mode flags, must be 0
  * @param index Index will be placed here on success.
  * @return 0 on success, or another value on failure.
  */
 H3Error H3_EXPORT(localIjToCell)(H3Index origin, const CoordIJ *ij,
-                                 H3Index *out) {
+                                 uint32_t flags, H3Index *out) {
+    if (flags != 0) {
+        return E_FAILED;
+    }
     CoordIJK ijk;
     ijToIjk(ij, &ijk);
 
