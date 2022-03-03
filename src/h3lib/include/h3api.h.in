@@ -526,7 +526,8 @@ DECLSPEC H3Error H3_EXPORT(cellToChildren)(H3Index h, int childRes,
  */
 /** @brief returns the center child of the given cell at the specified
  * resolution */
-DECLSPEC H3Index H3_EXPORT(cellToCenterChild)(H3Index h, int childRes);
+DECLSPEC H3Error H3_EXPORT(cellToCenterChild)(H3Index h, int childRes,
+                                              H3Index *child);
 /** @} */
 
 /** @defgroup compactCells compactCells

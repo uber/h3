@@ -27,8 +27,9 @@ CellArray pentagonSetup(int parentRes, int childRes, int nullEvery) {
     //
     // If `nullEvery > 0`, then modify the array to have H3_NULL
     // every `nullEvery` indices.
-    H3Index p = 0x80c3fffffffffff;  // res 0 pentagon
-    p = H3_EXPORT(cellToCenterChild)(p, parentRes);
+    H3Index pParent = 0x80c3fffffffffff;  // res 0 pentagon
+    H3Index p;
+    H3_EXPORT(cellToCenterChild)(pParent, parentRes, &p);
 
     CellArray ca;
 
