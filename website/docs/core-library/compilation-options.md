@@ -42,6 +42,14 @@ building the library as the output of these generators is checked in.
 
 Whether to build the [test suite](./testing).
 
+## BUILD_FUZZERS
+
+Whether to build the [fuzzer suite](./testing#fuzzers).
+
+## ENABLE_LIBFUZZER
+
+Whether to build the fuzzers with [libFuzzer](https://www.llvm.org/docs/LibFuzzer.html) (this expects to be used with Clang). If OFF, a `main` function suitable for use with [American fuzzy lop](https://lcamtuf.coredump.cx/afl/) is included.
+
 ## CMAKE_BUILD_TYPE
 
 Should be set to `Release` for production builds, and `Debug` in development.

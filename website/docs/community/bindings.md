@@ -33,6 +33,10 @@ As a C library, bindings can be made to call H3 functions from different program
 
 - [Factual/geo](https://github.com/Factual/geo)
 
+## Dart 
+
+- [festelo/h3_flutter](https://github.com/festelo/h3_flutter)
+
 ## ECL
 
 - [hpcc-systems/HPCC-Platform](https://github.com/hpcc-systems/HPCC-Platform/tree/master/plugins/h3)

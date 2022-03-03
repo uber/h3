@@ -17,7 +17,10 @@ The file `h3api.h.in` is preprocessed into the file `h3api.h` as part of H3's bu
 
 ## API preconditions
 
-The H3 API expects valid input. Behavior of the library may be undefined when given invalid input. Indexes should be validated with `h3IsValid` or `h3UnidirectionalEdgeIsValid` as appropriate.
+The H3 API expects valid input. Behavior of the library may be undefined when given invalid input. Indexes should be validated with `isValidCell` or `isValidDirectedEdge` as appropriate.
+
+The library attempts to validate inputs and return useful error codes if input is invalid. Which inputs are validated, and how precisely they are
+validated, may change between versions of the library. As a result the specific error code returned may change.
 
 ## Function renaming
 
