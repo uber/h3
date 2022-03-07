@@ -387,19 +387,9 @@ void _geoToFaceIjk(const LatLng *g, int res, FaceIJK *h) {
  * @param v The 2D hex coordinates of the cell containing the point.
  */
 void _geoToHex2d(const LatLng *g, int res, int *face, Vec2d *v) {
-    Vec3d v3d;
-    _geoToVec3d(g, &v3d);
-
     // determine the icosahedron face
-    *face = 0;
-    double sqd = _pointSquareDist(&faceCenterPoint[0], &v3d);
-    for (int f = 1; f < NUM_ICOSA_FACES; f++) {
-        double sqdT = _pointSquareDist(&faceCenterPoint[f], &v3d);
-        if (sqdT < sqd) {
-            *face = f;
-            sqd = sqdT;
-        }
-    }
+    double sqd;
+    _geoToClosestFace(g, face, sqd);
 
     // cos(r) = 1 - 2 * sin^2(r/2) = 1 - 2 * (sqd / 4) = 1 - sqd/2
     double r = acos(1 - sqd / 2);
@@ -933,4 +923,30 @@ Overage _adjustPentVertOverage(FaceIJK *fijk, int res) {
         overage = _adjustOverageClassII(fijk, res, pentLeading4, 1);
     } while (overage == NEW_FACE);
     return overage;
+}
+
+/**
+ * Encodes a coordinate on the sphere to the corresponding icosahedral face and
+ * containing the squared euclidean distance to that face center.
+ *
+ * @param g The spherical coordinates to encode.
+ * @param face The icosahedral face containing the spherical coordinates.
+ * @param sqd The squared euclidean distance to its icosahedral face center.
+ */
+void _geoToClosestFace(const LatLng *g, int *face, double *sqd) {
+    Vec3d v3d;
+    _geoToVec3d(g, &v3d);
+
+    // determine the icosahedron face
+    *face = 0;
+    // The distance between two farthest points is 2.0, therefore the square of
+    // the distance between two points should always be less or equal than 4.0 .
+    *sqd = 5.0;
+    for (int f = 0; f < NUM_ICOSA_FACES; ++f) {
+        double sqdT = _pointSquareDist(&faceCenterPoint[f], &v3d);
+        if (sqdT < sqd) {
+            *face = f;
+            sqd = sqdT;
+        }
+    }
 }
