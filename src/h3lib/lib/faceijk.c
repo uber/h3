@@ -389,7 +389,7 @@ void _geoToFaceIjk(const LatLng *g, int res, FaceIJK *h) {
 void _geoToHex2d(const LatLng *g, int res, int *face, Vec2d *v) {
     // determine the icosahedron face
     double sqd;
-    _geoToClosestFace(g, face, sqd);
+    _geoToClosestFace(g, face, &sqd);
 
     // cos(r) = 1 - 2 * sin^2(r/2) = 1 - 2 * (sqd / 4) = 1 - sqd/2
     double r = acos(1 - sqd / 2);
