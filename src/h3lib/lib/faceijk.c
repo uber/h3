@@ -944,9 +944,9 @@ void _geoToClosestFace(const LatLng *g, int *face, double *sqd) {
     *sqd = 5.0;
     for (int f = 0; f < NUM_ICOSA_FACES; ++f) {
         double sqdT = _pointSquareDist(&faceCenterPoint[f], &v3d);
-        if (sqdT < sqd) {
+        if (sqdT < *sqd) {
             *face = f;
-            sqd = sqdT;
+            *sqd = sqdT;
         }
     }
 }
