@@ -8,7 +8,7 @@ The public API of this library consists of the functions declared in file
 ## [Unreleased]
 ### Breaking changes
 - `experimentalH3ToLocalIj` and `experimentalLocalIjToH3` renamed to `cellToLocalIj` and `localIjToCell` respectively. (#586)
-- `cellToLocalIj` and `localIjToCell` accept a flags argument for future expansion. (#586)
+- `cellToLocalIj` and `localIjToCell` accept a mode argument for future expansion. (#586)
 - `cellToCenterChild` (previously `h3ToCenterChild`) returns an error code. (#581)
 
 ## [4.0.0-rc1] - 2022-02-07

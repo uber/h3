@@ -256,7 +256,7 @@ SUITE(h3ToLocalIj) {
         }
     }
 
-    TEST(invalidFlags) {
+    TEST(invalidMode) {
         CoordIJ ij;
         H3Index cell = 0x85283473fffffff;
         t_assertSuccess(H3_EXPORT(cellToLocalIj)(cell, cell, 0, &ij));
@@ -264,11 +264,11 @@ SUITE(h3ToLocalIj) {
         for (uint32_t i = 1; i <= 32; i++) {
             CoordIJ ij2;
             t_assert(H3_EXPORT(cellToLocalIj)(cell, cell, i, &ij2) == E_FAILED,
-                     "Invalid flags fail for cellToLocalIj");
+                     "Invalid mode fail for cellToLocalIj");
             H3Index cell2;
             t_assert(
                 H3_EXPORT(localIjToCell)(cell, &ij2, i, &cell2) == E_FAILED,
-                "Invalid flags fail for cellToLocalIj");
+                "Invalid mode fail for cellToLocalIj");
         }
     }
 }
