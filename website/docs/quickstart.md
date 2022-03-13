@@ -22,7 +22,7 @@ function example() {
 }
 ```
 
-The result is the identifier of the hexagonal cell in H3 containing this point. We can retrieve the centroid of this cell:
+The result is the identifier of the hexagonal cell in H3 containing this point. We can retrieve the center of this cell:
 
 ```js live
 function example() {
