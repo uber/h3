@@ -17,7 +17,7 @@
  * @brief tests H3 index to local IJ and IJK+ grid functions using
  * tests over a large number of indexes.
  *
- *  usage: `testH3ToLocalIjExhaustive`
+ *  usage: `testCellToLocalIjExhaustive`
  */
 
 #include <h3api.h>
@@ -48,11 +48,11 @@ static const CoordIJ NEXT_RING_DIRECTION = {1, 0};
  */
 void localIjToH3_identity_assertions(H3Index h3) {
     CoordIJ ij;
-    t_assert(H3_EXPORT(experimentalH3ToLocalIj)(h3, h3, &ij) == 0,
+    t_assert(H3_EXPORT(cellToLocalIj)(h3, h3, 0, &ij) == 0,
              "able to setup localIjToH3 test");
 
     H3Index retrieved;
-    t_assert(H3_EXPORT(experimentalLocalIjToH3)(h3, &ij, &retrieved) == 0,
+    t_assert(H3_EXPORT(localIjToCell)(h3, &ij, 0, &retrieved) == 0,
              "got an index back from localIjTOh3");
     t_assert(h3 == retrieved, "round trip through local IJ space works");
 }
@@ -66,7 +66,7 @@ void h3ToLocalIj_coordinates_assertions(H3Index h3) {
     int r = H3_GET_RESOLUTION(h3);
 
     CoordIJ ij;
-    t_assert(H3_EXPORT(experimentalH3ToLocalIj)(h3, h3, &ij) == 0,
+    t_assert(H3_EXPORT(cellToLocalIj)(h3, h3, 0, &ij) == 0,
              "get ij for origin");
     CoordIJK ijk;
     ijToIjk(&ij, &ijk);
@@ -92,7 +92,7 @@ void h3ToLocalIj_coordinates_assertions(H3Index h3) {
  */
 void h3ToLocalIj_neighbors_assertions(H3Index h3) {
     CoordIJ origin = {0};
-    t_assert(H3_EXPORT(experimentalH3ToLocalIj)(h3, h3, &origin) == 0,
+    t_assert(H3_EXPORT(cellToLocalIj)(h3, h3, 0, &origin) == 0,
              "got ij for origin");
     CoordIJK originIjk;
     ijToIjk(&origin, &originIjk);
@@ -107,7 +107,7 @@ void h3ToLocalIj_neighbors_assertions(H3Index h3) {
         t_assertSuccess(h3NeighborRotations(h3, d, &rotations, &offset));
 
         CoordIJ ij = {0};
-        t_assert(H3_EXPORT(experimentalH3ToLocalIj)(h3, offset, &ij) == 0,
+        t_assert(H3_EXPORT(cellToLocalIj)(h3, offset, 0, &ij) == 0,
                  "got ij for destination");
         CoordIJK ijk;
         ijToIjk(&ij, &ijk);
@@ -148,21 +148,20 @@ void h3ToLocalIj_invalid_assertions(H3Index h3) {
 
         CoordIJ ij;
         // Don't consider indexes which we can't unfold in the first place
-        if (H3_EXPORT(experimentalH3ToLocalIj)(h3, neighbors[i], &ij) ==
-            E_SUCCESS) {
+        if (H3_EXPORT(cellToLocalIj)(h3, neighbors[i], 0, &ij) == E_SUCCESS) {
             for (int j = 0; j < 2; j++) {
                 Direction dir = j == 0 ? INVALID_DIGIT : K_AXES_DIGIT;
                 // Valgrind / ASAN / UBSAN are used to test these assertions
                 H3Index h3Invalid = h3;
                 H3_SET_INDEX_DIGIT(h3Invalid, 0, dir);
                 CoordIJ ij2;
-                H3_EXPORT(experimentalH3ToLocalIj)
-                (h3Invalid, neighbors[i], &ij2);
+                H3_EXPORT(cellToLocalIj)
+                (h3Invalid, neighbors[i], 0, &ij2);
                 H3Index neighborInvalid = neighbors[i];
                 H3_SET_INDEX_DIGIT(neighborInvalid, 0, dir);
-                H3_EXPORT(experimentalH3ToLocalIj)(h3, neighborInvalid, &ij2);
+                H3_EXPORT(cellToLocalIj)(h3, neighborInvalid, 0, &ij2);
                 H3Index out;
-                H3_EXPORT(experimentalLocalIjToH3)(h3Invalid, &ij, &out);
+                H3_EXPORT(localIjToCell)(h3Invalid, &ij, 0, &out);
             }
         }
     }
@@ -195,11 +194,10 @@ void localIjToH3_gridDisk_assertions(H3Index h3) {
 
         CoordIJ ij;
         // Don't consider indexes which we can't unfold in the first place
-        if (H3_EXPORT(experimentalH3ToLocalIj)(h3, neighbors[i], &ij) == 0) {
+        if (H3_EXPORT(cellToLocalIj)(h3, neighbors[i], 0, &ij) == 0) {
             H3Index retrieved;
-            t_assert(
-                H3_EXPORT(experimentalLocalIjToH3)(h3, &ij, &retrieved) == 0,
-                "retrieved index for unfolded coordinates");
+            t_assert(H3_EXPORT(localIjToCell)(h3, &ij, 0, &retrieved) == 0,
+                     "retrieved index for unfolded coordinates");
             t_assert(retrieved == neighbors[i],
                      "round trip neighboring index matches expected");
         }
@@ -215,7 +213,7 @@ void localIjToH3_traverse_assertions(H3Index h3) {
     int k = MAX_DISTANCES[r];
 
     CoordIJ ij;
-    t_assert(H3_EXPORT(experimentalH3ToLocalIj)(h3, h3, &ij) == 0,
+    t_assert(H3_EXPORT(cellToLocalIj)(h3, h3, 0, &ij) == 0,
              "Got origin coordinates");
 
     // This logic is from gridDiskDistancesUnsafe.
@@ -237,14 +235,14 @@ void localIjToH3_traverse_assertions(H3Index h3) {
 
         H3Index testH3;
 
-        int failed = H3_EXPORT(experimentalLocalIjToH3)(h3, &ij, &testH3);
+        int failed = H3_EXPORT(localIjToCell)(h3, &ij, 0, &testH3);
         if (!failed) {
             t_assert(H3_EXPORT(isValidCell)(testH3),
                      "test coordinates result in valid index");
 
             CoordIJ expectedIj;
             int reverseFailed =
-                H3_EXPORT(experimentalH3ToLocalIj)(h3, testH3, &expectedIj);
+                H3_EXPORT(cellToLocalIj)(h3, testH3, 0, &expectedIj);
             // If it doesn't give a coordinate for this origin,index pair that's
             // OK.
             if (!reverseFailed) {
@@ -253,8 +251,8 @@ void localIjToH3_traverse_assertions(H3Index h3) {
                     // pentagon distortion. In that case, the other coordinates
                     // should also belong to the same index.
                     H3Index testTestH3;
-                    t_assert(H3_EXPORT(experimentalLocalIjToH3)(
-                                 h3, &expectedIj, &testTestH3) == 0,
+                    t_assert(H3_EXPORT(localIjToCell)(h3, &expectedIj, 0,
+                                                      &testTestH3) == 0,
                              "converted coordinates again");
                     t_assert(testH3 == testTestH3,
                              "index has normalizable coordinates in "

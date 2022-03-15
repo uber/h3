@@ -639,7 +639,7 @@ can fail because the two indexes are not comparable (different resolutions), too
 separated by pentagonal distortion. This is the same set of limitations as the local IJ coordinate
 space functions.
 
-## experimentalH3ToLocalIj
+## cellToLocalIj
 
 <Tabs
   groupId="language"
@@ -654,36 +654,36 @@ space functions.
 <TabItem value="c">
 
 ```c
-H3Error experimentalH3ToLocalIj(H3Index origin, H3Index h3, CoordIJ *out);
+H3Error cellToLocalIj(H3Index origin, H3Index h3, uint32_t mode, CoordIJ *out);
 ```
 
 </TabItem>
 <TabItem value="python">
 
 ```py
-h3.experimental_h3_to_local_ij(origin, h)
+h3.cell_to_local_ij(origin, h)
 ```
 
 </TabItem>
 <TabItem value="java">
 
 ```java
-CoordIJ experimentalH3ToLocalIj(long origin, long h3) throws PentagonEncounteredException, LocalIjUndefinedException;
-CoordIJ experimentalH3ToLocalIj(String originAddress, String h3Address) throws PentagonEncounteredException, LocalIjUndefinedException;
+CoordIJ cellToLocalIj(long origin, long h3) throws PentagonEncounteredException, LocalIjUndefinedException;
+CoordIJ cellToLocalIj(String originAddress, String h3Address) throws PentagonEncounteredException, LocalIjUndefinedException;
 ```
 
 </TabItem>
 <TabItem value="javascript">
 
 ```js
-h3.experimentalH3ToLocalIj(origin, h3)
+h3.cellToLocalIj(origin, h3)
 ```
 
 ```js live
 function example() {
   const origin = '85283473fffffff';
   const h = '8528342bfffffff';
-  const {i, j} = h3.experimentalH3ToLocalIj(origin, h);
+  const {i, j} = h3.cellToLocalIj(origin, h);
   return [i, j];
 }
 ```
@@ -693,10 +693,12 @@ function example() {
 
 Produces local IJ coordinates for an H3 index anchored by an origin.
 
-This function is experimental, and its output is not guaranteed
-to be compatible across different versions of H3.
+`mode` is reserved for future expansion and must be set to `0`.
 
-## experimentalLocalIjToH3
+This function's output is not guaranteed to be compatible across different
+versions of H3.
+
+## localIjToCell
 
 <Tabs
   groupId="language"
@@ -711,36 +713,36 @@ to be compatible across different versions of H3.
 <TabItem value="c">
 
 ```c
-H3Error experimentalLocalIjToH3(H3Index origin, const CoordIJ *ij, H3Index *out);
+H3Error localIjToCell(H3Index origin, const CoordIJ *ij, uint32_t mode, H3Index *out);
 ```
 
 </TabItem>
 <TabItem value="python">
 
 ```py
-h3.experimental_local_ij_to_h3(origin, i, j)
+h3.local_ij_to_cell(origin, i, j)
 ```
 
 </TabItem>
 <TabItem value="java">
 
 ```java
-long experimentalLocalIjToH3(long origin, CoordIJ ij) throws LocalIjUndefinedException;
-String experimentalLocalIjToH3(String originAddress, CoordIJ ij) throws LocalIjUndefinedException;
+long localIjToCell(long origin, CoordIJ ij) throws LocalIjUndefinedException;
+String localIjToCell(String originAddress, CoordIJ ij) throws LocalIjUndefinedException;
 ```
 
 </TabItem>
 <TabItem value="javascript">
 
 ```js
-h3.experimentalLocalIjToH3(origin, coords)
+h3.localIjToCell(origin, coords)
 ```
 
 ```js live
 function example() {
   const h = '85283473fffffff';
   const coords = {i: 0, j: 0};
-  return h3.experimentalLocalIjToH3(h, coords);
+  return h3.localIjToCell(h, coords);
 }
 ```
 
@@ -749,5 +751,9 @@ function example() {
 
 Produces an H3 index from local IJ coordinates anchored by an origin.
 
-This function is experimental, and its output is not guaranteed
-to be compatible across different versions of H3.
+`mode` is reserved for future expansion and must be set to `0`.
+
+This function's output is not guaranteed to be compatible across different
+versions of H3.
+
+

@@ -15,9 +15,9 @@
  */
 /** @file
  * @brief stdin/stdout filter that converts from local IJ coordinates to
- * H3 indexes. This is experimental.
+ * H3 indexes.
  *
- *  See `localIjToH3 --help` for usage.
+ *  See `localIjToCell --help` for usage.
  *
  *  The program reads IJ coordinates (in the format `i j` separated by newlines)
  *  from stdin and outputs the corresponding H3 indexes to stdout, until EOF is
@@ -26,7 +26,7 @@
  *  `origin` indicates the origin (or anchoring) index for the IJ coordinate
  *  space.
  *
- *  This program has the same limitations as the `experimentalLocalIjToH3`
+ *  This program has the same limitations as the `localIjToCell`
  *  function.
  */
 
@@ -40,7 +40,7 @@
 
 void doCell(const CoordIJ *ij, H3Index origin) {
     H3Index h;
-    if (H3_EXPORT(experimentalLocalIjToH3)(origin, ij, &h)) {
+    if (H3_EXPORT(localIjToCell)(origin, ij, 0, &h)) {
         printf("NA\n");
     } else {
         h3Println(h);
