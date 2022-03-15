@@ -85,5 +85,6 @@ void _hex2dToGeo(const Vec2d *v, int face, int res, int substrate, LatLng *g);
 Overage _adjustOverageClassII(FaceIJK *fijk, int res, int pentLeading4,
                               int substrate);
 Overage _adjustPentVertOverage(FaceIJK *fijk, int res);
+void _geoToClosestFace(const LatLng *g, int *face, double *sqd);
 
 #endif
