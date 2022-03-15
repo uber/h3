@@ -11,6 +11,9 @@ The public API of this library consists of the functions declared in file
 - `cellToLocalIj` and `localIjToCell` accept a mode argument for future expansion. (#586)
 - `cellToCenterChild` (previously `h3ToCenterChild`) returns an error code. (#581)
 
+### Added
+- `E_OPTION_INVALID` error code added. (#586)
+
 ## [4.0.0-rc1] - 2022-02-07
 ### Breaking changes
 - Rename functions according to the terminology RFC (#571, #403, #466, #495, #466)

@@ -526,7 +526,7 @@ H3Error localIjkToCell(H3Index origin, const CoordIJK *ijk, H3Index *out) {
 H3Error H3_EXPORT(cellToLocalIj)(H3Index origin, H3Index h3, uint32_t mode,
                                  CoordIJ *out) {
     if (mode != 0) {
-        return E_FAILED;
+        return E_OPTION_INVALID;
     }
     CoordIJK ijk;
     H3Error failed = cellToLocalIjk(origin, h3, &ijk);
@@ -560,7 +560,7 @@ H3Error H3_EXPORT(cellToLocalIj)(H3Index origin, H3Index h3, uint32_t mode,
 H3Error H3_EXPORT(localIjToCell)(H3Index origin, const CoordIJ *ij,
                                  uint32_t mode, H3Index *out) {
     if (mode != 0) {
-        return E_FAILED;
+        return E_OPTION_INVALID;
     }
     CoordIJK ijk;
     ijToIjk(ij, &ijk);

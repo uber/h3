@@ -256,7 +256,7 @@ SQLite's approach to this is to define broad error categories (in 8 bits), and t
 | 13    | E_MEMORY             | Necessary memory allocation failed
 | 14    | E_MEMORY_BOUNDS      | Bounds of provided memory were not large enough
 
-The H3 library may always add additional error messages. Error messages not recognized by the application should be treated as `E_FAILED`.
+The H3 library may always add additional error messages. Error messages not recognized by the application should be treated as `E_FAILED`. The latest version of this table is available [in the documentation](https://h3geo.org/docs/next/library/errors#table-of-error-codes).
 
 #### Example error code results
 
