@@ -48,10 +48,22 @@ SUITE(polygon) {
         BBox bbox;
         bboxFromGeoLoop(&geoloop, &bbox);
 
+        // For exact points on the polygon, we bias west and south,
+        // so only the southwest corner is considered in the polygon
         t_assert(!pointInsideGeoLoop(&geoloop, &bbox, &sfVerts[0]),
-                 "contains exact");
-        t_assert(pointInsideGeoLoop(&geoloop, &bbox, &sfVerts[4]),
-                 "contains exact 4");
+                 "!contains exact 0");
+        t_assert(!pointInsideGeoLoop(&geoloop, &bbox, &sfVerts[1]),
+                 "!contains exact 1");
+        t_assert(!pointInsideGeoLoop(&geoloop, &bbox, &sfVerts[2]),
+                 "!contains exact 2");
+        t_assert(!pointInsideGeoLoop(&geoloop, &bbox, &sfVerts[4]),
+                 "!contains exact 4");
+        t_assert(!pointInsideGeoLoop(&geoloop, &bbox, &sfVerts[5]),
+                 "!contains exact 5");
+
+        t_assert(pointInsideGeoLoop(&geoloop, &bbox, &sfVerts[3]),
+                 "contains exact 3 (southwest corner)");
+
         t_assert(pointInsideGeoLoop(&geoloop, &bbox, &inside),
                  "contains point inside");
         t_assert(!pointInsideGeoLoop(&geoloop, &bbox, &somewhere),
