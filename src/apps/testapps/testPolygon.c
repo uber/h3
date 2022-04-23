@@ -48,14 +48,82 @@ SUITE(polygon) {
         BBox bbox;
         bboxFromGeoLoop(&geoloop, &bbox);
 
+        // For exact points on the polygon, we bias west and south
         t_assert(!pointInsideGeoLoop(&geoloop, &bbox, &sfVerts[0]),
-                 "contains exact");
-        t_assert(pointInsideGeoLoop(&geoloop, &bbox, &sfVerts[4]),
-                 "contains exact 4");
+                 "does not contain exact vertex 0");
+        t_assert(pointInsideGeoLoop(&geoloop, &bbox, &sfVerts[3]),
+                 "contains exact vertex 3");
+
         t_assert(pointInsideGeoLoop(&geoloop, &bbox, &inside),
                  "contains point inside");
         t_assert(!pointInsideGeoLoop(&geoloop, &bbox, &somewhere),
                  "contains somewhere else");
+    }
+
+    TEST(pointInsideGeoLoopCornerCases) {
+        LatLng verts[] = {{0, 0}, {1, 0}, {1, 1}, {0, 1}};
+        GeoLoop geoloop = {.numVerts = 4, .verts = verts};
+
+        BBox bbox;
+        bboxFromGeoLoop(&geoloop, &bbox);
+
+        LatLng point = {0, 0};
+
+        // Test corners. For exact points on the polygon, we bias west and
+        // north, so only the southeast corner is contained.
+        t_assert(!pointInsideGeoLoop(&geoloop, &bbox, &point),
+                 "does not contain sw corner");
+        point.lat = 1;
+        t_assert(!pointInsideGeoLoop(&geoloop, &bbox, &point),
+                 "does not contain nw corner ");
+        point.lng = 1;
+        t_assert(!pointInsideGeoLoop(&geoloop, &bbox, &point),
+                 "does not contain ne corner ");
+        point.lat = 0;
+        t_assert(pointInsideGeoLoop(&geoloop, &bbox, &point),
+                 "contains se corner ");
+    }
+
+    TEST(pointInsideGeoLoopEdgeCases) {
+        LatLng verts[] = {{0, 0}, {1, 0}, {1, 1}, {0, 1}};
+        GeoLoop geoloop = {.numVerts = 4, .verts = verts};
+
+        BBox bbox;
+        bboxFromGeoLoop(&geoloop, &bbox);
+
+        LatLng point;
+
+        // Test edges. Only points on south and east edges are contained.
+        point.lat = 0.5;
+        point.lng = 0;
+        t_assert(!pointInsideGeoLoop(&geoloop, &bbox, &point),
+                 "does not contain point on west edge");
+        point.lat = 1;
+        point.lng = 0.5;
+        t_assert(!pointInsideGeoLoop(&geoloop, &bbox, &point),
+                 "does not contain point on north edge");
+        point.lat = 0.5;
+        point.lng = 1;
+        t_assert(pointInsideGeoLoop(&geoloop, &bbox, &point),
+                 "contains point on east edge");
+        point.lat = 0;
+        point.lng = 0.5;
+        t_assert(pointInsideGeoLoop(&geoloop, &bbox, &point),
+                 "contains point on south edge");
+    }
+
+    TEST(pointInsideGeoLoopExtraEdgeCase) {
+        // This is a carefully crafted shape + point to hit an otherwise
+        // missed branch in coverage
+        LatLng verts[] = {{0, 0}, {1, 0.5}, {0, 1}};
+        GeoLoop geoloop = {.numVerts = 4, .verts = verts};
+
+        BBox bbox;
+        bboxFromGeoLoop(&geoloop, &bbox);
+
+        LatLng point = {0.5, 0.5};
+        t_assert(pointInsideGeoLoop(&geoloop, &bbox, &point),
+                 "contains inside point matching longitude of a vertex");
     }
 
     TEST(pointInsideGeoLoopTransmeridian) {

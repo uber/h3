@@ -170,4 +170,37 @@ SUITE(polygonToCells_reported) {
         t_assert(actualNumIndexes == 4353, "got expected polygonToCells size");
         free(hexagons);
     }
+
+    // https://github.com/uber/h3/issues/595
+    TEST(h3_136) {
+        H3Index center = 0x85283473fffffff;
+        LatLng centerLatLng;
+        H3_EXPORT(cellToLatLng)(center, &centerLatLng);
+
+        // This polygon should include the center cell. The issue here arises
+        // when one of the polygon vertexes is to the east of the index center,
+        // with exactly the same latitude
+        LatLng testVerts[] = {{.lat = centerLatLng.lat, -2.121207808248113},
+                              {0.6565301558937859, -2.1281107217935986},
+                              {0.6515463604919347, -2.1345342663428695},
+                              {0.6466583305904194, -2.1276313527973842}};
+
+        GeoLoop testGeoLoop = {.numVerts = 4, .verts = testVerts};
+        GeoPolygon testPolygon;
+        testPolygon.geoloop = testGeoLoop;
+        testPolygon.numHoles = 0;
+
+        int res = 5;
+        int64_t numHexagons;
+        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(&testPolygon, res, 0,
+                                                         &numHexagons));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+
+        t_assertSuccess(
+            H3_EXPORT(polygonToCells)(&testPolygon, res, 0, hexagons));
+        int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
+
+        t_assert(actualNumIndexes == 8, "got expected polygonToCells size");
+        free(hexagons);
+    }
 }

@@ -92,6 +92,20 @@ bool GENERIC_LOOP_ALGO(pointInside)(const TYPE *loop, const BBox *bbox,
             b = tmp;
         }
 
+        // If the latitude matches exactly, we'll hit an edge case where
+        // the ray passes through the vertex twice on successive segment
+        // checks. To avoid this, adjust the latiude northward if needed.
+        //
+        // NOTE: This currently means that a point at the north pole cannot
+        // be contained in any polygon. This is acceptable in current usage,
+        // because the point we test in this function at present is always
+        // a cell center or vertex, and no cell has a center or vertex on the
+        // north pole. If we need to expand this algo to more generic uses we
+        // might need to handle this edge case.
+        if (lat == a.lat || lat == b.lat) {
+            lat += DBL_EPSILON;
+        }
+
         // If we're totally above or below the latitude ranges, the test
         // ray cannot intersect the line segment, so let's move on
         if (lat < a.lat || lat > b.lat) {
