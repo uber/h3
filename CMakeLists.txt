@@ -455,7 +455,9 @@ if(BUILD_GENERATORS AND ENABLE_REQUIRES_ALL_SYMBOLS)
     add_h3_executable(mkRandGeoBoundary src/apps/testapps/mkRandGeoBoundary.c ${APP_SOURCE_FILES})
 endif()
 
-include(CMakeTests.cmake)
+if(H3_IS_ROOT_PROJECT AND BUILD_TESTING)
+    include(CMakeTests.cmake)
+endif()
 
 if(BUILD_FUZZERS)
     add_custom_target(fuzzers)
