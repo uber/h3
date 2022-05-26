@@ -6,6 +6,11 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+### Fixed
+- Fix polyfill bug when vertex latitude exactly matches cell center. (#603)
+
+### Changed
+- The file `CMakeTests.cmake` is no longer included if `ENABLE_TESTING` is off. (#609)
 
 ## [4.0.0-rc2] - 2022-03-16
 ### Breaking changes
