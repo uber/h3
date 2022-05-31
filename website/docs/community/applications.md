@@ -11,3 +11,4 @@ The following applications use H3. Contributions to this list are welcome, pleas
 
 - [kepler.gl](http://kepler.gl/) - An open source geospatial analysis tool
 - [pydeck](https://pydeck.gl/) - High-scale spatial rendering in Python, powered by deck.gl
+- [mapfry]([https://www.mapfry.com/) - Location-intelligence made easy for entrepreneurs
