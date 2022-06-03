@@ -6,6 +6,8 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+
+## [4.0.0-rc3] - 2022-06-03
 ### Fixed
 - Fix polyfill bug when vertex latitude exactly matches cell center. (#603)
 
