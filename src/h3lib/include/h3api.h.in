@@ -76,7 +76,6 @@ typedef uint64_t H3Index;
 #define H3_NULL 0
 
 /** @brief Result code (success or specific error) from an H3 operation */
-typedef uint32_t H3Error;
 
 typedef enum {
     E_SUCCESS = 0,  // Success (no error)
@@ -102,7 +101,7 @@ typedef enum {
     E_MEMORY = 13,  // Necessary memory allocation failed
     E_MEMORY_BOUNDS = 14,  // Bounds of provided memory were not large enough
     E_OPTION_INVALID = 15  // Mode or flags argument was not valid.
-} H3ErrorCodes;
+} H3Error
 
 /* library version numbers generated from VERSION file */
 // clang-format off
