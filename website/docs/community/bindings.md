@@ -17,7 +17,9 @@ As a C library, bindings can be made to call H3 functions from different program
 
 ## BigQuery
 
-- [cartodb/bigquery-jslibs](https://github.com/CartoDB/bigquery-jslibs)
+- [CARTO Analytics Toolbox](https://docs.carto.com/analytics-toolbox-bigquery/sql-reference/h3/)
+- [CARTO Analytics Toobox source code](https://github.com/CartoDB/analytics-toolbox-core)
+- [cartodb/bigquery-jslibs (Deprecated)](https://github.com/CartoDB/bigquery-jslibs) 
 
 ## C&#35;
 
@@ -100,6 +102,11 @@ As a C library, bindings can be made to call H3 functions from different program
 - [rustyconover/libh3-sys](https://github.com/rustyconover/libh3-sys)
 - [rustyconover/libh3](https://github.com/rustyconover/libh3)
 - [nmandery/h3ron](https://github.com/nmandery/h3ron)
+
+## Snowflake
+
+- [CARTO Analytics Toolbox](https://docs.carto.com/analytics-toolbox-snowflake/sql-reference/h3/)
+- [CARTO Analytics Toobox source code](https://github.com/CartoDB/analytics-toolbox-core)
 
 ## Spark
 
