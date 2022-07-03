@@ -102,6 +102,11 @@ typedef enum {
     E_MEMORY_ALLOC = 13,    // Necessary memory allocation failed
     E_MEMORY_BOUNDS = 14,   // Bounds of provided memory were not large enough
     E_OPTION_INVALID = 15,  // Mode or flags argument was not valid.
+    E_TOO_FAR =
+        16,  // Indexes were further apart than the algorithm could handle
+    E_RETRY_WITH_SAFE = 17,  // The current algorithm ran into issues which can
+                             // be overcome by using the "safe" version of the
+                             // algorithm, which is typically slower
 } H3ErrorCodes;
 
 /* library version numbers generated from VERSION file */
