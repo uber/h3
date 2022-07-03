@@ -93,15 +93,20 @@ typedef enum {
         7,                 // `H3Index` undirected edge argument was not valid
     E_VERTEX_INVALID = 8,  // `H3Index` vertex argument was not valid
     E_PENTAGON = 9,  // Pentagon distortion was encountered which the algorithm
-                     // could not handle it
+                     // could not handle
     E_DUPLICATE_INPUT = 10,  // Duplicate input was encountered in the arguments
                              // and the algorithm could not handle it
     E_NOT_NEIGHBORS = 11,    // `H3Index` cell arguments were not neighbors
     E_RES_MISMATCH =
         12,         // `H3Index` cell arguments had incompatible resolutions
     E_MEMORY = 13,  // Necessary memory allocation failed
-    E_MEMORY_BOUNDS = 14,  // Bounds of provided memory were not large enough
-    E_OPTION_INVALID = 15  // Mode or flags argument was not valid.
+    E_MEMORY_BOUNDS = 14,   // Bounds of provided memory were not large enough
+    E_OPTION_INVALID = 15,  // Mode or flags argument was not valid.
+    E_TOO_FAR =
+        16,  // Indexes were further apart than the algorithm could handle
+    E_RETRY_WITH_SAFE = 17,  // The current algorithm ran into issues which can
+                             // be overcome by using the "safe" version of the
+                             // algorithm, which is typically slower
 } H3ErrorCodes;
 
 /* library version numbers generated from VERSION file */
