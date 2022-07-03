@@ -294,7 +294,7 @@ int normalizeMultiPolygon(LinkedGeoPolygon *root) {
     // We assume that the input is a single polygon with loops;
     // if it has multiple polygons, don't touch it
     if (root->next) {
-        return NORMALIZATION_ERR_MULTIPLE_POLYGONS;
+        return NORMALIZATION_ERR_MULTIPLE_POLYGONS; // Do we want to add these error codes to the public API?
     }
 
     // Count loops, exiting early if there's only one

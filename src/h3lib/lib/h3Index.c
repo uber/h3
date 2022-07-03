@@ -784,7 +784,7 @@ H3Error H3_EXPORT(latLngToCell)(const LatLng *g, int res, H3Index *out) {
     if (*out) {
         return E_SUCCESS;
     } else {
-        return E_FAILED;
+        return E_FAILED;  // todo: under what circumstances would this failure happen?
     }
 }
 
@@ -1004,7 +1004,7 @@ H3Error H3_EXPORT(getIcosahedronFaces)(H3Index h3, int *out) {
             if (pos >= faceCount) {
                 // Mismatch between the heuristic used in maxFaceCount and
                 // calculation here - indicates an invalid index.
-                return E_FAILED;
+                return E_CELL_INVALID;
             }
         }
         out[pos] = face;

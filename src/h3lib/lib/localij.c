@@ -155,7 +155,7 @@ H3Error cellToLocalIjk(H3Index origin, H3Index h3, CoordIJK *out) {
         dir = _getBaseCellDirection(originBaseCell, baseCell);
         if (dir == INVALID_DIGIT) {
             // Base cells are not neighbors, can't unfold.
-            return E_FAILED;
+            return E_TOO_FAR;
         }
         revDir = _getBaseCellDirection(baseCell, originBaseCell);
         assert(revDir != INVALID_DIGIT);
@@ -204,7 +204,7 @@ H3Error cellToLocalIjk(H3Index origin, H3Index h3, CoordIJK *out) {
                 // TODO: We may be unfolding the pentagon incorrectly in this
                 // case; return an error code until this is guaranteed to be
                 // correct.
-                return E_FAILED;
+                return E_PENTAGON;  // invalid inputs or algo improvements needed?
             }
 
             directionRotations = PENTAGON_ROTATIONS[originLeadingDigit][dir];
@@ -219,7 +219,7 @@ H3Error cellToLocalIjk(H3Index origin, H3Index h3, CoordIJK *out) {
                 // TODO: We may be unfolding the pentagon incorrectly in this
                 // case; return an error code until this is guaranteed to be
                 // correct.
-                return E_FAILED;
+                return E_PENTAGON;  // invalid inputs or algo improvements needed?
             }
 
             pentagonRotations = PENTAGON_ROTATIONS[revDir][indexLeadingDigit];
@@ -270,7 +270,7 @@ H3Error cellToLocalIjk(H3Index origin, H3Index h3, CoordIJK *out) {
         if (FAILED_DIRECTIONS[originLeadingDigit][indexLeadingDigit]) {
             // TODO: We may be unfolding the pentagon incorrectly in this case;
             // return an error code until this is guaranteed to be correct.
-            return E_FAILED;
+            return E_PENTAGON;  // invalid inputs or algo improvements needed?
         }
 
         int withinPentagonRotations =
@@ -319,14 +319,14 @@ H3Error localIjkToCell(H3Index origin, const CoordIJK *ijk, H3Index *out) {
     if (res == 0) {
         if (ijk->i > 1 || ijk->j > 1 || ijk->k > 1) {
             // out of range input
-            return E_FAILED;
+            return E_DOMAIN;
         }
 
         const Direction dir = _unitIjkToDigit(ijk);
         const int newBaseCell = _getBaseCellNeighbor(originBaseCell, dir);
         if (newBaseCell == INVALID_BASE_CELL) {
             // Moving in an invalid direction off a pentagon.
-            return E_FAILED;
+            return E_DOMAIN;  // i'm assuming this means the input values were invalid?
         }
         H3_SET_BASE_CELL(*out, newBaseCell);
         return E_SUCCESS;
@@ -367,7 +367,7 @@ H3Error localIjkToCell(H3Index origin, const CoordIJK *ijk, H3Index *out) {
 
     if (ijkCopy.i > 1 || ijkCopy.j > 1 || ijkCopy.k > 1) {
         // out of range input
-        return E_FAILED;
+        return E_DOMAIN;
     }
 
     // lookup the correct base cell
@@ -397,7 +397,7 @@ H3Error localIjkToCell(H3Index origin, const CoordIJK *ijk, H3Index *out) {
             // deleted direction. If it still happens, it means we're moving
             // into a deleted subsequence, so there is no index here.
             if (dir == K_AXES_DIGIT) {
-                return E_PENTAGON;
+                return E_PENTAGON;  // confirm: this is not recoverable, right? this indicates input values were invalid?
             }
             baseCell = _getBaseCellNeighbor(originBaseCell, dir);
 
@@ -494,7 +494,7 @@ H3Error localIjkToCell(H3Index origin, const CoordIJK *ijk, H3Index *out) {
         // accounted for here - instead just fail if the recovered index is
         // invalid.
         if (_h3LeadingNonZeroDigit(*out) == K_AXES_DIGIT) {
-            return E_PENTAGON;
+            return E_PENTAGON; // is this potentially recoverable with future algo improvements, or does it indicate bad inputs?
         }
     }
 

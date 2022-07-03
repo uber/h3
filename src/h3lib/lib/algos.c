@@ -336,7 +336,7 @@ H3Error h3NeighborRotations(H3Index origin, Direction dir, int *rotations,
     H3Index current = origin;
 
     if (dir < CENTER_DIGIT || dir >= INVALID_DIGIT) {
-        return E_FAILED;
+        return E_DOMAIN;
     }
     for (int i = 0; i < *rotations; i++) {
         dir = _rotate60ccw(dir);
@@ -563,7 +563,7 @@ H3Error H3_EXPORT(gridDiskDistancesUnsafe)(H3Index origin, int k, H3Index *out,
 
     if (H3_EXPORT(isPentagon)(origin)) {
         // Pentagon was encountered; bail out as user doesn't want this.
-        return E_PENTAGON;
+        return E_RETRY_WITH_SAFE;
     }
 
     // 0 < ring <= k, current ring
@@ -590,7 +590,7 @@ H3Error H3_EXPORT(gridDiskDistancesUnsafe)(H3Index origin, int k, H3Index *out,
 
             if (H3_EXPORT(isPentagon)(origin)) {
                 // Pentagon was encountered; bail out as user doesn't want this.
-                return E_PENTAGON;
+                return E_RETRY_WITH_SAFE;
             }
         }
 
@@ -619,7 +619,7 @@ H3Error H3_EXPORT(gridDiskDistancesUnsafe)(H3Index origin, int k, H3Index *out,
 
         if (H3_EXPORT(isPentagon)(origin)) {
             // Pentagon was encountered; bail out as user doesn't want this.
-            return E_PENTAGON;
+            return E_RETRY_WITH_SAFE;
         }
     }
     return E_SUCCESS;
@@ -985,7 +985,7 @@ H3Error H3_EXPORT(polygonToCells)(const GeoPolygon *geoPolygon, int res,
                         H3_MEMORY(free)(search);
                         H3_MEMORY(free)(found);
                         H3_MEMORY(free)(bboxes);
-                        return E_FAILED;
+                        return E_MEMORY_BOUNDS;
                     }
                     // LCOV_EXCL_STOP
                     if (out[loc] == hex) break;  // Skip duplicates found
@@ -1142,7 +1142,7 @@ H3Error H3_EXPORT(cellsToLinkedMultiPolygon)(const H3Index *h3Set,
     }
     _vertexGraphToLinkedGeo(&graph, out);
     if (normalizeMultiPolygon(out)) {
-        return E_FAILED;
+        return E_FAILED; // Q: normalizeMultiPolygon returns error codes, should we forward those to the public API?
     }
     destroyVertexGraph(&graph);
     return E_SUCCESS;
