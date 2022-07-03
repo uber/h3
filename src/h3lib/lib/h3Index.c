@@ -310,13 +310,13 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
     }
     H3Index *remainingHexes = H3_MEMORY(malloc)(numHexes * sizeof(H3Index));
     if (!remainingHexes) {
-        return E_MEMORY;
+        return E_MEMORY_ALLOC;
     }
     memcpy(remainingHexes, h3Set, numHexes * sizeof(H3Index));
     H3Index *hashSetArray = H3_MEMORY(calloc)(numHexes, sizeof(H3Index));
     if (!hashSetArray) {
         H3_MEMORY(free)(remainingHexes);
-        return E_MEMORY;
+        return E_MEMORY_ALLOC;
     }
     H3Index *compactedSetOffset = compactedSet;
     int numRemainingHexes = numHexes;
@@ -407,7 +407,7 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
         if (!compactableHexes) {
             H3_MEMORY(free)(remainingHexes);
             H3_MEMORY(free)(hashSetArray);
-            return E_MEMORY;
+            return E_MEMORY_ALLOC;
         }
         for (int i = 0; i < numRemainingHexes; i++) {
             if (hashSetArray[i] == 0) continue;
