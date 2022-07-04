@@ -37,6 +37,10 @@ As a C library, bindings can be made to call H3 functions from different program
 
 - [festelo/h3_flutter](https://github.com/festelo/h3_flutter)
 
+## DuckDB
+
+- [isaacbrodsky/h3-duckdb](https://github.com/isaacbrodsky/h3-duckdb)
+
 ## ECL
 
 - [hpcc-systems/HPCC-Platform](https://github.com/hpcc-systems/HPCC-Platform/tree/master/plugins/h3)
@@ -104,6 +108,10 @@ As a C library, bindings can be made to call H3 functions from different program
 ## Snowflake
 
 - [CARTO Analytics Toolbox](https://github.com/CartoDB/analytics-toolbox-core#snowflake)
+
+## SQLite3
+
+- [isaacbrodsky/h3-sqlite3](https://github.com/isaacbrodsky/h3-sqlite3)
 
 ## Spark
 
