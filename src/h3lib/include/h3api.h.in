@@ -319,14 +319,14 @@ DECLSPEC double H3_EXPORT(radsToDegs)(double radians);
  * @{
  */
 /** @brief "great circle distance" between pairs of LatLng points in radians*/
-DECLSPEC double H3_EXPORT(distanceRads)(const LatLng *a, const LatLng *b);
+DECLSPEC double H3_EXPORT(latLngDistanceRads)(const LatLng *a, const LatLng *b);
 
 /** @brief "great circle distance" between pairs of LatLng points in
  * kilometers*/
-DECLSPEC double H3_EXPORT(distanceKm)(const LatLng *a, const LatLng *b);
+DECLSPEC double H3_EXPORT(latLngDistanceKm)(const LatLng *a, const LatLng *b);
 
 /** @brief "great circle distance" between pairs of LatLng points in meters*/
-DECLSPEC double H3_EXPORT(distanceM)(const LatLng *a, const LatLng *b);
+DECLSPEC double H3_EXPORT(latLngDistanceM)(const LatLng *a, const LatLng *b);
 /** @} */
 
 /** @defgroup getHexagonAreaAvg getHexagonAreaAvg

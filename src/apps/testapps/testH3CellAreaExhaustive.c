@@ -55,24 +55,26 @@ static void haversine_assert(H3Index edge) {
 
     double ab, ba;
 
-    ab = H3_EXPORT(distanceRads)(&a, &b);
-    ba = H3_EXPORT(distanceRads)(&b, &a);
+    ab = H3_EXPORT(latLngDistanceRads)(&a, &b);
+    ba = H3_EXPORT(latLngDistanceRads)(&b, &a);
     t_assert(ab > 0, pos);
     t_assert(ab == ba, comm);
 
-    ab = H3_EXPORT(distanceKm)(&a, &b);
-    ba = H3_EXPORT(distanceKm)(&b, &a);
+    ab = H3_EXPORT(latLngDistanceKm)(&a, &b);
+    ba = H3_EXPORT(latLngDistanceKm)(&b, &a);
     t_assert(ab > 0, pos);
     t_assert(ab == ba, comm);
 
-    ab = H3_EXPORT(distanceM)(&a, &b);
-    ba = H3_EXPORT(distanceM)(&b, &a);
+    ab = H3_EXPORT(latLngDistanceM)(&a, &b);
+    ba = H3_EXPORT(latLngDistanceM)(&b, &a);
     t_assert(ab > 0, pos);
     t_assert(ab == ba, comm);
 
-    t_assert(H3_EXPORT(distanceKm)(&a, &b) > H3_EXPORT(distanceRads)(&a, &b),
+    t_assert(H3_EXPORT(latLngDistanceKm)(&a, &b) >
+                 H3_EXPORT(latLngDistanceRads)(&a, &b),
              "measurement in kilometers should be greater than in radians");
-    t_assert(H3_EXPORT(distanceM)(&a, &b) > H3_EXPORT(distanceKm)(&a, &b),
+    t_assert(H3_EXPORT(latLngDistanceM)(&a, &b) >
+                 H3_EXPORT(latLngDistanceKm)(&a, &b),
              "measurement in meters should be greater than in kilometers");
 }
 
