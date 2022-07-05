@@ -34,9 +34,9 @@
  * neighboring cells. Tests positivity and commutativity.
  *
  * Tests the functions:
- *     distanceRads
- *     distanceKm
- *     distanceM
+ *     latLngDistanceRads
+ *     latLngDistanceKm
+ *     latLngDistanceM
  *
  * @param  edge  H3 directed edge denoting neighboring cells
  */
