@@ -314,7 +314,7 @@ DECLSPEC double H3_EXPORT(degsToRads)(double degrees);
 DECLSPEC double H3_EXPORT(radsToDegs)(double radians);
 /** @} */
 
-/** @defgroup distance distance
+/** @defgroup latLngDistance latLngDistance
  * Functions for distance
  * @{
  */
