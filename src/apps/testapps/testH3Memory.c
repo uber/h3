@@ -112,8 +112,9 @@ SUITE(h3Memory) {
         resetMemoryCounters(0);
         failAlloc = true;
         memset(gridDiskOutput, 0, hexCount * sizeof(H3Index));
-        t_assert(H3_EXPORT(gridDisk)(pentagon, k, gridDiskOutput) == E_MEMORY,
-                 "gridDisk returns E_MEMORY");
+        t_assert(
+            H3_EXPORT(gridDisk)(pentagon, k, gridDiskOutput) == E_MEMORY_ALLOC,
+            "gridDisk returns E_MEMORY_ALLOC");
         t_assert(actualAllocCalls == 1, "gridDisk called alloc");
         t_assert(actualFreeCalls == 0, "gridDisk did not call free");
 
@@ -144,25 +145,25 @@ SUITE(h3Memory) {
         failAlloc = true;
         H3Error err =
             H3_EXPORT(compactCells)(sunnyvaleExpanded, compressed, hexCount);
-        t_assert(err == E_MEMORY, "malloc failed (1)");
+        t_assert(err == E_MEMORY_ALLOC, "malloc failed (1)");
         t_assert(actualAllocCalls == 1, "alloc called once");
         t_assert(actualFreeCalls == 0, "free not called");
 
         resetMemoryCounters(1);
         err = H3_EXPORT(compactCells)(sunnyvaleExpanded, compressed, hexCount);
-        t_assert(err == E_MEMORY, "malloc failed (2)");
+        t_assert(err == E_MEMORY_ALLOC, "malloc failed (2)");
         t_assert(actualAllocCalls == 2, "alloc called twice");
         t_assert(actualFreeCalls == 1, "free called once");
 
         resetMemoryCounters(2);
         err = H3_EXPORT(compactCells)(sunnyvaleExpanded, compressed, hexCount);
-        t_assert(err == E_MEMORY, "malloc failed (3)");
+        t_assert(err == E_MEMORY_ALLOC, "malloc failed (3)");
         t_assert(actualAllocCalls == 3, "alloc called three times");
         t_assert(actualFreeCalls == 2, "free called twice");
 
         resetMemoryCounters(3);
         err = H3_EXPORT(compactCells)(sunnyvaleExpanded, compressed, hexCount);
-        t_assert(err == E_MEMORY, "compactCells failed (4)");
+        t_assert(err == E_MEMORY_ALLOC, "compactCells failed (4)");
         t_assert(actualAllocCalls == 4, "alloc called four times");
         t_assert(actualFreeCalls == 3, "free called three times");
 
@@ -196,19 +197,19 @@ SUITE(h3Memory) {
         resetMemoryCounters(0);
         failAlloc = true;
         H3Error err = H3_EXPORT(polygonToCells)(&sfGeoPolygon, 9, 0, hexagons);
-        t_assert(err == E_MEMORY, "polygonToCells failed (1)");
+        t_assert(err == E_MEMORY_ALLOC, "polygonToCells failed (1)");
         t_assert(actualAllocCalls == 1, "alloc called once");
         t_assert(actualFreeCalls == 0, "free not called");
 
         resetMemoryCounters(1);
         err = H3_EXPORT(polygonToCells)(&sfGeoPolygon, 9, 0, hexagons);
-        t_assert(err == E_MEMORY, "polygonToCells failed (2)");
+        t_assert(err == E_MEMORY_ALLOC, "polygonToCells failed (2)");
         t_assert(actualAllocCalls == 2, "alloc called twice");
         t_assert(actualFreeCalls == 1, "free called once");
 
         resetMemoryCounters(2);
         err = H3_EXPORT(polygonToCells)(&sfGeoPolygon, 9, 0, hexagons);
-        t_assert(err == E_MEMORY, "polygonToCells failed (3)");
+        t_assert(err == E_MEMORY_ALLOC, "polygonToCells failed (3)");
         t_assert(actualAllocCalls == 3, "alloc called three times");
         t_assert(actualFreeCalls == 2, "free called twice");
 

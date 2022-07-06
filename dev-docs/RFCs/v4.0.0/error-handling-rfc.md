@@ -253,7 +253,7 @@ SQLite's approach to this is to define broad error categories (in 8 bits), and t
 | 10    | E_DUPLICATE_INPUT    | Duplicate input was encountered in the arguments and the algorithm could not handle it
 | 11    | E_NOT_NEIGHBORS      | `H3Index` cell arguments were not neighbors
 | 12    | E_RES_MISMATCH       | `H3Index` cell arguments had incompatible resolutions
-| 13    | E_MEMORY             | Necessary memory allocation failed
+| 13    | E_MEMORY_ALLOC       | Necessary memory allocation failed
 | 14    | E_MEMORY_BOUNDS      | Bounds of provided memory were not large enough
 
 The H3 library may always add additional error messages. Error messages not recognized by the application should be treated as `E_FAILED`. The latest version of this table is available [in the documentation](https://h3geo.org/docs/next/library/errors#table-of-error-codes).
@@ -272,7 +272,7 @@ hexRange(origin=0, k=0, &out) => E_CELL_INVALID
 hexRange(origin=AN_INDEX, k=-1, &out) => E_DOMAIN
 hexRange(origin=PENTAGON_INDEX, k=1, &out) => E_PENTAGON
 # Failed to allocate internal buffer:
-kRing(origin=AN_INDEX, k=1, &out) => E_MEMORY
+kRing(origin=AN_INDEX, k=1, &out) => E_MEMORY_ALLOC
 distanceRads({Infinity, Infinity}, {0, 0}, &out) => E_LATLNG_DOMAIN
 hexAreaKm2(res=-1) => E_RES_DOMAIN
 # Cannot parse:

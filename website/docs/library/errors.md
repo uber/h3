@@ -51,7 +51,7 @@ The type returned by most H3 functions is `H3Error`, a 32 bit integer type with 
 | 10    | E_DUPLICATE_INPUT    | Duplicate input was encountered in the arguments and the algorithm could not handle it
 | 11    | E_NOT_NEIGHBORS      | `H3Index` cell arguments were not neighbors
 | 12    | E_RES_MISMATCH       | `H3Index` cell arguments had incompatible resolutions
-| 13    | E_MEMORY             | Necessary memory allocation failed
+| 13    | E_MEMORY_ALLOC       | Necessary memory allocation failed
 | 14    | E_MEMORY_BOUNDS      | Bounds of provided memory were not large enough
 | 15    | E_OPTION_INVALID     | Mode or flags argument was not valid
 

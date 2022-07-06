@@ -218,7 +218,7 @@ H3Error H3_EXPORT(gridDiskDistances)(H3Index origin, int k, H3Index *out,
         if (distances == NULL) {
             distances = H3_MEMORY(calloc)(maxIdx, sizeof(int));
             if (!distances) {
-                return E_MEMORY;
+                return E_MEMORY_ALLOC;
             }
             H3Error result = _gridDiskDistancesInternal(origin, k, out,
                                                         distances, maxIdx, 0);
@@ -880,7 +880,7 @@ H3Error H3_EXPORT(polygonToCells)(const GeoPolygon *geoPolygon, int res,
     // Get the bounding boxes for the polygon and any holes
     BBox *bboxes = H3_MEMORY(malloc)((geoPolygon->numHoles + 1) * sizeof(BBox));
     if (!bboxes) {
-        return E_MEMORY;
+        return E_MEMORY_ALLOC;
     }
     bboxesFromGeoPolygon(geoPolygon, bboxes);
 
@@ -896,13 +896,13 @@ H3Error H3_EXPORT(polygonToCells)(const GeoPolygon *geoPolygon, int res,
     H3Index *search = H3_MEMORY(calloc)(numHexagons, sizeof(H3Index));
     if (!search) {
         H3_MEMORY(free)(bboxes);
-        return E_MEMORY;
+        return E_MEMORY_ALLOC;
     }
     H3Index *found = H3_MEMORY(calloc)(numHexagons, sizeof(H3Index));
     if (!found) {
         H3_MEMORY(free)(bboxes);
         H3_MEMORY(free)(search);
-        return E_MEMORY;
+        return E_MEMORY_ALLOC;
     }
 
     // Some metadata for tracking the state of the search and found memory
