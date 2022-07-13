@@ -133,9 +133,9 @@ For a future undirected edge mode, use the term `Edge`.
 | *DNE*           | `getPentagonEdgeLengthAvg*` |
 | *DNE*           | `cellAreaKm2`               |
 | *DNE*           | `cellAreaM2`                |
-| `pointDistKm`   | `latLngDistanceKm`          |
-| `pointDistM`    | `latLngDistanceM`           |
-| `pointDistRads` | `latLngDistanceRads`        |
+| `pointDistKm`   | `greatCircleDistanceKm`     |
+| `pointDistM`    | `greatCircleDistanceM`      |
+| `pointDistRads` | `greatCircleDistanceRads`   |
 
 **Note**: `cellAreaKm2` and `cellAreaM2` would return the actual area of
 the passed-in cell.

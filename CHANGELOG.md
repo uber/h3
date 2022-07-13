@@ -7,7 +7,7 @@ The public API of this library consists of the functions declared in file
 
 ## [Unreleased]
 ### Breaking changes
-- `distance*` functions (`distanceKm`, etc) renamed to `latLngDistance*`. (#622)
+- `distance*` functions (`distanceKm`, etc) renamed to `greatCircleDistance*`. (#622)
 
 ## [4.0.0-rc3] - 2022-06-03
 ### Fixed

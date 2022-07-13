@@ -898,7 +898,7 @@ This function exists for memory management and is not exposed.
 
 Number of pentagon H3 indexes per resolution. This is always 12, but provided as a convenience.
 
-## latLngDistanceKm
+## greatCircleDistanceKm
 
 <Tabs
   groupId="language"
@@ -913,35 +913,35 @@ Number of pentagon H3 indexes per resolution. This is always 12, but provided as
 <TabItem value="c">
 
 ```c
-double latLngDistanceKm(const LatLng *a, const LatLng *b);
+double greatCircleDistanceKm(const LatLng *a, const LatLng *b);
 ```
 
 </TabItem>
 <TabItem value="python">
 
 ```py
-h3.latlng_distance(point1, point2, unit='km')
+h3.great_circle_distance(point1, point2, unit='km')
 ```
 
 </TabItem>
 <TabItem value="java">
 
 ```java
-double latLngDistance(LatLng point1, LatLng point2, LengthUnit unit);
+double greatCircleDistance(LatLng point1, LatLng point2, LengthUnit unit);
 ```
 
 </TabItem>
 <TabItem value="javascript">
 
 ```js
-h3.latLngDistance(point1, point2, h3.UNITS.km)
+h3.greatCircleDistance(point1, point2, h3.UNITS.km)
 ```
 
 ```js live
 function example() {
   const point1 = [-10, 0];
   const point2 = [10, 0];
-  return h3.latLngDistance(point1, point2, h3.UNITS.km)
+  return h3.greatCircleDistance(point1, point2, h3.UNITS.km)
 }
 ```
 
@@ -951,7 +951,7 @@ function example() {
 Gives the "great circle" or "haversine" distance between pairs of
 LatLng points (lat/lng pairs) in kilometers.
 
-## latLngDistanceM
+## greatCircleDistanceM
 
 <Tabs
   groupId="language"
@@ -966,7 +966,7 @@ LatLng points (lat/lng pairs) in kilometers.
 <TabItem value="c">
 
 ```c
-double latLngDistanceM(const LatLng *a, const LatLng *b);
+double greatCircleDistanceM(const LatLng *a, const LatLng *b);
 ```
 
 </TabItem>
@@ -980,21 +980,21 @@ h3.latlng_distance(point1, point2, unit='m')
 <TabItem value="java">
 
 ```java
-double latLngDistance(LatLng point1, LatLng point2, LengthUnit unit);
+double greatCircleDistance(LatLng point1, LatLng point2, LengthUnit unit);
 ```
 
 </TabItem>
 <TabItem value="javascript">
 
 ```js
-h3.latLngDistance(point1, point2, h3.UNITS.m);
+h3.greatCircleDistance(point1, point2, h3.UNITS.m);
 ```
 
 ```js live
 function example() {
   const point1 = [-10, 0];
   const point2 = [10, 0];
-  return h3.latLngDistance(point1, point2, h3.UNITS.m);
+  return h3.greatCircleDistance(point1, point2, h3.UNITS.m);
 }
 ```
 
@@ -1004,7 +1004,7 @@ function example() {
 Gives the "great circle" or "haversine" distance between pairs of
 LatLng points (lat/lng pairs) in meters.
 
-## latLngDistanceRads
+## greatCircleDistanceRads
 
 <Tabs
   groupId="language"
@@ -1019,7 +1019,7 @@ LatLng points (lat/lng pairs) in meters.
 <TabItem value="c">
 
 ```c
-double latLngDistanceRads(const LatLng *a, const LatLng *b);
+double greatCircleDistanceRads(const LatLng *a, const LatLng *b);
 ```
 
 </TabItem>
@@ -1033,21 +1033,21 @@ h3.latlng_distance(point1, point2, unit='rads')
 <TabItem value="java">
 
 ```java
-double latLngDistance(LatLng point1, LatLng point2, LengthUnit unit);
+double greatCircleDistance(LatLng point1, LatLng point2, LengthUnit unit);
 ```
 
 </TabItem>
 <TabItem value="javascript">
 
 ```js
-h3.latLngDistance(point1, point2, h3.UNITS.rads)
+h3.greatCircleDistance(point1, point2, h3.UNITS.rads)
 ```
 
 ```js live
 function example() {
   const point1 = [-10, 0];
   const point2 = [10, 0];
-  return h3.latLngDistance(point1, point2, h3.UNITS.rads)
+  return h3.greatCircleDistance(point1, point2, h3.UNITS.rads)
 }
 ```
 

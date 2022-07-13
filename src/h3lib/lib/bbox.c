@@ -86,7 +86,7 @@ double _hexRadiusKm(H3Index h3Index) {
     CellBoundary h3Boundary;
     H3_EXPORT(cellToLatLng)(h3Index, &h3Center);
     H3_EXPORT(cellToBoundary)(h3Index, &h3Boundary);
-    return H3_EXPORT(latLngDistanceKm)(&h3Center, h3Boundary.verts);
+    return H3_EXPORT(greatCircleDistanceKm)(&h3Center, h3Boundary.verts);
 }
 
 /**
@@ -117,7 +117,7 @@ int64_t bboxHexEstimate(const BBox *bbox, int res) {
     p1.lng = bbox->east;
     p2.lat = bbox->south;
     p2.lng = bbox->west;
-    double d = H3_EXPORT(latLngDistanceKm)(&p1, &p2);
+    double d = H3_EXPORT(greatCircleDistanceKm)(&p1, &p2);
     // Derived constant based on: https://math.stackexchange.com/a/1921940
     // Clamped to 3 as higher values tend to rapidly drag the estimate to zero.
     double a = d * d / fmin(3.0, fabs((p1.lng - p2.lng) / (p1.lat - p2.lat)));
@@ -145,7 +145,7 @@ int64_t lineHexEstimate(const LatLng *origin, const LatLng *destination,
     H3_EXPORT(getPentagons)(res, pentagons);
     double pentagonRadiusKm = _hexRadiusKm(pentagons[0]);
 
-    double dist = H3_EXPORT(latLngDistanceKm)(origin, destination);
+    double dist = H3_EXPORT(greatCircleDistanceKm)(origin, destination);
     int64_t estimate = (int64_t)ceil(dist / (2 * pentagonRadiusKm));
     if (estimate == 0) estimate = 1;
     return estimate;

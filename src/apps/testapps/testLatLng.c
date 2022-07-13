@@ -62,9 +62,10 @@ SUITE(latLng) {
         setGeoDegs(&p2, 0, 10);
 
         // TODO: Epsilon is relatively large
-        t_assert(H3_EXPORT(latLngDistanceRads)(&p1, &p1) < EPSILON_RAD * 1000,
-                 "0 distance as expected");
-        t_assert(fabs(H3_EXPORT(latLngDistanceRads)(&p1, &p2) -
+        t_assert(
+            H3_EXPORT(greatCircleDistanceRads)(&p1, &p1) < EPSILON_RAD * 1000,
+            "0 distance as expected");
+        t_assert(fabs(H3_EXPORT(greatCircleDistanceRads)(&p1, &p2) -
                       H3_EXPORT(degsToRads)(10)) < EPSILON_RAD * 1000,
                  "distance along longitude as expected");
     }
@@ -184,14 +185,14 @@ SUITE(latLng) {
         double distance = H3_EXPORT(degsToRads)(15);
 
         _geoAzDistanceRads(&start, azimuth, distance, &out);
-        t_assert(fabs(H3_EXPORT(latLngDistanceRads)(&start, &out) - distance) <
-                     EPSILON_RAD,
+        t_assert(fabs(H3_EXPORT(greatCircleDistanceRads)(&start, &out) -
+                      distance) < EPSILON_RAD,
                  "moved distance is as expected");
 
         LatLng start2 = out;
         _geoAzDistanceRads(&start2, azimuth + degrees180, distance, &out);
         // TODO: Epsilon is relatively large
-        t_assert(H3_EXPORT(latLngDistanceRads)(&start, &out) < 0.01,
+        t_assert(H3_EXPORT(greatCircleDistanceRads)(&start, &out) < 0.01,
                  "moved back to origin");
     }
 
@@ -199,10 +200,10 @@ SUITE(latLng) {
         const LatLng negativeLongitude = {.lat = 0, .lng = -(M_PI + M_PI_2)};
         const LatLng zero = {.lat = 0, .lng = 0};
 
-        t_assert(fabs(M_PI_2 - H3_EXPORT(latLngDistanceRads)(
+        t_assert(fabs(M_PI_2 - H3_EXPORT(greatCircleDistanceRads)(
                                    &negativeLongitude, &zero)) < EPSILON_RAD,
                  "Distance with wrapped longitude");
-        t_assert(fabs(M_PI_2 - H3_EXPORT(latLngDistanceRads)(
+        t_assert(fabs(M_PI_2 - H3_EXPORT(greatCircleDistanceRads)(
                                    &zero, &negativeLongitude)) < EPSILON_RAD,
                  "Distance with wrapped longitude and swapped arguments");
     }
