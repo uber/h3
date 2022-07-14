@@ -34,9 +34,9 @@
  * neighboring cells. Tests positivity and commutativity.
  *
  * Tests the functions:
- *     distanceRads
- *     distanceKm
- *     distanceM
+ *     greatCircleDistanceRads
+ *     greatCircleDistanceKm
+ *     greatCircleDistanceM
  *
  * @param  edge  H3 directed edge denoting neighboring cells
  */
@@ -55,24 +55,26 @@ static void haversine_assert(H3Index edge) {
 
     double ab, ba;
 
-    ab = H3_EXPORT(distanceRads)(&a, &b);
-    ba = H3_EXPORT(distanceRads)(&b, &a);
+    ab = H3_EXPORT(greatCircleDistanceRads)(&a, &b);
+    ba = H3_EXPORT(greatCircleDistanceRads)(&b, &a);
     t_assert(ab > 0, pos);
     t_assert(ab == ba, comm);
 
-    ab = H3_EXPORT(distanceKm)(&a, &b);
-    ba = H3_EXPORT(distanceKm)(&b, &a);
+    ab = H3_EXPORT(greatCircleDistanceKm)(&a, &b);
+    ba = H3_EXPORT(greatCircleDistanceKm)(&b, &a);
     t_assert(ab > 0, pos);
     t_assert(ab == ba, comm);
 
-    ab = H3_EXPORT(distanceM)(&a, &b);
-    ba = H3_EXPORT(distanceM)(&b, &a);
+    ab = H3_EXPORT(greatCircleDistanceM)(&a, &b);
+    ba = H3_EXPORT(greatCircleDistanceM)(&b, &a);
     t_assert(ab > 0, pos);
     t_assert(ab == ba, comm);
 
-    t_assert(H3_EXPORT(distanceKm)(&a, &b) > H3_EXPORT(distanceRads)(&a, &b),
+    t_assert(H3_EXPORT(greatCircleDistanceKm)(&a, &b) >
+                 H3_EXPORT(greatCircleDistanceRads)(&a, &b),
              "measurement in kilometers should be greater than in radians");
-    t_assert(H3_EXPORT(distanceM)(&a, &b) > H3_EXPORT(distanceKm)(&a, &b),
+    t_assert(H3_EXPORT(greatCircleDistanceM)(&a, &b) >
+                 H3_EXPORT(greatCircleDistanceKm)(&a, &b),
              "measurement in meters should be greater than in kilometers");
 }
 

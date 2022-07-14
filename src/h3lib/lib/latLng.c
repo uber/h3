@@ -149,7 +149,7 @@ double constrainLng(double lng) {
  *
  * @return    the great circle distance in radians between a and b
  */
-double H3_EXPORT(distanceRads)(const LatLng *a, const LatLng *b) {
+double H3_EXPORT(greatCircleDistanceRads)(const LatLng *a, const LatLng *b) {
     double sinLat = sin((b->lat - a->lat) / 2.0);
     double sinLng = sin((b->lng - a->lng) / 2.0);
 
@@ -161,15 +161,15 @@ double H3_EXPORT(distanceRads)(const LatLng *a, const LatLng *b) {
 /**
  * The great circle distance in kilometers between two spherical coordinates.
  */
-double H3_EXPORT(distanceKm)(const LatLng *a, const LatLng *b) {
-    return H3_EXPORT(distanceRads)(a, b) * EARTH_RADIUS_KM;
+double H3_EXPORT(greatCircleDistanceKm)(const LatLng *a, const LatLng *b) {
+    return H3_EXPORT(greatCircleDistanceRads)(a, b) * EARTH_RADIUS_KM;
 }
 
 /**
  * The great circle distance in meters between two spherical coordinates.
  */
-double H3_EXPORT(distanceM)(const LatLng *a, const LatLng *b) {
-    return H3_EXPORT(distanceKm)(a, b) * 1000;
+double H3_EXPORT(greatCircleDistanceM)(const LatLng *a, const LatLng *b) {
+    return H3_EXPORT(greatCircleDistanceKm)(a, b) * 1000;
 }
 
 /**
@@ -356,9 +356,9 @@ double triangleEdgeLengthsToArea(double a, double b, double c) {
  * @return     area of triangle on unit sphere, in radians^2
  */
 double triangleArea(const LatLng *a, const LatLng *b, const LatLng *c) {
-    return triangleEdgeLengthsToArea(H3_EXPORT(distanceRads)(a, b),
-                                     H3_EXPORT(distanceRads)(b, c),
-                                     H3_EXPORT(distanceRads)(c, a));
+    return triangleEdgeLengthsToArea(H3_EXPORT(greatCircleDistanceRads)(a, b),
+                                     H3_EXPORT(greatCircleDistanceRads)(b, c),
+                                     H3_EXPORT(greatCircleDistanceRads)(c, a));
 }
 
 /**
@@ -437,7 +437,8 @@ H3Error H3_EXPORT(exactEdgeLengthRads)(H3Index edge, double *length) {
 
     *length = 0.0;
     for (int i = 0; i < cb.numVerts - 1; i++) {
-        *length += H3_EXPORT(distanceRads)(&cb.verts[i], &cb.verts[i + 1]);
+        *length +=
+            H3_EXPORT(greatCircleDistanceRads)(&cb.verts[i], &cb.verts[i + 1]);
     }
 
     return E_SUCCESS;
