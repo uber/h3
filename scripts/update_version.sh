@@ -35,8 +35,8 @@ read -p "Next version: " NEXT_VERSION
 
 echo -e "\n * Changelog entries *"
 git diff $REVISION_RANGE -- CHANGELOG.md
-echo -e "\n * Committed merges *"
-git log --merges --oneline $REVISION_RANGE
+echo -e "\n * Committed *"
+git log --oneline $REVISION_RANGE
 
 echo
 read -p "Are all changes in the changelog [y/N]? " CHANGELOG_OK

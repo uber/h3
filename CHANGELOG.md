@@ -8,6 +8,7 @@ The public API of this library consists of the functions declared in file
 ## [Unreleased]
 ### Breaking changes
 - `distance*` functions (`distanceKm`, etc) renamed to `greatCircleDistance*`. (#622)
+- Error code `E_MEMORY` renamed to `E_MEMORY_ALLOC`. (#617)
 
 ## [4.0.0-rc3] - 2022-06-03
 ### Fixed
