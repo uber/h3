@@ -6,6 +6,8 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+
+## [4.0.0-rc4] - 2022-07-25
 ### Breaking changes
 - `distance*` functions (`distanceKm`, etc) renamed to `greatCircleDistance*`. (#622)
 - Error code `E_MEMORY` renamed to `E_MEMORY_ALLOC`. (#617)
