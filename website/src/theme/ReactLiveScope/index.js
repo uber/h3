@@ -12,7 +12,7 @@ if (typeof window === 'undefined' || !window.document) {
 
 // Add react-live imports you need here
 const ReactLiveScope = {
-  h3: require("h3-jsv4/dist/browser/h3-js.js"),
+  h3: require("h3-js/dist/browser/h3-js.js"),
   h3v3: require("h3-jsv3/dist/browser/h3-js.js")
 };
 
