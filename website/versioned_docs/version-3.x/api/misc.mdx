@@ -162,7 +162,7 @@ h3.hexArea(res, h3.UNITS.km2)
 ```js live
 function example() {
   const res = 5;
-  return h3.hexArea(res, h3.UNITS.km2);
+  return h3v3.hexArea(res, h3v3.UNITS.km2);
 }
 ```
 
@@ -213,7 +213,7 @@ h3.hexArea(res, h3.UNITS.m2)
 ```js live
 function example() {
   const res = 5;
-  return h3.hexArea(res, h3.UNITS.m2);
+  return h3v3.hexArea(res, h3v3.UNITS.m2);
 }
 ```
 
@@ -265,7 +265,7 @@ h3.cellArea(h, h3.UNITS.m2)
 ```js live
 function example() {
   const h = '85283473fffffff';
-  return h3.cellArea(h, h3.UNITS.m2);
+  return h3v3.cellArea(h, h3v3.UNITS.m2);
 }
 ```
 
@@ -317,7 +317,7 @@ h3.cellArea(h, h3.UNITS.rads2)
 ```js live
 function example() {
   const h = '85283473fffffff';
-  return h3.cellArea(h, h3.UNITS.rads2);
+  return h3v3.cellArea(h, h3v3.UNITS.rads2);
 }
 ```
 
@@ -368,7 +368,7 @@ h3.edgeLength(res, h3.UNITS.km)
 ```js live
 function example() {
   const res = 5;
-  return h3.edgeLength(res, h3.UNITS.km);
+  return h3v3.edgeLength(res, h3v3.UNITS.km);
 }
 ```
 
@@ -419,7 +419,7 @@ h3.edgeLength(res, h3.UNITS.m)
 ```js live
 function example() {
   const res = 5;
-  return h3.edgeLength(res, h3.UNITS.m);
+  return h3v3.edgeLength(res, h3v3.UNITS.m);
 }
 ```
 
@@ -472,7 +472,7 @@ h3.exactEdgeLength(h3, h3.UNITS.km)
 ```js live
 function example() {
   const h = '115283473fffffff';
-  return h3.exactEdgeLength(h, h3.UNITS.km);
+  return h3v3.exactEdgeLength(h, h3v3.UNITS.km);
 }
 ```
 
@@ -524,7 +524,7 @@ h3.exactEdgeLength(h3, h3.UNITS.m)
 ```js live
 function example() {
   const h = '115283473fffffff';
-  return h3.exactEdgeLength(h, h3.UNITS.m);
+  return h3v3.exactEdgeLength(h, h3v3.UNITS.m);
 }
 ```
 
@@ -576,7 +576,7 @@ h3.exactEdgeLength(h3, h3.UNITS.rads)
 ```js live
 function example() {
   const h = '115283473fffffff';
-  return h3.exactEdgeLength(h, h3.UNITS.rads);
+  return h3v3.exactEdgeLength(h, h3v3.UNITS.rads);
 }
 ```
 
@@ -627,7 +627,7 @@ h3.numHexagons(res)
 ```js live
 function example() {
   const res = 5;
-  return h3.numHexagons(res);
+  return h3v3.numHexagons(res);
 }
 ```
 
@@ -679,7 +679,7 @@ h3.getRes0Indexes(res)
 ```js live
 function example() {
   const res = 5;
-  return h3.getRes0Indexes(res);
+  return h3v3.getRes0Indexes(res);
 }
 ```
 
@@ -769,7 +769,7 @@ h3.get_pentagon_indexes(res)
 
 ```java
 Collection<Long> getPentagonIndexes(int res);
-Collection<String> h3.getPentagonIndexesAddresses(int res);
+Collection<String> getPentagonIndexesAddresses(int res);
 ```
 
 </TabItem>
@@ -782,7 +782,7 @@ h3.getPentagonIndexes(res)
 ```js live
 function example() {
   const res = 5;
-  return h3.getPentagonIndexes(res);
+  return h3v3.getPentagonIndexes(res);
 }
 ```
 
@@ -885,7 +885,7 @@ h3.pointDist(point1, point2, h3.UNITS.km)
 function example() {
   const point1 = [-10, 0];
   const point2 = [10, 0];
-  return h3.pointDist(point1, point2, h3.UNITS.km)
+  return h3v3.pointDist(point1, point2, h3v3.UNITS.km)
 }
 ```
 
@@ -938,7 +938,7 @@ h3.pointDist(point1, point2, h3.UNITS.m)
 function example() {
   const point1 = [-10, 0];
   const point2 = [10, 0];
-  return h3.pointDist(point1, point2, h3.UNITS.m)
+  return h3v3.pointDist(point1, point2, h3v3.UNITS.m)
 }
 ```
 
@@ -991,7 +991,7 @@ h3.pointDist(point1, point2, h3.UNITS.rads)
 function example() {
   const point1 = [-10, 0];
   const point2 = [10, 0];
-  return h3.pointDist(point1, point2, h3.UNITS.rads)
+  return h3v3.pointDist(point1, point2, h3v3.UNITS.rads)
 }
 ```
 

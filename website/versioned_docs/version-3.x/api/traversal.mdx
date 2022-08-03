@@ -54,7 +54,7 @@ h3.kRing(origin, k)
 function example() {
   const h = '85283473fffffff';
   const k = 5;
-  return h3.kRing(h, k);
+  return h3v3.kRing(h, k);
 }
 ```
 
@@ -163,7 +163,7 @@ h3.kRingDistances(origin, k)
 function example() {
   const h = '85283473fffffff';
   const k = 5;
-  return h3.kRingDistances(h, k);
+  return h3v3.kRingDistances(h, k);
 }
 ```
 
@@ -391,7 +391,7 @@ h3.hexRing(h3Index, k)
 function example() {
   const h = '85283473fffffff';
   const k = 1;
-  return h3.hexRing(h, k);
+  return h3v3.hexRing(h, k);
 }
 ```
 
@@ -446,7 +446,7 @@ h3.h3Line(start, end)
 function example() {
   const start = '85283473fffffff';
   const end = '8528342bfffffff';
-  return h3.h3Line(start, end);
+  return h3v3.h3Line(start, end);
 }
 ```
 
@@ -565,7 +565,7 @@ h3.h3Distance(a, b)
 function example() {
   const start = '85283473fffffff';
   const end = '8528342bfffffff';
-  return h3.h3Distance(start, end);
+  return h3v3.h3Distance(start, end);
 }
 ```
 
@@ -622,7 +622,7 @@ h3.experimentalH3ToLocalIj(origin, h3)
 function example() {
   const origin = '85283473fffffff';
   const h = '8528342bfffffff';
-  const {i, j} = h3.experimentalH3ToLocalIj(origin, h);
+  const {i, j} = h3v3.experimentalH3ToLocalIj(origin, h);
   return [i, j];
 }
 ```
@@ -679,7 +679,7 @@ h3.experimentalLocalIjToH3(origin, coords)
 function example() {
   const h = '85283473fffffff';
   const coords = {i: 0, j: 0};
-  return h3.experimentalLocalIjToH3(h, coords);
+  return h3v3.experimentalLocalIjToH3(h, coords);
 }
 ```
 

@@ -5083,10 +5083,15 @@ gzip-size@^6.0.0:
   dependencies:
     duplexer "^0.1.2"
 
-h3-js@^3.7.1:
+"h3-jsv3@npm:h3-js@^3.7.1":
   version "3.7.2"
   resolved "https://registry.yarnpkg.com/h3-js/-/h3-js-3.7.2.tgz#61d4feb7bb42868ca9cdb2d5cf9d9dda94f9e5a3"
   integrity sha512-LPjlHSwB9zQZrMqKloCZmmmt3yZzIK7nqPcXqwU93zT3TtYG6jP4tZBzAPouxut7lLjdFbMQ75wRBiKfpsnY7w==
+
+"h3-jsv4@npm:h3-js@^4.0.0-rc1":
+  version "4.0.0-rc1"
+  resolved "https://registry.yarnpkg.com/h3-js/-/h3-js-4.0.0-rc1.tgz#7a2fb11240e6bf1354bd45565fc328fadd727fc5"
+  integrity sha512-aI1SUJOzkekQgQT9TfieAn+BcXCS3lPvh8Ht22OKE8/XkoQY9u/D3fmjiv5hQGaOSPmnMowva/LA6Tk+L5g45w==
 
 handle-thing@^2.0.0:
   version "2.0.1"

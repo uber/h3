@@ -53,7 +53,7 @@ h3.h3ToParent(h3Index, parentRes)
 ```js live
 function example() {
   const h = '85283473fffffff';
-  return h3.h3ToParent(h, 4);
+  return h3v3.h3ToParent(h, 4);
 }
 ```
 
@@ -105,7 +105,7 @@ h3.h3ToChildren(h3Index, childRes)
 ```js live
 function example() {
   const h = '85283473fffffff';
-  return h3.h3ToChildren(h, 6);
+  return h3v3.h3ToChildren(h, 6);
 }
 ```
 
@@ -207,7 +207,7 @@ h3.h3ToCenterChild(h, childRes)
 ```js live
 function example() {
   const h = '85283473fffffff';
-  return h3.h3ToCenterChild(h, 7);
+  return h3v3.h3ToCenterChild(h, 7);
 }
 ```
 
@@ -260,7 +260,7 @@ h3.compact(hexes)
 function example() {
   const h = '85283473fffffff';
   const nearby = h3.kRing(h, 4);
-  return h3.compact(nearby);
+  return h3v3.compact(nearby);
 }
 ```
 
@@ -316,7 +316,7 @@ function example() {
   const h = '85283473fffffff';
   const nearby = h3.kRing(h, 4);
   const compacted = h3.compact(nearby);
-  return h3.uncompact(compacted, 5);
+  return h3v3.uncompact(compacted, 5);
 }
 ```
 

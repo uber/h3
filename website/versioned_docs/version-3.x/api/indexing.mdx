@@ -55,7 +55,7 @@ function example() {
   const lat = 45;
   const lng = 40;
   const res = 2;
-  return h3.geoToH3(lat, lng, res);
+  return h3v3.geoToH3(lat, lng, res);
 }
 ```
 
@@ -110,7 +110,7 @@ h3.h3ToGeo(h3Index)
 ```js live
 function example() {
   const h = '85283473fffffff';
-  return h3.h3ToGeo(h);
+  return h3v3.h3ToGeo(h);
 }
 ```
 
@@ -169,7 +169,7 @@ h3.h3ToGeoBoundary(h3Index, [formatAsGeoJson])
 ```js live
 function example() {
   const h = '85283473fffffff';
-  return h3.h3ToGeoBoundary(h);
+  return h3v3.h3ToGeoBoundary(h);
 }
 ```
 
