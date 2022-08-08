@@ -238,4 +238,20 @@ SUITE(BBox) {
         t_assert(!bboxEquals(&bbox, &east), "Not equals different east");
         t_assert(!bboxEquals(&bbox, &west), "Not equals different west");
     }
+
+    TEST(bboxHexEstimate_invalidRes) {
+        int64_t numHexagons;
+        BBox bbox = {1.0, 0.0, 1.0, 0.0};
+        t_assert(bboxHexEstimate(&bbox, -1, &numHexagons) == E_RES_DOMAIN,
+                 "bboxHexEstimate of invalid resolution fails");
+    }
+
+    TEST(lineHexEstimate_invalidRes) {
+        int64_t numHexagons;
+        LatLng origin = {0.0, 0.0};
+        LatLng destination = {1.0, 1.0};
+        t_assert(lineHexEstimate(&origin, &destination, -1, &numHexagons) ==
+                     E_RES_DOMAIN,
+                 "lineHexEstimate of invalid resolution fails");
+    }
 }
