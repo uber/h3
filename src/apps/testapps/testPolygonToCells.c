@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+#include <assert.h>
+#include <math.h>
 #include <stdlib.h>
 
 #include "algos.h"
@@ -42,6 +44,10 @@ static LatLng emptyVerts[] = {{0.659966917655, -2.1364398519394},
                               {0.659966917655, -2.1364398519396}};
 static GeoLoop emptyGeoLoop = {.numVerts = 3, .verts = emptyVerts};
 static GeoPolygon emptyGeoPolygon;
+
+static LatLng invalidVerts[] = {{INFINITY, INFINITY}, {-INFINITY, -INFINITY}};
+static GeoLoop invalidGeoLoop = {.numVerts = 2, .verts = invalidVerts};
+static GeoPolygon invalidGeoPolygon;
 
 /**
  * Return true if the cell crosses the meridian.
@@ -127,6 +133,9 @@ SUITE(polygonToCells) {
 
     emptyGeoPolygon.geoloop = emptyGeoLoop;
     emptyGeoPolygon.numHoles = 0;
+
+    invalidGeoPolygon.geoloop = invalidGeoLoop;
+    invalidGeoPolygon.numHoles = 0;
 
     TEST(maxPolygonToCellsSize) {
         int64_t numHexagons;
@@ -419,5 +428,40 @@ SUITE(polygonToCells) {
         iterateAllIndexesAtRes(0, fillIndex_assertions);
         iterateAllIndexesAtRes(1, fillIndex_assertions);
         iterateAllIndexesAtRes(2, fillIndex_assertions);
+    }
+
+    TEST(getEdgeHexagonsInvalid) {
+        int64_t numHexagons = 100;
+        H3Index *search = calloc(numHexagons, sizeof(H3Index));
+        assert(search != NULL);
+        H3Index *found = calloc(numHexagons, sizeof(H3Index));
+        assert(found != NULL);
+
+        int res = 0;
+        int64_t numSearchHexes = 0;
+        H3Error err = _getEdgeHexagons(&invalidGeoLoop, numHexagons, res,
+                                       &numSearchHexes, search, found);
+        t_assert(err != E_SUCCESS,
+                 "_getEdgeHexagons returns error for invalid geoloop");
+
+        free(found);
+        free(search);
+    }
+
+    TEST(polygonToCellsInvalid) {
+        int64_t numHexagons;
+        t_assert(H3_EXPORT(maxPolygonToCellsSize)(&invalidGeoPolygon, 9, 0,
+                                                  &numHexagons) == E_FAILED,
+                 "Cannot determine cell size to invalid geo polygon");
+
+        // Chosen arbitrarily, polygonToCells should error out before this is an
+        // issue.
+        numHexagons = 0;
+        
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+        t_assert(H3_EXPORT(polygonToCells)(&invalidGeoPolygon, 9, 0,
+                                           hexagons) == E_FAILED,
+                 "Flags other than 0 are invalid for polygonToCells");
+        free(hexagons);
     }
 }
