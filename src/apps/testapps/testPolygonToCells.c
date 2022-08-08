@@ -49,6 +49,10 @@ static LatLng invalidVerts[] = {{INFINITY, INFINITY}, {-INFINITY, -INFINITY}};
 static GeoLoop invalidGeoLoop = {.numVerts = 2, .verts = invalidVerts};
 static GeoPolygon invalidGeoPolygon;
 
+static LatLng pointVerts[] = {{0, 0}};
+static GeoLoop pointGeoLoop = {.numVerts = 1, .verts = pointVerts};
+static GeoPolygon pointGeoPolygon;
+
 /**
  * Return true if the cell crosses the meridian.
  */
@@ -136,6 +140,9 @@ SUITE(polygonToCells) {
 
     invalidGeoPolygon.geoloop = invalidGeoLoop;
     invalidGeoPolygon.numHoles = 0;
+
+    pointGeoPolygon.geoloop = pointGeoLoop;
+    pointGeoPolygon.numHoles = 0;
 
     TEST(maxPolygonToCellsSize) {
         int64_t numHexagons;
@@ -461,7 +468,21 @@ SUITE(polygonToCells) {
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
         t_assert(H3_EXPORT(polygonToCells)(&invalidGeoPolygon, 9, 0,
                                            hexagons) == E_FAILED,
-                 "Flags other than 0 are invalid for polygonToCells");
+                 "Invalid geo polygon cannot be evaluated");
+        free(hexagons);
+    }
+
+    TEST(polygonToCellsPoint) {
+        int64_t numHexagons;
+        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(&pointGeoPolygon, 9, 0,
+                                                         &numHexagons));
+        t_assert(numHexagons == 13, "Point has expected 1 hexagon");
+
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+        t_assertSuccess(
+            H3_EXPORT(polygonToCells)(&pointGeoPolygon, 9, 0, hexagons));
+        t_assert(hexagons[0] == H3_NULL,
+                 "no results for polygonToCells of a single point");
         free(hexagons);
     }
 }
