@@ -457,7 +457,7 @@ SUITE(polygonToCells) {
         // Chosen arbitrarily, polygonToCells should error out before this is an
         // issue.
         numHexagons = 0;
-        
+
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
         t_assert(H3_EXPORT(polygonToCells)(&invalidGeoPolygon, 9, 0,
                                            hexagons) == E_FAILED,
