@@ -221,8 +221,7 @@ H3Error H3_EXPORT(cellToVertex)(H3Index cell, int vertexNum, H3Index *out) {
     if (res == 0 || H3_GET_INDEX_DIGIT(cell, res) != CENTER_DIGIT) {
         // Get the left neighbor of the vertex, with its rotations
         Direction left = directionForVertexNum(cell, vertexNum);
-        // This case should be unreachable; invalid verts fail earlier
-        if (left == INVALID_DIGIT) return E_FAILED;  // LCOV_EXCL_LINE
+        if (left == INVALID_DIGIT) return E_FAILED;
         int lRotations = 0;
         H3Index leftNeighbor;
         h3NeighborRotations(cell, left, &lRotations, &leftNeighbor);
