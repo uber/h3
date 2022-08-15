@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /** @file
- * @brief Fuzzer program for exactEdgeLengthRads
+ * @brief Fuzzer program for edgeLengthRads
  */
 
 #include "aflHarness.h"
@@ -32,9 +32,9 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     const inputArgs *args = (const inputArgs *)data;
 
     double distance;
-    H3_EXPORT(exactEdgeLengthRads)(args->index, &distance);
-    H3_EXPORT(exactEdgeLengthKm)(args->index, &distance);
-    H3_EXPORT(exactEdgeLengthM)(args->index, &distance);
+    H3_EXPORT(edgeLengthRads)(args->index, &distance);
+    H3_EXPORT(edgeLengthKm)(args->index, &distance);
+    H3_EXPORT(edgeLengthM)(args->index, &distance);
 
     return 0;
 }
