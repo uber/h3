@@ -95,13 +95,16 @@ double _hexRadiusKm(H3Index h3Index) {
  *
  * @param bbox the bounding box to estimate the hexagon fill level
  * @param res the resolution of the H3 hexagons to fill the bounding box
- * @return the estimated number of hexagons to fill the bounding box
+ * @param out the estimated number of hexagons to fill the bounding box
+ * @return E_SUCCESS (0) on success, or another value otherwise.
  */
-int64_t bboxHexEstimate(const BBox *bbox, int res) {
+H3Error bboxHexEstimate(const BBox *bbox, int res, int64_t *out) {
     // Get the area of the pentagon as the maximally-distorted area possible
     H3Index pentagons[12] = {0};
-    // TODO: Return error here
-    H3_EXPORT(getPentagons)(res, pentagons);
+    H3Error pentagonsErr = H3_EXPORT(getPentagons)(res, pentagons);
+    if (pentagonsErr) {
+        return pentagonsErr;
+    }
     double pentagonRadiusKm = _hexRadiusKm(pentagons[0]);
     // Area of a regular hexagon is 3/2*sqrt(3) * r * r
     // The pentagon has the most distortion (smallest edges) and shares its
@@ -123,30 +126,44 @@ int64_t bboxHexEstimate(const BBox *bbox, int res) {
     double a = d * d / fmin(3.0, fabs((p1.lng - p2.lng) / (p1.lat - p2.lat)));
 
     // Divide the two to get an estimate of the number of hexagons needed
-    int64_t estimate = (int64_t)ceil(a / pentagonAreaKm2);
+    double estimateDouble = ceil(a / pentagonAreaKm2);
+    if (!isfinite(estimateDouble)) {
+        return E_FAILED;
+    }
+    int64_t estimate = (int64_t)estimateDouble;
     if (estimate == 0) estimate = 1;
-    return estimate;
+    *out = estimate;
+    return E_SUCCESS;
 }
 
 /**
  * lineHexEstimate returns an estimated number of hexagons that trace
  *                 the cartesian-projected line
  *
- *  @param origin the origin coordinates
- *  @param destination the destination coordinates
- *  @param res the resolution of the H3 hexagons to trace the line
- *  @return the estimated number of hexagons required to trace the line
+ * @param origin the origin coordinates
+ * @param destination the destination coordinates
+ * @param res the resolution of the H3 hexagons to trace the line
+ * @param out Out parameter for the estimated number of hexagons required to
+ * trace the line
+ * @return E_SUCCESS (0) on success or another value otherwise.
  */
-int64_t lineHexEstimate(const LatLng *origin, const LatLng *destination,
-                        int res) {
+H3Error lineHexEstimate(const LatLng *origin, const LatLng *destination,
+                        int res, int64_t *out) {
     // Get the area of the pentagon as the maximally-distorted area possible
     H3Index pentagons[12] = {0};
-    // TODO: Return error here
-    H3_EXPORT(getPentagons)(res, pentagons);
+    H3Error pentagonsErr = H3_EXPORT(getPentagons)(res, pentagons);
+    if (pentagonsErr) {
+        return pentagonsErr;
+    }
     double pentagonRadiusKm = _hexRadiusKm(pentagons[0]);
 
     double dist = H3_EXPORT(greatCircleDistanceKm)(origin, destination);
-    int64_t estimate = (int64_t)ceil(dist / (2 * pentagonRadiusKm));
+    double distCeil = ceil(dist / (2 * pentagonRadiusKm));
+    if (!isfinite(distCeil)) {
+        return E_FAILED;
+    }
+    int64_t estimate = (int64_t)distCeil;
     if (estimate == 0) estimate = 1;
-    return estimate;
+    *out = estimate;
+    return E_SUCCESS;
 }

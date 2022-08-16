@@ -6,6 +6,8 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+### Fixed
+- `polygonToCells` returns an error if Infinity is passed in. (#636)
 
 ## [4.0.0-rc4] - 2022-07-25
 ### Breaking changes
