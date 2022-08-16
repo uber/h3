@@ -427,7 +427,7 @@ H3Error H3_EXPORT(cellAreaM2)(H3Index cell, double *out) {
  *
  * @return        length in radians
  */
-H3Error H3_EXPORT(exactEdgeLengthRads)(H3Index edge, double *length) {
+H3Error H3_EXPORT(edgeLengthRads)(H3Index edge, double *length) {
     CellBoundary cb;
 
     H3Error err = H3_EXPORT(directedEdgeToBoundary)(edge, &cb);
@@ -447,8 +447,8 @@ H3Error H3_EXPORT(exactEdgeLengthRads)(H3Index edge, double *length) {
 /**
  * Length of a directed edge in kilometers.
  */
-H3Error H3_EXPORT(exactEdgeLengthKm)(H3Index edge, double *length) {
-    H3Error err = H3_EXPORT(exactEdgeLengthRads)(edge, length);
+H3Error H3_EXPORT(edgeLengthKm)(H3Index edge, double *length) {
+    H3Error err = H3_EXPORT(edgeLengthRads)(edge, length);
     *length = *length * EARTH_RADIUS_KM;
     return err;
 }
@@ -456,8 +456,8 @@ H3Error H3_EXPORT(exactEdgeLengthKm)(H3Index edge, double *length) {
 /**
  * Length of a directed edge in meters.
  */
-H3Error H3_EXPORT(exactEdgeLengthM)(H3Index edge, double *length) {
-    H3Error err = H3_EXPORT(exactEdgeLengthKm)(edge, length);
+H3Error H3_EXPORT(edgeLengthM)(H3Index edge, double *length) {
+    H3Error err = H3_EXPORT(edgeLengthKm)(edge, length);
     *length = *length * 1000;
     return err;
 }

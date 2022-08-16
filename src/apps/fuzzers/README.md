@@ -25,7 +25,7 @@ such as the H3 core library.
 | getHexagonAreaAvg | [fuzzerResolutions](./fuzzerResolutions.c)
 | cellArea | [fuzzerCellArea](./fuzzerCellArea.c)
 | getHexagonEdgeLengthAvg | [fuzzerResolutions](./fuzzerResolutions.c)
-| exactEdgeLength | [fuzzerExactEdgeLength](./fuzzerExactEdgeLength.c)
+| edgeLength | [fuzzerEdgeLength](./fuzzerEdgeLength.c)
 | getNumCells | [fuzzerResolutions](./fuzzerResolutions.c)
 | getRes0Cells | Trivial
 | getPentagons | [fuzzerResolutions](./fuzzerResolutions.c)

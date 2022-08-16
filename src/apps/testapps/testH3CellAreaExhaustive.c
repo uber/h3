@@ -81,9 +81,9 @@ static void haversine_assert(H3Index edge) {
 /**
  * Tests positivity of edge length calculation for the functions:
  *
- *      exactEdgeLengthRads
- *      exactEdgeLengthKm
- *      exactEdgeLengthM
+ *      edgeLengthRads
+ *      edgeLengthKm
+ *      edgeLengthM
  *
  * @param  edge  edge to compute the length of
  */
@@ -91,11 +91,11 @@ static void edge_length_assert(H3Index edge) {
     char msg[] = "edge has positive length";
 
     double length;
-    t_assertSuccess(H3_EXPORT(exactEdgeLengthRads)(edge, &length));
+    t_assertSuccess(H3_EXPORT(edgeLengthRads)(edge, &length));
     t_assert(length > 0, msg);
-    t_assertSuccess(H3_EXPORT(exactEdgeLengthKm)(edge, &length));
+    t_assertSuccess(H3_EXPORT(edgeLengthKm)(edge, &length));
     t_assert(length > 0, msg);
-    t_assertSuccess(H3_EXPORT(exactEdgeLengthM)(edge, &length));
+    t_assertSuccess(H3_EXPORT(edgeLengthM)(edge, &length));
     t_assert(length > 0, msg);
 }
 
