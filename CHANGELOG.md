@@ -6,6 +6,11 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+
+## [4.0.0-rc5] - 2022-08-16
+### Breaking changes
+- `exactEdgeLength` functions renamed to `edgeLength` (#639)
+
 ### Fixed
 - `polygonToCells` returns an error if Infinity is passed in. (#636)
 

@@ -123,19 +123,22 @@ For a future undirected edge mode, use the term `Edge`.
 
 ### Area/Length Functions
 
-|    3.x name.    |         4.0.0 name          |
-|-----------------|-----------------------------|
-| `hexAreaKm2`    | `getHexagonAreaAvgKm2`      |
-| `hexAreaM2`     | `getHexagonAreaAvgM2`       |
-| `edgeLengthKm`  | `getHexagonEdgeLengthAvgKm` |
-| `edgeLengthM`   | `getHexagonEdgeLengthAvgM`  |
-| *DNE*           | `getPentagonAreaAvg*`       |
-| *DNE*           | `getPentagonEdgeLengthAvg*` |
-| *DNE*           | `cellAreaKm2`               |
-| *DNE*           | `cellAreaM2`                |
-| `pointDistKm`   | `greatCircleDistanceKm`     |
-| `pointDistM`    | `greatCircleDistanceM`      |
-| `pointDistRads` | `greatCircleDistanceRads`   |
+|    3.x name.          |         4.0.0 name          |
+|-----------------------|-----------------------------|
+| `hexAreaKm2`          | `getHexagonAreaAvgKm2`      |
+| `hexAreaM2`           | `getHexagonAreaAvgM2`       |
+| `edgeLengthKm`        | `getHexagonEdgeLengthAvgKm` |
+| `edgeLengthM`         | `getHexagonEdgeLengthAvgM`  |
+| *DNE*                 | `getPentagonAreaAvg*`       |
+| *DNE*                 | `getPentagonEdgeLengthAvg*` |
+| *DNE*                 | `cellAreaKm2`               |
+| *DNE*                 | `cellAreaM2`                |
+| `pointDistKm`         | `greatCircleDistanceKm`     |
+| `pointDistM`          | `greatCircleDistanceM`      |
+| `pointDistRads`       | `greatCircleDistanceRads`   |
+| `exactEdgeLengthRads` | `edgeLengthRads`            |
+| `exactEdgeLengthKm`   | `edgeLengthKm`              |
+| `exactEdgeLengthM`    | `edgeLengthM`               |
 
 **Note**: `cellAreaKm2` and `cellAreaM2` would return the actual area of
 the passed-in cell.
