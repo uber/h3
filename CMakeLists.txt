@@ -14,11 +14,20 @@
 
 cmake_minimum_required(VERSION 3.20) # Due to dependency on CMP0115
 
+# Do not try to append extensions to source files
+cmake_policy(SET CMP0115 NEW)
+
+file(READ VERSION H3_VERSION LIMIT_COUNT 1)
+# Clean any newlines
+string(REPLACE "\n" "" H3_VERSION "${H3_VERSION}")
+# Remove any trailing qualifier
+string(REGEX REPLACE "-.*$" "" H3_VERSION "${H3_VERSION}")
+
+project(h3 LANGUAGES C VERSION ${H3_VERSION})
+
 set(H3_PREFIX "" CACHE STRING "Prefix for exported symbols")
 set(H3_ALLOC_PREFIX "" CACHE STRING "Prefix for allocation functions")
 
-# Do not try to append extensions to source files
-cmake_policy(SET CMP0115 NEW)
 # Needed due to CMP0042
 set(CMAKE_MACOSX_RPATH 1)
 # YCM needs compilation database
@@ -61,18 +70,11 @@ else()
     set(LIBRARY_OUTPUT_PATH lib)
 endif()
 
-file(READ VERSION H3_VERSION LIMIT_COUNT 1)
-# Clean any newlines
-string(REPLACE "\n" "" H3_VERSION "${H3_VERSION}")
-# Remove any trailing qualifier
-string(REGEX REPLACE "-.*$" "" H3_VERSION "${H3_VERSION}")
 string(REPLACE "." ";" H3_VERSION_LIST "${H3_VERSION}")
 list(GET H3_VERSION_LIST 0 H3_VERSION_MAJOR)
 list(GET H3_VERSION_LIST 1 H3_VERSION_MINOR)
 list(GET H3_VERSION_LIST 2 H3_VERSION_PATCH)
 set(H3_SOVERSION 1)
-
-project(h3 LANGUAGES C VERSION ${H3_VERSION})
 
 # Detect if someone else is including the package
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
