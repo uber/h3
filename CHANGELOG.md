@@ -14,10 +14,12 @@ The public API of this library consists of the functions declared in file
 - Cell count parameters use `int64_t` instead of `int`.
 - `polygonToCells` (previously `polyfill`) accepts a flags argument for future expansion. (#570)
 - `cellToLocalIj` and `localIjToCell` accept a mode argument for future expansion. (#586)
+- `exactEdgeLength` functions renamed to `edgeLength` (#639)
 
 ### Fixed
 - Fix polyfill bug when vertex latitude exactly matches cell center. (#603)
 - A number of issues detected via unit tests and fuzzers were fixed. (#568, #562, #558, #559, #560, #430)
+- `polygonToCells` returns an error if Infinity is passed in. (#636)
 
 ### Changed
 - The file `CMakeTests.cmake` is no longer included if `ENABLE_TESTING` is off. (#609)
@@ -35,6 +37,13 @@ The public API of this library consists of the functions declared in file
 - Closed-form implementation of `numHexagons`
 - A number of fuzzer harnesses are now included in the H3 core library. (#557, #553, #545, #433)
 - Additional benchmarks are added and benchmarks are regularly run in CI. (#524, #518)
+
+## [4.0.0-rc5] - 2022-08-16
+### Breaking changes
+- `exactEdgeLength` functions renamed to `edgeLength` (#639)
+
+### Fixed
+- `polygonToCells` returns an error if Infinity is passed in. (#636)
 
 ## [4.0.0-rc4] - 2022-07-25
 ### Breaking changes

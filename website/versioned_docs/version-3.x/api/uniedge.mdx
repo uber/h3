@@ -54,7 +54,7 @@ h3.h3IndexesAreNeighbors(origin, destination)
 function example() {
   const origin = '85283473fffffff';
   const destination = '85283477fffffff';
-  return String(h3.h3IndexesAreNeighbors(origin, destination));
+  return String(h3v3.h3IndexesAreNeighbors(origin, destination));
 }
 ```
 
@@ -109,7 +109,7 @@ h3.getH3UnidirectionalEdge(h3Index)
 function example() {
   const origin = '85283473fffffff';
   const destination = '85283477fffffff';
-  return h3.getH3UnidirectionalEdge(origin, destination);
+  return h3v3.getH3UnidirectionalEdge(origin, destination);
 }
 ```
 
@@ -164,7 +164,7 @@ h3.h3UnidirectionalEdgeIsValid(edge)
 ```js live
 function example() {
   const edge = '115283473fffffff';
-  return String(h3.h3UnidirectionalEdgeIsValid(edge));
+  return String(h3v3.h3UnidirectionalEdgeIsValid(edge));
 }
 ```
 
@@ -218,7 +218,7 @@ h3.getOriginH3IndexFromUnidirectionalEdge(h3Index)
 ```js live
 function example() {
   const edge = '115283473fffffff';
-  return h3.getOriginH3IndexFromUnidirectionalEdge(edge);
+  return h3v3.getOriginH3IndexFromUnidirectionalEdge(edge);
 }
 ```
 
@@ -270,7 +270,7 @@ h3.getDestinationH3IndexFromUnidirectionalEdge(edge)
 ```js live
 function example() {
   const edge = '115283473fffffff';
-  return h3.getDestinationH3IndexFromUnidirectionalEdge(edge);
+  return h3v3.getDestinationH3IndexFromUnidirectionalEdge(edge);
 }
 ```
 
@@ -322,7 +322,7 @@ h3.getH3IndexesFromUnidirectionalEdge(edge)
 ```js live
 function example() {
   const edge = '115283473fffffff';
-  return h3.getH3IndexesFromUnidirectionalEdge(edge);
+  return h3v3.getH3IndexesFromUnidirectionalEdge(edge);
 }
 ```
 
@@ -375,7 +375,7 @@ h3.getH3UnidirectionalEdgesFromHexagon(h3Index)
 ```js live
 function example() {
   const h = '85283473fffffff';
-  return h3.getH3UnidirectionalEdgesFromHexagon(h);
+  return h3v3.getH3UnidirectionalEdgesFromHexagon(h);
 }
 ```
 
@@ -428,7 +428,7 @@ h3.getH3UnidirectionalEdgeBoundary(edge, [formatAsGeoJson])
 ```js live
 function example() {
   const edge = '115283473fffffff';
-  return h3.getH3UnidirectionalEdgeBoundary(edge);
+  return h3v3.getH3UnidirectionalEdgeBoundary(edge);
 }
 ```
 

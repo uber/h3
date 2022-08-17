@@ -116,7 +116,7 @@ SUITE(polygon) {
         // This is a carefully crafted shape + point to hit an otherwise
         // missed branch in coverage
         LatLng verts[] = {{0, 0}, {1, 0.5}, {0, 1}};
-        GeoLoop geoloop = {.numVerts = 4, .verts = verts};
+        GeoLoop geoloop = {.numVerts = 3, .verts = verts};
 
         BBox bbox;
         bboxFromGeoLoop(&geoloop, &bbox);

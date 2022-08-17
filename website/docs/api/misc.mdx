@@ -483,7 +483,7 @@ function example() {
 Average hexagon edge length in meters at the given resolution. Excludes pentagons.
 
 
-## exactEdgeLengthKm
+## edgeLengthKm
 
 <Tabs
   groupId="language"
@@ -498,7 +498,7 @@ Average hexagon edge length in meters at the given resolution. Excludes pentagon
 <TabItem value="c">
 
 ```c
-H3Error exactEdgeLengthKm(H3Index edge, double *length);
+H3Error edgeLengthKm(H3Index edge, double *length);
 ```
 
 </TabItem>
@@ -512,21 +512,21 @@ h3.exact_edge_length(h, unit='km')
 <TabItem value="java">
 
 ```java
-double exactEdgeLength(long h3, LengthUnit unit);
-double exactEdgeLength(String h3Address, LengthUnit unit);
+double edgeLength(long h3, LengthUnit unit);
+double edgeLength(String h3Address, LengthUnit unit);
 ```
 
 </TabItem>
 <TabItem value="javascript">
 
 ```js
-h3.exactEdgeLength(h3, h3.UNITS.km)
+h3.edgeLength(h3, h3.UNITS.km)
 ```
 
 ```js live
 function example() {
   const h = '115283473fffffff';
-  return h3.exactEdgeLength(h, h3.UNITS.km);
+  return h3.edgeLength(h, h3.UNITS.km);
 }
 ```
 
@@ -535,7 +535,7 @@ function example() {
 
 Exact edge length of specific unidirectional edge in kilometers.
 
-## exactEdgeLengthM
+## edgeLengthM
 
 <Tabs
   groupId="language"
@@ -550,7 +550,7 @@ Exact edge length of specific unidirectional edge in kilometers.
 <TabItem value="c">
 
 ```c
-H3Error exactEdgeLengthM(H3Index edge, double *length);
+H3Error edgeLengthM(H3Index edge, double *length);
 ```
 
 </TabItem>
@@ -564,21 +564,21 @@ h3.exact_edge_length(h, unit='m')
 <TabItem value="java">
 
 ```java
-double exactEdgeLength(long h3, LengthUnit unit);
-double exactEdgeLength(String h3Address, LengthUnit unit);
+double edgeLength(long h3, LengthUnit unit);
+double edgeLength(String h3Address, LengthUnit unit);
 ```
 
 </TabItem>
 <TabItem value="javascript">
 
 ```js
-h3.exactEdgeLength(h3, h3.UNITS.m)
+h3.edgeLength(h3, h3.UNITS.m)
 ```
 
 ```js live
 function example() {
   const h = '115283473fffffff';
-  return h3.exactEdgeLength(h, h3.UNITS.m);
+  return h3.edgeLength(h, h3.UNITS.m);
 }
 ```
 
@@ -587,7 +587,7 @@ function example() {
 
 Exact edge length of specific unidirectional edge in meters.
 
-## exactEdgeLengthRads
+## edgeLengthRads
 
 <Tabs
   groupId="language"
@@ -602,7 +602,7 @@ Exact edge length of specific unidirectional edge in meters.
 <TabItem value="c">
 
 ```c
-H3Error exactEdgeLengthRads(H3Index edge, double *length);
+H3Error edgeLengthRads(H3Index edge, double *length);
 ```
 
 </TabItem>
@@ -616,21 +616,21 @@ h3.exact_edge_length(h, unit='rads')
 <TabItem value="java">
 
 ```java
-double exactEdgeLength(long h3, LengthUnit unit);
-double exactEdgeLength(String h3Address, LengthUnit unit);
+double edgeLength(long h3, LengthUnit unit);
+double edgeLength(String h3Address, LengthUnit unit);
 ```
 
 </TabItem>
 <TabItem value="javascript">
 
 ```js
-h3.exactEdgeLength(h3, h3.UNITS.rads)
+h3.edgeLength(h3, h3.UNITS.rads)
 ```
 
 ```js live
 function example() {
   const h = '115283473fffffff';
-  return h3.exactEdgeLength(h, h3.UNITS.rads);
+  return h3.edgeLength(h, h3.UNITS.rads);
 }
 ```
 

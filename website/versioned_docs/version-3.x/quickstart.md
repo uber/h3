@@ -18,7 +18,7 @@ function example() {
   const lat = 37.7955;
   const lng = -122.3937;
   const res = 10;
-  return h3.geoToH3(lat, lng, res);
+  return h3v3.geoToH3(lat, lng, res);
 }
 ```
 
@@ -27,7 +27,7 @@ The result is the identifier of the hexagonal cell in H3 containing this point. 
 ```js live
 function example() {
   const h = '8a283082a677fff';
-  return h3.h3ToGeo(h);
+  return h3v3.h3ToGeo(h);
 }
 ```
 
@@ -36,6 +36,6 @@ Note that the result of this example is not our original coordinates. That's bec
 ```js live
 function example() {
   const h = '8a283082a677fff';
-  return h3.h3ToGeoBoundary(h);
+  return h3v3.h3ToGeoBoundary(h);
 }
 ```
