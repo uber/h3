@@ -34,9 +34,6 @@ set(CMAKE_MACOSX_RPATH 1)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cmake/toolchain.cmake"
-    CACHE FILEPATH
-    "Toolchain to use for building this project")
 
 # Some misc apps do not work with shared libraries on Windows
 # because they require access to internal H3 functions. Build these
@@ -269,6 +266,7 @@ function(add_h3_library name h3_alloc_prefix_override)
 
     target_compile_options(${name} PRIVATE ${H3_COMPILE_FLAGS})
     target_link_libraries(${name} PRIVATE ${H3_LINK_FLAGS})
+    target_compile_features(${name} PUBLIC c_std_99)
 
     find_library(M_LIB m)
     if(M_LIB)
