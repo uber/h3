@@ -104,7 +104,7 @@ int H3_EXPORT(isValidCell)(H3Index h) {
     int res = H3_GET_RESOLUTION(h);
     if (res < 0 || res > MAX_H3_RES) {  // LCOV_EXCL_BR_LINE
         // Resolutions less than zero can not be represented in an index
-        return 0;
+        return 0;  // LCOV_EXCL_LINE
     }
 
     bool foundFirstNonZeroDigit = false;
