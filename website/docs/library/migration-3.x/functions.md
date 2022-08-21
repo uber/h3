@@ -152,7 +152,6 @@ the passed-in cell.
 | `GeoCoord`        | `LatLng`          |                                   |
 | `Geofence`        | `GeoLoop`         | heap-allocated `LatLng`s          |
 | `GeoPolygon`      | `GeoPolygon`      |                                   |
-| `GeoMultiPolygon` | `GeoMultiPolygon` | currently not used                |
 
 
 ### Functions

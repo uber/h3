@@ -276,7 +276,6 @@ discussion requiring benchmarking, so we will defer that to a
 | `GeoBoundary`     | `CellBoundary`    | <= 10 stack-allocated `LatLng`s |
 | `Geofence`        | `GeoLoop`         | heap-allocated `LatLng`s        |
 | `GeoPolygon`      | `GeoPolygon`      |                                 |
-| `GeoMultiPolygon` | `GeoMultiPolygon` | currently not used              |
 
 
 ### Functions
