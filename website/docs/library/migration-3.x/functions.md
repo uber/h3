@@ -149,13 +149,12 @@ the passed-in cell.
 
 - rename `GeoBoundary` to `CellBoundary` to indicate it is space-limited to describing the geometry of cells
 
-|      3.x name     |    4.0.0 name     |               Notes               |
-|-------------------|-------------------|-----------------------------------|
-| `GeoBoundary`     | `CellBoundary`    | <= 10 stack-allocated `LatLng`s   |
-| `GeoCoord`        | `LatLng`          |                                   |
-| `Geofence`        | `GeoLoop`         | heap-allocated `LatLng`s          |
-| `GeoPolygon`      | `GeoPolygon`      |                                   |
-| `GeoMultiPolygon` | `GeoMultiPolygon` | currently not used                |
+|    3.x name   |   4.0.0 name   |              Notes              |
+|---------------|----------------|---------------------------------|
+| `GeoBoundary` | `CellBoundary` | <= 10 stack-allocated `LatLng`s |
+| `GeoCoord`    | `LatLng`       |                                 |
+| `Geofence`    | `GeoLoop`      | heap-allocated `LatLng`s        |
+| `GeoPolygon`  | `GeoPolygon`   |                                 |
 
 
 ### Functions

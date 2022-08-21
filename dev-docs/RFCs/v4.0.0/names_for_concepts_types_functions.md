@@ -276,13 +276,12 @@ discussion requiring benchmarking, so we will defer that to a
 
 - rename `GeoBoundary` to `CellBoundary` to indicate it is space-limited to describing the geometry of cells
 
-|    Current name   |   Proposed name   |              Notes              |
-|-------------------|-------------------|---------------------------------|
-| `GeoCoord`        | `LatLng`          |                                 |
-| `GeoBoundary`     | `CellBoundary`    | <= 10 stack-allocated `LatLng`s |
-| `Geofence`        | `GeoLoop`         | heap-allocated `LatLng`s        |
-| `GeoPolygon`      | `GeoPolygon`      |                                 |
-| `GeoMultiPolygon` | `GeoMultiPolygon` | currently not used              |
+|  Current name | Proposed name  |              Notes              |
+|---------------|----------------|---------------------------------|
+| `GeoCoord`    | `LatLng`       |                                 |
+| `GeoBoundary` | `CellBoundary` | <= 10 stack-allocated `LatLng`s |
+| `Geofence`    | `GeoLoop`      | heap-allocated `LatLng`s        |
+| `GeoPolygon`  | `GeoPolygon`   |                                 |
 
 
 ### Functions

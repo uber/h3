@@ -149,14 +149,6 @@ typedef struct {
     GeoLoop *holes;   ///< interior boundaries (holes) in the polygon
 } GeoPolygon;
 
-/** @struct GeoMultiPolygon
- *  @brief Simplified core of GeoJSON MultiPolygon coordinates definition
- */
-typedef struct {
-    int numPolygons;
-    GeoPolygon *polygons;
-} GeoMultiPolygon;
-
 /** @struct LinkedLatLng
  *  @brief A coordinate node in a linked geo structure, part of a linked list
  */
