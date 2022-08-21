@@ -78,6 +78,7 @@ As a C library, bindings can be made to call H3 functions from different program
 ## PHP
 
 - [neatlife/php-h3](https://github.com/neatlife/php-h3)
+- [abler98/h3-php](https://github.com/abler98/h3-php)
 
 ## PostgreSQL
 
