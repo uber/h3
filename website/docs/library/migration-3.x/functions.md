@@ -123,7 +123,7 @@ For a future undirected edge mode, use the term `Edge`.
 
 ### Area/Length Functions
 
-|    3.x name.    |         4.0.0 name          |
+|    3.x name.    |          4.0.0 name         |
 |-----------------|-----------------------------|
 | `hexAreaKm2`    | `getHexagonAreaAvgKm2`      |
 | `hexAreaM2`     | `getHexagonAreaAvgM2`       |
@@ -146,17 +146,17 @@ the passed-in cell.
 
 - rename `GeoBoundary` to `CellBoundary` to indicate it is space-limited to describing the geometry of cells
 
-|      3.x name     |    4.0.0 name     |               Notes               |
-|-------------------|-------------------|-----------------------------------|
-| `GeoBoundary`     | `CellBoundary`    | <= 10 stack-allocated `LatLng`s   |
-| `GeoCoord`        | `LatLng`          |                                   |
-| `Geofence`        | `GeoLoop`         | heap-allocated `LatLng`s          |
-| `GeoPolygon`      | `GeoPolygon`      |                                   |
+|    3.x name   |   4.0.0 name   |              Notes              |
+|---------------|----------------|---------------------------------|
+| `GeoBoundary` | `CellBoundary` | <= 10 stack-allocated `LatLng`s |
+| `GeoCoord`    | `LatLng`       |                                 |
+| `Geofence`    | `GeoLoop`      | heap-allocated `LatLng`s        |
+| `GeoPolygon`  | `GeoPolygon`   |                                 |
 
 
 ### Functions
 
-|              3.x name             |       4.0.0 name            |         Notes              |
+|              3.x name             |          4.0.0 name         |           Notes            |
 |-----------------------------------|-----------------------------|----------------------------|
 | `h3ToGeoBoundary`                 | `cellToBoundary`            | returns `CellBoundary`     |
 | *DNE*                             | `cellToLoop`                | returns `GeoLoop`          |
