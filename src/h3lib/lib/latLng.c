@@ -23,6 +23,7 @@
 #include <stdbool.h>
 
 #include "constants.h"
+#include "edge.h"
 #include "h3api.h"
 #include "mathExtensions.h"
 
@@ -423,13 +424,18 @@ H3Error H3_EXPORT(cellAreaM2)(H3Index cell, double *out) {
 /**
  * Length of a directed edge in radians.
  *
- * @param   edge  H3 directed edge
+ * @param   edge  H3 directed or nondirected edge
  *
  * @return        length in radians
  */
 H3Error H3_EXPORT(edgeLengthRads)(H3Index edge, double *length) {
     CellBoundary cb;
 
+    if (isValidEdge(edge)) {
+        // TODO: This could potentially generate a E_DIREDGE_INVALID error
+        // which would be confusing.
+        edge = edgeAsDirectedEdge(edge);
+    }
     H3Error err = H3_EXPORT(directedEdgeToBoundary)(edge, &cb);
     if (err) {
         return err;
@@ -445,7 +451,7 @@ H3Error H3_EXPORT(edgeLengthRads)(H3Index edge, double *length) {
 }
 
 /**
- * Length of a directed edge in kilometers.
+ * Length of a directed or nondirected edge in kilometers.
  */
 H3Error H3_EXPORT(edgeLengthKm)(H3Index edge, double *length) {
     H3Error err = H3_EXPORT(edgeLengthRads)(edge, length);
@@ -454,7 +460,7 @@ H3Error H3_EXPORT(edgeLengthKm)(H3Index edge, double *length) {
 }
 
 /**
- * Length of a directed edge in meters.
+ * Length of a directed or nondirected edge in meters.
  */
 H3Error H3_EXPORT(edgeLengthM)(H3Index edge, double *length) {
     H3Error err = H3_EXPORT(edgeLengthKm)(edge, length);

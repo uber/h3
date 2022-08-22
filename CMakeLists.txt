@@ -117,6 +117,7 @@ set(LIB_SOURCE_FILES
     src/h3lib/include/polygonAlgos.h
     src/h3lib/include/h3Index.h
     src/h3lib/include/directedEdge.h
+    src/h3lib/include/edge.h
     src/h3lib/include/latLng.h
     src/h3lib/include/vec2d.h
     src/h3lib/include/vec3d.h
@@ -142,6 +143,7 @@ set(LIB_SOURCE_FILES
     src/h3lib/lib/localij.c
     src/h3lib/lib/latLng.c
     src/h3lib/lib/directedEdge.c
+    src/h3lib/lib/edge.c
     src/h3lib/lib/mathExtensions.c
     src/h3lib/lib/iterators.c
     src/h3lib/lib/vertexGraph.c
@@ -204,6 +206,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testVec3d.c
     src/apps/testapps/testDirectedEdge.c
     src/apps/testapps/testDirectedEdgeExhaustive.c
+    src/apps/testapps/testEdge.c
     src/apps/testapps/testLinkedGeo.c
     src/apps/testapps/mkRandGeo.c
     src/apps/testapps/testH3Api.c
@@ -240,6 +243,7 @@ set(OTHER_SOURCE_FILES
     src/apps/fuzzers/fuzzerVertexes.c
     src/apps/fuzzers/fuzzerCompact.c
     src/apps/fuzzers/fuzzerDirectedEdge.c
+    src/apps/fuzzers/fuzzerEdge.c
     src/apps/fuzzers/fuzzerLocalIj.c
     src/apps/fuzzers/fuzzerPolygonToCells.c
     src/apps/fuzzers/fuzzerPolygonToCellsNoHoles.c
@@ -249,6 +253,7 @@ set(OTHER_SOURCE_FILES
     src/apps/benchmarks/benchmarkGridDiskCells.c
     src/apps/benchmarks/benchmarkGridPathCells.c
     src/apps/benchmarks/benchmarkDirectedEdge.c
+    src/apps/benchmarks/benchmarkEdge.c
     src/apps/benchmarks/benchmarkVertex.c
     src/apps/benchmarks/benchmarkIsValidCell.c
     src/apps/benchmarks/benchmarkH3Api.c)
@@ -484,6 +489,7 @@ if(BUILD_FUZZERS)
     add_h3_fuzzer(fuzzerVertexes src/apps/fuzzers/fuzzerVertexes.c)
     add_h3_fuzzer(fuzzerCompact src/apps/fuzzers/fuzzerCompact.c)
     add_h3_fuzzer(fuzzerDirectedEdge src/apps/fuzzers/fuzzerDirectedEdge.c)
+    add_h3_fuzzer(fuzzerEdge src/apps/fuzzers/fuzzerEdge.c)
     add_h3_fuzzer(fuzzerLocalIj src/apps/fuzzers/fuzzerLocalIj.c)
     add_h3_fuzzer(fuzzerPolygonToCells src/apps/fuzzers/fuzzerPolygonToCells.c)
     add_h3_fuzzer(fuzzerPolygonToCellsNoHoles src/apps/fuzzers/fuzzerPolygonToCellsNoHoles.c)
@@ -503,6 +509,7 @@ if(BUILD_BENCHMARKS)
     add_h3_benchmark(benchmarkGridDiskCells src/apps/benchmarks/benchmarkGridDiskCells.c)
     add_h3_benchmark(benchmarkGridPathCells src/apps/benchmarks/benchmarkGridPathCells.c)
     add_h3_benchmark(benchmarkDirectedEdge src/apps/benchmarks/benchmarkDirectedEdge.c)
+    add_h3_benchmark(benchmarkEdge src/apps/benchmarks/benchmarkEdge.c)
     add_h3_benchmark(benchmarkVertex src/apps/benchmarks/benchmarkVertex.c)
     add_h3_benchmark(benchmarkIsValidCell src/apps/benchmarks/benchmarkIsValidCell.c)
     add_h3_benchmark(benchmarkCellsToLinkedMultiPolygon src/apps/benchmarks/benchmarkCellsToLinkedMultiPolygon.c)

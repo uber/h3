@@ -668,6 +668,58 @@ DECLSPEC H3Error H3_EXPORT(directedEdgeToBoundary)(H3Index edge,
                                                    CellBoundary *gb);
 /** @} */
 
+/** @defgroup cellsToEdge cellsToEdge
+ * Functions for cellsToEdge
+ * @{
+ */
+/** @brief returns the nondirected edge H3Index for the specified cells */
+DECLSPEC H3Error H3_EXPORT(cellsToEdge)(H3Index cell1, H3Index cell2,
+                                        H3Index *out);
+/** @} */
+
+/** @defgroup isValidEdge isValidEdge
+ * Functions for isValidEdge
+ * @{
+ */
+/** @brief returns whether the H3Index is a valid (nondirected) edge */
+DECLSPEC int H3_EXPORT(isValidEdge)(H3Index edge);
+/** @} */
+
+/** @defgroup directedEdgeToCells \
+ * directedEdgeToCells
+ * Functions for directedEdgeToCells
+ * @{
+ */
+/** @brief Returns the neighboring cells from the (nondirected) edge H3Index */
+DECLSPEC H3Error H3_EXPORT(edgeToCells)(H3Index edge, H3Index *cells);
+/** @} */
+
+/** @defgroup cellToEdges \
+ * cellToEdges
+ * Functions for cellToEdges
+ * @{
+ */
+/** @brief Returns the 6 (or 5 for pentagons) edges associated with the H3Index
+ */
+DECLSPEC H3Error H3_EXPORT(cellToEdges)(H3Index origin, H3Index *edges);
+/** @} */
+
+/** @defgroup edgeToBoundary edgeToBoundary
+ * Functions for edgeToBoundary
+ * @{
+ */
+/** @brief Returns the CellBoundary containing the coordinates of the edge */
+DECLSPEC H3Error H3_EXPORT(edgeToBoundary)(H3Index edge, CellBoundary *gb);
+/** @} */
+
+/** @defgroup directedEdgeToEdge directedEdgeToEdge
+ * Functions for directedEdgeToEdge
+ * @{
+ */
+/** @brief Returns the nondirected edge for the given directed edge */
+DECLSPEC H3Error H3_EXPORT(directedEdgeToEdge)(H3Index edge, H3Index *out);
+/** @} */
+
 /** @defgroup cellToVertex cellToVertex
  * Functions for cellToVertex
  * @{
