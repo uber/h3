@@ -6,6 +6,8 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+### Fixed
+- Changing an internal `float` to `double` improves the precision of geographic coordinate output (#652)
 
 ## [4.0.0] - 2022-08-23
 ### Breaking changes
