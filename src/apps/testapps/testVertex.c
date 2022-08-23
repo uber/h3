@@ -103,8 +103,7 @@ SUITE(Vertex) {
     TEST(cellToVertex_invalid) {
         H3Index invalid = 0xFFFFFFFFFFFFFFFF;
         H3Index vert;
-        // TODO: Assert specific error
-        t_assert(H3_EXPORT(cellToVertex)(invalid, 3, &vert) != E_SUCCESS,
+        t_assert(H3_EXPORT(cellToVertex)(invalid, 3, &vert) == E_FAILED,
                  "Invalid cell returns error");
     }
 
