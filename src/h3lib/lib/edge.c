@@ -134,13 +134,15 @@ H3Error H3_EXPORT(cellsToEdge)(H3Index cell1, H3Index cell2, H3Index *out) {
  * @return 1 if it is an edge H3Index, otherwise 0.
  */
 int H3_EXPORT(isValidEdge)(H3Index edge) {
+    if (H3_GET_MODE(edge) != H3_EDGE_MODE) {
+        return 0;
+    }
     Direction neighborDirection = H3_GET_RESERVED_BITS(edge);
     if (neighborDirection <= CENTER_DIGIT || neighborDirection >= NUM_DIGITS) {
         return 0;
     }
 
     H3Index cells[2] = {0};
-    // Note: This call is also checking for H3_EDGE_MODE
     // We also rely on the first returned cell being the "owning" cell.
     H3Error cellsResult = H3_EXPORT(edgeToCells)(edge, cells);
     if (cellsResult) {
@@ -166,6 +168,8 @@ int H3_EXPORT(isValidEdge)(H3Index edge) {
  * @param cells Pointer to memory to store cell IDs
  */
 H3Error H3_EXPORT(edgeToCells)(H3Index edge, H3Index *cells) {
+    // Note: this function will accept directed edges as well, but report
+    // E_UNDIR_EDGE_INVALID errors.
     H3Index directedEdge = edgeAsDirectedEdge(edge);
     H3Error cellsResult = H3_EXPORT(directedEdgeToCells)(directedEdge, cells);
     if (cellsResult) {
@@ -191,7 +195,7 @@ H3Error H3_EXPORT(cellToEdges)(H3Index origin, H3Index *edges) {
             edges[i] = H3_NULL;
         } else {
             H3Index edge = origin;
-            H3_SET_MODE(edge, H3_DIRECTEDEDGE_MODE);
+            H3_SET_MODE(edge, H3_EDGE_MODE);
             H3_SET_RESERVED_BITS(edge, i + 1);
             H3Error normalizeError = normalizeEdge(edge, &edges[i]);
             if (normalizeError) {
@@ -208,6 +212,8 @@ H3Error H3_EXPORT(cellToEdges)(H3Index origin, H3Index *edges) {
  * @param cb The cellboundary object to store the edge coordinates.
  */
 H3Error H3_EXPORT(edgeToBoundary)(H3Index edge, CellBoundary *cb) {
+    // Note: this function will accept directed edges as well, but report
+    // E_UNDIR_EDGE_INVALID errors.
     H3Index directedEdge = edgeAsDirectedEdge(edge);
     return wrapDirectedEdgeError(
         H3_EXPORT(directedEdgeToBoundary)(directedEdge, cb));
