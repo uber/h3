@@ -344,8 +344,8 @@ H3Error h3NeighborRotations(H3Index origin, Direction dir, int *rotations,
 
     int newRotations = 0;
     int oldBaseCell = H3_GET_BASE_CELL(current);
-    if (oldBaseCell < 0 ||
-        oldBaseCell >= NUM_BASE_CELLS) {  // LCOV_EXCL_BR_LINE
+    if (oldBaseCell < 0 ||  // LCOV_EXCL_BR_LINE
+        oldBaseCell >= NUM_BASE_CELLS) {
         // Base cells less than zero can not be represented in an index
         return E_CELL_INVALID;
     }
@@ -757,7 +757,11 @@ H3Error H3_EXPORT(maxPolygonToCellsSize)(const GeoPolygon *geoPolygon, int res,
     BBox bbox;
     const GeoLoop geoloop = geoPolygon->geoloop;
     bboxFromGeoLoop(&geoloop, &bbox);
-    int64_t numHexagons = bboxHexEstimate(&bbox, res);
+    int64_t numHexagons;
+    H3Error estimateErr = bboxHexEstimate(&bbox, res, &numHexagons);
+    if (estimateErr) {
+        return estimateErr;
+    }
     // This algorithm assumes that the number of vertices is usually less than
     // the number of hexagons, but when it's wrong, this will keep it from
     // failing
@@ -800,8 +804,12 @@ H3Error _getEdgeHexagons(const GeoLoop *geoloop, int64_t numHexagons, int res,
         LatLng origin = geoloop->verts[i];
         LatLng destination = i == geoloop->numVerts - 1 ? geoloop->verts[0]
                                                         : geoloop->verts[i + 1];
-        const int64_t numHexesEstimate =
-            lineHexEstimate(&origin, &destination, res);
+        int64_t numHexesEstimate;
+        H3Error estimateErr =
+            lineHexEstimate(&origin, &destination, res, &numHexesEstimate);
+        if (estimateErr) {
+            return estimateErr;
+        }
         for (int64_t j = 0; j < numHexesEstimate; j++) {
             LatLng interpolate;
             interpolate.lat =

@@ -232,7 +232,7 @@ set(OTHER_SOURCE_FILES
     src/apps/fuzzers/fuzzerCellsToLinkedMultiPolygon.c
     src/apps/fuzzers/fuzzerDistances.c
     src/apps/fuzzers/fuzzerCellArea.c
-    src/apps/fuzzers/fuzzerExactEdgeLength.c
+    src/apps/fuzzers/fuzzerEdgeLength.c
     src/apps/fuzzers/fuzzerCellProperties.c
     src/apps/fuzzers/fuzzerIndexIO.c
     src/apps/fuzzers/fuzzerResolutions.c
@@ -476,7 +476,7 @@ if(BUILD_FUZZERS)
     add_h3_fuzzer(fuzzerCellsToLinkedMultiPolygon src/apps/fuzzers/fuzzerCellsToLinkedMultiPolygon.c)
     add_h3_fuzzer(fuzzerDistances src/apps/fuzzers/fuzzerDistances.c)
     add_h3_fuzzer(fuzzerCellArea src/apps/fuzzers/fuzzerCellArea.c)
-    add_h3_fuzzer(fuzzerExactEdgeLength src/apps/fuzzers/fuzzerExactEdgeLength.c)
+    add_h3_fuzzer(fuzzerEdgeLength src/apps/fuzzers/fuzzerEdgeLength.c)
     add_h3_fuzzer(fuzzerCellProperties src/apps/fuzzers/fuzzerCellProperties.c)
     add_h3_fuzzer(fuzzerIndexIO src/apps/fuzzers/fuzzerIndexIO.c)
     add_h3_fuzzer(fuzzerResolutions src/apps/fuzzers/fuzzerResolutions.c)

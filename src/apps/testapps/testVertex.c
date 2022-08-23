@@ -183,4 +183,11 @@ SUITE(Vertex) {
         t_assert(H3_EXPORT(vertexToLatLng)(invalid, &latLng) != E_SUCCESS,
                  "Invalid vertex returns error");
     }
+
+    TEST(cellToVertexes_invalid) {
+        H3Index invalid = 0xFFFFFFFFFFFFFFFF;
+        H3Index verts[6] = {0};
+        t_assert(H3_EXPORT(cellToVertexes)(invalid, verts) == E_FAILED,
+                 "cellToVertexes fails for invalid cell");
+    }
 }
