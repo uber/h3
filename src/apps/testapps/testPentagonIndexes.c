@@ -56,6 +56,16 @@ SUITE(getPentagons) {
         }
     }
 
+    TEST(getPentagonsInvalid) {
+        H3Index h3Indexes[PADDED_COUNT] = {0};
+        t_assert(H3_EXPORT(getPentagons)(16, h3Indexes) == E_RES_DOMAIN,
+                 "getPentagons of invalid resolutions fails");
+        t_assert(H3_EXPORT(getPentagons)(100, h3Indexes) == E_RES_DOMAIN,
+                 "getPentagons of invalid resolutions fails");
+        t_assert(H3_EXPORT(getPentagons)(-1, h3Indexes) == E_RES_DOMAIN,
+                 "getPentagons of invalid resolutions fails");
+    }
+
     TEST(invalidPentagons) {
         t_assert(!H3_EXPORT(isPentagon)(0), "0 is not a pentagon");
         t_assert(!H3_EXPORT(isPentagon)(0x7fffffffffffffff),
