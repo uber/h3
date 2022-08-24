@@ -431,7 +431,7 @@ H3Error H3_EXPORT(cellAreaM2)(H3Index cell, double *out) {
 H3Error H3_EXPORT(edgeLengthRads)(H3Index edge, double *length) {
     CellBoundary cb;
 
-    if (isValidEdge(edge)) {
+    if (H3_EXPORT(isValidEdge)(edge)) {
         // TODO: This could potentially generate a E_DIREDGE_INVALID error
         // which would be confusing.
         edge = edgeAsDirectedEdge(edge);
