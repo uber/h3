@@ -6,6 +6,8 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+### Added
+- (Undirected) edge index mode. (#654)
 
 ## [4.0.0] - 2022-08-23
 ### Breaking changes
