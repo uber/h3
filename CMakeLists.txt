@@ -14,20 +14,26 @@
 
 cmake_minimum_required(VERSION 3.20) # Due to dependency on CMP0115
 
+# Do not try to append extensions to source files
+cmake_policy(SET CMP0115 NEW)
+
+file(READ VERSION H3_VERSION LIMIT_COUNT 1)
+# Clean any newlines
+string(REPLACE "\n" "" H3_VERSION "${H3_VERSION}")
+# Remove any trailing qualifier
+string(REGEX REPLACE "-.*$" "" H3_VERSION "${H3_VERSION}")
+
+project(h3 LANGUAGES C VERSION ${H3_VERSION})
+
 set(H3_PREFIX "" CACHE STRING "Prefix for exported symbols")
 set(H3_ALLOC_PREFIX "" CACHE STRING "Prefix for allocation functions")
 
-# Do not try to append extensions to source files
-cmake_policy(SET CMP0115 NEW)
 # Needed due to CMP0042
 set(CMAKE_MACOSX_RPATH 1)
 # YCM needs compilation database
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cmake/toolchain.cmake"
-    CACHE FILEPATH
-    "Toolchain to use for building this project")
 
 # Some misc apps do not work with shared libraries on Windows
 # because they require access to internal H3 functions. Build these
@@ -61,18 +67,11 @@ else()
     set(LIBRARY_OUTPUT_PATH lib)
 endif()
 
-file(READ VERSION H3_VERSION LIMIT_COUNT 1)
-# Clean any newlines
-string(REPLACE "\n" "" H3_VERSION "${H3_VERSION}")
-# Remove any trailing qualifier
-string(REGEX REPLACE "-.*$" "" H3_VERSION "${H3_VERSION}")
 string(REPLACE "." ";" H3_VERSION_LIST "${H3_VERSION}")
 list(GET H3_VERSION_LIST 0 H3_VERSION_MAJOR)
 list(GET H3_VERSION_LIST 1 H3_VERSION_MINOR)
 list(GET H3_VERSION_LIST 2 H3_VERSION_PATCH)
 set(H3_SOVERSION 1)
-
-project(h3 LANGUAGES C VERSION ${H3_VERSION})
 
 # Detect if someone else is including the package
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
@@ -267,6 +266,7 @@ function(add_h3_library name h3_alloc_prefix_override)
 
     target_compile_options(${name} PRIVATE ${H3_COMPILE_FLAGS})
     target_link_libraries(${name} PRIVATE ${H3_LINK_FLAGS})
+    target_compile_features(${name} PUBLIC c_std_99)
 
     find_library(M_LIB m)
     if(M_LIB)
