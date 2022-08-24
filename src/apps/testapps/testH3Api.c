@@ -115,8 +115,9 @@ SUITE(h3Api) {
 
     TEST(cellToLatLngInvalid) {
         LatLng coord;
-        H3_EXPORT(cellToLatLng)(0x7fffffffffffffff, &coord);
-        // Test is this should not crash (should return an error in the future)
+        t_assert(H3_EXPORT(cellToLatLng)(0x7fffffffffffffff, &coord) ==
+                     E_CELL_INVALID,
+                 "invalid cell gives error");
     }
 
     TEST(version) {
