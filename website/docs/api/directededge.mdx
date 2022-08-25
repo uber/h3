@@ -55,7 +55,7 @@ h3.areNeighborCells(origin, destination)
 function example() {
   const origin = '85283473fffffff';
   const destination = '85283477fffffff';
-  return String(h3.areNeighborCells(origin, destination));
+  return h3.areNeighborCells(origin, destination);
 }
 ```
 
@@ -165,7 +165,7 @@ h3.isValidDirectedEdge(edge)
 ```js live
 function example() {
   const edge = '115283473fffffff';
-  return String(h3.isValidDirectedEdge(edge));
+  return h3.isValidDirectedEdge(edge);
 }
 ```
 
