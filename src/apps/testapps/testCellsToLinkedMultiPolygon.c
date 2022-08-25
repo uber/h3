@@ -346,9 +346,10 @@ SUITE(cellsToLinkedMultiPolygon) {
         H3Index indexes[] = {0, 0, 0, 0, 0, 0};
 
         for (int res = 1; res < 15; res++) {
-            // Take the 1-disk of the center child at res. Note: We can't take the
-            // 2-disk here, as increased distortion around the pentagon will still fail
-            // at res 1. TODO: Use a 2-ring, start at res 0 when output is correct.
+            // Take the 1-disk of the center child at res. Note: We can't take
+            // the 2-disk here, as increased distortion around the pentagon will
+            // still fail at res 1. TODO: Use a 2-ring, start at res 0 when
+            // output is correct.
             t_assertSuccess(
                 H3_EXPORT(cellToCenterChild)(baseCell, res, &origin));
             t_assertSuccess(H3_EXPORT(gridDisk)(origin, 1, diskIndexes));
