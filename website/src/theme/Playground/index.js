@@ -80,6 +80,7 @@ export default function Playground({children, transformCode, ...props}) {
       <LiveProvider
         code={children.replace(/\n$/, '')}
         noInline={noInline}
+        /* || 'undefined' is to work around https://github.com/facebook/docusaurus/issues/8009 */
         transformCode={transformCode || ((code) => `JSON.stringify(${code}(), null, 2) || 'undefined';`)}
         theme={prismTheme}
         {...props}>
