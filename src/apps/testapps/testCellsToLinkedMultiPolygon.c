@@ -309,7 +309,7 @@ SUITE(cellsToLinkedMultiPolygon) {
                  "invalid cells fail");
     }
 
-    TEST(kRingResolutions) {
+    TEST(gridDiskResolutions) {
         // This is a center-face base cell, no pentagon siblings
         H3Index baseCell = 0x8073fffffffffff;
         H3Index origin = baseCell;
@@ -318,10 +318,10 @@ SUITE(cellsToLinkedMultiPolygon) {
         int numHexes = 7;
 
         for (int res = 1; res < 15; res++) {
-            // Take the 1-disk of the center child at res
+            // Take the 2-disk of the center child at res
             t_assertSuccess(
                 H3_EXPORT(cellToCenterChild)(baseCell, res, &origin));
-            t_assertSuccess(H3_EXPORT(gridDisk)(origin, 1, indexes));
+            t_assertSuccess(H3_EXPORT(gridDisk)(origin, 2, indexes));
 
             // Test the polygon output
             LinkedGeoPolygon polygon;
@@ -337,7 +337,7 @@ SUITE(cellsToLinkedMultiPolygon) {
         }
     }
 
-    TEST(kRingResolutionsPentagon) {
+    TEST(gridDiskResolutionsPentagon) {
         // This is a pentagon base cell
         H3Index baseCell = 0x8031fffffffffff;
         H3Index origin = baseCell;
@@ -346,7 +346,9 @@ SUITE(cellsToLinkedMultiPolygon) {
         H3Index indexes[] = {0, 0, 0, 0, 0, 0};
 
         for (int res = 1; res < 15; res++) {
-            // Take the 1-disk of the center child at res
+            // Take the 1-disk of the center child at res. Note: We can't take the
+            // 2-disk here, as increased distortion around the pentagon will still fail
+            // at res 1. TODO: Use a 2-ring, start at res 0 when output is correct.
             t_assertSuccess(
                 H3_EXPORT(cellToCenterChild)(baseCell, res, &origin));
             t_assertSuccess(H3_EXPORT(gridDisk)(origin, 1, diskIndexes));
