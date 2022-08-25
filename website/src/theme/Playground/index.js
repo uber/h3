@@ -1,7 +1,7 @@
 import React from 'react';
 import clsx from 'clsx';
 import useIsBrowser from '@docusaurus/useIsBrowser';
-import {LiveProvider, LiveEditor, LiveError, LivePreview, LiveContext} from 'react-live';
+import {LiveProvider, LiveEditor, LiveError, LivePreview} from 'react-live';
 import Translate from '@docusaurus/Translate';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import BrowserOnly from '@docusaurus/BrowserOnly';
@@ -31,6 +31,7 @@ function ResultWithHeader() {
         <BrowserOnly fallback={<LivePreviewLoader />}>
           {() => (
             <>
+              {/* H3 specific change: use the code component here for styling reasons */}
               <LivePreview Component='code' />
               <LiveError />
             </>
@@ -80,7 +81,11 @@ export default function Playground({children, transformCode, ...props}) {
       <LiveProvider
         code={children.replace(/\n$/, '')}
         noInline={noInline}
-        /* || 'undefined' is to work around https://github.com/facebook/docusaurus/issues/8009 */
+        /*
+        H3 specific changes:
+        1) JSON.stringify of the code results, with indentation
+        2) `|| 'undefined'` is to work around https://github.com/facebook/docusaurus/issues/8009
+        */
         transformCode={transformCode || ((code) => `JSON.stringify(${code}(), null, 2) || 'undefined';`)}
         theme={prismTheme}
         {...props}>

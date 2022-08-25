@@ -31,11 +31,13 @@
   padding: 1rem;
   background-color: var(--ifm-pre-background);
 
+  /* H3 specific change for styling results*/
   max-height: 12em;
   overflow-x: hidden;
   overflow-y: auto;
 }
 
+/* H3 specific change for styling results*/
 .playgroundPreview code {
   white-space: pre;
   border: 0;
