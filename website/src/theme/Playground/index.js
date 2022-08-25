@@ -8,20 +8,6 @@ import BrowserOnly from '@docusaurus/BrowserOnly';
 import {usePrismTheme} from '@docusaurus/theme-common';
 import styles from './styles.module.css';
 
-// Modified version to wrap:
-// https://github.com/FormidableLabs/react-live/blob/4ef370647d4e52f8f87148b70c6429237de508cb/src/utils/transpile/errorBoundary.js
-// In order to fix issues with null rendering. Note that this just swallows errors
-// that would have crashed the above.
-class ErrorBoundary2 extends React.Component {
-  componentDidCatch() {
-    // Don't do anything
-  }
-
-  render() {
-    return this.props.children;
-  }
-}
-
 function Header({children}) {
   return <div className={clsx(styles.playgroundHeader)}>{children}</div>;
 }
