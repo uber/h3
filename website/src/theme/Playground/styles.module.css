@@ -38,8 +38,6 @@
 
 .playgroundPreview code {
   white-space: pre;
-  padding: 0;
   border: 0;
   background-color: transparent;
-  overflow: scroll;
 }
