@@ -1,12 +1,8 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
 .playgroundContainer {
   margin-bottom: var(--ifm-leading);
+  border-radius: var(--ifm-global-radius);
+  box-shadow: var(--ifm-global-shadow-lw);
+  overflow: hidden;
 }
 
 .playgroundHeader {
@@ -22,23 +18,28 @@
 .playgroundHeader:first-of-type {
   background: var(--ifm-color-emphasis-600);
   color: var(--ifm-color-content-inverse);
-  border-top-left-radius: var(--ifm-global-radius);
-  border-top-right-radius: var(--ifm-global-radius);
 }
 
 .playgroundEditor {
   font: var(--ifm-code-font-size) / var(--ifm-pre-line-height)
     var(--ifm-font-family-monospace) !important;
-  /*rtl:ignore*/
+  /* rtl:ignore */
   direction: ltr;
 }
 
 .playgroundPreview {
-  border: 1px solid var(--ifm-color-emphasis-200);
   padding: 1rem;
+  background-color: var(--ifm-pre-background);
+
+  /* H3 specific change for styling results*/
+  max-height: 12em;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
-.playgroundPreview:last-of-type, .playgroundEditor:last-of-type {
-  border-bottom-left-radius: var(--ifm-global-radius);
-  border-bottom-right-radius: var(--ifm-global-radius);
+/* H3 specific change for styling results*/
+.playgroundPreview code {
+  white-space: pre;
+  border: 0;
+  background-color: transparent;
 }
