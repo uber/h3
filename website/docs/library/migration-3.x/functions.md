@@ -168,4 +168,4 @@ the passed-in cell.
 | *DNE*                             | `boundaryToLoop`            |                            |
 | `getH3UnidirectionalEdgeBoundary` | `directedEdgeToBoundary`    | returns `CellBoundary`     |
 | `h3SetToLinkedGeo`                | `cellsToLinkedMultiPolygon` | returns `LinkedGeoPolygon` |
-| `h3SetToToMultiPolygon`           | `cellsToMultiPolygon`       | bindings only              |
+| `h3SetToMultiPolygon`             | `cellsToMultiPolygon`       | bindings only              |
