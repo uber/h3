@@ -25,7 +25,7 @@ These functions convert H3 indexes to and from polygonal areas.
 <TabItem value="c">
 
 ```c
-H3Error polygonToCells(const GeoPolygon *geoPolygon, int res, H3Index *out);
+H3Error polygonToCells(const GeoPolygon *geoPolygon, int res, uint32_t flags, H3Index *out);
 ```
 
 </TabItem>
@@ -91,7 +91,7 @@ Returns 0 (`E_SUCCESS`) on success.
 <TabItem value="c">
 
 ```c
-H3Error maxPolygonToCellsSize(const GeoPolygon *geoPolygon, int res, int *out);
+H3Error maxPolygonToCellsSize(const GeoPolygon *geoPolygon, int res, uint32_t flags, int64_t *out);
 ```
 
 </TabItem>
