@@ -1155,3 +1155,67 @@ H3Error H3_EXPORT(cellsToLinkedMultiPolygon)(const H3Index *h3Set,
     destroyVertexGraph(&graph);
     return E_SUCCESS;
 }
+
+/*
+typedef struct {
+    int numVerts;
+    LatLng *verts;
+} GeoLoop;
+
+
+typedef struct {
+    GeoLoop geoloop;  ///< exterior boundary of the polygon
+    int numHoles;     ///< number of elements in the array pointed to by holes
+    GeoLoop *holes;   ///< interior boundaries (holes) in the polygon
+} GeoPolygon;
+
+typedef struct {
+    int numPolygons;
+    GeoPolygon *polygons;
+} GeoMultiPolygon;
+
+typedef struct LinkedLatLng LinkedLatLng;
+struct LinkedLatLng {
+    LatLng vertex;
+    LinkedLatLng *next;
+};
+
+typedef struct LinkedGeoLoop LinkedGeoLoop;
+struct LinkedGeoLoop {
+    LinkedLatLng *first;
+    LinkedLatLng *last;
+    LinkedGeoLoop *next;
+};
+
+typedef struct LinkedGeoPolygon LinkedGeoPolygon;
+struct LinkedGeoPolygon {
+    LinkedGeoLoop *first;
+    LinkedGeoLoop *last;
+    LinkedGeoPolygon *next;
+};
+*/
+
+H3Error H3_EXPORT(LinkedToGeoMultiPolygon)(const LinkedGeoPolygon *link_poly,
+                                           GeoMultiPolygon *geo_poly) {
+    geo_poly->numPolygons = 0;
+
+    LinkedGeoPolygon *L = link_poly;
+    while (L) {
+        geo_poly->numPolygons++;
+        L = L->next;
+    }
+    geo_poly->polygons =
+        H3_MEMORY(calloc)(geo_poly->numPolygons, sizeof(GeoPolygon));
+
+    L = link_poly;
+    while (L) {
+        // geo_poly->numPolygons++;
+        L = L->next;
+        // TODO: do something
+    }
+}
+
+H3Error _LinkedGeoPolygon_to_Polygon(const LinkedGeoPolygon *link_poly,
+                                     GeoPolygon *poly) {
+    1 + 1;
+}

@@ -298,6 +298,9 @@ DECLSPEC H3Error H3_EXPORT(cellsToLinkedMultiPolygon)(const H3Index *h3Set,
 DECLSPEC void H3_EXPORT(destroyLinkedMultiPolygon)(LinkedGeoPolygon *polygon);
 /** @} */
 
+DECLSPEC H3Error H3_EXPORT(LinkedToGeoMultiPolygon)(const LinkedGeoPolygon *lgp,
+                                                    GeoMultiPolygon *gmp);
+
 /** @defgroup degsToRads degsToRads
  * Functions for degsToRads
  * @{
