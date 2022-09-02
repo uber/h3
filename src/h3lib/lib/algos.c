@@ -1156,7 +1156,6 @@ H3Error H3_EXPORT(cellsToLinkedMultiPolygon)(const H3Index *h3Set,
     return E_SUCCESS;
 }
 
-
 int num_polys(LinkedGeoPolygon *L) {
     int n = 0;
     while (L) {
@@ -1185,11 +1184,6 @@ int num_latlngs(LinkedLatLng *L) {
 }
 
 /*
-GeoLoop:
-    int numVerts
-    LatLng *verts
-
-
 LinkedGeoLoop:
     LinkedLatLng *first
     LinkedLatLng *last
@@ -1199,13 +1193,17 @@ LinkedLatLng:
     LatLng vertex
     LinkedLatLng *next
 
+GeoLoop:
+    int numVerts
+    LatLng *verts
  */
 GeoLoop _LinkedGeoLoop_to_GeoLoop(LinkedGeoLoop link_loop) {
     int n = num_latlngs(link_loop.first);  // double?
 
-    GeoLoop geo_loop;
-    geo_loop.numVerts = n;
-    geo_loop.verts = H3_MEMORY(calloc)(n, sizeof(LatLng));
+    GeoLoop geo_loop = {
+        .numVerts = n,
+        .verts = H3_MEMORY(calloc)(n, sizeof(LatLng))  // comment to make this
+    };
 
     LinkedLatLng *L = link_loop.first;  // double?
     int i = 0;
@@ -1219,12 +1217,6 @@ GeoLoop _LinkedGeoLoop_to_GeoLoop(LinkedGeoLoop link_loop) {
 }
 
 /*
-
-GeoPolygon:
-    GeoLoop geoloop
-    int numHoles
-    GeoLoop *holes
-
 LinkedGeoPolygon:
     LinkedGeoLoop *first
     LinkedGeoLoop *last
@@ -1235,6 +1227,10 @@ LinkedGeoLoop:
     LinkedLatLng *last
     LinkedGeoLoop *next
 
+GeoPolygon:
+    GeoLoop geoloop
+    int numHoles
+    GeoLoop *holes
  */
 GeoPolygon _LinkedGeoPolygon_to_Polygon(LinkedGeoPolygon link_poly) {
     GeoPolygon geo_poly;
@@ -1243,6 +1239,11 @@ GeoPolygon _LinkedGeoPolygon_to_Polygon(LinkedGeoPolygon link_poly) {
     geo_poly.geoloop = _LinkedGeoLoop_to_GeoLoop(*L);
     L = L->next;
 
+    // todo: try the struct member notation here. might be a bit triky for this
+    // one
+    // notationally, the setup here is amazing, becuase it makes it very clear
+    // via symmetry to the user that we are setting up the thing we are
+    // populating in this structure.
     geo_poly.numHoles = num_loops(L);
     geo_poly.holes = H3_MEMORY(calloc)(geo_poly.numHoles, sizeof(GeoLoop));
 
@@ -1267,21 +1268,28 @@ GeoMultiPolygon:
     GeoPolygon *polygons
 
  */
-GeoMultiPolygon _LinkedGeoPolygon_to_GeoMultiPolygon(
-    LinkedGeoPolygon *link_poly) {
+GeoMultiPolygon _LinkedGeoPoly_to_GeoMultiPolygon(LinkedGeoPolygon *link_poly) {
     int n = num_polys(link_poly);
 
-    GeoMultiPolygon geo_mpoly;
-    geo_mpoly.numPolygons = n;
-    geo_mpoly.polygons = H3_MEMORY(calloc)(n, sizeof(GeoPolygon));
+    GeoMultiPolygon geo_mpoly = {
+        .numPolygons = n,
+        .polygons = H3_MEMORY(calloc)(n, sizeof(GeoPolygon))  // combine this
+    };
 
     LinkedGeoPolygon *L = link_poly;
-    int i = 0;
+    int i = 0;  // macro here?
     while (L) {
-        geo_mpoly.polygons[i] = _LinkedGeoPolygon_to_Polygon(*L);
+        {
+            geo_mpoly.polygons[i] = _LinkedGeoPolygon_to_Polygon(*L);
+        }  // with this?
         L = L->next;
         i++;
     }
 
+    // something like this:
+    // WALK(i, L, { geo_mpoly.polygons[i] = _LinkedGeoPolygon_to_Polygon(*L); })
+
     return geo_mpoly;
 }
+
+// todo: need one to delete GeoMultiPolygon
