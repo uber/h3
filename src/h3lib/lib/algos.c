@@ -1157,11 +1157,6 @@ H3Error H3_EXPORT(cellsToLinkedMultiPolygon)(const H3Index *h3Set,
 }
 
 /*
-typedef struct {
-    int numVerts;
-    LatLng *verts;
-} GeoLoop;
-
 
 typedef struct {
     GeoLoop geoloop;  ///< exterior boundary of the polygon
@@ -1174,19 +1169,6 @@ typedef struct {
     GeoPolygon *polygons;
 } GeoMultiPolygon;
 
-typedef struct LinkedLatLng LinkedLatLng;
-struct LinkedLatLng {
-    LatLng vertex;
-    LinkedLatLng *next;
-};
-
-typedef struct LinkedGeoLoop LinkedGeoLoop;
-struct LinkedGeoLoop {
-    LinkedLatLng *first;
-    LinkedLatLng *last;
-    LinkedGeoLoop *next;
-};
-
 typedef struct LinkedGeoPolygon LinkedGeoPolygon;
 struct LinkedGeoPolygon {
     LinkedGeoLoop *first;
@@ -1195,27 +1177,90 @@ struct LinkedGeoPolygon {
 };
 */
 
-H3Error H3_EXPORT(LinkedToGeoMultiPolygon)(const LinkedGeoPolygon *link_poly,
-                                           GeoMultiPolygon *geo_poly) {
-    geo_poly->numPolygons = 0;
-
-    LinkedGeoPolygon *L = link_poly;
+int num_polys(LinkedGeoPolygon *L) {
+    int n = 0;
     while (L) {
-        geo_poly->numPolygons++;
+        n++;
         L = L->next;
     }
+    return n;
+}
+
+int num_loops(LinkedGeoLoop *L) {
+    int n = 0;
+    while (L) {
+        n++;
+        L = L->next;
+    }
+    return n;
+}
+
+int num_latlngs(LinkedLatLng *L) {
+    int n = 0;
+    while (L) {
+        n++;
+        L = L->next;
+    }
+    return n;
+}
+
+H3Error H3_EXPORT(LinkedToGeoMultiPolygon)(const LinkedGeoPolygon *link_poly,
+                                           GeoMultiPolygon *geo_poly) {
+    geo_poly->numPolygons = num_polys(link_poly);
     geo_poly->polygons =
         H3_MEMORY(calloc)(geo_poly->numPolygons, sizeof(GeoPolygon));
 
-    L = link_poly;
-    while (L) {
-        // geo_poly->numPolygons++;
-        L = L->next;
-        // TODO: do something
-    }
+    // L = link_poly;
+    // while (L) {
+    //     // geo_poly->numPolygons++;
+    //     L = L->next;
+    //     // TODO: do something
+    // }
 }
 
-H3Error _LinkedGeoPolygon_to_Polygon(const LinkedGeoPolygon *link_poly,
-                                     GeoPolygon *poly) {
-    1 + 1;
+GeoPolygon _LinkedGeoPolygon_to_Polygon(LinkedGeoPolygon link_poly) {
+    GeoPolygon geo_poly;
+    geo_poly.numHoles = num_loops(link_poly.first) - 1;
+
+    // do exterior loop
+    // do the holes loops
+
+    return geo_poly;
+}
+
+/*
+typedef struct {
+    int numVerts;
+    LatLng *verts;
+} GeoLoop;
+
+typedef struct LinkedGeoLoop LinkedGeoLoop;
+struct LinkedGeoLoop {
+    LinkedLatLng *first;
+    LinkedLatLng *last;
+    LinkedGeoLoop *next;
+};
+
+typedef struct LinkedLatLng LinkedLatLng;
+struct LinkedLatLng {
+    LatLng vertex;
+    LinkedLatLng *next;
+};
+ */
+GeoLoop _LinkedGeoLoop_to_GeoLoop(LinkedGeoLoop link_loop) {
+    int n = num_latlngs(link_loop.first);
+
+    GeoLoop geo_loop;
+    geo_loop.numVerts = n;
+    geo_loop.verts = H3_MEMORY(calloc)(n, sizeof(LatLng));
+
+    LinkedLatLng *L = link_loop.first;
+    int i = 0;
+    while (L) {
+        geo_loop.verts[i] = L->vertex;
+        L = L->next;
+        i++;
+    }
+
+    return geo_loop;
 }
