@@ -1218,6 +1218,21 @@ H3Error H3_EXPORT(LinkedToGeoMultiPolygon)(const LinkedGeoPolygon *link_poly,
     // }
 }
 
+/*
+
+typedef struct {
+    GeoLoop geoloop;  ///< exterior boundary of the polygon
+    int numHoles;     ///< number of elements in the array pointed to by holes
+    GeoLoop *holes;   ///< interior boundaries (holes) in the polygon
+} GeoPolygon;
+
+typedef struct LinkedGeoPolygon LinkedGeoPolygon;
+struct LinkedGeoPolygon {
+    LinkedGeoLoop *first;
+    LinkedGeoLoop *last;
+    LinkedGeoPolygon *next;
+};
+ */
 GeoPolygon _LinkedGeoPolygon_to_Polygon(LinkedGeoPolygon link_poly) {
     GeoPolygon geo_poly;
     geo_poly.numHoles = num_loops(link_poly.first) - 1;
