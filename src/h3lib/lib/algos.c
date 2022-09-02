@@ -1204,20 +1204,6 @@ int num_latlngs(LinkedLatLng *L) {
     return n;
 }
 
-H3Error H3_EXPORT(LinkedToGeoMultiPolygon)(const LinkedGeoPolygon *link_poly,
-                                           GeoMultiPolygon *geo_poly) {
-    geo_poly->numPolygons = num_polys(link_poly);
-    geo_poly->polygons =
-        H3_MEMORY(calloc)(geo_poly->numPolygons, sizeof(GeoPolygon));
-
-    // L = link_poly;
-    // while (L) {
-    //     // geo_poly->numPolygons++;
-    //     L = L->next;
-    //     // TODO: do something
-    // }
-}
-
 /*
 typedef struct {
     int numVerts;
@@ -1292,4 +1278,36 @@ GeoPolygon _LinkedGeoPolygon_to_Polygon(LinkedGeoPolygon link_poly) {
     }
 
     return geo_poly;
+}
+
+/*
+struct LinkedGeoPolygon {
+    LinkedGeoLoop *first;
+    LinkedGeoLoop *last;
+    LinkedGeoPolygon *next;
+};
+
+typedef struct {
+    int numPolygons;
+    GeoPolygon *polygons;
+} GeoMultiPolygon;
+
+ */
+GeoMultiPolygon _LinkedGeoPolygon_to_GeoMultiPolygon(
+    LinkedGeoPolygon *link_poly) {
+    int n = num_polys(link_poly);
+
+    GeoMultiPolygon geo_mpoly;
+    geo_mpoly.numPolygons = n;
+    geo_mpoly.polygons = H3_MEMORY(calloc)(n, sizeof(GeoPolygon));
+
+    LinkedGeoPolygon *L = link_poly;
+    int i = 0;
+    while (L) {
+        geo_mpoly.polygons[i] = _LinkedGeoPolygon_to_Polygon(*L);
+        L = L->next;
+        i++;
+    }
+
+    return geo_mpoly;
 }
