@@ -1202,7 +1202,7 @@ GeoLoop _LinkedGeoLoop_to_GeoLoop(LinkedGeoLoop link_loop) {
 
     GeoLoop geo_loop = {
         .numVerts = n,
-        .verts = H3_MEMORY(calloc)(n, sizeof(LatLng))  // comment to make this
+        .verts = H3_MEMORY(calloc)(n, sizeof(LatLng))
     };
 
     LinkedLatLng *L = link_loop.first;  // double?
@@ -1233,20 +1233,16 @@ GeoPolygon:
     GeoLoop *holes
  */
 GeoPolygon _LinkedGeoPolygon_to_Polygon(LinkedGeoPolygon link_poly) {
-    GeoPolygon geo_poly;
-
     LinkedGeoLoop *L = link_poly.first;
-    geo_poly.geoloop = _LinkedGeoLoop_to_GeoLoop(*L);
+
+    int n = num_loops(L) - 1;
+    GeoPolygon geo_poly = {
+        .geoloop = _LinkedGeoLoop_to_GeoLoop(*L),
+        .numHoles = n,
+        .holes = H3_MEMORY(calloc)(n, sizeof(GeoLoop)),
+    };
+
     L = L->next;
-
-    // todo: try the struct member notation here. might be a bit triky for this
-    // one
-    // notationally, the setup here is amazing, becuase it makes it very clear
-    // via symmetry to the user that we are setting up the thing we are
-    // populating in this structure.
-    geo_poly.numHoles = num_loops(L);
-    geo_poly.holes = H3_MEMORY(calloc)(geo_poly.numHoles, sizeof(GeoLoop));
-
     int i = 0;
     while (L) {
         geo_poly.holes[i] = _LinkedGeoLoop_to_GeoLoop(*L);
