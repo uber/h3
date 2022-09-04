@@ -297,4 +297,15 @@ SUITE(cellsToLinkedMultiPolygon) {
 
         H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
     }
+
+    TEST(specificLeak) {
+        // Test for a case where a leak can occur, detected by fuzzer.
+        // The leak detection part will be enforced here by valgrind.
+        LinkedGeoPolygon polygon;
+        H3Index set[] = {0xd60006d60000f100, 0x3c3c403c1300d668};
+        int numHexes = ARRAY_SIZE(set);
+        t_assert(H3_EXPORT(cellsToLinkedMultiPolygon)(set, numHexes,
+                                                      &polygon) == E_FAILED,
+                 "invalid cells fail");
+    }
 }
