@@ -30,12 +30,12 @@ typedef struct {
     uint8_t buffer[1024];
 } inputArgs;
 
-const int MAX_RES = 15;
-const int MAX_SZ = 4000000;
-const int MAX_HOLES = 100;
+static const int MAX_RES = 15;
+static const int MAX_SZ = 4000000;
+static const int MAX_HOLES = 100;
 
-int populateGeoLoop(GeoLoop *g, const uint8_t *data, size_t *offset,
-                    size_t size) {
+static int populateGeoLoop(GeoLoop *g, const uint8_t *data, size_t *offset,
+                           size_t size) {
     if (size < *offset + sizeof(int)) {
         return 1;
     }
@@ -50,7 +50,7 @@ int populateGeoLoop(GeoLoop *g, const uint8_t *data, size_t *offset,
     return 0;
 }
 
-void run(GeoPolygon *geoPolygon, uint32_t flags, int res) {
+static void run(GeoPolygon *geoPolygon, uint32_t flags, int res) {
     int64_t sz;
     H3Error err = H3_EXPORT(maxPolygonToCellsSize)(geoPolygon, res, flags, &sz);
     if (!err && sz < MAX_SZ) {
@@ -60,7 +60,12 @@ void run(GeoPolygon *geoPolygon, uint32_t flags, int res) {
     }
 }
 
-int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
+#ifdef FUZZER_COMBINED
+#define MAIN_NAME fuzzerPolygonToCells
+#else
+#define MAIN_NAME LLVMFuzzerTestOneInput
+#endif
+int MAIN_NAME(const uint8_t *data, size_t size) {
     // TODO: It is difficult for the fuzzer to generate inputs that are
     // considered valid by this fuzzer. fuzzerPolygonToCellsNoHoles.c
     // is a workaround for that.

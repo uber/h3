@@ -29,7 +29,12 @@ typedef struct {
     int childRes;
 } inputArgs;
 
-int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
+#ifdef FUZZER_COMBINED
+#define MAIN_NAME fuzzerHierarchy
+#else
+#define MAIN_NAME LLVMFuzzerTestOneInput
+#endif
+int MAIN_NAME(const uint8_t *data, size_t size) {
     if (size < sizeof(inputArgs)) {
         return 0;
     }

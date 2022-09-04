@@ -25,7 +25,8 @@
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size);
 
-#ifndef H3_USE_LIBFUZZER
+#if !defined(H3_USE_LIBFUZZER) && \
+    (!defined(FUZZER_COMBINED) || defined(FUZZER_COMBINED_INCLUDE_MAIN))
 
 /**
  * Generate a AFL++ test case file of the right size initialized to all zeroes.

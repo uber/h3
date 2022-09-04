@@ -24,7 +24,12 @@
 const int MAX_UNCOMPACT_RES = 9;
 const int64_t MAX_UNCOMPACT_SIZE = 4000000;
 
-int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
+#ifdef FUZZER_COMBINED
+#define MAIN_NAME fuzzerCompact
+#else
+#define MAIN_NAME LLVMFuzzerTestOneInput
+#endif
+int MAIN_NAME(const uint8_t *data, size_t size) {
     if (size < sizeof(H3Index) * 2) {
         return 0;
     }

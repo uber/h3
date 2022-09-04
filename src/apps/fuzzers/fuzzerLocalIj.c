@@ -30,7 +30,7 @@ typedef struct {
     uint32_t mode;
 } inputArgs;
 
-void testTwoIndexes(H3Index index, H3Index index2) {
+static void testTwoIndexes(H3Index index, H3Index index2) {
     int64_t distance;
     H3_EXPORT(gridDistance)(index, index2, &distance);
     int64_t size;
@@ -42,7 +42,12 @@ void testTwoIndexes(H3Index index, H3Index index2) {
     }
 }
 
-int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
+#ifdef FUZZER_COMBINED
+#define MAIN_NAME fuzzerLocalIj
+#else
+#define MAIN_NAME LLVMFuzzerTestOneInput
+#endif
+int MAIN_NAME(const uint8_t *data, size_t size) {
     if (size < sizeof(inputArgs)) {
         return 0;
     }

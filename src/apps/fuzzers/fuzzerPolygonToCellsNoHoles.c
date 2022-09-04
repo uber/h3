@@ -21,10 +21,9 @@
 #include "h3api.h"
 #include "utility.h"
 
-const int MAX_RES = 15;
-const int MAX_SZ = 4000000;
+static const int MAX_SZ = 4000000;
 
-void run(GeoPolygon *geoPolygon, uint32_t flags, int res) {
+static void run(GeoPolygon *geoPolygon, uint32_t flags, int res) {
     int64_t sz;
     H3Error err = H3_EXPORT(maxPolygonToCellsSize)(geoPolygon, res, flags, &sz);
     if (!err && sz < MAX_SZ) {
@@ -34,7 +33,12 @@ void run(GeoPolygon *geoPolygon, uint32_t flags, int res) {
     }
 }
 
-int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
+#ifdef FUZZER_COMBINED
+#define MAIN_NAME fuzzerPolygonToCellsNoHoles
+#else
+#define MAIN_NAME LLVMFuzzerTestOneInput
+#endif
+int MAIN_NAME(const uint8_t *data, size_t size) {
     if (size < sizeof(int)) {
         return 0;
     }

@@ -225,6 +225,7 @@ set(OTHER_SOURCE_FILES
     src/apps/miscapps/generatePentagonDirectionFaces.c
     src/apps/miscapps/generateFaceCenterPoint.c
     src/apps/miscapps/h3ToHier.c
+    src/apps/fuzzers/fuzzer.c
     src/apps/fuzzers/fuzzerLatLngToCell.c
     src/apps/fuzzers/fuzzerCellToLatLng.c
     src/apps/fuzzers/fuzzerGridDisk.c
@@ -462,8 +463,8 @@ endif()
 if(BUILD_FUZZERS)
     add_custom_target(fuzzers)
 
-    macro(add_h3_fuzzer name srcfile)
-        add_h3_executable(${name} ${srcfile} ${APP_SOURCE_FILES})
+    macro(add_h3_fuzzer name)
+        add_h3_executable(${ARGV} ${APP_SOURCE_FILES})
         if(ENABLE_LIBFUZZER)
             target_compile_definitions(${name} PRIVATE H3_USE_LIBFUZZER)
         endif()
@@ -487,6 +488,27 @@ if(BUILD_FUZZERS)
     add_h3_fuzzer(fuzzerLocalIj src/apps/fuzzers/fuzzerLocalIj.c)
     add_h3_fuzzer(fuzzerPolygonToCells src/apps/fuzzers/fuzzerPolygonToCells.c)
     add_h3_fuzzer(fuzzerPolygonToCellsNoHoles src/apps/fuzzers/fuzzerPolygonToCellsNoHoles.c)
+
+    # Add a combined all-function fuzzer
+    add_h3_fuzzer(fuzzerH3 src/apps/fuzzers/fuzzer.c
+        src/apps/fuzzers/fuzzerLatLngToCell.c
+        src/apps/fuzzers/fuzzerCellToLatLng.c
+        src/apps/fuzzers/fuzzerGridDisk.c
+        src/apps/fuzzers/fuzzerCellsToLinkedMultiPolygon.c
+        src/apps/fuzzers/fuzzerDistances.c
+        src/apps/fuzzers/fuzzerCellArea.c
+        src/apps/fuzzers/fuzzerEdgeLength.c
+        src/apps/fuzzers/fuzzerCellProperties.c
+        src/apps/fuzzers/fuzzerIndexIO.c
+        src/apps/fuzzers/fuzzerResolutions.c
+        src/apps/fuzzers/fuzzerHierarchy.c
+        src/apps/fuzzers/fuzzerVertexes.c
+        src/apps/fuzzers/fuzzerCompact.c
+        src/apps/fuzzers/fuzzerDirectedEdge.c
+        src/apps/fuzzers/fuzzerLocalIj.c
+        src/apps/fuzzers/fuzzerPolygonToCells.c
+        src/apps/fuzzers/fuzzerPolygonToCellsNoHoles.c)
+    target_compile_definitions(fuzzerH3 PRIVATE FUZZER_COMBINED)
 endif()
 
 if(BUILD_BENCHMARKS)

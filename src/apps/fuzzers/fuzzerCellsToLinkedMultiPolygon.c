@@ -21,7 +21,12 @@
 #include "h3api.h"
 #include "utility.h"
 
-int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
+#ifdef FUZZER_COMBINED
+#define MAIN_NAME fuzzerCellsToLinkedMultiPolygon
+#else
+#define MAIN_NAME LLVMFuzzerTestOneInput
+#endif
+int MAIN_NAME(const uint8_t *data, size_t size) {
     const H3Index *h3Set = (const H3Index *)data;
     int sz = size / sizeof(H3Index);
 
