@@ -26,7 +26,7 @@ typedef struct {
     int64_t k;
 } inputArgs;
 
-const int64_t MAX_GRID_DISK_SIZE = 0x10000000;
+const int64_t MAX_GRID_DISK_SIZE = 0x1000000;
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     if (size < sizeof(inputArgs)) {
@@ -36,8 +36,11 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 
     int64_t sz;
     H3Error err = H3_EXPORT(maxGridDiskSize)(args->k, &sz);
-    if (err || sz > MAX_GRID_DISK_SIZE) {
-        // Can't allocate
+    if (err || sz > MAX_GRID_DISK_SIZE || sz < 0) {
+        // Can't allocate - do not test for cases where sz is extremely large
+        // because this is expected to hang, and do not test for cases where
+        // sizeof(H3Index) * sz overflows (this is undefined behavior per C
+        // and will stop the fuzzer from making progress).
         return 0;
     }
     H3Index *results = calloc(sizeof(H3Index), sz);
