@@ -69,5 +69,5 @@ jobs:
           cd build
           for fuzzer in bin/fuzzer*; do
             echo $fuzzer
-            $fuzzer -runs=100000
+            $fuzzer -runs=10000
           done
