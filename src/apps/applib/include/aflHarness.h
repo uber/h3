@@ -37,8 +37,10 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size);
 int generateTestCase(const char *filename, size_t expectedSize) {
     FILE *fp = fopen(filename, "wb");
     uint8_t zero = 0;
-    if (fwrite(&zero, sizeof(zero), expectedSize, fp) != expectedSize) {
-        error("Error writing\n");
+    for (size_t i = 0; i < expectedSize; i += sizeof(zero)) {
+        if (fwrite(&zero, sizeof(zero), 1, fp) != 1) {
+            error("Error writing\n");
+        }
     }
     fclose(fp);
     return 0;
@@ -55,13 +57,18 @@ int generateTestCase(const char *filename, size_t expectedSize) {
             return generateTestCase(argv[2], expectedSize);                    \
         }                                                                      \
         if (argc != 2) {                                                       \
-            error("Should have one argument (test case file)\n");              \
+            error(                                                             \
+                "Should have one argument, test case file, or --generate "     \
+                "test_case_file\n");                                           \
         }                                                                      \
         const char *filename = argv[1];                                        \
         FILE *fp = fopen(filename, "rb");                                      \
+        if (!fp) {                                                             \
+            error("Error opening test case file\n");                           \
+        }                                                                      \
         uint8_t data[expectedSize];                                            \
         if (fread(&data, expectedSize, 1, fp) != 1) {                          \
-            error("Error reading\n");                                          \
+            error("Error reading test case file\n");                           \
         }                                                                      \
         fclose(fp);                                                            \
         return LLVMFuzzerTestOneInput(data, expectedSize);                     \
