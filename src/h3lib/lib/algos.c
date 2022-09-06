@@ -1149,9 +1149,10 @@ H3Error H3_EXPORT(cellsToLinkedMultiPolygon)(const H3Index *h3Set,
         return err;
     }
     _vertexGraphToLinkedGeo(&graph, out);
-    if (normalizeMultiPolygon(out)) {
-        return E_FAILED;
-    }
     destroyVertexGraph(&graph);
-    return E_SUCCESS;
+    H3Error normalizeResult = normalizeMultiPolygon(out);
+    if (normalizeResult) {
+        H3_EXPORT(destroyLinkedMultiPolygon)(out);
+    }
+    return normalizeResult;
 }

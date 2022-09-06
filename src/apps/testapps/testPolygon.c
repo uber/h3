@@ -355,9 +355,7 @@ SUITE(polygon) {
         LinkedGeoPolygon polygon = {0};
         addLinkedLoop(&polygon, outer);
 
-        int result = normalizeMultiPolygon(&polygon);
-
-        t_assert(result == NORMALIZATION_SUCCESS, "No error code returned");
+        t_assertSuccess(normalizeMultiPolygon(&polygon));
 
         t_assert(countLinkedPolygons(&polygon) == 1, "Polygon count correct");
         t_assert(countLinkedLoops(&polygon) == 1, "Loop count correct");
@@ -383,9 +381,7 @@ SUITE(polygon) {
         addLinkedLoop(&polygon, outer1);
         addLinkedLoop(&polygon, outer2);
 
-        int result = normalizeMultiPolygon(&polygon);
-
-        t_assert(result == NORMALIZATION_SUCCESS, "No error code returned");
+        t_assertSuccess(normalizeMultiPolygon(&polygon));
 
         t_assert(countLinkedPolygons(&polygon) == 2, "Polygon count correct");
         t_assert(countLinkedLoops(&polygon) == 1,
@@ -413,9 +409,7 @@ SUITE(polygon) {
         addLinkedLoop(&polygon, inner);
         addLinkedLoop(&polygon, outer);
 
-        int result = normalizeMultiPolygon(&polygon);
-
-        t_assert(result == NORMALIZATION_SUCCESS, "No error code returned");
+        t_assertSuccess(normalizeMultiPolygon(&polygon));
 
         t_assert(countLinkedPolygons(&polygon) == 1, "Polygon count correct");
         t_assert(countLinkedLoops(&polygon) == 2,
@@ -450,9 +444,7 @@ SUITE(polygon) {
         addLinkedLoop(&polygon, outer);
         addLinkedLoop(&polygon, inner1);
 
-        int result = normalizeMultiPolygon(&polygon);
-
-        t_assert(result == NORMALIZATION_SUCCESS, "No error code returned");
+        t_assertSuccess(normalizeMultiPolygon(&polygon));
 
         t_assert(countLinkedPolygons(&polygon) == 1,
                  "Polygon count correct for 2 holes");
@@ -490,9 +482,7 @@ SUITE(polygon) {
         addLinkedLoop(&polygon, outer);
         addLinkedLoop(&polygon, outer2);
 
-        int result = normalizeMultiPolygon(&polygon);
-
-        t_assert(result == NORMALIZATION_SUCCESS, "No error code returned");
+        t_assertSuccess(normalizeMultiPolygon(&polygon));
 
         t_assert(countLinkedPolygons(&polygon) == 2, "Polygon count correct");
         t_assert(countLinkedLoops(&polygon) == 2,
@@ -538,9 +528,7 @@ SUITE(polygon) {
         addLinkedLoop(&polygon, innerBig);
         addLinkedLoop(&polygon, outer);
 
-        int result = normalizeMultiPolygon(&polygon);
-
-        t_assert(result == NORMALIZATION_SUCCESS, "No error code returned");
+        t_assertSuccess(normalizeMultiPolygon(&polygon));
 
         t_assert(countLinkedPolygons(&polygon) == 2, "Polygon count correct");
         t_assert(countLinkedLoops(&polygon) == 2,
@@ -572,9 +560,7 @@ SUITE(polygon) {
         addLinkedLoop(&polygon, outer1);
         addLinkedLoop(&polygon, outer2);
 
-        int result = normalizeMultiPolygon(&polygon);
-
-        t_assert(result == NORMALIZATION_ERR_UNASSIGNED_HOLES,
+        t_assert(normalizeMultiPolygon(&polygon) == E_FAILED,
                  "Expected error code returned");
 
         t_assert(countLinkedPolygons(&polygon) == 1, "Polygon count correct");
@@ -603,9 +589,7 @@ SUITE(polygon) {
         addLinkedLoop(next, outer2);
 
         // Should be a no-op
-        int result = normalizeMultiPolygon(&polygon);
-
-        t_assert(result == NORMALIZATION_ERR_MULTIPLE_POLYGONS,
+        t_assert(normalizeMultiPolygon(&polygon) == E_FAILED,
                  "Expected error code returned");
 
         t_assert(countLinkedPolygons(&polygon) == 2, "Polygon count correct");
@@ -636,9 +620,7 @@ SUITE(polygon) {
         addLinkedLoop(&polygon, inner);
         addLinkedLoop(&polygon, outer);
 
-        int result = normalizeMultiPolygon(&polygon);
-
-        t_assert(result == NORMALIZATION_ERR_UNASSIGNED_HOLES,
+        t_assert(normalizeMultiPolygon(&polygon) == E_FAILED,
                  "Expected error code returned");
 
         H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
