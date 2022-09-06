@@ -93,6 +93,34 @@ SUITE(directedEdge) {
         t_assert(isNeighbor, "hexagons in a ring are neighbors");
     }
 
+    TEST(areNeighborCells_invalid) {
+        H3Index origin;
+        setH3Index(&origin, 5, 0, CENTER_DIGIT);
+        H3Index dest = origin;
+        H3_SET_INDEX_DIGIT(origin, 5, INVALID_DIGIT);
+        H3_SET_INDEX_DIGIT(dest, 5, JK_AXES_DIGIT);
+        int out;
+
+        t_assert(
+            H3_EXPORT(areNeighborCells)(origin, dest, &out) == E_CELL_INVALID,
+            "Invalid index digit origin is rejected");
+
+        setH3Index(&origin, 5, 4, CENTER_DIGIT);
+        dest = origin;
+        H3_SET_INDEX_DIGIT(origin, 5, K_AXES_DIGIT);
+        H3_SET_INDEX_DIGIT(dest, 5, I_AXES_DIGIT);
+        t_assert(
+            H3_EXPORT(areNeighborCells)(origin, dest, &out) == E_CELL_INVALID,
+            "Invalid k subsequence origin is rejected");
+        H3_SET_INDEX_DIGIT(origin, 5, I_AXES_DIGIT);
+        H3_SET_INDEX_DIGIT(dest, 5, K_AXES_DIGIT);
+        t_assert(
+            H3_EXPORT(areNeighborCells)(origin, dest, &out) == E_CELL_INVALID,
+            "Invalid k subsequence destination is rejected");
+        // Can't test origin and dest both having K_AXES_DIGIT as this will be
+        // rejected as the same cell.
+    }
+
     TEST(cellsToDirectedEdgeAndFriends) {
         H3Index sf;
         t_assertSuccess(H3_EXPORT(latLngToCell)(&sfGeo, 9, &sf));
