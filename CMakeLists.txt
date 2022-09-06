@@ -54,6 +54,15 @@ option(BUILD_GENERATORS "Build code generation applications." ON)
 # for afl++ is provided instead.
 option(ENABLE_LIBFUZZER "Build fuzzers with libFuzzer support." OFF)
 
+# These options exist for integration with OSS-Fuzz, so that the fuzzer options
+# can be passed through only to the fuzzer executables but not the H3 library,
+# since passing those options to the library too may result in too many implementations
+# of main in the fuzzer executables.
+option(H3_FUZZER_NO_MAIN "Build fuzzers with no main." OFF)
+mark_as_advanced(H3_FUZZER_NO_MAIN)
+set(H3_FUZZER_EXTRA_OPTIONS "" CACHE STRING "Extra compilation options for fuzzers particularly.")
+mark_as_advanced(H3_FUZZER_EXTRA_OPTIONS)
+
 if(WIN32)
     # Use bash (usually from Git for Windows) for piping results
     set(SHELL bash -c)
@@ -242,6 +251,7 @@ set(OTHER_SOURCE_FILES
     src/apps/fuzzers/fuzzerLocalIj.c
     src/apps/fuzzers/fuzzerPolygonToCells.c
     src/apps/fuzzers/fuzzerPolygonToCellsNoHoles.c
+    src/apps/fuzzers/fuzzerInternalAlgos.c
     src/apps/benchmarks/benchmarkPolygonToCells.c
     src/apps/benchmarks/benchmarkPolygon.c
     src/apps/benchmarks/benchmarkCellsToLinkedMultiPolygon.c
@@ -464,8 +474,11 @@ if(BUILD_FUZZERS)
 
     macro(add_h3_fuzzer name srcfile)
         add_h3_executable(${name} ${srcfile} ${APP_SOURCE_FILES})
-        if(ENABLE_LIBFUZZER)
+        if(ENABLE_LIBFUZZER OR H3_FUZZER_NO_MAIN)
             target_compile_definitions(${name} PRIVATE H3_USE_LIBFUZZER)
+        endif()
+        if(H3_FUZZER_EXTRA_OPTIONS)
+            target_compile_options(${name} PRIVATE ${H3_FUZZER_EXTRA_OPTIONS})
         endif()
         add_dependencies(fuzzers ${name})
     endmacro()
@@ -487,6 +500,9 @@ if(BUILD_FUZZERS)
     add_h3_fuzzer(fuzzerLocalIj src/apps/fuzzers/fuzzerLocalIj.c)
     add_h3_fuzzer(fuzzerPolygonToCells src/apps/fuzzers/fuzzerPolygonToCells.c)
     add_h3_fuzzer(fuzzerPolygonToCellsNoHoles src/apps/fuzzers/fuzzerPolygonToCellsNoHoles.c)
+    if(ENABLE_REQUIRES_ALL_SYMBOLS)
+        add_h3_fuzzer(fuzzerInternalAlgos src/apps/fuzzers/fuzzerInternalAlgos.c)
+    endif()
 endif()
 
 if(BUILD_BENCHMARKS)

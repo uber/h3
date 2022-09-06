@@ -1,13 +1,15 @@
 # Fuzzer harnesses for H3
 
 This directory contains helper programs for testing the H3 library using the
-''[American fuzzy lop](https://lcamtuf.coredump.cx/afl/)''/
-''[AFL++](https://github.com/AFLplusplus/AFLplusplus)'' or
-''[libFuzzer](https://www.llvm.org/docs/LibFuzzer.html)'' fuzzers.
+[American fuzzy lop](https://lcamtuf.coredump.cx/afl/)/
+[AFL++](https://github.com/AFLplusplus/AFLplusplus) or
+[libFuzzer](https://www.llvm.org/docs/LibFuzzer.html) fuzzers.
 Fuzzing is a technique for discovering crashes and other edge cases in code
 such as the H3 core library.
 
 # Function coverage
+
+The public API of H3 is covered in the following fuzzers:
 
 | Function | File or status
 | -------- | --------------
@@ -58,6 +60,17 @@ such as the H3 core library.
 | gridPathCells | [fuzzerLocalIj](./fuzzerLocalIj.c)
 | cellToLocalIj | [fuzzerLocalIj](./fuzzerLocalIj.c)
 | localIjToCell | [fuzzerLocalIj](./fuzzerLocalIj.c)
+
+## Internal function coverage
+
+In addition to the public API, the following internal functions of H3 are covered in fuzzers:
+
+| Function | File
+| -------- | ----
+| h3NeighborRotations | [fuzzerInternalAlgos](./fuzzerInternalAlgos.c)
+| directionForNeighbor | [fuzzerInternalAlgos](./fuzzerInternalAlgos.c)
+| h3SetToVertexGraph | [fuzzerInternalAlgos](./fuzzerInternalAlgos.c)
+| _vertexGraphToLinkedGeo | [fuzzerInternalAlgos](./fuzzerInternalAlgos.c)
 
 # libFuzzer Usage
 
