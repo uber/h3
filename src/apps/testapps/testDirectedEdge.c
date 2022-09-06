@@ -108,11 +108,11 @@ SUITE(directedEdge) {
         setH3Index(&origin, 5, 4, CENTER_DIGIT);
         dest = origin;
         H3_SET_INDEX_DIGIT(origin, 5, K_AXES_DIGIT);
-        H3_SET_INDEX_DIGIT(dest, 5, I_AXES_DIGIT);
+        H3_SET_INDEX_DIGIT(dest, 5, IK_AXES_DIGIT);
         t_assert(
             H3_EXPORT(areNeighborCells)(origin, dest, &out) == E_CELL_INVALID,
             "Invalid k subsequence origin is rejected");
-        H3_SET_INDEX_DIGIT(origin, 5, I_AXES_DIGIT);
+        H3_SET_INDEX_DIGIT(origin, 5, IK_AXES_DIGIT);
         H3_SET_INDEX_DIGIT(dest, 5, K_AXES_DIGIT);
         t_assert(
             H3_EXPORT(areNeighborCells)(origin, dest, &out) == E_CELL_INVALID,
