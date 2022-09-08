@@ -69,5 +69,5 @@ jobs:
           cd build
           for fuzzer in bin/fuzzer*; do
             echo $fuzzer
-            $fuzzer -max_total_time=60
+            $fuzzer -runs=100000 -max_total_time=60
           done
