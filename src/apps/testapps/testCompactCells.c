@@ -70,6 +70,26 @@ SUITE(compactCells) {
         free(sunnyvaleExpanded);
     }
 
+    TEST(res0children) {
+        H3Index parent;
+        setH3Index(&parent, 0, 0, 0);
+
+        int64_t arrSize;
+        t_assertSuccess(H3_EXPORT(cellToChildrenSize)(parent, 1, &arrSize));
+
+        H3Index *children = calloc(arrSize, sizeof(H3Index));
+        t_assertSuccess(H3_EXPORT(cellToChildren)(parent, 1, children));
+
+        t_assert(arrSize > 0, "got expected number of children");
+        for (int i = 0; i < arrSize; i++) {
+            t_assert(children[i] != 0, "got expected child");
+        }
+
+        H3Index *compressed = calloc(1, sizeof(H3Index));
+        t_assertSuccess(H3_EXPORT(compactCells(children, compressed, arrSize)));
+        t_assert(compressed[0] == parent, "got expected parent");
+    }
+
     TEST(res0) {
         int hexCount = NUM_BASE_CELLS;
 
