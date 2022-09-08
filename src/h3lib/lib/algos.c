@@ -1202,7 +1202,7 @@ GeoLoop _LinkedGeoLoop_to_GeoLoop(LinkedGeoLoop link_loop) {
 
     GeoLoop geo_loop = {
         .numVerts = n,
-        .verts = H3_MEMORY(calloc)(n, sizeof(LatLng))
+        .verts = H3_MEMORY(calloc)(n, sizeof(LatLng))  // hello there
     };
 
     LinkedLatLng *L = link_loop.first;  // double?
@@ -1273,17 +1273,12 @@ GeoMultiPolygon _LinkedGeoPoly_to_GeoMultiPolygon(LinkedGeoPolygon *link_poly) {
     };
 
     LinkedGeoPolygon *L = link_poly;
-    int i = 0;  // macro here?
+    int i = 0;
     while (L) {
-        {
-            geo_mpoly.polygons[i] = _LinkedGeoPolygon_to_Polygon(*L);
-        }  // with this?
+        geo_mpoly.polygons[i] = _LinkedGeoPolygon_to_Polygon(*L);
         L = L->next;
         i++;
     }
-
-    // something like this:
-    // WALK(i, L, { geo_mpoly.polygons[i] = _LinkedGeoPolygon_to_Polygon(*L); })
 
     return geo_mpoly;
 }
