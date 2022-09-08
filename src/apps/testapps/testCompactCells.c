@@ -86,6 +86,7 @@ SUITE(compactCells) {
         t_assert(compressed[1] == 0, "expected only 1 cell");
 
         free(compressed);
+        free(children);
     }
 
     TEST(res0) {
