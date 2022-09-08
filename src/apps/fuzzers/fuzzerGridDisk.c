@@ -26,7 +26,8 @@ typedef struct {
     int64_t k;
 } inputArgs;
 
-// This is limited to avoid timeouts due to the runtime of gridDisk growing with k
+// This is limited to avoid timeouts due to the runtime of gridDisk growing with
+// k
 const int64_t MAX_GRID_DISK_SIZE = 1000000;
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
