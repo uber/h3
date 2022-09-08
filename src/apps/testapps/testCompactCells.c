@@ -80,11 +80,6 @@ SUITE(compactCells) {
         H3Index *children = calloc(arrSize, sizeof(H3Index));
         t_assertSuccess(H3_EXPORT(cellToChildren)(parent, 1, children));
 
-        t_assert(arrSize > 0, "got expected number of children");
-        for (int i = 0; i < arrSize; i++) {
-            t_assert(children[i] != 0, "got expected child");
-        }
-
         H3Index *compressed = calloc(arrSize, sizeof(H3Index));
         t_assertSuccess(H3_EXPORT(compactCells(children, compressed, arrSize)));
         t_assert(compressed[0] == parent, "got expected parent");
