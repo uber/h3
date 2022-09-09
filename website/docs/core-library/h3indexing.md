@@ -23,7 +23,7 @@ An `H3Index` is the integer representation of an H3 index, which may be one of m
 * Mode 0 is reserved and indicates an invalid H3 index.
 * Mode 1 is an *H3 Cell* (Hexagon/Pentagon) index.
 * Mode 2 is an *H3 Directed Edge* (Cell A -> Cell B) index.
-* Mode 3 is an *H3 Nondirected Edge* (Cell A <-> Cell B) index.
+* Mode 3 is an *H3 (Undirected) Edge* (Cell A <-> Cell B) index.
 * Mode 4 is an *H3 Vertex* (i.e. a single vertex of an H3 Cell) index.
 
 The canonical string representation of an `H3Index` is the hexadecimal representation of the integer, using lowercase letters. The string representation is variable length (no zero padding) and is not prefixed or suffixed.
@@ -57,12 +57,12 @@ An H3 Directed Edge index (mode 2) represents a single directed edge between two
 * 3 bits to indicate the edge (1-6) of the origin cell,
 * Subsequent bits matching the index bits of the origin cell.
 
-### H3 Nondirected Edge Index
+### H3 Undirected Edge Index
 
-An H3 Nondirected Edge index (mode 2) represents a single edge between two cells. An H3 Nondirected Edge is arbitrarily assigned to one of the two neighboring cells as its "owner", which is used to calculate the canonical index. The components of the H3 Directed Edge index are packed into a 64-bit integer in order, highest bit first, as follows:
+An H3 Undirected Edge index (mode 2) represents a single edge between two cells. An H3 Undirected Edge is arbitrarily assigned to one of the two neighboring cells as its "owner", which is used to calculate the canonical index. The components of the H3 Directed Edge index are packed into a 64-bit integer in order, highest bit first, as follows:
 
 * 1 bit reserved and set to 0,
-* 4 bits to indicate the H3 Nondirected Edge index mode,
+* 4 bits to indicate the H3 Undirected Edge index mode,
 * 3 bits to indicate the edge (1-6) of the owner cell,
 * Subsequent bits matching the index bits of the origin cell.
 

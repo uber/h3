@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /** @file  edge.c
- * @brief Edge functions for manipulating (nondirected) edge indexes.
+ * @brief Edge functions for manipulating (undirected) edge indexes.
  */
 
 #include <inttypes.h>
@@ -65,7 +65,7 @@ H3Error cellsToEdgeNonNormalized(H3Index cell1, H3Index cell2, H3Index *out) {
 /**
  * Allows for operations on an edge index as if it were a directed edge
  * from the edge owner to the neighboring cell.
- * @param edge Nondirected edge index
+ * @param edge Undirected edge index
  * @return H3Index Directed edge index
  */
 H3Index edgeAsDirectedEdge(H3Index edge) {
@@ -77,7 +77,7 @@ H3Index edgeAsDirectedEdge(H3Index edge) {
 }
 
 /**
- * Normalize a nondirected edge.
+ * Normalize an udirected edge.
  *
  * The normalization algorithm is that the owner of an edge
  * is the cell with the numerically lower index.
@@ -220,9 +220,9 @@ H3Error H3_EXPORT(edgeToBoundary)(H3Index edge, CellBoundary *cb) {
 }
 
 /**
- * Provides the nondirected edge for a given directed edge.
+ * Provides the undirected edge for a given directed edge.
  * @param edge Directed edge
- * @param out Output nondirected edge
+ * @param out Output undirected edge
  */
 H3Error H3_EXPORT(directedEdgeToEdge)(H3Index edge, H3Index *out) {
     H3_SET_MODE(edge, H3_EDGE_MODE);

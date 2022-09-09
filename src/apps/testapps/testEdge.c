@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /** @file testEdge.c
- * @brief Tests functions for manipulating nondirected edge H3Indexes
+ * @brief Tests functions for manipulating undirected edge H3Indexes
  *
  * usage: `testEdge`
  */

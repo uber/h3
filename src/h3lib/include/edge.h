@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /** @file  edge.h
- *  @brief Edge functions for manipulating (nondirected) edge indexes.
+ *  @brief Edge functions for manipulating (undirected) edge indexes.
  */
 
 #ifndef EDGE_H
