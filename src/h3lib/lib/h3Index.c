@@ -323,75 +323,84 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
     while (numRemainingHexes) {
         res = H3_GET_RESOLUTION(remainingHexes[0]);
         int parentRes = res - 1;
-        // Put the parents of the hexagons into the temp array
-        // via a hashing mechanism, and use the reserved bits
-        // to track how many times a parent is duplicated
-        for (int i = 0; i < numRemainingHexes; i++) {
-            H3Index currIndex = remainingHexes[i];
-            if (currIndex != 0) {
-                // If the reserved bits were set by the caller, the
-                // algorithm below may encounter undefined behavior
-                // because it expects to have set the reserved bits
-                // itself.
-                if (H3_GET_RESERVED_BITS(currIndex) != 0) {
-                    H3_MEMORY(free)(remainingHexes);
-                    H3_MEMORY(free)(hashSetArray);
-                    return E_CELL_INVALID;
-                }
 
-                H3Index parent;
-                H3Error parentError =
-                    H3_EXPORT(cellToParent)(currIndex, parentRes, &parent);
-                // Should never be reachable as a result of the compact
-                // algorithm. Can happen if cellToParent errors e.g.
-                // because of incompatible resolutions.
-                if (parentError) {
-                    H3_MEMORY(free)(remainingHexes);
-                    H3_MEMORY(free)(hashSetArray);
-                    return parentError;
-                }
-                // Modulus hash the parent into the temp array
-                int loc = (int)(parent % numRemainingHexes);
-                int loopCount = 0;
-                while (hashSetArray[loc] != 0) {
-                    if (loopCount > numRemainingHexes) {  // LCOV_EXCL_BR_LINE
-                        // LCOV_EXCL_START
-                        // This case should not be possible because at most one
-                        // index is placed into hashSetArray per
-                        // numRemainingHexes.
+        // If parentRes is less than zero, we've compacted all the way up to the
+        // base cells. Time to process the remaining cells.
+        if (parentRes >= 0) {
+            // Put the parents of the hexagons into the temp array
+            // via a hashing mechanism, and use the reserved bits
+            // to track how many times a parent is duplicated
+            for (int i = 0; i < numRemainingHexes; i++) {
+                H3Index currIndex = remainingHexes[i];
+                if (currIndex != 0) {
+                    // If the reserved bits were set by the caller, the
+                    // algorithm below may encounter undefined behavior
+                    // because it expects to have set the reserved bits
+                    // itself.
+                    if (H3_GET_RESERVED_BITS(currIndex) != 0) {
                         H3_MEMORY(free)(remainingHexes);
                         H3_MEMORY(free)(hashSetArray);
-                        return E_FAILED;
-                        // LCOV_EXCL_STOP
+                        return E_CELL_INVALID;
                     }
-                    H3Index tempIndex =
-                        hashSetArray[loc] & H3_RESERVED_MASK_NEGATIVE;
-                    if (tempIndex == parent) {
-                        int count = H3_GET_RESERVED_BITS(hashSetArray[loc]) + 1;
-                        int limitCount = 7;
-                        if (H3_EXPORT(isPentagon)(tempIndex &
-                                                  H3_RESERVED_MASK_NEGATIVE)) {
-                            limitCount--;
-                        }
-                        // One is added to count for this check to match one
-                        // being added to count later in this function when
-                        // checking for all children being present.
-                        if (count + 1 > limitCount) {
-                            // Only possible on duplicate input
+
+                    H3Index parent;
+                    H3Error parentError =
+                        H3_EXPORT(cellToParent)(currIndex, parentRes, &parent);
+                    // Should never be reachable as a result of the compact
+                    // algorithm. Can happen if cellToParent errors e.g.
+                    // because of incompatible resolutions.
+                    if (parentError) {
+                        H3_MEMORY(free)(remainingHexes);
+                        H3_MEMORY(free)(hashSetArray);
+                        return parentError;
+                    }
+                    // Modulus hash the parent into the temp array
+                    int loc = (int)(parent % numRemainingHexes);
+                    int loopCount = 0;
+                    while (hashSetArray[loc] != 0) {
+                        if (loopCount >           // LCOV_EXCL_BR_LINE
+                            numRemainingHexes) {  // LCOV_EXCL_BR_LINE
+                            // LCOV_EXCL_START
+                            // This case should not be possible because at
+                            // most one index is placed into hashSetArray
+                            // per numRemainingHexes.
                             H3_MEMORY(free)(remainingHexes);
                             H3_MEMORY(free)(hashSetArray);
-                            return E_DUPLICATE_INPUT;
+                            return E_FAILED;
+                            // LCOV_EXCL_STOP
                         }
-                        H3_SET_RESERVED_BITS(parent, count);
-                        hashSetArray[loc] = H3_NULL;
-                    } else {
-                        loc = (loc + 1) % numRemainingHexes;
+                        H3Index tempIndex =
+                            hashSetArray[loc] & H3_RESERVED_MASK_NEGATIVE;
+                        if (tempIndex == parent) {
+                            int count =
+                                H3_GET_RESERVED_BITS(hashSetArray[loc]) + 1;
+                            int limitCount = 7;
+                            if (H3_EXPORT(isPentagon)(
+                                    tempIndex & H3_RESERVED_MASK_NEGATIVE)) {
+                                limitCount--;
+                            }
+                            // One is added to count for this check to match
+                            // one being added to count later in this
+                            // function when checking for all children being
+                            // present.
+                            if (count + 1 > limitCount) {
+                                // Only possible on duplicate input
+                                H3_MEMORY(free)(remainingHexes);
+                                H3_MEMORY(free)(hashSetArray);
+                                return E_DUPLICATE_INPUT;
+                            }
+                            H3_SET_RESERVED_BITS(parent, count);
+                            hashSetArray[loc] = H3_NULL;
+                        } else {
+                            loc = (loc + 1) % numRemainingHexes;
+                        }
+                        loopCount++;
                     }
-                    loopCount++;
+                    hashSetArray[loc] = parent;
                 }
-                hashSetArray[loc] = parent;
             }
         }
+
         // Determine which parent hexagons have a complete set
         // of children and put them in the compactableHexes array
         int compactableCount = 0;
