@@ -16,7 +16,7 @@
 
 #include <stdio.h>
 
-#include "algos.h"
+#include "algos.h"  // not needed? prolly just need linkedGeo.h
 #include "test.h"
 #include "utility.h"
 
@@ -45,6 +45,21 @@ SUITE(cellsToLinkedMultiPolygon) {
                  "6 coords added to loop");
 
         H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
+    }
+
+    TEST(singleHex_GMP) {
+        GeoMultiPolygon mpoly;
+        H3Index cells[] = {0x890dab6220bffff};
+        int numCells = ARRAY_SIZE(cells);
+
+        t_assertSuccess(
+            H3_EXPORT(cellsToGeoMultiPolygon)(cells, numCells, &mpoly));
+
+        t_assert(mpoly.numPolygons == 1, "only one polygon");
+        t_assert(mpoly.polygons[0].numHoles == 0, "1 outer loop and no holes");
+        t_assert(mpoly.polygons[0].geoloop.numVerts == 6, "6 vertices in hex");
+
+        // H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
     }
 
     TEST(invalid) {
