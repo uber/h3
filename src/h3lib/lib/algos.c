@@ -1284,3 +1284,20 @@ GeoMultiPolygon _LinkedGeoPoly_to_GeoMultiPolygon(LinkedGeoPolygon *link_poly) {
 }
 
 // todo: need one to delete GeoMultiPolygon
+
+H3Error H3_EXPORT(cellsToGeoMultiPolygon)(const H3Index *cells,
+                                          const int numCells,
+                                          GeoMultiPolygon *out) {
+    H3Error err;
+    LinkedGeoPolygon lgp;
+
+    err = H3_EXPORT(cellsToLinkedMultiPolygon)(cells, numCells, &lgp);
+    if (err) {
+        return err;
+    }
+
+    *out = _LinkedGeoPoly_to_GeoMultiPolygon(&lgp);
+    // todo: capture errors from conversion function
+
+    return E_SUCCESS;
+}
