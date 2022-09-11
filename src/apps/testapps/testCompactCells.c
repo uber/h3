@@ -307,6 +307,60 @@ SUITE(compactCells) {
             "compactCells returns E_RES_MISMATCH on bad input (parent error)");
     }
 
+    TEST(compactCells_parentError2) {
+        // This test primary ensures memory is not leaked upon invalid input,
+        // and ensures coverage of a very particular error branch in
+        // compactCells. The particular error code is not important.
+        const int numHex = 43;
+        H3Index bad[] = {0x2010202020202020,
+                         0x2100000000,
+                         0x7,
+                         0x400000000,
+                         0x20000000,
+                         0x5000000000,
+                         0x100321,
+                         0x2100000000,
+                         0x7,
+                         0x400000000,
+                         0x20000000,
+                         0x2100000000,
+                         0x7,
+                         0x400000000,
+                         0x20000000,
+                         0x5000000000,
+                         0x100321,
+                         0x20000000,
+                         0x5000000000,
+                         0x100321,
+                         0x2100000000,
+                         0x7,
+                         0x400000000,
+                         0x5000000000,
+                         0x100321,
+                         0x2100000000,
+                         0x7,
+                         0x400000000,
+                         0x20000000,
+                         0x5000000000,
+                         0x100321,
+                         0x2100000000,
+                         0x7,
+                         0x400000000,
+                         0x20000000,
+                         0x5000000000,
+                         0x100321,
+                         0x20000000,
+                         0x5000000000,
+                         0x100321,
+                         0x2100000000,
+                         0x7,
+                         0x400000000};
+        H3Index output[numHex] = {0};
+        t_assert(H3_EXPORT(compactCells)(bad, output, numHex) == E_RES_DOMAIN,
+                 "compactCells returns E_RES_DOMAIN on bad input (parent "
+                 "error #2)");
+    }
+
     TEST(uncompactCells_wrongRes) {
         int numHex = 3;
         H3Index someHexagons[] = {0, 0, 0};

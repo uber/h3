@@ -446,16 +446,12 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
                 H3Index parent;
                 H3Error parentError =
                     H3_EXPORT(cellToParent)(currIndex, parentRes, &parent);
-                // LCOV_EXCL_START
-                // Should never be reachable as a result of the compact
-                // algorithm.
                 if (parentError) {
-                    // TODO: Determine if this is somehow reachable.
+                    H3_MEMORY(free)(compactableHexes);
                     H3_MEMORY(free)(remainingHexes);
                     H3_MEMORY(free)(hashSetArray);
                     return parentError;
                 }
-                // LCOV_EXCL_STOP
                 // Modulus hash the parent into the temp array
                 // to determine if this index was included in
                 // the compactableHexes array
