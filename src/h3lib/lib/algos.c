@@ -1343,6 +1343,7 @@ void H3_EXPORT(freeGeoMultiPolygon)(GeoMultiPolygon *mpoly) {
     for (int i = 0; i < mpoly->numPolygons; i++) {
         freeGeoPolygon(&(mpoly->polygons[i]));
     }
+    H3_MEMORY(free)(mpoly->polygons);
     // todo: null the memory?
     mpoly->polygons = NULL;
     mpoly->numPolygons = 0;  // or negative one?
