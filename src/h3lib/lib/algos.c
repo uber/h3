@@ -1283,8 +1283,6 @@ GeoMultiPolygon _LinkedGeoPoly_to_GeoMultiPolygon(LinkedGeoPolygon *link_poly) {
     return geo_mpoly;
 }
 
-// todo: need one to delete GeoMultiPolygon
-
 H3Error H3_EXPORT(cellsToGeoMultiPolygon)(const H3Index *cells,
                                           const int numCells,
                                           GeoMultiPolygon *out) {
@@ -1300,4 +1298,52 @@ H3Error H3_EXPORT(cellsToGeoMultiPolygon)(const H3Index *cells,
     // todo: capture errors from conversion function
 
     return E_SUCCESS;
+}
+
+/*
+GeoLoop:
+    int numVerts
+    LatLng *verts
+
+GeoPolygon:
+    GeoLoop geoloop
+    int numHoles
+    GeoLoop *holes
+
+GeoMultiPolygon:
+    int numPolygons
+    GeoPolygon *polygons
+ */
+
+// destroy *internals*
+// i suppose we could free the loop memory, but that feels weird.... dunno.
+void freeGeoLoop(GeoLoop *loop) {
+    H3_MEMORY(free)(loop->verts);
+    loop->verts = NULL;
+    loop->numVerts = -1;  // or zero?
+}
+
+// destroy *internals*
+void freeGeoPolygon(GeoPolygon *poly) {
+    freeGeoLoop(&(poly->geoloop));  // weird address of operator here...
+    // todo: null the pointer?
+
+    for (int i = 0; i < poly->numHoles; i++) {
+        freeGeoLoop(&(poly->holes[i]));  // another weird address-of operator
+
+        // todo: null the pointer? maybe doesn't make sense in a loop?
+    }
+    H3_MEMORY(free)(poly->holes);
+    // todo: null the pointer?
+}
+
+// void or H3Error?
+// destroy *internals*
+void H3_EXPORT(freeGeoMultiPolygon)(GeoMultiPolygon *mpoly) {
+    for (int i = 0; i < mpoly->numPolygons; i++) {
+        freeGeoPolygon(&(mpoly->polygons[i]));
+    }
+    // todo: null the memory?
+    mpoly->polygons = NULL;
+    mpoly->numPolygons = 0;  // or negative one?
 }

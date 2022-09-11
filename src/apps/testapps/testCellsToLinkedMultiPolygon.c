@@ -60,6 +60,8 @@ SUITE(cellsToLinkedMultiPolygon) {
         t_assert(mpoly.polygons[0].geoloop.numVerts == 6, "6 vertices in hex");
 
         // H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
+        // H3_EXPORT(freeGeoMultiPolygon)(GeoMultiPolygon *mpoly); // enabling
+        // this should fix valgrind, yeah?
     }
 
     TEST(invalid) {
