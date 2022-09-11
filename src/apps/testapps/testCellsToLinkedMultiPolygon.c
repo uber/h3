@@ -17,6 +17,7 @@
 #include <stdio.h>
 
 #include "algos.h"  // not needed? prolly just need linkedGeo.h
+#include "h3api.h"  // todo: don't be lazy, this file has some lax imports
 #include "test.h"
 #include "utility.h"
 
@@ -59,9 +60,7 @@ SUITE(cellsToLinkedMultiPolygon) {
         t_assert(mpoly.polygons[0].numHoles == 0, "1 outer loop and no holes");
         t_assert(mpoly.polygons[0].geoloop.numVerts == 6, "6 vertices in hex");
 
-        // H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
-        // H3_EXPORT(freeGeoMultiPolygon)(GeoMultiPolygon *mpoly); // enabling
-        // this should fix valgrind, yeah?
+        H3_EXPORT(freeGeoMultiPolygon)(&mpoly);
     }
 
     TEST(invalid) {

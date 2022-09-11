@@ -1341,7 +1341,7 @@ void freeGeoPolygon(GeoPolygon *poly) {
 // destroy *internals*
 void H3_EXPORT(freeGeoMultiPolygon)(GeoMultiPolygon *mpoly) {
     for (int i = 0; i < mpoly->numPolygons; i++) {
-        freeGeoPolygon(&(mpoly->polygons[i]));
+        H3_EXPORT(freeGeoPolygon)(&(mpoly->polygons[i]));
     }
     // todo: null the memory?
     mpoly->polygons = NULL;
