@@ -171,7 +171,7 @@ H3Error H3_EXPORT(maxGridDiskSize)(int k, int64_t *out) {
         // be possible for the gridDisk functions to exceed that. Note this is
         // not resolution specific. So, when resolution < 15, this function may
         // still estimate a size larger than the number of cells in the grid.
-        return getNumCells(MAX_H3_RES, out);
+        return H3_EXPORT(getNumCells)(MAX_H3_RES, out);
     }
     *out = 3 * (int64_t)k * ((int64_t)k + 1) + 1;
     return E_SUCCESS;
