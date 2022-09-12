@@ -418,4 +418,20 @@ SUITE(gridDisk) {
         t_assertSuccess(H3_EXPORT(maxGridDiskSize)(26755, &sz));
         t_assert(sz == 2147570341, "large (> 32 bit signed int) k works");
     }
+
+    TEST(maxGridDiskSize_numCells) {
+        int64_t sz;
+        int64_t prev = 0;
+        int64_t max;
+        t_assertSuccess(H3_EXPORT(getNumCells)(15, &max));
+        // 13780510 will produce values above max
+        for (int64_t k = 13780510 - 100; k < 13780510 + 100; k++) {
+            t_assertSuccess(H3_EXPORT(maxGridDiskSize)(k, &sz));
+            t_assert(sz <= max,
+                     "maxGridDiskSize does not produce estimates above the "
+                     "number of grid cells");
+            t_assert(prev <= sz, "maxGridDiskSize is monotonically increasing");
+            prev = sz;
+        }
+    }
 }

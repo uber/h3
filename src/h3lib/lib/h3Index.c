@@ -357,8 +357,8 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
                     int loc = (int)(parent % numRemainingHexes);
                     int loopCount = 0;
                     while (hashSetArray[loc] != 0) {
-                        if (loopCount >           // LCOV_EXCL_BR_LINE
-                            numRemainingHexes) {  // LCOV_EXCL_BR_LINE
+                        if (loopCount >  // LCOV_EXCL_BR_LINE
+                            numRemainingHexes) {
                             // LCOV_EXCL_START
                             // This case should not be possible because at
                             // most one index is placed into hashSetArray

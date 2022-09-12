@@ -162,6 +162,17 @@ H3Error H3_EXPORT(maxGridDiskSize)(int k, int64_t *out) {
     if (k < 0) {
         return E_DOMAIN;
     }
+    if (k >= 13780510) {
+        // If a k value of this value or above is provided, this function will
+        // estimate more cells than exist in the H3 grid at the finest
+        // resolution. This is a problem since the function does signed integer
+        // arithmetic on `k`, which could overflow. To prevent that, instead
+        // substitute the maximum number of cells in the grid, as it should not
+        // be possible for the gridDisk functions to exceed that. Note this is
+        // not resolution specific. So, when resolution < 15, this function may
+        // still estimate a size larger than the number of cells in the grid.
+        return getNumCells(MAX_H3_RES, out);
+    }
     *out = 3 * (int64_t)k * ((int64_t)k + 1) + 1;
     return E_SUCCESS;
 }
