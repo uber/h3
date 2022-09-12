@@ -308,7 +308,7 @@ SUITE(compactCells) {
     }
 
     TEST(compactCells_parentError2) {
-        // This test primary ensures memory is not leaked upon invalid input,
+        // This test primarily ensures memory is not leaked upon invalid input,
         // and ensures coverage of a very particular error branch in
         // compactCells. The particular error code is not important.
         const int numHex = 43;
