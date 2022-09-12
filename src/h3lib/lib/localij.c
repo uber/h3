@@ -317,12 +317,12 @@ H3Error localIjkToCell(H3Index origin, const CoordIJK *ijk, H3Index *out) {
 
     // check for res 0/base cell
     if (res == 0) {
-        if (ijk->i > 1 || ijk->j > 1 || ijk->k > 1) {
-            // out of range input
+        const Direction dir = _unitIjkToDigit(ijk);
+        if (dir == INVALID_DIGIT) {
+            // out of range input - not a unit vector or zero vector
             return E_FAILED;
         }
 
-        const Direction dir = _unitIjkToDigit(ijk);
         const int newBaseCell = _getBaseCellNeighbor(originBaseCell, dir);
         if (newBaseCell == INVALID_BASE_CELL) {
             // Moving in an invalid direction off a pentagon.
