@@ -425,7 +425,7 @@ SUITE(gridDisk) {
         int64_t max;
         t_assertSuccess(H3_EXPORT(getNumCells)(15, &max));
         // 13780510 will produce values above max
-        for (int64_t k = 13780510 - 100; k < 13780510 + 100; k++) {
+        for (int k = 13780510 - 100; k < 13780510 + 100; k++) {
             t_assertSuccess(H3_EXPORT(maxGridDiskSize)(k, &sz));
             t_assert(sz <= max,
                      "maxGridDiskSize does not produce estimates above the "
@@ -433,5 +433,9 @@ SUITE(gridDisk) {
             t_assert(prev <= sz, "maxGridDiskSize is monotonically increasing");
             prev = sz;
         }
+
+        t_assertSuccess(H3_EXPORT(maxGridDiskSize)(INT32_MAX, &sz));
+        t_assert(sz == max,
+                 "maxGridDiskSize of INT32_MAX produces valid result");
     }
 }
