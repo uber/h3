@@ -152,6 +152,12 @@ static const Direction NEW_ADJUSTMENT_III[7][7] = {
      CENTER_DIGIT, IJ_AXES_DIGIT}};
 
 /**
+ * k value which will encompass all cells at resolution 15.
+ * This is the largest possible k in the H3 grid system.
+ */
+static const int K_ALL_CELLS_AT_RES_15 = 13780510;
+
+/**
  * Maximum number of cells that result from the gridDisk algorithm with the
  * given k. Formula source and proof: https://oeis.org/A003215
  *
@@ -162,7 +168,7 @@ H3Error H3_EXPORT(maxGridDiskSize)(int k, int64_t *out) {
     if (k < 0) {
         return E_DOMAIN;
     }
-    if (k >= 13780510) {
+    if (k >= K_ALL_CELLS_AT_RES_15) {
         // If a k value of this value or above is provided, this function will
         // estimate more cells than exist in the H3 grid at the finest
         // resolution. This is a problem since the function does signed integer
