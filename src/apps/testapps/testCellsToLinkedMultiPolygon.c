@@ -317,7 +317,7 @@ SUITE(cellsToLinkedMultiPolygon) {
         H3Index indexes[] = {0, 0, 0, 0, 0, 0, 0};
         int numHexes = 7;
 
-        for (int res = 1; res < 15; res++) {
+        for (int res = 2; res < 14; res++) {
             // Take the 2-disk of the center child at res
             t_assertSuccess(
                 H3_EXPORT(cellToCenterChild)(baseCell, res, &origin));
@@ -345,7 +345,7 @@ SUITE(cellsToLinkedMultiPolygon) {
         H3Index diskIndexes[] = {0, 0, 0, 0, 0, 0, 0};
         H3Index indexes[] = {0, 0, 0, 0, 0, 0};
 
-        for (int res = 1; res < 15; res++) {
+        for (int res = 2; res < 14; res++) {
             // Take the 1-disk of the center child at res. Note: We can't take
             // the 2-disk here, as increased distortion around the pentagon will
             // still fail at res 1. TODO: Use a 2-ring, start at res 0 when
