@@ -356,7 +356,7 @@ SUITE(cellsToLinkedMultiPolygon) {
 
             int j = 0;
             for (int i = 0; i < 7; i++) {
-                if (diskIndexes[i]) j++; // indexes[j++] = diskIndexes[i];
+                if (diskIndexes[i]) j++;  // indexes[j++] = diskIndexes[i];
             }
             t_assert(j == 6, "Filled all 6 indexes");
 
