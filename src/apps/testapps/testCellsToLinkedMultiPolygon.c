@@ -308,4 +308,69 @@ SUITE(cellsToLinkedMultiPolygon) {
                                                       &polygon) == E_FAILED,
                  "invalid cells fail");
     }
+
+    TEST(gridDiskResolutions) {
+        // This is a center-face base cell, no pentagon siblings
+        H3Index baseCell = 0x8073fffffffffff;
+        H3Index origin = baseCell;
+
+        H3Index indexes[19] = {0};
+        int numHexes = 7;
+
+        for (int res = 1; res < 15; res++) {
+            // Take the 2-disk of the center child at res
+            t_assertSuccess(
+                H3_EXPORT(cellToCenterChild)(baseCell, res, &origin));
+            t_assertSuccess(H3_EXPORT(gridDisk)(origin, 2, indexes));
+
+            // Test the polygon output
+            LinkedGeoPolygon polygon;
+            t_assertSuccess(H3_EXPORT(cellsToLinkedMultiPolygon)(
+                indexes, numHexes, &polygon));
+            t_assert(countLinkedPolygons(&polygon) == 1, "1 polygon added");
+            t_assert(countLinkedLoops(&polygon) == 1,
+                     "1 loop on the first polygon");
+            t_assert(countLinkedCoords(polygon.first) == 18,
+                     "All coords for all hexes added to first loop");
+
+            H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
+        }
+    }
+
+    TEST(gridDiskResolutionsPentagon) {
+        // This is a pentagon base cell
+        H3Index baseCell = 0x8031fffffffffff;
+        H3Index origin = baseCell;
+
+        H3Index diskIndexes[7] = {0};
+        H3Index indexes[6] = {0};
+
+        for (int res = 1; res < 15; res++) {
+            // Take the 1-disk of the center child at res. Note: We can't take
+            // the 2-disk here, as increased distortion around the pentagon will
+            // still fail at res 1. TODO: Use a 2-ring, start at res 0
+            // when output is correct.
+            t_assertSuccess(
+                H3_EXPORT(cellToCenterChild)(baseCell, res, &origin));
+            t_assertSuccess(H3_EXPORT(gridDisk)(origin, 1, diskIndexes));
+
+            int j = 0;
+            for (int i = 0; i < 7; i++) {
+                if (diskIndexes[i]) indexes[j++] = diskIndexes[i];
+            }
+            t_assert(j == 6, "Filled all 6 indexes");
+
+            // Test the polygon output
+            LinkedGeoPolygon polygon;
+            t_assertSuccess(
+                H3_EXPORT(cellsToLinkedMultiPolygon)(indexes, 6, &polygon));
+            t_assert(countLinkedPolygons(&polygon) == 1, "1 polygon added");
+            t_assert(countLinkedLoops(&polygon) == 1,
+                     "1 loop on the first polygon");
+            t_assert(countLinkedCoords(polygon.first) == 15,
+                     "All coords for all hexes added to first loop");
+
+            H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
+        }
+    }
 }

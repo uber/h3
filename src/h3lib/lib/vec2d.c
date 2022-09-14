@@ -19,6 +19,7 @@
 
 #include "vec2d.h"
 
+#include <float.h>
 #include <math.h>
 #include <stdio.h>
 
@@ -46,7 +47,7 @@ void _v2dIntersect(const Vec2d *p0, const Vec2d *p1, const Vec2d *p2,
     s2.x = p3->x - p2->x;
     s2.y = p3->y - p2->y;
 
-    float t;
+    double t;
     t = (s2.x * (p0->y - p2->y) - s2.y * (p0->x - p2->x)) /
         (-s2.x * s1.y + s1.x * s2.y);
 
@@ -55,12 +56,12 @@ void _v2dIntersect(const Vec2d *p0, const Vec2d *p1, const Vec2d *p2,
 }
 
 /**
- * Whether two 2D vectors are equal. Does not consider possible false
- * negatives due to floating-point errors.
+ * Whether two 2D vectors are almost equal, within some threshold
  * @param v1 First vector to compare
  * @param v2 Second vector to compare
- * @return Whether the vectors are equal
+ * @return Whether the vectors are almost equal
  */
-bool _v2dEquals(const Vec2d *v1, const Vec2d *v2) {
-    return v1->x == v2->x && v1->y == v2->y;
+bool _v2dAlmostEquals(const Vec2d *v1, const Vec2d *v2) {
+    return fabs(v1->x - v2->x) < FLT_EPSILON &&
+           fabs(v1->y - v2->y) < FLT_EPSILON;
 }
