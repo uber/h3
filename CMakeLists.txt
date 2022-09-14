@@ -190,6 +190,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testPentagonIndexes.c
     src/apps/testapps/testGridDisk.c
     src/apps/testapps/testCellToBoundary.c
+    src/apps/testapps/testCellToBoundaryEdgeCases.c
     src/apps/testapps/testCellToParent.c
     src/apps/testapps/testH3Index.c
     src/apps/testapps/mkRandGeoBoundary.c
