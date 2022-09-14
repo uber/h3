@@ -86,7 +86,7 @@ As a C library, bindings can be made to call H3 functions from different program
 
 ## PostgreSQL
 
-- [bytesandbrains/h3-pg](https://github.com/bytesandbrains/h3-pg)
+- [zachasme/h3-pg](https://github.com/zachasme/h3-pg)
 
 ## Python
 
