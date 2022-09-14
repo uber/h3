@@ -343,7 +343,7 @@ SUITE(cellsToLinkedMultiPolygon) {
         H3Index origin = baseCell;
 
         H3Index diskIndexes[] = {0, 0, 0, 0, 0, 0, 0};
-        H3Index indexes[] = {0, 0, 0, 0, 0, 0};
+        // H3Index indexes[] = {0, 0, 0, 0, 0, 0};
 
         for (int res = 1; res < 15; res++) {
             // Take the 1-disk of the center child at res. Note: We can't take
@@ -356,7 +356,7 @@ SUITE(cellsToLinkedMultiPolygon) {
 
             int j = 0;
             for (int i = 0; i < 7; i++) {
-                if (diskIndexes[i]) indexes[j++] = diskIndexes[i];
+                if (diskIndexes[i]) j++; // indexes[j++] = diskIndexes[i];
             }
             t_assert(j == 6, "Filled all 6 indexes");
 
