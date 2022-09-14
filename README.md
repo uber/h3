@@ -27,6 +27,17 @@ brew install h3
 ```
 Otherwise, to build H3 from source, please see the following instructions.
 
+### Installing from vcpkg
+You can download and install H3 using the [vcpkg](https://github.com/Microsoft/vcpkg) dependency manager:
+```sh
+git clone https://github.com/Microsoft/vcpkg.git
+cd vcpkg
+./bootstrap-vcpkg.sh #.\bootstrap-vcpkg.bat(for windows)
+./vcpkg integrate install
+./vcpkg install h3
+```
+The H3 port in vcpkg is kept up to date by Microsoft team members and community contributors. If the version is out of date, please [create an issue or pull   request](https://github.com/Microsoft/vcpkg) on the vcpkg repository.
+
 ### Building from source
 
 Still here? To build the H3 C library, you'll need a C compiler (tested with `gcc` and `clang`), [CMake](https://cmake.org/), and [Make](https://www.gnu.org/software/make/). If you intend to contribute to H3, you must have [clang-format](https://clang.llvm.org/docs/ClangFormat.html) installed and we recommend installing [ccmake](https://cmake.org/cmake/help/v3.0/manual/ccmake.1.html) and [LCOV](http://ltp.sourceforge.net/coverage/lcov.php) to configure the `cmake` arguments to build and run the tests and generate the code coverage report. We also recommend using `gcc` for the code coverage as some versions of `clang` generate annotations that aren't compatible with `lcov`. [Doxygen](https://www.doxygen.nl/index.html) is needed to build the API documentation.
