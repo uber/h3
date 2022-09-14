@@ -6,6 +6,23 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+### Fixed
+- Fixed possible signed integer overflow in `maxGridDiskSize` (#686)
+- Fixed possible use of uninitialized values in `cellToVertex` (#683, #690)
+- Fixed possible out of bounds read in `localIjToCell` (#684)
+- Fixed possible memory leak in `compactCells` (#685)
+- Fixed compacting all children of a resolution 0 cell (#679)
+- Fixed possible out of bounds read in `areNeighborCells` (#677)
+- Fixed possible memory leak in `cellsToLinkedMultiPolygon` (#673)
+
+### Changed
+- Build script does not use toolchain file (#641)
+
+### Other changes
+- Removed a duplicated include preprocessor directive (#682)
+- Improvements to the fuzzer suite and their automatic runs in CI (#671, #674, #687)
+- Increased test coverage (#642)
+- Added a fuzzer targetting internal `algos.c` functions (#675)
 
 ## [4.0.0] - 2022-08-23
 ### Breaking changes
