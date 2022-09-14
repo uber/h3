@@ -315,7 +315,7 @@ SUITE(cellsToLinkedMultiPolygon) {
         H3Index origin = baseCell;
 
         H3Index indexes[] = {0, 0, 0, 0, 0, 0, 0};
-        int numHexes = 7;
+        // int numHexes = 7;
 
         for (int res = 1; res < 15; res++) {
             // Take the 2-disk of the center child at res
