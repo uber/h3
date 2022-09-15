@@ -240,7 +240,9 @@ H3Error H3_EXPORT(cellToVertex)(H3Index cell, int vertexNum, H3Index *out) {
             if (right == INVALID_DIGIT) return E_FAILED;  // LCOV_EXCL_LINE
             int rRotations = 0;
             H3Index rightNeighbor;
-            h3NeighborRotations(cell, right, &rRotations, &rightNeighbor);
+            H3Error rightNeighborError =
+                h3NeighborRotations(cell, right, &rRotations, &rightNeighbor);
+            if (rightNeighborError) return rightNeighborError;
             // Set to owner if lowest index
             if (rightNeighbor < owner) {
                 owner = rightNeighbor;

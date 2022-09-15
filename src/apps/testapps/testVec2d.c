@@ -47,14 +47,16 @@ SUITE(Vec2d) {
                  "Y coord as expected");
     }
 
-    TEST(_v2dEquals) {
+    TEST(_v2dAlmostEquals) {
         Vec2d v1 = {3.0, 4.0};
         Vec2d v2 = {3.0, 4.0};
         Vec2d v3 = {3.5, 4.0};
         Vec2d v4 = {3.0, 4.5};
+        Vec2d v5 = {3.0 + DBL_EPSILON, 4.0 - DBL_EPSILON};
 
-        t_assert(_v2dEquals(&v1, &v2), "true for equal vectors");
-        t_assert(!_v2dEquals(&v1, &v3), "false for different x");
-        t_assert(!_v2dEquals(&v1, &v4), "false for different y");
+        t_assert(_v2dAlmostEquals(&v1, &v2), "true for equal vectors");
+        t_assert(!_v2dAlmostEquals(&v1, &v3), "false for different x");
+        t_assert(!_v2dAlmostEquals(&v1, &v4), "false for different y");
+        t_assert(_v2dAlmostEquals(&v1, &v5), "true for almost equal");
     }
 }

@@ -7,6 +7,7 @@ The public API of this library consists of the functions declared in file
 
 ## [Unreleased]
 ### Fixed
+- Changing an internal `float` to `double` improves the precision of geographic coordinate output (#652)
 - Fixed possible signed integer overflow in `maxGridDiskSize` (#686)
 - Fixed possible use of uninitialized values in `cellToVertex` (#683, #690)
 - Fixed possible out of bounds read in `localIjToCell` (#684)
