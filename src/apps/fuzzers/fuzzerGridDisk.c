@@ -23,7 +23,7 @@
 
 typedef struct {
     H3Index index;
-    int64_t k;
+    int k;
 } inputArgs;
 
 // This is limited to avoid timeouts due to the runtime of gridDisk growing with
@@ -87,6 +87,14 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     results = calloc(sizeof(H3Index), sz);
     if (results != NULL) {
         H3_EXPORT(gridRingUnsafe)(args->index, args->k, results);
+    }
+    free(results);
+
+    size_t length = (size - sizeof(inputArgs)) / sizeof(H3Index);
+    results = calloc(sizeof(H3Index), sz * length);
+    if (results != NULL) {
+        H3Index *h3Set = (H3Index *)(data + sizeof(inputArgs));
+        H3_EXPORT(gridDisksUnsafe)(h3Set, length, args->k, results);
     }
     free(results);
     return 0;
