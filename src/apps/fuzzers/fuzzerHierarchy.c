@@ -41,15 +41,18 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     H3Index out;
     H3_EXPORT(cellToCenterChild)(args->index, args->childRes, &out);
 
-    int resDiff = args->childRes - H3_EXPORT(getResolution)(args->index);
-    if (resDiff < MAX_CHILDREN_DIFF) {
-        int64_t childrenSize;
-        H3Error err = H3_EXPORT(cellToChildrenSize)(args->index, args->childRes,
-                                                    &childrenSize);
-        if (!err) {
-            H3Index *children = calloc(childrenSize, sizeof(H3Index));
-            H3_EXPORT(cellToChildren)(args->index, args->childRes, children);
-            free(children);
+    if (args->childRes > 0) {
+        int resDiff = args->childRes - H3_EXPORT(getResolution)(args->index);
+        if (resDiff < MAX_CHILDREN_DIFF) {
+            int64_t childrenSize;
+            H3Error err = H3_EXPORT(cellToChildrenSize)(
+                args->index, args->childRes, &childrenSize);
+            if (!err) {
+                H3Index *children = calloc(childrenSize, sizeof(H3Index));
+                H3_EXPORT(cellToChildren)
+                (args->index, args->childRes, children);
+                free(children);
+            }
         }
     }
     return 0;
