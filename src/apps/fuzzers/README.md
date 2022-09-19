@@ -19,6 +19,7 @@ The public API of H3 is covered in the following fuzzers:
 | gridDisk | [fuzzerGridDisk](./fuzzerGridDisk.c)
 | gridDiskDistances | [fuzzerGridDisk](./fuzzerGridDisk.c)
 | gridRingUnsafe | [fuzzerGridDisk](./fuzzerGridDisk.c)
+| gridDisksUnsafe | [fuzzerGridDisk](./fuzzerGridDisk.c)
 | polygonToCells | [fuzzerPoylgonToCells](./fuzzerPolygonToCells.c)
 | h3SetToMultiPolygon | [fuzzerH3SetToLinkedGeo](./fuzzerH3SetToLinkedGeo.c)
 | degsToRads | Trivial
