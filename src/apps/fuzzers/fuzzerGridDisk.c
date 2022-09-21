@@ -91,6 +91,10 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     free(results);
 
     size_t length = (size - sizeof(inputArgs)) / sizeof(H3Index);
+    if (sz * length > MAX_GRID_DISK_SIZE) {
+        // Can't allocate.
+        return 0;
+    }
     results = calloc(sizeof(H3Index), sz * length);
     if (results != NULL) {
         H3Index *h3Set = (H3Index *)(data + sizeof(inputArgs));
