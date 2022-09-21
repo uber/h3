@@ -37,6 +37,10 @@ As a C library, bindings can be made to call H3 functions from different program
 
 - [festelo/h3_flutter](https://github.com/festelo/h3_flutter)
 
+## Delphi
+
+- [SkybuckFlying/h3_delphi](https://github.com/SkybuckFlying/h3_delphi)
+
 ## DuckDB
 
 - [isaacbrodsky/h3-duckdb](https://github.com/isaacbrodsky/h3-duckdb)
@@ -82,7 +86,7 @@ As a C library, bindings can be made to call H3 functions from different program
 
 ## PostgreSQL
 
-- [bytesandbrains/h3-pg](https://github.com/bytesandbrains/h3-pg)
+- [zachasme/h3-pg](https://github.com/zachasme/h3-pg)
 
 ## Python
 

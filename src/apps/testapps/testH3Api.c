@@ -55,16 +55,14 @@ SUITE(h3Api) {
 
     TEST(cellToBoundary_classIIIEdgeVertex) {
         // Bug test for https://github.com/uber/h3/issues/45
-        char *hexes[] = {
-            "894cc5349b7ffff", "894cc534d97ffff", "894cc53682bffff",
-            "894cc536b17ffff", "894cc53688bffff", "894cead92cbffff",
-            "894cc536537ffff", "894cc5acbabffff", "894cc536597ffff"};
+        H3Index hexes[] = {
+            0x894cc5349b7ffff, 0x894cc534d97ffff, 0x894cc53682bffff,
+            0x894cc536b17ffff, 0x894cc53688bffff, 0x894cead92cbffff,
+            0x894cc536537ffff, 0x894cc5acbabffff, 0x894cc536597ffff};
         int numHexes = sizeof(hexes) / sizeof(hexes[0]);
-        H3Index h3;
         CellBoundary b;
         for (int i = 0; i < numHexes; i++) {
-            t_assertSuccess(H3_EXPORT(stringToH3)(hexes[i], &h3));
-            H3_EXPORT(cellToBoundary)(h3, &b);
+            H3_EXPORT(cellToBoundary)(hexes[i], &b);
             t_assert(b.numVerts == 7, "got expected vertex count");
         }
     }
@@ -115,8 +113,9 @@ SUITE(h3Api) {
 
     TEST(cellToLatLngInvalid) {
         LatLng coord;
-        H3_EXPORT(cellToLatLng)(0x7fffffffffffffff, &coord);
-        // Test is this should not crash (should return an error in the future)
+        t_assert(H3_EXPORT(cellToLatLng)(0x7fffffffffffffff, &coord) ==
+                     E_CELL_INVALID,
+                 "invalid cell gives error");
     }
 
     TEST(version) {

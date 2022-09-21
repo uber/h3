@@ -117,9 +117,10 @@ module.exports = {
             // Per docusaurus, apply changes to the "next" version, not the current one
             return `https://github.com/uber/h3/edit/master/website/docs/${docPath}`;
           },
+          lastVersion: 'current',
           versions: {
             current: {
-              label: '4.x (release candidate)'
+              label: '4.x'
             },
           },
         },

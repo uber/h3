@@ -14,20 +14,26 @@
 
 cmake_minimum_required(VERSION 3.20) # Due to dependency on CMP0115
 
+# Do not try to append extensions to source files
+cmake_policy(SET CMP0115 NEW)
+
+file(READ VERSION H3_VERSION LIMIT_COUNT 1)
+# Clean any newlines
+string(REPLACE "\n" "" H3_VERSION "${H3_VERSION}")
+# Remove any trailing qualifier
+string(REGEX REPLACE "-.*$" "" H3_VERSION "${H3_VERSION}")
+
+project(h3 LANGUAGES C VERSION ${H3_VERSION})
+
 set(H3_PREFIX "" CACHE STRING "Prefix for exported symbols")
 set(H3_ALLOC_PREFIX "" CACHE STRING "Prefix for allocation functions")
 
-# Do not try to append extensions to source files
-cmake_policy(SET CMP0115 NEW)
 # Needed due to CMP0042
 set(CMAKE_MACOSX_RPATH 1)
 # YCM needs compilation database
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cmake/toolchain.cmake"
-    CACHE FILEPATH
-    "Toolchain to use for building this project")
 
 # Some misc apps do not work with shared libraries on Windows
 # because they require access to internal H3 functions. Build these
@@ -48,6 +54,15 @@ option(BUILD_GENERATORS "Build code generation applications." ON)
 # for afl++ is provided instead.
 option(ENABLE_LIBFUZZER "Build fuzzers with libFuzzer support." OFF)
 
+# These options exist for integration with OSS-Fuzz, so that the fuzzer options
+# can be passed through only to the fuzzer executables but not the H3 library,
+# since passing those options to the library too may result in too many implementations
+# of main in the fuzzer executables.
+option(H3_FUZZER_NO_MAIN "Build fuzzers with no main." OFF)
+mark_as_advanced(H3_FUZZER_NO_MAIN)
+set(H3_FUZZER_EXTRA_OPTIONS "" CACHE STRING "Extra compilation options for fuzzers particularly.")
+mark_as_advanced(H3_FUZZER_EXTRA_OPTIONS)
+
 if(WIN32)
     # Use bash (usually from Git for Windows) for piping results
     set(SHELL bash -c)
@@ -61,18 +76,11 @@ else()
     set(LIBRARY_OUTPUT_PATH lib)
 endif()
 
-file(READ VERSION H3_VERSION LIMIT_COUNT 1)
-# Clean any newlines
-string(REPLACE "\n" "" H3_VERSION "${H3_VERSION}")
-# Remove any trailing qualifier
-string(REGEX REPLACE "-.*$" "" H3_VERSION "${H3_VERSION}")
 string(REPLACE "." ";" H3_VERSION_LIST "${H3_VERSION}")
 list(GET H3_VERSION_LIST 0 H3_VERSION_MAJOR)
 list(GET H3_VERSION_LIST 1 H3_VERSION_MINOR)
 list(GET H3_VERSION_LIST 2 H3_VERSION_PATCH)
 set(H3_SOVERSION 1)
-
-project(h3 LANGUAGES C VERSION ${H3_VERSION})
 
 # Detect if someone else is including the package
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
@@ -182,6 +190,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testPentagonIndexes.c
     src/apps/testapps/testGridDisk.c
     src/apps/testapps/testCellToBoundary.c
+    src/apps/testapps/testCellToBoundaryEdgeCases.c
     src/apps/testapps/testCellToParent.c
     src/apps/testapps/testH3Index.c
     src/apps/testapps/mkRandGeoBoundary.c
@@ -243,6 +252,7 @@ set(OTHER_SOURCE_FILES
     src/apps/fuzzers/fuzzerLocalIj.c
     src/apps/fuzzers/fuzzerPolygonToCells.c
     src/apps/fuzzers/fuzzerPolygonToCellsNoHoles.c
+    src/apps/fuzzers/fuzzerInternalAlgos.c
     src/apps/benchmarks/benchmarkPolygonToCells.c
     src/apps/benchmarks/benchmarkPolygon.c
     src/apps/benchmarks/benchmarkCellsToLinkedMultiPolygon.c
@@ -267,6 +277,7 @@ function(add_h3_library name h3_alloc_prefix_override)
 
     target_compile_options(${name} PRIVATE ${H3_COMPILE_FLAGS})
     target_link_libraries(${name} PRIVATE ${H3_LINK_FLAGS})
+    target_compile_features(${name} PUBLIC c_std_99)
 
     find_library(M_LIB m)
     if(M_LIB)
@@ -464,8 +475,11 @@ if(BUILD_FUZZERS)
 
     macro(add_h3_fuzzer name srcfile)
         add_h3_executable(${name} ${srcfile} ${APP_SOURCE_FILES})
-        if(ENABLE_LIBFUZZER)
+        if(ENABLE_LIBFUZZER OR H3_FUZZER_NO_MAIN)
             target_compile_definitions(${name} PRIVATE H3_USE_LIBFUZZER)
+        endif()
+        if(H3_FUZZER_EXTRA_OPTIONS)
+            target_compile_options(${name} PRIVATE ${H3_FUZZER_EXTRA_OPTIONS})
         endif()
         add_dependencies(fuzzers ${name})
     endmacro()
@@ -487,6 +501,9 @@ if(BUILD_FUZZERS)
     add_h3_fuzzer(fuzzerLocalIj src/apps/fuzzers/fuzzerLocalIj.c)
     add_h3_fuzzer(fuzzerPolygonToCells src/apps/fuzzers/fuzzerPolygonToCells.c)
     add_h3_fuzzer(fuzzerPolygonToCellsNoHoles src/apps/fuzzers/fuzzerPolygonToCellsNoHoles.c)
+    if(ENABLE_REQUIRES_ALL_SYMBOLS)
+        add_h3_fuzzer(fuzzerInternalAlgos src/apps/fuzzers/fuzzerInternalAlgos.c)
+    endif()
 endif()
 
 if(BUILD_BENCHMARKS)

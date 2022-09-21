@@ -103,8 +103,21 @@ SUITE(Vertex) {
     TEST(cellToVertex_invalid) {
         H3Index invalid = 0xFFFFFFFFFFFFFFFF;
         H3Index vert;
-        // TODO: Assert specific error
-        t_assert(H3_EXPORT(cellToVertex)(invalid, 3, &vert) != E_SUCCESS,
+        t_assert(H3_EXPORT(cellToVertex)(invalid, 3, &vert) == E_FAILED,
+                 "Invalid cell returns error");
+    }
+
+    TEST(cellToVertex_invalid2) {
+        H3Index index = 0x685b2396e900fff9;
+        H3Index vert;
+        t_assert(H3_EXPORT(cellToVertex)(index, 2, &vert) == E_CELL_INVALID,
+                 "Invalid cell returns error");
+    }
+
+    TEST(cellToVertex_invalid3) {
+        H3Index index = 0x20ff20202020ff35;
+        H3Index vert;
+        t_assert(H3_EXPORT(cellToVertex)(index, 0, &vert) == E_CELL_INVALID,
                  "Invalid cell returns error");
     }
 

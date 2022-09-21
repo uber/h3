@@ -245,11 +245,12 @@ void _ijkNormalize(CoordIJK *c) {
 }
 
 /**
- * Determines the H3 digit corresponding to a unit vector in ijk coordinates.
+ * Determines the H3 digit corresponding to a unit vector or the zero vector
+ * in ijk coordinates.
  *
- * @param ijk The ijk coordinates; must be a unit vector.
- * @return The H3 digit (0-6) corresponding to the ijk unit vector, or
- * INVALID_DIGIT on failure.
+ * @param ijk The ijk coordinates; must be a unit vector or zero vector.
+ * @return The H3 digit (0-6) corresponding to the ijk unit vector, zero vector,
+ * or INVALID_DIGIT (7) on failure.
  */
 Direction _unitIjkToDigit(const CoordIJK *ijk) {
     CoordIJK c = *ijk;

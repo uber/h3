@@ -69,6 +69,5 @@ jobs:
           cd build
           for fuzzer in bin/fuzzer*; do
             echo $fuzzer
-            # TODO: Increase run count
-            $fuzzer -runs=1000
+            $fuzzer -runs=100000 -max_total_time=60 -timeout=120
           done
