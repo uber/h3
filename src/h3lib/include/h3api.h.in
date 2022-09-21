@@ -302,7 +302,7 @@ DECLSPEC H3Error H3_EXPORT(cellsToGeoMultiPolygon)(const H3Index *cells,
                                                    const int numCells,
                                                    GeoMultiPolygon *out);
 
-DECLSPEC void H3_EXPORT(freeGeoMultiPolygon)(GeoMultiPolygon *mpoly);
+DECLSPEC void H3_EXPORT(freeGeoMultiPolygon)(GeoMultiPolygon mpoly);
 
 /** @defgroup degsToRads degsToRads
  * Functions for degsToRads

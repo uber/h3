@@ -60,7 +60,7 @@ SUITE(cellsToLinkedMultiPolygon) {
         t_assert(mpoly.polygons[0].numHoles == 0, "1 outer loop and no holes");
         t_assert(mpoly.polygons[0].geoloop.numVerts == 6, "6 vertices in hex");
 
-        H3_EXPORT(freeGeoMultiPolygon)(&mpoly);
+        H3_EXPORT(freeGeoMultiPolygon)(mpoly);
     }
 
     TEST(nestedDonut_GMP) {
@@ -100,7 +100,7 @@ SUITE(cellsToLinkedMultiPolygon) {
         t_assert(poly.geoloop.numVerts == 18, "Got expected outer loop");
         t_assert(poly.holes[0].numVerts == 6, "Got expected inner loop");
 
-        H3_EXPORT(freeGeoMultiPolygon)(&mpoly);
+        H3_EXPORT(freeGeoMultiPolygon)(mpoly);
     }
 
     TEST(invalid) {

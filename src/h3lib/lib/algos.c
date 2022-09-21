@@ -1317,39 +1317,20 @@ GeoMultiPolygon:
     GeoPolygon *polygons
  */
 
-// destroy *internals*
-// i suppose we could free the loop memory, but that feels weird.... dunno.
-void freeGeoLoop(GeoLoop *loop) {
-    H3_MEMORY(free)(loop->verts);
-    loop->verts = NULL;
-    loop->numVerts = -1;  // or zero?
+void freeGeoLoop(GeoLoop loop) { H3_MEMORY(free)(loop.verts); }
+
+void freeGeoPolygon(GeoPolygon poly) {
+    freeGeoLoop(poly.geoloop);
+
+    for (int i = 0; i < poly.numHoles; i++) {
+        freeGeoLoop(poly.holes[i]);
+    }
+    H3_MEMORY(free)(poly.holes);
 }
 
-// destroy *internals*
-void freeGeoPolygon(GeoPolygon *poly) {
-    freeGeoLoop(&(poly->geoloop));  // weird address of operator here...
-    // todo: null the pointer?
-
-    for (int i = 0; i < poly->numHoles; i++) {
-        freeGeoLoop(&(poly->holes[i]));  // another weird address-of operator
-
-        // todo: null the pointer? maybe doesn't make sense in a loop?
+void H3_EXPORT(freeGeoMultiPolygon)(GeoMultiPolygon mpoly) {
+    for (int i = 0; i < mpoly.numPolygons; i++) {
+        freeGeoPolygon(mpoly.polygons[i]);
     }
-    H3_MEMORY(free)(poly->holes);
-    // todo: null the pointer?
-}
-
-// void or H3Error?
-// destroy *internals*
-void H3_EXPORT(freeGeoMultiPolygon)(GeoMultiPolygon *mpoly) {
-    for (int i = 0; i < mpoly->numPolygons; i++) {
-        freeGeoPolygon(&(mpoly->polygons[i]));
-    }
-
-    // i mean, the data ain't good no more anyway
-    H3_MEMORY(free)(mpoly->polygons);
-
-    // todo: null the memory?
-    mpoly->polygons = NULL;
-    mpoly->numPolygons = 0;  // or negative one?
+    H3_MEMORY(free)(mpoly.polygons);
 }
