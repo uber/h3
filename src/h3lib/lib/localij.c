@@ -712,10 +712,10 @@ H3Error H3_EXPORT(gridPathCells)(H3Index start, H3Index end, H3Index *out) {
         // Convert cube -> ijk -> h3 index
         cubeToIjk(&currentIjk);
         H3Error currentError = localIjkToCell(start, &currentIjk, &out[n]);
-        if (currentError) {  // LCOV_EXCL_BR_LINE
-            // Expected to be unreachable since cells between `start` and `end`
-            // should have valid local IJK coordinates.
-            return currentError;  // LCOV_EXCL_LINE
+        if (currentError) {
+            // The cells between `start` and `end` may fall in pentagon
+            // distortion.
+            return currentError;
         }
     }
 
