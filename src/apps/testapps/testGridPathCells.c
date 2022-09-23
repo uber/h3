@@ -39,4 +39,16 @@ SUITE(gridPathCells) {
         t_assert(lineError == E_FAILED,
                  "Line not computable across multiple icosa faces");
     }
+
+    TEST(gridPathCells_pentagon) {
+        H3Index start = 0x820807fffffffff;
+        H3Index end = 0x8208e7fffffffff;
+
+        int64_t size;
+        t_assertSuccess(H3_EXPORT(gridPathCellsSize)(start, end, &size));
+        H3Index *path = calloc(sizeof(H3Index), size);
+        t_assert(H3_EXPORT(gridPathCells)(start, end, path) == E_PENTAGON,
+                 "Line not computable due to pentagon distortion");
+        free(path);
+    }
 }
