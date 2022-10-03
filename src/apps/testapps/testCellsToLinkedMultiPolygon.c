@@ -315,7 +315,7 @@ SUITE(cellsToLinkedMultiPolygon) {
         H3Index origin = baseCell;
 
         H3Index indexes[19] = {0};
-        int numHexes = 7;
+        int numHexes = ARRAY_SIZE(indexes);
 
         for (int res = 1; res < 15; res++) {
             // Take the 2-disk of the center child at res
@@ -330,7 +330,7 @@ SUITE(cellsToLinkedMultiPolygon) {
             t_assert(countLinkedPolygons(&polygon) == 1, "1 polygon added");
             t_assert(countLinkedLoops(&polygon) == 1,
                      "1 loop on the first polygon");
-            t_assert(countLinkedCoords(polygon.first) == 18,
+            t_assert(countLinkedCoords(polygon.first) == 30,
                      "All coords for all hexes added to first loop");
 
             H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
