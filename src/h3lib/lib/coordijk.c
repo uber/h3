@@ -210,6 +210,11 @@ void _ijkScale(CoordIJK *c, int factor) {
 /**
  * Normalizes ijk coordinates by setting the components to the smallest possible
  * values. Works in place.
+ * 
+ * This function does not protect against signed integer overflow. The caller must
+ * ensure that none of (i - j), (i - k), (j - i), (j - k), (k - i), (k - j) will
+ * overflow. This function may be changed in the future to make that check itself
+ * and return an error code.
  *
  * @param c The ijk coordinates to normalize.
  */
