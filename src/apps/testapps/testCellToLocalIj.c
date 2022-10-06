@@ -298,4 +298,13 @@ SUITE(h3ToLocalIj) {
         t_assert(H3_EXPORT(localIjToCell)(origin, &ij, 0, &out) == E_FAILED,
                  "High magnitude J and I components fail");
     }
+
+    TEST(localIjToCell_overflow_ij) {
+        H3Index origin;
+        setH3Index(&origin, 2, 2, CENTER_DIGIT);
+        CoordIJ ij = {.i = INT32_MIN, .j = INT32_MIN};
+        H3Index out;
+        t_assert(H3_EXPORT(localIjToCell)(origin, &ij, 0, &out) == E_FAILED,
+                 "High magnitude J and I components fail");
+    }
 }

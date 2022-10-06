@@ -210,11 +210,11 @@ void _ijkScale(CoordIJK *c, int factor) {
 /**
  * Normalizes ijk coordinates by setting the components to the smallest possible
  * values. Works in place.
- * 
- * This function does not protect against signed integer overflow. The caller must
- * ensure that none of (i - j), (i - k), (j - i), (j - k), (k - i), (k - j) will
- * overflow. This function may be changed in the future to make that check itself
- * and return an error code.
+ *
+ * This function does not protect against signed integer overflow. The caller
+ * must ensure that none of (i - j), (i - k), (j - i), (j - k), (k - i), (k - j)
+ * will overflow. This function may be changed in the future to make that check
+ * itself and return an error code.
  *
  * @param c The ijk coordinates to normalize.
  */
@@ -550,12 +550,16 @@ H3Error ijToIjk(const CoordIJ *ij, CoordIJK *ijk) {
         min = ijk->i;
     }
     if (min < 0) {
-        if (max > INT32_MAX + min) {
+        // Only if the min is less than 0 will the resulting number be larger
+        // than max. If min is positive, then max is also positive, and a
+        // positive signed integer minus another positive signed integer will
+        // not overflow.
+        if (max < INT32_MIN - min) {
+            // max - min would overflow
             return E_FAILED;
         }
-    } else {
-        // min >= 0
-        if (max < INT32_MIN + min) {
+        if (min == INT32_MIN) {
+            // 0 - INT32_MIN would overflow
             return E_FAILED;
         }
     }
