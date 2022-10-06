@@ -527,13 +527,36 @@ void ijkToIj(const CoordIJK *ijk, CoordIJ *ij) {
  *
  * @param ij The input IJ coordinates
  * @param ijk The output IJK+ coordinates
+ * @returns E_SUCCESS on success, E_FAILED if signed integer overflow would have
+ * occurred.
  */
-void ijToIjk(const CoordIJ *ij, CoordIJK *ijk) {
+H3Error ijToIjk(const CoordIJ *ij, CoordIJK *ijk) {
     ijk->i = ij->i;
     ijk->j = ij->j;
     ijk->k = 0;
 
+    // Check for the possibility of overflow
+    int max, min;
+    if (ijk->i > ijk->j) {
+        max = ijk->i;
+        min = ijk->j;
+    } else {
+        max = ijk->j;
+        min = ijk->i;
+    }
+    if (min < 0) {
+        if (max > INT32_MAX + min) {
+            return E_FAILED;
+        }
+    } else {
+        // min >= 0
+        if (max < INT32_MIN + min) {
+            return E_FAILED;
+        }
+    }
+
     _ijkNormalize(ijk);
+    return E_SUCCESS;
 }
 
 /**
