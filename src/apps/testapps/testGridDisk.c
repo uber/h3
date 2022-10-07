@@ -344,9 +344,7 @@ SUITE(gridDisk) {
         // Determined by looking at the base cell table
         setH3Index(&expected, 0, 1, CENTER_DIGIT);
         t_assert(out == expected, "Expected neighbor");
-        // 1 (original value) + 4 (newRotations for IK direction) + 1 (applied
-        // when adjusting to the IK direction) = 6, 6 modulo 6 = 0
-        t_assert(rotations == 0, "Expected rotations value");
+        t_assert(rotations == 5, "Expected rotations value");
     }
 
     TEST(h3NeighborRotations_rotationsOverflow2) {
@@ -364,8 +362,9 @@ SUITE(gridDisk) {
         // Determined by looking at the base cell table
         setH3Index(&expected, 0, 0, CENTER_DIGIT);
         t_assert(out == expected, "Expected neighbor");
-        printf("\n\n*** %d ***\n\n", rotations);
-        t_assert(rotations == 2, "Expected rotations value");
+        // 1 (original value) + 4 (newRotations for IK direction) + 1 (applied
+        // when adjusting to the IK direction) = 6, 6 modulo 6 = 0
+        t_assert(rotations == 0, "Expected rotations value");
     }
 
     TEST(h3NeighborRotations_invalid) {
