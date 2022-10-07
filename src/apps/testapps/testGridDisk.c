@@ -320,17 +320,55 @@ SUITE(gridDisk) {
     }
 
     TEST(h3NeighborRotations_identity) {
-        // This is undefined behavior, but it's helpful for it to make sense.
+        // This is not used in gridDisk, but it's helpful for it to make sense.
         H3Index origin = 0x811d7ffffffffffL;
         int rotations = 0;
         H3Index out;
         t_assertSuccess(
             h3NeighborRotations(origin, CENTER_DIGIT, &rotations, &out));
         t_assert(out == origin, "Moving to self goes to self");
+        t_assert(rotations == 0, "Expected rotations");
+    }
+
+    TEST(h3NeighborRotations_rotationsOverflow) {
+        // Check for possible signed integer overflow of `rotations`
+        H3Index origin;
+        setH3Index(&origin, 0, 0, CENTER_DIGIT);
+        // A multiple of 6, so effectively no rotation. Very close
+        // to INT32_MAX.
+        int rotations = 2147483646;
+        H3Index out;
+        t_assertSuccess(
+            h3NeighborRotations(origin, K_AXES_DIGIT, &rotations, &out));
+        H3Index expected;
+        // Determined by looking at the base cell table
+        setH3Index(&expected, 0, 1, CENTER_DIGIT);
+        t_assert(out == expected, "Expected neighbor");
+        // 1 (original value) + 4 (newRotations for IK direction) + 1 (applied
+        // when adjusting to the IK direction) = 6, 6 modulo 6 = 0
+        t_assert(rotations == 0, "Expected rotations value");
+    }
+
+    TEST(h3NeighborRotations_rotationsOverflow2) {
+        // Check for possible signed integer overflow of `rotations`
+        H3Index origin;
+        setH3Index(&origin, 0, 4, CENTER_DIGIT);
+        // This modulo 6 is 1.
+        int rotations = INT32_MAX;
+        H3Index out;
+        // This will try to move in the K direction off of origin,
+        // which will be adjusted to the IK direction.
+        t_assertSuccess(
+            h3NeighborRotations(origin, JK_AXES_DIGIT, &rotations, &out));
+        H3Index expected;
+        // Determined by looking at the base cell table
+        setH3Index(&expected, 0, 0, CENTER_DIGIT);
+        t_assert(out == expected, "Expected neighbor");
+        printf("\n\n*** %d ***\n\n", rotations);
+        t_assert(rotations == 2, "Expected rotations value");
     }
 
     TEST(h3NeighborRotations_invalid) {
-        // This is undefined behavior, but it's helpful for it to make sense.
         H3Index origin = 0x811d7ffffffffffL;
         int rotations = 0;
         H3Index out;
