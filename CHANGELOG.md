@@ -6,6 +6,8 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+### Fixed
+- Fixed possible signed integer overflow in `h3NeighborRotations` (#707)
 
 ## [4.0.1] - 2022-09-15
 ### Fixed
