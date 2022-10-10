@@ -85,7 +85,7 @@ From the repository root, you can compile H3 with:
 ```
 mkdir build
 cd build
-cmake ..
+cmake -DCMAKE_BUILD_TYPE=Release ..
 make
 ```
 
