@@ -563,7 +563,10 @@ H3Error H3_EXPORT(localIjToCell)(H3Index origin, const CoordIJ *ij,
         return E_OPTION_INVALID;
     }
     CoordIJK ijk;
-    ijToIjk(ij, &ijk);
+    H3Error ijToIjkError = ijToIjk(ij, &ijk);
+    if (ijToIjkError) {
+        return ijToIjkError;
+    }
 
     return localIjkToCell(origin, &ijk, out);
 }

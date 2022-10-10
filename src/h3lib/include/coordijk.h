@@ -108,7 +108,7 @@ Direction _rotate60ccw(Direction digit);
 Direction _rotate60cw(Direction digit);
 int ijkDistance(const CoordIJK *a, const CoordIJK *b);
 void ijkToIj(const CoordIJK *ijk, CoordIJ *ij);
-void ijToIjk(const CoordIJ *ij, CoordIJK *ijk);
+H3Error ijToIjk(const CoordIJ *ij, CoordIJK *ijk);
 void ijkToCube(CoordIJK *ijk);
 void cubeToIjk(CoordIJK *ijk);
 
