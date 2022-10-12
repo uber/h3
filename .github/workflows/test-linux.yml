@@ -115,7 +115,7 @@ jobs:
         run: |
           mkdir build/examples
           cd build/examples
-          cmake ../../examples
+          cmake -DCMAKE_C_FLAGS="${{ matrix.compile_opts }}" ../../examples
           make
           make test
 
