@@ -123,11 +123,4 @@ SUITE(h3Api) {
         t_assert(H3_VERSION_MINOR >= 0, "minor version is set");
         t_assert(H3_VERSION_PATCH >= 0, "patch version is set");
     }
-
-    TEST(fsanitize) {
-        // TODO: This is for confirming CI works only
-        volatile int a = INT32_MAX;
-        a++;
-        printf("%d\n", a);
-    }
 }
