@@ -40,8 +40,8 @@ static GeoLoop holeGeoLoop = {.numVerts = 3, .verts = holeVerts};
 static GeoPolygon holeGeoPolygon;
 
 static LatLng emptyVerts[] = {{0.659966917655, -2.1364398519394},
-                              {0.659966917655, -2.1364398519395},
-                              {0.659966917655, -2.1364398519396}};
+                              {0.659966917656, -2.1364398519395},
+                              {0.659966917657, -2.1364398519396}};
 static GeoLoop emptyGeoLoop = {.numVerts = 3, .verts = emptyVerts};
 static GeoPolygon emptyGeoPolygon;
 
@@ -474,18 +474,8 @@ SUITE(polygonToCells) {
 
     TEST(polygonToCellsPoint) {
         int64_t numHexagons;
-        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(&pointGeoPolygon, 9, 0,
-                                                         &numHexagons));
-        // 0 estimation, plus 1 vertex, plus 12 buffer
-        t_assert(numHexagons == 13, "Point has expected 13 hexagons");
-
-        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
-        t_assertSuccess(
-            H3_EXPORT(polygonToCells)(&pointGeoPolygon, 9, 0, hexagons));
-        for (int i = 0; i < numHexagons; i++) {
-            t_assert(hexagons[i] == H3_NULL,
-                     "no results for polygonToCells of a single point");
-        }
-        free(hexagons);
+        t_assert(H3_EXPORT(maxPolygonToCellsSize)(&pointGeoPolygon, 9, 0,
+                                                  &numHexagons) == E_FAILED,
+                 "Cannot estimate for single point");
     }
 }
