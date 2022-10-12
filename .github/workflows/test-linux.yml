@@ -7,15 +7,11 @@ on:
     branches: [master, stable-*]
 
 jobs:
-  tests:
-    name: Test Compile ${{ matrix.compiler }}
+  gcc-tests:
+    name: Test Compile gcc
     runs-on: ubuntu-latest
     env:
-      CC: ${{ matrix.compiler }}
-
-    strategy:
-      matrix:
-        compiler: [clang, gcc]
+      CC: gcc
 
     steps:
       - uses: actions/checkout@v2.4.0
@@ -27,6 +23,65 @@ jobs:
 
       - name: Configure build
         run: cmake -Bbuild -DWARNINGS_AS_ERRORS=ON .
+
+      - name: Formatting check
+        working-directory: build
+        run: |
+          clang-format-9 --version
+          make format
+          git diff --exit-code
+
+      - name: Build
+        working-directory: build
+        run: make
+
+      - name: binding-functions
+        working-directory: build
+        run: |
+          make binding-functions
+          test -s binding-functions
+
+      - name: Tests
+        working-directory: build
+        run: |
+          make test
+          sudo make install
+
+        # Note the packages aren't used to test the examples below
+      - name: Test packaging
+        working-directory: build
+        run: cpack -D CPACK_PACKAGE_CONTACT="Test build in CI"
+
+      - name: Examples
+        run: |
+          mkdir build/examples
+          cd build/examples
+          cmake ../../examples
+          make
+          make test
+
+  clang-tests:
+    name: Test Compile clang ${{ matrix.compile_opt }}
+    runs-on: ubuntu-latest
+    env:
+      CC: clang
+
+    strategy:
+      matrix:
+        # See Clang docs for more information on the sanitizers:
+        # https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html
+        compile_opt: ["", "-fsanitize=undefined,float-divide-by-zero -fno-sanitize-recover=undefined,float-divide-by-zero", "-fsanitize=memory -fno-sanitize-recover=memory", "-fsanitize=address -fno-sanitize-recover=address"]
+
+    steps:
+      - uses: actions/checkout@v2.4.0
+
+      - name: Install Doxygen
+        run: |
+          sudo apt update
+          sudo apt-get install doxygen graphviz clang-format-9
+
+      - name: Configure build
+        run: cmake -Bbuild -DWARNINGS_AS_ERRORS=ON -DCMAKE_C_FLAGS="${{ matrix.compile_opt }}" .
 
       - name: Formatting check
         working-directory: build
