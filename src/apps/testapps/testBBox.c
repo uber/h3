@@ -246,6 +246,20 @@ SUITE(BBox) {
                  "bboxHexEstimate of invalid resolution fails");
     }
 
+    TEST(bboxHexEstimate_ratio) {
+        BBox bbox1 = {100.0, 1.0, 3.0, 2.0};
+        BBox bbox2 = {3.0, 2.0, 100.0, 1.0};
+        int64_t numHexagons1;
+        int64_t numHexagons2;
+
+        bboxHexEstimate(&bbox1, -1, &numHexagons1);
+        bboxHexEstimate(&bbox2, -1, &numHexagons2);
+
+        t_assert(numHexagons1 == numHexagons2,
+                 "Should be equal for bounding boxes with the same diameter "
+                 "and side ratio");
+    }
+
     TEST(lineHexEstimate_invalidRes) {
         int64_t numHexagons;
         LatLng origin = {0.0, 0.0};
