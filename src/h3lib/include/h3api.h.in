@@ -534,6 +534,26 @@ DECLSPEC H3Error H3_EXPORT(cellToCenterChild)(H3Index h, int childRes,
                                               H3Index *child);
 /** @} */
 
+/** @defgroup cellToChildPos cellToChildPos
+ * Functions for cellToChildPos
+ * @{
+ */
+/** @brief Returns the position of the cell within an ordered list of all
+ * children of the cell's parent at the specified resolution */
+DECLSPEC H3Error H3_EXPORT(cellToChildPos)(H3Index child, int parentRes,
+                                           int64_t *out);
+/** @} */
+
+/** @defgroup childPosToCell childPosToCell
+ * Functions for childPosToCell
+ * @{
+ */
+/** @brief Returns the child cell at a given position within an ordered list of
+ * all children at the specified resolution */
+DECLSPEC H3Error H3_EXPORT(childPosToCell)(int64_t childPos, H3Index parent,
+                                           int childRes, H3Index *child);
+/** @} */
+
 /** @defgroup compactCells compactCells
  * Functions for compactCells
  * @{
