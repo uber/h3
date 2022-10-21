@@ -1078,7 +1078,7 @@ H3Error H3_EXPORT(cellToChildPos)(H3Index child, int parentRes, int64_t *out) {
             int digit =
                 parentIsPentagon && rawDigit > 0 ? rawDigit - 1 : rawDigit;
             if (digit != CENTER_DIGIT) {
-                int hexChildCount = _ipow(7, childRes - res);
+                int64_t hexChildCount = _ipow(7, childRes - res);
                 // The offset for the 0-digit slot depends on whether the
                 // current index is the child of a pentagon. If so, the offset
                 // is based on the count of pentagon children, otherwise,
@@ -1117,24 +1117,23 @@ H3Error H3_EXPORT(childPosToCell)(int64_t childPos, H3Index parent,
     }
 
     int resOffset = childRes - parentRes;
-    int parentIsPentagon = H3_EXPORT(isPentagon)(parent);
 
     *child = parent;
     int64_t idx = childPos;
 
     H3_SET_RESOLUTION(*child, childRes);
 
-    if (parentIsPentagon) {
+    if (H3_EXPORT(isPentagon)(parent)) {
         // Pentagon tile logic. Pentagon tiles skip the 1 digit, so the offsets
         // are different
         bool inPent = true;
         for (int res = 1; res <= resOffset; res++) {
-            int resWidth = _ipow(7, resOffset - res);
+            int64_t resWidth = _ipow(7, resOffset - res);
             if (inPent) {
                 // While we are inside a parent pentagon, we need to check if
                 // this cell is a pentagon, and if not, we need to offset its
                 // digit to account for the skipped direction
-                int pentWidth = 1 + (5 * (resWidth - 1)) / 6;
+                int64_t pentWidth = 1 + (5 * (resWidth - 1)) / 6;
                 if (idx < pentWidth) {
                     H3_SET_INDEX_DIGIT(*child, parentRes + res, 0);
                 } else {
@@ -1153,7 +1152,7 @@ H3Error H3_EXPORT(childPosToCell)(int64_t childPos, H3Index parent,
     } else {
         // Hexagon tile logic. Offsets are simple powers of 7
         for (int res = 1; res <= resOffset; res++) {
-            int resWidth = _ipow(7, resOffset - res);
+            int64_t resWidth = _ipow(7, resOffset - res);
             H3_SET_INDEX_DIGIT(*child, parentRes + res, idx / resWidth);
             idx %= resWidth;
         }
