@@ -54,9 +54,40 @@ static void childPos_assertions(H3Index h3) {
 }
 
 SUITE(cellToChildPos) {
-    TEST(cellToChildPos_correctness) {
+    TEST(childPos_correctness) {
         iterateAllIndexesAtRes(0, childPos_assertions);
         iterateAllIndexesAtRes(1, childPos_assertions);
         iterateAllIndexesAtRes(2, childPos_assertions);
+    }
+
+    TEST(cellToChildPos_res_errors) {
+        int64_t childPos;
+        // random res 8 cell
+        H3Index child = 0x88283080ddfffff;
+        t_assert(
+            H3_EXPORT(cellToChildPos)(child, -1, &childPos) == E_RES_DOMAIN,
+            "error matches expected for invalid res");
+        t_assert(
+            H3_EXPORT(cellToChildPos)(child, 42, &childPos) == E_RES_DOMAIN,
+            "error matches expected for invalid res");
+        t_assert(
+            H3_EXPORT(cellToChildPos)(child, 9, &childPos) == E_RES_MISMATCH,
+            "error matches expected for parent res finer than child");
+    }
+
+    TEST(childPosToCell_res_errors) {
+        H3Index cell;
+        // random res 8 cell
+        H3Index parent = 0x88283080ddfffff;
+        int64_t childPos = 27;
+        t_assert(H3_EXPORT(childPosToCell)(childPos, parent, 42, &cell) ==
+                     E_RES_DOMAIN,
+                 "error matches expected for invalid res");
+        t_assert(H3_EXPORT(childPosToCell)(childPos, parent, -1, &cell) ==
+                     E_RES_DOMAIN,
+                 "error matches expected for invalid res");
+        t_assert(H3_EXPORT(childPosToCell)(childPos, parent, 7, &cell) ==
+                     E_RES_MISMATCH,
+                 "error matches expected for child res coarser than parent");
     }
 }
