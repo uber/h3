@@ -197,7 +197,7 @@ H3Error cellToLocalIjk(H3Index origin, H3Index h3, CoordIJK *out) {
         if (originOnPent) {
             int originLeadingDigit = _h3LeadingNonZeroDigit(origin);
 
-            if (originLeadingDigit == INVALID_DIGIT) {
+            if (NEVER(originLeadingDigit == INVALID_DIGIT)) {
                 return E_CELL_INVALID;
             }
             if (FAILED_DIRECTIONS[originLeadingDigit][dir]) {

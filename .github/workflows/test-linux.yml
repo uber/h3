@@ -8,10 +8,14 @@ on:
 
 jobs:
   gcc-tests:
-    name: Test Compile gcc
+    name: Test Compile gcc ${{ matrix.build_type }}
     runs-on: ubuntu-latest
     env:
       CC: gcc
+
+    strategy:
+      matrix:
+        build_type: ["Debug", "Release"]
 
     steps:
       - uses: actions/checkout@v2.4.0
@@ -22,7 +26,7 @@ jobs:
           sudo apt-get install doxygen graphviz clang-format-9
 
       - name: Configure build
-        run: cmake -Bbuild -DWARNINGS_AS_ERRORS=ON .
+        run: cmake -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DWARNINGS_AS_ERRORS=ON .
 
       - name: Formatting check
         working-directory: build
@@ -56,12 +60,12 @@ jobs:
         run: |
           mkdir build/examples
           cd build/examples
-          cmake ../../examples
+          cmake -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} ../../examples
           make
           make test
 
   clang-tests:
-    name: Test Compile clang ${{ matrix.compile_opt }}
+    name: Test Compile clang ${{ matrix.build_type }} ${{ matrix.compile_opt }}
     runs-on: ubuntu-latest
     env:
       CC: clang
@@ -71,6 +75,7 @@ jobs:
         # See Clang docs for more information on the sanitizers:
         # https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html
         compile_opt: ["", "-fsanitize=undefined,float-divide-by-zero -fno-sanitize-recover=undefined,float-divide-by-zero", "-fsanitize=memory -fno-sanitize-recover=memory", "-fsanitize=address -fno-sanitize-recover=address"]
+        build_type: ["Debug", "Release"]
 
     steps:
       - uses: actions/checkout@v2.4.0
@@ -81,7 +86,7 @@ jobs:
           sudo apt-get install doxygen graphviz clang-format-9
 
       - name: Configure build
-        run: cmake -Bbuild -DWARNINGS_AS_ERRORS=ON -DCMAKE_C_FLAGS="${{ matrix.compile_opt }}" .
+        run: cmake -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DWARNINGS_AS_ERRORS=ON -DCMAKE_C_FLAGS="${{ matrix.compile_opt }}" .
 
       - name: Formatting check
         working-directory: build
@@ -115,7 +120,7 @@ jobs:
         run: |
           mkdir build/examples
           cd build/examples
-          cmake -DCMAKE_C_FLAGS="${{ matrix.compile_opt }}" ../../examples
+          cmake -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_C_FLAGS="${{ matrix.compile_opt }}" ../../examples
           make
           make test
 
@@ -159,7 +164,7 @@ jobs:
           sudo apt-get install lcov
 
       - name: Configure build
-        run: cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=ON-DWARNINGS_AS_ERRORS=ON -DH3_PREFIX=testprefix_ .
+        run: cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=ON -DWARNINGS_AS_ERRORS=ON -DH3_PREFIX=testprefix_ .
 
       - name: Build
         run: make

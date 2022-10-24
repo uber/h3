@@ -69,8 +69,8 @@ static H3Error vertexRotations(H3Index cell, int *out) {
     if (_isBaseCellPentagon(baseCell)) {
         // Find the appropriate direction-to-face mapping
         PentagonDirectionFaces dirFaces;
-        // Excluding from branch coverage as we never hit the end condition
-        for (int p = 0; ALWAYS(p < NUM_PENTAGONS); p++) {
+        // We never hit the end condition
+        for (int p = 0; p < NUM_PENTAGONS; p++) {
             if (pentagonDirectionFaces[p].baseCell == baseCell) {
                 dirFaces = pentagonDirectionFaces[p];
                 break;

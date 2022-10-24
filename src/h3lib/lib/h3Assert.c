@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /** @file h3Assert.c
- * @brief   TODO
+ * @brief   Support code for unit testing
  */
 
 #include "h3Assert.h"

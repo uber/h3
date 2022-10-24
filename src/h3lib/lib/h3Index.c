@@ -118,7 +118,7 @@ int H3_EXPORT(isValidCell)(H3Index h) {
             }
         }
 
-        if (digit < CENTER_DIGIT || digit >= NUM_DIGITS) return 0;
+        if (NEVER(digit < CENTER_DIGIT) || digit >= NUM_DIGITS) return 0;
     }
 
     for (int r = res + 1; r <= MAX_H3_RES; r++) {
@@ -332,7 +332,7 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
             // to track how many times a parent is duplicated
             for (int i = 0; i < numRemainingHexes; i++) {
                 H3Index currIndex = remainingHexes[i];
-                if (currIndex != 0) {
+                if (ALWAYS(currIndex != 0)) {
                     // If the reserved bits were set by the caller, the
                     // algorithm below may encounter undefined behavior
                     // because it expects to have set the reserved bits
@@ -440,7 +440,7 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
         int uncompactableCount = 0;
         for (int i = 0; i < numRemainingHexes; i++) {
             H3Index currIndex = remainingHexes[i];
-            if (currIndex != H3_NULL) {
+            if (ALWAYS(currIndex != H3_NULL)) {
                 H3Index parent;
                 H3Error parentError =
                     H3_EXPORT(cellToParent)(currIndex, parentRes, &parent);
@@ -781,7 +781,7 @@ H3Error H3_EXPORT(latLngToCell)(const LatLng *g, int res, H3Index *out) {
     FaceIJK fijk;
     _geoToFaceIjk(g, res, &fijk);
     *out = _faceIjkToH3(&fijk, res);
-    if (*out) {
+    if (ALWAYS(*out)) {
         return E_SUCCESS;
     } else {
         return E_FAILED;
@@ -975,7 +975,7 @@ H3Error H3_EXPORT(getIcosahedronFaces)(H3Index h3, int *out) {
     // so fill with invalid values to indicate unused slots
     int faceCount;
     H3Error maxFaceCountError = H3_EXPORT(maxFaceCount)(h3, &faceCount);
-    if (maxFaceCountError != E_SUCCESS) {
+    if (NEVER(maxFaceCountError != E_SUCCESS)) {
         return maxFaceCountError;
     }
     for (int i = 0; i < faceCount; i++) {
