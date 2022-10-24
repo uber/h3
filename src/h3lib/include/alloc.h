@@ -24,7 +24,7 @@
 #ifndef ALLOC_H
 #define ALLOC_H
 
-#include "h3api.h" // for TJOIN
+#include "h3api.h"  // for TJOIN
 
 #ifdef H3_ALLOC_PREFIX
 #define H3_MEMORY(name) TJOIN(H3_ALLOC_PREFIX, name)
@@ -33,10 +33,10 @@
 extern "C" {
 #endif
 
-void* H3_MEMORY(malloc)(size_t size);
-void* H3_MEMORY(calloc)(size_t num, size_t size);
-void* H3_MEMORY(realloc)(void* ptr, size_t size);
-void H3_MEMORY(free)(void* ptr);
+void *H3_MEMORY(malloc)(size_t size);
+void *H3_MEMORY(calloc)(size_t num, size_t size);
+void *H3_MEMORY(realloc)(void *ptr, size_t size);
+void H3_MEMORY(free)(void *ptr);
 
 #ifdef __cplusplus
 }

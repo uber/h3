@@ -120,6 +120,8 @@ if(H3_IS_ROOT_PROJECT)
 endif()
 
 set(LIB_SOURCE_FILES
+    src/h3lib/include/h3Assert.h
+    src/h3lib/include/alloc.h
     src/h3lib/include/bbox.h
     src/h3lib/include/polygon.h
     src/h3lib/include/polygonAlgos.h
@@ -138,6 +140,7 @@ set(LIB_SOURCE_FILES
     src/h3lib/include/constants.h
     src/h3lib/include/coordijk.h
     src/h3lib/include/algos.h
+    src/h3lib/lib/h3Assert.c
     src/h3lib/lib/algos.c
     src/h3lib/lib/coordijk.c
     src/h3lib/lib/bbox.c
