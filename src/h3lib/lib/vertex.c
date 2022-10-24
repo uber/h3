@@ -25,6 +25,7 @@
 #include "algos.h"
 #include "baseCells.h"
 #include "faceijk.h"
+#include "h3Assert.h"
 #include "h3Index.h"
 #include "latLng.h"
 
@@ -69,7 +70,7 @@ static H3Error vertexRotations(H3Index cell, int *out) {
         // Find the appropriate direction-to-face mapping
         PentagonDirectionFaces dirFaces;
         // Excluding from branch coverage as we never hit the end condition
-        for (int p = 0; p < NUM_PENTAGONS; p++) {  // LCOV_EXCL_BR_LINE
+        for (int p = 0; ALWAYS(p < NUM_PENTAGONS); p++) {
             if (pentagonDirectionFaces[p].baseCell == baseCell) {
                 dirFaces = pentagonDirectionFaces[p];
                 break;
@@ -237,7 +238,7 @@ H3Error H3_EXPORT(cellToVertex)(H3Index cell, int vertexNum, H3Index *out) {
             Direction right = directionForVertexNum(
                 cell, (vertexNum - 1 + cellNumVerts) % cellNumVerts);
             // This case should be unreachable; invalid verts fail earlier
-            if (right == INVALID_DIGIT) return E_FAILED;  // LCOV_EXCL_LINE
+            if (NEVER(right == INVALID_DIGIT)) return E_FAILED;
             int rRotations = 0;
             H3Index rightNeighbor;
             H3Error rightNeighborError =

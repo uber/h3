@@ -32,6 +32,8 @@
 #ifndef H3ASSERT_H
 #define H3ASSERT_H
 
+#include <assert.h>
+
 /*
 ** The testcase() macro is used to aid in coverage testing.  When
 ** doing coverage testing, the condition inside the argument to
