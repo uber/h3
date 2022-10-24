@@ -10,6 +10,9 @@ The public API of this library consists of the functions declared in file
 - Fixed possible signed integer overflow in `h3NeighborRotations` (#707)
 - Fixed possible signed integer overflow in `localIjToCell` (#706)
 
+### Changed
+- `assert` on defensive code blocks that are not already covered.
+
 ## [4.0.1] - 2022-09-15
 ### Fixed
 - Changing an internal `float` to `double` improves the precision of geographic coordinate output (#652)
