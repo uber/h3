@@ -50,6 +50,8 @@ static void childPos_assertions(H3Index h3) {
                 H3_EXPORT(childPosToCell)(childPos, h3, childRes, &cell));
             t_assert(cell == children[i], "cell matches expected");
         }
+        
+        free(children);
     }
 }
 
