@@ -101,7 +101,7 @@ extern unsigned int h3CoverageCounter;
 ** are intended to always be true or false, respectively.  Such
 ** expressions could be omitted from the code completely.  But they
 ** are included in a few cases in order to enhance the resilience
-** of SQLite to unexpected behavior - to make the code "self-healing"
+** of the H3 library to unexpected behavior - to make the code "self-healing"
 ** or "ductile" rather than being "brittle" and crashing at the first
 ** hint of unplanned behavior.
 **
