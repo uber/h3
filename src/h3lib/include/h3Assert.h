@@ -16,14 +16,15 @@
 /** @file h3Assert.h
  * @brief   Support code for unit testing and assertions
  *
- * This file defines macros needed for defensive programming in the H3 core library.
- * H3 strives to have complete code and branch coverage, but this is not feasible if
- * some branches cannot be reached because they are defensive - that is, we do not know
- * of a test case that would exercise the branch but we do have an opinion of how to
- * recover from such an error. These defensive branches are excluded from coverage.
+ * This file defines macros needed for defensive programming in the H3 core
+ * library. H3 strives to have complete code and branch coverage, but this is
+ * not feasible if some branches cannot be reached because they are defensive -
+ * that is, we do not know of a test case that would exercise the branch but we
+ * do have an opinion of how to recover from such an error. These defensive
+ * branches are excluded from coverage.
  *
- * In other testing, such as unit tests or fuzzer testing, they trigger assertions if
- * the conditions fail. 
+ * In other testing, such as unit tests or fuzzer testing, they trigger
+ * assertions if the conditions fail.
  *
  * Adapted from https://www.sqlite.org/testing.html and
  * https://www.sqlite.org/assert.html
