@@ -454,16 +454,14 @@ H3Error h3NeighborRotations(H3Index origin, Direction dir, int *rotations,
                     // moving in
                     current = _h3Rotate60ccw(current);
                     *rotations = *rotations + 1;
-                } else if (ALWAYS(oldLeadingDigit == IK_AXES_DIGIT)) {
-                    // This case is gaurded with ALWAYS because the else-block
-                    // below should never occur.
+                } else if (oldLeadingDigit == IK_AXES_DIGIT) {
                     // Rotate out of the deleted k subsequence
                     // We also need an additional change to the direction we're
                     // moving in
                     current = _h3Rotate60cw(current);
                     *rotations = *rotations + 5;
                 } else {
-                    // Should never occur
+                    // TODO: Should never occur, but is reachable by fuzzer
                     return E_FAILED;
                 }
             }
