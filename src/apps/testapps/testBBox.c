@@ -252,15 +252,13 @@ SUITE(BBox) {
         int64_t numHexagons1;
         int64_t numHexagons2;
 
-        t_assert(bboxHexEstimate(&bbox1, 15, &numHexagons1) == 0,
-                 "should not fail");
-        t_assert(bboxHexEstimate(&bbox2, 15, &numHexagons2) == 0,
-                 "should not fail");
+        t_assertSuccess(bboxHexEstimate(&bbox1, 15, &numHexagons1));
+        t_assertSuccess(bboxHexEstimate(&bbox2, 15, &numHexagons2));
 
         double diffPercentage = fabs(1.0 - numHexagons1 / (double)numHexagons2);
 
-        // numHexagons1 and numHexagons2 cannot be exactly equals because the
-        // diameter of the two bboxes is not exaxtly the same. (It's calculated
+        // numHexagons1 and numHexagons2 cannot be exactly equal because the
+        // diameter of the two bboxes is not exactly the same (it's calculated
         // using greatCircleDistanceKm)
         t_assert(
             diffPercentage < 0.03,
