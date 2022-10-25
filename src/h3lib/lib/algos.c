@@ -971,7 +971,8 @@ H3Error H3_EXPORT(polygonToCells)(const GeoPolygon *geoPolygon, int res,
                                         search, found);
         // If this branch is reached, we have exceeded the maximum number of
         // hexagons possible and need to clean up the allocated memory.
-        if (NEVER(edgeHexError)) {
+        // TODO: Reachable via fuzzer
+        if (edgeHexError) {
             H3_MEMORY(free)(search);
             H3_MEMORY(free)(found);
             H3_MEMORY(free)(bboxes);
