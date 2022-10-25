@@ -247,17 +247,25 @@ SUITE(BBox) {
     }
 
     TEST(bboxHexEstimate_ratio) {
-        BBox bbox1 = {100.0, 1.0, 3.0, 2.0};
-        BBox bbox2 = {3.0, 2.0, 100.0, 1.0};
+        BBox bbox1 = {0.82294, 0.82273, 0.131671, 0.131668};
+        BBox bbox2 = {0.131671, 0.131668, 0.82294, 0.82273};
         int64_t numHexagons1;
         int64_t numHexagons2;
 
-        bboxHexEstimate(&bbox1, -1, &numHexagons1);
-        bboxHexEstimate(&bbox2, -1, &numHexagons2);
+        t_assert(bboxHexEstimate(&bbox1, 15, &numHexagons1) == 0,
+                 "should not fail");
+        t_assert(bboxHexEstimate(&bbox2, 15, &numHexagons2) == 0,
+                 "should not fail");
 
-        t_assert(numHexagons1 == numHexagons2,
-                 "Should be equal for bounding boxes with the same diameter "
-                 "and side ratio");
+        double diffPercentage = fabs(1.0 - numHexagons1 / (double)numHexagons2);
+
+        // numHexagons1 and numHexagons2 cannot be exactly equals because the
+        // diameter of the two bboxes is not exaxtly the same. (It's calculated
+        // using greatCircleDistanceKm)
+        t_assert(
+            diffPercentage < 0.03,
+            "Should be true for bounding boxes with (almost) the same diameter "
+            "and side ratio");
     }
 
     TEST(lineHexEstimate_invalidRes) {
