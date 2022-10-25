@@ -303,7 +303,6 @@ H3Error _gridDiskDistancesInternal(H3Index origin, int k, H3Index *out,
             neighborResult = _gridDiskDistancesInternal(
                 nextNeighbor, k, out, distances, maxIdx, curK + 1);
             if (neighborResult) {
-                // TODO: Reachable in fuzzer
                 return neighborResult;
             }
         }
@@ -607,6 +606,7 @@ H3Error H3_EXPORT(gridDiskDistancesUnsafe)(H3Index origin, int k, H3Index *out,
             if (neighborResult) {
                 // Should not be possible because `origin` would have to be a
                 // pentagon
+                // TODO: Reachable via fuzzer
                 return neighborResult;
             }
 
@@ -619,7 +619,6 @@ H3Error H3_EXPORT(gridDiskDistancesUnsafe)(H3Index origin, int k, H3Index *out,
         H3Error neighborResult = h3NeighborRotations(
             origin, DIRECTIONS[direction], &rotations, &origin);
         if (neighborResult) {
-            // TODO: Reachable via fuzzer
             return neighborResult;
         }
         out[idx] = origin;
@@ -845,7 +844,7 @@ H3Error _getEdgeHexagons(const GeoLoop *geoloop, int64_t numHexagons, int res,
                 (destination.lng * j / numHexesEstimate);
             H3Index pointHex;
             H3Error e = H3_EXPORT(latLngToCell)(&interpolate, res, &pointHex);
-            if (NEVER(e)) {
+            if (e) {
                 return e;
             }
             // A simple hash to store the hexagon, or move to another place if
