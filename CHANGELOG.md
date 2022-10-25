@@ -11,7 +11,7 @@ The public API of this library consists of the functions declared in file
 - Fixed possible signed integer overflow in `localIjToCell` (#706)
 
 ### Changed
-- `assert` on defensive code blocks that are not already covered.
+- `assert` on defensive code blocks that are not already covered. (#720)
 
 ## [4.0.1] - 2022-09-15
 ### Fixed
