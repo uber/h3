@@ -5,7 +5,7 @@ sidebar_label: Testing strategy
 slug: /core-library/testing
 ---
 
-The H3 developers try to ensure the robustness and reliability of the H3 library. Tools used to do this include defensive code, unit tests with coverage reporting and fuzzing.
+The H3 developers try to ensure the robustness and reliability of the H3 library. Tools used to do this include defensive code, unit tests with coverage reporting, and fuzzing.
 
 The H3 library may despite these efforts behave unexpectedly; in these cases the developers
 [welcome feedback and contributions](https://github.com/uber/h3/blob/master/CONTRIBUTING.md).
