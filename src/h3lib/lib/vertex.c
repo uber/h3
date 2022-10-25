@@ -70,11 +70,15 @@ static H3Error vertexRotations(H3Index cell, int *out) {
         // Find the appropriate direction-to-face mapping
         PentagonDirectionFaces dirFaces;
         // We never hit the end condition
-        for (int p = 0; p < NUM_PENTAGONS; p++) {
+        int p = 0;
+        for (; p < NUM_PENTAGONS; p++) {
             if (pentagonDirectionFaces[p].baseCell == baseCell) {
                 dirFaces = pentagonDirectionFaces[p];
                 break;
             }
+        }
+        if (p == NUM_PENTAGONS) {
+            return E_FAILED;
         }
 
         // additional CCW rotation for polar neighbors or IK neighbors

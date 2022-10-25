@@ -332,7 +332,8 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
             // to track how many times a parent is duplicated
             for (int i = 0; i < numRemainingHexes; i++) {
                 H3Index currIndex = remainingHexes[i];
-                if (ALWAYS(currIndex != 0)) {
+                // TODO: This case is coverable (reachable by fuzzer)
+                if (currIndex != 0) {
                     // If the reserved bits were set by the caller, the
                     // algorithm below may encounter undefined behavior
                     // because it expects to have set the reserved bits
