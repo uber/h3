@@ -302,7 +302,8 @@ H3Error _gridDiskDistancesInternal(H3Index origin, int k, H3Index *out,
             }
             neighborResult = _gridDiskDistancesInternal(
                 nextNeighbor, k, out, distances, maxIdx, curK + 1);
-            if (NEVER(neighborResult)) {
+            if (neighborResult) {
+                // TODO: Reachable in fuzzer
                 return neighborResult;
             }
         }
