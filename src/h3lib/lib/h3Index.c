@@ -441,7 +441,8 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
         int uncompactableCount = 0;
         for (int i = 0; i < numRemainingHexes; i++) {
             H3Index currIndex = remainingHexes[i];
-            if (ALWAYS(currIndex != H3_NULL)) {
+            // TODO: This case is coverable (reachable by fuzzer)
+            if (currIndex != H3_NULL) {
                 H3Index parent;
                 H3Error parentError =
                     H3_EXPORT(cellToParent)(currIndex, parentRes, &parent);
