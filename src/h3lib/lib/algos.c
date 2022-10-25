@@ -617,7 +617,8 @@ H3Error H3_EXPORT(gridDiskDistancesUnsafe)(H3Index origin, int k, H3Index *out,
 
         H3Error neighborResult = h3NeighborRotations(
             origin, DIRECTIONS[direction], &rotations, &origin);
-        if (NEVER(neighborResult)) {
+        if (neighborResult) {
+            // TODO: Reachable via fuzzer
             return neighborResult;
         }
         out[idx] = origin;
@@ -707,9 +708,10 @@ H3Error H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index *out) {
     for (int ring = 0; ring < k; ring++) {
         H3Error neighborResult = h3NeighborRotations(
             origin, NEXT_RING_DIRECTION, &rotations, &origin);
-        if (NEVER(neighborResult)) {
+        if (neighborResult) {
             // Should not be possible because `origin` would have to be a
             // pentagon
+            // TODO: Reachable via fuzzer
             return neighborResult;
         }
 
@@ -727,9 +729,10 @@ H3Error H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index *out) {
         for (int pos = 0; pos < k; pos++) {
             H3Error neighborResult = h3NeighborRotations(
                 origin, DIRECTIONS[direction], &rotations, &origin);
-            if (NEVER(neighborResult)) {
+            if (neighborResult) {
                 // Should not be possible because `origin` would have to be a
                 // pentagon
+                // TODO: Reachable via fuzzer
                 return neighborResult;
             }
 
