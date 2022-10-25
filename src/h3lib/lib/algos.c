@@ -854,7 +854,8 @@ H3Error _getEdgeHexagons(const GeoLoop *geoloop, int64_t numHexagons, int res,
             while (found[loc] != 0) {
                 // If this conditional is reached, the `found` memory block is
                 // too small for the given polygon. This should not happen.
-                if (NEVER(loopCount > numHexagons)) return E_FAILED;
+                // TODO: Reachable via fuzzer
+                if (loopCount > numHexagons) return E_FAILED;
                 if (found[loc] == pointHex)
                     break;  // At least two points of the geoloop index to the
                             // same cell
