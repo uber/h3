@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Uber Technologies, Inc.
+ * Copyright 2022 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,5 +91,53 @@ SUITE(cellToChildPos) {
         t_assert(H3_EXPORT(childPosToCell)(childPos, parent, 7, &cell) ==
                      E_RES_MISMATCH,
                  "error matches expected for child res coarser than parent");
+    }
+
+    TEST(childPosToCell_childPos_errors) {
+        H3Index cell;
+        // random res 8 cell
+        H3Index parent = 0x88283080ddfffff;
+        int res = 10;
+        t_assert(H3_EXPORT(childPosToCell)(-1, parent, res, &cell) == E_DOMAIN,
+                 "error matches expected for negative childPos");
+
+        // res is two steps down, so max valid child pos is 48
+        t_assert(H3_EXPORT(childPosToCell)(48, parent, res, &cell) == E_SUCCESS,
+                 "No error for max valid child pos");
+        t_assert(H3_EXPORT(childPosToCell)(49, parent, res, &cell) == E_DOMAIN,
+                 "error matches expected for childPos greater than max");
+    }
+
+    TEST(cellToChildPos_invalid_digit) {
+        // random res 8 cell
+        H3Index child = 0x88283080ddfffff;
+        H3_SET_INDEX_DIGIT(child, 6, INVALID_DIGIT);
+
+        int64_t childPos;
+        t_assert(
+            H3_EXPORT(cellToChildPos)(child, 0, &childPos) == E_CELL_INVALID,
+            "error matches expected for invalid cell");
+    }
+
+    TEST(cellToChildPos_invalid_pentagon_digit) {
+        // Res 7 hexagon child of a pentagon
+        H3Index child = 0x870800006ffffff;
+        H3_SET_INDEX_DIGIT(child, 7, INVALID_DIGIT);
+
+        int64_t childPos;
+        t_assert(
+            H3_EXPORT(cellToChildPos)(child, 0, &childPos) == E_CELL_INVALID,
+            "error matches expected for invalid cell");
+    }
+
+    TEST(cellToChildPos_invalid_pentagon_kaxis) {
+        H3Index child;
+        // Create a res 8 index located in a deleted subsequence of a pentagon.
+        setH3Index(&child, 8, 4, K_AXES_DIGIT);
+
+        int64_t childPos;
+        t_assert(
+            H3_EXPORT(cellToChildPos)(child, 0, &childPos) == E_CELL_INVALID,
+            "error matches expected for invalid cell");
     }
 }

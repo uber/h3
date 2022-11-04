@@ -1072,9 +1072,15 @@ H3Error H3_EXPORT(cellToChildPos)(H3Index child, int parentRes, int64_t *out) {
         // different from hexagons
         for (int res = childRes; res > parentRes; res--) {
             // It shouldn't be possible to get an error here, so we don't check
+            // TODO: Assert unreachable error with NEVER
             H3_EXPORT(cellToParent(child, res - 1, &parent));
             parentIsPentagon = H3_EXPORT(isPentagon)(parent);
             int rawDigit = H3_GET_INDEX_DIGIT(child, res);
+            // Validate the digit before proceeding
+            if (rawDigit == INVALID_DIGIT ||
+                (parentIsPentagon && rawDigit == K_AXES_DIGIT)) {
+                return E_CELL_INVALID;
+            }
             int digit =
                 parentIsPentagon && rawDigit > 0 ? rawDigit - 1 : rawDigit;
             if (digit != CENTER_DIGIT) {
@@ -1096,9 +1102,17 @@ H3Error H3_EXPORT(cellToChildPos)(H3Index child, int parentRes, int64_t *out) {
     } else {
         // Hexagon logic. Offsets are simple powers of 7
         for (int res = childRes; res > parentRes; res--) {
-            *out += H3_GET_INDEX_DIGIT(child, res) * _ipow(7, childRes - res);
+            int digit = H3_GET_INDEX_DIGIT(child, res);
+            if (digit == INVALID_DIGIT) {
+                return E_CELL_INVALID;
+            }
+            *out += digit * _ipow(7, childRes - res);
         }
     }
+    // TODO:
+    // if (NEVER(out < 0 || out > cellToChildrenSize(parent, childRes))) {
+    //   return E_FAILED;
+    // }
 
     return E_SUCCESS;
 }
@@ -1108,12 +1122,21 @@ H3Error H3_EXPORT(cellToChildPos)(H3Index child, int parentRes, int64_t *out) {
  * children at the specified resolution */
 H3Error H3_EXPORT(childPosToCell)(int64_t childPos, H3Index parent,
                                   int childRes, H3Index *child) {
+    // Validate resolution
     if (childRes < 0 || childRes > MAX_H3_RES) {
         return E_RES_DOMAIN;
     }
     int parentRes = H3_GET_RESOLUTION(parent);
     if (childRes < parentRes) {
         return E_RES_MISMATCH;
+    }
+
+    // Validate child pos
+    int64_t maxChildCount;
+    // TODO: Assert unreachable error with NEVER
+    H3_EXPORT(cellToChildrenSize)(parent, childRes, &maxChildCount);
+    if (childPos < 0 || childPos >= maxChildCount) {
+        return E_DOMAIN;
     }
 
     int resOffset = childRes - parentRes;
