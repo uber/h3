@@ -23,6 +23,7 @@
 #include "algos.h"
 #include "constants.h"
 #include "coordijk.h"
+#include "h3Assert.h"
 #include "h3Index.h"
 #include "latLng.h"
 #include "vertex.h"
@@ -74,6 +75,20 @@ H3Error H3_EXPORT(areNeighborCells)(H3Index origin, H3Index destination,
                 destinationResDigit == CENTER_DIGIT) {
                 *out = 1;
                 return E_SUCCESS;
+            }
+            if (originResDigit >= INVALID_DIGIT) {
+                // Prevent indexing off the end of the array below
+                return E_CELL_INVALID;
+            }
+            if ((originResDigit == K_AXES_DIGIT ||
+                 destinationResDigit == K_AXES_DIGIT) &&
+                H3_EXPORT(isPentagon)(originParent)) {
+                // If these are invalid cells, fail rather than incorrectly
+                // reporting neighbors. For pentagon cells that are actually
+                // neighbors across the deleted subsequence, they will fail the
+                // optimized check below, but they will be accepted by the
+                // gridDisk check below that.
+                return E_CELL_INVALID;
             }
             // These sets are the relevant neighbors in the clockwise
             // and counter-clockwise
@@ -264,7 +279,7 @@ H3Error H3_EXPORT(directedEdgeToBoundary)(H3Index edge, CellBoundary *cb) {
     // crosses an edge of the icosahedron.
     FaceIJK fijk;
     H3Error fijkResult = _h3ToFaceIjk(origin, &fijk);
-    if (fijkResult) {
+    if (NEVER(fijkResult)) {
         return fijkResult;
     }
     int res = H3_GET_RESOLUTION(origin);

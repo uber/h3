@@ -45,7 +45,7 @@ else()
     set(ENABLE_REQUIRES_ALL_SYMBOLS OFF)
 endif()
 
-option(ENABLE_COVERAGE "Enable compiling tests with coverage." ON)
+option(ENABLE_COVERAGE "Enable compiling tests with coverage." OFF)
 option(BUILD_BENCHMARKS "Build benchmarking applications." ON)
 option(BUILD_FUZZERS "Build fuzzer applications (for use with afl)." ON)
 option(BUILD_FILTERS "Build filter applications." ON)
@@ -53,6 +53,15 @@ option(BUILD_GENERATORS "Build code generation applications." ON)
 # If ON, libfuzzer settings are used to build the fuzzer harnesses. If OFF, a frontend
 # for afl++ is provided instead.
 option(ENABLE_LIBFUZZER "Build fuzzers with libFuzzer support." OFF)
+
+# These options exist for integration with OSS-Fuzz, so that the fuzzer options
+# can be passed through only to the fuzzer executables but not the H3 library,
+# since passing those options to the library too may result in too many implementations
+# of main in the fuzzer executables.
+option(H3_FUZZER_NO_MAIN "Build fuzzers with no main." OFF)
+mark_as_advanced(H3_FUZZER_NO_MAIN)
+set(H3_FUZZER_EXTRA_OPTIONS "" CACHE STRING "Extra compilation options for fuzzers particularly.")
+mark_as_advanced(H3_FUZZER_EXTRA_OPTIONS)
 
 if(WIN32)
     # Use bash (usually from Git for Windows) for piping results
@@ -111,6 +120,8 @@ if(H3_IS_ROOT_PROJECT)
 endif()
 
 set(LIB_SOURCE_FILES
+    src/h3lib/include/h3Assert.h
+    src/h3lib/include/alloc.h
     src/h3lib/include/bbox.h
     src/h3lib/include/polygon.h
     src/h3lib/include/polygonAlgos.h
@@ -129,6 +140,7 @@ set(LIB_SOURCE_FILES
     src/h3lib/include/constants.h
     src/h3lib/include/coordijk.h
     src/h3lib/include/algos.h
+    src/h3lib/lib/h3Assert.c
     src/h3lib/lib/algos.c
     src/h3lib/lib/coordijk.c
     src/h3lib/lib/bbox.c
@@ -181,6 +193,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testPentagonIndexes.c
     src/apps/testapps/testGridDisk.c
     src/apps/testapps/testCellToBoundary.c
+    src/apps/testapps/testCellToBoundaryEdgeCases.c
     src/apps/testapps/testCellToParent.c
     src/apps/testapps/testH3Index.c
     src/apps/testapps/mkRandGeoBoundary.c
@@ -242,6 +255,7 @@ set(OTHER_SOURCE_FILES
     src/apps/fuzzers/fuzzerLocalIj.c
     src/apps/fuzzers/fuzzerPolygonToCells.c
     src/apps/fuzzers/fuzzerPolygonToCellsNoHoles.c
+    src/apps/fuzzers/fuzzerInternalAlgos.c
     src/apps/benchmarks/benchmarkPolygonToCells.c
     src/apps/benchmarks/benchmarkPolygon.c
     src/apps/benchmarks/benchmarkCellsToLinkedMultiPolygon.c
@@ -276,6 +290,9 @@ function(add_h3_library name h3_alloc_prefix_override)
     if(BUILD_SHARED_LIBS)
         set_target_properties(${name} PROPERTIES SOVERSION ${H3_SOVERSION})
         target_compile_definitions(${name} PRIVATE BUILD_SHARED_LIBS=1)
+    endif()
+    if(ENABLE_COVERAGE)
+        target_compile_definitions(${name} PRIVATE H3_COVERAGE_TEST=1)
     endif()
 
     target_compile_definitions(${name} PUBLIC H3_PREFIX=${H3_PREFIX})
@@ -464,8 +481,11 @@ if(BUILD_FUZZERS)
 
     macro(add_h3_fuzzer name srcfile)
         add_h3_executable(${name} ${srcfile} ${APP_SOURCE_FILES})
-        if(ENABLE_LIBFUZZER)
+        if(ENABLE_LIBFUZZER OR H3_FUZZER_NO_MAIN)
             target_compile_definitions(${name} PRIVATE H3_USE_LIBFUZZER)
+        endif()
+        if(H3_FUZZER_EXTRA_OPTIONS)
+            target_compile_options(${name} PRIVATE ${H3_FUZZER_EXTRA_OPTIONS})
         endif()
         add_dependencies(fuzzers ${name})
     endmacro()
@@ -487,6 +507,9 @@ if(BUILD_FUZZERS)
     add_h3_fuzzer(fuzzerLocalIj src/apps/fuzzers/fuzzerLocalIj.c)
     add_h3_fuzzer(fuzzerPolygonToCells src/apps/fuzzers/fuzzerPolygonToCells.c)
     add_h3_fuzzer(fuzzerPolygonToCellsNoHoles src/apps/fuzzers/fuzzerPolygonToCellsNoHoles.c)
+    if(ENABLE_REQUIRES_ALL_SYMBOLS)
+        add_h3_fuzzer(fuzzerInternalAlgos src/apps/fuzzers/fuzzerInternalAlgos.c)
+    endif()
 endif()
 
 if(BUILD_BENCHMARKS)

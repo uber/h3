@@ -41,7 +41,7 @@ SUITE(coordIj) {
         t_assert(ij.i == 0, "ij.i zero");
         t_assert(ij.j == 0, "ij.j zero");
 
-        ijToIjk(&ij, &ijk);
+        t_assertSuccess(ijToIjk(&ij, &ijk));
         t_assert(ijk.i == 0, "ijk.i zero");
         t_assert(ijk.j == 0, "ijk.j zero");
         t_assert(ijk.k == 0, "ijk.k zero");
@@ -56,7 +56,7 @@ SUITE(coordIj) {
             ijkToIj(&ijk, &ij);
 
             CoordIJK recovered = {0};
-            ijToIjk(&ij, &recovered);
+            t_assertSuccess(ijToIjk(&ij, &recovered));
 
             t_assert(_ijkMatches(&ijk, &recovered),
                      "got same ijk coordinates back");

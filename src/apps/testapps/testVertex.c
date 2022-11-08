@@ -107,6 +107,20 @@ SUITE(Vertex) {
                  "Invalid cell returns error");
     }
 
+    TEST(cellToVertex_invalid2) {
+        H3Index index = 0x685b2396e900fff9;
+        H3Index vert;
+        t_assert(H3_EXPORT(cellToVertex)(index, 2, &vert) == E_CELL_INVALID,
+                 "Invalid cell returns error");
+    }
+
+    TEST(cellToVertex_invalid3) {
+        H3Index index = 0x20ff20202020ff35;
+        H3Index vert;
+        t_assert(H3_EXPORT(cellToVertex)(index, 0, &vert) == E_CELL_INVALID,
+                 "Invalid cell returns error");
+    }
+
     TEST(isValidVertex_hex) {
         H3Index origin = 0x823d6ffffffffff;
         H3Index vert = 0x2222597fffffffff;

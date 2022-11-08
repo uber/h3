@@ -290,20 +290,20 @@ static const LinkedGeoPolygon *findPolygonForHole(
  * @param root Root polygon including all loops
  * @return     0 on success, or an error code > 0 for invalid input
  */
-int normalizeMultiPolygon(LinkedGeoPolygon *root) {
+H3Error normalizeMultiPolygon(LinkedGeoPolygon *root) {
     // We assume that the input is a single polygon with loops;
     // if it has multiple polygons, don't touch it
     if (root->next) {
-        return NORMALIZATION_ERR_MULTIPLE_POLYGONS;
+        return E_FAILED;
     }
 
     // Count loops, exiting early if there's only one
     int loopCount = countLinkedLoops(root);
     if (loopCount <= 1) {
-        return NORMALIZATION_SUCCESS;
+        return E_SUCCESS;
     }
 
-    int resultCode = NORMALIZATION_SUCCESS;
+    H3Error resultCode = E_SUCCESS;
     LinkedGeoPolygon *polygon = NULL;
     LinkedGeoLoop *next;
     int innerCount = 0;
@@ -355,7 +355,7 @@ int normalizeMultiPolygon(LinkedGeoPolygon *root) {
             // a way to destroy it with destroyLinkedMultiPolygon.
             destroyLinkedGeoLoop(innerLoops[i]);
             H3_MEMORY(free)(innerLoops[i]);
-            resultCode = NORMALIZATION_ERR_UNASSIGNED_HOLES;
+            resultCode = E_FAILED;
         }
     }
 

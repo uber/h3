@@ -167,6 +167,7 @@ foreach(file ${all_cells})
     add_h3_test_with_file(testCellToBoundary src/apps/testapps/testCellToBoundary.c ${file})
 endforeach()
 
+add_h3_test(testCellToBoundaryEdgeCases src/apps/testapps/testCellToBoundaryEdgeCases.c)
 add_h3_test(testCompactCells src/apps/testapps/testCompactCells.c)
 add_h3_test(testGridDisk src/apps/testapps/testGridDisk.c)
 add_h3_test(testGridRingUnsafe src/apps/testapps/testGridRingUnsafe.c)

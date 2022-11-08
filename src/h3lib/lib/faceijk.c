@@ -747,8 +747,8 @@ void _faceIjkToCellBoundary(const FaceIJK *h, int res, int start, int length,
             adjacent hexagon edge will lie completely on a single icosahedron
             face, and no additional vertex is required.
             */
-            bool isIntersectionAtVertex =
-                _v2dEquals(&orig2d0, &inter) || _v2dEquals(&orig2d1, &inter);
+            bool isIntersectionAtVertex = _v2dAlmostEquals(&orig2d0, &inter) ||
+                                          _v2dAlmostEquals(&orig2d1, &inter);
             if (!isIntersectionAtVertex) {
                 _hex2dToGeo(&inter, centerIJK.face, adjRes, 1,
                             &g->verts[g->numVerts]);

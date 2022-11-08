@@ -272,4 +272,39 @@ SUITE(h3ToLocalIj) {
                      "Invalid mode fail for cellToLocalIj");
         }
     }
+
+    TEST(invalid_negativeIj) {
+        H3Index index = 0x200f202020202020;
+        CoordIJ ij = {.i = -14671840, .j = -2147483648};
+        H3Index out;
+        t_assert(H3_EXPORT(localIjToCell)(index, &ij, 0, &out) == E_FAILED,
+                 "Negative I and J components fail");
+    }
+
+    TEST(localIjToCell_overflow_i) {
+        H3Index origin;
+        setH3Index(&origin, 2, 2, CENTER_DIGIT);
+        CoordIJ ij = {.i = INT32_MIN, .j = INT32_MAX};
+        H3Index out;
+        t_assert(H3_EXPORT(localIjToCell)(origin, &ij, 0, &out) == E_FAILED,
+                 "High magnitude I and J components fail");
+    }
+
+    TEST(localIjToCell_overflow_j) {
+        H3Index origin;
+        setH3Index(&origin, 2, 2, CENTER_DIGIT);
+        CoordIJ ij = {.i = INT32_MAX, .j = INT32_MIN};
+        H3Index out;
+        t_assert(H3_EXPORT(localIjToCell)(origin, &ij, 0, &out) == E_FAILED,
+                 "High magnitude J and I components fail");
+    }
+
+    TEST(localIjToCell_overflow_ij) {
+        H3Index origin;
+        setH3Index(&origin, 2, 2, CENTER_DIGIT);
+        CoordIJ ij = {.i = INT32_MIN, .j = INT32_MIN};
+        H3Index out;
+        t_assert(H3_EXPORT(localIjToCell)(origin, &ij, 0, &out) == E_FAILED,
+                 "High magnitude J and I components fail");
+    }
 }

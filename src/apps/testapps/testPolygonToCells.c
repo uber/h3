@@ -40,8 +40,8 @@ static GeoLoop holeGeoLoop = {.numVerts = 3, .verts = holeVerts};
 static GeoPolygon holeGeoPolygon;
 
 static LatLng emptyVerts[] = {{0.659966917655, -2.1364398519394},
-                              {0.659966917655, -2.1364398519395},
-                              {0.659966917655, -2.1364398519396}};
+                              {0.659966917656, -2.1364398519395},
+                              {0.659966917657, -2.1364398519396}};
 static GeoLoop emptyGeoLoop = {.numVerts = 3, .verts = emptyVerts};
 static GeoPolygon emptyGeoPolygon;
 
@@ -49,9 +49,17 @@ static LatLng invalidVerts[] = {{INFINITY, INFINITY}, {-INFINITY, -INFINITY}};
 static GeoLoop invalidGeoLoop = {.numVerts = 2, .verts = invalidVerts};
 static GeoPolygon invalidGeoPolygon;
 
+static LatLng invalid2Verts[] = {{NAN, NAN}, {-NAN, -NAN}};
+static GeoLoop invalid2GeoLoop = {.numVerts = 2, .verts = invalid2Verts};
+static GeoPolygon invalid2GeoPolygon;
+
 static LatLng pointVerts[] = {{0, 0}};
 static GeoLoop pointGeoLoop = {.numVerts = 1, .verts = pointVerts};
 static GeoPolygon pointGeoPolygon;
+
+static LatLng lineVerts[] = {{0, 0}, {1, 0}};
+static GeoLoop lineGeoLoop = {.numVerts = 2, .verts = lineVerts};
+static GeoPolygon lineGeoPolygon;
 
 /**
  * Return true if the cell crosses the meridian.
@@ -141,8 +149,14 @@ SUITE(polygonToCells) {
     invalidGeoPolygon.geoloop = invalidGeoLoop;
     invalidGeoPolygon.numHoles = 0;
 
+    invalid2GeoPolygon.geoloop = invalid2GeoLoop;
+    invalid2GeoPolygon.numHoles = 0;
+
     pointGeoPolygon.geoloop = pointGeoLoop;
     pointGeoPolygon.numHoles = 0;
+
+    lineGeoPolygon.geoloop = lineGeoLoop;
+    lineGeoPolygon.numHoles = 0;
 
     TEST(maxPolygonToCellsSize) {
         int64_t numHexagons;
@@ -457,9 +471,13 @@ SUITE(polygonToCells) {
 
     TEST(polygonToCellsInvalid) {
         int64_t numHexagons;
-        t_assert(H3_EXPORT(maxPolygonToCellsSize)(&invalidGeoPolygon, 9, 0,
+        t_assert(
+            H3_EXPORT(maxPolygonToCellsSize)(&invalidGeoPolygon, 9, 0,
+                                             &numHexagons) == E_FAILED,
+            "Cannot determine cell size to invalid geo polygon with Infinity");
+        t_assert(H3_EXPORT(maxPolygonToCellsSize)(&invalid2GeoPolygon, 9, 0,
                                                   &numHexagons) == E_FAILED,
-                 "Cannot determine cell size to invalid geo polygon");
+                 "Cannot determine cell size to invalid geo polygon with NaNs");
 
         // Chosen arbitrarily, polygonToCells should error out before this is an
         // issue.
@@ -474,18 +492,15 @@ SUITE(polygonToCells) {
 
     TEST(polygonToCellsPoint) {
         int64_t numHexagons;
-        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(&pointGeoPolygon, 9, 0,
-                                                         &numHexagons));
-        // 0 estimation, plus 1 vertex, plus 12 buffer
-        t_assert(numHexagons == 13, "Point has expected 13 hexagons");
+        t_assert(H3_EXPORT(maxPolygonToCellsSize)(&pointGeoPolygon, 9, 0,
+                                                  &numHexagons) == E_FAILED,
+                 "Cannot estimate for single point");
+    }
 
-        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
-        t_assertSuccess(
-            H3_EXPORT(polygonToCells)(&pointGeoPolygon, 9, 0, hexagons));
-        for (int i = 0; i < numHexagons; i++) {
-            t_assert(hexagons[i] == H3_NULL,
-                     "no results for polygonToCells of a single point");
-        }
-        free(hexagons);
+    TEST(polygonToCellsLine) {
+        int64_t numHexagons;
+        t_assert(H3_EXPORT(maxPolygonToCellsSize)(&lineGeoPolygon, 9, 0,
+                                                  &numHexagons) == E_FAILED,
+                 "Cannot estimate for straight line");
     }
 }

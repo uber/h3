@@ -30,6 +30,7 @@
 #include "baseCells.h"
 #include "bbox.h"
 #include "faceijk.h"
+#include "h3Assert.h"
 #include "h3Index.h"
 #include "h3api.h"
 #include "latLng.h"
@@ -152,6 +153,12 @@ static const Direction NEW_ADJUSTMENT_III[7][7] = {
      CENTER_DIGIT, IJ_AXES_DIGIT}};
 
 /**
+ * k value which will encompass all cells at resolution 15.
+ * This is the largest possible k in the H3 grid system.
+ */
+static const int K_ALL_CELLS_AT_RES_15 = 13780510;
+
+/**
  * Maximum number of cells that result from the gridDisk algorithm with the
  * given k. Formula source and proof: https://oeis.org/A003215
  *
@@ -161,6 +168,17 @@ static const Direction NEW_ADJUSTMENT_III[7][7] = {
 H3Error H3_EXPORT(maxGridDiskSize)(int k, int64_t *out) {
     if (k < 0) {
         return E_DOMAIN;
+    }
+    if (k >= K_ALL_CELLS_AT_RES_15) {
+        // If a k value of this value or above is provided, this function will
+        // estimate more cells than exist in the H3 grid at the finest
+        // resolution. This is a problem since the function does signed integer
+        // arithmetic on `k`, which could overflow. To prevent that, instead
+        // substitute the maximum number of cells in the grid, as it should not
+        // be possible for the gridDisk functions to exceed that. Note this is
+        // not resolution specific. So, when resolution < 15, this function may
+        // still estimate a size larger than the number of cells in the grid.
+        return H3_EXPORT(getNumCells)(MAX_H3_RES, out);
     }
     *out = 3 * (int64_t)k * ((int64_t)k + 1) + 1;
     return E_SUCCESS;
@@ -338,14 +356,16 @@ H3Error h3NeighborRotations(H3Index origin, Direction dir, int *rotations,
     if (dir < CENTER_DIGIT || dir >= INVALID_DIGIT) {
         return E_FAILED;
     }
+    // Ensure that rotations is modulo'd by 6 before any possible addition,
+    // to protect against signed integer overflow.
+    *rotations = *rotations % 6;
     for (int i = 0; i < *rotations; i++) {
         dir = _rotate60ccw(dir);
     }
 
     int newRotations = 0;
     int oldBaseCell = H3_GET_BASE_CELL(current);
-    if (oldBaseCell < 0 ||  // LCOV_EXCL_BR_LINE
-        oldBaseCell >= NUM_BASE_CELLS) {
+    if (NEVER(oldBaseCell < 0) || oldBaseCell >= NUM_BASE_CELLS) {
         // Base cells less than zero can not be represented in an index
         return E_CELL_INVALID;
     }
@@ -411,13 +431,14 @@ H3Error h3NeighborRotations(H3Index origin, Direction dir, int *rotations,
                 // on how we got here.
                 // check for a cw/ccw offset face; default is ccw
 
-                if (_baseCellIsCwOffset(
-                        newBaseCell, baseCellData[oldBaseCell].homeFijk.face)) {
+                if (ALWAYS(_baseCellIsCwOffset(
+                        newBaseCell,
+                        baseCellData[oldBaseCell].homeFijk.face))) {
                     current = _h3Rotate60cw(current);
                 } else {
                     // See cwOffsetPent in testGridDisk.c for why this is
                     // unreachable.
-                    current = _h3Rotate60ccw(current);  // LCOV_EXCL_LINE
+                    current = _h3Rotate60ccw(current);
                 }
                 alreadyAdjustedKSubsequence = 1;
             } else {
@@ -440,8 +461,8 @@ H3Error h3NeighborRotations(H3Index origin, Direction dir, int *rotations,
                     current = _h3Rotate60cw(current);
                     *rotations = *rotations + 5;
                 } else {
-                    // Should never occur
-                    return E_FAILED;  // LCOV_EXCL_LINE
+                    // TODO: Should never occur, but is reachable by fuzzer
+                    return E_FAILED;
                 }
             }
         }
@@ -582,10 +603,11 @@ H3Error H3_EXPORT(gridDiskDistancesUnsafe)(H3Index origin, int k, H3Index *out,
             // the end of this ring.
             H3Error neighborResult = h3NeighborRotations(
                 origin, NEXT_RING_DIRECTION, &rotations, &origin);
-            if (neighborResult) {  // LCOV_EXCL_BR_LINE
+            if (neighborResult) {
                 // Should not be possible because `origin` would have to be a
                 // pentagon
-                return neighborResult;  // LCOV_EXCL_LINE
+                // TODO: Reachable via fuzzer
+                return neighborResult;
             }
 
             if (H3_EXPORT(isPentagon)(origin)) {
@@ -686,10 +708,11 @@ H3Error H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index *out) {
     for (int ring = 0; ring < k; ring++) {
         H3Error neighborResult = h3NeighborRotations(
             origin, NEXT_RING_DIRECTION, &rotations, &origin);
-        if (neighborResult) {  // LCOV_EXCL_BR_LINE
+        if (neighborResult) {
             // Should not be possible because `origin` would have to be a
             // pentagon
-            return neighborResult;  // LCOV_EXCL_LINE
+            // TODO: Reachable via fuzzer
+            return neighborResult;
         }
 
         if (H3_EXPORT(isPentagon)(origin)) {
@@ -706,10 +729,11 @@ H3Error H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index *out) {
         for (int pos = 0; pos < k; pos++) {
             H3Error neighborResult = h3NeighborRotations(
                 origin, DIRECTIONS[direction], &rotations, &origin);
-            if (neighborResult) {  // LCOV_EXCL_BR_LINE
+            if (neighborResult) {
                 // Should not be possible because `origin` would have to be a
                 // pentagon
-                return neighborResult;  // LCOV_EXCL_LINE
+                // TODO: Reachable via fuzzer
+                return neighborResult;
             }
 
             // Skip the very last index, it was already added. We do
@@ -830,7 +854,8 @@ H3Error _getEdgeHexagons(const GeoLoop *geoloop, int64_t numHexagons, int res,
             while (found[loc] != 0) {
                 // If this conditional is reached, the `found` memory block is
                 // too small for the given polygon. This should not happen.
-                if (loopCount > numHexagons) return E_FAILED;  // LCOV_EXCL_LINE
+                // TODO: Reachable via fuzzer
+                if (loopCount > numHexagons) return E_FAILED;
                 if (found[loc] == pointHex)
                     break;  // At least two points of the geoloop index to the
                             // same cell
@@ -927,14 +952,13 @@ H3Error H3_EXPORT(polygonToCells)(const GeoPolygon *geoPolygon, int res,
                                             &numSearchHexes, search, found);
     // If this branch is reached, we have exceeded the maximum number of
     // hexagons possible and need to clean up the allocated memory.
-    // LCOV_EXCL_START
+    // TODO: Reachable via fuzzer
     if (edgeHexError) {
         H3_MEMORY(free)(search);
         H3_MEMORY(free)(found);
         H3_MEMORY(free)(bboxes);
         return edgeHexError;
     }
-    // LCOV_EXCL_STOP
 
     // 2. Iterate over all holes, trace the polygons defining the holes with
     // hexagons and add to only the search hash. We're going to temporarily use
@@ -947,14 +971,13 @@ H3Error H3_EXPORT(polygonToCells)(const GeoPolygon *geoPolygon, int res,
                                         search, found);
         // If this branch is reached, we have exceeded the maximum number of
         // hexagons possible and need to clean up the allocated memory.
-        // LCOV_EXCL_START
+        // TODO: Reachable via fuzzer
         if (edgeHexError) {
             H3_MEMORY(free)(search);
             H3_MEMORY(free)(found);
             H3_MEMORY(free)(bboxes);
             return edgeHexError;
         }
-        // LCOV_EXCL_STOP
     }
 
     // 3. Re-zero the found hash so it can be used in the main loop below
@@ -988,14 +1011,13 @@ H3Error H3_EXPORT(polygonToCells)(const GeoPolygon *geoPolygon, int res,
                     // If this branch is reached, we have exceeded the maximum
                     // number of hexagons possible and need to clean up the
                     // allocated memory.
-                    // LCOV_EXCL_START
+                    // TODO: Reachable via fuzzer
                     if (loopCount > numHexagons) {
                         H3_MEMORY(free)(search);
                         H3_MEMORY(free)(found);
                         H3_MEMORY(free)(bboxes);
                         return E_FAILED;
                     }
-                    // LCOV_EXCL_STOP
                     if (out[loc] == hex) break;  // Skip duplicates found
                     loc = (loc + 1) % numHexagons;
                     loopCount++;
@@ -1149,9 +1171,10 @@ H3Error H3_EXPORT(cellsToLinkedMultiPolygon)(const H3Index *h3Set,
         return err;
     }
     _vertexGraphToLinkedGeo(&graph, out);
-    if (normalizeMultiPolygon(out)) {
-        return E_FAILED;
-    }
     destroyVertexGraph(&graph);
-    return E_SUCCESS;
+    H3Error normalizeResult = normalizeMultiPolygon(out);
+    if (normalizeResult) {
+        H3_EXPORT(destroyLinkedMultiPolygon)(out);
+    }
+    return normalizeResult;
 }
