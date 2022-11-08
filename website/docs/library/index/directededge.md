@@ -5,6 +5,10 @@ sidebar_label: Directed edge mode
 slug: /library/index/directededge
 ---
 
+<div align="center">
+  <img height="300" src="/images/edge_mode.png" />
+</div>
+
 An H3 Directed Edge index (mode 2) represents a single directed edge between two cells (an "origin" cell and a neighboring "destination" cell). The components of the H3 Directed Edge index are packed into a 64-bit integer in order, highest bit first, as follows:
 
 * 1 bit reserved and set to 0,

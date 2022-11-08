@@ -5,13 +5,16 @@ sidebar_label: Cell mode
 slug: /library/index/cell
 ---
 
+<div align="center">
+  <img height="300" src="/images/cell_mode.png" />
+</div>
+
 The H3 system assigns a unique hierarchical index to each cell. The H3 index of a resolution *r* cell begins with the appropriate resolution 0 base cell number. This is followed by a sequence of *r* digits 0-6, where each *i*<sup>th</sup> digit *d*<sub>i</sub> specifies one of the 7 cells centered on the cell indicated by the coarser resolution digits *d*<sub>1</sub> through *d*<sub>i-1</sub>. A local hexagon coordinate system is assigned to each of the resolution 0 base cells and is used to orient all hierarchical indexing child cells of that base cell. The assignment of digits 0-6 at each resolution uses a *Central Place Indexing* arrangement (see [Sahr, 2014](http://webpages.sou.edu/~sahrk/sqspc/pubs/autocarto14.pdf)). In the case of the 12 pentagonal cells the indexing hierarchy produced by sub-digit 1 is removed at all resolutions.
 
 Child hexagons are linearly smaller than their parent hexagons.
 
 <div align="center">
   <img height="300" src="/images/cpidigits.png" />
-  <img height="300" src="/images/cell_mode.png" />
 </div>
 
 ## H3 Cell Index
