@@ -213,7 +213,7 @@ h3.cellToCenterChild(cell, childRes)
 ```js live
 function example() {
   const cell = '85283473fffffff';
-  return h3.cellToCenterChild(h, 7);
+  return h3.cellToCenterChild(cell, 7);
 }
 ```
 
@@ -252,7 +252,7 @@ h3.compact_cells(cells)
 
 ```java
 List<Long> compactCells(Collection<Long> cells);
-List<String> compactCellsAddress(Collection<String> cells);
+List<String> compactCellAddress(Collection<String> cells);
 ```
 
 </TabItem>
@@ -265,7 +265,7 @@ h3.compactCells(cells)
 ```js live
 function example() {
   const cell = '85283473fffffff';
-  const nearby = h3.kRing(cell, 4);
+  const nearby = h3.gridDisk(cell, 4);
   return h3.compactCells(nearby);
 }
 ```
@@ -273,7 +273,7 @@ function example() {
 </TabItem>
 </Tabs>
 
-Compacts the set `cellSet` of indexes as best as possible, into the array `compactedSet`. `compactedSet` must be at least the size of `cellSet` in case the set cannot be compacted.
+Compacts the set `cellSet` of indexes as best as possible, into the array `compactedSet`. `compactedSet` must be at least the size of `cellSet` in case the set cannot be compacted. Cells in `cellSet` must all share the same resolution.
 
 Returns 0 (`E_SUCCESS`) on success.
 
@@ -307,7 +307,7 @@ h3.uncompact_cells(cells, res)
 
 ```java
 List<Long> uncompactCells(Collection<Long> cells, int res);
-List<String> uncompactCellsAddress(Collection<String> cells, int res);
+List<String> uncompactCellAddress(Collection<String> cells, int res);
 ```
 
 </TabItem>
@@ -320,7 +320,7 @@ h3.uncompactCells(cells, res)
 ```js live
 function example() {
   const cell = '85283473fffffff';
-  const nearby = h3.kRing(cell, 4);
+  const nearby = h3.gridDisk(cell, 4);
   const compacted = h3.compact(nearby);
   return h3.uncompactCells(compacted, 5);
 }

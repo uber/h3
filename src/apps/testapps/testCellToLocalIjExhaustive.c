@@ -69,7 +69,7 @@ void h3ToLocalIj_coordinates_assertions(H3Index h3) {
     t_assert(H3_EXPORT(cellToLocalIj)(h3, h3, 0, &ij) == 0,
              "get ij for origin");
     CoordIJK ijk;
-    ijToIjk(&ij, &ijk);
+    t_assertSuccess(ijToIjk(&ij, &ijk));
     if (r == 0) {
         t_assert(_ijkMatches(&ijk, &UNIT_VECS[0]) == 1, "res 0 cell at 0,0,0");
     } else if (r == 1) {
@@ -95,7 +95,7 @@ void h3ToLocalIj_neighbors_assertions(H3Index h3) {
     t_assert(H3_EXPORT(cellToLocalIj)(h3, h3, 0, &origin) == 0,
              "got ij for origin");
     CoordIJK originIjk;
-    ijToIjk(&origin, &originIjk);
+    t_assertSuccess(ijToIjk(&origin, &originIjk));
 
     for (Direction d = K_AXES_DIGIT; d < INVALID_DIGIT; d++) {
         if (d == K_AXES_DIGIT && H3_EXPORT(isPentagon)(h3)) {
@@ -110,7 +110,7 @@ void h3ToLocalIj_neighbors_assertions(H3Index h3) {
         t_assert(H3_EXPORT(cellToLocalIj)(h3, offset, 0, &ij) == 0,
                  "got ij for destination");
         CoordIJK ijk;
-        ijToIjk(&ij, &ijk);
+        t_assertSuccess(ijToIjk(&ij, &ijk));
         CoordIJK invertedIjk = {0};
         _neighbor(&invertedIjk, d);
         for (int i = 0; i < 3; i++) {

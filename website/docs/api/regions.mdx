@@ -25,29 +25,29 @@ These functions convert H3 indexes to and from polygonal areas.
 <TabItem value="c">
 
 ```c
-H3Error polygonToCells(const GeoPolygon *geoPolygon, int res, H3Index *out);
+H3Error polygonToCells(const GeoPolygon *geoPolygon, int res, uint32_t flags, H3Index *out);
 ```
 
 </TabItem>
 <TabItem value="python">
 
 ```py
-h3.polyfill(polygons, res, geo_json_conformant=False)
+h3.polygon_to_cells(polygons, res, geo_json_conformant=False)
 ```
 
 </TabItem>
 <TabItem value="java">
 
 ```java
-List<Long> polyfill(List<LatLng> points, List<List<LatLng>> holes, int res);
-List<String> polyfillAddress(List<LatLng> points, List<List<LatLng>> holes, int res);
+List<Long> polygonToCells(List<LatLng> points, List<List<LatLng>> holes, int res);
+List<String> polygonToCellAddresses(List<LatLng> points, List<List<LatLng>> holes, int res);
 ```
 
 </TabItem>
 <TabItem value="javascript">
 
 ```js
-h3.polyfill(polygon, res, isGeoJson)
+h3.polygonToCells(polygon, res, isGeoJson)
 ```
 
 ```js live
@@ -58,7 +58,7 @@ function example() {
         [37.8151571999998453, -122.4798767000009008]
     ];
     const res = 7;
-    return h3.polyfill(polygon, res);
+    return h3.polygonToCells(polygon, res);
 }
 ```
 
@@ -91,7 +91,7 @@ Returns 0 (`E_SUCCESS`) on success.
 <TabItem value="c">
 
 ```c
-H3Error maxPolygonToCellsSize(const GeoPolygon *geoPolygon, int res, int *out);
+H3Error maxPolygonToCellsSize(const GeoPolygon *geoPolygon, int res, uint32_t flags, int64_t *out);
 ```
 
 </TabItem>
@@ -129,7 +129,7 @@ computing `polygonToCells` on the given GeoJSON-like data structure.
 
 Returns 0 (`E_SUCCESS`) on success.
 
-## h3SetToLinkedGeo / h3SetToMultiPolygon
+## cellsToLinkedMultiPolygon / cellsToMultiPolygon
 
 <Tabs
   groupId="language"
@@ -144,35 +144,35 @@ Returns 0 (`E_SUCCESS`) on success.
 <TabItem value="c">
 
 ```c
-H3Error h3SetToLinkedGeo(const H3Index *h3Set, const int numHexes, LinkedGeoPolygon *out);
+H3Error cellsToLinkedMultiPolygon(const H3Index *h3Set, const int numHexes, LinkedGeoPolygon *out);
 ```
 
 </TabItem>
 <TabItem value="python">
 
 ```py
-h3.h3_set_to_multi_polygon(hexes, geo_json=False)
+h3.cells_to_multi_polygon(hexes, geo_json=False)
 ```
 
 </TabItem>
 <TabItem value="java">
 
 ```java
-List<List<List<LatLng>>> h3SetToMultiPolygon(Collection<Long> h3, boolean geoJson);
-List<List<List<LatLng>>> h3AddressSetToMultiPolygon(Collection<String> h3Addresses, boolean geoJson);
+List<List<List<LatLng>>> cellsToMultiPolygon(Collection<Long> h3, boolean geoJson);
+List<List<List<LatLng>>> cellAddressesToMultiPolygon(Collection<String> h3Addresses, boolean geoJson);
 ```
 
 </TabItem>
 <TabItem value="javascript">
 
 ```js
-h3.h3SetToMultiPolygon(polygon, geoJson)
+h3.cellsToMultiPolygon(cells, geoJson)
 ```
 
 ```js live
 function example() {
     const hexagons = ['872830828ffffff', '87283082effffff'];
-    return h3.h3SetToMultiPolygon(hexagons, true);
+    return h3.cellsToMultiPolygon(hexagons, true);
 }
 ```
 
@@ -194,7 +194,7 @@ unexpected or invalid output.
 
 Returns 0 (`E_SUCCESS`) on success.
 
-## destroyLinkedPolygon
+## destroyLinkedMultiPolygon
 
 <Tabs
   groupId="language"
@@ -209,7 +209,7 @@ Returns 0 (`E_SUCCESS`) on success.
 <TabItem value="c">
 
 ```c
-void destroyLinkedPolygon(LinkedGeoPolygon *polygon);
+void destroyLinkedMultiPolygon(LinkedGeoPolygon *polygon);
 ```
 
 </TabItem>

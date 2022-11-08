@@ -123,7 +123,12 @@ H3Error bboxHexEstimate(const BBox *bbox, int res, int64_t *out) {
     double d = H3_EXPORT(greatCircleDistanceKm)(&p1, &p2);
     // Derived constant based on: https://math.stackexchange.com/a/1921940
     // Clamped to 3 as higher values tend to rapidly drag the estimate to zero.
-    double a = d * d / fmin(3.0, fabs((p1.lng - p2.lng) / (p1.lat - p2.lat)));
+    double lngDiff = p1.lng - p2.lng;
+    double latDiff = p1.lat - p2.lat;
+    if (lngDiff == 0 || latDiff == 0) {
+        return E_FAILED;
+    }
+    double a = d * d / fmin(3.0, fabs(lngDiff / latDiff));
 
     // Divide the two to get an estimate of the number of hexagons needed
     double estimateDouble = ceil(a / pentagonAreaKm2);

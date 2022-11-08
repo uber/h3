@@ -17,12 +17,12 @@ The areas where there are changes include:
 
 # Function naming
 
-Many [function names have changed](./migration-3.x/functions) between 3.x and 4.0.0. These follow the H3 [terminology](./terminology) reference,
+Many [function names have changed](./migration-3.x/functions.md) between 3.x and 4.0.0. These follow the H3 [terminology](./terminology.md) reference,
 and that document explains how each function name has been renamed. These changes were made to make the API more
 consistent and predictable.
 
 # Error codes
 
-The C library is being changed to more consistently [report errors](./errors). This is done via the return code of
+The C library is being changed to more consistently [report errors](./errors.md). This is done via the return code of
 functions. Users of the C library will need to adjust some function calls to pass output parameters instead of
 using the return value of a function.

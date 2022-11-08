@@ -8,14 +8,18 @@ on:
 
 jobs:
   tests:
-    name: Test Compile ${{ matrix.compiler }}
+    name: Test Compile ${{ matrix.build_type }}
     runs-on: macos-latest
+
+    strategy:
+      matrix:
+        build_type: ["Debug", "Release"]
 
     steps:
       - uses: actions/checkout@v2.4.0
 
       - name: Configure build
-        run: cmake -Bbuild -DWARNINGS_AS_ERRORS=ON .
+        run: cmake -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.build_type}} -DWARNINGS_AS_ERRORS=ON .
 
       - name: Build
         working-directory: build
@@ -37,6 +41,6 @@ jobs:
         run: |
           mkdir build/examples
           cd build/examples
-          cmake ../../examples
+          cmake -DCMAKE_BUILD_TYPE=${{ matrix.build_type}} ../../examples
           make
           make test

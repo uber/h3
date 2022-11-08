@@ -9,6 +9,31 @@ The public API of this library consists of the functions declared in file
 ### Added
 - (Undirected) edge index mode. (#654)
 
+### Fixed
+- Fixed possible signed integer overflow in `h3NeighborRotations` (#707)
+- Fixed possible signed integer overflow in `localIjToCell` (#706)
+
+### Changed
+- `assert` on defensive code blocks that are not already covered. (#720)
+
+## [4.0.1] - 2022-09-15
+### Fixed
+- Changing an internal `float` to `double` improves the precision of geographic coordinate output (#652)
+- Fixed compacting all children of a resolution 0 cell (#679)
+- Fixed possible signed integer overflow in `maxGridDiskSize` (#686)
+- Fixed possible use of uninitialized values in `cellToVertex` (#683, #690)
+- Fixed possible out of bounds read in `localIjToCell` (#684)
+- Fixed possible memory leak in `compactCells` (#685)
+- Fixed possible out of bounds read in `areNeighborCells` (#677)
+- Fixed possible memory leak in `cellsToLinkedMultiPolygon` (#673)
+
+### Changed
+- Build script does not use toolchain file (#641)
+- Removed a duplicated include preprocessor directive (#682)
+- Improvements to the fuzzer suite and their automatic runs in CI (#671, #674, #687)
+- Increased test coverage (#642)
+- Added a fuzzer targetting internal `algos.c` functions (#675)
+
 ## [4.0.0] - 2022-08-23
 ### Breaking changes
 - Rename functions according to the terminology RFC (#622, #586, #571, #403, #466, #495, #466)

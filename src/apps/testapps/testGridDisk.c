@@ -320,17 +320,54 @@ SUITE(gridDisk) {
     }
 
     TEST(h3NeighborRotations_identity) {
-        // This is undefined behavior, but it's helpful for it to make sense.
+        // This is not used in gridDisk, but it's helpful for it to make sense.
         H3Index origin = 0x811d7ffffffffffL;
         int rotations = 0;
         H3Index out;
         t_assertSuccess(
             h3NeighborRotations(origin, CENTER_DIGIT, &rotations, &out));
         t_assert(out == origin, "Moving to self goes to self");
+        t_assert(rotations == 0, "Expected rotations");
+    }
+
+    TEST(h3NeighborRotations_rotationsOverflow) {
+        // Check for possible signed integer overflow of `rotations`
+        H3Index origin;
+        setH3Index(&origin, 0, 0, CENTER_DIGIT);
+        // A multiple of 6, so effectively no rotation. Very close
+        // to INT32_MAX.
+        int rotations = 2147483646;
+        H3Index out;
+        t_assertSuccess(
+            h3NeighborRotations(origin, K_AXES_DIGIT, &rotations, &out));
+        H3Index expected;
+        // Determined by looking at the base cell table
+        setH3Index(&expected, 0, 1, CENTER_DIGIT);
+        t_assert(out == expected, "Expected neighbor");
+        t_assert(rotations == 5, "Expected rotations value");
+    }
+
+    TEST(h3NeighborRotations_rotationsOverflow2) {
+        // Check for possible signed integer overflow of `rotations`
+        H3Index origin;
+        setH3Index(&origin, 0, 4, CENTER_DIGIT);
+        // This modulo 6 is 1.
+        int rotations = INT32_MAX;
+        H3Index out;
+        // This will try to move in the K direction off of origin,
+        // which will be adjusted to the IK direction.
+        t_assertSuccess(
+            h3NeighborRotations(origin, JK_AXES_DIGIT, &rotations, &out));
+        H3Index expected;
+        // Determined by looking at the base cell table
+        setH3Index(&expected, 0, 0, CENTER_DIGIT);
+        t_assert(out == expected, "Expected neighbor");
+        // 1 (original value) + 4 (newRotations for IK direction) + 1 (applied
+        // when adjusting to the IK direction) = 6, 6 modulo 6 = 0
+        t_assert(rotations == 0, "Expected rotations value");
     }
 
     TEST(h3NeighborRotations_invalid) {
-        // This is undefined behavior, but it's helpful for it to make sense.
         H3Index origin = 0x811d7ffffffffffL;
         int rotations = 0;
         H3Index out;
@@ -417,5 +454,25 @@ SUITE(gridDisk) {
         int64_t sz;
         t_assertSuccess(H3_EXPORT(maxGridDiskSize)(26755, &sz));
         t_assert(sz == 2147570341, "large (> 32 bit signed int) k works");
+    }
+
+    TEST(maxGridDiskSize_numCells) {
+        int64_t sz;
+        int64_t prev = 0;
+        int64_t max;
+        t_assertSuccess(H3_EXPORT(getNumCells)(15, &max));
+        // 13780510 will produce values above max
+        for (int k = 13780510 - 100; k < 13780510 + 100; k++) {
+            t_assertSuccess(H3_EXPORT(maxGridDiskSize)(k, &sz));
+            t_assert(sz <= max,
+                     "maxGridDiskSize does not produce estimates above the "
+                     "number of grid cells");
+            t_assert(prev <= sz, "maxGridDiskSize is monotonically increasing");
+            prev = sz;
+        }
+
+        t_assertSuccess(H3_EXPORT(maxGridDiskSize)(INT32_MAX, &sz));
+        t_assert(sz == max,
+                 "maxGridDiskSize of INT32_MAX produces valid result");
     }
 }

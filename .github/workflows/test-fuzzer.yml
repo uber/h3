@@ -24,7 +24,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake -DCMAKE_BUILD_TYPE=Release ..
+          cmake -DCMAKE_BUILD_TYPE=Debug ..
 
       - name: Build
         run: |
@@ -57,7 +57,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_LIBFUZZER=ON ..
+          cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_LIBFUZZER=ON ..
 
       - name: Build
         run: |
@@ -69,6 +69,5 @@ jobs:
           cd build
           for fuzzer in bin/fuzzer*; do
             echo $fuzzer
-            # TODO: Increase run count
-            $fuzzer -runs=1000
+            $fuzzer -runs=100000 -max_total_time=60 -timeout=120
           done

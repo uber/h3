@@ -26,7 +26,7 @@ jobs:
 
       - name: Configure build
         shell: cmd
-        run: cmake -Bbuild -A ${{ matrix.arch }} -DWARNINGS_AS_ERRORS=ON -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=ON .
+        run: cmake -Bbuild -A ${{ matrix.arch }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type}} -DWARNINGS_AS_ERRORS=ON -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=ON .
 
       - name: Build
         working-directory: build

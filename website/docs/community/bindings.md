@@ -86,7 +86,7 @@ As a C library, bindings can be made to call H3 functions from different program
 
 ## PostgreSQL
 
-- [bytesandbrains/h3-pg](https://github.com/bytesandbrains/h3-pg)
+- [zachasme/h3-pg](https://github.com/zachasme/h3-pg)
 
 ## Python
 
@@ -101,7 +101,7 @@ As a C library, bindings can be made to call H3 functions from different program
 
 ## Ruby
 
-- [StuartApp/h3_ruby](https://github.com/StuartApp/h3_ruby)
+- [seanhandley/h3_ruby](https://github.com/seanhandley/h3_ruby)
 
 ## Rust
 
