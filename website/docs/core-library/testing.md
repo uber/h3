@@ -14,8 +14,7 @@ The H3 library may despite these efforts behave unexpectedly; in these cases the
 
 Github Actions are used to run the H3 test suite for every commit. A variety of configurations, described below, are tested.
 
-Coverage information is collected in Coveralls. Because of the self-contained nature of the H3 library, we seek
-to have as close to 100% code coverage as possible.
+Coverage information is collected in Coveralls. Because of the self-contained nature of the H3 library, we seek to have as close to 100% code coverage as possible.
 
 | Operating system | Compiler    | Build type     | Processor architecture | Special notes
 | ---------------- | ----------- | -------------- | ---------------------- | -------------
@@ -31,13 +30,13 @@ to have as close to 100% code coverage as possible.
 
 ## Defensive code
 
-H3 uses preprocessor macros borrowed from [SQLite's testing methodology](https://www.sqlite.org/testing.html) to include defensive code in the library. Defensive code is code that handles error conditions for which there are no known test cases to demonstrate it. The lack of known test cases means that without the macros, the defensive cases could inappropriately reduce coverage metrics, disincentivizing including them.
+H3 uses preprocessor macros borrowed from [SQLite's testing methodology](https://www.sqlite.org/testing.html) to include defensive code in the library. Defensive code is code that handles error conditions for which there are no known test cases to demonstrate it. The lack of known test cases means that without the macros, the defensive cases could inappropriately reduce coverage metrics, disincentivizing including them. The macros behave differently, depending on the build configuration:
 
-Under release builds of the library, the defensive code is included without modification. These branches are intended to be very simple (usually only `return`ing an error code and possibly `free`ing some resources) and to be visually inspectable.
+* Under release builds of the library (`CMAKE_BUILD_TYPE=Release`), the defensive code is included without modification. These branches are intended to be very simple (usually only `return`ing an error code and possibly `free`ing some resources) and to be visually inspectable.
 
-Under debug builds of the library, the defensive code is included and `assert` calls are included if the defensive code is invoked. Any unit test or fuzzer which can demonstrate the defensive code is actually reached will trigger a test failure and the developers can be alerted to cover the defensive code in unit tests.
+* Under debug builds of the library (`CMAKE_BUILD_TYPE=Debug`), the defensive code is included and `assert` calls are included if the defensive code is invoked. Any unit test or fuzzer which can demonstrate the defensive code is actually reached will trigger a test failure and the developers can be alerted to cover the defensive code in unit tests.
 
-Under coverage builds of the library, the defensive code is not included by replacing its condition with a constant value. The compiler removes the defensive code and it is not counted in coverage metrics.
+* Under coverage builds of the library (`CMAKE_BUILD_TYPE=Debug ENABLE_COVERAGE=ON`), the defensive code is not included by replacing its condition with a constant value. The compiler removes the defensive code and it is not counted in coverage metrics. This is intended only for determining test coverage of the library.
 
 ## Benchmarks
 
