@@ -45,7 +45,7 @@ else()
     set(ENABLE_REQUIRES_ALL_SYMBOLS OFF)
 endif()
 
-option(ENABLE_COVERAGE "Enable compiling tests with coverage." ON)
+option(ENABLE_COVERAGE "Enable compiling tests with coverage." OFF)
 option(BUILD_BENCHMARKS "Build benchmarking applications." ON)
 option(BUILD_FUZZERS "Build fuzzer applications (for use with afl)." ON)
 option(BUILD_FILTERS "Build filter applications." ON)
@@ -120,6 +120,8 @@ if(H3_IS_ROOT_PROJECT)
 endif()
 
 set(LIB_SOURCE_FILES
+    src/h3lib/include/h3Assert.h
+    src/h3lib/include/alloc.h
     src/h3lib/include/bbox.h
     src/h3lib/include/polygon.h
     src/h3lib/include/polygonAlgos.h
@@ -138,6 +140,7 @@ set(LIB_SOURCE_FILES
     src/h3lib/include/constants.h
     src/h3lib/include/coordijk.h
     src/h3lib/include/algos.h
+    src/h3lib/lib/h3Assert.c
     src/h3lib/lib/algos.c
     src/h3lib/lib/coordijk.c
     src/h3lib/lib/bbox.c
@@ -287,6 +290,9 @@ function(add_h3_library name h3_alloc_prefix_override)
     if(BUILD_SHARED_LIBS)
         set_target_properties(${name} PROPERTIES SOVERSION ${H3_SOVERSION})
         target_compile_definitions(${name} PRIVATE BUILD_SHARED_LIBS=1)
+    endif()
+    if(ENABLE_COVERAGE)
+        target_compile_definitions(${name} PRIVATE H3_COVERAGE_TEST=1)
     endif()
 
     target_compile_definitions(${name} PUBLIC H3_PREFIX=${H3_PREFIX})

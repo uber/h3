@@ -56,7 +56,7 @@ Should be set to `Release` for production builds, and `Debug` in development.
 
 ## ENABLE_COVERAGE
 
-Whether to compile `Debug` builds with coverage instrumentation (compatible with GCC, Clang, and lcov).
+Whether to compile `Debug` builds with coverage instrumentation (compatible with GCC, Clang, and lcov). This also excludes defensive code in the library that should not be counted against coverage because it is unreachable.
 
 ## ENABLE_DOCS
 

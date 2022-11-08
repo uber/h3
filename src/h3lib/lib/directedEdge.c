@@ -23,6 +23,7 @@
 #include "algos.h"
 #include "constants.h"
 #include "coordijk.h"
+#include "h3Assert.h"
 #include "h3Index.h"
 #include "latLng.h"
 #include "vertex.h"
@@ -278,7 +279,7 @@ H3Error H3_EXPORT(directedEdgeToBoundary)(H3Index edge, CellBoundary *cb) {
     // crosses an edge of the icosahedron.
     FaceIJK fijk;
     H3Error fijkResult = _h3ToFaceIjk(origin, &fijk);
-    if (fijkResult) {
+    if (NEVER(fijkResult)) {
         return fijkResult;
     }
     int res = H3_GET_RESOLUTION(origin);

@@ -27,6 +27,7 @@
 #include "alloc.h"
 #include "baseCells.h"
 #include "faceijk.h"
+#include "h3Assert.h"
 #include "iterators.h"
 #include "mathExtensions.h"
 
@@ -95,15 +96,15 @@ int H3_EXPORT(isValidCell)(H3Index h) {
     if (H3_GET_RESERVED_BITS(h) != 0) return 0;
 
     int baseCell = H3_GET_BASE_CELL(h);
-    if (baseCell < 0 || baseCell >= NUM_BASE_CELLS) {  // LCOV_EXCL_BR_LINE
+    if (NEVER(baseCell < 0) || baseCell >= NUM_BASE_CELLS) {
         // Base cells less than zero can not be represented in an index
         return 0;
     }
 
     int res = H3_GET_RESOLUTION(h);
-    if (res < 0 || res > MAX_H3_RES) {  // LCOV_EXCL_BR_LINE
+    if (NEVER(res < 0 || res > MAX_H3_RES)) {
         // Resolutions less than zero can not be represented in an index
-        return 0;  // LCOV_EXCL_LINE
+        return 0;
     }
 
     bool foundFirstNonZeroDigit = false;
@@ -117,7 +118,7 @@ int H3_EXPORT(isValidCell)(H3Index h) {
             }
         }
 
-        if (digit < CENTER_DIGIT || digit >= NUM_DIGITS) return 0;
+        if (NEVER(digit < CENTER_DIGIT) || digit >= NUM_DIGITS) return 0;
     }
 
     for (int r = res + 1; r <= MAX_H3_RES; r++) {
@@ -331,6 +332,7 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
             // to track how many times a parent is duplicated
             for (int i = 0; i < numRemainingHexes; i++) {
                 H3Index currIndex = remainingHexes[i];
+                // TODO: This case is coverable (reachable by fuzzer)
                 if (currIndex != 0) {
                     // If the reserved bits were set by the caller, the
                     // algorithm below may encounter undefined behavior
@@ -357,16 +359,13 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
                     int loc = (int)(parent % numRemainingHexes);
                     int loopCount = 0;
                     while (hashSetArray[loc] != 0) {
-                        if (loopCount >  // LCOV_EXCL_BR_LINE
-                            numRemainingHexes) {
-                            // LCOV_EXCL_START
+                        if (NEVER(loopCount > numRemainingHexes)) {
                             // This case should not be possible because at
                             // most one index is placed into hashSetArray
                             // per numRemainingHexes.
                             H3_MEMORY(free)(remainingHexes);
                             H3_MEMORY(free)(hashSetArray);
                             return E_FAILED;
-                            // LCOV_EXCL_STOP
                         }
                         H3Index tempIndex =
                             hashSetArray[loc] & H3_RESERVED_MASK_NEGATIVE;
@@ -442,6 +441,7 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
         int uncompactableCount = 0;
         for (int i = 0; i < numRemainingHexes; i++) {
             H3Index currIndex = remainingHexes[i];
+            // TODO: This case is coverable (reachable by fuzzer)
             if (currIndex != H3_NULL) {
                 H3Index parent;
                 H3Error parentError =
@@ -459,15 +459,13 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
                 int loopCount = 0;
                 bool isUncompactable = true;
                 do {
-                    if (loopCount > numRemainingHexes) {  // LCOV_EXCL_BR_LINE
-                        // LCOV_EXCL_START
+                    if (NEVER(loopCount > numRemainingHexes)) {
                         // This case should not be possible because at most one
                         // index is placed into hashSetArray per input hexagon.
                         H3_MEMORY(free)(compactableHexes);
                         H3_MEMORY(free)(remainingHexes);
                         H3_MEMORY(free)(hashSetArray);
                         return E_FAILED;
-                        // LCOV_EXCL_STOP
                     }
                     H3Index tempIndex =
                         hashSetArray[loc] & H3_RESERVED_MASK_NEGATIVE;
@@ -785,7 +783,7 @@ H3Error H3_EXPORT(latLngToCell)(const LatLng *g, int res, H3Index *out) {
     FaceIJK fijk;
     _geoToFaceIjk(g, res, &fijk);
     *out = _faceIjkToH3(&fijk, res);
-    if (*out) {
+    if (ALWAYS(*out)) {
         return E_SUCCESS;
     } else {
         return E_FAILED;
@@ -832,7 +830,7 @@ int _h3ToFaceIjkWithInitializedFijk(H3Index h, FaceIJK *fijk) {
  */
 H3Error _h3ToFaceIjk(H3Index h, FaceIJK *fijk) {
     int baseCell = H3_GET_BASE_CELL(h);
-    if (baseCell < 0 || baseCell >= NUM_BASE_CELLS) {  // LCOV_EXCL_BR_LINE
+    if (NEVER(baseCell < 0) || baseCell >= NUM_BASE_CELLS) {
         // Base cells less than zero can not be represented in an index
         // To prevent reading uninitialized memory, we zero the output.
         fijk->face = 0;
@@ -979,7 +977,7 @@ H3Error H3_EXPORT(getIcosahedronFaces)(H3Index h3, int *out) {
     // so fill with invalid values to indicate unused slots
     int faceCount;
     H3Error maxFaceCountError = H3_EXPORT(maxFaceCount)(h3, &faceCount);
-    if (maxFaceCountError != E_SUCCESS) {
+    if (NEVER(maxFaceCountError != E_SUCCESS)) {
         return maxFaceCountError;
     }
     for (int i = 0; i < faceCount; i++) {
