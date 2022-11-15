@@ -246,6 +246,26 @@ SUITE(BBox) {
                  "bboxHexEstimate of invalid resolution fails");
     }
 
+    TEST(bboxHexEstimate_ratio) {
+        BBox bbox1 = {0.82294, 0.82273, 0.131671, 0.131668};
+        BBox bbox2 = {0.131671, 0.131668, 0.82294, 0.82273};
+        int64_t numHexagons1;
+        int64_t numHexagons2;
+
+        t_assertSuccess(bboxHexEstimate(&bbox1, 15, &numHexagons1));
+        t_assertSuccess(bboxHexEstimate(&bbox2, 15, &numHexagons2));
+
+        double diffPercentage = fabs(1.0 - numHexagons1 / (double)numHexagons2);
+
+        // numHexagons1 and numHexagons2 cannot be exactly equal because the
+        // diameter of the two bboxes is not exactly the same (it's calculated
+        // using greatCircleDistanceKm)
+        t_assert(
+            diffPercentage < 0.03,
+            "Should be true for bounding boxes with (almost) the same diameter "
+            "and side ratio");
+    }
+
     TEST(lineHexEstimate_invalidRes) {
         int64_t numHexagons;
         LatLng origin = {0.0, 0.0};
