@@ -185,7 +185,7 @@ Returns 0 (`E_SUCCESS`) on success.
 <TabItem value="c">
 
 ```c
-H3Index cellToCenterChild(H3Index cell, int childRes);
+H3Error cellToCenterChild(H3Index cell, int childRes, H3Index *child);
 ```
 
 </TabItem>
@@ -220,7 +220,118 @@ function example() {
 </TabItem>
 </Tabs>
 
-Returns the center child (finer) index contained by `cell` at resolution `childRes`.
+Provides the center child (finer) index contained by `cell` at resolution `childRes`.
+
+Returns 0 (`E_SUCCESS`) on success.
+
+## cellToChildPos
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+H3Index cellToChildPos(H3Index child, int parentRes, int64_t *out);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.cell_to_child_pos(cell, parent_res)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+long cellToChildPos(long cell, int parentRes);
+long cellToChildPos(String cellAddress, int parentRes);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.cellToChildPos(cell, parentRes)
+```
+
+```js live
+function example() {
+  const cell = '85283473fffffff';
+  return h3.cellToChildPos(cell, 3);
+}
+```
+
+</TabItem>
+</Tabs>
+
+Returns the position of the child cell within an ordered list of all children of the cell's parent at the specified resolution `parentRes`. The order of the ordered list is the same as that returned by `cellToChildren`. This is the complement of `childPosToCell`.
+
+Returns 0 (`E_SUCCESS`) on success.
+
+## childPosToCell
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Python', value: 'python'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+H3Index childPosToCell(int64_t childPos, H3Index parent, int childRes, H3Index *child);
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.cell_to_child_pos(child_pos, parent, child_res)
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+long childPosToCell(long childPos, long parent, int childRes);
+String childPosToCell(long childPos, String parentAddress, int childRes);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.childPosToCell(childPos, parent, childRes);
+```
+
+```js live
+function example() {
+  const parent = '85283473fffffff';
+  const childPos = 42;
+  return h3.childPosToCell(childPos, parent, 7);
+}
+```
+
+</TabItem>
+</Tabs>
+
+Returns the child cell at a given position within an ordered list of all children of `parent` at the specified resolution `childRes`. The order of the ordered list is the same as that returned by `cellToChildren`. This is the complement of `cellToChildPos`.
+
+Returns 0 (`E_SUCCESS`) on success.
 
 ## compactCells
 
