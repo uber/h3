@@ -1136,7 +1136,7 @@ H3Error H3_EXPORT(cellToChildPos)(H3Index child, int parentRes, int64_t *out) {
         }
     }
 
-    if (NEVER(validateChildPos(childPos, originalParent, childRes))) {
+    if (NEVER(validateChildPos(*out, originalParent, childRes))) {
         // This is the result of an internal error, so return E_FAILED
         // instead of the validation error
         return E_FAILED;
