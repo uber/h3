@@ -1052,17 +1052,40 @@ H3Error H3_EXPORT(getPentagons)(int res, H3Index *out) {
 int isResolutionClassIII(int res) { return res % 2; }
 
 /**
+ * Validate a child position in the context of a given parent, returning
+ * an error if validation fails.
+ */
+static H3Error validateChildPos(int64_t childPos, H3Index parent,
+                                int childRes) {
+    int64_t maxChildCount;
+    H3Error sizeError =
+        H3_EXPORT(cellToChildrenSize)(parent, childRes, &maxChildCount);
+    if (NEVER(sizeError)) {
+        return sizeError;
+    }
+    if (childPos < 0 || childPos >= maxChildCount) {
+        return E_DOMAIN;
+    }
+    return E_SUCCESS;
+}
+
+/**
  * Returns the position of the cell within an ordered list of all children of
  * the cell's parent at the specified resolution
  */
 H3Error H3_EXPORT(cellToChildPos)(H3Index child, int parentRes, int64_t *out) {
     int childRes = H3_GET_RESOLUTION(child);
     // Get the parent at res. This will catch any resolution errors
-    H3Index parent;
-    H3Error parentError = H3_EXPORT(cellToParent(child, parentRes, &parent));
+    H3Index originalParent;
+    H3Error parentError =
+        H3_EXPORT(cellToParent(child, parentRes, &originalParent));
     if (parentError) {
         return parentError;
     }
+
+    // Define the initial parent. Note that these variables are reassigned
+    // within the loop.
+    H3Index parent = originalParent;
     int parentIsPentagon = H3_EXPORT(isPentagon)(parent);
 
     // Walk up the resolution digits, incrementing the index
@@ -1071,9 +1094,12 @@ H3Error H3_EXPORT(cellToChildPos)(H3Index child, int parentRes, int64_t *out) {
         // Pentagon logic. Pentagon parents skip the 1 digit, so the offsets are
         // different from hexagons
         for (int res = childRes; res > parentRes; res--) {
-            // It shouldn't be possible to get an error here, so we don't check
-            // TODO: Assert unreachable error with NEVER
-            H3_EXPORT(cellToParent(child, res - 1, &parent));
+            H3Error parentError =
+                H3_EXPORT(cellToParent(child, res - 1, &parent));
+            if (NEVER(parentError)) {
+                return parentError;
+            }
+
             parentIsPentagon = H3_EXPORT(isPentagon)(parent);
             int rawDigit = H3_GET_INDEX_DIGIT(child, res);
             // Validate the digit before proceeding
@@ -1109,10 +1135,12 @@ H3Error H3_EXPORT(cellToChildPos)(H3Index child, int parentRes, int64_t *out) {
             *out += digit * _ipow(7, childRes - res);
         }
     }
-    // TODO:
-    // if (NEVER(out < 0 || out > cellToChildrenSize(parent, childRes))) {
-    //   return E_FAILED;
-    // }
+
+    if (NEVER(validateChildPos(childPos, originalParent, childRes))) {
+        // This is the result of an internal error, so return E_FAILED
+        // instead of the validation error
+        return E_FAILED;
+    }
 
     return E_SUCCESS;
 }
@@ -1126,17 +1154,15 @@ H3Error H3_EXPORT(childPosToCell)(int64_t childPos, H3Index parent,
     if (childRes < 0 || childRes > MAX_H3_RES) {
         return E_RES_DOMAIN;
     }
+    // Validate parent resolution
     int parentRes = H3_GET_RESOLUTION(parent);
     if (childRes < parentRes) {
         return E_RES_MISMATCH;
     }
-
     // Validate child pos
-    int64_t maxChildCount;
-    // TODO: Assert unreachable error with NEVER
-    H3_EXPORT(cellToChildrenSize)(parent, childRes, &maxChildCount);
-    if (childPos < 0 || childPos >= maxChildCount) {
-        return E_DOMAIN;
+    H3Error childPosErr = validateChildPos(childPos, parent, childRes);
+    if (childPosErr) {
+        return childPosErr;
     }
 
     int resOffset = childRes - parentRes;
