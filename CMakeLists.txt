@@ -204,6 +204,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testCellToLatLng.c
     src/apps/testapps/testCellToCenterChild.c
     src/apps/testapps/testCellToChildren.c
+    src/apps/testapps/testCellToChildPos.c
     src/apps/testapps/testGetIcosahedronFaces.c
     src/apps/testapps/testLatLng.c
     src/apps/testapps/testGridRingUnsafe.c
