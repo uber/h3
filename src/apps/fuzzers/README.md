@@ -61,6 +61,8 @@ The public API of H3 is covered in the following fuzzers:
 | gridPathCells | [fuzzerLocalIj](./fuzzerLocalIj.c)
 | cellToLocalIj | [fuzzerLocalIj](./fuzzerLocalIj.c)
 | localIjToCell | [fuzzerLocalIj](./fuzzerLocalIj.c)
+| cellToChildPos| [fuzzerCellToChildPos](./fuzzerCellToChildPos.c)
+| childPosToCell| [fuzzerCellToChildPos](./fuzzerCellToChildPos.c)
 
 ## Internal function coverage
 
