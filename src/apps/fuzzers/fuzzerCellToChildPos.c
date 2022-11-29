@@ -38,11 +38,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     int64_t posOut;
     H3_EXPORT(cellToChildPos)(args->index, args->res, &posOut);
     H3Index cellOut;
-    H3Error cellError = H3_EXPORT(childPosToCell)(args->childPos, args->index,
-                                                  args->res, &cellOut);
-    if (cellError == E_SUCCESS) {
-        assert(H3_EXPORT(isValidCell)(cellOut));
-    }
+    H3_EXPORT(childPosToCell)(args->childPos, args->index, args->res, &cellOut);
     return 0;
 }
 
