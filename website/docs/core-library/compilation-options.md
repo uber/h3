@@ -65,7 +65,7 @@ but is rather the documentation for the internal C library functions.
 
 ## ENABLE_FORMAT
 
-Whether to enable using clang-format-9 to format source files before building. This should be enabled
+Whether to enable using clang-format-11 to format source files before building. This should be enabled
 before submitting patches for H3 as continuous integration will fail if the formatting does not match.
 
 Only this version of clang-format should be used to format the sources as new releases of clang-format
