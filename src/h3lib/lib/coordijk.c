@@ -554,16 +554,16 @@ H3Error ijToIjk(const CoordIJ *ij, CoordIJK *ijk) {
         // than max. If min is positive, then max is also positive, and a
         // positive signed integer minus another positive signed integer will
         // not overflow.
-        if (max > INT32_MAX + min) {
-            // max - min would overflow
-            return E_FAILED;
-        }
         if (max < INT32_MIN - min) {
             // max + min would overflow
             return E_FAILED;
         }
         if (min == INT32_MIN) {
             // 0 - INT32_MIN would overflow
+            return E_FAILED;
+        }
+        if (max > INT32_MAX + min) {
+            // max - min would overflow
             return E_FAILED;
         }
     }
