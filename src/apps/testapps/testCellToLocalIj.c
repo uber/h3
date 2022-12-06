@@ -321,5 +321,17 @@ SUITE(h3ToLocalIj) {
         ij.j = -11;
         t_assert(H3_EXPORT(localIjToCell)(origin, &ij, 0, &out) == E_FAILED,
                  "Particular high magnitude J and I components fail (2)");
+
+        setH3Index(&origin, 2, 2, CENTER_DIGIT);
+        ij.i = INT32_MAX - 10;
+        ij.j = -10;
+        t_assert(H3_EXPORT(localIjToCell)(origin, &ij, 0, &out) == E_FAILED,
+                 "Particular high magnitude J and I components fail (3)");
+
+        setH3Index(&origin, 2, 2, CENTER_DIGIT);
+        ij.i = INT32_MAX - 10;
+        ij.j = -9;
+        t_assert(H3_EXPORT(localIjToCell)(origin, &ij, 0, &out) == E_FAILED,
+                 "Particular high magnitude J and I components fail (3)");
     }
 }

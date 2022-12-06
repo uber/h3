@@ -27,6 +27,14 @@
  */
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 
+// TODO: Verify
+#define SUM_INT32S_OVERFLOWS(a, b) \
+    ((a) > 0 ? (INT32_MAX - (a) < (b)) : (INT32_MIN - (a) > (b)))
+
+// TODO: Verify
+#define SUB_INT32S_OVERFLOWS(a, b) \
+    ((a) > 0 ? (INT32_MIN + (a) > (b)) : (INT32_MAX + (a) < (b)))
+
 // Internal functions
 int64_t _ipow(int64_t base, int64_t exp);
 

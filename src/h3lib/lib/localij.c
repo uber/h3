@@ -344,12 +344,18 @@ H3Error localIjkToCell(H3Index origin, const CoordIJK *ijk, H3Index *out) {
         CoordIJK lastCenter;
         if (isResolutionClassIII(r + 1)) {
             // rotate ccw
-            _upAp7(&ijkCopy);
+            H3Error upAp7Error = _upAp7Checked(&ijkCopy);
+            if (upAp7Error) {
+                return upAp7Error;
+            }
             lastCenter = ijkCopy;
             _downAp7(&lastCenter);
         } else {
             // rotate cw
-            _upAp7r(&ijkCopy);
+            H3Error upAp7rError = _upAp7rChecked(&ijkCopy);
+            if (upAp7rError) {
+                return upAp7rError;
+            }
             lastCenter = ijkCopy;
             _downAp7r(&lastCenter);
         }

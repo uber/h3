@@ -95,6 +95,8 @@ void _ijkSub(const CoordIJK *h1, const CoordIJK *h2, CoordIJK *diff);
 void _ijkScale(CoordIJK *c, int factor);
 void _ijkNormalize(CoordIJK *c);
 Direction _unitIjkToDigit(const CoordIJK *ijk);
+H3Error _upAp7Checked(CoordIJK *ijk);
+H3Error _upAp7rChecked(CoordIJK *ijk);
 void _upAp7(CoordIJK *ijk);
 void _upAp7r(CoordIJK *ijk);
 void _downAp7(CoordIJK *ijk);
