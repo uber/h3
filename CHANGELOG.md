@@ -15,6 +15,7 @@ The public API of this library consists of the functions declared in file
 
 ### Changed
 - `assert` on defensive code blocks that are not already covered. (#720)
+- `clang-format` upgraded to version 11. (#734)
 
 ## [4.0.1] - 2022-09-15
 ### Fixed

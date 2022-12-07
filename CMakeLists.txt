@@ -330,8 +330,8 @@ endfunction()
 add_h3_library(h3 "")
 
 # Automatic code formatting
-# Give preference to clang-format-9
-find_program(CLANG_FORMAT_PATH NAMES clang-format-9 clang-format)
+# Give preference to clang-format-11
+find_program(CLANG_FORMAT_PATH NAMES clang-format-11 clang-format)
 cmake_dependent_option(
     ENABLE_FORMAT "Enable running clang-format before compiling" ON
     "CLANG_FORMAT_PATH" OFF)
