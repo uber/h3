@@ -311,27 +311,32 @@ SUITE(h3ToLocalIj) {
     TEST(localIjToCell_overflow_particularCases) {
         H3Index origin;
         setH3Index(&origin, 2, 2, CENTER_DIGIT);
+        H3Index originRes3;
+        setH3Index(&originRes3, 2, 2, CENTER_DIGIT);
+
         CoordIJ ij = {.i = 553648127, .j = -2145378272};
         H3Index out;
         t_assert(H3_EXPORT(localIjToCell)(origin, &ij, 0, &out) == E_FAILED,
                  "Particular high magnitude J and I components fail (1)");
 
-        setH3Index(&origin, 2, 2, CENTER_DIGIT);
         ij.i = INT32_MAX - 10;
         ij.j = -11;
         t_assert(H3_EXPORT(localIjToCell)(origin, &ij, 0, &out) == E_FAILED,
                  "Particular high magnitude J and I components fail (2)");
 
-        setH3Index(&origin, 2, 2, CENTER_DIGIT);
-        ij.i = INT32_MAX - 10;
-        ij.j = -10;
+        ij.i = 553648127;
+        ij.j = -2145378272;
         t_assert(H3_EXPORT(localIjToCell)(origin, &ij, 0, &out) == E_FAILED,
                  "Particular high magnitude J and I components fail (3)");
 
-        setH3Index(&origin, 2, 2, CENTER_DIGIT);
+        ij.i = INT32_MAX - 10;
+        ij.j = -10;
+        t_assert(H3_EXPORT(localIjToCell)(origin, &ij, 0, &out) == E_FAILED,
+                 "Particular high magnitude J and I components fail (4)");
+
         ij.i = INT32_MAX - 10;
         ij.j = -9;
         t_assert(H3_EXPORT(localIjToCell)(origin, &ij, 0, &out) == E_FAILED,
-                 "Particular high magnitude J and I components fail (3)");
+                 "Particular high magnitude J and I components fail (5)");
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2018, 2020-2021 Uber Technologies, Inc.
+ * Copyright 2016-2018, 2020-2022 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@
 #include <string.h>
 
 #include "constants.h"
+#include "h3Assert.h"
 #include "latLng.h"
 #include "mathExtensions.h"
 
@@ -226,15 +227,15 @@ bool _ijkNormalizeCouldOverflow(const CoordIJK *ijk) {
         // than max. If min is positive, then max is also positive, and a
         // positive signed integer minus another positive signed integer will
         // not overflow.
-        if (max < INT32_MIN - min) {
+        if (SUM_INT32S_OVERFLOWS(max, min)) {
             // max + min would overflow
             return true;
         }
-        if (min == INT32_MIN) {
+        if (SUB_INT32S_OVERFLOWS(0, min)) {
             // 0 - INT32_MIN would overflow
             return true;
         }
-        if (max > INT32_MAX + min) {
+        if (SUB_INT32S_OVERFLOWS(max, min)) {
             // max - min would overflow
             return true;
         }
@@ -314,7 +315,7 @@ Direction _unitIjkToDigit(const CoordIJK *ijk) {
  * Assumes ijk is IJK+ coordinates (no negative numbers).
  */
 H3Error _upAp7Checked(CoordIJK *ijk) {
-    // Doesn't need to be checked because i, j, and k are all positive
+    // Doesn't need to be checked because i, j, and k must all be positive
     int i = ijk->i - ijk->k;
     int j = ijk->j - ijk->k;
 
@@ -339,11 +340,13 @@ H3Error _upAp7Checked(CoordIJK *ijk) {
     }
 
     // TODO: Do the int math parts here in long double?
-    ijk->i = (int)lroundl((3 * i - j) / 7.0L);
-    ijk->j = (int)lroundl((i + 2 * j) / 7.0L);
+    ijk->i = (int)lroundl((i3 - j) / 7.0L);
+    ijk->j = (int)lroundl((i + j2) / 7.0L);
     ijk->k = 0;
 
-    if (_ijkNormalizeCouldOverflow(ijk)) {
+    // Expected not to be reachable, because max + min or max - min would need
+    // to overflow.
+    if (NEVER(_ijkNormalizeCouldOverflow(ijk))) {
         return E_FAILED;
     }
     _ijkNormalize(ijk);
@@ -357,7 +360,7 @@ H3Error _upAp7Checked(CoordIJK *ijk) {
  * Assumes ijk is IJK+ coordinates (no negative numbers).
  */
 H3Error _upAp7rChecked(CoordIJK *ijk) {
-    // Doesn't need to be checked because i, j, and k are all positive
+    // Doesn't need to be checked because i, j, and k must all be positive
     int i = ijk->i - ijk->k;
     int j = ijk->j - ijk->k;
 
@@ -382,11 +385,13 @@ H3Error _upAp7rChecked(CoordIJK *ijk) {
     }
 
     // TODO: Do the int math parts here in long double?
-    ijk->i = (int)lroundl((2 * i + j) / 7.0L);
-    ijk->j = (int)lroundl((3 * j - i) / 7.0L);
+    ijk->i = (int)lroundl((i2 + j) / 7.0L);
+    ijk->j = (int)lroundl((j3 - i) / 7.0L);
     ijk->k = 0;
 
-    if (_ijkNormalizeCouldOverflow(ijk)) {
+    // Expected not to be reachable, because max + min or max - min would need
+    // to overflow.
+    if (NEVER(_ijkNormalizeCouldOverflow(ijk))) {
         return E_FAILED;
     }
     _ijkNormalize(ijk);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Uber Technologies, Inc.
+ * Copyright 2017-2018, 2022 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,13 +27,13 @@
  */
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 
-// TODO: Verify
+/** Evaluates to true if a + b would overflow for int32 */
 #define SUM_INT32S_OVERFLOWS(a, b) \
     ((a) > 0 ? (INT32_MAX - (a) < (b)) : (INT32_MIN - (a) > (b)))
 
-// TODO: Verify
+/** Evaluates to true if a - b would overflow for int32 */
 #define SUB_INT32S_OVERFLOWS(a, b) \
-    ((a) > 0 ? (INT32_MIN + (a) > (b)) : (INT32_MAX + (a) < (b)))
+    ((a) >= 0 ? (INT32_MIN + (a) >= (b)) : (INT32_MAX + (a) + 1 < (b)))
 
 // Internal functions
 int64_t _ipow(int64_t base, int64_t exp);

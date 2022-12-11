@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2018, 2020-2021 Uber Technologies, Inc.
+ * Copyright 2016-2018, 2020-2022 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,6 +93,7 @@ int _ijkMatches(const CoordIJK *c1, const CoordIJK *c2);
 void _ijkAdd(const CoordIJK *h1, const CoordIJK *h2, CoordIJK *sum);
 void _ijkSub(const CoordIJK *h1, const CoordIJK *h2, CoordIJK *diff);
 void _ijkScale(CoordIJK *c, int factor);
+bool _ijkNormalizeCouldOverflow(const CoordIJK *ijk);
 void _ijkNormalize(CoordIJK *c);
 Direction _unitIjkToDigit(const CoordIJK *ijk);
 H3Error _upAp7Checked(CoordIJK *ijk);

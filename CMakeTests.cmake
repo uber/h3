@@ -202,6 +202,7 @@ add_h3_test(testCoordIjk src/apps/testapps/testCoordIjk.c)
 add_h3_test(testBaseCells src/apps/testapps/testBaseCells.c)
 add_h3_test(testPentagonIndexes src/apps/testapps/testPentagonIndexes.c)
 add_h3_test(testH3Iterators src/apps/testapps/testH3Iterators.c)
+add_h3_test(testMathExtensions src/apps/testapps/testMathExtensions.c)
 
 add_h3_test_with_arg(testH3NeighborRotations src/apps/testapps/testH3NeighborRotations.c 0)
 add_h3_test_with_arg(testH3NeighborRotations src/apps/testapps/testH3NeighborRotations.c 1)
