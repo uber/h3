@@ -42,7 +42,8 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     // This function needs a guard check to be safe and that guard
     // check assumes k = 0.
     CoordIJK ijkCopy3 = args->ijk;
-    if (ijkCopy3.k == 0 && !_ijkNormalizeCouldOverflow(&ijkCopy3)) {
+    ijkCopy3.k = 0;
+    if (!_ijkNormalizeCouldOverflow(&ijkCopy3)) {
         _ijkNormalize(&ijkCopy3);
     }
 
