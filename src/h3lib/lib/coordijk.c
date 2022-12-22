@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2018, 2020-2021 Uber Technologies, Inc.
+ * Copyright 2016-2018, 2020-2022 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,11 @@
 #include <string.h>
 
 #include "constants.h"
+#include "h3Assert.h"
 #include "latLng.h"
 #include "mathExtensions.h"
+
+#define INT32_MAX_3 (INT32_MAX / 3)
 
 /**
  * Sets an IJK coordinate to the specified component values.
@@ -208,6 +211,41 @@ void _ijkScale(CoordIJK *c, int factor) {
 }
 
 /**
+ * Returns true if _ijkNormalize with the given input could have a signed
+ * integer overflow. Assumes k is set to 0.
+ */
+bool _ijkNormalizeCouldOverflow(const CoordIJK *ijk) {
+    // Check for the possibility of overflow
+    int max, min;
+    if (ijk->i > ijk->j) {
+        max = ijk->i;
+        min = ijk->j;
+    } else {
+        max = ijk->j;
+        min = ijk->i;
+    }
+    if (min < 0) {
+        // Only if the min is less than 0 will the resulting number be larger
+        // than max. If min is positive, then max is also positive, and a
+        // positive signed integer minus another positive signed integer will
+        // not overflow.
+        if (ADD_INT32S_OVERFLOWS(max, min)) {
+            // max + min would overflow
+            return true;
+        }
+        if (SUB_INT32S_OVERFLOWS(0, min)) {
+            // 0 - INT32_MIN would overflow
+            return true;
+        }
+        if (SUB_INT32S_OVERFLOWS(max, min)) {
+            // max - min would overflow
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
  * Normalizes ijk coordinates by setting the components to the smallest possible
  * values. Works in place.
  *
@@ -270,6 +308,104 @@ Direction _unitIjkToDigit(const CoordIJK *ijk) {
     }
 
     return digit;
+}
+
+/**
+ * Returns non-zero if _upAp7 with the given input could have a signed integer
+ * overflow.
+ *
+ * Assumes ijk is IJK+ coordinates (no negative numbers).
+ */
+H3Error _upAp7Checked(CoordIJK *ijk) {
+    // Doesn't need to be checked because i, j, and k must all be non-negative
+    int i = ijk->i - ijk->k;
+    int j = ijk->j - ijk->k;
+
+    // <0 is checked because the input must all be non-negative, but some
+    // negative inputs are used in unit tests to exercise the below.
+    if (i >= INT32_MAX_3 || j >= INT32_MAX_3 || i < 0 || j < 0) {
+        if (ADD_INT32S_OVERFLOWS(i, i)) {
+            return E_FAILED;
+        }
+        int i2 = i + i;
+        if (ADD_INT32S_OVERFLOWS(i2, i)) {
+            return E_FAILED;
+        }
+        int i3 = i2 + i;
+        if (ADD_INT32S_OVERFLOWS(j, j)) {
+            return E_FAILED;
+        }
+        int j2 = j + j;
+
+        if (SUB_INT32S_OVERFLOWS(i3, j)) {
+            return E_FAILED;
+        }
+        if (ADD_INT32S_OVERFLOWS(i, j2)) {
+            return E_FAILED;
+        }
+    }
+
+    // TODO: Do the int math parts here in long double?
+    ijk->i = (int)lroundl(((i * 3) - j) / 7.0L);
+    ijk->j = (int)lroundl((i + (j * 2)) / 7.0L);
+    ijk->k = 0;
+
+    // Expected not to be reachable, because max + min or max - min would need
+    // to overflow.
+    if (NEVER(_ijkNormalizeCouldOverflow(ijk))) {
+        return E_FAILED;
+    }
+    _ijkNormalize(ijk);
+    return E_SUCCESS;
+}
+
+/**
+ * Returns non-zero if _upAp7r with the given input could have a signed integer
+ * overflow.
+ *
+ * Assumes ijk is IJK+ coordinates (no negative numbers).
+ */
+H3Error _upAp7rChecked(CoordIJK *ijk) {
+    // Doesn't need to be checked because i, j, and k must all be non-negative
+    int i = ijk->i - ijk->k;
+    int j = ijk->j - ijk->k;
+
+    // <0 is checked because the input must all be non-negative, but some
+    // negative inputs are used in unit tests to exercise the below.
+    if (i >= INT32_MAX_3 || j >= INT32_MAX_3 || i < 0 || j < 0) {
+        if (ADD_INT32S_OVERFLOWS(i, i)) {
+            return E_FAILED;
+        }
+        int i2 = i + i;
+        if (ADD_INT32S_OVERFLOWS(j, j)) {
+            return E_FAILED;
+        }
+        int j2 = j + j;
+        if (ADD_INT32S_OVERFLOWS(j2, j)) {
+            return E_FAILED;
+        }
+        int j3 = j2 + j;
+
+        if (ADD_INT32S_OVERFLOWS(i2, j)) {
+            return E_FAILED;
+        }
+        if (SUB_INT32S_OVERFLOWS(j3, i)) {
+            return E_FAILED;
+        }
+    }
+
+    // TODO: Do the int math parts here in long double?
+    ijk->i = (int)lroundl(((i * 2) + j) / 7.0L);
+    ijk->j = (int)lroundl(((j * 3) - i) / 7.0L);
+    ijk->k = 0;
+
+    // Expected not to be reachable, because max + min or max - min would need
+    // to overflow.
+    if (NEVER(_ijkNormalizeCouldOverflow(ijk))) {
+        return E_FAILED;
+    }
+    _ijkNormalize(ijk);
+    return E_SUCCESS;
 }
 
 /**
@@ -540,28 +676,8 @@ H3Error ijToIjk(const CoordIJ *ij, CoordIJK *ijk) {
     ijk->j = ij->j;
     ijk->k = 0;
 
-    // Check for the possibility of overflow
-    int max, min;
-    if (ijk->i > ijk->j) {
-        max = ijk->i;
-        min = ijk->j;
-    } else {
-        max = ijk->j;
-        min = ijk->i;
-    }
-    if (min < 0) {
-        // Only if the min is less than 0 will the resulting number be larger
-        // than max. If min is positive, then max is also positive, and a
-        // positive signed integer minus another positive signed integer will
-        // not overflow.
-        if (max < INT32_MIN - min) {
-            // max - min would overflow
-            return E_FAILED;
-        }
-        if (min == INT32_MIN) {
-            // 0 - INT32_MIN would overflow
-            return E_FAILED;
-        }
+    if (_ijkNormalizeCouldOverflow(ijk)) {
+        return E_FAILED;
     }
 
     _ijkNormalize(ijk);

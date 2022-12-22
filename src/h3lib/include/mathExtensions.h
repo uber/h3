@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Uber Technologies, Inc.
+ * Copyright 2017-2018, 2022 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,14 @@
  * MAX returns the maximum of two values.
  */
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
+
+/** Evaluates to true if a + b would overflow for int32 */
+#define ADD_INT32S_OVERFLOWS(a, b) \
+    ((a) > 0 ? (INT32_MAX - (a) < (b)) : (INT32_MIN - (a) > (b)))
+
+/** Evaluates to true if a - b would overflow for int32 */
+#define SUB_INT32S_OVERFLOWS(a, b) \
+    ((a) >= 0 ? (INT32_MIN + (a) >= (b)) : (INT32_MAX + (a) + 1 < (b)))
 
 // Internal functions
 int64_t _ipow(int64_t base, int64_t exp);

@@ -233,6 +233,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testCoordIjk.c
     src/apps/testapps/testH3Memory.c
     src/apps/testapps/testH3Iterators.c
+    src/apps/testapps/testMathExtensions.c
     src/apps/miscapps/cellToBoundaryHier.c
     src/apps/miscapps/cellToLatLngHier.c
     src/apps/miscapps/generateBaseCellNeighbors.c
@@ -258,6 +259,7 @@ set(OTHER_SOURCE_FILES
     src/apps/fuzzers/fuzzerPolygonToCellsNoHoles.c
     src/apps/fuzzers/fuzzerCellToChildPos.c
     src/apps/fuzzers/fuzzerInternalAlgos.c
+    src/apps/fuzzers/fuzzerInternalCoordIjk.c
     src/apps/benchmarks/benchmarkPolygonToCells.c
     src/apps/benchmarks/benchmarkPolygon.c
     src/apps/benchmarks/benchmarkCellsToLinkedMultiPolygon.c
@@ -512,6 +514,7 @@ if(BUILD_FUZZERS)
     add_h3_fuzzer(fuzzerCellToChildPos src/apps/fuzzers/fuzzerCellToChildPos.c)
     if(ENABLE_REQUIRES_ALL_SYMBOLS)
         add_h3_fuzzer(fuzzerInternalAlgos src/apps/fuzzers/fuzzerInternalAlgos.c)
+        add_h3_fuzzer(fuzzerInternalCoordIjk src/apps/fuzzers/fuzzerInternalCoordIjk.c)
     endif()
 endif()
 
