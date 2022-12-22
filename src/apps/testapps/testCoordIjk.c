@@ -67,6 +67,9 @@ SUITE(coordIjk) {
         t_assert(_upAp7Checked(&ijk) == E_FAILED, "(i * 3) - j overflows");
         _setIJK(&ijk, INT32_MAX / 3, INT32_MAX / 2, 0);
         t_assert(_upAp7Checked(&ijk) == E_FAILED, "i + (j * 2) overflows");
+        // This input should be invalid because j < 0
+        _setIJK(&ijk, -1, 0, 0);
+        t_assert(_upAp7Checked(&ijk) == E_SUCCESS, "i < 0 succeeds");
     }
 
     TEST(_upAp7rChecked) {
@@ -85,5 +88,8 @@ SUITE(coordIjk) {
         // This input should be invalid because i < 0
         _setIJK(&ijk, -2, INT32_MAX / 3, 0);
         t_assert(_upAp7rChecked(&ijk) == E_FAILED, "(j * 3) - 1 overflows");
+        // This input should be invalid because j < 0
+        _setIJK(&ijk, -1, 0, 0);
+        t_assert(_upAp7rChecked(&ijk) == E_SUCCESS, "i < 0 succeeds");
     }
 }

@@ -28,7 +28,7 @@
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 
 /** Evaluates to true if a + b would overflow for int32 */
-#define SUM_INT32S_OVERFLOWS(a, b) \
+#define ADD_INT32S_OVERFLOWS(a, b) \
     ((a) > 0 ? (INT32_MAX - (a) < (b)) : (INT32_MIN - (a) > (b)))
 
 /** Evaluates to true if a - b would overflow for int32 */

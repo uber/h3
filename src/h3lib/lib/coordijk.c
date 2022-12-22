@@ -30,6 +30,8 @@
 #include "latLng.h"
 #include "mathExtensions.h"
 
+#define INT32_MAX_3 (INT32_MAX / 3)
+
 /**
  * Sets an IJK coordinate to the specified component values.
  *
@@ -227,7 +229,7 @@ bool _ijkNormalizeCouldOverflow(const CoordIJK *ijk) {
         // than max. If min is positive, then max is also positive, and a
         // positive signed integer minus another positive signed integer will
         // not overflow.
-        if (SUM_INT32S_OVERFLOWS(max, min)) {
+        if (ADD_INT32S_OVERFLOWS(max, min)) {
             // max + min would overflow
             return true;
         }
@@ -315,33 +317,37 @@ Direction _unitIjkToDigit(const CoordIJK *ijk) {
  * Assumes ijk is IJK+ coordinates (no negative numbers).
  */
 H3Error _upAp7Checked(CoordIJK *ijk) {
-    // Doesn't need to be checked because i, j, and k must all be positive
+    // Doesn't need to be checked because i, j, and k must all be non-negative
     int i = ijk->i - ijk->k;
     int j = ijk->j - ijk->k;
 
-    if (SUM_INT32S_OVERFLOWS(i, i)) {
-        return E_FAILED;
-    }
-    int i2 = i + i;
-    if (SUM_INT32S_OVERFLOWS(i2, i)) {
-        return E_FAILED;
-    }
-    int i3 = i2 + i;
-    if (SUM_INT32S_OVERFLOWS(j, j)) {
-        return E_FAILED;
-    }
-    int j2 = j + j;
+    // <0 is checked because the input must all be non-negative, but some
+    // negative inputs are used in unit tests to exercise the below.
+    if (i >= INT32_MAX_3 || j >= INT32_MAX_3 || i < 0 || j < 0) {
+        if (ADD_INT32S_OVERFLOWS(i, i)) {
+            return E_FAILED;
+        }
+        int i2 = i + i;
+        if (ADD_INT32S_OVERFLOWS(i2, i)) {
+            return E_FAILED;
+        }
+        int i3 = i2 + i;
+        if (ADD_INT32S_OVERFLOWS(j, j)) {
+            return E_FAILED;
+        }
+        int j2 = j + j;
 
-    if (SUB_INT32S_OVERFLOWS(i3, j)) {
-        return E_FAILED;
-    }
-    if (SUM_INT32S_OVERFLOWS(i, j2)) {
-        return E_FAILED;
+        if (SUB_INT32S_OVERFLOWS(i3, j)) {
+            return E_FAILED;
+        }
+        if (ADD_INT32S_OVERFLOWS(i, j2)) {
+            return E_FAILED;
+        }
     }
 
     // TODO: Do the int math parts here in long double?
-    ijk->i = (int)lroundl((i3 - j) / 7.0L);
-    ijk->j = (int)lroundl((i + j2) / 7.0L);
+    ijk->i = (int)lroundl(((i * 3) - j) / 7.0L);
+    ijk->j = (int)lroundl((i + (j * 2)) / 7.0L);
     ijk->k = 0;
 
     // Expected not to be reachable, because max + min or max - min would need
@@ -360,33 +366,37 @@ H3Error _upAp7Checked(CoordIJK *ijk) {
  * Assumes ijk is IJK+ coordinates (no negative numbers).
  */
 H3Error _upAp7rChecked(CoordIJK *ijk) {
-    // Doesn't need to be checked because i, j, and k must all be positive
+    // Doesn't need to be checked because i, j, and k must all be non-negative
     int i = ijk->i - ijk->k;
     int j = ijk->j - ijk->k;
 
-    if (SUM_INT32S_OVERFLOWS(i, i)) {
-        return E_FAILED;
-    }
-    int i2 = i + i;
-    if (SUM_INT32S_OVERFLOWS(j, j)) {
-        return E_FAILED;
-    }
-    int j2 = j + j;
-    if (SUM_INT32S_OVERFLOWS(j2, j)) {
-        return E_FAILED;
-    }
-    int j3 = j2 + j;
+    // <0 is checked because the input must all be non-negative, but some
+    // negative inputs are used in unit tests to exercise the below.
+    if (i >= INT32_MAX_3 || j >= INT32_MAX_3 || i < 0 || j < 0) {
+        if (ADD_INT32S_OVERFLOWS(i, i)) {
+            return E_FAILED;
+        }
+        int i2 = i + i;
+        if (ADD_INT32S_OVERFLOWS(j, j)) {
+            return E_FAILED;
+        }
+        int j2 = j + j;
+        if (ADD_INT32S_OVERFLOWS(j2, j)) {
+            return E_FAILED;
+        }
+        int j3 = j2 + j;
 
-    if (SUM_INT32S_OVERFLOWS(i2, j)) {
-        return E_FAILED;
-    }
-    if (SUB_INT32S_OVERFLOWS(j3, i)) {
-        return E_FAILED;
+        if (ADD_INT32S_OVERFLOWS(i2, j)) {
+            return E_FAILED;
+        }
+        if (SUB_INT32S_OVERFLOWS(j3, i)) {
+            return E_FAILED;
+        }
     }
 
     // TODO: Do the int math parts here in long double?
-    ijk->i = (int)lroundl((i2 + j) / 7.0L);
-    ijk->j = (int)lroundl((j3 - i) / 7.0L);
+    ijk->i = (int)lroundl(((i * 2) + j) / 7.0L);
+    ijk->j = (int)lroundl(((j * 3) - i) / 7.0L);
     ijk->k = 0;
 
     // Expected not to be reachable, because max + min or max - min would need
