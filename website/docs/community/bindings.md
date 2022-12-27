@@ -88,6 +88,10 @@ As a C library, bindings can be made to call H3 functions from different program
 
 - [zachasme/h3-pg](https://github.com/zachasme/h3-pg)
 
+## Presto
+
+- [foursquare/h3-presto](https://github.com/foursquare/h3-presto)
+
 ## Python
 
 - [uber/h3-py](https://github.com/uber/h3-py)

@@ -206,6 +206,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testCellToLatLng.c
     src/apps/testapps/testCellToCenterChild.c
     src/apps/testapps/testCellToChildren.c
+    src/apps/testapps/testCellToChildPos.c
     src/apps/testapps/testGetIcosahedronFaces.c
     src/apps/testapps/testLatLng.c
     src/apps/testapps/testGridRingUnsafe.c
@@ -235,6 +236,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testCoordIjk.c
     src/apps/testapps/testH3Memory.c
     src/apps/testapps/testH3Iterators.c
+    src/apps/testapps/testMathExtensions.c
     src/apps/miscapps/cellToBoundaryHier.c
     src/apps/miscapps/cellToLatLngHier.c
     src/apps/miscapps/generateBaseCellNeighbors.c
@@ -259,7 +261,9 @@ set(OTHER_SOURCE_FILES
     src/apps/fuzzers/fuzzerLocalIj.c
     src/apps/fuzzers/fuzzerPolygonToCells.c
     src/apps/fuzzers/fuzzerPolygonToCellsNoHoles.c
+    src/apps/fuzzers/fuzzerCellToChildPos.c
     src/apps/fuzzers/fuzzerInternalAlgos.c
+    src/apps/fuzzers/fuzzerInternalCoordIjk.c
     src/apps/benchmarks/benchmarkPolygonToCells.c
     src/apps/benchmarks/benchmarkPolygon.c
     src/apps/benchmarks/benchmarkCellsToLinkedMultiPolygon.c
@@ -333,8 +337,8 @@ endfunction()
 add_h3_library(h3 "")
 
 # Automatic code formatting
-# Give preference to clang-format-9
-find_program(CLANG_FORMAT_PATH NAMES clang-format-9 clang-format)
+# Give preference to clang-format-11
+find_program(CLANG_FORMAT_PATH NAMES clang-format-11 clang-format)
 cmake_dependent_option(
     ENABLE_FORMAT "Enable running clang-format before compiling" ON
     "CLANG_FORMAT_PATH" OFF)
@@ -513,8 +517,10 @@ if(BUILD_FUZZERS)
     add_h3_fuzzer(fuzzerLocalIj src/apps/fuzzers/fuzzerLocalIj.c)
     add_h3_fuzzer(fuzzerPolygonToCells src/apps/fuzzers/fuzzerPolygonToCells.c)
     add_h3_fuzzer(fuzzerPolygonToCellsNoHoles src/apps/fuzzers/fuzzerPolygonToCellsNoHoles.c)
+    add_h3_fuzzer(fuzzerCellToChildPos src/apps/fuzzers/fuzzerCellToChildPos.c)
     if(ENABLE_REQUIRES_ALL_SYMBOLS)
         add_h3_fuzzer(fuzzerInternalAlgos src/apps/fuzzers/fuzzerInternalAlgos.c)
+        add_h3_fuzzer(fuzzerInternalCoordIjk src/apps/fuzzers/fuzzerInternalCoordIjk.c)
     endif()
 endif()
 

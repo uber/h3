@@ -2,14 +2,15 @@
 
 Pull requests and Github issues are welcome!
 
-Planned improvements and changes are listed on the [H3 Roadmap](https://github.com/uber/h3/wiki/Roadmap). Roadmap items are currently discussed in Github issues. Feel free to open a discussion about an existing roadmap item or proposing a new one.
+Planned improvements and changes are discussed in Github issues. Feel free to open a discussion proposing a new one.
 
 ## Pull requests
 
 * Please include tests that show the bug is fixed or feature works as intended.
+* Please include fuzzer tests for public API functions.
 * Please add a description of your change to the Unreleased section of the [changelog](./CHANGELOG.md).
 * Please open issues to discuss large features or changes which would break compatibility, before submitting pull requests.
-* Please keep H3 compatible with major C compilers, such as GCC, Clang, and MSVC. We use clang-format-9 for source code formatting, if you have another version the CI job may error on formatting differences.
+* Please keep H3 compatible with major C compilers, such as GCC, Clang, and MSVC. We use clang-format-11 for source code formatting, if you have another version the CI job may error on formatting differences.
 * Please keep code coverage of the core H3 library at 100%.
 
 Before we can merge your changes, you must agree to the [Uber Contributor License Agreement](https://cla-assistant.io/uber/h3).

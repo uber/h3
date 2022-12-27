@@ -7,14 +7,16 @@ The public API of this library consists of the functions declared in file
 
 ## [Unreleased]
 ### Added
+- Functions for `cellToChildPos` and `childPosToCell` (#719)
 - (Undirected) edge index mode. (#654)
 
 ### Fixed
 - Fixed possible signed integer overflow in `h3NeighborRotations` (#707)
-- Fixed possible signed integer overflow in `localIjToCell` (#706)
+- Fixed possible signed integer overflow in `localIjToCell` (#706, #735)
 
 ### Changed
 - `assert` on defensive code blocks that are not already covered. (#720)
+- `clang-format` upgraded to version 11. (#734)
 
 ## [4.0.1] - 2022-09-15
 ### Fixed

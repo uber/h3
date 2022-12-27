@@ -50,4 +50,46 @@ SUITE(coordIjk) {
         _neighbor(&ijk, INVALID_DIGIT);
         t_assert(_ijkMatches(&ijk, &i), "Invalid neighbor is self");
     }
+
+    TEST(_upAp7Checked) {
+        CoordIJK ijk;
+
+        _setIJK(&ijk, 0, 0, 0);
+        t_assertSuccess(_upAp7Checked(&ijk));
+        _setIJK(&ijk, INT32_MAX, 0, 0);
+        t_assert(_upAp7Checked(&ijk) == E_FAILED, "i + i overflows");
+        _setIJK(&ijk, INT32_MAX / 2, 0, 0);
+        t_assert(_upAp7Checked(&ijk) == E_FAILED, "i * 3 overflows");
+        _setIJK(&ijk, 0, INT32_MAX, 0);
+        t_assert(_upAp7Checked(&ijk) == E_FAILED, "j + j overflows");
+        // This input should be invalid because j < 0
+        _setIJK(&ijk, INT32_MAX / 3, -2, 0);
+        t_assert(_upAp7Checked(&ijk) == E_FAILED, "(i * 3) - j overflows");
+        _setIJK(&ijk, INT32_MAX / 3, INT32_MAX / 2, 0);
+        t_assert(_upAp7Checked(&ijk) == E_FAILED, "i + (j * 2) overflows");
+        // This input should be invalid because j < 0
+        _setIJK(&ijk, -1, 0, 0);
+        t_assert(_upAp7Checked(&ijk) == E_SUCCESS, "i < 0 succeeds");
+    }
+
+    TEST(_upAp7rChecked) {
+        CoordIJK ijk;
+
+        _setIJK(&ijk, 0, 0, 0);
+        t_assertSuccess(_upAp7rChecked(&ijk));
+        _setIJK(&ijk, INT32_MAX, 0, 0);
+        t_assert(_upAp7rChecked(&ijk) == E_FAILED, "i + i overflows");
+        _setIJK(&ijk, 0, INT32_MAX, 0);
+        t_assert(_upAp7rChecked(&ijk) == E_FAILED, "j + j overflows");
+        _setIJK(&ijk, 0, INT32_MAX / 2, 0);
+        t_assert(_upAp7rChecked(&ijk) == E_FAILED, "3 * j overflows");
+        _setIJK(&ijk, INT32_MAX / 2, INT32_MAX / 3, 0);
+        t_assert(_upAp7rChecked(&ijk) == E_FAILED, "(i * 2) + j overflows");
+        // This input should be invalid because i < 0
+        _setIJK(&ijk, -2, INT32_MAX / 3, 0);
+        t_assert(_upAp7rChecked(&ijk) == E_FAILED, "(j * 3) - 1 overflows");
+        // This input should be invalid because j < 0
+        _setIJK(&ijk, -1, 0, 0);
+        t_assert(_upAp7rChecked(&ijk) == E_SUCCESS, "i < 0 succeeds");
+    }
 }
