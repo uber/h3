@@ -23,6 +23,7 @@
 #include "algos.h"
 #include "constants.h"
 #include "coordijk.h"
+#include "h3Assert.h"
 #include "h3Index.h"
 #include "latLng.h"
 #include "vertex.h"
@@ -93,7 +94,6 @@ int H3_EXPORT(isValidEdge)(H3Index edge) {
     }
     if (H3_EXPORT(isPentagon)(cells[0]) && neighborDirection == K_AXES_DIGIT) {
         // Deleted direction from a pentagon.
-        // TODO: Cover this case
         return 0;
     }
     if (cells[1] < cells[0]) {
@@ -140,7 +140,6 @@ H3Error H3_EXPORT(cellToEdges)(H3Index origin, H3Index *edges) {
             H3Error error = H3_EXPORT(cellsToEdge)(origin, neighborRing[i],
                                                    &edges[edgesIndex]);
             if (error) {
-                // TODO: Cover this case
                 return error;
             }
             edgesIndex++;

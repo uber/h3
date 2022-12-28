@@ -35,13 +35,13 @@ SUITE(edge) {
     TEST(cellsToEdgeAndFriends) {
         H3Index sf;
         t_assertSuccess(H3_EXPORT(latLngToCell)(&sfGeo, 9, &sf));
-        H3Index ring[7] = {0};
+        H3Index ring[7] = {H3_NULL};
         t_assertSuccess(H3_EXPORT(gridRingUnsafe)(sf, 1, ring));
         H3Index sf2 = ring[0];
 
         H3Index edge;
         t_assertSuccess(H3_EXPORT(cellsToEdge)(sf, sf2, &edge));
-        H3Index cells[2] = {0};
+        H3Index cells[2] = {H3_NULL};
         t_assertSuccess(H3_EXPORT(edgeToCells)(edge, cells));
         t_assert(cells[0] == sf || cells[1] == sf,
                  "One of the cells is the origin");
@@ -60,7 +60,7 @@ SUITE(edge) {
         t_assert(H3_EXPORT(edgeToCells)(invalidEdge, cells) != E_SUCCESS,
                  "edgeToCells fails for invalid edges");
 
-        H3Index largerRing[19] = {0};
+        H3Index largerRing[19] = {H3_NULL};
         t_assertSuccess(H3_EXPORT(gridRingUnsafe)(sf, 2, largerRing));
         H3Index sf3 = largerRing[0];
 
@@ -70,8 +70,8 @@ SUITE(edge) {
     }
 
     TEST(cellsToEdgeFromPentagon) {
-        H3Index pentagons[NUM_PENTAGONS] = {0};
-        H3Index ring[7] = {0};
+        H3Index pentagons[NUM_PENTAGONS] = {H3_NULL};
+        H3Index ring[7] = {H3_NULL};
         H3Index pentagon;
         H3Index edge, edge2;
 
@@ -102,7 +102,7 @@ SUITE(edge) {
     TEST(isValidEdge) {
         H3Index sf;
         t_assertSuccess(H3_EXPORT(latLngToCell)(&sfGeo, 9, &sf));
-        H3Index ring[7] = {0};
+        H3Index ring[7] = {H3_NULL};
         t_assertSuccess(H3_EXPORT(gridRingUnsafe)(sf, 1, ring));
         H3Index sf2 = ring[0];
 
@@ -142,6 +142,11 @@ SUITE(edge) {
         H3_SET_RESERVED_BITS(badPentagonalEdge, 1);
         t_assert(H3_EXPORT(isValidEdge)(badPentagonalEdge) == 0,
                  "missing pentagonal edge does not validate");
+        // Case discovered by fuzzer that triggers pentagon deleted direction
+        // condition
+        H3Index badPentagonalEdge2 = 0x1a53002880009900;
+        t_assert(H3_EXPORT(isValidEdge)(badPentagonalEdge2) == 0,
+                 "missing pentagonal edge 2 does not validate");
 
         H3Index highBitEdge = edge;
         H3_SET_HIGH_BIT(highBitEdge, 1);
@@ -152,7 +157,7 @@ SUITE(edge) {
     TEST(cellToEdges) {
         H3Index sf;
         t_assertSuccess(H3_EXPORT(latLngToCell)(&sfGeo, 9, &sf));
-        H3Index edges[6] = {0};
+        H3Index edges[6] = {H3_NULL};
         t_assertSuccess(H3_EXPORT(cellToEdges)(sf, edges));
 
         for (int i = 0; i < 6; i++) {
@@ -176,9 +181,18 @@ SUITE(edge) {
         }
     }
 
+    TEST(cellToEdges_invalid) {
+        // Test case discovered by fuzzer that triggers cellsToEdge to fail
+        // within cellToEdges
+        H3Index invalid = 0x26262626262600fa;
+        H3Index edges[6] = {H3_NULL};
+        t_assert(H3_EXPORT(cellToEdges)(invalid, edges) == E_NOT_NEIGHBORS,
+                 "cellToEdges fails");
+    }
+
     TEST(getEdgesFromPentagon) {
         H3Index pentagon = 0x821c07fffffffff;
-        H3Index edges[6] = {0};
+        H3Index edges[6] = {H3_NULL};
         t_assertSuccess(H3_EXPORT(cellToEdges)(pentagon, edges));
 
         int missingEdgeCount = 0;
@@ -233,7 +247,7 @@ SUITE(edge) {
     }
 
     TEST(cellToEdgesFailed) {
-        H3Index edges[6] = {0};
+        H3Index edges[6] = {H3_NULL};
         t_assert(
             H3_EXPORT(cellToEdges)(0x7fffffffffffffff, edges) == E_CELL_INVALID,
             "cellToEdges of invalid index");
