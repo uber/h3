@@ -19,9 +19,9 @@
  * usage: `testEdgeExhaustive`
  */
 
+#include <math.h>
 #include <stdlib.h>
 
-#include "algos.h"
 #include "constants.h"
 #include "h3Index.h"
 #include "latLng.h"
@@ -70,6 +70,32 @@ static void edge_correctness_assertions(H3Index h3) {
     }
 }
 
+static void edge_length_assertions(H3Index h3) {
+    H3Index edges[6] = {H3_NULL};
+    t_assertSuccess(H3_EXPORT(cellToEdges)(h3, edges));
+
+    for (int i = 0; i < 6; i++) {
+        if (edges[i] == H3_NULL) continue;
+
+        double length;
+        t_assertSuccess(H3_EXPORT(edgeLengthRads)(edges[i], &length));
+        double lengthKm;
+        t_assertSuccess(H3_EXPORT(edgeLengthKm)(edges[i], &lengthKm));
+        double lengthM;
+        t_assertSuccess(H3_EXPORT(edgeLengthM)(edges[i], &lengthM));
+        double directedEdgeLength;
+        H3Index asDirectedEdge = edges[i];
+        H3_SET_MODE(asDirectedEdge, H3_DIRECTEDEDGE_MODE);
+        t_assertSuccess(
+            H3_EXPORT(edgeLengthRads)(asDirectedEdge, &directedEdgeLength));
+        t_assert(length > 0, "length is positive");
+        t_assert(lengthKm > length, "length in KM is greater than rads");
+        t_assert(lengthM > lengthKm, "length in M is greater than KM");
+        t_assert(fabs(length - directedEdgeLength) < EPSILON_RAD,
+                 "edge and directed edge length are approximately equal");
+    }
+}
+
 static void edge_boundary_assertions(H3Index h3) {
     H3Index edges[6] = {H3_NULL};
     t_assertSuccess(H3_EXPORT(cellToEdges)(h3, edges));
@@ -107,6 +133,14 @@ SUITE(edge) {
         iterateAllIndexesAtRes(2, edge_correctness_assertions);
         iterateAllIndexesAtRes(3, edge_correctness_assertions);
         iterateAllIndexesAtRes(4, edge_correctness_assertions);
+    }
+
+    TEST(edge_length) {
+        iterateAllIndexesAtRes(0, edge_length_assertions);
+        iterateAllIndexesAtRes(1, edge_length_assertions);
+        iterateAllIndexesAtRes(2, edge_length_assertions);
+        iterateAllIndexesAtRes(3, edge_length_assertions);
+        iterateAllIndexesAtRes(4, edge_length_assertions);
     }
 
     TEST(edge_boundary) {
