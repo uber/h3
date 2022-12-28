@@ -32,15 +32,6 @@
 static LatLng sfGeo = {0.659966917655, -2.1364398519396};
 
 SUITE(edge) {
-    /*
-| cellsToEdge | [fuzzerEdge](./fuzzerEdge.c)
-| isValidEdge | [fuzzerEdge](./fuzzerEdge.c)
-| edgeToCells | [fuzzerEdge](./fuzzerEdge.c)
-| cellToEdges | [fuzzerEdge](./fuzzerEdge.c)
-| edgeToBoundary | [fuzzerEdge](./fuzzerEdge.c)
-| directedEdgeToEdge | [fuzzerEdge](./fuzzerEdge.c)
-    */
-    // ...TODO...
     TEST(cellsToEdgeAndFriends) {
         H3Index sf;
         t_assertSuccess(H3_EXPORT(latLngToCell)(&sfGeo, 9, &sf));
@@ -209,6 +200,45 @@ SUITE(edge) {
                  "Only one edge was deleted for the pentagon");
     }
 
+    TEST(invalid_pentagon_edge) {
+        H3Index pentagonEdge = 0x821c07fffffffff;
+        H3_SET_MODE(pentagonEdge, H3_EDGE_MODE);
+        H3_SET_RESERVED_BITS(pentagonEdge, K_AXES_DIGIT);
+        t_assert(H3_EXPORT(isValidEdge)(pentagonEdge) == 0,
+                 "Invalid edge off a pentagon");
+    }
+
+    TEST(nonNormalizedEdge) {
+        H3Index pentagon = 0x821c07fffffffff;
+        H3Index neighbors[7] = {H3_NULL};
+        t_assertSuccess(H3_EXPORT(gridDisk)(pentagon, 1, neighbors));
+
+        for (int i = 0; i < 7; i++) {
+            if (neighbors[i] != H3_NULL && neighbors[i] != pentagon) {
+                H3Index edge;
+                t_assertSuccess(
+                    H3_EXPORT(cellsToEdge)(pentagon, neighbors[i], &edge));
+                H3Index originDestination[2] = {H3_NULL};
+                t_assertSuccess(
+                    H3_EXPORT(edgeToCells)(edge, originDestination));
+                Direction revDir = directionForNeighbor(originDestination[1],
+                                                        originDestination[0]);
+                H3Index fakeEdge = originDestination[1];
+                H3_SET_MODE(fakeEdge, H3_EDGE_MODE);
+                H3_SET_RESERVED_BITS(fakeEdge, revDir);
+                t_assert(H3_EXPORT(isValidEdge)(fakeEdge) == 0,
+                         "Edge in non normalized form is invalid");
+            }
+        }
+    }
+
+    TEST(cellToEdgesFailed) {
+        H3Index edges[6] = {0};
+        t_assert(
+            H3_EXPORT(cellToEdges)(0x7fffffffffffffff, edges) == E_CELL_INVALID,
+            "cellToEdges of invalid index");
+    }
+
     // TEST(edgeToBoundary) {
     //     H3Index sf;
     //     CellBoundary boundary;
@@ -330,5 +360,30 @@ SUITE(edge) {
         H3_SET_MODE(invalidEdge2, H3_EDGE_MODE);
         t_assert(H3_EXPORT(edgeToBoundary)(invalidEdge2, &cb) != E_SUCCESS,
                  "edgeToBoundary fails on invalid edge indexing digit");
+    }
+
+    TEST(directedEdgeToEdge) {
+        H3Index edge;
+        t_assert(H3_EXPORT(directedEdgeToEdge)(0, &edge) == E_DIR_EDGE_INVALID,
+                 "can't convert 0");
+        H3Index sf;
+        t_assertSuccess(H3_EXPORT(latLngToCell)(&sfGeo, 9, &sf));
+        H3Index edges[6] = {H3_NULL};
+        t_assertSuccess(H3_EXPORT(originToDirectedEdges)(sf, edges));
+        for (int i = 0; i < 6; i++) {
+            t_assertSuccess(H3_EXPORT(directedEdgeToEdge)(edges[i], &edge));
+            t_assert(H3_EXPORT(isValidEdge)(edge) == 1,
+                     "resulting edge is valid");
+            H3Index originDestination[2];
+            t_assertSuccess(H3_EXPORT(edgeToCells)(edge, originDestination));
+            t_assert(originDestination[0] == sf || originDestination[1] == sf,
+                     "one of the cells is the origin");
+            t_assert(originDestination[0] != originDestination[1],
+                     "there is another cell");
+            int areNeighbors;
+            t_assertSuccess(H3_EXPORT(areNeighborCells)(
+                originDestination[0], originDestination[1], &areNeighbors));
+            t_assert(areNeighbors == 1, "are neighbors");
+        }
     }
 }

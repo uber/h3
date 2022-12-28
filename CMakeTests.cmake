@@ -211,6 +211,7 @@ add_h3_test_with_arg(testH3NeighborRotations src/apps/testapps/testH3NeighborRot
 
 # The "Exhaustive" part of the test name is used by the test-fast to exclude these files.
 # test-fast exists so that Travis CI can run Valgrind on tests without taking a very long time.
+add_h3_test(testEdgeExhaustive src/apps/testapps/testEdgeExhaustive.c)
 add_h3_test(testDirectedEdgeExhaustive src/apps/testapps/testDirectedEdgeExhaustive.c)
 add_h3_test(testVertexExhaustive src/apps/testapps/testVertexExhaustive.c)
 add_h3_test(testCellToLocalIjExhaustive src/apps/testapps/testCellToLocalIjExhaustive.c)

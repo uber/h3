@@ -24,8 +24,6 @@
 #include "h3Index.h"
 
 H3Error wrapDirectedEdgeError(H3Error err);
-H3Error cellsToEdgeNonNormalized(H3Index cell1, H3Index cell2, H3Index *out);
 H3Index edgeAsDirectedEdge(H3Index edge);
-H3Error normalizeEdge(H3Index edge, H3Index *out);
 
 #endif

@@ -23,6 +23,7 @@
 #include "algos.h"
 #include "constants.h"
 #include "coordijk.h"
+#include "h3Assert.h"
 #include "h3Index.h"
 #include "latLng.h"
 #include "vertex.h"
@@ -36,30 +37,6 @@ H3Error wrapDirectedEdgeError(H3Error err) {
         return E_UNDIR_EDGE_INVALID;
     }
     return err;
-}
-
-/**
- * Encode the edge between the two cells in non-normalized form.
- * @param cell1 Origin cell
- * @param cell2 Neighboring cell
- * @param out Non-directed edge between the two cells, non-normalized
- */
-H3Error cellsToEdgeNonNormalized(H3Index cell1, H3Index cell2, H3Index *out) {
-    // Determine the IJK direction from the origin to the destination
-    Direction direction = directionForNeighbor(cell1, cell2);
-
-    // The direction will be invalid if the cells are not neighbors
-    if (direction == INVALID_DIGIT) {
-        return E_NOT_NEIGHBORS;
-    }
-
-    // Create the edge index for the neighbor direction
-    H3Index output = cell1;
-    H3_SET_MODE(output, H3_EDGE_MODE);
-    H3_SET_RESERVED_BITS(output, direction);
-
-    *out = output;
-    return E_SUCCESS;
 }
 
 /**
@@ -77,55 +54,22 @@ H3Index edgeAsDirectedEdge(H3Index edge) {
 }
 
 /**
- * Normalize an udirected edge.
- *
- * The normalization algorithm is that the owner of an edge
- * is the cell with the numerically lower index.
- * @param edge
- * @param out
- */
-H3Error normalizeEdge(H3Index edge, H3Index *out) {
-    H3Index originDestination[2] = {0};
-    H3Error odError = H3_EXPORT(edgeToCells)(edge, originDestination);
-    if (odError) {
-        return odError;
-    }
-    if (originDestination[1] < originDestination[0]) {
-        // The edge is not in normalized form already. Since there is only
-        // one other representation of this edge, we can be assured that
-        // reencoding with that representation will be normalized.
-        H3Error reencodeError = cellsToEdgeNonNormalized(
-            originDestination[1], originDestination[0], out);
-        if (reencodeError) {
-            return reencodeError;
-        }
-    } else {
-        // The edge is already in normalized form.
-        *out = edge;
-    }
-    return E_SUCCESS;
-}
-
-/**
  * Returns an edge H3 index based on the provided neighboring cells
  * @param cell1 An H3 hexagon index
  * @param cell2 A neighboring H3 hexagon index
  * @param out Output: the edge H3Index
  */
 H3Error H3_EXPORT(cellsToEdge)(H3Index cell1, H3Index cell2, H3Index *out) {
-    H3Index nonNormalizedEdge;
-    H3Error nonNormalizedError =
-        cellsToEdgeNonNormalized(cell1, cell2, &nonNormalizedEdge);
-    if (nonNormalizedError) {
-        return nonNormalizedError;
+    bool cell1IsOrigin = cell1 < cell2;
+    H3Index origin = cell1IsOrigin ? cell1 : cell2;
+    H3Index dest = cell1IsOrigin ? cell2 : cell1;
+    H3Error edgeErr = H3_EXPORT(cellsToDirectedEdge)(origin, dest, out);
+    if (!edgeErr) {
+        H3_SET_MODE(*out, H3_EDGE_MODE);
+        return edgeErr;
+    } else {
+        return edgeErr;
     }
-    H3Index normalizedEdge;
-    H3Error normalizeError = normalizeEdge(nonNormalizedEdge, &normalizedEdge);
-    if (normalizeError) {
-        return normalizeError;
-    }
-    *out = normalizedEdge;
-    return E_SUCCESS;
 }
 
 /**
@@ -148,8 +92,10 @@ int H3_EXPORT(isValidEdge)(H3Index edge) {
     if (cellsResult) {
         return 0;
     }
-    if (H3_EXPORT(isPentagon)(cells[0]) && neighborDirection == K_AXES_DIGIT) {
-        // Deleted direction from a pentagon
+    if (NEVER(H3_EXPORT(isPentagon)(cells[0]) &&
+              neighborDirection == K_AXES_DIGIT)) {
+        // Deleted direction from a pentagon. This cannot occur because
+        // edgeToCells would have already failed.
         return 0;
     }
     if (cells[1] < cells[0]) {
@@ -184,23 +130,21 @@ H3Error H3_EXPORT(edgeToCells)(H3Index edge, H3Index *cells) {
  * @param edges The memory to store all of the edges inside.
  */
 H3Error H3_EXPORT(cellToEdges)(H3Index origin, H3Index *edges) {
-    // Determine if the origin is a pentagon and special treatment needed.
-    int isPent = H3_EXPORT(isPentagon)(origin);
-
-    // This is actually quite simple. Just modify the bits of the origin
-    // slightly for each direction, except the 'k' direction in pentagons,
-    // which is zeroed.
-    for (int i = 0; i < 6; i++) {
-        if (isPent && i == 0) {
-            edges[i] = H3_NULL;
-        } else {
-            H3Index edge = origin;
-            H3_SET_MODE(edge, H3_EDGE_MODE);
-            H3_SET_RESERVED_BITS(edge, i + 1);
-            H3Error normalizeError = normalizeEdge(edge, &edges[i]);
-            if (normalizeError) {
-                return normalizeError;
+    // Otherwise, we have to determine the neighbor relationship the "hard" way.
+    H3Index neighborRing[7] = {0};
+    H3Error gridDiskErr = H3_EXPORT(gridDisk)(origin, 1, neighborRing);
+    if (gridDiskErr) {
+        return gridDiskErr;
+    }
+    int edgesIndex = 0;
+    for (int i = 0; i < 7; i++) {
+        if (neighborRing[i] != origin && neighborRing[i]) {
+            H3Error error = H3_EXPORT(cellsToEdge)(origin, neighborRing[i],
+                                                   &edges[edgesIndex]);
+            if (NEVER(error)) {
+                return error;
             }
+            edgesIndex++;
         }
     }
     return E_SUCCESS;
@@ -225,6 +169,11 @@ H3Error H3_EXPORT(edgeToBoundary)(H3Index edge, CellBoundary *cb) {
  * @param out Output undirected edge
  */
 H3Error H3_EXPORT(directedEdgeToEdge)(H3Index edge, H3Index *out) {
-    H3_SET_MODE(edge, H3_EDGE_MODE);
-    return normalizeEdge(edge, out);
+    H3Index originDestination[2] = {0};
+    H3Error odError = H3_EXPORT(directedEdgeToCells)(edge, originDestination);
+    if (odError) {
+        return odError;
+    }
+    return H3_EXPORT(cellsToEdge)(originDestination[0], originDestination[1],
+                                  out);
 }
