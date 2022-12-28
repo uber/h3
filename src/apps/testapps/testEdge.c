@@ -144,7 +144,7 @@ SUITE(edge) {
                  "missing pentagonal edge does not validate");
         // Case discovered by fuzzer that triggers pentagon deleted direction
         // condition
-        H3Index badPentagonalEdge2 = 0x1a53002880009900;
+        H3Index badPentagonalEdge2 = 0x990d6700ff00ffff;
         t_assert(H3_EXPORT(isValidEdge)(badPentagonalEdge2) == 0,
                  "missing pentagonal edge 2 does not validate");
 
