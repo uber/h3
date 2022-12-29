@@ -128,7 +128,6 @@ H3Error H3_EXPORT(edgeToCells)(H3Index edge, H3Index *cells) {
  * @param edges The memory to store all of the edges inside.
  */
 H3Error H3_EXPORT(cellToEdges)(H3Index origin, H3Index *edges) {
-    // Otherwise, we have to determine the neighbor relationship the "hard" way.
     H3Index neighborRing[7] = {0};
     H3Error gridDiskErr = H3_EXPORT(gridDisk)(origin, 1, neighborRing);
     if (gridDiskErr) {
