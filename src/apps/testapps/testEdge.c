@@ -48,8 +48,9 @@ SUITE(edge) {
         t_assert(cells[0] == sf2 || cells[1] == sf2,
                  "One of the cells is the destination");
         t_assert(sf != sf2, "Sanity check for cells not being the same");
+        // Uses an implementation detail that the origin cell is returned first
         t_assert(cells[0] < cells[1],
-                 "Directed edge cells are in normalized order");
+                 "Undirected edge cells are in normalized order");
 
         t_assert(H3_EXPORT(edgeToCells)(0, cells) == E_UNDIR_EDGE_INVALID,
                  "edgeToCells fails for invalid edges");
