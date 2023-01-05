@@ -7,7 +7,7 @@ slug: /core-library/h3Indexing
 
 ## Introduction
 
-The H3 system assigns a unique hierarchical index to each cell. Each directed edge, each, and vertex is assigned an index based on its origin or owner cell, respectively.
+The H3 system assigns a unique hierarchical index to each cell. Each directed edge, edge, and vertex is assigned an index based on its origin or owner cell, respectively.
 
 ## H3Index Representation
 
