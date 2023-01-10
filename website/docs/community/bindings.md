@@ -112,6 +112,7 @@ As a C library, bindings can be made to call H3 functions from different program
 - [rustyconover/libh3-sys](https://github.com/rustyconover/libh3-sys)
 - [rustyconover/libh3](https://github.com/rustyconover/libh3)
 - [nmandery/h3ron](https://github.com/nmandery/h3ron)
+- [HydroniumLabs/h3o](https://github.com/HydroniumLabs/h3o) - A translation instead of a binding
 
 ## Snowflake
 
