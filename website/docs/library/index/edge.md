@@ -5,12 +5,14 @@ sidebar_label: Edge mode
 slug: /library/index/edge
 ---
 
-An H3 Edge index (mode 3) represents a single undirected edge between two cells. One of the two cells is arbitrarily picked as an "owner" or "origin" cell, which is used to calculate the canonical index of the edge. The components of the H3 Edge index are packed into a 64-bit integer in order, highest bit first, as follows:
+An H3 Edge index (mode 3) represents a single undirected edge between two cells. One of the two cells is picked as an *origin* cell, which is used to calculate the canonical index of the edge. The components of the H3 Edge index are packed into a 64-bit integer in order, highest bit first, as follows:
 
 * 1 bit reserved and set to 0,
 * 4 bits to indicate the H3 Edge index mode (3),
 * 3 bits to indicate the edge (1-6) of the origin cell,
 * Subsequent bits matching the index bits of the [origin cell](./cell#h3-cell-index).
+
+Of the two cells, the cell with the numerically lower `H3Index` is picked as the origin.
 
 ## Bit layout of H3Index for directed edges
 

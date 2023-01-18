@@ -101,7 +101,10 @@ int H3_EXPORT(isValidEdge)(H3Index edge) {
         return 0;
     }
 
-    return H3_EXPORT(isValidCell)(cells[0]);
+    // If the owning cell is valid, we expect the destination cell will always
+    // be valid.
+    return H3_EXPORT(isValidCell)(cells[0]) &&
+           ALWAYS(H3_EXPORT(isValidCell)(cells[1]));
 }
 
 /**
