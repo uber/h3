@@ -6,11 +6,12 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+### Added
+- (Undirected) edge index mode. (#654)
 
 ## [4.1.0] - 2023-01-18
 ### Added
 - Functions for `cellToChildPos` and `childPosToCell` (#719)
-- (Undirected) edge index mode. (#654)
 
 ### Fixed
 - Fixed possible signed integer overflow in `h3NeighborRotations` (#707)
