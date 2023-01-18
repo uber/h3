@@ -7,7 +7,7 @@ The public API of this library consists of the functions declared in file
 
 ## [Unreleased]
 
-## [4.1.0] - 2023-01-03
+## [4.1.0] - 2023-01-18
 ### Added
 - Functions for `cellToChildPos` and `childPosToCell` (#719)
 
