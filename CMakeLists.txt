@@ -263,6 +263,7 @@ set(OTHER_SOURCE_FILES
     src/apps/benchmarks/benchmarkPolygonToCells.c
     src/apps/benchmarks/benchmarkPolygon.c
     src/apps/benchmarks/benchmarkCellsToLinkedMultiPolygon.c
+    src/apps/benchmarks/benchmarkCellToChildren.c
     src/apps/benchmarks/benchmarkGridDiskCells.c
     src/apps/benchmarks/benchmarkGridPathCells.c
     src/apps/benchmarks/benchmarkDirectedEdge.c
@@ -535,6 +536,7 @@ if(BUILD_BENCHMARKS)
     add_h3_benchmark(benchmarkVertex src/apps/benchmarks/benchmarkVertex.c)
     add_h3_benchmark(benchmarkIsValidCell src/apps/benchmarks/benchmarkIsValidCell.c)
     add_h3_benchmark(benchmarkCellsToLinkedMultiPolygon src/apps/benchmarks/benchmarkCellsToLinkedMultiPolygon.c)
+    add_h3_benchmark(benchmarkCellToChildren src/apps/benchmarks/benchmarkCellToChildren.c)
     add_h3_benchmark(benchmarkPolygonToCells src/apps/benchmarks/benchmarkPolygonToCells.c)
     if(ENABLE_REQUIRES_ALL_SYMBOLS)
         add_h3_benchmark(benchmarkPolygon src/apps/benchmarks/benchmarkPolygon.c)
