@@ -131,32 +131,28 @@ Edge lengths are computed with a **spherical** model of the earth using the
 [authalic radius](https://en.wikipedia.org/wiki/Earth_radius#Authalic_radius)
 given by
 [WGS84](https://en.wikipedia.org/wiki/WGS84)/[EPSG:4326](https://epsg.io/4326).
-:::
-
-:::danger
-These values are hard coded into the `getHexagonEdgeLengthAvgKm` function and
-related functions in the H3 library. There are [known issues](https://github.com/uber/h3/issues/666)
-with these numbers and they are expected to be updated later.
+Average edge lengths were calculated exactly for resolutions 0 through 6 and 
+extrapolated for finer resolutions.
 :::
 
 | Res | Average edge length (Km) |
 |----:|-------------------------:|
-|   0 | 1107.712591              |
-|   1 | 418.6760055              |
-|   2 | 158.2446558              |
-|   3 | 59.81085794              |
-|   4 | 22.6063794               |
-|   5 | 8.544408276              |
-|   6 | 3.229482772              |
-|   7 | 1.220629759              |
-|   8 | 0.461354684              |
-|   9 | 0.174375668              |
-|  10 | 0.065907807              |
-|  11 | 0.024910561              |
-|  12 | 0.009415526              |
-|  13 | 0.003559893              |
-|  14 | 0.001348575              |
-|  15 | 0.000509713              |
+|   0 | 1281.256011              |
+|   1 | 483.0568391              |
+|   2 | 182.5129565              |
+|   3 | 68.97922179              |
+|   4 | 26.07175968              |
+|   5 | 9.854090990              |
+|   6 | 3.724532667              |
+|   7 | 1.406475763              |
+|   8 | 0.531414010              |
+|   9 | 0.200786148              |
+|  10 | 0.075863783              |
+|  11 | 0.028663897              |
+|  12 | 0.010830188              |
+|  13 | 0.004092010              |
+|  14 | 0.001546100              |
+|  15 | 0.000584169              |
 
 ## Appendix: Methodology
 
