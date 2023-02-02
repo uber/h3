@@ -44,7 +44,7 @@ The layout of an `H3Index` for vertexes is shown below in table form. The interp
   <th>0x30</th>
   <td>Reserved (0)</td>
   <td colspan="4">Mode (4)</td>
-  <td colspan="3">Edge</td>
+  <td colspan="3">Vertex</td>
   <td colspan="4">Resolution</td>
   <td colspan="4">Base cell</td>
 </tr>
