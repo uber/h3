@@ -37,7 +37,7 @@ As a C library, bindings can be made to call H3 functions from different program
 
 - [festelo/h3_flutter](https://github.com/festelo/h3_flutter)
 
-## Databrick
+## Databricks
 
 - [H3 geospatial functions](https://docs.databricks.com/sql/language-manual/sql-ref-h3-geospatial-functions.html)
 
