@@ -22,7 +22,7 @@ Child hexagons are linearly smaller than their parent hexagons.
 An H3 Cell index (mode 1) represents a cell (hexagon or pentagon) in the H3 grid system at a particular resolution. The components of the H3 Cell index are packed into a 64-bit integer in order, highest bit first, as follows:
 
 * 1 bit reserved and set to 0,
-* 4 bits to indicate the H3 Cell index mode,
+* 4 bits to indicate the H3 Cell index mode (1),
 * 3 bits reserved and set to 0,
 * 4 bits to indicate the cell resolution 0-15,
 * 7 bits to indicate the base cell 0-121,

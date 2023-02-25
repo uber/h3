@@ -1,20 +1,18 @@
 ---
-id: directededge
-title: Directed edge mode
-sidebar_label: Directed edge mode
-slug: /library/index/directededge
+id: edge
+title: Edge mode
+sidebar_label: Edge mode
+slug: /library/index/edge
 ---
 
-<div align="center">
-  <img height="300" src="/images/diredge_mode.png" />
-</div>
-
-An H3 Directed Edge index (mode 2) represents a single directed edge between two cells (an "origin" cell and a neighboring "destination" cell). The components of the H3 Directed Edge index are packed into a 64-bit integer in order, highest bit first, as follows:
+An H3 Edge index (mode 3) represents a single undirected edge between two cells. One of the two cells is picked as an *origin* cell, which is used to calculate the canonical index of the edge. The components of the H3 Edge index are packed into a 64-bit integer in order, highest bit first, as follows:
 
 * 1 bit reserved and set to 0,
-* 4 bits to indicate the H3 Directed Edge index mode (2),
+* 4 bits to indicate the H3 Edge index mode (3),
 * 3 bits to indicate the edge (1-6) of the origin cell,
 * Subsequent bits matching the index bits of the [origin cell](./cell#h3-cell-index).
+
+Of the two cells, the cell with the numerically lower `H3Index` is picked as the origin.
 
 ## Bit layout of H3Index for directed edges
 
@@ -43,7 +41,7 @@ The layout of an `H3Index` is shown below in table form. The interpretation of t
 <tr>
   <th>0x30</th>
   <td>Reserved (0)</td>
-  <td colspan="4">Mode (2)</td>
+  <td colspan="4">Mode (3)</td>
   <td colspan="3">Edge</td>
   <td colspan="4">Resolution</td>
   <td colspan="4">Base cell</td>

@@ -12,7 +12,7 @@ slug: /library/index/vertex
 An H3 Vertex index (mode 4) represents a single topological vertex in H3 grid system, shared by three cells. Note that this does not include the distortion vertexes occasionally present in a cell's geographic boundary. An H3 Vertex is arbitrarily assigned one of the three neighboring cells as its "owner", which is used to calculate the canonical index and geographic coordinates for the vertex. The components of the H3 Vertex index are packed into a 64-bit integer in order, highest bit first, as follows:
 
 * 1 bit reserved and set to 0,
-* 4 bits to indicate the H3 Vertex index mode,
+* 4 bits to indicate the H3 Vertex index mode (4),
 * 3 bits to indicate the vertex number (0-5) of vertex on the owner cell,
 * Subsequent bits matching the index bits of the [owner cell](./cell#h3-cell-index).
 

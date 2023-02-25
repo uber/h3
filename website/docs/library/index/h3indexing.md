@@ -7,7 +7,7 @@ slug: /core-library/h3Indexing
 
 ## Introduction
 
-The H3 system assigns a unique hierarchical index to each cell. Each directed edge and vertex is assigned an index based on its origin or owner cell, respectively.
+The H3 system assigns a unique hierarchical index to each cell. Each directed edge, edge, and vertex is assigned an index based on its origin or owner cell, respectively.
 
 ## H3Index Representation
 
@@ -16,7 +16,7 @@ An `H3Index` is the 64-bit integer representation of an H3 index, which may be o
 * Mode 0 is reserved and indicates an [invalid H3 index](#invalid-index).
 * Mode 1 is an *[H3 Cell](../library/index/cell)* (Hexagon/Pentagon) index.
 * Mode 2 is an *[H3 Directed Edge](../library/index/directededge)* (Cell A -> Cell B) index.
-* Mode 3 is planned to be a bidirectional edge (Cell A <-> Cell B).
+* Mode 3 is an *[H3 Edge](../library/index/edge)* (Cell A <-> Cell B) index.
 * Mode 4 is an *[H3 Vertex](../library/index/vertex)* (i.e. a single vertex of an H3 Cell).
 
 The canonical string representation of an `H3Index` is the hexadecimal representation of the integer, using lowercase letters. The string representation is variable length (no zero padding) and is not prefixed or suffixed.
