@@ -48,14 +48,6 @@ SUITE(h3ToLocalIj) {
     H3Index pent1 = H3_INIT;
     setH3Index(&pent1, 0, 4, 0);
 
-    TEST(ijkBaseCells) {
-        CoordIJK ijk;
-        t_assert(cellToLocalIjk(pent1, bc1, &ijk) == E_SUCCESS,
-                 "got ijk for base cells 4 and 15");
-        t_assert(_ijkMatches(&ijk, &UNIT_VECS[2]) == 1,
-                 "neighboring base cell at 0,1,0");
-    }
-
     TEST(ijBaseCells) {
         CoordIJ ij = {.i = 0, .j = 0};
         H3Index origin = 0x8029fffffffffff;
@@ -188,72 +180,6 @@ SUITE(h3ToLocalIj) {
         t_assert(H3_EXPORT(localIjToCell)(onPentInvalid, &ij, 0, &out) ==
                      E_CELL_INVALID,
                  "invalid origin on pentagon");
-    }
-
-    /**
-     * Test that coming from the same direction outside the pentagon is handled
-     * the same as coming from the same direction inside the pentagon.
-     */
-    TEST(onOffPentagonSame) {
-        for (int bc = 0; bc < NUM_BASE_CELLS; bc++) {
-            for (int res = 1; res <= MAX_H3_RES; res++) {
-                // K_AXES_DIGIT is the first internal direction, and it's also
-                // invalid for pentagons, so skip to next.
-                Direction startDir = K_AXES_DIGIT;
-                if (_isBaseCellPentagon(bc)) {
-                    startDir++;
-                }
-
-                for (Direction dir = startDir; dir < NUM_DIGITS; dir++) {
-                    H3Index internalOrigin;
-                    setH3Index(&internalOrigin, res, bc, dir);
-
-                    H3Index externalOrigin;
-                    setH3Index(&externalOrigin, res,
-                               _getBaseCellNeighbor(bc, dir), CENTER_DIGIT);
-
-                    for (Direction testDir = startDir; testDir < NUM_DIGITS;
-                         testDir++) {
-                        H3Index testIndex;
-                        setH3Index(&testIndex, res, bc, testDir);
-
-                        CoordIJ internalIj;
-                        int internalIjFailed = H3_EXPORT(cellToLocalIj)(
-                            internalOrigin, testIndex, 0, &internalIj);
-                        CoordIJ externalIj;
-                        int externalIjFailed = H3_EXPORT(cellToLocalIj)(
-                            externalOrigin, testIndex, 0, &externalIj);
-
-                        t_assert(
-                            (bool)internalIjFailed == (bool)externalIjFailed,
-                            "internal/external failed matches when getting IJ");
-
-                        if (internalIjFailed) {
-                            continue;
-                        }
-
-                        H3Index internalIndex;
-                        int internalIjFailed2 = H3_EXPORT(localIjToCell)(
-                            internalOrigin, &internalIj, 0, &internalIndex);
-                        H3Index externalIndex;
-                        int externalIjFailed2 = H3_EXPORT(localIjToCell)(
-                            externalOrigin, &externalIj, 0, &externalIndex);
-
-                        t_assert(
-                            (bool)internalIjFailed2 == (bool)externalIjFailed2,
-                            "internal/external failed matches when getting "
-                            "index");
-
-                        if (internalIjFailed2) {
-                            continue;
-                        }
-
-                        t_assert(internalIndex == externalIndex,
-                                 "internal/external index matches");
-                    }
-                }
-            }
-        }
     }
 
     TEST(invalidMode) {

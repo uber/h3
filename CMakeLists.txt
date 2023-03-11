@@ -134,6 +134,7 @@ set(LIB_SOURCE_FILES
     src/h3lib/include/localij.h
     src/h3lib/include/baseCells.h
     src/h3lib/include/faceijk.h
+    # src/h3lib/include/vertex.h
     src/h3lib/include/vertexGraph.h
     src/h3lib/include/mathExtensions.h
     src/h3lib/include/iterators.h
@@ -186,16 +187,20 @@ set(OTHER_SOURCE_FILES
     src/apps/filters/cellToBoundary.c
     src/apps/filters/gridDisk.c
     src/apps/filters/gridDiskUnsafe.c
-    src/apps/testapps/testVertexGraph.c
+    src/apps/testapps/testBaseCells.c
+    src/apps/testapps/testBaseCellsInternal.c
+    src/apps/testapps/testVertexGraphInternal.c
     src/apps/testapps/testCompactCells.c
     src/apps/testapps/testPolygonToCells.c
     src/apps/testapps/testPolygonToCellsReported.c
     src/apps/testapps/testPentagonIndexes.c
     src/apps/testapps/testGridDisk.c
+    src/apps/testapps/testGridDiskInternal.c
     src/apps/testapps/testCellToBoundary.c
     src/apps/testapps/testCellToBoundaryEdgeCases.c
     src/apps/testapps/testCellToParent.c
     src/apps/testapps/testH3Index.c
+    src/apps/testapps/testH3IndexInternal.c
     src/apps/testapps/mkRandGeoBoundary.c
     src/apps/testapps/testLatLngToCell.c
     src/apps/testapps/testH3NeighborRotations.c
@@ -207,33 +212,37 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testCellToChildPos.c
     src/apps/testapps/testGetIcosahedronFaces.c
     src/apps/testapps/testLatLng.c
+    src/apps/testapps/testLatLngInternal.c
     src/apps/testapps/testGridRingUnsafe.c
-    src/apps/testapps/testH3SetToVertexGraph.c
-    src/apps/testapps/testBBox.c
+    src/apps/testapps/testH3SetToVertexGraphInternal.c
+    src/apps/testapps/testBBoxInternal.c
     src/apps/testapps/testVertex.c
+    src/apps/testapps/testVertexInternal.c
     src/apps/testapps/testVertexExhaustive.c
-    src/apps/testapps/testPolygon.c
-    src/apps/testapps/testVec2d.c
-    src/apps/testapps/testVec3d.c
+    src/apps/testapps/testPolygonInternal.c
+    src/apps/testapps/testVec2dInternal.c
+    src/apps/testapps/testVec3dInternal.c
     src/apps/testapps/testDirectedEdge.c
     src/apps/testapps/testDirectedEdgeExhaustive.c
-    src/apps/testapps/testLinkedGeo.c
+    src/apps/testapps/testLinkedGeoInternal.c
     src/apps/testapps/mkRandGeo.c
     src/apps/testapps/testH3Api.c
     src/apps/testapps/testCellsToLinkedMultiPolygon.c
     src/apps/testapps/testCellToLocalIj.c
+    src/apps/testapps/testCellToLocalIjInternal.c
     src/apps/testapps/testCellToLocalIjExhaustive.c
     src/apps/testapps/testGridDistance.c
+    src/apps/testapps/testGridDistanceInternal.c
     src/apps/testapps/testGridDistanceExhaustive.c
     src/apps/testapps/testGridPathCells.c
     src/apps/testapps/testGridPathCellsExhaustive.c
     src/apps/testapps/testH3CellArea.c
     src/apps/testapps/testH3CellAreaExhaustive.c
-    src/apps/testapps/testCoordIj.c
-    src/apps/testapps/testCoordIjk.c
+    src/apps/testapps/testCoordIjInternal.c
+    src/apps/testapps/testCoordIjkInternal.c
     src/apps/testapps/testH3Memory.c
-    src/apps/testapps/testH3Iterators.c
-    src/apps/testapps/testMathExtensions.c
+    src/apps/testapps/testH3IteratorsInternal.c
+    src/apps/testapps/testMathExtensionsInternal.c
     src/apps/miscapps/cellToBoundaryHier.c
     src/apps/miscapps/cellToLatLngHier.c
     src/apps/miscapps/generateBaseCellNeighbors.c
@@ -273,6 +282,25 @@ set(OTHER_SOURCE_FILES
 
 set(ALL_SOURCE_FILES
     ${LIB_SOURCE_FILES} ${APP_SOURCE_FILES} ${TEST_APP_SOURCE_FILES} ${OTHER_SOURCE_FILES})
+
+# This is done for quality control purposes (to detect if any source files are missing from
+# our list), but is not done as the authoritative list as per CMake developer recommendations.
+# See https://cmake.org/cmake/help/latest/command/file.html#glob-recurse
+option(AUDIT_SOURCE_FILE_LIST "Compare source file list against glob expression" OFF)
+if(AUDIT_SOURCE_FILE_LIST)
+    file(GLOB_RECURSE QA_SRC_SOURCE_FILES RELATIVE "${CMAKE_SOURCE_DIR}" "src/*.c" "src/*.h")
+    file(GLOB_RECURSE QA_EXAMPLE_SOURCE_FILES RELATIVE "${CMAKE_SOURCE_DIR}" "examples/*.c" "examples/*.h")
+    foreach(QA_FILE IN LISTS QA_SRC_SOURCE_FILES)
+        if(NOT QA_FILE IN_LIST ALL_SOURCE_FILES)
+            message(FATAL_ERROR "${QA_FILE} not in ALL_SOURCE_FILES")
+        endif()
+    endforeach()
+    foreach(QA_FILE IN LISTS QA_EXAMPLE_SOURCE_FILES)
+        if(NOT QA_FILE IN_LIST EXAMPLE_SOURCE_FILES)
+            message(FATAL_ERROR "${QA_FILE} not in EXAMPLE_SOURCE_FILES")
+        endif()
+    endforeach()
+endif()
 
 set(UNCONFIGURED_API_HEADER src/h3lib/include/h3api.h.in)
 set(CONFIGURED_API_HEADER src/h3lib/include/h3api.h)
