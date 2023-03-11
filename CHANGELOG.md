@@ -6,6 +6,8 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+### Changed
+- Reorganize tests into public / internal. (#762)
 
 ## [4.1.0] - 2023-01-18
 ### Added
