@@ -134,7 +134,7 @@ set(LIB_SOURCE_FILES
     src/h3lib/include/localij.h
     src/h3lib/include/baseCells.h
     src/h3lib/include/faceijk.h
-    # src/h3lib/include/vertex.h
+    src/h3lib/include/vertex.h
     src/h3lib/include/vertexGraph.h
     src/h3lib/include/mathExtensions.h
     src/h3lib/include/iterators.h
