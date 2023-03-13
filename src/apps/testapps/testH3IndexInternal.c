@@ -16,7 +16,7 @@
 /** @file
  * @brief tests H3 functions for manipulating H3 indexes
  *
- *  usage: `testH3Index`
+ *  usage: `testH3IndexInternal`
  */
 
 #include <stdio.h>

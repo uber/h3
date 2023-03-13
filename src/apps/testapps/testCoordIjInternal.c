@@ -16,7 +16,7 @@
 /** @file
  * @brief tests IJ grid functions and IJK distance functions.
  *
- *  usage: `testCoordIj`
+ *  usage: `testCoordIjInternal`
  */
 
 #include <stdio.h>

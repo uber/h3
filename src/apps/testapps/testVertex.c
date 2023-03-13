@@ -22,19 +22,6 @@
 #include "vertex.h"
 
 SUITE(Vertex) {
-    TEST(directionForVertexNum_badVerts) {
-        H3Index origin = 0x823d6ffffffffff;
-
-        t_assert(directionForVertexNum(origin, -1) == INVALID_DIGIT,
-                 "negative vertex should return invalid direction");
-        t_assert(directionForVertexNum(origin, 6) == INVALID_DIGIT,
-                 "invalid vertex should return invalid direction");
-
-        H3Index pentagon = 0x823007fffffffff;
-        t_assert(directionForVertexNum(pentagon, 5) == INVALID_DIGIT,
-                 "invalid pent vertex should return invalid direction");
-    }
-
     TEST(cellToVertex_badVerts) {
         H3Index origin = 0x823d6ffffffffff;
 

@@ -16,7 +16,7 @@
 /** @file
  * @brief tests IJK grid functions
  *
- *  usage: `testCoordIjk`
+ *  usage: `testCoordIjkInternal`
  */
 
 #include "coordijk.h"

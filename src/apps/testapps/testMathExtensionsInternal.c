@@ -16,7 +16,7 @@
 /** @file
  * @brief tests functions and macros in mathExtensions.h
  *
- *  usage: `testMathExtensions`
+ *  usage: `testMathExtensionsInternal`
  */
 
 #include "mathExtensions.h"

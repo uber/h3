@@ -16,7 +16,7 @@
 /** @file
  * @brief tests H3 index to local IJ and IJK+ grid functions.
  *
- *  usage: `testCellToLocalIj`
+ *  usage: `testCellToLocalIjInternal`
  */
 
 #include <h3api.h>

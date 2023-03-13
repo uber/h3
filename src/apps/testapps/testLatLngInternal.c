@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** @file testLatLng.c
+/** @file testLatLngInternal.c
  * @brief Tests geographic coordinate functions
  *
- * usage: `testLatLng`
+ * usage: `testLatLngInternal`
  */
 
 #include <float.h>

@@ -17,7 +17,7 @@
 /** @file
  * @brief tests the H3 cell iterators
  *
- *  usage: `testH3Iterators`
+ *  usage: `testH3IteratorsInternal`
  */
 
 #include "h3api.h"
