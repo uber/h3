@@ -16,7 +16,7 @@
 /** @file
  * @brief tests IJ grid functions and IJK distance functions.
  *
- *  usage: `testCoordIj`
+ *  usage: `testCoordIjInternal`
  */
 
 #include <stdio.h>
@@ -32,7 +32,7 @@
 #include "test.h"
 #include "utility.h"
 
-SUITE(coordIj) {
+SUITE(coordIjInternal) {
     TEST(ijkToIj_zero) {
         CoordIJK ijk = {0};
         CoordIJ ij = {0};

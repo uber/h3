@@ -7,6 +7,16 @@ on:
     branches: [master, stable-*]
 
 jobs:
+  cmake:
+    name: CMake correctness checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2.4.0
+
+      - name: Configure build
+        run: cmake -DAUDIT_SOURCE_FILE_LIST=ON .
+
   gcc-tests:
     name: Test Compile gcc ${{ matrix.build_type }}
     runs-on: ubuntu-latest

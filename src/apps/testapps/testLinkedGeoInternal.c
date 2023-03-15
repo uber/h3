@@ -28,7 +28,7 @@ static LatLng vertex2;
 static LatLng vertex3;
 static LatLng vertex4;
 
-SUITE(linkedGeo) {
+SUITE(linkedGeoInternal) {
     setGeoDegs(&vertex1, 87.372002166, 166.160981117);
     setGeoDegs(&vertex2, 87.370101364, 166.160184306);
     setGeoDegs(&vertex3, 87.369088356, 166.196239997);

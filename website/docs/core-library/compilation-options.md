@@ -21,6 +21,12 @@ Boolean options should be set to `ON` or `OFF`, like so:
 cmake .. -DBUILD_TESTING=OFF
 ```
 
+## AUDIT_SOURCE_FILE_LIST
+
+Whether to glob the list of source files and compare it to the `ALL_SOURCE_FILES` and `EXAMPLE_SOURCE_FILES` lists
+defined in CMake. This is a quality control measure to ensure that the source file list in `CMakeLists.txt` actually
+matches the sources in the repository and is not missing any files.
+
 ## BUILD_ALLOC_TESTS
 
 Whether to build the parts of the [test suite](./testing) that exercise the [H3_ALLOC_PREFIX](./custom-alloc) feature.

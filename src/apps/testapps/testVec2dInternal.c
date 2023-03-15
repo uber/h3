@@ -21,7 +21,7 @@
 #include "test.h"
 #include "vec2d.h"
 
-SUITE(Vec2d) {
+SUITE(Vec2dInternal) {
     TEST(_v2dMag) {
         Vec2d v = {3.0, 4.0};
         double expected = 5.0;

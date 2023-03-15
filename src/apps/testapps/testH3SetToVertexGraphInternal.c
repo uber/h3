@@ -20,7 +20,7 @@
 #include "test.h"
 #include "utility.h"
 
-SUITE(h3SetToVertexGraph) {
+SUITE(h3SetToVertexGraphInternal) {
     TEST(empty) {
         VertexGraph graph;
 

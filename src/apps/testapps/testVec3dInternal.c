@@ -21,7 +21,7 @@
 #include "test.h"
 #include "vec3d.h"
 
-SUITE(Vec3d) {
+SUITE(Vec3dInternal) {
     TEST(_pointSquareDist) {
         Vec3d v1 = {0, 0, 0};
         Vec3d v2 = {1, 0, 0};

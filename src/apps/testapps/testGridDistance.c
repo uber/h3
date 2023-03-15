@@ -107,27 +107,6 @@ SUITE(gridDistance) {
                  "distance to neighbor is invalid");
     }
 
-    TEST(ijkDistance) {
-        CoordIJK z = {0, 0, 0};
-        CoordIJK i = {1, 0, 0};
-        CoordIJK ik = {1, 0, 1};
-        CoordIJK ij = {1, 1, 0};
-        CoordIJK j2 = {0, 2, 0};
-
-        t_assert(ijkDistance(&z, &z) == 0, "identity distance 0,0,0");
-        t_assert(ijkDistance(&i, &i) == 0, "identity distance 1,0,0");
-        t_assert(ijkDistance(&ik, &ik) == 0, "identity distance 1,0,1");
-        t_assert(ijkDistance(&ij, &ij) == 0, "identity distance 1,1,0");
-        t_assert(ijkDistance(&j2, &j2) == 0, "identity distance 0,2,0");
-
-        t_assert(ijkDistance(&z, &i) == 1, "0,0,0 to 1,0,0");
-        t_assert(ijkDistance(&z, &j2) == 2, "0,0,0 to 0,2,0");
-        t_assert(ijkDistance(&z, &ik) == 1, "0,0,0 to 1,0,1");
-        t_assert(ijkDistance(&i, &ik) == 1, "1,0,0 to 1,0,1");
-        t_assert(ijkDistance(&ik, &j2) == 3, "1,0,1 to 0,2,0");
-        t_assert(ijkDistance(&ij, &ik) == 2, "1,0,1 to 1,1,0");
-    }
-
     TEST(gridDistanceResolutionMismatch) {
         int64_t distance;
         t_assert(H3_EXPORT(gridDistance)(0x832830fffffffffL, 0x822837fffffffffL,

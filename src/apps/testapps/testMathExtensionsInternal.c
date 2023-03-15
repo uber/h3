@@ -16,7 +16,7 @@
 /** @file
  * @brief tests functions and macros in mathExtensions.h
  *
- *  usage: `testMathExtensions`
+ *  usage: `testMathExtensionsInternal`
  */
 
 #include "mathExtensions.h"
@@ -36,7 +36,7 @@
                                                  " Does Not " \
                                                  "Overflow")
 
-SUITE(mathExtensions) {
+SUITE(mathExtensionsInternal) {
     TEST(_ipow) {
         t_assert(_ipow(7, 0) == 1, "7 ** 0 == 1");
         t_assert(_ipow(7, 1) == 7, "7 ** 1 == 7");

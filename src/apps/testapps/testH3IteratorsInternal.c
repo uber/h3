@@ -17,7 +17,7 @@
 /** @file
  * @brief tests the H3 cell iterators
  *
- *  usage: `testH3Iterators`
+ *  usage: `testH3IteratorsInternal`
  */
 
 #include "h3api.h"
@@ -72,7 +72,7 @@ static void assert_is_null_iterator(IterCellsChildren iter) {
     t_assert(iter._skipDigit == -1, "null iterator skipDigit is -1");
 }
 
-SUITE(h3Iterators) {
+SUITE(h3IteratorsInternal) {
     TEST(iterator_setup_invalid) {
         assert_is_null_iterator(iterInitBaseCellNum(-1, 0));
         assert_is_null_iterator(iterInitBaseCellNum(1000, 0));

@@ -15,6 +15,7 @@
  */
 
 #include <stdlib.h>
+
 #include "baseCells.h"
 #include "h3api.h"
 #include "test.h"
@@ -22,27 +23,10 @@
 SUITE(baseCells) {
     TEST(getRes0Cells) {
         int count = H3_EXPORT(res0CellCount)();
-        H3Index* indexes = malloc(count * sizeof(H3Index));
+        H3Index *indexes = malloc(count * sizeof(H3Index));
         t_assertSuccess(H3_EXPORT(getRes0Cells)(indexes));
         t_assert(indexes[0] == 0x8001fffffffffff, "correct first basecell");
         t_assert(indexes[121] == 0x80f3fffffffffff, "correct last basecell");
         free(indexes);
-    }
-
-    TEST(baseCellToCCWrot60) {
-        // a few random spot-checks
-        t_assert(_baseCellToCCWrot60(16, 0) == 0, "got expected rotation");
-        t_assert(_baseCellToCCWrot60(32, 0) == 3, "got expected rotation");
-        t_assert(_baseCellToCCWrot60(7, 3) == 1, "got expected rotation");
-    }
-
-    TEST(baseCellToCCWrot60_invalid) {
-        t_assert(_baseCellToCCWrot60(16, 42) == INVALID_ROTATIONS, "should return invalid rotation for invalid face");
-        t_assert(_baseCellToCCWrot60(16, -1) == INVALID_ROTATIONS, "should return invalid rotation for invalid face (negative)");
-        t_assert(_baseCellToCCWrot60(1, 0) == INVALID_ROTATIONS, "should return invalid rotation for base cell not appearing on face");
-    }
-
-    TEST(isBaseCellPentagon_invalid) {
-        t_assert(_isBaseCellPentagon(-1) == false, "isBaseCellPentagon handles negative");
     }
 }
