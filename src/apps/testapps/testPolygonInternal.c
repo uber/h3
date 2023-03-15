@@ -38,7 +38,7 @@ static void createLinkedLoop(LinkedGeoLoop *loop, LatLng *verts, int numVerts) {
     }
 }
 
-SUITE(polygon) {
+SUITE(polygonInternal) {
     TEST(pointInsideGeoLoop) {
         GeoLoop geoloop = {.numVerts = 6, .verts = sfVerts};
 

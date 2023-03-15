@@ -27,7 +27,7 @@
 #include "test.h"
 #include "utility.h"
 
-SUITE(gridDisk) {
+SUITE(gridDiskInternal) {
     TEST(h3NeighborRotations_identity) {
         // This is not used in gridDisk, but it's helpful for it to make sense.
         H3Index origin = 0x811d7ffffffffffL;

@@ -28,7 +28,7 @@
 #include "test.h"
 #include "utility.h"
 
-SUITE(h3Index) {
+SUITE(h3IndexInternal) {
     TEST(faceIjkToH3ExtremeCoordinates) {
         FaceIJK fijk0I = {0, {3, 0, 0}};
         t_assert(_faceIjkToH3(&fijk0I, 0) == 0, "i out of bounds at res 0");

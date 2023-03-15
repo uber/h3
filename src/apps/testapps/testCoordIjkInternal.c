@@ -22,7 +22,7 @@
 #include "coordijk.h"
 #include "test.h"
 
-SUITE(coordIjk) {
+SUITE(coordIjkInternal) {
     TEST(_unitIjkToDigit) {
         CoordIJK zero = {0};
         CoordIJK i = {1, 0, 0};

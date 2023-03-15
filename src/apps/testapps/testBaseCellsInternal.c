@@ -20,7 +20,7 @@
 #include "h3api.h"
 #include "test.h"
 
-SUITE(baseCells) {
+SUITE(baseCellsInternal) {
     TEST(baseCellToCCWrot60) {
         // a few random spot-checks
         t_assert(_baseCellToCCWrot60(16, 0) == 0, "got expected rotation");

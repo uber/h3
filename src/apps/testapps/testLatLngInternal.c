@@ -28,7 +28,7 @@
 #include "test.h"
 #include "utility.h"
 
-SUITE(latLng) {
+SUITE(latLngInternal) {
     TEST(geoAlmostEqualThreshold) {
         LatLng a = {15, 10};
         LatLng b = {15, 10};

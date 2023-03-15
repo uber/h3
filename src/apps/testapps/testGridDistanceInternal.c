@@ -32,7 +32,7 @@
 #include "test.h"
 #include "utility.h"
 
-SUITE(gridDistance) {
+SUITE(gridDistanceInternal) {
     TEST(ijkDistance) {
         CoordIJK z = {0, 0, 0};
         CoordIJK i = {1, 0, 0};

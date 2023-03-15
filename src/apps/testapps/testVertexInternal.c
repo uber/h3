@@ -21,7 +21,7 @@
 #include "utility.h"
 #include "vertex.h"
 
-SUITE(Vertex) {
+SUITE(VertexInternal) {
     TEST(vertexNumForDirection_hex) {
         H3Index origin = 0x823d6ffffffffff;
         int vertexNums[NUM_HEX_VERTS] = {0};
