@@ -712,35 +712,36 @@ H3Error getRes0Cells(H3Index *out);
 <TabItem value="python">
 
 ```py
-h3.get_res0_cells(res)
+h3.get_res0_cells()
 ```
 
 </TabItem>
 <TabItem value="java">
 
 ```java
-Collection<Long> getRes0Cells(int res);
-Collection<String> getRes0CellAddresses(int res);
+Collection<Long> getRes0Cells();
+Collection<String> getRes0CellAddresses();
 ```
 
 </TabItem>
 <TabItem value="javascript">
 
 ```js
-h3.getRes0Cells(res)
+h3.getRes0Cells()
 ```
 
 ```js live
 function example() {
-  const res = 5;
-  return h3.getRes0Cells(res);
+  return h3.getRes0Cells();
 }
 ```
 
 </TabItem>
 </Tabs>
 
-All the resolution 0 H3 indexes.
+All the resolution `0` H3 cell indexes. These are the coarsest cells that can be represented in the H3 system and are the 
+parents of all other cell indexes in the H3 grid system. The returned indexes correspond with the 122 base cells.
+
 `out` must be an array of at least size `res0CellCount()`.
 
 ## res0CellCount
@@ -791,7 +792,7 @@ This function exists for memory management and is not exposed.
 </TabItem>
 </Tabs>
 
-Number of resolution 0 H3 indexes, which is defined as 122.
+Number of resolution `0` H3 indexes, which is defined as 122.
 
 ## getPentagons
 
