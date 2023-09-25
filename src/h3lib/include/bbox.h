@@ -22,6 +22,7 @@
 
 #include <stdbool.h>
 
+#include "h3api.h"
 #include "latLng.h"
 
 /** @struct BBox
@@ -41,5 +42,7 @@ bool bboxEquals(const BBox *b1, const BBox *b2);
 H3Error bboxHexEstimate(const BBox *bbox, int res, int64_t *out);
 H3Error lineHexEstimate(const LatLng *origin, const LatLng *destination,
                         int res, int64_t *out);
+H3Error cellToChildBBox(H3Index cell, BBox *out);
+void scaleBBox(BBox *bbox, double scale);
 
 #endif

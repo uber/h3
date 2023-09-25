@@ -175,3 +175,33 @@ H3Error lineHexEstimate(const LatLng *origin, const LatLng *destination,
     *out = estimate;
     return E_SUCCESS;
 }
+
+/**
+ * Scale a given bounding box by some factor. Scales both width and height
+ * by the factor, rather than scaling area, which will scale at scale^2.
+ * Note that this function is meant to handle bounding boxes and scales,
+ * within a reasonable domain, and does not guarantee reasonable results for
+ * extreme values.
+ * @param bbox Bounding box to scale, in-place
+ * @param scale Scale factor
+ */
+void scaleBBox(BBox *bbox, double scale) {
+    bool isTransmeridian = bboxIsTransmeridian(bbox);
+    double width = isTransmeridian ? bbox->east - bbox->west + M_2PI
+                                   : bbox->east - bbox->west;
+    double height = bbox->north - bbox->south;
+    double widthBuffer = (width * scale - width) / 2;
+    double heightBuffer = (height * scale - height) / 2;
+    // Scale north and south, clamping to latitude domain
+    bbox->north += heightBuffer;
+    if (bbox->north > M_PI_2) bbox->north = M_PI_2;
+    bbox->south -= heightBuffer;
+    if (bbox->south < -M_PI_2) bbox->south = -M_PI_2;
+    // Scale east and west, clamping to longitude domain
+    bbox->east += widthBuffer;
+    if (bbox->east > M_PI) bbox->east -= M_2PI;
+    if (bbox->east < -M_PI) bbox->east += M_2PI;
+    bbox->west -= widthBuffer;
+    if (bbox->west > M_PI) bbox->west -= M_2PI;
+    if (bbox->west < -M_PI) bbox->west += M_2PI;
+}
