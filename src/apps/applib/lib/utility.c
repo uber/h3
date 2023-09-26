@@ -118,6 +118,18 @@ void cellBoundaryPrintln(const CellBoundary *b) {
     printf("}\n");
 }
 
+void bboxPrint(const BBox *bbox) {
+    printf(
+        "bbox {%.9lf, %.9lf, %.9lf, %.9lf}", H3_EXPORT(radsToDegs)(bbox->north),
+        H3_EXPORT(radsToDegs)(bbox->south), H3_EXPORT(radsToDegs)(bbox->east),
+        H3_EXPORT(radsToDegs)(bbox->west));
+}
+
+void bboxPrintln(const BBox *bbox) {
+    bboxPrint(bbox);
+    printf("\n");
+}
+
 /**
  * Apply callback for every unidirectional edge at the given resolution.
  */

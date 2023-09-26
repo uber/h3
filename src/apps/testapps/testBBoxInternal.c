@@ -39,14 +39,10 @@ void assertBBoxFromGeoLoop(const GeoLoop *geoloop, const BBox *expected,
 void assertBBox(const BBox *bbox, const BBox *expected) {
     LatLng actualNE = {.lat = bbox->north, .lng = bbox->east};
     LatLng expectedNE = {.lat = expected->north, .lng = expected->east};
-    geoPrint(&actualNE);
-    geoPrintln(&expectedNE);
     t_assert(geoAlmostEqual(&actualNE, &expectedNE), "NE corner matches");
 
     LatLng actualSW = {.lat = bbox->south, .lng = bbox->west};
     LatLng expectedSW = {.lat = expected->south, .lng = expected->west};
-    geoPrint(&actualSW);
-    geoPrintln(&expectedSW);
     t_assert(geoAlmostEqual(&actualSW, &expectedSW), "SW corner matches");
 }
 
@@ -291,7 +287,6 @@ SUITE(BBox) {
     }
 
     TEST(scaleBBox_noop) {
-        printf("scaleBBox_noop\n");
         BBox bbox = {1.0, 0.0, 1.0, 0.0};
         BBox expected = {1.0, 0.0, 1.0, 0.0};
         scaleBBox(&bbox, 1);
@@ -299,7 +294,6 @@ SUITE(BBox) {
     }
 
     TEST(scaleBBox_basicGrow) {
-        printf("scaleBBox_basicGrow\n");
         BBox bbox = {1.0, 0.0, 1.0, 0.0};
         BBox expected = {1.5, -0.5, 1.5, -0.5};
         scaleBBox(&bbox, 2);
@@ -307,7 +301,6 @@ SUITE(BBox) {
     }
 
     TEST(scaleBBox_basicShrink) {
-        printf("scaleBBox_basicShrink\n");
         BBox bbox = {1.0, 0.0, 1.0, 0.0};
         BBox expected = {0.75, 0.25, 0.75, 0.25};
         scaleBBox(&bbox, 0.5);
@@ -315,7 +308,6 @@ SUITE(BBox) {
     }
 
     TEST(scaleBBox_clampNorthSouth) {
-        printf("scaleBBox_clampNorthSouth\n");
         BBox bbox = {M_PI_2 * 0.9, -M_PI_2 * 0.9, 1.0, 0.0};
         BBox expected = {M_PI_2, -M_PI_2, 1.5, -0.5};
         scaleBBox(&bbox, 2);
@@ -323,7 +315,6 @@ SUITE(BBox) {
     }
 
     TEST(scaleBBox_clampEastPos) {
-        printf("scaleBBox_clampEastPos\n");
         BBox bbox = {1.0, 0.0, M_PI - 0.1, M_PI - 1.1};
         BBox expected = {1.5, -0.5, -M_PI + 0.4, M_PI - 1.6};
         scaleBBox(&bbox, 2);
@@ -331,7 +322,6 @@ SUITE(BBox) {
     }
 
     TEST(scaleBBox_clampEastNeg) {
-        printf("scaleBBox_clampEastNeg\n");
         BBox bbox = {1.5, -0.5, -M_PI + 0.4, M_PI - 1.6};
         BBox expected = {1.0, 0.0, M_PI - 0.1, M_PI - 1.1};
         scaleBBox(&bbox, 0.5);
@@ -339,7 +329,6 @@ SUITE(BBox) {
     }
 
     TEST(scaleBBox_clampWestPos) {
-        printf("scaleBBox_clampWestPos\n");
         BBox bbox = {1.0, 0.0, -M_PI + 0.9, M_PI - 0.1};
         BBox expected = {0.75, 0.25, -M_PI + 0.65, -M_PI + 0.15};
         scaleBBox(&bbox, 0.5);
@@ -347,7 +336,6 @@ SUITE(BBox) {
     }
 
     TEST(scaleBBox_clampWestNeg) {
-        printf("scaleBBox_clampWestNeg\n");
         BBox bbox = {0.75, 0.25, -M_PI + 0.65, -M_PI + 0.15};
         BBox expected = {1.0, 0.0, -M_PI + 0.9, M_PI - 0.1};
         scaleBBox(&bbox, 2);

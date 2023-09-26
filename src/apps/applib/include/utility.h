@@ -22,6 +22,7 @@
 
 #include <stdio.h>
 
+#include "bbox.h"
 #include "coordijk.h"
 #include "h3api.h"
 
@@ -46,6 +47,8 @@ void geoPrintNoFmt(const LatLng *p);
 void geoPrintlnNoFmt(const LatLng *p);
 void cellBoundaryPrint(const CellBoundary *b);
 void cellBoundaryPrintln(const CellBoundary *b);
+void bboxPrint(const BBox *bbox);
+void bboxPrintln(const BBox *bbox);
 
 void randomGeo(LatLng *p);
 

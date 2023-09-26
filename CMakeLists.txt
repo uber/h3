@@ -146,6 +146,7 @@ set(LIB_SOURCE_FILES
     src/h3lib/lib/coordijk.c
     src/h3lib/lib/bbox.c
     src/h3lib/lib/polygon.c
+    src/h3lib/lib/polyfill.c
     src/h3lib/lib/h3Index.c
     src/h3lib/lib/vec2d.c
     src/h3lib/lib/vec3d.c
@@ -209,6 +210,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testCellToLatLng.c
     src/apps/testapps/testCellToCenterChild.c
     src/apps/testapps/testCellToChildren.c
+    src/apps/testapps/testCellToChildBBoxExhaustive.c
     src/apps/testapps/testCellToChildPos.c
     src/apps/testapps/testGetIcosahedronFaces.c
     src/apps/testapps/testLatLng.c
