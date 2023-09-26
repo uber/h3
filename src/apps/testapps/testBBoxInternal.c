@@ -171,6 +171,43 @@ SUITE(BBox) {
         }
     }
 
+    TEST(bboxIntersects) {
+        BBox a = {1.0, 0.0, 1.0, 0.0};
+
+        BBox b1 = {1.0, 0.0, -1.0, -1.5};
+        t_assert(!bboxIntersects(&a, &b1), "no intersection to the west");
+
+        BBox b2 = {1.0, 0.0, 2.0, 1.5};
+        t_assert(!bboxIntersects(&a, &b2), "no intersection to the east");
+
+        BBox b3 = {-1.0, -1.5, 1.0, 0.0};
+        t_assert(!bboxIntersects(&a, &b3), "no intersection to the south");
+
+        BBox b4 = {2.0, 1.5, 1.0, 0.0};
+        t_assert(!bboxIntersects(&a, &b4), "no intersection to the north");
+
+        BBox b5 = {1.0, 0.0, 0.5, -1.5};
+        t_assert(bboxIntersects(&a, &b5), "intersection to the west");
+
+        BBox b6 = {1.0, 0.0, 2.0, 0.5};
+        t_assert(bboxIntersects(&a, &b6), "intersection to the east");
+
+        BBox b7 = {0.5, -1.5, 1.0, 0.0};
+        t_assert(bboxIntersects(&a, &b7), "intersection to the south");
+
+        BBox b8 = {2.0, 0.5, 1.0, 0.0};
+        t_assert(bboxIntersects(&a, &b8), "intersection to the north");
+
+        BBox b9 = {1.5, -0.5, 1.5, -0.5};
+        t_assert(bboxIntersects(&a, &b9), "intersection, b contains a");
+
+        BBox b10 = {0.5, 0.25, 0.5, 0.25};
+        t_assert(bboxIntersects(&a, &b10), "intersection, a contains b");
+
+        BBox b11 = {1.0, 0.0, 1.0, 0.0};
+        t_assert(bboxIntersects(&a, &b11), "intersection, a equals b");
+    }
+
     TEST(bboxCenterBasicQuandrants) {
         LatLng center;
 

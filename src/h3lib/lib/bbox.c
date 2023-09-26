@@ -28,6 +28,23 @@
 #include "latLng.h"
 
 /**
+ * Width of the bounding box, in rads
+ * @param  bbox Bounding box to inspect
+ * @return      width, in rads
+ */
+double bboxWidthRads(const BBox *bbox) {
+    return bboxIsTransmeridian(bbox) ? bbox->east - bbox->west + M_2PI
+                                     : bbox->east - bbox->west;
+}
+
+/**
+ * Height of the bounding box
+ * @param  bbox Bounding box to inspect
+ * @return      height, in rads
+ */
+double bboxHeightRads(const BBox *bbox) { return bbox->north - bbox->south; }
+
+/**
  * Whether the given bounding box crosses the antimeridian
  * @param  bbox Bounding box to inspect
  * @return      is transmeridian
@@ -60,6 +77,25 @@ bool bboxContains(const BBox *bbox, const LatLng *point) {
                                       :
                                       // standard case
                 (point->lng >= bbox->west && point->lng <= bbox->east));
+}
+
+/**
+ * Whether two bounding boxes intersect
+ * @param  a First bounding box
+ * @param  b Second bounding box
+ * @return   Whether the bounding boxes intersect
+ */
+bool bboxIntersects(const BBox *a, const BBox *b) {
+    // Check whether longitude coords intersect
+    double aw = bboxWidthRads(a);
+    double bw = bboxWidthRads(b);
+    if (fabs((a->west + aw / 2) - (b->west + bw / 2)) * 2 > (aw + bw)) {
+        return false;
+    }
+    // Check whether latitude coords intersect
+    double ah = bboxHeightRads(a);
+    double bh = bboxHeightRads(b);
+    return (fabs((a->north - ah / 2) - (b->north - bh / 2)) * 2 < (ah + bh));
 }
 
 /**
@@ -186,10 +222,8 @@ H3Error lineHexEstimate(const LatLng *origin, const LatLng *destination,
  * @param scale Scale factor
  */
 void scaleBBox(BBox *bbox, double scale) {
-    bool isTransmeridian = bboxIsTransmeridian(bbox);
-    double width = isTransmeridian ? bbox->east - bbox->west + M_2PI
-                                   : bbox->east - bbox->west;
-    double height = bbox->north - bbox->south;
+    double width = bboxWidthRads(bbox);
+    double height = bboxHeightRads(bbox);
     double widthBuffer = (width * scale - width) / 2;
     double heightBuffer = (height * scale - height) / 2;
     // Scale north and south, clamping to latitude domain
