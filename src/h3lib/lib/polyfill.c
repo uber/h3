@@ -38,6 +38,8 @@ static const LatLng SOUTH_POLE = {-M_PI_2, 0};
  * children at any finer resolution. Note that no guarantee is provided
  * as to the level of accuracy, and the bounding box may have a significant
  * margin of error.
+ * @param cell Cell to calculate bbox for
+ * @param out  BBox to hold output
  */
 H3Error cellToChildBBox(H3Index cell, BBox *out) {
     H3Error err;
