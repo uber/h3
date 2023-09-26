@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** @file bbox.c
- * @brief   Geographic bounding box functions
+/** @file polyfill.c
+ * @brief   Functions relating to the cell-to-polygon algorithm
  */
 
 #include "polyfill.h"

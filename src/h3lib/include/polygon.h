@@ -73,4 +73,7 @@ bool pointInsideGeoLoop(const GeoLoop *loop, const BBox *bbox,
  */
 bool isClockwiseGeoLoop(const GeoLoop *geoloop);
 
+bool lineIntersectsLine(const LatLng *a1, const LatLng *a2, const LatLng *b1,
+                        const LatLng *b2);
+
 #endif

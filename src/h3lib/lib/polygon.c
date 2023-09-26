@@ -83,3 +83,29 @@ bool pointInsidePolygon(const GeoPolygon *geoPolygon, const BBox *bboxes,
 
     return contains;
 }
+
+/**
+ * Whether two lines intersect. This is a purely Cartesian implementation
+ * and does not consider anti-meridian wrapping, poles, etc. Based on
+ * http://www.jeffreythompson.org/collision-detection/line-line.php
+ * @param  a1 Start of line A
+ * @param  a2 End of line A
+ * @param  b1 Start of line B
+ * @param  b2 End of line B
+ * @return    Whether the lines intersect
+ */
+bool lineIntersectsLine(const LatLng *a1, const LatLng *a2, const LatLng *b1,
+                        const LatLng *b2) {
+    double test;
+    test = ((b2->lat - b1->lat) * (a1->lng - b1->lng) -
+            (b2->lng - b1->lng) * (a1->lat - b1->lat)) /
+           ((b2->lng - b1->lng) * (a2->lat - a1->lat) -
+            (b2->lat - b1->lat) * (a2->lng - a1->lng));
+    if (test < 0 || test > 1) return false;
+
+    test = ((a2->lat - a1->lat) * (a1->lng - b1->lng) -
+            (a2->lng - a1->lng) * (a1->lat - b1->lat)) /
+           ((b2->lng - b1->lng) * (a2->lat - a1->lat) -
+            (b2->lat - b1->lat) * (a2->lng - a1->lng));
+    return (test >= 0 && test <= 1);
+}
