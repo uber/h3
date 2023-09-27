@@ -143,18 +143,18 @@ bool cellBoundaryCrossesGeoLoop(const GeoLoop *geoloop, const BBox *loopBBox,
         loop2 = geoloop->verts[(i + 1) % geoloop->numVerts];
         loop2.lng = NORMALIZE_LNG(loop2.lng, isTransmeridianLoop);
         for (int j = 0; j < boundary->numVerts; j++) {
-            boundary1 = boundary->verts[i];
+            boundary1 = boundary->verts[j];
             boundary1.lng =
                 NORMALIZE_LNG(boundary1.lng, isTransmeridianBoundary);
-            boundary2 = boundary->verts[(i + 1) % boundary->numVerts];
+            boundary2 = boundary->verts[(j + 1) % boundary->numVerts];
             boundary2.lng =
                 NORMALIZE_LNG(boundary2.lng, isTransmeridianBoundary);
             if (lineIntersectsLine(&loop1, &loop2, &boundary1, &boundary2)) {
-                return false;
+                return true;
             }
         }
     }
-    return true;
+    return false;
 }
 
 /**
