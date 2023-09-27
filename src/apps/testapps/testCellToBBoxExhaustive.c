@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 /** @file
- * @brief tests H3 function `cellToChildBBox`
+ * @brief tests H3 function `cellToBBox`
  *
- *  usage: `testCellToChildBBoxExhaustive`
+ *  usage: `testCellToBBoxExhaustive`
  */
 
 #include <stdbool.h>
@@ -35,7 +35,7 @@ static void childBBox_assertions(H3Index h3) {
     int parentRes = H3_GET_RESOLUTION(h3);
 
     BBox bbox;
-    t_assertSuccess(cellToChildBBox(h3, &bbox));
+    t_assertSuccess(cellToBBox(h3, &bbox, true));
 
     for (int resolutionOffset = 0; resolutionOffset < 5; resolutionOffset++) {
         // Test whether all verts of all children are inside the bbox
@@ -68,7 +68,7 @@ static void childBBox_assertions(H3Index h3) {
     }
 }
 
-SUITE(cellToChildBBox) {
+SUITE(cellToBBox) {
     TEST(childBBox_correctness) {
         iterateAllIndexesAtRes(0, childBBox_assertions);
         iterateAllIndexesAtRes(1, childBBox_assertions);

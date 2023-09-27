@@ -34,14 +34,15 @@ static const LatLng NORTH_POLE = {M_PI_2, 0};
 static const LatLng SOUTH_POLE = {-M_PI_2, 0};
 
 /**
- * For a given cell, return a bounding box guaranteed to contain its
- * children at any finer resolution. Note that no guarantee is provided
- * as to the level of accuracy, and the bounding box may have a significant
- * margin of error.
+ * For a given cell, return its bounding box. If coverChildren is true, the bbox
+ * will be guaranteed to contain its children at any finer resolution. Note that
+ * in this case no guarantee is provided as to the level of accuracy, and the
+ * bounding box may have a significant margin of error.
  * @param cell Cell to calculate bbox for
  * @param out  BBox to hold output
+ * @param coverChildren Whether the bounding box should cover all children
  */
-H3Error cellToChildBBox(H3Index cell, BBox *out) {
+H3Error cellToBBox(H3Index cell, BBox *out, bool coverChildren) {
     H3Error err;
 
     CellBoundary boundary;
@@ -61,8 +62,10 @@ H3Error cellToChildBBox(H3Index cell, BBox *out) {
     // Calculate bbox
     bboxFromGeoLoop(&loop, out);
 
-    // Buffer the bounding box to cover children
-    scaleBBox(out, CHILD_SCALE_FACTOR);
+    if (coverChildren) {
+        // Buffer the bounding box to cover children
+        scaleBBox(out, CHILD_SCALE_FACTOR);
+    }
 
     // Adjust the BBox to handle poles
     H3Index poleTest;

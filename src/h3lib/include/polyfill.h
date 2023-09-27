@@ -20,9 +20,11 @@
 #ifndef POLYFILL_H
 #define POLYFILL_H
 
+#include <stdbool.h>
+
 #include "h3api.h"
 #include "bbox.h"
 
-H3Error cellToChildBBox(H3Index cell, BBox *out);
+H3Error cellToBBox(H3Index cell, BBox *out, bool coverChildren);
 
 #endif

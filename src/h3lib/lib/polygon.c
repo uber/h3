@@ -85,6 +85,79 @@ bool pointInsidePolygon(const GeoPolygon *geoPolygon, const BBox *bboxes,
 }
 
 /**
+ * Whether a cell boundary is completely contained by a polygon.
+ * @param  geoPolygon The polygon to test
+ * @param  bboxes     The bboxes for the main geoloop and each of its holes
+ * @param  boundary   The cell boundary to test
+ * @return            Whether the cell boundary is contained
+ */
+bool cellBoundaryInsidePolygon(const GeoPolygon *geoPolygon, const BBox *bboxes,
+                               const CellBoundary *boundary,
+                               const BBox *boundaryBBox) {
+    // First test a single point. Note that this fails fast if point is outside
+    // bounding box.
+    if (!pointInsidePolygon(geoPolygon, &bboxes[0], &boundary->verts[0])) {
+        return false;
+    }
+
+    // If a point is contained, check for any line intersections
+    if (cellBoundaryCrossesGeoLoop(&(geoPolygon->geoloop), &bboxes[0], boundary,
+                                   boundaryBBox)) {
+        return false;
+    }
+    // Check for line intersections with any hole
+    for (int i = 0; i < geoPolygon->numHoles; i++) {
+        if (cellBoundaryCrossesGeoLoop(&(geoPolygon->holes[i]), &bboxes[i + 1],
+                                       boundary, boundaryBBox)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+/**
+ * Whether a cell boundary crosses a geo loop. Crossing in this case means
+ * whether any line segments intersect; it does not include containment.
+ * @param  geoloop  Geo loop to test
+ * @param  boundary Cell boundary to test
+ * @return          Whether any line segments in the boundary intersect any line
+ * segments in the geo loop
+ */
+bool cellBoundaryCrossesGeoLoop(const GeoLoop *geoloop, const BBox *loopBBox,
+                                const CellBoundary *boundary,
+                                const BBox *boundaryBBox) {
+    if (!bboxIntersects(loopBBox, boundaryBBox)) {
+        return false;
+    }
+    bool isTransmeridianLoop = bboxIsTransmeridian(loopBBox);
+    bool isTransmeridianBoundary = bboxIsTransmeridian(boundaryBBox);
+
+    LatLng loop1;
+    LatLng loop2;
+    LatLng boundary1;
+    LatLng boundary2;
+
+    for (int i = 0; i < geoloop->numVerts; i++) {
+        loop1 = geoloop->verts[i];
+        loop1.lng = NORMALIZE_LNG(loop1.lng, isTransmeridianLoop);
+        loop2 = geoloop->verts[(i + 1) % geoloop->numVerts];
+        loop2.lng = NORMALIZE_LNG(loop2.lng, isTransmeridianLoop);
+        for (int j = 0; j < boundary->numVerts; j++) {
+            boundary1 = boundary->verts[i];
+            boundary1.lng =
+                NORMALIZE_LNG(boundary1.lng, isTransmeridianBoundary);
+            boundary2 = boundary->verts[(i + 1) % boundary->numVerts];
+            boundary2.lng =
+                NORMALIZE_LNG(boundary2.lng, isTransmeridianBoundary);
+            if (lineIntersectsLine(&loop1, &loop2, &boundary1, &boundary2)) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+/**
  * Whether two lines intersect. This is a purely Cartesian implementation
  * and does not consider anti-meridian wrapping, poles, etc. Based on
  * http://www.jeffreythompson.org/collision-detection/line-line.php

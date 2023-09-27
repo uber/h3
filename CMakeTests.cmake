@@ -223,7 +223,7 @@ add_h3_test(testCellToLocalIjExhaustive src/apps/testapps/testCellToLocalIjExhau
 add_h3_test(testGridPathCellsExhaustive src/apps/testapps/testGridPathCellsExhaustive.c)
 add_h3_test(testGridDistanceExhaustive src/apps/testapps/testGridDistanceExhaustive.c)
 add_h3_test(testH3CellAreaExhaustive src/apps/testapps/testH3CellAreaExhaustive.c)
-add_h3_test(testCellToChildBBoxExhaustive src/apps/testapps/testCellToChildBBoxExhaustive.c)
+add_h3_test(testCellToBBoxExhaustive src/apps/testapps/testCellToBBoxExhaustive.c)
 
 add_h3_cli_test(testCliCellToLatLng "cellToLatLng -c 8928342e20fffff" "37.5012466151, -122.5003039349")
 add_h3_cli_test(testCliLatLngToCell "latLngToCell --lat 20 --lng 123 -r 2" "824b9ffffffffff")
