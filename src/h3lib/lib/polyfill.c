@@ -172,8 +172,8 @@ static H3Index nextCell(H3Index cell) {
  * @param  flags   Bit mask of option flags
  * @return         Initialized iterator, with the first value available
  */
-IterCellsPolygonCompact iterInitPolygonCompact(GeoPolygon *polygon, int res,
-                                               uint32_t flags) {
+IterCellsPolygonCompact iterInitPolygonCompact(const GeoPolygon *polygon,
+                                               int res, uint32_t flags) {
     IterCellsPolygonCompact iter = {
         // Initialize output properties. The first cell will be set in iterStep
         .cell = getBaseCell(0),

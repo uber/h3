@@ -55,11 +55,11 @@ typedef struct {
     H3Error error; // error, if any
     int _res;  // target resolution
     uint32_t _flags; // Mode flags for the polygonToCells operation
-    GeoPolygon *_polygon; // the polygon we're filling
+    const GeoPolygon *_polygon; // the polygon we're filling
     BBox *_bboxes; // Bounding box(es) for the polygon and its holes
 } IterCellsPolygonCompact;
 
-DECLSPEC IterCellsPolygonCompact iterInitPolygonCompact(GeoPolygon *polygon, int res, uint32_t flags);
+DECLSPEC IterCellsPolygonCompact iterInitPolygonCompact(const GeoPolygon *polygon, int res, uint32_t flags);
 DECLSPEC void iterStepPolygonCompact(IterCellsPolygonCompact *iter);
 DECLSPEC void iterDestroyPolygonCompact(IterCellsPolygonCompact *iter);
 
