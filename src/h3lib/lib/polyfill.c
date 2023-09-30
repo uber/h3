@@ -128,25 +128,27 @@ static H3Index nextCell(H3Index cell) {
         if (res == 0) {
             return getBaseCell(H3_GET_BASE_CELL(cell) + 1);
         }
+
+        H3Index parent;
+        H3Error err = H3_EXPORT(cellToParent)(cell, res - 1, &parent);
+        if (NEVER(err != E_SUCCESS)) {
+            // Should be unreachable; res - 1 can't be out of range, and can't
+            // mismatch current
+            return H3_NULL;
+        }
+
         // If not the last sibling of parent, return next sibling
         Direction digit = H3_GET_INDEX_DIGIT(cell, res);
-        if (digit < INVALID_DIGIT) {
-            H3_SET_INDEX_DIGIT(
-                cell, res,
-                digit + (H3_EXPORT(isPentagon)(cell) && digit == CENTER_DIGIT
-                             ? 2  // Skip missing pentagon child
-                             : 1));
+        if (digit < INVALID_DIGIT - 1) {
+            H3_SET_INDEX_DIGIT(cell, res,
+                               digit + ((H3_EXPORT(isPentagon)(parent) &&
+                                         digit == CENTER_DIGIT)
+                                            ? 2  // Skip missing pentagon child
+                                            : 1));
             return cell;
         }
         // Move up to the parent for the next loop iteration
         res--;
-        H3Index parent;
-        H3Error err = H3_EXPORT(cellToParent)(cell, res, &parent);
-        if (NEVER(err != E_SUCCESS)) {
-            // Should be unreachable; res-- can't be out of range, and can't
-            // mismatch current
-            return H3_NULL;
-        }
         cell = parent;
     }
 }
@@ -175,14 +177,15 @@ static H3Index nextCell(H3Index cell) {
 IterCellsPolygonCompact iterInitPolygonCompact(const GeoPolygon *polygon,
                                                int res, uint32_t flags) {
     IterCellsPolygonCompact iter = {
-        // Initialize output properties. The first cell will be set in iterStep
+        // Initialize output properties. The first valid cell will be set in iterStep
         .cell = getBaseCell(0),
         .error = E_SUCCESS,
         // Save input arguments
         ._polygon = polygon,
         ._res = res,
         ._flags = flags,
-        ._bboxes = NULL};
+        ._bboxes = NULL,
+        ._started = false};
 
     if (res < 0 || res > MAX_H3_RES) {
         iterErrorPolygonCompact(&iter, E_RES_DOMAIN);
@@ -202,6 +205,10 @@ IterCellsPolygonCompact iterInitPolygonCompact(const GeoPolygon *polygon,
         return iter;
     }
     bboxesFromGeoPolygon(polygon, iter._bboxes);
+
+    // Start the iterator by taking the first step.
+    // This is necessary to have a valid value after initialization.
+    iterStepPolygonCompact(&iter);
 
     return iter;
 }
@@ -227,9 +234,17 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
     H3Index cell = iter->cell;
     H3Error err;
 
-    // once cell == H3_NULL, the iterator returns an infinite sequence of
+    // once the cell is H3_NULL, the iterator returns an infinite sequence of
     // H3_NULL
     if (cell == H3_NULL) return;
+
+    // For the first step, we need to evaluate the current cell; after that, we
+    // should start with the next cell.
+    if (iter->_started) {
+        cell = nextCell(cell);
+    } else {
+        iter->_started = true;
+    }
 
     while (cell) {
         int cellRes = H3_GET_RESOLUTION(cell);
@@ -296,7 +311,6 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
  * Destroy an iterator, releasing any allocated memory. Iterators destroyed in
  * this manner are safe to use but will always return H3_NULL.
  * @param  iter Iterator to destroy
- * @return      [description]
  */
 void iterDestroyPolygonCompact(IterCellsPolygonCompact *iter) {
     if (iter->_bboxes) {
@@ -308,4 +322,36 @@ void iterDestroyPolygonCompact(IterCellsPolygonCompact *iter) {
     iter->_res = -1;
     iter->_flags = 0;
     iter->_bboxes = NULL;
+}
+
+/**
+ * Quick and dirty parity for polygonToCells. TODO: Should be
+ * done with a wrapping uncompact iterator instead
+ */
+H3Error H3_EXPORT(polygonToCells2)(const GeoPolygon *polygon, int res,
+                                   uint32_t flags, H3Index *out) {
+    int64_t polygonToCellsSize;
+    H3_EXPORT(maxPolygonToCellsSize)(polygon, res, 0, &polygonToCellsSize);
+    H3Index *compactCells =
+        H3_MEMORY(calloc)(polygonToCellsSize, sizeof(H3Index));
+    if (!compactCells) {
+        return E_MEMORY_ALLOC;
+    }
+
+    IterCellsPolygonCompact iter = iterInitPolygonCompact(polygon, res, flags);
+    if (iter.error) {
+        H3_MEMORY(free)(compactCells);
+        return iter.error;
+    }
+    int64_t i = 0;
+    for (; iter.cell; iterStepPolygonCompact(&iter)) {
+        if (i < polygonToCellsSize) {
+            compactCells[i++] = iter.cell;
+        }
+        // else throw not enough memory?
+    }
+    H3Error err = H3_EXPORT(uncompactCells)(compactCells, i, out,
+                                            polygonToCellsSize, res);
+    H3_MEMORY(free)(compactCells);
+    return err;
 }

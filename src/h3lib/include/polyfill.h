@@ -57,11 +57,16 @@ typedef struct {
     uint32_t _flags; // Mode flags for the polygonToCells operation
     const GeoPolygon *_polygon; // the polygon we're filling
     BBox *_bboxes; // Bounding box(es) for the polygon and its holes
+    bool _started; // Whether iteration has started
 } IterCellsPolygonCompact;
 
 DECLSPEC IterCellsPolygonCompact iterInitPolygonCompact(const GeoPolygon *polygon, int res, uint32_t flags);
 DECLSPEC void iterStepPolygonCompact(IterCellsPolygonCompact *iter);
 DECLSPEC void iterDestroyPolygonCompact(IterCellsPolygonCompact *iter);
+
+H3Error H3_EXPORT(polygonToCells2)(const GeoPolygon *polygon,
+                                           int res, uint32_t flags,
+                                           H3Index *out);
 
 H3Error cellToBBox(H3Index cell, BBox *out, bool coverChildren);
 
