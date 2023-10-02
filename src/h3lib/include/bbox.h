@@ -46,5 +46,8 @@ H3Error bboxHexEstimate(const BBox *bbox, int res, int64_t *out);
 H3Error lineHexEstimate(const LatLng *origin, const LatLng *destination,
                         int res, int64_t *out);
 void scaleBBox(BBox *bbox, double scale);
+void bboxNormalization(const BBox *a, const BBox *b,
+                       LongitudeNormalization *aNormalization,
+                       LongitudeNormalization *bNormalization);
 
 #endif

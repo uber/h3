@@ -32,6 +32,18 @@
 /** epsilon of ~0.1mm in radians */
 #define EPSILON_RAD (EPSILON_DEG * M_PI_180)
 
+typedef enum {
+    NORMALIZE_NONE = 0,  // Do not normalize
+    NORMALIZE_EAST = 1,  // Normalize negative numbers to the east
+    NORMALIZE_WEST = 2   // Normalize positive numbers to the west
+} LongitudeNormalization;
+
+/** Macro: Normalize longitude, dealing with transmeridian arcs */
+#define NORMALIZE_LNG(lng, normalization)                               \
+    (normalization == NORMALIZE_EAST && lng < 0   ? lng + (double)M_2PI \
+     : normalization == NORMALIZE_WEST && lng > 0 ? lng - (double)M_2PI \
+                                                  : lng)
+
 void setGeoDegs(LatLng *p, double latDegs, double lngDegs);
 double constrainLat(double lat);
 double constrainLng(double lng);

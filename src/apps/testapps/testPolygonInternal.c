@@ -696,6 +696,52 @@ SUITE(polygonInternal) {
                  "simple containment is inside");
     }
 
+    TEST(cellBoundaryInsidePolygon_insideTransmeridianWest) {
+        LatLng verts[] = {{0, M_PI - 0.5},
+                          {0, -M_PI + 0.5},
+                          {1, -M_PI + 0.5},
+                          {1, M_PI - 0.5}};
+        GeoLoop geoloop = {.numVerts = 4, .verts = verts};
+
+        GeoPolygon polygon = {.geoloop = geoloop, .numHoles = 0};
+        BBox *bboxes = calloc(sizeof(BBox), 1);
+        bboxesFromGeoPolygon(&polygon, bboxes);
+
+        CellBoundary boundary = {.numVerts = 4,
+                                 .verts = {{0.6, M_PI - 0.1},
+                                           {0.6, M_PI - 0.2},
+                                           {0.4, M_PI - 0.2},
+                                           {0.4, M_PI - 0.1}}};
+        BBox boundaryBBox = {0.6, 0.4, 0.6, 0.4};
+
+        t_assert(cellBoundaryInsidePolygon(&polygon, bboxes, &boundary,
+                                           &boundaryBBox),
+                 "simple containment is inside, west side of transmeridian");
+    }
+
+    TEST(cellBoundaryInsidePolygon_insideTransmeridianEast) {
+        LatLng verts[] = {{0, M_PI - 0.5},
+                          {0, -M_PI + 0.5},
+                          {1, -M_PI + 0.5},
+                          {1, M_PI - 0.5}};
+        GeoLoop geoloop = {.numVerts = 4, .verts = verts};
+
+        GeoPolygon polygon = {.geoloop = geoloop, .numHoles = 0};
+        BBox *bboxes = calloc(sizeof(BBox), 1);
+        bboxesFromGeoPolygon(&polygon, bboxes);
+
+        CellBoundary boundary = {.numVerts = 4,
+                                 .verts = {{0.6, -M_PI + 0.4},
+                                           {0.6, -M_PI + 0.2},
+                                           {0.4, -M_PI + 0.2},
+                                           {0.4, -M_PI + 0.4}}};
+        BBox boundaryBBox = {0.6, 0.4, 0.6, 0.4};
+
+        t_assert(cellBoundaryInsidePolygon(&polygon, bboxes, &boundary,
+                                           &boundaryBBox),
+                 "simple containment is inside, east side of transmeridian");
+    }
+
     TEST(cellBoundaryInsidePolygon_insideWithHole) {
         LatLng verts[] = {{0, 0}, {0, 1}, {1, 1}, {1, 0}};
         GeoLoop geoloop = {.numVerts = 4, .verts = verts};

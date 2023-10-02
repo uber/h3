@@ -176,16 +176,16 @@ static H3Index nextCell(H3Index cell) {
  */
 IterCellsPolygonCompact iterInitPolygonCompact(const GeoPolygon *polygon,
                                                int res, uint32_t flags) {
-    IterCellsPolygonCompact iter = {
-        // Initialize output properties. The first valid cell will be set in iterStep
-        .cell = getBaseCell(0),
-        .error = E_SUCCESS,
-        // Save input arguments
-        ._polygon = polygon,
-        ._res = res,
-        ._flags = flags,
-        ._bboxes = NULL,
-        ._started = false};
+    IterCellsPolygonCompact iter = {// Initialize output properties. The first
+                                    // valid cell will be set in iterStep
+                                    .cell = getBaseCell(0),
+                                    .error = E_SUCCESS,
+                                    // Save input arguments
+                                    ._polygon = polygon,
+                                    ._res = res,
+                                    ._flags = flags,
+                                    ._bboxes = NULL,
+                                    ._started = false};
 
     if (res < 0 || res > MAX_H3_RES) {
         iterErrorPolygonCompact(&iter, E_RES_DOMAIN);

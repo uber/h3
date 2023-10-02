@@ -86,16 +86,22 @@ bool bboxContains(const BBox *bbox, const LatLng *point) {
  * @return   Whether the bounding boxes intersect
  */
 bool bboxIntersects(const BBox *a, const BBox *b) {
-    // Check whether longitude coords intersect
-    double aw = bboxWidthRads(a);
-    double bw = bboxWidthRads(b);
-    if (fabs((a->west + aw / 2) - (b->west + bw / 2)) * 2 > (aw + bw)) {
-        return false;
-    }
     // Check whether latitude coords intersect
     double ah = bboxHeightRads(a);
     double bh = bboxHeightRads(b);
-    return (fabs((a->north - ah / 2) - (b->north - bh / 2)) * 2 < (ah + bh));
+    if (fabs((a->north - ah / 2) - (b->north - bh / 2)) * 2 > (ah + bh)) {
+        return false;
+    }
+    // Check whether longitude coords intersect
+    double aw = bboxWidthRads(a);
+    double bw = bboxWidthRads(b);
+    // Account for transmeridian bboxes
+    LongitudeNormalization aNormalization;
+    LongitudeNormalization bNormalization;
+    bboxNormalization(a, b, &aNormalization, &bNormalization);
+    double aWest = NORMALIZE_LNG(a->west, aNormalization);
+    double bWest = NORMALIZE_LNG(b->west, bNormalization);
+    return (fabs((aWest + aw / 2) - (bWest + bw / 2)) * 2 < (aw + bw));
 }
 
 /**
@@ -238,4 +244,33 @@ void scaleBBox(BBox *bbox, double scale) {
     bbox->west -= widthBuffer;
     if (bbox->west > M_PI) bbox->west -= M_2PI;
     if (bbox->west < -M_PI) bbox->west += M_2PI;
+}
+
+/**
+ * Determine the longitude normalization scheme for two bounding boxes, either
+ * or both of which might cross the antimeridian. The goal is to transform
+ * latitudes in one or both boxes so that they are in tne same frame of
+ * reference and can be operated on with standard Cartesian functions.
+ * @param a              First bounding box
+ * @param b              Second bounding box
+ * @param aNormalization Output: Normalization for longitudes in the first box
+ * @param bNormalization Output: Normalization for longitudes in the second box
+ */
+void bboxNormalization(const BBox *a, const BBox *b,
+                       LongitudeNormalization *aNormalization,
+                       LongitudeNormalization *bNormalization) {
+    bool aIsTransmeridian = bboxIsTransmeridian(a);
+    bool bIsTransmeridian = bboxIsTransmeridian(b);
+    bool aToBTrendsEast = a->west - b->east < b->west - a->east;
+    // If neither is transmeridian, no normalization.
+    // If both are transmeridian, normalize both east (though it doesn't matter).
+    // If one is transmeridian and one is not, normalize toward the other.
+    *aNormalization = !aIsTransmeridian  ? NORMALIZE_NONE
+                      : bIsTransmeridian ? NORMALIZE_EAST
+                      : aToBTrendsEast   ? NORMALIZE_EAST
+                                         : NORMALIZE_WEST;
+    *bNormalization = !bIsTransmeridian  ? NORMALIZE_NONE
+                      : aIsTransmeridian ? NORMALIZE_EAST
+                      : aToBTrendsEast   ? NORMALIZE_WEST
+                                         : NORMALIZE_EAST;
 }

@@ -53,10 +53,6 @@
 #define LOOP_ALGO_TJOIN(a, b) LOOP_ALGO_XTJOIN(a, b)
 #define GENERIC_LOOP_ALGO(func) LOOP_ALGO_TJOIN(func, TYPE)
 
-/** Macro: Normalize longitude, dealing with transmeridian arcs */
-#define NORMALIZE_LNG(lng, isTransmeridian) \
-    (isTransmeridian && lng < 0 ? lng + (double)M_2PI : lng)
-
 /**
  * pointInside is the core loop of the point-in-poly algorithm
  * @param loop  The loop to check
@@ -70,11 +66,12 @@ bool GENERIC_LOOP_ALGO(pointInside)(const TYPE *loop, const BBox *bbox,
     if (!bboxContains(bbox, coord)) {
         return false;
     }
-    bool isTransmeridian = bboxIsTransmeridian(bbox);
+    LongitudeNormalization normalization =
+        bboxIsTransmeridian(bbox) ? NORMALIZE_EAST : NORMALIZE_NONE;
     bool contains = false;
 
     double lat = coord->lat;
-    double lng = NORMALIZE_LNG(coord->lng, isTransmeridian);
+    double lng = NORMALIZE_LNG(coord->lng, normalization);
 
     LatLng a;
     LatLng b;
@@ -112,8 +109,8 @@ bool GENERIC_LOOP_ALGO(pointInside)(const TYPE *loop, const BBox *bbox,
             continue;
         }
 
-        double aLng = NORMALIZE_LNG(a.lng, isTransmeridian);
-        double bLng = NORMALIZE_LNG(b.lng, isTransmeridian);
+        double aLng = NORMALIZE_LNG(a.lng, normalization);
+        double bLng = NORMALIZE_LNG(b.lng, normalization);
 
         // Rays are cast in the longitudinal direction, in case a point
         // exactly matches, to decide tiebreakers, bias westerly
@@ -128,7 +125,7 @@ bool GENERIC_LOOP_ALGO(pointInside)(const TYPE *loop, const BBox *bbox,
         // of a to b
         double ratio = (lat - a.lat) / (b.lat - a.lat);
         double testLng =
-            NORMALIZE_LNG(aLng + (bLng - aLng) * ratio, isTransmeridian);
+            NORMALIZE_LNG(aLng + (bLng - aLng) * ratio, normalization);
 
         // Intersection of the ray
         if (testLng > lng) {
@@ -202,8 +199,8 @@ void GENERIC_LOOP_ALGO(bboxFrom)(const TYPE *loop, BBox *bbox) {
  * @param isTransmeridian   Whether the loop crosses the antimeridian
  * @return                  Whether the loop is clockwise
  */
-static bool GENERIC_LOOP_ALGO(isClockwiseNormalized)(const TYPE *loop,
-                                                     bool isTransmeridian) {
+static bool GENERIC_LOOP_ALGO(isClockwiseNormalized)(
+    const TYPE *loop, LongitudeNormalization isTransmeridian) {
     double sum = 0;
     LatLng a;
     LatLng b;
@@ -216,8 +213,10 @@ static bool GENERIC_LOOP_ALGO(isClockwiseNormalized)(const TYPE *loop,
         if (!isTransmeridian && fabs(a.lng - b.lng) > M_PI) {
             return GENERIC_LOOP_ALGO(isClockwiseNormalized)(loop, true);
         }
-        sum += ((NORMALIZE_LNG(b.lng, isTransmeridian) -
-                 NORMALIZE_LNG(a.lng, isTransmeridian)) *
+        LongitudeNormalization normalization =
+            isTransmeridian ? NORMALIZE_EAST : NORMALIZE_NONE;
+        sum += ((NORMALIZE_LNG(b.lng, normalization) -
+                 NORMALIZE_LNG(a.lng, normalization)) *
                 (b.lat + a.lat));
     }
 

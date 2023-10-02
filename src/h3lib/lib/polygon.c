@@ -129,8 +129,10 @@ bool cellBoundaryCrossesGeoLoop(const GeoLoop *geoloop, const BBox *loopBBox,
     if (!bboxIntersects(loopBBox, boundaryBBox)) {
         return false;
     }
-    bool isTransmeridianLoop = bboxIsTransmeridian(loopBBox);
-    bool isTransmeridianBoundary = bboxIsTransmeridian(boundaryBBox);
+    LongitudeNormalization loopNormalization;
+    LongitudeNormalization boundaryNormalization;
+    bboxNormalization(loopBBox, boundaryBBox, &loopNormalization,
+                      &boundaryNormalization);
 
     LatLng loop1;
     LatLng loop2;
@@ -139,16 +141,14 @@ bool cellBoundaryCrossesGeoLoop(const GeoLoop *geoloop, const BBox *loopBBox,
 
     for (int i = 0; i < geoloop->numVerts; i++) {
         loop1 = geoloop->verts[i];
-        loop1.lng = NORMALIZE_LNG(loop1.lng, isTransmeridianLoop);
+        loop1.lng = NORMALIZE_LNG(loop1.lng, loopNormalization);
         loop2 = geoloop->verts[(i + 1) % geoloop->numVerts];
-        loop2.lng = NORMALIZE_LNG(loop2.lng, isTransmeridianLoop);
+        loop2.lng = NORMALIZE_LNG(loop2.lng, loopNormalization);
         for (int j = 0; j < boundary->numVerts; j++) {
             boundary1 = boundary->verts[j];
-            boundary1.lng =
-                NORMALIZE_LNG(boundary1.lng, isTransmeridianBoundary);
+            boundary1.lng = NORMALIZE_LNG(boundary1.lng, boundaryNormalization);
             boundary2 = boundary->verts[(j + 1) % boundary->numVerts];
-            boundary2.lng =
-                NORMALIZE_LNG(boundary2.lng, isTransmeridianBoundary);
+            boundary2.lng = NORMALIZE_LNG(boundary2.lng, boundaryNormalization);
             if (lineIntersectsLine(&loop1, &loop2, &boundary1, &boundary2)) {
                 return true;
             }

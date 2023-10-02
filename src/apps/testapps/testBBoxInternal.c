@@ -208,6 +208,45 @@ SUITE(BBox) {
         t_assert(bboxIntersects(&a, &b11), "intersection, a equals b");
     }
 
+    TEST(bboxIntersectsTransmeridian) {
+        BBox a = {1.0, 0.0, -M_PI + 0.5, M_PI - 0.5};
+
+        BBox b1 = {1.0, 0.0, M_PI - 0.7, M_PI - 0.9};
+        t_assert(!bboxIntersects(&a, &b1), "no intersection to the west");
+
+        BBox b2 = {1.0, 0.0, -M_PI + 0.9, -M_PI + 0.7};
+        t_assert(!bboxIntersects(&a, &b2), "no intersection to the east");
+
+        BBox b3 = {1.0, 0.0, M_PI - 0.4, M_PI - 0.9};
+        t_assert(bboxIntersects(&a, &b3), "intersection to the west");
+        t_assert(bboxIntersects(&b3, &a), "intersection to the west, reverse");
+
+        BBox b4 = {1.0, 0.0, -M_PI + 0.9, -M_PI + 0.4};
+        t_assert(bboxIntersects(&a, &b4), "intersection to the east");
+        t_assert(bboxIntersects(&b4, &a), "intersection to the east, reverse");
+
+        BBox b5 = {1.0, 0.0, -M_PI + 0.4, M_PI - 0.4};
+        t_assert(bboxIntersects(&a, &b5), "intersection, a contains b");
+
+        BBox b6 = {1.0, 0.0, -M_PI + 0.6, M_PI - 0.6};
+        t_assert(bboxIntersects(&a, &b6), "intersection, b contains a");
+
+        BBox b7 = {1.0, 0.0, -M_PI + 0.5, M_PI - 0.5};
+        t_assert(bboxIntersects(&a, &b7), "intersection, a equals b");
+
+        BBox b8 = {1.0, 0.0, -M_PI + 0.9, M_PI - 0.4};
+        t_assert(bboxIntersects(&a, &b8),
+                 "intersection, transmeridian to the east");
+        t_assert(bboxIntersects(&b8, &a),
+                 "intersection, transmeridian to the east, reverse");
+
+        BBox b9 = {1.0, 0.0, -M_PI + 0.4, M_PI - 0.9};
+        t_assert(bboxIntersects(&a, &b9),
+                 "intersection, transmeridian to the west");
+        t_assert(bboxIntersects(&b9, &a),
+                 "intersection, transmeridian to the west, reverse");
+    }
+
     TEST(bboxCenterBasicQuandrants) {
         LatLng center;
 
