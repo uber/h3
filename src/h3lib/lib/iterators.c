@@ -213,27 +213,33 @@ and so on.
  */
 IterCellsChildren iterInitParent(H3Index h, int childRes) {
     IterCellsChildren it;
+    _iterInitParent(h, childRes, &it);
+    return it;
+}
 
-    it._parentRes = H3_GET_RESOLUTION(h);
+/**
+ * Internal function - initialize a parent iterator in-place
+ */
+void _iterInitParent(H3Index h, int childRes, IterCellsChildren *iter) {
+    iter->_parentRes = H3_GET_RESOLUTION(h);
 
-    if (childRes < it._parentRes || childRes > MAX_H3_RES || h == H3_NULL) {
-        return _null_iter();
+    if (childRes < iter->_parentRes || childRes > MAX_H3_RES || h == H3_NULL) {
+        *iter = _null_iter();
+        return;
     }
 
-    it.h = _zeroIndexDigits(h, it._parentRes + 1, childRes);
-    H3_SET_RESOLUTION(it.h, childRes);
+    iter->h = _zeroIndexDigits(h, iter->_parentRes + 1, childRes);
+    H3_SET_RESOLUTION(iter->h, childRes);
 
-    if (H3_EXPORT(isPentagon)(it.h)) {
+    if (H3_EXPORT(isPentagon)(iter->h)) {
         // The skip digit skips `1` for pentagons.
         // The "_skipDigit" moves to the left as we count up from the
         // child resolution to the parent resolution.
-        it._skipDigit = childRes;
+        iter->_skipDigit = childRes;
     } else {
         // if not a pentagon, we can ignore "skip digit" logic
-        it._skipDigit = -1;
+        iter->_skipDigit = -1;
     }
-
-    return it;
 }
 
 /**

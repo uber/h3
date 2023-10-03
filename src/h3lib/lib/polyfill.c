@@ -373,10 +373,9 @@ void iterStepPolygon(IterCellsPolygon *iter) {
     // Otherwise, increment the polyfill iterator
     iterStepPolygonCompact(&(iter->_cellIter));
     if (iter->_cellIter.cell) {
-        IterCellsChildren childIter =
-            iterInitParent(iter->_cellIter.cell, iter->_cellIter._res);
-        iter->cell = childIter.h;
-        iter->_childIter = childIter;
+        _iterInitParent(iter->_cellIter.cell, iter->_cellIter._res,
+                        &(iter->_childIter));
+        iter->cell = iter->_childIter.h;
         return;
     }
 
