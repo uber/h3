@@ -155,8 +155,8 @@ static H3Index nextCell(H3Index cell) {
 
 /**
  * Initialize a IterCellsPolygonCompact struct representing the sequence of
- * cells within the target polygon. The test for including edge cells is defined
- * by the polyfill mode passed in the `flags` argument.
+ * compact cells within the target polygon. The test for including edge cells is
+ * defined by the polyfill mode passed in the `flags` argument.
  *
  * Initialization of this object may fail, in which case the `error` property
  * will be set and all iteration will return H3_NULL. It is the responsibility
@@ -228,7 +228,6 @@ IterCellsPolygonCompact iterInitPolygonCompact(const GeoPolygon *polygon,
  * to the inclusion criteria set in flags.
  *
  * @param  iter Iterator to increment
- * @return      Updated iterator, with the latest value in the `cell` property
  */
 void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
     H3Index cell = iter->cell;
@@ -325,33 +324,92 @@ void iterDestroyPolygonCompact(IterCellsPolygonCompact *iter) {
 }
 
 /**
- * Quick and dirty parity for polygonToCells. TODO: Should be
- * done with a wrapping uncompact iterator instead
+ * Initialize a IterCellsPolygonCompact struct representing the sequence of
+ * cells within the target polygon. The test for including edge cells is defined
+ * by the polyfill mode passed in the `flags` argument.
+ *
+ * Initialization of this object may fail, in which case the `error` property
+ * will be set and all iteration will return H3_NULL. It is the responsibility
+ * of the caller to check the error property after initialization.
+ *
+ * At any point in the iteration, starting once the struct is initialized, the
+ * output value can be accessed through the `cell` property.
+ *
+ * Note that initializing the iterator allocates memory. If an iterator is
+ * exhausted or returns an error that memory is released; otherwise it must be
+ * released manually with iterDestroyPolygon.
+ *
+ * @param  polygon Polygon to fill with cells
+ * @param  res     Resolution for output cells
+ * @param  flags   Bit mask of option flags
+ * @return         Initialized iterator, with the first value available
+ */
+IterCellsPolygon iterInitPolygon(const GeoPolygon *polygon, int res,
+                                 uint32_t flags) {
+    // Create the sub-iterator for compact cells
+    IterCellsPolygonCompact cellIter =
+        iterInitPolygonCompact(polygon, res, flags);
+    // Create the sub-iterator for children
+    IterCellsChildren childIter = iterInitParent(cellIter.cell, res);
+
+    IterCellsPolygon iter = {.cell = childIter.h,
+                             .error = cellIter.error,
+                             ._cellIter = cellIter,
+                             ._childIter = childIter};
+    return iter;
+}
+
+/**
+ * Increment the polyfill iterator, outputting the latest cell at the
+ * desired resolution.
+ *
+ * @param  iter Iterator to increment
+ */
+void iterStepPolygon(IterCellsPolygon *iter) {
+    if (iter->cell == H3_NULL) return;
+
+    // See if there are more children to output
+    iterStepChild(&(iter->_childIter));
+    if (iter->_childIter.h) {
+        iter->cell = iter->_childIter.h;
+        return;
+    }
+
+    // Otherwise, increment the polyfill iterator
+    iterStepPolygonCompact(&(iter->_cellIter));
+    if (iter->_cellIter.cell) {
+        IterCellsChildren childIter =
+            iterInitParent(iter->_cellIter.cell, iter->_cellIter._res);
+        iter->cell = childIter.h;
+        iter->_childIter = childIter;
+        return;
+    }
+
+    // All done, set to null and report errors if any
+    iter->cell = H3_NULL;
+    iter->error = iter->_cellIter.error;
+}
+
+/**
+ * Destroy an iterator, releasing any allocated memory. Iterators destroyed in
+ * this manner are safe to use but will always return H3_NULL.
+ * @param  iter Iterator to destroy
+ */
+void iterDestroyPolygon(IterCellsPolygon *iter) {
+    iterDestroyPolygonCompact(&(iter->_cellIter));
+    iter->cell = H3_NULL;
+    iter->error = E_SUCCESS;
+}
+
+/**
+ * Parity implementation for polygonToCells
  */
 H3Error H3_EXPORT(polygonToCells2)(const GeoPolygon *polygon, int res,
                                    uint32_t flags, H3Index *out) {
-    int64_t polygonToCellsSize;
-    H3_EXPORT(maxPolygonToCellsSize)(polygon, res, 0, &polygonToCellsSize);
-    H3Index *compactCells =
-        H3_MEMORY(calloc)(polygonToCellsSize, sizeof(H3Index));
-    if (!compactCells) {
-        return E_MEMORY_ALLOC;
-    }
-
-    IterCellsPolygonCompact iter = iterInitPolygonCompact(polygon, res, flags);
-    if (iter.error) {
-        H3_MEMORY(free)(compactCells);
-        return iter.error;
-    }
+    IterCellsPolygon iter = iterInitPolygon(polygon, res, flags);
     int64_t i = 0;
-    for (; iter.cell; iterStepPolygonCompact(&iter)) {
-        if (i < polygonToCellsSize) {
-            compactCells[i++] = iter.cell;
-        }
-        // else throw not enough memory?
+    for (; iter.cell; iterStepPolygon(&iter)) {
+        out[i++] = iter.cell;
     }
-    H3Error err = H3_EXPORT(uncompactCells)(compactCells, i, out,
-                                            polygonToCellsSize, res);
-    H3_MEMORY(free)(compactCells);
-    return err;
+    return iter.error;
 }

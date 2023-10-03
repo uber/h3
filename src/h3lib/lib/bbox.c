@@ -263,7 +263,7 @@ void bboxNormalization(const BBox *a, const BBox *b,
     bool bIsTransmeridian = bboxIsTransmeridian(b);
     bool aToBTrendsEast = a->west - b->east < b->west - a->east;
     // If neither is transmeridian, no normalization.
-    // If both are transmeridian, normalize east by convention. 
+    // If both are transmeridian, normalize east by convention.
     // If one is transmeridian and one is not, normalize toward the other.
     *aNormalization = !aIsTransmeridian  ? NORMALIZE_NONE
                       : bIsTransmeridian ? NORMALIZE_EAST

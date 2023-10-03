@@ -24,6 +24,7 @@
 
 #include "h3api.h"
 #include "bbox.h"
+#include "iterators.h"
 
 /**
  * IterCellsPolygonCompact: struct for iterating through all the cells
@@ -31,7 +32,7 @@
  *
  * Constructors:
  *
- * Initialize with `iterInitPolygonCompact`. This will save a reference to the
+ * Initialize with `iterInitPolygon`. This will save a reference to the
  * input polygon and allocate memory for data structures used in the
  * iteration. Iterators initialized in this way must be destroyed by
  * `iterDestroyPolygon` to free allocated memory.
@@ -48,7 +49,7 @@
  *
  * Cleanup:
  *
- * Destroy the iterator and free allocated memory with `iterDestroyPolygonCompact`.
+ * Destroy the iterator and free allocated memory with `iterDestroyPolygon`.
  */
 typedef struct {
     H3Index cell; // current value
@@ -64,7 +65,22 @@ DECLSPEC IterCellsPolygonCompact iterInitPolygonCompact(const GeoPolygon *polygo
 DECLSPEC void iterStepPolygonCompact(IterCellsPolygonCompact *iter);
 DECLSPEC void iterDestroyPolygonCompact(IterCellsPolygonCompact *iter);
 
+typedef struct {
+    H3Index cell; // current value
+    H3Error error; // error, if any
+    IterCellsPolygonCompact _cellIter; // sub-iterator for compact cells
+    IterCellsChildren _childIter; // sub-iterator for cell children
+} IterCellsPolygon;
+
+DECLSPEC IterCellsPolygon iterInitPolygon(const GeoPolygon *polygon, int res, uint32_t flags);
+DECLSPEC void iterStepPolygon(IterCellsPolygon *iter);
+DECLSPEC void iterDestroyPolygon(IterCellsPolygon *iter);
+
 H3Error H3_EXPORT(polygonToCells2)(const GeoPolygon *polygon,
+                                           int res, uint32_t flags,
+                                           H3Index *out);
+
+H3Error H3_EXPORT(polygonToCells3)(const GeoPolygon *polygon,
                                            int res, uint32_t flags,
                                            H3Index *out);
 
