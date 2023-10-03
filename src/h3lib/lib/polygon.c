@@ -134,22 +134,23 @@ bool cellBoundaryCrossesGeoLoop(const GeoLoop *geoloop, const BBox *loopBBox,
     bboxNormalization(loopBBox, boundaryBBox, &loopNormalization,
                       &boundaryNormalization);
 
+    CellBoundary normalBoundary = *boundary;
+    for (int i = 0; i < boundary->numVerts; i++) {
+        normalBoundary.verts[i].lng =
+            NORMALIZE_LNG(normalBoundary.verts[i].lng, boundaryNormalization);
+    }
+
     LatLng loop1;
     LatLng loop2;
-    LatLng boundary1;
-    LatLng boundary2;
-
     for (int i = 0; i < geoloop->numVerts; i++) {
         loop1 = geoloop->verts[i];
         loop1.lng = NORMALIZE_LNG(loop1.lng, loopNormalization);
         loop2 = geoloop->verts[(i + 1) % geoloop->numVerts];
         loop2.lng = NORMALIZE_LNG(loop2.lng, loopNormalization);
-        for (int j = 0; j < boundary->numVerts; j++) {
-            boundary1 = boundary->verts[j];
-            boundary1.lng = NORMALIZE_LNG(boundary1.lng, boundaryNormalization);
-            boundary2 = boundary->verts[(j + 1) % boundary->numVerts];
-            boundary2.lng = NORMALIZE_LNG(boundary2.lng, boundaryNormalization);
-            if (lineIntersectsLine(&loop1, &loop2, &boundary1, &boundary2)) {
+        for (int j = 0; j < normalBoundary.numVerts; j++) {
+            if (lineIntersectsLine(
+                    &loop1, &loop2, &normalBoundary.verts[j],
+                    &normalBoundary.verts[(j + 1) % normalBoundary.numVerts])) {
                 return true;
             }
         }
@@ -169,8 +170,7 @@ bool cellBoundaryCrossesGeoLoop(const GeoLoop *geoloop, const BBox *loopBBox,
  */
 bool lineIntersectsLine(const LatLng *a1, const LatLng *a2, const LatLng *b1,
                         const LatLng *b2) {
-    double test;
-    test = ((b2->lat - b1->lat) * (a1->lng - b1->lng) -
+    double test = ((b2->lat - b1->lat) * (a1->lng - b1->lng) -
             (b2->lng - b1->lng) * (a1->lat - b1->lat)) /
            ((b2->lng - b1->lng) * (a2->lat - a1->lat) -
             (b2->lat - b1->lat) * (a2->lng - a1->lng));

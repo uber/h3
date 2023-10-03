@@ -249,7 +249,7 @@ void scaleBBox(BBox *bbox, double scale) {
 /**
  * Determine the longitude normalization scheme for two bounding boxes, either
  * or both of which might cross the antimeridian. The goal is to transform
- * latitudes in one or both boxes so that they are in tne same frame of
+ * latitudes in one or both boxes so that they are in the same frame of
  * reference and can be operated on with standard Cartesian functions.
  * @param a              First bounding box
  * @param b              Second bounding box
