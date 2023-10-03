@@ -55,12 +55,7 @@ H3Error cellToBBox(H3Index cell, BBox *out, bool coverChildren) {
     // Convert to GeoLoop
     GeoLoop loop;
     loop.numVerts = boundary.numVerts;
-    LatLng *verts = malloc(boundary.numVerts * sizeof(LatLng));
-    if (!verts) {
-        return E_MEMORY_ALLOC;
-    }
-    memcpy(verts, &boundary.verts, boundary.numVerts * sizeof(LatLng));
-    loop.verts = verts;
+    loop.verts = (LatLng *)&boundary.verts;
     // Calculate bbox
     bboxFromGeoLoop(&loop, out);
 

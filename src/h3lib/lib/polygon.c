@@ -170,7 +170,8 @@ bool cellBoundaryCrossesGeoLoop(const GeoLoop *geoloop, const BBox *loopBBox,
  */
 bool lineIntersectsLine(const LatLng *a1, const LatLng *a2, const LatLng *b1,
                         const LatLng *b2) {
-    double test = ((b2->lat - b1->lat) * (a1->lng - b1->lng) -
+    double test;
+    test = ((b2->lat - b1->lat) * (a1->lng - b1->lng) -
             (b2->lng - b1->lng) * (a1->lat - b1->lat)) /
            ((b2->lng - b1->lng) * (a2->lat - a1->lat) -
             (b2->lat - b1->lat) * (a2->lng - a1->lng));
