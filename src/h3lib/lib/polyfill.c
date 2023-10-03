@@ -407,3 +407,16 @@ H3Error H3_EXPORT(polygonToCells2)(const GeoPolygon *polygon, int res,
     }
     return iter.error;
 }
+
+/**
+ * Compact implementation for polygonToCells
+ */
+H3Error H3_EXPORT(polygonToCellsCompact)(const GeoPolygon *polygon, int res,
+                                         uint32_t flags, H3Index *out) {
+    IterCellsPolygonCompact iter = iterInitPolygonCompact(polygon, res, flags);
+    int64_t i = 0;
+    for (; iter.cell; iterStepPolygonCompact(&iter)) {
+        out[i++] = iter.cell;
+    }
+    return iter.error;
+}

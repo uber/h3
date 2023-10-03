@@ -80,7 +80,7 @@ H3Error H3_EXPORT(polygonToCells2)(const GeoPolygon *polygon,
                                            int res, uint32_t flags,
                                            H3Index *out);
 
-H3Error H3_EXPORT(polygonToCells3)(const GeoPolygon *polygon,
+H3Error H3_EXPORT(polygonToCellsCompact)(const GeoPolygon *polygon,
                                            int res, uint32_t flags,
                                            H3Index *out);
 
