@@ -125,6 +125,7 @@ set(LIB_SOURCE_FILES
     src/h3lib/include/bbox.h
     src/h3lib/include/polygon.h
     src/h3lib/include/polygonAlgos.h
+    src/h3lib/include/polyfill.h
     src/h3lib/include/h3Index.h
     src/h3lib/include/directedEdge.h
     src/h3lib/include/latLng.h
