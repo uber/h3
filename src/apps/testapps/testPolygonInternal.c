@@ -694,6 +694,7 @@ SUITE(polygonInternal) {
         t_assert(cellBoundaryInsidePolygon(&polygon, bboxes, &boundary,
                                            &boundaryBBox),
                  "simple containment is inside");
+        free(bboxes);
     }
 
     TEST(cellBoundaryInsidePolygon_insideTransmeridianWest) {
@@ -717,6 +718,7 @@ SUITE(polygonInternal) {
         t_assert(cellBoundaryInsidePolygon(&polygon, bboxes, &boundary,
                                            &boundaryBBox),
                  "simple containment is inside, west side of transmeridian");
+        free(bboxes);
     }
 
     TEST(cellBoundaryInsidePolygon_insideTransmeridianEast) {
@@ -740,6 +742,7 @@ SUITE(polygonInternal) {
         t_assert(cellBoundaryInsidePolygon(&polygon, bboxes, &boundary,
                                            &boundaryBBox),
                  "simple containment is inside, east side of transmeridian");
+        free(bboxes);
     }
 
     TEST(cellBoundaryInsidePolygon_insideWithHole) {
@@ -763,6 +766,7 @@ SUITE(polygonInternal) {
         t_assert(cellBoundaryInsidePolygon(&polygon, bboxes, &boundary,
                                            &boundaryBBox),
                  "simple containment is inside, with hole");
+        free(bboxes);
     }
 
     TEST(cellBoundaryInsidePolygon_notInside) {
@@ -781,6 +785,7 @@ SUITE(polygonInternal) {
         t_assert(!cellBoundaryInsidePolygon(&polygon, bboxes, &boundary,
                                             &boundaryBBox),
                  "fully outside is not inside");
+        free(bboxes);
     }
 
     TEST(cellBoundaryInsidePolygon_notInsideIntersect) {
@@ -799,6 +804,7 @@ SUITE(polygonInternal) {
         t_assert(!cellBoundaryInsidePolygon(&polygon, bboxes, &boundary,
                                             &boundaryBBox),
                  "intersecting polygon is not inside");
+        free(bboxes);
     }
 
     TEST(cellBoundaryInsidePolygon_notInsideIntersectHole) {
@@ -822,6 +828,7 @@ SUITE(polygonInternal) {
         t_assert(!cellBoundaryInsidePolygon(&polygon, bboxes, &boundary,
                                             &boundaryBBox),
                  "not inside with hole intersection");
+        free(bboxes);
     }
 
     TEST(cellBoundaryInsidePolygon_notInsideWithinHole) {
@@ -845,5 +852,6 @@ SUITE(polygonInternal) {
         t_assert(!cellBoundaryInsidePolygon(&polygon, bboxes, &boundary,
                                             &boundaryBBox),
                  "not inside when within hole");
+        free(bboxes);
     }
 }
