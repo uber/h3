@@ -22,8 +22,8 @@
 
 #include <stdbool.h>
 
-#include "h3api.h"
 #include "bbox.h"
+#include "h3api.h"
 #include "iterators.h"
 
 /**
@@ -41,48 +41,48 @@
  *
  * Step iterator with `iterStepPolygonCompact`.
  * During the lifetime of the `iterCellsPolygonCompact`, the current iterate
- * is accessed via the `iterCellsPolygonCompact.cell` member. When the iterator is 
- * exhausted  or if there was an error in initialization or iteration, 
- * `iterCellsPolygonCompact.cell` will be `H3_NULL` after calling `iterStepChild`. 
- * It is the responsibiliy of the caller to check  `iterCellsPolygonCompact.error`
- * when `H3_NULL` is received.
+ * is accessed via the `iterCellsPolygonCompact.cell` member. When the iterator
+ * is exhausted  or if there was an error in initialization or iteration,
+ * `iterCellsPolygonCompact.cell` will be `H3_NULL` after calling
+ * `iterStepChild`. It is the responsibiliy of the caller to check
+ * `iterCellsPolygonCompact.error` when `H3_NULL` is received.
  *
  * Cleanup:
  *
  * Destroy the iterator and free allocated memory with `iterDestroyPolygon`.
  */
 typedef struct {
-    H3Index cell; // current value
-    H3Error error; // error, if any
-    int _res;  // target resolution
-    uint32_t _flags; // Mode flags for the polygonToCells operation
-    const GeoPolygon *_polygon; // the polygon we're filling
-    BBox *_bboxes; // Bounding box(es) for the polygon and its holes
-    bool _started; // Whether iteration has started
+    H3Index cell;                // current value
+    H3Error error;               // error, if any
+    int _res;                    // target resolution
+    uint32_t _flags;             // Mode flags for the polygonToCells operation
+    const GeoPolygon *_polygon;  // the polygon we're filling
+    BBox *_bboxes;  // Bounding box(es) for the polygon and its holes
+    bool _started;  // Whether iteration has started
 } IterCellsPolygonCompact;
 
-DECLSPEC IterCellsPolygonCompact iterInitPolygonCompact(const GeoPolygon *polygon, int res, uint32_t flags);
+DECLSPEC IterCellsPolygonCompact
+iterInitPolygonCompact(const GeoPolygon *polygon, int res, uint32_t flags);
 DECLSPEC void iterStepPolygonCompact(IterCellsPolygonCompact *iter);
 DECLSPEC void iterDestroyPolygonCompact(IterCellsPolygonCompact *iter);
 
 typedef struct {
-    H3Index cell; // current value
-    H3Error error; // error, if any
-    IterCellsPolygonCompact _cellIter; // sub-iterator for compact cells
-    IterCellsChildren _childIter; // sub-iterator for cell children
+    H3Index cell;                       // current value
+    H3Error error;                      // error, if any
+    IterCellsPolygonCompact _cellIter;  // sub-iterator for compact cells
+    IterCellsChildren _childIter;       // sub-iterator for cell children
 } IterCellsPolygon;
 
-DECLSPEC IterCellsPolygon iterInitPolygon(const GeoPolygon *polygon, int res, uint32_t flags);
+DECLSPEC IterCellsPolygon iterInitPolygon(const GeoPolygon *polygon, int res,
+                                          uint32_t flags);
 DECLSPEC void iterStepPolygon(IterCellsPolygon *iter);
 DECLSPEC void iterDestroyPolygon(IterCellsPolygon *iter);
 
-H3Error H3_EXPORT(polygonToCells2)(const GeoPolygon *polygon,
-                                           int res, uint32_t flags,
-                                           H3Index *out);
+H3Error H3_EXPORT(polygonToCells2)(const GeoPolygon *polygon, int res,
+                                   uint32_t flags, H3Index *out);
 
-H3Error H3_EXPORT(polygonToCellsCompact)(const GeoPolygon *polygon,
-                                           int res, uint32_t flags,
-                                           H3Index *out);
+H3Error H3_EXPORT(polygonToCellsCompact)(const GeoPolygon *polygon, int res,
+                                         uint32_t flags, H3Index *out);
 
 H3Error cellToBBox(H3Index cell, BBox *out, bool coverChildren);
 
