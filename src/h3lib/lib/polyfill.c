@@ -319,7 +319,7 @@ void iterDestroyPolygonCompact(IterCellsPolygonCompact *iter) {
 }
 
 /**
- * Initialize a IterCellsPolygonCompact struct representing the sequence of
+ * Initialize a IterCellsPolygon struct representing the sequence of
  * cells within the target polygon. The test for including edge cells is defined
  * by the polyfill mode passed in the `flags` argument.
  *
