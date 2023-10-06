@@ -45,12 +45,10 @@ static const LatLng SOUTH_POLE = {-M_PI_2, 0};
  * @param coverChildren Whether the bounding box should cover all children
  */
 H3Error cellToBBox(H3Index cell, BBox *out, bool coverChildren) {
-    H3Error err;
-
     CellBoundary boundary;
-    err = H3_EXPORT(cellToBoundary)(cell, &boundary);
-    if (err) {
-        return err;
+    H3Error boundaryErr = H3_EXPORT(cellToBoundary)(cell, &boundary);
+    if (boundaryErr) {
+        return boundaryErr;
     }
     // Convert to GeoLoop
     GeoLoop loop;
@@ -67,19 +65,19 @@ H3Error cellToBBox(H3Index cell, BBox *out, bool coverChildren) {
     // Adjust the BBox to handle poles
     H3Index poleTest;
     // North pole
-    err = H3_EXPORT(latLngToCell)(&NORTH_POLE, H3_GET_RESOLUTION(cell),
-                                  &poleTest);
-    if (NEVER(err != E_SUCCESS)) {
-        return err;
+    H3Error northPoleErr = H3_EXPORT(latLngToCell)(
+        &NORTH_POLE, H3_GET_RESOLUTION(cell), &poleTest);
+    if (NEVER(northPoleErr != E_SUCCESS)) {
+        return northPoleErr;
     }
     if (cell == poleTest) {
         out->north = M_PI_2;
     }
     // South pole
-    err = H3_EXPORT(latLngToCell)(&SOUTH_POLE, H3_GET_RESOLUTION(cell),
-                                  &poleTest);
-    if (NEVER(err != E_SUCCESS)) {
-        return err;
+    H3Error southPoleErr = H3_EXPORT(latLngToCell)(
+        &SOUTH_POLE, H3_GET_RESOLUTION(cell), &poleTest);
+    if (NEVER(southPoleErr != E_SUCCESS)) {
+        return southPoleErr;
     }
     if (cell == poleTest) {
         out->south = -M_PI_2;
@@ -125,8 +123,8 @@ static H3Index nextCell(H3Index cell) {
         }
 
         H3Index parent;
-        H3Error err = H3_EXPORT(cellToParent)(cell, res - 1, &parent);
-        if (NEVER(err != E_SUCCESS)) {
+        H3Error parentErr = H3_EXPORT(cellToParent)(cell, res - 1, &parent);
+        if (NEVER(parentErr != E_SUCCESS)) {
             // Should be unreachable; res - 1 can't be out of range, and can't
             // mismatch current
             return H3_NULL;
@@ -226,7 +224,6 @@ IterCellsPolygonCompact iterInitPolygonCompact(const GeoPolygon *polygon,
  */
 void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
     H3Index cell = iter->cell;
-    H3Error err;
 
     // once the cell is H3_NULL, the iterator returns an infinite sequence of
     // H3_NULL
@@ -248,7 +245,11 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
             // Check if the cell is in the polygon
             // TODO: Handle other polyfill modes here
             LatLng center;
-            H3_EXPORT(cellToLatLng)(cell, &center);
+            H3Error centerErr = H3_EXPORT(cellToLatLng)(cell, &center);
+            if (NEVER(centerErr != E_SUCCESS)) {
+                iterErrorPolygonCompact(iter, centerErr);
+                return;
+            }
             if (pointInsidePolygon(iter->_polygon, iter->_bboxes, &center)) {
                 // Set to next output
                 iter->cell = cell;
@@ -260,9 +261,9 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
         if (cellRes < iter->_res) {
             // Get a bounding box for all of the cell's children
             BBox bbox;
-            err = cellToBBox(cell, &bbox, true);
-            if (err) {
-                iterErrorPolygonCompact(iter, err);
+            H3Error bboxErr = cellToBBox(cell, &bbox, true);
+            if (bboxErr) {
+                iterErrorPolygonCompact(iter, bboxErr);
                 return;
             }
             if (bboxIntersects(&bbox, &iter->_bboxes[0])) {
@@ -283,9 +284,10 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
                 // Otherwise, the intersecting bbox means we need to test all
                 // children, starting with the first child
                 H3Index child;
-                err = H3_EXPORT(cellToCenterChild)(cell, cellRes + 1, &child);
-                if (err) {
-                    iterErrorPolygonCompact(iter, err);
+                H3Error childErr =
+                    H3_EXPORT(cellToCenterChild)(cell, cellRes + 1, &child);
+                if (childErr) {
+                    iterErrorPolygonCompact(iter, childErr);
                     return;
                 }
                 // Restart the loop with the child cell
@@ -391,6 +393,8 @@ void iterStepPolygon(IterCellsPolygon *iter) {
  */
 void iterDestroyPolygon(IterCellsPolygon *iter) {
     iterDestroyPolygonCompact(&(iter->_cellIter));
+    // null out the child iterator by passing H3_NULL
+    _iterInitParent(H3_NULL, 0, &(iter->_childIter));
     iter->cell = H3_NULL;
     iter->error = E_SUCCESS;
 }

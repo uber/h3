@@ -170,16 +170,18 @@ bool cellBoundaryCrossesGeoLoop(const GeoLoop *geoloop, const BBox *loopBBox,
  */
 bool lineIntersectsLine(const LatLng *a1, const LatLng *a2, const LatLng *b1,
                         const LatLng *b2) {
+    double denom = ((b2->lng - b1->lng) * (a2->lat - a1->lat) -
+                    (b2->lat - b1->lat) * (a2->lng - a1->lng));
+    if (!denom) return false;
+
     double test;
     test = ((b2->lat - b1->lat) * (a1->lng - b1->lng) -
             (b2->lng - b1->lng) * (a1->lat - b1->lat)) /
-           ((b2->lng - b1->lng) * (a2->lat - a1->lat) -
-            (b2->lat - b1->lat) * (a2->lng - a1->lng));
+           denom;
     if (test < 0 || test > 1) return false;
 
     test = ((a2->lat - a1->lat) * (a1->lng - b1->lng) -
             (a2->lng - a1->lng) * (a1->lat - b1->lat)) /
-           ((b2->lng - b1->lng) * (a2->lat - a1->lat) -
-            (b2->lat - b1->lat) * (a2->lng - a1->lng));
+           denom;
     return (test >= 0 && test <= 1);
 }
