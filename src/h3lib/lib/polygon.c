@@ -143,22 +143,24 @@ bool cellBoundaryCrossesGeoLoop(const GeoLoop *geoloop, const BBox *loopBBox,
     LatLng loop1;
     LatLng loop2;
     for (int i = 0; i < geoloop->numVerts; i++) {
-        int nexti = (i + 1) % geoloop->numVerts;
-        if ((geoloop->verts[i].lat >= boundaryBBox->north &&
-             geoloop->verts[nexti].lat >= boundaryBBox->north) ||
-            (geoloop->verts[i].lat <= boundaryBBox->south &&
-             geoloop->verts[nexti].lat <= boundaryBBox->south) ||
-            (geoloop->verts[i].lng <= boundaryBBox->west &&
-             geoloop->verts[nexti].lng <= boundaryBBox->west) ||
-            (geoloop->verts[i].lng >= boundaryBBox->east &&
-             geoloop->verts[nexti].lng >= boundaryBBox->east)) {
-            continue;
-        }
-
         loop1 = geoloop->verts[i];
         loop1.lng = NORMALIZE_LNG(loop1.lng, loopNormalization);
-        loop2 = geoloop->verts[nexti];
+        loop2 = geoloop->verts[(i + 1) % geoloop->numVerts];
         loop2.lng = NORMALIZE_LNG(loop2.lng, loopNormalization);
+        if ((loop1.lat >= boundaryBBox->north &&
+             loop2.lat >= boundaryBBox->north) ||
+            (loop1.lat <= boundaryBBox->south &&
+             loop2.lat <= boundaryBBox->south) ||
+            (loop1.lng <=
+                 NORMALIZE_LNG(boundaryBBox->west, boundaryNormalization) &&
+             loop2.lng <=
+                 NORMALIZE_LNG(boundaryBBox->west, boundaryNormalization)) ||
+            (loop1.lng >=
+                 NORMALIZE_LNG(boundaryBBox->east, boundaryNormalization) &&
+             loop2.lng >=
+                 NORMALIZE_LNG(boundaryBBox->east, boundaryNormalization))) {
+            continue;
+        }
 
         for (int j = 0; j < normalBoundary.numVerts; j++) {
             if (lineIntersectsLine(
