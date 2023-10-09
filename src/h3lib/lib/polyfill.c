@@ -122,13 +122,11 @@ static H3Index nextCell(H3Index cell) {
             return getBaseCell(H3_GET_BASE_CELL(cell) + 1);
         }
 
-        H3Index parent;
-        H3Error parentErr = H3_EXPORT(cellToParent)(cell, res - 1, &parent);
-        if (NEVER(parentErr != E_SUCCESS)) {
-            // Should be unreachable; res - 1 can't be out of range, and can't
-            // mismatch current
-            return H3_NULL;
-        }
+        // Faster cellToParent when we know the resolution is valid
+        // and we're only moving up one level
+        H3Index parent = cell;
+        H3_SET_RESOLUTION(parent, res - 1);
+        H3_SET_INDEX_DIGIT(parent, res, H3_DIGIT_MASK);
 
         // If not the last sibling of parent, return next sibling
         Direction digit = H3_GET_INDEX_DIGIT(cell, res);

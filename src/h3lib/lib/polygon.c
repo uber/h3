@@ -143,10 +143,23 @@ bool cellBoundaryCrossesGeoLoop(const GeoLoop *geoloop, const BBox *loopBBox,
     LatLng loop1;
     LatLng loop2;
     for (int i = 0; i < geoloop->numVerts; i++) {
+        int nexti = (i + 1) % geoloop->numVerts;
+        if ((geoloop->verts[i].lat >= boundaryBBox->north &&
+             geoloop->verts[nexti].lat >= boundaryBBox->north) ||
+            (geoloop->verts[i].lat <= boundaryBBox->south &&
+             geoloop->verts[nexti].lat <= boundaryBBox->south) ||
+            (geoloop->verts[i].lng <= boundaryBBox->west &&
+             geoloop->verts[nexti].lng <= boundaryBBox->west) ||
+            (geoloop->verts[i].lng >= boundaryBBox->east &&
+             geoloop->verts[nexti].lng >= boundaryBBox->east)) {
+            continue;
+        }
+
         loop1 = geoloop->verts[i];
         loop1.lng = NORMALIZE_LNG(loop1.lng, loopNormalization);
-        loop2 = geoloop->verts[(i + 1) % geoloop->numVerts];
+        loop2 = geoloop->verts[nexti];
         loop2.lng = NORMALIZE_LNG(loop2.lng, loopNormalization);
+
         for (int j = 0; j < normalBoundary.numVerts; j++) {
             if (lineIntersectsLine(
                     &loop1, &loop2, &normalBoundary.verts[j],
