@@ -22,6 +22,7 @@
 #include <string.h>
 
 #include "alloc.h"
+#include "baseCells.h"
 #include "coordijk.h"
 #include "h3Assert.h"
 #include "h3Index.h"
@@ -62,26 +63,40 @@ H3Error cellToBBox(H3Index cell, BBox *out, bool coverChildren) {
         scaleBBox(out, CHILD_SCALE_FACTOR);
     }
 
-    // Adjust the BBox to handle poles
-    H3Index poleTest;
-    // North pole
-    H3Error northPoleErr = H3_EXPORT(latLngToCell)(
-        &NORTH_POLE, H3_GET_RESOLUTION(cell), &poleTest);
-    if (NEVER(northPoleErr != E_SUCCESS)) {
-        return northPoleErr;
-    }
-    if (cell == poleTest) {
+    // Adjust the BBox to handle poles, if needed
+    int baseCell = H3_GET_BASE_CELL(cell);
+
+    // Res 0 base cell that contains the north pole
+    if (cell == 0x8001fffffffffff) {
         out->north = M_PI_2;
     }
-    // South pole
-    H3Error southPoleErr = H3_EXPORT(latLngToCell)(
-        &SOUTH_POLE, H3_GET_RESOLUTION(cell), &poleTest);
-    if (NEVER(southPoleErr != E_SUCCESS)) {
-        return southPoleErr;
+    // Res 1 and finer, north pole is in base cell 1
+    else if (baseCell == 1) {
+        // Test north pole
+        H3Index poleTest;
+        H3Error northPoleErr = H3_EXPORT(latLngToCell)(
+            &NORTH_POLE, H3_GET_RESOLUTION(cell), &poleTest);
+        if (NEVER(northPoleErr != E_SUCCESS)) {
+            return northPoleErr;
+        }
+        if (cell == poleTest) {
+            out->north = M_PI_2;
+        }
     }
-    if (cell == poleTest) {
-        out->south = -M_PI_2;
+    // All cells with south pole are in base cell 121
+    else if (baseCell == 121) {
+        // Test outh pole
+        H3Index poleTest;
+        H3Error southPoleErr = H3_EXPORT(latLngToCell)(
+            &SOUTH_POLE, H3_GET_RESOLUTION(cell), &poleTest);
+        if (NEVER(southPoleErr != E_SUCCESS)) {
+            return southPoleErr;
+        }
+        if (cell == poleTest) {
+            out->south = -M_PI_2;
+        }
     }
+
     // If we contain a pole, expand the longitude to include the full domain,
     // effectively making the bbox a circle around the pole.
     if (out->north == M_PI_2 || out->south == -M_PI_2) {
@@ -264,20 +279,24 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
                 iterErrorPolygonCompact(iter, bboxErr);
                 return;
             }
-            if (bboxIntersects(&bbox, &iter->_bboxes[0])) {
-                // Convert bbox to cell boundary, CCW vertex order
-                CellBoundary bboxBoundary = {
-                    .numVerts = 4,
-                    .verts = {{bbox.north, bbox.east},
-                              {bbox.north, bbox.west},
-                              {bbox.south, bbox.west},
-                              {bbox.south, bbox.east}}};
-                if (cellBoundaryInsidePolygon(iter->_polygon, iter->_bboxes,
-                                              &bboxBoundary, &bbox)) {
-                    // Bounding box is fully contained, so all children are
-                    // included. Set to next output.
-                    iter->cell = cell;
-                    return;
+            if (bboxOverlapsBBox(&iter->_bboxes[0], &bbox)) {
+                // Quick check for possible containment
+                if (bboxContainsBBox(&iter->_bboxes[0], &bbox)) {
+                    // Convert bbox to cell boundary, CCW vertex order
+                    CellBoundary bboxBoundary = {
+                        .numVerts = 4,
+                        .verts = {{bbox.north, bbox.east},
+                                  {bbox.north, bbox.west},
+                                  {bbox.south, bbox.west},
+                                  {bbox.south, bbox.east}}};
+                    // Do a fine-grained, more expensive check on the polygon
+                    if (cellBoundaryInsidePolygon(iter->_polygon, iter->_bboxes,
+                                                  &bboxBoundary, &bbox)) {
+                        // Bounding box is fully contained, so all children are
+                        // included. Set to next output.
+                        iter->cell = cell;
+                        return;
+                    }
                 }
                 // Otherwise, the intersecting bbox means we need to test all
                 // children, starting with the first child

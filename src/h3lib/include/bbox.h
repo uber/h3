@@ -40,7 +40,8 @@ double bboxHeightRads(const BBox *bbox);
 bool bboxIsTransmeridian(const BBox *bbox);
 void bboxCenter(const BBox *bbox, LatLng *center);
 bool bboxContains(const BBox *bbox, const LatLng *point);
-bool bboxIntersects(const BBox *a, const BBox *b);
+bool bboxContainsBBox(const BBox *a, const BBox *b);
+bool bboxOverlapsBBox(const BBox *a, const BBox *b);
 bool bboxEquals(const BBox *b1, const BBox *b2);
 H3Error bboxHexEstimate(const BBox *bbox, int res, int64_t *out);
 H3Error lineHexEstimate(const LatLng *origin, const LatLng *destination,

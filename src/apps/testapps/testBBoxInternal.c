@@ -171,79 +171,81 @@ SUITE(BBox) {
         }
     }
 
-    TEST(bboxIntersects) {
+    TEST(bboxOverlapsBBox) {
         BBox a = {1.0, 0.0, 1.0, 0.0};
 
         BBox b1 = {1.0, 0.0, -1.0, -1.5};
-        t_assert(!bboxIntersects(&a, &b1), "no intersection to the west");
+        t_assert(!bboxOverlapsBBox(&a, &b1), "no intersection to the west");
 
         BBox b2 = {1.0, 0.0, 2.0, 1.5};
-        t_assert(!bboxIntersects(&a, &b2), "no intersection to the east");
+        t_assert(!bboxOverlapsBBox(&a, &b2), "no intersection to the east");
 
         BBox b3 = {-1.0, -1.5, 1.0, 0.0};
-        t_assert(!bboxIntersects(&a, &b3), "no intersection to the south");
+        t_assert(!bboxOverlapsBBox(&a, &b3), "no intersection to the south");
 
         BBox b4 = {2.0, 1.5, 1.0, 0.0};
-        t_assert(!bboxIntersects(&a, &b4), "no intersection to the north");
+        t_assert(!bboxOverlapsBBox(&a, &b4), "no intersection to the north");
 
         BBox b5 = {1.0, 0.0, 0.5, -1.5};
-        t_assert(bboxIntersects(&a, &b5), "intersection to the west");
+        t_assert(bboxOverlapsBBox(&a, &b5), "intersection to the west");
 
         BBox b6 = {1.0, 0.0, 2.0, 0.5};
-        t_assert(bboxIntersects(&a, &b6), "intersection to the east");
+        t_assert(bboxOverlapsBBox(&a, &b6), "intersection to the east");
 
         BBox b7 = {0.5, -1.5, 1.0, 0.0};
-        t_assert(bboxIntersects(&a, &b7), "intersection to the south");
+        t_assert(bboxOverlapsBBox(&a, &b7), "intersection to the south");
 
         BBox b8 = {2.0, 0.5, 1.0, 0.0};
-        t_assert(bboxIntersects(&a, &b8), "intersection to the north");
+        t_assert(bboxOverlapsBBox(&a, &b8), "intersection to the north");
 
         BBox b9 = {1.5, -0.5, 1.5, -0.5};
-        t_assert(bboxIntersects(&a, &b9), "intersection, b contains a");
+        t_assert(bboxOverlapsBBox(&a, &b9), "intersection, b contains a");
 
         BBox b10 = {0.5, 0.25, 0.5, 0.25};
-        t_assert(bboxIntersects(&a, &b10), "intersection, a contains b");
+        t_assert(bboxOverlapsBBox(&a, &b10), "intersection, a contains b");
 
         BBox b11 = {1.0, 0.0, 1.0, 0.0};
-        t_assert(bboxIntersects(&a, &b11), "intersection, a equals b");
+        t_assert(bboxOverlapsBBox(&a, &b11), "intersection, a equals b");
     }
 
-    TEST(bboxIntersectsTransmeridian) {
+    TEST(bboxOverlapsBBoxTransmeridian) {
         BBox a = {1.0, 0.0, -M_PI + 0.5, M_PI - 0.5};
 
         BBox b1 = {1.0, 0.0, M_PI - 0.7, M_PI - 0.9};
-        t_assert(!bboxIntersects(&a, &b1), "no intersection to the west");
+        t_assert(!bboxOverlapsBBox(&a, &b1), "no intersection to the west");
 
         BBox b2 = {1.0, 0.0, -M_PI + 0.9, -M_PI + 0.7};
-        t_assert(!bboxIntersects(&a, &b2), "no intersection to the east");
+        t_assert(!bboxOverlapsBBox(&a, &b2), "no intersection to the east");
 
         BBox b3 = {1.0, 0.0, M_PI - 0.4, M_PI - 0.9};
-        t_assert(bboxIntersects(&a, &b3), "intersection to the west");
-        t_assert(bboxIntersects(&b3, &a), "intersection to the west, reverse");
+        t_assert(bboxOverlapsBBox(&a, &b3), "intersection to the west");
+        t_assert(bboxOverlapsBBox(&b3, &a),
+                 "intersection to the west, reverse");
 
         BBox b4 = {1.0, 0.0, -M_PI + 0.9, -M_PI + 0.4};
-        t_assert(bboxIntersects(&a, &b4), "intersection to the east");
-        t_assert(bboxIntersects(&b4, &a), "intersection to the east, reverse");
+        t_assert(bboxOverlapsBBox(&a, &b4), "intersection to the east");
+        t_assert(bboxOverlapsBBox(&b4, &a),
+                 "intersection to the east, reverse");
 
         BBox b5 = {1.0, 0.0, -M_PI + 0.4, M_PI - 0.4};
-        t_assert(bboxIntersects(&a, &b5), "intersection, a contains b");
+        t_assert(bboxOverlapsBBox(&a, &b5), "intersection, a contains b");
 
         BBox b6 = {1.0, 0.0, -M_PI + 0.6, M_PI - 0.6};
-        t_assert(bboxIntersects(&a, &b6), "intersection, b contains a");
+        t_assert(bboxOverlapsBBox(&a, &b6), "intersection, b contains a");
 
         BBox b7 = {1.0, 0.0, -M_PI + 0.5, M_PI - 0.5};
-        t_assert(bboxIntersects(&a, &b7), "intersection, a equals b");
+        t_assert(bboxOverlapsBBox(&a, &b7), "intersection, a equals b");
 
         BBox b8 = {1.0, 0.0, -M_PI + 0.9, M_PI - 0.4};
-        t_assert(bboxIntersects(&a, &b8),
+        t_assert(bboxOverlapsBBox(&a, &b8),
                  "intersection, transmeridian to the east");
-        t_assert(bboxIntersects(&b8, &a),
+        t_assert(bboxOverlapsBBox(&b8, &a),
                  "intersection, transmeridian to the east, reverse");
 
         BBox b9 = {1.0, 0.0, -M_PI + 0.4, M_PI - 0.9};
-        t_assert(bboxIntersects(&a, &b9),
+        t_assert(bboxOverlapsBBox(&a, &b9),
                  "intersection, transmeridian to the west");
-        t_assert(bboxIntersects(&b9, &a),
+        t_assert(bboxOverlapsBBox(&b9, &a),
                  "intersection, transmeridian to the west, reverse");
     }
 

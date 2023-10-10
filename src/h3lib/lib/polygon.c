@@ -126,7 +126,7 @@ bool cellBoundaryInsidePolygon(const GeoPolygon *geoPolygon, const BBox *bboxes,
 bool cellBoundaryCrossesGeoLoop(const GeoLoop *geoloop, const BBox *loopBBox,
                                 const CellBoundary *boundary,
                                 const BBox *boundaryBBox) {
-    if (!bboxIntersects(loopBBox, boundaryBBox)) {
+    if (!bboxOverlapsBBox(loopBBox, boundaryBBox)) {
         return false;
     }
     LongitudeNormalization loopNormalization;
@@ -140,6 +140,12 @@ bool cellBoundaryCrossesGeoLoop(const GeoLoop *geoloop, const BBox *loopBBox,
             NORMALIZE_LNG(normalBoundary.verts[i].lng, boundaryNormalization);
     }
 
+    BBox normalBoundaryBBox = {
+        .north = boundaryBBox->north,
+        .south = boundaryBBox->south,
+        .east = NORMALIZE_LNG(boundaryBBox->east, boundaryNormalization),
+        .west = NORMALIZE_LNG(boundaryBBox->west, boundaryNormalization)};
+
     LatLng loop1;
     LatLng loop2;
     for (int i = 0; i < geoloop->numVerts; i++) {
@@ -147,18 +153,16 @@ bool cellBoundaryCrossesGeoLoop(const GeoLoop *geoloop, const BBox *loopBBox,
         loop1.lng = NORMALIZE_LNG(loop1.lng, loopNormalization);
         loop2 = geoloop->verts[(i + 1) % geoloop->numVerts];
         loop2.lng = NORMALIZE_LNG(loop2.lng, loopNormalization);
-        if ((loop1.lat >= boundaryBBox->north &&
-             loop2.lat >= boundaryBBox->north) ||
-            (loop1.lat <= boundaryBBox->south &&
-             loop2.lat <= boundaryBBox->south) ||
-            (loop1.lng <=
-                 NORMALIZE_LNG(boundaryBBox->west, boundaryNormalization) &&
-             loop2.lng <=
-                 NORMALIZE_LNG(boundaryBBox->west, boundaryNormalization)) ||
-            (loop1.lng >=
-                 NORMALIZE_LNG(boundaryBBox->east, boundaryNormalization) &&
-             loop2.lng >=
-                 NORMALIZE_LNG(boundaryBBox->east, boundaryNormalization))) {
+
+        // Quick check if the line segment overlaps our bbox
+        if ((loop1.lat >= normalBoundaryBBox.north &&
+             loop2.lat >= normalBoundaryBBox.north) ||
+            (loop1.lat <= normalBoundaryBBox.south &&
+             loop2.lat <= normalBoundaryBBox.south) ||
+            (loop1.lng <= normalBoundaryBBox.west &&
+             loop2.lng <= normalBoundaryBBox.west) ||
+            (loop1.lng >= normalBoundaryBBox.east &&
+             loop2.lng >= normalBoundaryBBox.east)) {
             continue;
         }
 

@@ -80,19 +80,19 @@ bool bboxContains(const BBox *bbox, const LatLng *point) {
 }
 
 /**
- * Whether two bounding boxes intersect
+ * Whether two bounding boxes overlap
  * @param  a First bounding box
  * @param  b Second bounding box
- * @return   Whether the bounding boxes intersect
+ * @return   Whether the bounding boxes overlap
  */
-bool bboxIntersects(const BBox *a, const BBox *b) {
-    // Check whether latitude coords intersect
+bool bboxOverlapsBBox(const BBox *a, const BBox *b) {
+    // Check whether latitude coords overlap
     double ah = bboxHeightRads(a);
     double bh = bboxHeightRads(b);
     if (fabs((a->north - ah / 2) - (b->north - bh / 2)) * 2 > (ah + bh)) {
         return false;
     }
-    // Check whether longitude coords intersect
+    // Check whether longitude coords overlap
     double aw = bboxWidthRads(a);
     double bw = bboxWidthRads(b);
     // Account for transmeridian bboxes
@@ -102,6 +102,28 @@ bool bboxIntersects(const BBox *a, const BBox *b) {
     double aWest = NORMALIZE_LNG(a->west, aNormalization);
     double bWest = NORMALIZE_LNG(b->west, bNormalization);
     return (fabs((aWest + aw / 2) - (bWest + bw / 2)) * 2 < (aw + bw));
+}
+
+/**
+ * Whether one bounding box contains another
+ * @param  a First bounding box
+ * @param  b Second bounding box
+ * @return   Whether a contains b
+ */
+bool bboxContainsBBox(const BBox *a, const BBox *b) {
+    // Check whether latitude coords are contained
+    if (a->north < b->north || a->south > b->south) {
+        return false;
+    }
+    // Check whether longitude coords are contained
+    // Account for transmeridian bboxes
+    LongitudeNormalization aNormalization;
+    LongitudeNormalization bNormalization;
+    bboxNormalization(a, b, &aNormalization, &bNormalization);
+    return NORMALIZE_LNG(a->west, aNormalization) <=
+               NORMALIZE_LNG(b->west, bNormalization) &&
+           NORMALIZE_LNG(a->east, aNormalization) >=
+               NORMALIZE_LNG(b->east, bNormalization);
 }
 
 /**
