@@ -87,21 +87,24 @@ bool bboxContains(const BBox *bbox, const LatLng *point) {
  */
 bool bboxOverlapsBBox(const BBox *a, const BBox *b) {
     // Check whether latitude coords overlap
-    double ah = bboxHeightRads(a);
-    double bh = bboxHeightRads(b);
-    if (fabs((a->north - ah / 2) - (b->north - bh / 2)) * 2 > (ah + bh)) {
+    if (a->north < b->south || a->south > b->north) {
         return false;
     }
-    // Check whether longitude coords overlap
-    double aw = bboxWidthRads(a);
-    double bw = bboxWidthRads(b);
-    // Account for transmeridian bboxes
+
+    // Check whether longitude coords overlap, accounting for transmeridian
+    // bboxes
     LongitudeNormalization aNormalization;
     LongitudeNormalization bNormalization;
     bboxNormalization(a, b, &aNormalization, &bNormalization);
-    double aWest = NORMALIZE_LNG(a->west, aNormalization);
-    double bWest = NORMALIZE_LNG(b->west, bNormalization);
-    return (fabs((aWest + aw / 2) - (bWest + bw / 2)) * 2 < (aw + bw));
+
+    if (NORMALIZE_LNG(a->east, aNormalization) <
+            NORMALIZE_LNG(b->west, bNormalization) ||
+        NORMALIZE_LNG(a->west, aNormalization) >
+            NORMALIZE_LNG(b->east, bNormalization)) {
+        return false;
+    }
+
+    return true;
 }
 
 /**
