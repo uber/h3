@@ -81,7 +81,7 @@ static void auditBaseCellNeighbors(int baseCellNeighbors[NUM_BASE_CELLS][7],
 /**
  * Generates and prints the baseCellNeighbors and baseCellRotations tables.
  */
-static void generate() {
+static void generate(void) {
     int baseCellNeighbors[NUM_BASE_CELLS][7];
     int baseCellRotations[NUM_BASE_CELLS][7];
 
