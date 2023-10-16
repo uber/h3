@@ -1019,7 +1019,7 @@ H3Error H3_EXPORT(getIcosahedronFaces)(H3Index h3, int *out) {
  *
  * @return int count of pentagon indexes
  */
-int H3_EXPORT(pentagonCount)() { return NUM_PENTAGONS; }
+int H3_EXPORT(pentagonCount)(void) { return NUM_PENTAGONS; }
 
 /**
  * Generates all pentagons at the specified resolution

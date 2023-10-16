@@ -919,7 +919,7 @@ Direction _getBaseCellDirection(int originBaseCell, int neighboringBaseCell) {
  *
  * @return int count of resolution 0 cells
  */
-int H3_EXPORT(res0CellCount)() { return NUM_BASE_CELLS; }
+int H3_EXPORT(res0CellCount)(void) { return NUM_BASE_CELLS; }
 
 /**
  * getRes0Cells generates all base cells storing them into the provided

@@ -25,7 +25,7 @@
 #include "baseCells.h"
 #include "h3Index.h"
 
-static void generate() {
+static void generate(void) {
     H3Index pentagons[NUM_PENTAGONS] = {0};
     // Get the res 2 pentagons, whose neighbors have the same base cell
     // and are unambiguously on the correct faces

@@ -42,7 +42,7 @@ static void _incrementResDigit(IterCellsChildren *it, int res) {
  * internal state after it's exhausted, like the child resolution, for
  * example.
  */
-static IterCellsChildren _null_iter() {
+static IterCellsChildren _null_iter(void) {
     return (IterCellsChildren){
         .h = H3_NULL, ._parentRes = -1, ._skipDigit = -1};
 }

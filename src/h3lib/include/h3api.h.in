@@ -437,7 +437,7 @@ DECLSPEC H3Error H3_EXPORT(getNumCells)(int res, int64_t *out);
  * @{
  */
 /** @brief returns the number of resolution 0 cells (hexagons and pentagons) */
-DECLSPEC int H3_EXPORT(res0CellCount)();
+DECLSPEC int H3_EXPORT(res0CellCount)(void);
 
 /** @brief provides all base cells in H3Index format*/
 DECLSPEC H3Error H3_EXPORT(getRes0Cells)(H3Index *out);
@@ -448,7 +448,7 @@ DECLSPEC H3Error H3_EXPORT(getRes0Cells)(H3Index *out);
  * @{
  */
 /** @brief returns the number of pentagons per resolution */
-DECLSPEC int H3_EXPORT(pentagonCount)();
+DECLSPEC int H3_EXPORT(pentagonCount)(void);
 
 /** @brief generates all pentagons at the specified resolution */
 DECLSPEC H3Error H3_EXPORT(getPentagons)(int res, H3Index *out);
