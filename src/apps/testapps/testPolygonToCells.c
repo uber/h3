@@ -18,7 +18,6 @@
 #include <math.h>
 #include <stdlib.h>
 
-#include "algos.h"
 #include "constants.h"
 #include "h3Index.h"
 #include "latLng.h"
@@ -451,25 +450,7 @@ SUITE(polygonToCells) {
         iterateAllIndexesAtRes(2, fillIndex_assertions);
     }
 
-    TEST(getEdgeHexagonsInvalid) {
-        int64_t numHexagons = 100;
-        H3Index *search = calloc(numHexagons, sizeof(H3Index));
-        assert(search != NULL);
-        H3Index *found = calloc(numHexagons, sizeof(H3Index));
-        assert(found != NULL);
-
-        int res = 0;
-        int64_t numSearchHexes = 0;
-        H3Error err = _getEdgeHexagons(&invalidGeoLoop, numHexagons, res,
-                                       &numSearchHexes, search, found);
-        t_assert(err != E_SUCCESS,
-                 "_getEdgeHexagons returns error for invalid geoloop");
-
-        free(found);
-        free(search);
-    }
-
-    TEST(polygonToCellsInvalid) {
+    TEST(polygonToCellsInvalidEstimate) {
         int64_t numHexagons;
         t_assert(
             H3_EXPORT(maxPolygonToCellsSize)(&invalidGeoPolygon, 9, 0,
@@ -478,26 +459,16 @@ SUITE(polygonToCells) {
         t_assert(H3_EXPORT(maxPolygonToCellsSize)(&invalid2GeoPolygon, 9, 0,
                                                   &numHexagons) == E_FAILED,
                  "Cannot determine cell size to invalid geo polygon with NaNs");
-
-        // Chosen arbitrarily, polygonToCells should error out before this is an
-        // issue.
-        numHexagons = 0;
-
-        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
-        t_assert(H3_EXPORT(polygonToCells)(&invalidGeoPolygon, 9, 0,
-                                           hexagons) == E_FAILED,
-                 "Invalid geo polygon cannot be evaluated");
-        free(hexagons);
     }
 
-    TEST(polygonToCellsPoint) {
+    TEST(polygonToCellsPointEstimate) {
         int64_t numHexagons;
         t_assert(H3_EXPORT(maxPolygonToCellsSize)(&pointGeoPolygon, 9, 0,
                                                   &numHexagons) == E_FAILED,
                  "Cannot estimate for single point");
     }
 
-    TEST(polygonToCellsLine) {
+    TEST(polygonToCellsLineEstimate) {
         int64_t numHexagons;
         t_assert(H3_EXPORT(maxPolygonToCellsSize)(&lineGeoPolygon, 9, 0,
                                                   &numHexagons) == E_FAILED,

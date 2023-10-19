@@ -78,12 +78,6 @@ DECLSPEC IterCellsPolygon iterInitPolygon(const GeoPolygon *polygon, int res,
 DECLSPEC void iterStepPolygon(IterCellsPolygon *iter);
 DECLSPEC void iterDestroyPolygon(IterCellsPolygon *iter);
 
-H3Error H3_EXPORT(polygonToCells2)(const GeoPolygon *polygon, int res,
-                                   uint32_t flags, H3Index *out);
-
-H3Error H3_EXPORT(polygonToCellsCompact)(const GeoPolygon *polygon, int res,
-                                         uint32_t flags, H3Index *out);
-
 H3Error cellToBBox(H3Index cell, BBox *out, bool coverChildren);
 
 #endif

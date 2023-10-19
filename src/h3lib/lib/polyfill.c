@@ -417,26 +417,19 @@ void iterDestroyPolygon(IterCellsPolygon *iter) {
 }
 
 /**
- * Parity implementation for polygonToCells
+ * polygonToCells takes a given GeoJSON-like data structure and preallocated,
+ * zeroed memory, and fills it with the hexagons that are contained by
+ * the GeoJSON-like data structure. Polygons are considered in Cartesian space.
+ *
+ * @param geoPolygon The geoloop and holes defining the relevant area
+ * @param res The Hexagon resolution (0-15)
+ * @param out The slab of zeroed memory to write to. Assumed to be big enough.
  */
-H3Error H3_EXPORT(polygonToCells2)(const GeoPolygon *polygon, int res,
+H3Error H3_EXPORT(polygonToCells)(const GeoPolygon *polygon, int res,
                                    uint32_t flags, H3Index *out) {
     IterCellsPolygon iter = iterInitPolygon(polygon, res, flags);
     int64_t i = 0;
     for (; iter.cell; iterStepPolygon(&iter)) {
-        out[i++] = iter.cell;
-    }
-    return iter.error;
-}
-
-/**
- * Compact implementation for polygonToCells
- */
-H3Error H3_EXPORT(polygonToCellsCompact)(const GeoPolygon *polygon, int res,
-                                         uint32_t flags, H3Index *out) {
-    IterCellsPolygonCompact iter = iterInitPolygonCompact(polygon, res, flags);
-    int64_t i = 0;
-    for (; iter.cell; iterStepPolygonCompact(&iter)) {
         out[i++] = iter.cell;
     }
     return iter.error;
