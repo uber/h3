@@ -355,15 +355,6 @@ SUITE(BBox) {
             "and side ratio");
     }
 
-    TEST(lineHexEstimate_invalidRes) {
-        int64_t numHexagons;
-        LatLng origin = {0.0, 0.0};
-        LatLng destination = {1.0, 1.0};
-        t_assert(lineHexEstimate(&origin, &destination, -1, &numHexagons) ==
-                     E_RES_DOMAIN,
-                 "lineHexEstimate of invalid resolution fails");
-    }
-
     TEST(scaleBBox_noop) {
         BBox bbox = {1.0, 0.0, 1.0, 0.0};
         BBox expected = {1.0, 0.0, 1.0, 0.0};

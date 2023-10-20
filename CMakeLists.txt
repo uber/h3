@@ -223,6 +223,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testVertexInternal.c
     src/apps/testapps/testVertexExhaustive.c
     src/apps/testapps/testPolygonInternal.c
+    src/apps/testapps/testPolyfillInternal.c
     src/apps/testapps/testVec2dInternal.c
     src/apps/testapps/testVec3dInternal.c
     src/apps/testapps/testDirectedEdge.c

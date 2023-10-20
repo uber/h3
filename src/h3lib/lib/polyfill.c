@@ -111,7 +111,7 @@ H3Error cellToBBox(H3Index cell, BBox *out, bool coverChildren) {
  * Get a base cell by number, or H3_NULL if out of bounds
  */
 static H3Index getBaseCell(int baseCellNum) {
-    if (baseCellNum < 0 || baseCellNum >= NUM_BASE_CELLS) {
+    if (NEVER(baseCellNum < 0) || baseCellNum >= NUM_BASE_CELLS) {
         return H3_NULL;
     }
     H3Index baseCell;

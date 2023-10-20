@@ -112,13 +112,13 @@ You can run a faster test suite that excludes the most expensive tests with `mak
 
 #### Coverage
 
-You can generate a code coverage report if `lcov` is installed, and if the project was built with the `CMAKE_BUILD_TYPE=Debug` option.
+You can generate a code coverage report if `lcov` is installed, and if the project was built with the `CMAKE_BUILD_TYPE=Debug` and `ENABLE_COVERAGE=ON` options.
 For example, from a clean repository, you could run:
 
 ```
 mkdir build
 cd build
-cmake -DCMAKE_BUILD_TYPE=Debug ..
+cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=ON ..
 make
 make coverage
 ```

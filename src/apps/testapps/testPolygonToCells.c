@@ -157,6 +157,10 @@ SUITE(polygonToCells) {
     lineGeoPolygon.geoloop = lineGeoLoop;
     lineGeoPolygon.numHoles = 0;
 
+    // --------------------------------------------
+    // maxPolygonToCellsSize
+    // --------------------------------------------
+
     TEST(maxPolygonToCellsSize) {
         int64_t numHexagons;
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(&sfGeoPolygon, 9, 0,
@@ -173,6 +177,35 @@ SUITE(polygonToCells) {
         t_assert(numHexagons == 15,
                  "got expected max polygonToCells size (empty)");
     }
+
+    TEST(maxPolygonToCellsSizeInvalid) {
+        int64_t numHexagons;
+        t_assert(
+            H3_EXPORT(maxPolygonToCellsSize)(&invalidGeoPolygon, 9, 0,
+                                             &numHexagons) == E_FAILED,
+            "Cannot determine cell size to invalid geo polygon with Infinity");
+        t_assert(H3_EXPORT(maxPolygonToCellsSize)(&invalid2GeoPolygon, 9, 0,
+                                                  &numHexagons) == E_FAILED,
+                 "Cannot determine cell size to invalid geo polygon with NaNs");
+    }
+
+    TEST(maxPolygonToCellsSizePoint) {
+        int64_t numHexagons;
+        t_assert(H3_EXPORT(maxPolygonToCellsSize)(&pointGeoPolygon, 9, 0,
+                                                  &numHexagons) == E_FAILED,
+                 "Cannot estimate for single point");
+    }
+
+    TEST(maxPolygonToCellsSizeLine) {
+        int64_t numHexagons;
+        t_assert(H3_EXPORT(maxPolygonToCellsSize)(&lineGeoPolygon, 9, 0,
+                                                  &numHexagons) == E_FAILED,
+                 "Cannot estimate for straight line");
+    }
+
+    // --------------------------------------------
+    // polygonToCells
+    // --------------------------------------------
 
     TEST(polygonToCells) {
         int64_t numHexagons;
@@ -448,30 +481,5 @@ SUITE(polygonToCells) {
         iterateAllIndexesAtRes(0, fillIndex_assertions);
         iterateAllIndexesAtRes(1, fillIndex_assertions);
         iterateAllIndexesAtRes(2, fillIndex_assertions);
-    }
-
-    TEST(polygonToCellsInvalidEstimate) {
-        int64_t numHexagons;
-        t_assert(
-            H3_EXPORT(maxPolygonToCellsSize)(&invalidGeoPolygon, 9, 0,
-                                             &numHexagons) == E_FAILED,
-            "Cannot determine cell size to invalid geo polygon with Infinity");
-        t_assert(H3_EXPORT(maxPolygonToCellsSize)(&invalid2GeoPolygon, 9, 0,
-                                                  &numHexagons) == E_FAILED,
-                 "Cannot determine cell size to invalid geo polygon with NaNs");
-    }
-
-    TEST(polygonToCellsPointEstimate) {
-        int64_t numHexagons;
-        t_assert(H3_EXPORT(maxPolygonToCellsSize)(&pointGeoPolygon, 9, 0,
-                                                  &numHexagons) == E_FAILED,
-                 "Cannot estimate for single point");
-    }
-
-    TEST(polygonToCellsLineEstimate) {
-        int64_t numHexagons;
-        t_assert(H3_EXPORT(maxPolygonToCellsSize)(&lineGeoPolygon, 9, 0,
-                                                  &numHexagons) == E_FAILED,
-                 "Cannot estimate for straight line");
     }
 }
