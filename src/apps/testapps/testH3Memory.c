@@ -25,6 +25,7 @@
 #include "h3Index.h"
 #include "h3api.h"
 #include "latLng.h"
+#include "polyfill.h"
 #include "test.h"
 #include "utility.h"
 
@@ -203,12 +204,55 @@ SUITE(h3Memory) {
 
         resetMemoryCounters(1);
         err = H3_EXPORT(polygonToCells)(&sfGeoPolygon, 9, 0, hexagons);
-        t_assert(err == E_SUCCESS, "polygonToCells succeeded (1)");
+        t_assert(err == E_MEMORY_ALLOC, "polygonToCells failed (2)");
+        t_assert(actualAllocCalls == 2, "alloc called twice");
+        t_assert(actualFreeCalls == 1, "free called once");
+
+        resetMemoryCounters(2);
+        err = H3_EXPORT(polygonToCells)(&sfGeoPolygon, 9, 0, hexagons);
+        t_assert(err == E_MEMORY_ALLOC, "polygonToCells failed (3)");
+        t_assert(actualAllocCalls == 3, "alloc called three times");
+        t_assert(actualFreeCalls == 2, "free called twice");
+
+        resetMemoryCounters(3);
+        err = H3_EXPORT(polygonToCells)(&sfGeoPolygon, 9, 0, hexagons);
+        t_assert(err == E_SUCCESS, "polygonToCells succeeded (4)");
+        t_assert(actualAllocCalls == 3, "alloc called three times");
+        t_assert(actualFreeCalls == 3, "free called three times");
+
+        int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
+        t_assert(actualNumIndexes == 1253, "got expected polygonToCells size");
+        free(hexagons);
+    }
+
+    TEST(polygonToCellsExperimental) {
+        sfGeoPolygon.geoloop = sfGeoLoop;
+        sfGeoPolygon.numHoles = 0;
+
+        int64_t numHexagons;
+        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(&sfGeoPolygon, 9, 0,
+                                                         &numHexagons));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+
+        resetMemoryCounters(0);
+        failAlloc = true;
+        H3Error err = H3_EXPORT(polygonToCellsExperimental)(&sfGeoPolygon, 9, 0,
+                                                            hexagons);
+        t_assert(err == E_MEMORY_ALLOC,
+                 "polygonToCellsExperimental failed (1)");
+        t_assert(actualAllocCalls == 1, "alloc called once");
+        t_assert(actualFreeCalls == 0, "free not called");
+
+        resetMemoryCounters(1);
+        err = H3_EXPORT(polygonToCellsExperimental)(&sfGeoPolygon, 9, 0,
+                                                    hexagons);
+        t_assert(err == E_SUCCESS, "polygonToCellsExperimental succeeded (1)");
         t_assert(actualAllocCalls == 1, "alloc called one time");
         t_assert(actualFreeCalls == 1, "free called one time");
 
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
-        t_assert(actualNumIndexes == 1253, "got expected polygonToCells size");
+        t_assert(actualNumIndexes == 1253,
+                 "got expected polygonToCellsExperimental size");
         free(hexagons);
     }
 }

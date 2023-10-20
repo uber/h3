@@ -425,8 +425,9 @@ void iterDestroyPolygon(IterCellsPolygon *iter) {
  * @param res The Hexagon resolution (0-15)
  * @param out The slab of zeroed memory to write to. Assumed to be big enough.
  */
-H3Error H3_EXPORT(polygonToCells)(const GeoPolygon *polygon, int res,
-                                   uint32_t flags, H3Index *out) {
+H3Error H3_EXPORT(polygonToCellsExperimental)(const GeoPolygon *polygon,
+                                              int res, uint32_t flags,
+                                              H3Index *out) {
     IterCellsPolygon iter = iterInitPolygon(polygon, res, flags);
     int64_t i = 0;
     for (; iter.cell; iterStepPolygon(&iter)) {
