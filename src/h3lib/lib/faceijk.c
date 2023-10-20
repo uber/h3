@@ -33,7 +33,7 @@
 #include "vec3d.h"
 
 /** square root of 7 */
-#define M_SQRT7 2.6457513110645905905016157536392604257102L
+#define M_SQRT7 2.6457513110645905905016157536392604257102
 
 /** @brief icosahedron face centers in lat/lng radians */
 const LatLng faceCenterGeo[NUM_ICOSA_FACES] = {
@@ -395,7 +395,7 @@ void _geoToHex2d(const LatLng *g, int res, int *face, Vec2d *v) {
     double r = acos(1 - sqd / 2);
 
     if (r < EPSILON) {
-        v->x = v->y = 0.0L;
+        v->x = v->y = 0.0;
         return;
     }
 
