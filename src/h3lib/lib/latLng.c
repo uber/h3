@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 Uber Technologies, Inc.
+ * Copyright 2016-2023 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@
  * @return The normalized radians value.
  */
 double _posAngleRads(double rads) {
-    double tmp = ((rads < 0.0L) ? rads + M_2PI : rads);
+    double tmp = ((rads < 0.0) ? rads + M_2PI : rads);
     if (rads >= M_2PI) tmp -= M_2PI;
     return tmp;
 }
