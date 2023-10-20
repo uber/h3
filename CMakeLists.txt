@@ -577,6 +577,15 @@ if(BUILD_BENCHMARKS)
     if(ENABLE_REQUIRES_ALL_SYMBOLS)
         add_h3_benchmark(benchmarkPolygon src/apps/benchmarks/benchmarkPolygon.c)
     endif()
+
+    add_custom_target(country-benchmark
+        COMMAND node ${CMAKE_CURRENT_SOURCE_DIR}/scripts/make_countries.js src/apps/benchmarks/benchmarkCountries.c
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        )
+    
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/apps/benchmarks/benchmarkCountries.c")
+       add_h3_benchmark(benchmarkCountries src/apps/benchmarks/benchmarkCountries.c)
+    endif()
 endif()
 
 # Installation (https://github.com/forexample/package-example)
