@@ -183,7 +183,7 @@ You can get the center coordinate of the hexagon like so:
 ./bin/cellToLatLng --index 8a2a1072b59ffff
 ```
 
-This will produce some coordinate:
+This will produce some coordination:
 
 ```
 40.6894218437 -74.0444313999
