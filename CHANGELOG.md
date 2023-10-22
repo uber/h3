@@ -8,6 +8,7 @@ The public API of this library consists of the functions declared in file
 ## [Unreleased]
 ### Changed
 - Reorganize tests into public / internal. (#762)
+- Performance enhancement for aarch64, should not affect other platforms
 
 ## [4.1.0] - 2023-01-18
 ### Added

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 Uber Technologies, Inc.
+ * Copyright 2016-2023 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@
 #include "vec3d.h"
 
 /** square root of 7 */
-#define M_SQRT7 2.6457513110645905905016157536392604257102L
+#define M_SQRT7 2.6457513110645905905016157536392604257102
 
 /** @brief icosahedron face centers in lat/lng radians */
 const LatLng faceCenterGeo[NUM_ICOSA_FACES] = {
@@ -395,7 +395,7 @@ void _geoToHex2d(const LatLng *g, int res, int *face, Vec2d *v) {
     double r = acos(1 - sqd / 2);
 
     if (r < EPSILON) {
-        v->x = v->y = 0.0L;
+        v->x = v->y = 0.0;
         return;
     }
 
