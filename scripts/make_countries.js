@@ -25,7 +25,7 @@ const path = require('path');
 const https = require('https');
 
 // Using GeoJSON version as it is easy to convert
-const SOURCE_URL = 'https://raw.githubusercontent.com/martynafford/natural-earth-geojson/master/110m/cultural/ne_110m_admin_0_countries.json';
+const SOURCE_URL = 'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_admin_0_countries.geojson';
 const TARGET = process.argv[2];
 
 // Use Node HTTPS module for download, to avoid dependencies
@@ -87,12 +87,12 @@ async function makeCountries(sourceUrl, targetPath) {
   for (const {geometry, properties: {ADMIN: name}} of countries.features) {
     if (geometry.type === 'Polygon') {
       polygons.push(geometry.coordinates);
-      names.push({i: String(i++), name});
+      names.push({i: String(i++), name, verts: geometry.coordinates[0].length});
     } else if (geometry.type === 'MultiPolygon') {
-      polygons.push(...geometry.coordinates);
-      let index = String(i++);
-      i += geometry.coordinates.length - 1;
-      names.push({i: `${index} - ${i}`, name});
+      for (const poly of geometry.coordinates) {
+        polygons.push(poly);
+        names.push({i: String(i++), name, verts: poly[0].length});
+      }
     }
   }
 
@@ -121,7 +121,7 @@ async function makeCountries(sourceUrl, targetPath) {
   /*
   Country names associated with each polygon:
   ${
-    names.map(({name, i}) => `${i}. ${name}`).join('\n')
+    names.map(({name, i, verts}) => `${i}. ${name} (${verts} verts)`).join('\n  ')
   }
    */
 
