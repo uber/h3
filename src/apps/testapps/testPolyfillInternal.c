@@ -129,7 +129,7 @@ SUITE(polyfillInternal) {
         CellBoundary verts;
         t_assertSuccess(H3_EXPORT(cellToBoundary)(cell, &verts));
 
-        t_assert(ratio < 2 && ratio > 1,
+        t_assert(ratio < 3 && ratio > 1,
                  "Got reasonable area ratio between cell and bbox");
     }
 

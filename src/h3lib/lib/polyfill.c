@@ -29,6 +29,11 @@
 #include "h3Index.h"
 #include "polygon.h"
 
+// Factor by which to scale the cell bounding box to include all cells.
+// This was determined empirically by finding the smallest factor that
+// passed exhaustive tests.
+#define CELL_SCALE_FACTOR 1.1
+
 // Factor by which to scale the cell bounding box to include all children.
 // This was determined empirically by finding the smallest factor that
 // passed exhaustive tests.
@@ -100,7 +105,7 @@ H3Error cellToBBox(H3Index cell, BBox *out, bool coverChildren) {
 
     // Buffer the bounding box to cover children. Call this even if no buffering
     // is required in order to normalize the bbox to lat/lng bounds
-    scaleBBox(out, coverChildren ? CHILD_SCALE_FACTOR : 1.25);
+    scaleBBox(out, coverChildren ? CHILD_SCALE_FACTOR : CELL_SCALE_FACTOR);
 
     // Cell that contains the north pole
     if (cell == NORTH_POLE_CELLS[res]) {
