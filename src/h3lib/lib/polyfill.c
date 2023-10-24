@@ -222,7 +222,7 @@ H3Error cellToBBox(H3Index cell, BBox *out, bool coverChildren) {
 
     if (res == 0) {
         int baseCell = H3_GET_BASE_CELL(cell);
-        if (baseCell < 0 || baseCell >= NUM_BASE_CELLS) {
+        if (NEVER(baseCell < 0) || baseCell >= NUM_BASE_CELLS) {
             return E_CELL_INVALID;
         }
         *out = RES0_BBOXES[baseCell];

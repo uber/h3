@@ -142,4 +142,14 @@ SUITE(polyfillInternal) {
         t_assert(cellToBBox(cell, &bbox, false) == E_CELL_INVALID,
                  "Got expected error for cell with invalid base cell");
     }
+
+    TEST(cellToBBox_res0boundaryError) {
+        // arbitrary res 0 cell
+        H3Index cell = 0x8001fffffffffff;
+        H3_SET_BASE_CELL(cell, 123);
+
+        BBox bbox;
+        t_assert(cellToBBox(cell, &bbox, false) == E_CELL_INVALID,
+                 "Got expected error for res 0 cell with invalid base cell");
+    }
 }
