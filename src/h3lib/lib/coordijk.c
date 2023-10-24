@@ -345,7 +345,6 @@ H3Error _upAp7Checked(CoordIJK *ijk) {
         }
     }
 
-    // TODO: Do the int math parts here in long double?
     ijk->i = (int)lround(((i * 3) - j) / 7.0);
     ijk->j = (int)lround((i + (j * 2)) / 7.0);
     ijk->k = 0;
@@ -394,7 +393,6 @@ H3Error _upAp7rChecked(CoordIJK *ijk) {
         }
     }
 
-    // TODO: Do the int math parts here in long double?
     ijk->i = (int)lround(((i * 2) + j) / 7.0);
     ijk->j = (int)lround(((j * 3) - i) / 7.0);
     ijk->k = 0;
