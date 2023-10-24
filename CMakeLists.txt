@@ -196,6 +196,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testPolygonToCells.c
     src/apps/testapps/testPolygonToCellsExperimental.c
     src/apps/testapps/testPolygonToCellsReported.c
+    src/apps/testapps/testPolygonToCellsReportedExperimental.c
     src/apps/testapps/testPentagonIndexes.c
     src/apps/testapps/testGridDisk.c
     src/apps/testapps/testGridDiskInternal.c
