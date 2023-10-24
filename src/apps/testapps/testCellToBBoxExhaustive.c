@@ -31,6 +31,24 @@
 #include "test.h"
 #include "utility.h"
 
+static void cellBBox_assertions(H3Index h3) {
+    BBox bbox;
+    t_assertSuccess(cellToBBox(h3, &bbox, false));
+
+    CellBoundary verts;
+    t_assertSuccess(H3_EXPORT(cellToBoundary)(h3, &verts));
+    for (int j = 0; j < verts.numVerts; j++) {
+        if (!bboxContains(&bbox, &verts.verts[j])) {
+            printf("cell: ");
+            h3Println(h3);
+            bboxPrintln(&bbox);
+            geoPrintln(&verts.verts[j]);
+        }
+        t_assert(bboxContains(&bbox, &verts.verts[j]),
+                 "BBox contains cell vertex");
+    }
+}
+
 static void childBBox_assertions(H3Index h3) {
     int parentRes = H3_GET_RESOLUTION(h3);
 
@@ -69,6 +87,11 @@ static void childBBox_assertions(H3Index h3) {
 }
 
 SUITE(cellToBBox) {
+    TEST(cellBBox_correctness) {
+        iterateAllIndexesAtRes(0, cellBBox_assertions);
+        iterateAllIndexesAtRes(1, cellBBox_assertions);
+        iterateAllIndexesAtRes(2, cellBBox_assertions);
+    }
     TEST(childBBox_correctness) {
         iterateAllIndexesAtRes(0, childBBox_assertions);
         iterateAllIndexesAtRes(1, childBBox_assertions);

@@ -19,6 +19,7 @@
 
 #include "polyfill.h"
 
+#include <math.h>
 #include <string.h>
 
 #include "alloc.h"
@@ -33,68 +34,82 @@
 // passed exhaustive tests.
 #define CHILD_SCALE_FACTOR 1.4
 
-static const LatLng NORTH_POLE = {M_PI_2, 0};
-static const LatLng SOUTH_POLE = {-M_PI_2, 0};
+/**
+ * Max cell edge length, in radians, for each resolution. This was computed
+ * by taking the max exact edge length for cells at the center of each base
+ * cell at that resolution.
+ */
+static double MAX_EDGE_LENGTH_RADS[MAX_H3_RES + 1] = {
+    0.21577206265130, 0.08308767068495, 0.03148970436439, 0.01190662871439,
+    0.00450053330908, 0.00170105523619, 0.00064293917678, 0.00024300820659,
+    0.00009184847087, 0.00003471545901, 0.00001312121017, 0.00000495935129,
+    0.00000187445860, 0.00000070847876, 0.00000026777980, 0.00000010121125};
+
+/** All cells that contain the north pole, by res */
+static H3Index NORTH_POLE_CELLS[MAX_H3_RES + 1] = {
+    0x8001fffffffffff, 0x81033ffffffffff, 0x820327fffffffff, 0x830326fffffffff,
+    0x8403263ffffffff, 0x85032623fffffff, 0x860326237ffffff, 0x870326233ffffff,
+    0x880326233bfffff, 0x890326233abffff, 0x8a0326233ab7fff, 0x8b0326233ab0fff,
+    0x8c0326233ab03ff, 0x8d0326233ab03bf, 0x8e0326233ab039f, 0x8f0326233ab0399};
+
+/** All cells that contain the south pole, by res */
+static H3Index SOUTH_POLE_CELLS[MAX_H3_RES + 1] = {
+    0x80f3fffffffffff, 0x81f2bffffffffff, 0x82f297fffffffff, 0x83f293fffffffff,
+    0x84f2939ffffffff, 0x85f29383fffffff, 0x86f29380fffffff, 0x87f29380effffff,
+    0x88f29380e1fffff, 0x89f29380e0fffff, 0x8af29380e0d7fff, 0x8bf29380e0d0fff,
+    0x8cf29380e0d0dff, 0x8df29380e0d0cff, 0x8ef29380e0d0cc7, 0x8ff29380e0d0cc4};
 
 /**
  * For a given cell, return its bounding box. If coverChildren is true, the bbox
  * will be guaranteed to contain its children at any finer resolution. Note that
- * in this case no guarantee is provided as to the level of accuracy, and the
- * bounding box may have a significant margin of error.
+ * no guarantee is provided as to the level of accuracy, and the bounding box
+ * may have a significant margin of error.
  * @param cell Cell to calculate bbox for
  * @param out  BBox to hold output
  * @param coverChildren Whether the bounding box should cover all children
  */
 H3Error cellToBBox(H3Index cell, BBox *out, bool coverChildren) {
-    CellBoundary boundary;
-    H3Error boundaryErr = H3_EXPORT(cellToBoundary)(cell, &boundary);
-    if (boundaryErr) {
-        return boundaryErr;
-    }
-    // Convert to GeoLoop
-    GeoLoop loop;
-    loop.numVerts = boundary.numVerts;
-    loop.verts = (LatLng *)&boundary.verts;
-    // Calculate bbox
-    bboxFromGeoLoop(&loop, out);
-
-    if (coverChildren) {
-        // Buffer the bounding box to cover children
-        scaleBBox(out, CHILD_SCALE_FACTOR);
-    }
-
     // Adjust the BBox to handle poles, if needed
-    int baseCell = H3_GET_BASE_CELL(cell);
+    int res = H3_GET_RESOLUTION(cell);
 
-    // Res 0 base cell that contains the north pole
-    if (cell == 0x8001fffffffffff) {
+    if (res == 0) {
+        // For res 0
+        CellBoundary boundary;
+        H3Error boundaryErr = H3_EXPORT(cellToBoundary)(cell, &boundary);
+        if (boundaryErr) {
+            return boundaryErr;
+        }
+        // Convert to GeoLoop
+        GeoLoop loop;
+        loop.numVerts = boundary.numVerts;
+        loop.verts = (LatLng *)&boundary.verts;
+        // Calculate bbox
+        bboxFromGeoLoop(&loop, out);
+    } else {
+        LatLng center;
+        H3Error centerErr = H3_EXPORT(cellToLatLng)(cell, &center);
+        if (centerErr != E_SUCCESS) {
+            return centerErr;
+        }
+        double lngRatio = 1 / cos(center.lat);
+        out->north = center.lat + MAX_EDGE_LENGTH_RADS[res];
+        out->south = center.lat - MAX_EDGE_LENGTH_RADS[res];
+        out->east = center.lng + MAX_EDGE_LENGTH_RADS[res] * lngRatio;
+        out->west = center.lng - MAX_EDGE_LENGTH_RADS[res] * lngRatio;
+    }
+
+    // Buffer the bounding box to cover children. Call this even if no buffering
+    // is required in order to normalize the bbox to lat/lng bounds
+    scaleBBox(out, coverChildren ? CHILD_SCALE_FACTOR : 1.25);
+
+    // Cell that contains the north pole
+    if (cell == NORTH_POLE_CELLS[res]) {
         out->north = M_PI_2;
     }
-    // Res 1 and finer, north pole is in base cell 1
-    else if (baseCell == 1) {
-        // Test north pole
-        H3Index poleTest;
-        H3Error northPoleErr = H3_EXPORT(latLngToCell)(
-            &NORTH_POLE, H3_GET_RESOLUTION(cell), &poleTest);
-        if (NEVER(northPoleErr != E_SUCCESS)) {
-            return northPoleErr;
-        }
-        if (cell == poleTest) {
-            out->north = M_PI_2;
-        }
-    }
-    // All cells with south pole are in base cell 121
-    else if (baseCell == 121) {
-        // Test outh pole
-        H3Index poleTest;
-        H3Error southPoleErr = H3_EXPORT(latLngToCell)(
-            &SOUTH_POLE, H3_GET_RESOLUTION(cell), &poleTest);
-        if (NEVER(southPoleErr != E_SUCCESS)) {
-            return southPoleErr;
-        }
-        if (cell == poleTest) {
-            out->south = -M_PI_2;
-        }
+
+    // Cell that contains the north pole
+    if (cell == SOUTH_POLE_CELLS[res]) {
+        out->south = -M_PI_2;
     }
 
     // If we contain a pole, expand the longitude to include the full domain,
