@@ -28,6 +28,24 @@
 #include "latLng.h"
 
 /**
+ * Normalize an input longitude according to the specified normalization
+ * @param  lng           Input longitude
+ * @param  normalization Longitude normalization strategy
+ * @return               Normalized longitude
+ */
+static double normalizeLng(const double lng,
+                           const LongitudeNormalization normalization) {
+    switch (normalization) {
+        case NORMALIZE_NONE:
+            return lng;
+        case NORMALIZE_EAST:
+            return lng < 0 ? lng + M_2PI : lng;
+        case NORMALIZE_WEST:
+            return lng > 0 ? lng - M_2PI : lng;
+    }
+}
+
+/**
  * Width of the bounding box, in rads
  * @param  bbox Bounding box to inspect
  * @return      width, in rads
@@ -97,10 +115,10 @@ bool bboxOverlapsBBox(const BBox *a, const BBox *b) {
     LongitudeNormalization bNormalization;
     bboxNormalization(a, b, &aNormalization, &bNormalization);
 
-    if (NORMALIZE_LNG(a->east, aNormalization) <
-            NORMALIZE_LNG(b->west, bNormalization) ||
-        NORMALIZE_LNG(a->west, aNormalization) >
-            NORMALIZE_LNG(b->east, bNormalization)) {
+    if (normalizeLng(a->east, aNormalization) <
+            normalizeLng(b->west, bNormalization) ||
+        normalizeLng(a->west, aNormalization) >
+            normalizeLng(b->east, bNormalization)) {
         return false;
     }
 
@@ -123,10 +141,10 @@ bool bboxContainsBBox(const BBox *a, const BBox *b) {
     LongitudeNormalization aNormalization;
     LongitudeNormalization bNormalization;
     bboxNormalization(a, b, &aNormalization, &bNormalization);
-    return NORMALIZE_LNG(a->west, aNormalization) <=
-               NORMALIZE_LNG(b->west, bNormalization) &&
-           NORMALIZE_LNG(a->east, aNormalization) >=
-               NORMALIZE_LNG(b->east, bNormalization);
+    return normalizeLng(a->west, aNormalization) <=
+               normalizeLng(b->west, bNormalization) &&
+           normalizeLng(a->east, aNormalization) >=
+               normalizeLng(b->east, bNormalization);
 }
 
 /**

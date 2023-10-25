@@ -38,16 +38,6 @@ typedef enum {
     NORMALIZE_WEST = 2   // Normalize positive numbers to the west
 } LongitudeNormalization;
 
-/** Macro: Normalize longitude, dealing with transmeridian arcs */
-#define NORMALIZE_LNG(lng, normalization)                               \
-    (normalization == NORMALIZE_EAST && lng < 0   ? lng + (double)M_2PI \
-     : normalization == NORMALIZE_WEST && lng > 0 ? lng - (double)M_2PI \
-                                                  : lng)
-
-/** Simpler version of NORMALIZE_LNG that only normalizes east */
-#define NORMALIZE_LNG_EAST(lng, normalization) \
-    (normalization == NORMALIZE_EAST && lng < 0 ? lng + (double)M_2PI : lng)
-
 void setGeoDegs(LatLng *p, double latDegs, double lngDegs);
 double constrainLat(double lat);
 double constrainLng(double lng);
