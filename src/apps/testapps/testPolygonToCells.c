@@ -478,6 +478,18 @@ SUITE(polygonToCells) {
         free(hexagons);
     }
 
+    TEST(polygonToCellsInvalidPolygon) {
+        // Chosen arbitrarily, polygonToCells should error out before this is an
+        // issue.
+        int64_t numHexagons = 0;
+
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+        t_assert(H3_EXPORT(polygonToCells)(&invalidGeoPolygon, 9, 0,
+                                           hexagons) == E_FAILED,
+                 "Invalid geo polygon cannot be evaluated");
+        free(hexagons);
+    }
+
     TEST(fillIndex) {
         iterateAllIndexesAtRes(0, fillIndex_assertions);
         iterateAllIndexesAtRes(1, fillIndex_assertions);
