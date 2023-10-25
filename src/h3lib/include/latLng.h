@@ -44,6 +44,10 @@ typedef enum {
      : normalization == NORMALIZE_WEST && lng > 0 ? lng - (double)M_2PI \
                                                   : lng)
 
+/** Simpler version of NORMALIZE_LNG that only normalizes east */
+#define NORMALIZE_LNG_EAST(lng, normalization) \
+    (normalization == NORMALIZE_EAST && lng < 0 ? lng + (double)M_2PI : lng)
+
 void setGeoDegs(LatLng *p, double latDegs, double lngDegs);
 double constrainLat(double lat);
 double constrainLng(double lng);

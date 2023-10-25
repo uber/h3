@@ -71,7 +71,7 @@ bool GENERIC_LOOP_ALGO(pointInside)(const TYPE *loop, const BBox *bbox,
     bool contains = false;
 
     double lat = coord->lat;
-    double lng = NORMALIZE_LNG(coord->lng, normalization);
+    double lng = NORMALIZE_LNG_EAST(coord->lng, normalization);
 
     LatLng a;
     LatLng b;
@@ -109,8 +109,8 @@ bool GENERIC_LOOP_ALGO(pointInside)(const TYPE *loop, const BBox *bbox,
             continue;
         }
 
-        double aLng = NORMALIZE_LNG(a.lng, normalization);
-        double bLng = NORMALIZE_LNG(b.lng, normalization);
+        double aLng = NORMALIZE_LNG_EAST(a.lng, normalization);
+        double bLng = NORMALIZE_LNG_EAST(b.lng, normalization);
 
         // Rays are cast in the longitudinal direction, in case a point
         // exactly matches, to decide tiebreakers, bias westerly
@@ -125,7 +125,7 @@ bool GENERIC_LOOP_ALGO(pointInside)(const TYPE *loop, const BBox *bbox,
         // of a to b
         double ratio = (lat - a.lat) / (b.lat - a.lat);
         double testLng =
-            NORMALIZE_LNG(aLng + (bLng - aLng) * ratio, normalization);
+            NORMALIZE_LNG_EAST(aLng + (bLng - aLng) * ratio, normalization);
 
         // Intersection of the ray
         if (testLng > lng) {
@@ -215,8 +215,8 @@ static bool GENERIC_LOOP_ALGO(isClockwiseNormalized)(
         }
         LongitudeNormalization normalization =
             isTransmeridian ? NORMALIZE_EAST : NORMALIZE_NONE;
-        sum += ((NORMALIZE_LNG(b.lng, normalization) -
-                 NORMALIZE_LNG(a.lng, normalization)) *
+        sum += ((NORMALIZE_LNG_EAST(b.lng, normalization) -
+                 NORMALIZE_LNG_EAST(a.lng, normalization)) *
                 (b.lat + a.lat));
     }
 
