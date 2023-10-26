@@ -28,24 +28,6 @@
 #include "latLng.h"
 
 /**
- * Normalize an input longitude according to the specified normalization
- * @param  lng           Input longitude
- * @param  normalization Longitude normalization strategy
- * @return               Normalized longitude
- */
-static double normalizeLng(const double lng,
-                           const LongitudeNormalization normalization) {
-    switch (normalization) {
-        case NORMALIZE_NONE:
-            return lng;
-        case NORMALIZE_EAST:
-            return lng < 0 ? lng + M_2PI : lng;
-        case NORMALIZE_WEST:
-            return lng > 0 ? lng - M_2PI : lng;
-    }
-}
-
-/**
  * Width of the bounding box, in rads
  * @param  bbox Bounding box to inspect
  * @return      width, in rads

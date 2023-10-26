@@ -137,22 +137,22 @@ bool cellBoundaryCrossesGeoLoop(const GeoLoop *geoloop, const BBox *loopBBox,
     CellBoundary normalBoundary = *boundary;
     for (int i = 0; i < boundary->numVerts; i++) {
         normalBoundary.verts[i].lng =
-            NORMALIZE_LNG(normalBoundary.verts[i].lng, boundaryNormalization);
+            normalizeLng(normalBoundary.verts[i].lng, boundaryNormalization);
     }
 
     BBox normalBoundaryBBox = {
         .north = boundaryBBox->north,
         .south = boundaryBBox->south,
-        .east = NORMALIZE_LNG(boundaryBBox->east, boundaryNormalization),
-        .west = NORMALIZE_LNG(boundaryBBox->west, boundaryNormalization)};
+        .east = normalizeLng(boundaryBBox->east, boundaryNormalization),
+        .west = normalizeLng(boundaryBBox->west, boundaryNormalization)};
 
     LatLng loop1;
     LatLng loop2;
     for (int i = 0; i < geoloop->numVerts; i++) {
         loop1 = geoloop->verts[i];
-        loop1.lng = NORMALIZE_LNG(loop1.lng, loopNormalization);
+        loop1.lng = normalizeLng(loop1.lng, loopNormalization);
         loop2 = geoloop->verts[(i + 1) % geoloop->numVerts];
-        loop2.lng = NORMALIZE_LNG(loop2.lng, loopNormalization);
+        loop2.lng = normalizeLng(loop2.lng, loopNormalization);
 
         // Quick check if the line segment overlaps our bbox
         if ((loop1.lat >= normalBoundaryBBox.north &&

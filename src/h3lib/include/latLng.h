@@ -41,6 +41,8 @@ typedef enum {
 void setGeoDegs(LatLng *p, double latDegs, double lngDegs);
 double constrainLat(double lat);
 double constrainLng(double lng);
+double normalizeLng(const double lng,
+                    const LongitudeNormalization normalization);
 
 bool geoAlmostEqual(const LatLng *p1, const LatLng *p2);
 bool geoAlmostEqualThreshold(const LatLng *p1, const LatLng *p2,
