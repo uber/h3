@@ -276,6 +276,7 @@ set(OTHER_SOURCE_FILES
     src/apps/fuzzers/fuzzerInternalAlgos.c
     src/apps/fuzzers/fuzzerInternalCoordIjk.c
     src/apps/benchmarks/benchmarkPolygonToCells.c
+    src/apps/benchmarks/benchmarkPolygonToCellsExperimental.c
     src/apps/benchmarks/benchmarkPolygon.c
     src/apps/benchmarks/benchmarkCellsToLinkedMultiPolygon.c
     src/apps/benchmarks/benchmarkCellToChildren.c
@@ -572,6 +573,7 @@ if(BUILD_BENCHMARKS)
     add_h3_benchmark(benchmarkCellsToLinkedMultiPolygon src/apps/benchmarks/benchmarkCellsToLinkedMultiPolygon.c)
     add_h3_benchmark(benchmarkCellToChildren src/apps/benchmarks/benchmarkCellToChildren.c)
     add_h3_benchmark(benchmarkPolygonToCells src/apps/benchmarks/benchmarkPolygonToCells.c)
+    add_h3_benchmark(benchmarkPolygonToCellsExperimental src/apps/benchmarks/benchmarkPolygonToCellsExperimental.c)
     if(ENABLE_REQUIRES_ALL_SYMBOLS)
         add_h3_benchmark(benchmarkPolygon src/apps/benchmarks/benchmarkPolygon.c)
     endif()
