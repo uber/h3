@@ -146,12 +146,12 @@ double constrainLng(double lng) {
 double normalizeLng(const double lng,
                     const LongitudeNormalization normalization) {
     switch (normalization) {
-        case NORMALIZE_NONE:
-            return lng;
         case NORMALIZE_EAST:
             return lng < 0 ? lng + (double)M_2PI : lng;
         case NORMALIZE_WEST:
             return lng > 0 ? lng - (double)M_2PI : lng;
+        default:
+            return lng;
     }
 }
 
