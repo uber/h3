@@ -192,6 +192,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testVertexGraphInternal.c
     src/apps/testapps/testCompactCells.c
     src/apps/testapps/testPolygonToCells.c
+    src/apps/testapps/testPolygonToCellsErrors.c
     src/apps/testapps/testPolygonToCellsReported.c
     src/apps/testapps/testPentagonIndexes.c
     src/apps/testapps/testGridDisk.c

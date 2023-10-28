@@ -186,6 +186,7 @@ add_h3_test(testCellsToLinkedMultiPolygon src/apps/testapps/testCellsToLinkedMul
 add_h3_test(testH3SetToVertexGraphInternal src/apps/testapps/testH3SetToVertexGraphInternal.c)
 add_h3_test(testLinkedGeoInternal src/apps/testapps/testLinkedGeoInternal.c)
 add_h3_test(testPolygonToCells src/apps/testapps/testPolygonToCells.c)
+add_h3_test(testPolygonToCellsErrors src/apps/testapps/testPolygonToCellsErrors.c)
 add_h3_test(testPolygonToCellsReported src/apps/testapps/testPolygonToCellsReported.c)
 add_h3_test(testVertexGraphInternal src/apps/testapps/testVertexGraphInternal.c)
 add_h3_test(testDirectedEdge src/apps/testapps/testDirectedEdge.c)
