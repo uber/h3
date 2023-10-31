@@ -578,7 +578,8 @@ if(BUILD_BENCHMARKS)
         add_h3_benchmark(benchmarkPolygon src/apps/benchmarks/benchmarkPolygon.c)
     endif()
 
-    add_custom_target(country-benchmark
+    # Country benchmark: Downloads country geometry and generates the benchmark file
+    add_custom_target(generate-country-benchmark
         COMMAND node ${CMAKE_CURRENT_SOURCE_DIR}/scripts/make_countries.js src/apps/benchmarks/benchmarkCountries.c
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         )
