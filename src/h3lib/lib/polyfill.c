@@ -266,8 +266,8 @@ H3Error cellToBBox(H3Index cell, BBox *out, bool coverChildren) {
 /**
  * Get a base cell by number, or H3_NULL if out of bounds
  */
-static H3Index getBaseCell(int baseCellNum) {
-    if (NEVER(baseCellNum < 0) || baseCellNum >= NUM_BASE_CELLS) {
+H3Index baseCellNumToCell(int baseCellNum) {
+    if (baseCellNum < 0 || baseCellNum >= NUM_BASE_CELLS) {
         return H3_NULL;
     }
     H3Index baseCell;
@@ -290,7 +290,7 @@ static H3Index nextCell(H3Index cell) {
     while (true) {
         // If this is a base cell, set to next base cell (or H3_NULL if done)
         if (res == 0) {
-            return getBaseCell(H3_GET_BASE_CELL(cell) + 1);
+            return baseCellNumToCell(H3_GET_BASE_CELL(cell) + 1);
         }
 
         // Faster cellToParent when we know the resolution is valid
@@ -340,7 +340,7 @@ IterCellsPolygonCompact iterInitPolygonCompact(const GeoPolygon *polygon,
                                                int res, uint32_t flags) {
     IterCellsPolygonCompact iter = {// Initialize output properties. The first
                                     // valid cell will be set in iterStep
-                                    .cell = getBaseCell(0),
+                                    .cell = baseCellNumToCell(0),
                                     .error = E_SUCCESS,
                                     // Save input arguments
                                     ._polygon = polygon,

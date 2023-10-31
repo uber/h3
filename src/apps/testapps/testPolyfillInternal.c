@@ -152,4 +152,21 @@ SUITE(polyfillInternal) {
         t_assert(cellToBBox(cell, &bbox, false) == E_CELL_INVALID,
                  "Got expected error for res 0 cell with invalid base cell");
     }
+
+    TEST(baseCellNumToCell) {
+        for (int i = 0; i < NUM_BASE_CELLS; i++) {
+            H3Index cell = baseCellNumToCell(i);
+            t_assert(H3_EXPORT(isValidCell)(cell), "Cell is valid");
+            t_assert(
+                H3_GET_BASE_CELL(cell) == i && H3_GET_RESOLUTION(cell) == 0,
+                "Cell has correct base number and res");
+        }
+    }
+
+    TEST(baseCellNumToCell_boundaryErrors) {
+        t_assert(baseCellNumToCell(-1) == H3_NULL,
+                 "Expected null for less than 0");
+        t_assert(baseCellNumToCell(NUM_BASE_CELLS) == H3_NULL,
+                 "Expected null for positive out of bounds");
+    }
 }
