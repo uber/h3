@@ -7,6 +7,7 @@ The public API of this library consists of the functions declared in file
 
 ## [Unreleased]
 ### Changed
+- Replace internal algorithm for `polygonToCells` with a new version that is more memory-efficient (#785)
 - Reorganize tests into public / internal. (#762)
 - Performance enhancement for aarch64, should not affect other platforms (#790, #792)
 

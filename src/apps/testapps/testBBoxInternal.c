@@ -22,9 +22,10 @@
 #include "latLng.h"
 #include "polygon.h"
 #include "test.h"
+#include "utility.h"
 
-void assertBBox(const GeoLoop *geoloop, const BBox *expected,
-                const LatLng *inside, const LatLng *outside) {
+void assertBBoxFromGeoLoop(const GeoLoop *geoloop, const BBox *expected,
+                           const LatLng *inside, const LatLng *outside) {
     BBox result;
 
     bboxFromGeoLoop(geoloop, &result);
@@ -35,14 +36,24 @@ void assertBBox(const GeoLoop *geoloop, const BBox *expected,
              "Does not contain expected outside point");
 }
 
-SUITE(BBoxInternal) {
+void assertBBox(const BBox *bbox, const BBox *expected) {
+    LatLng actualNE = {.lat = bbox->north, .lng = bbox->east};
+    LatLng expectedNE = {.lat = expected->north, .lng = expected->east};
+    t_assert(geoAlmostEqual(&actualNE, &expectedNE), "NE corner matches");
+
+    LatLng actualSW = {.lat = bbox->south, .lng = bbox->west};
+    LatLng expectedSW = {.lat = expected->south, .lng = expected->west};
+    t_assert(geoAlmostEqual(&actualSW, &expectedSW), "SW corner matches");
+}
+
+SUITE(BBox) {
     TEST(posLatPosLng) {
         LatLng verts[] = {{0.8, 0.3}, {0.7, 0.6}, {1.1, 0.7}, {1.0, 0.2}};
         const GeoLoop geoloop = {.numVerts = 4, .verts = verts};
         const BBox expected = {1.1, 0.7, 0.7, 0.2};
         const LatLng inside = {0.9, 0.4};
         const LatLng outside = {0.0, 0.0};
-        assertBBox(&geoloop, &expected, &inside, &outside);
+        assertBBoxFromGeoLoop(&geoloop, &expected, &inside, &outside);
     }
 
     TEST(negLatPosLng) {
@@ -51,7 +62,7 @@ SUITE(BBoxInternal) {
         const BBox expected = {-0.1, -0.4, 0.9, 0.6};
         const LatLng inside = {-0.3, 0.8};
         const LatLng outside = {0.0, 0.0};
-        assertBBox(&geoloop, &expected, &inside, &outside);
+        assertBBoxFromGeoLoop(&geoloop, &expected, &inside, &outside);
     }
 
     TEST(posLatNegLng) {
@@ -60,7 +71,7 @@ SUITE(BBoxInternal) {
         const BBox expected = {1.1, 0.7, -0.8, -1.4};
         const LatLng inside = {0.9, -1.0};
         const LatLng outside = {0.0, 0.0};
-        assertBBox(&geoloop, &expected, &inside, &outside);
+        assertBBoxFromGeoLoop(&geoloop, &expected, &inside, &outside);
     }
 
     TEST(negLatNegLng) {
@@ -70,7 +81,7 @@ SUITE(BBoxInternal) {
         const BBox expected = {-0.1, -0.4, -1.1, -1.4};
         const LatLng inside = {-0.3, -1.2};
         const LatLng outside = {0.0, 0.0};
-        assertBBox(&geoloop, &expected, &inside, &outside);
+        assertBBoxFromGeoLoop(&geoloop, &expected, &inside, &outside);
     }
 
     TEST(aroundZeroZero) {
@@ -79,7 +90,7 @@ SUITE(BBoxInternal) {
         const BBox expected = {0.4, -0.4, 0.4, -0.4};
         const LatLng inside = {-0.1, -0.1};
         const LatLng outside = {1.0, -1.0};
-        assertBBox(&geoloop, &expected, &inside, &outside);
+        assertBBoxFromGeoLoop(&geoloop, &expected, &inside, &outside);
     }
 
     TEST(transmeridian) {
@@ -91,7 +102,7 @@ SUITE(BBoxInternal) {
         const BBox expected = {0.4, -0.4, -M_PI + 0.1, M_PI - 0.1};
         const LatLng insideOnMeridian = {-0.1, M_PI};
         const LatLng outside = {1.0, M_PI - 0.5};
-        assertBBox(&geoloop, &expected, &insideOnMeridian, &outside);
+        assertBBoxFromGeoLoop(&geoloop, &expected, &insideOnMeridian, &outside);
 
         const LatLng westInside = {0.1, M_PI - 0.05};
         t_assert(bboxContains(&expected, &westInside),
@@ -117,7 +128,7 @@ SUITE(BBoxInternal) {
         const BBox expected = {M_PI_2, M_PI_2 - 0.1, 0.8, 0.1};
         const LatLng inside = {M_PI_2 - 0.01, 0.4};
         const LatLng outside = {M_PI_2, 0.9};
-        assertBBox(&geoloop, &expected, &inside, &outside);
+        assertBBoxFromGeoLoop(&geoloop, &expected, &inside, &outside);
     }
 
     TEST(edgeOnSouthPole) {
@@ -129,7 +140,7 @@ SUITE(BBoxInternal) {
         const BBox expected = {-M_PI_2 + 0.1, -M_PI_2, 0.8, 0.1};
         const LatLng inside = {-M_PI_2 + 0.01, 0.4};
         const LatLng outside = {-M_PI_2, 0.9};
-        assertBBox(&geoloop, &expected, &inside, &outside);
+        assertBBoxFromGeoLoop(&geoloop, &expected, &inside, &outside);
     }
 
     TEST(containsEdges) {
@@ -158,6 +169,99 @@ SUITE(BBoxInternal) {
             t_assert(bboxContains(&bbox, &points[i]),
                      "Contains transmeridian edge point");
         }
+    }
+
+    TEST(bboxOverlapsBBox) {
+        BBox a = {1.0, 0.0, 1.0, 0.0};
+
+        BBox b1 = {1.0, 0.0, -1.0, -1.5};
+        t_assert(!bboxOverlapsBBox(&a, &b1), "no intersection to the west");
+        t_assert(!bboxOverlapsBBox(&b1, &a),
+                 "no intersection to the west, reverse");
+
+        BBox b2 = {1.0, 0.0, 2.0, 1.5};
+        t_assert(!bboxOverlapsBBox(&a, &b2), "no intersection to the east");
+        t_assert(!bboxOverlapsBBox(&b2, &a),
+                 "no intersection to the east, reverse");
+
+        BBox b3 = {-1.0, -1.5, 1.0, 0.0};
+        t_assert(!bboxOverlapsBBox(&a, &b3), "no intersection to the south");
+        t_assert(!bboxOverlapsBBox(&b3, &a),
+                 "no intersection to the south, reverse");
+
+        BBox b4 = {2.0, 1.5, 1.0, 0.0};
+        t_assert(!bboxOverlapsBBox(&a, &b4), "no intersection to the north");
+        t_assert(!bboxOverlapsBBox(&b4, &a),
+                 "no intersection to the north, reverse");
+
+        BBox b5 = {1.0, 0.0, 0.5, -1.5};
+        t_assert(bboxOverlapsBBox(&a, &b5), "intersection to the west");
+
+        BBox b6 = {1.0, 0.0, 2.0, 0.5};
+        t_assert(bboxOverlapsBBox(&a, &b6), "intersection to the east");
+
+        BBox b7 = {0.5, -1.5, 1.0, 0.0};
+        t_assert(bboxOverlapsBBox(&a, &b7), "intersection to the south");
+
+        BBox b8 = {2.0, 0.5, 1.0, 0.0};
+        t_assert(bboxOverlapsBBox(&a, &b8), "intersection to the north");
+
+        BBox b9 = {1.5, -0.5, 1.5, -0.5};
+        t_assert(bboxOverlapsBBox(&a, &b9), "intersection, b contains a");
+
+        BBox b10 = {0.5, 0.25, 0.5, 0.25};
+        t_assert(bboxOverlapsBBox(&a, &b10), "intersection, a contains b");
+
+        BBox b11 = {1.0, 0.0, 1.0, 0.0};
+        t_assert(bboxOverlapsBBox(&a, &b11), "intersection, a equals b");
+    }
+
+    TEST(bboxOverlapsBBoxTransmeridian) {
+        BBox a = {1.0, 0.0, -M_PI + 0.5, M_PI - 0.5};
+
+        BBox b1 = {1.0, 0.0, M_PI - 0.7, M_PI - 0.9};
+        t_assert(!bboxOverlapsBBox(&a, &b1), "no intersection to the west");
+        t_assert(!bboxOverlapsBBox(&b1, &a),
+                 "no intersection to the west, reverse");
+
+        BBox b2 = {1.0, 0.0, -M_PI + 0.9, -M_PI + 0.7};
+        t_assert(!bboxOverlapsBBox(&a, &b2), "no intersection to the east");
+        t_assert(!bboxOverlapsBBox(&b2, &a), "no intersection to the east");
+
+        BBox b3 = {1.0, 0.0, M_PI - 0.4, M_PI - 0.9};
+        t_assert(bboxOverlapsBBox(&a, &b3), "intersection to the west");
+        t_assert(bboxOverlapsBBox(&b3, &a),
+                 "intersection to the west, reverse");
+
+        BBox b4 = {1.0, 0.0, -M_PI + 0.9, -M_PI + 0.4};
+        t_assert(bboxOverlapsBBox(&a, &b4), "intersection to the east");
+        t_assert(bboxOverlapsBBox(&b4, &a),
+                 "intersection to the east, reverse");
+
+        BBox b5 = {1.0, 0.0, -M_PI + 0.4, M_PI - 0.4};
+        t_assert(bboxOverlapsBBox(&a, &b5), "intersection, a contains b");
+        t_assert(bboxOverlapsBBox(&b5, &a),
+                 "intersection, a contains b, reverse");
+
+        BBox b6 = {1.0, 0.0, -M_PI + 0.6, M_PI - 0.6};
+        t_assert(bboxOverlapsBBox(&a, &b6), "intersection, b contains a");
+        t_assert(bboxOverlapsBBox(&b6, &a),
+                 "intersection, b contains a, reverse");
+
+        BBox b7 = {1.0, 0.0, -M_PI + 0.5, M_PI - 0.5};
+        t_assert(bboxOverlapsBBox(&a, &b7), "intersection, a equals b");
+
+        BBox b8 = {1.0, 0.0, -M_PI + 0.9, M_PI - 0.4};
+        t_assert(bboxOverlapsBBox(&a, &b8),
+                 "intersection, transmeridian to the east");
+        t_assert(bboxOverlapsBBox(&b8, &a),
+                 "intersection, transmeridian to the east, reverse");
+
+        BBox b9 = {1.0, 0.0, -M_PI + 0.4, M_PI - 0.9};
+        t_assert(bboxOverlapsBBox(&a, &b9),
+                 "intersection, transmeridian to the west");
+        t_assert(bboxOverlapsBBox(&b9, &a),
+                 "intersection, transmeridian to the west, reverse");
     }
 
     TEST(bboxCenterBasicQuandrants) {
@@ -273,5 +377,61 @@ SUITE(BBoxInternal) {
         t_assert(lineHexEstimate(&origin, &destination, -1, &numHexagons) ==
                      E_RES_DOMAIN,
                  "lineHexEstimate of invalid resolution fails");
+    }
+
+    TEST(scaleBBox_noop) {
+        BBox bbox = {1.0, 0.0, 1.0, 0.0};
+        BBox expected = {1.0, 0.0, 1.0, 0.0};
+        scaleBBox(&bbox, 1);
+        assertBBox(&bbox, &expected);
+    }
+
+    TEST(scaleBBox_basicGrow) {
+        BBox bbox = {1.0, 0.0, 1.0, 0.0};
+        BBox expected = {1.5, -0.5, 1.5, -0.5};
+        scaleBBox(&bbox, 2);
+        assertBBox(&bbox, &expected);
+    }
+
+    TEST(scaleBBox_basicShrink) {
+        BBox bbox = {1.0, 0.0, 1.0, 0.0};
+        BBox expected = {0.75, 0.25, 0.75, 0.25};
+        scaleBBox(&bbox, 0.5);
+        assertBBox(&bbox, &expected);
+    }
+
+    TEST(scaleBBox_clampNorthSouth) {
+        BBox bbox = {M_PI_2 * 0.9, -M_PI_2 * 0.9, 1.0, 0.0};
+        BBox expected = {M_PI_2, -M_PI_2, 1.5, -0.5};
+        scaleBBox(&bbox, 2);
+        assertBBox(&bbox, &expected);
+    }
+
+    TEST(scaleBBox_clampEastPos) {
+        BBox bbox = {1.0, 0.0, M_PI - 0.1, M_PI - 1.1};
+        BBox expected = {1.5, -0.5, -M_PI + 0.4, M_PI - 1.6};
+        scaleBBox(&bbox, 2);
+        assertBBox(&bbox, &expected);
+    }
+
+    TEST(scaleBBox_clampEastNeg) {
+        BBox bbox = {1.5, -0.5, -M_PI + 0.4, M_PI - 1.6};
+        BBox expected = {1.0, 0.0, M_PI - 0.1, M_PI - 1.1};
+        scaleBBox(&bbox, 0.5);
+        assertBBox(&bbox, &expected);
+    }
+
+    TEST(scaleBBox_clampWestPos) {
+        BBox bbox = {1.0, 0.0, -M_PI + 0.9, M_PI - 0.1};
+        BBox expected = {0.75, 0.25, -M_PI + 0.65, -M_PI + 0.15};
+        scaleBBox(&bbox, 0.5);
+        assertBBox(&bbox, &expected);
+    }
+
+    TEST(scaleBBox_clampWestNeg) {
+        BBox bbox = {0.75, 0.25, -M_PI + 0.65, -M_PI + 0.15};
+        BBox expected = {1.0, 0.0, -M_PI + 0.9, M_PI - 0.1};
+        scaleBBox(&bbox, 2);
+        assertBBox(&bbox, &expected);
     }
 }

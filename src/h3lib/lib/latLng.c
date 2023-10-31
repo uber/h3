@@ -138,6 +138,24 @@ double constrainLng(double lng) {
 }
 
 /**
+ * Normalize an input longitude according to the specified normalization
+ * @param  lng           Input longitude
+ * @param  normalization Longitude normalization strategy
+ * @return               Normalized longitude
+ */
+double normalizeLng(const double lng,
+                    const LongitudeNormalization normalization) {
+    switch (normalization) {
+        case NORMALIZE_EAST:
+            return lng < 0 ? lng + (double)M_2PI : lng;
+        case NORMALIZE_WEST:
+            return lng > 0 ? lng - (double)M_2PI : lng;
+        default:
+            return lng;
+    }
+}
+
+/**
  * The great circle distance in radians between two spherical coordinates.
  *
  * This function uses the Haversine formula.

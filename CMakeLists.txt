@@ -125,6 +125,7 @@ set(LIB_SOURCE_FILES
     src/h3lib/include/bbox.h
     src/h3lib/include/polygon.h
     src/h3lib/include/polygonAlgos.h
+    src/h3lib/include/polyfill.h
     src/h3lib/include/h3Index.h
     src/h3lib/include/directedEdge.h
     src/h3lib/include/latLng.h
@@ -146,6 +147,7 @@ set(LIB_SOURCE_FILES
     src/h3lib/lib/coordijk.c
     src/h3lib/lib/bbox.c
     src/h3lib/lib/polygon.c
+    src/h3lib/lib/polyfill.c
     src/h3lib/lib/h3Index.c
     src/h3lib/lib/vec2d.c
     src/h3lib/lib/vec3d.c
@@ -192,7 +194,9 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testVertexGraphInternal.c
     src/apps/testapps/testCompactCells.c
     src/apps/testapps/testPolygonToCells.c
+    src/apps/testapps/testPolygonToCellsExperimental.c
     src/apps/testapps/testPolygonToCellsReported.c
+    src/apps/testapps/testPolygonToCellsReportedExperimental.c
     src/apps/testapps/testPentagonIndexes.c
     src/apps/testapps/testGridDisk.c
     src/apps/testapps/testGridDiskInternal.c
@@ -209,6 +213,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testCellToLatLng.c
     src/apps/testapps/testCellToCenterChild.c
     src/apps/testapps/testCellToChildren.c
+    src/apps/testapps/testCellToBBoxExhaustive.c
     src/apps/testapps/testCellToChildPos.c
     src/apps/testapps/testGetIcosahedronFaces.c
     src/apps/testapps/testLatLng.c
@@ -220,6 +225,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testVertexInternal.c
     src/apps/testapps/testVertexExhaustive.c
     src/apps/testapps/testPolygonInternal.c
+    src/apps/testapps/testPolyfillInternal.c
     src/apps/testapps/testVec2dInternal.c
     src/apps/testapps/testVec3dInternal.c
     src/apps/testapps/testDirectedEdge.c
@@ -270,6 +276,7 @@ set(OTHER_SOURCE_FILES
     src/apps/fuzzers/fuzzerInternalAlgos.c
     src/apps/fuzzers/fuzzerInternalCoordIjk.c
     src/apps/benchmarks/benchmarkPolygonToCells.c
+    src/apps/benchmarks/benchmarkPolygonToCellsExperimental.c
     src/apps/benchmarks/benchmarkPolygon.c
     src/apps/benchmarks/benchmarkCellsToLinkedMultiPolygon.c
     src/apps/benchmarks/benchmarkCellToChildren.c
@@ -566,6 +573,7 @@ if(BUILD_BENCHMARKS)
     add_h3_benchmark(benchmarkCellsToLinkedMultiPolygon src/apps/benchmarks/benchmarkCellsToLinkedMultiPolygon.c)
     add_h3_benchmark(benchmarkCellToChildren src/apps/benchmarks/benchmarkCellToChildren.c)
     add_h3_benchmark(benchmarkPolygonToCells src/apps/benchmarks/benchmarkPolygonToCells.c)
+    add_h3_benchmark(benchmarkPolygonToCellsExperimental src/apps/benchmarks/benchmarkPolygonToCellsExperimental.c)
     if(ENABLE_REQUIRES_ALL_SYMBOLS)
         add_h3_benchmark(benchmarkPolygon src/apps/benchmarks/benchmarkPolygon.c)
     endif()

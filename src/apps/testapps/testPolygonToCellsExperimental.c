@@ -18,10 +18,10 @@
 #include <math.h>
 #include <stdlib.h>
 
-#include "algos.h"
 #include "constants.h"
 #include "h3Index.h"
 #include "latLng.h"
+#include "polyfill.h"
 #include "test.h"
 #include "utility.h"
 
@@ -98,8 +98,8 @@ static void fillIndex_assertions(H3Index h) {
                                                          &polygonToCellsSize));
         H3Index *polygonToCellsOut =
             calloc(polygonToCellsSize, sizeof(H3Index));
-        t_assertSuccess(
-            H3_EXPORT(polygonToCells)(&polygon, nextRes, 0, polygonToCellsOut));
+        t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
+            &polygon, nextRes, 0, polygonToCellsOut));
 
         int64_t polygonToCellsCount =
             countNonNullIndexes(polygonToCellsOut, polygonToCellsSize);
@@ -158,64 +158,14 @@ SUITE(polygonToCells) {
     lineGeoPolygon.geoloop = lineGeoLoop;
     lineGeoPolygon.numHoles = 0;
 
-    // --------------------------------------------
-    // maxPolygonToCellsSize
-    // --------------------------------------------
-
-    TEST(maxPolygonToCellsSize) {
-        int64_t numHexagons;
-        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(&sfGeoPolygon, 9, 0,
-                                                         &numHexagons));
-        t_assert(numHexagons == 5613, "got expected max polygonToCells size");
-
-        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(&holeGeoPolygon, 9, 0,
-                                                         &numHexagons));
-        t_assert(numHexagons == 5613,
-                 "got expected max polygonToCells size (hole)");
-
-        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(&emptyGeoPolygon, 9, 0,
-                                                         &numHexagons));
-        t_assert(numHexagons == 15,
-                 "got expected max polygonToCells size (empty)");
-    }
-
-    TEST(maxPolygonToCellsSizeInvalid) {
-        int64_t numHexagons;
-        t_assert(
-            H3_EXPORT(maxPolygonToCellsSize)(&invalidGeoPolygon, 9, 0,
-                                             &numHexagons) == E_FAILED,
-            "Cannot determine cell size to invalid geo polygon with Infinity");
-        t_assert(H3_EXPORT(maxPolygonToCellsSize)(&invalid2GeoPolygon, 9, 0,
-                                                  &numHexagons) == E_FAILED,
-                 "Cannot determine cell size to invalid geo polygon with NaNs");
-    }
-
-    TEST(maxPolygonToCellsSizePoint) {
-        int64_t numHexagons;
-        t_assert(H3_EXPORT(maxPolygonToCellsSize)(&pointGeoPolygon, 9, 0,
-                                                  &numHexagons) == E_FAILED,
-                 "Cannot estimate for single point");
-    }
-
-    TEST(maxPolygonToCellsSizeLine) {
-        int64_t numHexagons;
-        t_assert(H3_EXPORT(maxPolygonToCellsSize)(&lineGeoPolygon, 9, 0,
-                                                  &numHexagons) == E_FAILED,
-                 "Cannot estimate for straight line");
-    }
-
-    // --------------------------------------------
-    // polygonToCells
-    // --------------------------------------------
-
     TEST(polygonToCells) {
         int64_t numHexagons;
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(&sfGeoPolygon, 9, 0,
                                                          &numHexagons));
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
-        t_assertSuccess(
-            H3_EXPORT(polygonToCells)(&sfGeoPolygon, 9, 0, hexagons));
+        t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(&sfGeoPolygon, 9,
+                                                              0, hexagons));
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         t_assert(actualNumIndexes == 1253, "got expected polygonToCells size");
@@ -228,8 +178,8 @@ SUITE(polygonToCells) {
                                                          &numHexagons));
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
-        t_assertSuccess(
-            H3_EXPORT(polygonToCells)(&holeGeoPolygon, 9, 0, hexagons));
+        t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(&holeGeoPolygon,
+                                                              9, 0, hexagons));
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         t_assert(actualNumIndexes == 1214,
@@ -243,8 +193,8 @@ SUITE(polygonToCells) {
                                                          &numHexagons));
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
-        t_assertSuccess(
-            H3_EXPORT(polygonToCells)(&emptyGeoPolygon, 9, 0, hexagons));
+        t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(&emptyGeoPolygon,
+                                                              9, 0, hexagons));
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         t_assert(actualNumIndexes == 0,
@@ -277,8 +227,8 @@ SUITE(polygonToCells) {
             H3_EXPORT(maxPolygonToCellsSize)(&someHexagon, 9, 0, &numHexagons));
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
-        t_assertSuccess(
-            H3_EXPORT(polygonToCells)(&someHexagon, 9, 0, hexagons));
+        t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(&someHexagon, 9,
+                                                              0, hexagons));
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         t_assert(actualNumIndexes == 1, "got expected polygonToCells size (1)");
@@ -325,8 +275,8 @@ SUITE(polygonToCells) {
             &primeMeridianGeoPolygon, 7, 0, &numHexagons));
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
-        t_assertSuccess(H3_EXPORT(polygonToCells)(&primeMeridianGeoPolygon, 7,
-                                                  0, hexagons));
+        t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
+            &primeMeridianGeoPolygon, 7, 0, hexagons));
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         t_assert(actualNumIndexes == expectedSize,
@@ -340,8 +290,8 @@ SUITE(polygonToCells) {
             &transMeridianGeoPolygon, 7, 0, &numHexagons));
         H3Index *hexagonsTM = calloc(numHexagons, sizeof(H3Index));
 
-        t_assertSuccess(H3_EXPORT(polygonToCells)(&transMeridianGeoPolygon, 7,
-                                                  0, hexagonsTM));
+        t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
+            &transMeridianGeoPolygon, 7, 0, hexagonsTM));
         actualNumIndexes = countNonNullIndexes(hexagonsTM, numHexagons);
 
         t_assert(actualNumIndexes == expectedSize,
@@ -353,7 +303,7 @@ SUITE(polygonToCells) {
             &transMeridianFilledHoleGeoPolygon, 7, 0, &numHexagons));
         H3Index *hexagonsTMFH = calloc(numHexagons, sizeof(H3Index));
 
-        t_assertSuccess(H3_EXPORT(polygonToCells)(
+        t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
             &transMeridianFilledHoleGeoPolygon, 7, 0, hexagonsTMFH));
         int64_t actualNumHoleIndexes =
             countNonNullIndexes(hexagonsTMFH, numHexagons);
@@ -363,8 +313,8 @@ SUITE(polygonToCells) {
             &transMeridianHoleGeoPolygon, 7, 0, &numHexagons));
         H3Index *hexagonsTMH = calloc(numHexagons, sizeof(H3Index));
 
-        t_assertSuccess(H3_EXPORT(polygonToCells)(&transMeridianHoleGeoPolygon,
-                                                  7, 0, hexagonsTMH));
+        t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
+            &transMeridianHoleGeoPolygon, 7, 0, hexagonsTMH));
         actualNumIndexes = countNonNullIndexes(hexagonsTMH, numHexagons);
 
         t_assert(actualNumIndexes == expectedSize - actualNumHoleIndexes,
@@ -391,7 +341,8 @@ SUITE(polygonToCells) {
             H3_EXPORT(maxPolygonToCellsSize)(&polygon, 4, 0, &numHexagons));
 
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
-        t_assertSuccess(H3_EXPORT(polygonToCells)(&polygon, 4, 0, hexagons));
+        t_assertSuccess(
+            H3_EXPORT(polygonToCellsExperimental)(&polygon, 4, 0, hexagons));
 
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
@@ -442,7 +393,8 @@ SUITE(polygonToCells) {
             H3_EXPORT(maxPolygonToCellsSize)(&polygon, 9, 0, &numHexagons));
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
-        t_assertSuccess(H3_EXPORT(polygonToCells)(&polygon, 9, 0, hexagons));
+        t_assertSuccess(
+            H3_EXPORT(polygonToCellsExperimental)(&polygon, 9, 0, hexagons));
 
         int found = 0;
         int numPentagons = 0;
@@ -471,22 +423,10 @@ SUITE(polygonToCells) {
                                                          &numHexagons));
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
         for (uint32_t flags = 1; flags <= 32; flags++) {
-            t_assert(H3_EXPORT(polygonToCells)(&sfGeoPolygon, 9, flags,
-                                               hexagons) == E_OPTION_INVALID,
+            t_assert(H3_EXPORT(polygonToCellsExperimental)(
+                         &sfGeoPolygon, 9, flags, hexagons) == E_OPTION_INVALID,
                      "Flags other than 0 are invalid for polygonToCells");
         }
-        free(hexagons);
-    }
-
-    TEST(polygonToCellsInvalidPolygon) {
-        // Chosen arbitrarily, polygonToCells should error out before this is an
-        // issue.
-        int64_t numHexagons = 0;
-
-        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
-        t_assert(H3_EXPORT(polygonToCells)(&invalidGeoPolygon, 9, 0,
-                                           hexagons) == E_FAILED,
-                 "Invalid geo polygon cannot be evaluated");
         free(hexagons);
     }
 
@@ -494,23 +434,5 @@ SUITE(polygonToCells) {
         iterateAllIndexesAtRes(0, fillIndex_assertions);
         iterateAllIndexesAtRes(1, fillIndex_assertions);
         iterateAllIndexesAtRes(2, fillIndex_assertions);
-    }
-
-    TEST(getEdgeHexagonsInvalid) {
-        int64_t numHexagons = 100;
-        H3Index *search = calloc(numHexagons, sizeof(H3Index));
-        assert(search != NULL);
-        H3Index *found = calloc(numHexagons, sizeof(H3Index));
-        assert(found != NULL);
-
-        int res = 0;
-        int64_t numSearchHexes = 0;
-        H3Error err = _getEdgeHexagons(&invalidGeoLoop, numHexagons, res,
-                                       &numSearchHexes, search, found);
-        t_assert(err != E_SUCCESS,
-                 "_getEdgeHexagons returns error for invalid geoloop");
-
-        free(found);
-        free(search);
     }
 }

@@ -83,3 +83,124 @@ bool pointInsidePolygon(const GeoPolygon *geoPolygon, const BBox *bboxes,
 
     return contains;
 }
+
+/**
+ * Whether a cell boundary is completely contained by a polygon.
+ * @param  geoPolygon The polygon to test
+ * @param  bboxes     The bboxes for the main geoloop and each of its holes
+ * @param  boundary   The cell boundary to test
+ * @return            Whether the cell boundary is contained
+ */
+bool cellBoundaryInsidePolygon(const GeoPolygon *geoPolygon, const BBox *bboxes,
+                               const CellBoundary *boundary,
+                               const BBox *boundaryBBox) {
+    // First test a single point. Note that this fails fast if point is outside
+    // bounding box.
+    if (!pointInsidePolygon(geoPolygon, &bboxes[0], &boundary->verts[0])) {
+        return false;
+    }
+
+    // If a point is contained, check for any line intersections
+    if (cellBoundaryCrossesGeoLoop(&(geoPolygon->geoloop), &bboxes[0], boundary,
+                                   boundaryBBox)) {
+        return false;
+    }
+    // Check for line intersections with any hole
+    for (int i = 0; i < geoPolygon->numHoles; i++) {
+        if (cellBoundaryCrossesGeoLoop(&(geoPolygon->holes[i]), &bboxes[i + 1],
+                                       boundary, boundaryBBox)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+/**
+ * Whether a cell boundary crosses a geo loop. Crossing in this case means
+ * whether any line segments intersect; it does not include containment.
+ * @param  geoloop  Geo loop to test
+ * @param  boundary Cell boundary to test
+ * @return          Whether any line segments in the boundary intersect any line
+ * segments in the geo loop
+ */
+bool cellBoundaryCrossesGeoLoop(const GeoLoop *geoloop, const BBox *loopBBox,
+                                const CellBoundary *boundary,
+                                const BBox *boundaryBBox) {
+    if (!bboxOverlapsBBox(loopBBox, boundaryBBox)) {
+        return false;
+    }
+    LongitudeNormalization loopNormalization;
+    LongitudeNormalization boundaryNormalization;
+    bboxNormalization(loopBBox, boundaryBBox, &loopNormalization,
+                      &boundaryNormalization);
+
+    CellBoundary normalBoundary = *boundary;
+    for (int i = 0; i < boundary->numVerts; i++) {
+        normalBoundary.verts[i].lng =
+            normalizeLng(normalBoundary.verts[i].lng, boundaryNormalization);
+    }
+
+    BBox normalBoundaryBBox = {
+        .north = boundaryBBox->north,
+        .south = boundaryBBox->south,
+        .east = normalizeLng(boundaryBBox->east, boundaryNormalization),
+        .west = normalizeLng(boundaryBBox->west, boundaryNormalization)};
+
+    LatLng loop1;
+    LatLng loop2;
+    for (int i = 0; i < geoloop->numVerts; i++) {
+        loop1 = geoloop->verts[i];
+        loop1.lng = normalizeLng(loop1.lng, loopNormalization);
+        loop2 = geoloop->verts[(i + 1) % geoloop->numVerts];
+        loop2.lng = normalizeLng(loop2.lng, loopNormalization);
+
+        // Quick check if the line segment overlaps our bbox
+        if ((loop1.lat >= normalBoundaryBBox.north &&
+             loop2.lat >= normalBoundaryBBox.north) ||
+            (loop1.lat <= normalBoundaryBBox.south &&
+             loop2.lat <= normalBoundaryBBox.south) ||
+            (loop1.lng <= normalBoundaryBBox.west &&
+             loop2.lng <= normalBoundaryBBox.west) ||
+            (loop1.lng >= normalBoundaryBBox.east &&
+             loop2.lng >= normalBoundaryBBox.east)) {
+            continue;
+        }
+
+        for (int j = 0; j < normalBoundary.numVerts; j++) {
+            if (lineIntersectsLine(
+                    &loop1, &loop2, &normalBoundary.verts[j],
+                    &normalBoundary.verts[(j + 1) % normalBoundary.numVerts])) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+/**
+ * Whether two lines intersect. This is a purely Cartesian implementation
+ * and does not consider anti-meridian wrapping, poles, etc. Based on
+ * http://www.jeffreythompson.org/collision-detection/line-line.php
+ * @param  a1 Start of line A
+ * @param  a2 End of line A
+ * @param  b1 Start of line B
+ * @param  b2 End of line B
+ * @return    Whether the lines intersect
+ */
+bool lineIntersectsLine(const LatLng *a1, const LatLng *a2, const LatLng *b1,
+                        const LatLng *b2) {
+    double denom = ((b2->lng - b1->lng) * (a2->lat - a1->lat) -
+                    (b2->lat - b1->lat) * (a2->lng - a1->lng));
+    if (!denom) return false;
+
+    double test;
+    test = ((b2->lat - b1->lat) * (a1->lng - b1->lng) -
+            (b2->lng - b1->lng) * (a1->lat - b1->lat)) /
+           denom;
+    if (test < 0 || test > 1) return false;
+
+    test = ((a2->lat - a1->lat) * (a1->lng - b1->lng) -
+            (a2->lng - a1->lng) * (a1->lat - b1->lat)) /
+           denom;
+    return (test >= 0 && test <= 1);
+}
