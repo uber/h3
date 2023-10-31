@@ -361,7 +361,7 @@ IterCellsPolygonCompact iterInitPolygonCompact(const GeoPolygon *polygon,
 
     // Initialize bounding boxes for polygon and any holes. Memory allocated
     // here must be released through iterDestroyPolygonCompact
-    iter._bboxes = H3_MEMORY(malloc)((polygon->numHoles + 1) * sizeof(BBox));
+    iter._bboxes = H3_MEMORY(calloc)((polygon->numHoles + 1) * sizeof(BBox));
     if (!iter._bboxes) {
         iterErrorPolygonCompact(&iter, E_MEMORY_ALLOC);
         return iter;
