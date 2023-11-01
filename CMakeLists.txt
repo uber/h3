@@ -579,7 +579,7 @@ if(BUILD_BENCHMARKS)
     endif()
 
     # Country benchmark: Downloads country geometry and generates the benchmark file
-    add_custom_target(generate-country-benchmark
+    add_custom_target(generate_country_benchmark
         COMMAND node ${CMAKE_CURRENT_SOURCE_DIR}/scripts/make_countries.js src/apps/benchmarks/benchmarkCountries.c
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         )
