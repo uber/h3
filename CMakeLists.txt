@@ -47,7 +47,7 @@ endif()
 
 option(ENABLE_COVERAGE "Enable compiling tests with coverage." OFF)
 option(BUILD_BENCHMARKS "Build benchmarking applications." ON)
-option(ENABLE_COUNTRY_BENCHMARKS "Build benchmarking applications with Natural Earth geometries." ON)
+option(ENABLE_COUNTRY_BENCHMARKS "Build benchmarking applications with Natural Earth geometries." OFF)
 option(BUILD_FUZZERS "Build fuzzer applications (for use with afl)." ON)
 option(BUILD_FILTERS "Build filter applications." ON)
 option(BUILD_GENERATORS "Build code generation applications." ON)

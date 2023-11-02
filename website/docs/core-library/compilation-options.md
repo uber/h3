@@ -35,6 +35,12 @@ Whether to build the parts of the [test suite](./testing) that exercise the [H3_
 
 Whether to build the [benchmark suite](./testing#benchmarks).
 
+## BUILD_COUNTRY_BENCHMARKS
+
+Whether to build benchmarks that use [Natural Earth](https://github.com/nvkelso/natural-earth-vector/) geometries.
+
+The geometries will be downloaded at build time using Node.
+
 ## BUILD_FILTERS
 
 Whether to build the [H3 command line filter](./filters) executables.
