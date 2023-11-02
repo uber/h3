@@ -47,6 +47,7 @@ endif()
 
 option(ENABLE_COVERAGE "Enable compiling tests with coverage." OFF)
 option(BUILD_BENCHMARKS "Build benchmarking applications." ON)
+option(ENABLE_COUNTRY_BENCHMARKS "Build benchmarking applications with Natural Earth geometries." ON)
 option(BUILD_FUZZERS "Build fuzzer applications (for use with afl)." ON)
 option(BUILD_FILTERS "Build filter applications." ON)
 option(BUILD_GENERATORS "Build code generation applications." ON)
@@ -578,14 +579,14 @@ if(BUILD_BENCHMARKS)
         add_h3_benchmark(benchmarkPolygon src/apps/benchmarks/benchmarkPolygon.c)
     endif()
 
-    # Country benchmark: Downloads country geometry and generates the benchmark file
-    add_custom_target(generate_country_benchmark
-        COMMAND node ${CMAKE_CURRENT_SOURCE_DIR}/scripts/make_countries.js src/apps/benchmarks/benchmarkCountries.c
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        )
-    
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/apps/benchmarks/benchmarkCountries.c")
-       add_h3_benchmark(benchmarkCountries src/apps/benchmarks/benchmarkCountries.c)
+    if(ENABLE_COUNTRY_BENCHMARKS)
+        # Country benchmark: Downloads country geometry and generates the benchmark file
+        add_custom_command(OUTPUT src/apps/benchmarks/benchmarkCountries.c
+            COMMAND node ${CMAKE_CURRENT_SOURCE_DIR}/scripts/make_countries.js ${CMAKE_CURRENT_BINARY_DIR}/src/apps/benchmarks/benchmarkCountries.c
+            )
+
+        add_h3_benchmark(benchmarkCountries ${CMAKE_CURRENT_BINARY_DIR}/src/apps/benchmarks/benchmarkCountries.c)
+        # add_dependencies(bench_benchmarkCountries )
     endif()
 endif()
 

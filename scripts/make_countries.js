@@ -54,7 +54,7 @@ function formatCoord([lng, lat]) {
 function formatGeoLoop(loop) {
   return `{
     .numVerts = ${loop.length},
-    .verts = (LatLng[]){
+    .verts = (LatLng[]) {
       ${loop.map(formatCoord).join(',\n')}
     }
   }`
@@ -147,13 +147,13 @@ for (int res = 0; res < MAX_RES + 1; res++) {
 
   printf("Res %d", res);
 
-  BENCHMARK(polygonToCells_AllCountries, 5, {
+  BENCHMARK(polygonToCells_AllCountries1, 5, {
     for (int index = 0; index < ${polygons.length}; index++) {
       H3_EXPORT(polygonToCells)(&COUNTRIES[index], res, 0, hexagons);
     }
   });
 
-  BENCHMARK(polygonToCells_AllCountries, 5, {
+  BENCHMARK(polygonToCells_AllCountries2, 5, {
     for (int index = 0; index < ${polygons.length}; index++) {
       H3_EXPORT(polygonToCellsExperimental)(&COUNTRIES[index], res, 0, hexagons);
     }
@@ -166,10 +166,10 @@ free(hexagons);
 END_BENCHMARKS();
   `
 
-  const outPath = path.join(__dirname, '..', targetPath);
-  fs.writeFileSync(outPath, out, 'utf-8');
+  fs.mkdirSync(path.dirname(targetPath), { recursive:true });
+  fs.writeFileSync(targetPath, out, 'utf-8');
 
-  console.log(`Wrote fixture to ${outPath}`);
+  console.log(`Wrote fixture to ${targetPath}`);
 }
 
 makeCountries(SOURCE_URL, TARGET);
