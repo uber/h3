@@ -24,7 +24,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake -DCMAKE_BUILD_TYPE=Release ..
+          cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_COUNTRY_BENCHMARKS=ON ..
 
       - name: Build
         run: |

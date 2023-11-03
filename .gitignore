@@ -83,6 +83,7 @@ RunCoverage.cmake
 # Generated coverage runner
 scripts/coverage.sh
 
+
 # CTest / coverage
 CTestTestfile.cmake
 Testing/
@@ -105,3 +106,4 @@ KML/res*centers.kml
 
 # Generated files
 src/h3lib/include/h3api.h
+src/apps/benchmarks/benchmarkCountries.c
