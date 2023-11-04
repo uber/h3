@@ -354,8 +354,9 @@ IterCellsPolygonCompact iterInitPolygonCompact(const GeoPolygon *polygon,
         return iter;
     }
 
-    if (flags != 0) {
-        iterErrorPolygonCompact(&iter, E_OPTION_INVALID);
+    H3Error flagErr = validatePolygonFlags(flags);
+    if (flagErr) {
+        iterErrorPolygonCompact(&iter, flagErr);
         return iter;
     }
 
@@ -406,23 +407,48 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
         iter->_started = true;
     }
 
+    ContainmentMode mode = FLAG_GET_CONTAINMENT_MODE(iter->_flags);
+
     while (cell) {
         int cellRes = H3_GET_RESOLUTION(cell);
 
         // Target res: Do a fine-grained check
         if (cellRes == iter->_res) {
-            // Check if the cell is in the polygon
-            // TODO: Handle other polyfill modes here
-            LatLng center;
-            H3Error centerErr = H3_EXPORT(cellToLatLng)(cell, &center);
-            if (NEVER(centerErr != E_SUCCESS)) {
-                iterErrorPolygonCompact(iter, centerErr);
-                return;
-            }
-            if (pointInsidePolygon(iter->_polygon, iter->_bboxes, &center)) {
-                // Set to next output
-                iter->cell = cell;
-                return;
+            if (mode == CENTER_CONTAINMENT) {
+                // Check if the cell center is inside the polygon
+                LatLng center;
+                H3Error centerErr = H3_EXPORT(cellToLatLng)(cell, &center);
+                if (centerErr != E_SUCCESS) {
+                    iterErrorPolygonCompact(iter, centerErr);
+                    return;
+                }
+                if (pointInsidePolygon(iter->_polygon, iter->_bboxes,
+                                       &center)) {
+                    // Set to next output
+                    iter->cell = cell;
+                    return;
+                }
+            } else if (mode == FULL_CONTAINMENT) {
+                // Check if the cell is fully contained by the polygon
+                CellBoundary boundary;
+                H3Error boundaryErr =
+                    H3_EXPORT(cellToBoundary)(cell, &boundary);
+                if (boundaryErr != E_SUCCESS) {
+                    iterErrorPolygonCompact(iter, boundaryErr);
+                    return;
+                }
+                BBox bbox;
+                H3Error bboxErr = cellToBBox(cell, &bbox, false);
+                if (bboxErr) {
+                    iterErrorPolygonCompact(iter, bboxErr);
+                    return;
+                }
+                if (cellBoundaryInsidePolygon(iter->_polygon, iter->_bboxes,
+                                              &boundary, &bbox)) {
+                    // Set to next output
+                    iter->cell = cell;
+                    return;
+                }
             }
         }
 

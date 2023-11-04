@@ -43,6 +43,21 @@
 #undef IS_EMPTY
 
 /**
+ * Whether the flags for the polyfill operation are valid
+ * TODO: Move to polyfill.c when the old algo is removed
+ * @param  flags Flags to validate
+ * @return       Whether the flags are valid
+ */
+H3Error validatePolygonFlags(uint32_t flags) {
+    if (flags & (~FLAG_CONTAINMENT_MODE_MASK) ||
+        !(FLAG_GET_CONTAINMENT_MODE(flags) == CENTER_CONTAINMENT ||
+          FLAG_GET_CONTAINMENT_MODE(flags) == FULL_CONTAINMENT)) {
+        return E_OPTION_INVALID;
+    }
+    return E_SUCCESS;
+}
+
+/**
  * Create a bounding box from a GeoPolygon
  * @param polygon Input GeoPolygon
  * @param bboxes  Output bboxes, one for the outer loop and one for each hole

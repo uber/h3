@@ -774,8 +774,9 @@ H3Error H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index *out) {
  */
 H3Error H3_EXPORT(maxPolygonToCellsSize)(const GeoPolygon *geoPolygon, int res,
                                          uint32_t flags, int64_t *out) {
-    if (flags != 0) {
-        return E_OPTION_INVALID;
+    H3Error flagErr = validatePolygonFlags(flags);
+    if (flagErr) {
+        return flagErr;
     }
     // Get the bounding box for the GeoJSON-like struct
     BBox bbox;
@@ -890,8 +891,9 @@ H3Error _getEdgeHexagons(const GeoLoop *geoloop, int64_t numHexagons, int res,
  */
 H3Error H3_EXPORT(polygonToCells)(const GeoPolygon *geoPolygon, int res,
                                   uint32_t flags, H3Index *out) {
-    if (flags != 0) {
-        return E_OPTION_INVALID;
+    H3Error flagErr = validatePolygonFlags(flags);
+    if (flagErr) {
+        return flagErr;
     }
     // One of the goals of the polygonToCells algorithm is that two adjacent
     // polygons with zero overlap have zero overlapping hexagons. That the

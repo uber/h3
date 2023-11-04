@@ -40,7 +40,22 @@
 /** Macro: Whether a GeoLoop is empty */
 #define IS_EMPTY_GEOFENCE(geoloop) geoloop->numVerts == 0
 
+/**
+ * Values representing polyfill containment modes, to be used in
+ * the `flags` bit field.
+ */
+typedef enum {
+    CENTER_CONTAINMENT = 0,
+    FULL_CONTAINMENT = 1,
+    INTERSECTION = 2
+} ContainmentMode;
+
+// 1s in the 4 bits defining the polyfill containment mode, 0s elsewhere
+#define FLAG_CONTAINMENT_MODE_MASK ((uint32_t)(15))
+#define FLAG_GET_CONTAINMENT_MODE(flags) (flags & FLAG_CONTAINMENT_MODE_MASK)
+
 // Defined directly in polygon.c:
+H3Error validatePolygonFlags(uint32_t flags);
 void bboxesFromGeoPolygon(const GeoPolygon *polygon, BBox *bboxes);
 bool pointInsidePolygon(const GeoPolygon *geoPolygon, const BBox *bboxes,
                         const LatLng *coord);
