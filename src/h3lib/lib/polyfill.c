@@ -414,7 +414,7 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
 
         // Target res: Do a fine-grained check
         if (cellRes == iter->_res) {
-            if (mode == CENTER_CONTAINMENT) {
+            if (mode == CENTER_CONTAINMENT || mode == OVERLAPPING) {
                 // Check if the cell center is inside the polygon
                 LatLng center;
                 H3Error centerErr = H3_EXPORT(cellToLatLng)(cell, &center);
@@ -428,8 +428,8 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
                     iter->cell = cell;
                     return;
                 }
-            } else if (mode == FULL_CONTAINMENT) {
-                // Check if the cell is fully contained by the polygon
+            }
+            if (mode == FULL_CONTAINMENT || mode == OVERLAPPING) {
                 CellBoundary boundary;
                 H3Error boundaryErr =
                     H3_EXPORT(cellToBoundary)(cell, &boundary);
@@ -443,8 +443,20 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
                     iterErrorPolygonCompact(iter, bboxErr);
                     return;
                 }
-                if (cellBoundaryInsidePolygon(iter->_polygon, iter->_bboxes,
+                // Check if the cell is fully contained by the polygon
+                if (mode == FULL_CONTAINMENT &&
+                    cellBoundaryInsidePolygon(iter->_polygon, iter->_bboxes,
                                               &boundary, &bbox)) {
+                    // Set to next output
+                    iter->cell = cell;
+                    return;
+                }
+                // For overlap, we've already checked for center point inclusion
+                // above; if that failed, we only need to check for line
+                // intersection
+                else if (mode == OVERLAPPING &&
+                         cellBoundaryCrossesPolygon(
+                             iter->_polygon, iter->_bboxes, &boundary, &bbox)) {
                     // Set to next output
                     iter->cell = cell;
                     return;

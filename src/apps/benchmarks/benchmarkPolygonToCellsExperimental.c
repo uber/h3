@@ -17,6 +17,7 @@
 #include "benchmark.h"
 #include "h3api.h"
 #include "polyfill.h"
+#include "polygon.h"
 
 // Fixtures
 LatLng sfVerts[] = {
@@ -123,23 +124,29 @@ int64_t numHexagons;
 H3Index *hexagons;
 
 BENCHMARK(polygonToCellsSF, 500, {
-    H3_EXPORT(maxPolygonToCellsSize)(&sfGeoPolygon, 9, 0, &numHexagons);
+    H3_EXPORT(maxPolygonToCellsSize)
+    (&sfGeoPolygon, 9, CENTER_CONTAINMENT, &numHexagons);
     hexagons = calloc(numHexagons, sizeof(H3Index));
-    H3_EXPORT(polygonToCellsExperimental)(&sfGeoPolygon, 9, 0, hexagons);
+    H3_EXPORT(polygonToCellsExperimental)
+    (&sfGeoPolygon, 9, CENTER_CONTAINMENT, hexagons);
     free(hexagons);
 });
 
 BENCHMARK(polygonToCellsAlameda, 500, {
-    H3_EXPORT(maxPolygonToCellsSize)(&alamedaGeoPolygon, 9, 0, &numHexagons);
+    H3_EXPORT(maxPolygonToCellsSize)
+    (&alamedaGeoPolygon, 9, CENTER_CONTAINMENT, &numHexagons);
     hexagons = calloc(numHexagons, sizeof(H3Index));
-    H3_EXPORT(polygonToCellsExperimental)(&alamedaGeoPolygon, 9, 0, hexagons);
+    H3_EXPORT(polygonToCellsExperimental)
+    (&alamedaGeoPolygon, 9, CENTER_CONTAINMENT, hexagons);
     free(hexagons);
 });
 
 BENCHMARK(polygonToCellsSouthernExpansion, 10, {
-    H3_EXPORT(maxPolygonToCellsSize)(&southernGeoPolygon, 9, 0, &numHexagons);
+    H3_EXPORT(maxPolygonToCellsSize)
+    (&southernGeoPolygon, 9, CENTER_CONTAINMENT, &numHexagons);
     hexagons = calloc(numHexagons, sizeof(H3Index));
-    H3_EXPORT(polygonToCellsExperimental)(&southernGeoPolygon, 9, 0, hexagons);
+    H3_EXPORT(polygonToCellsExperimental)
+    (&southernGeoPolygon, 9, CENTER_CONTAINMENT, hexagons);
     free(hexagons);
 });
 

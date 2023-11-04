@@ -47,7 +47,8 @@
 typedef enum {
     CENTER_CONTAINMENT = 0,
     FULL_CONTAINMENT = 1,
-    INTERSECTION = 2
+    OVERLAPPING = 2,
+    INVALID_CONTAINMENT = 3
 } ContainmentMode;
 
 // 1s in the 4 bits defining the polyfill containment mode, 0s elsewhere
@@ -62,11 +63,15 @@ bool pointInsidePolygon(const GeoPolygon *geoPolygon, const BBox *bboxes,
 bool cellBoundaryInsidePolygon(const GeoPolygon *geoPolygon, const BBox *bboxes,
                                const CellBoundary *boundary,
                                const BBox *boundaryBBox);
+bool cellBoundaryCrossesPolygon(const GeoPolygon *geoPolygon,
+                                const BBox *bboxes,
+                                const CellBoundary *boundary,
+                                const BBox *boundaryBBox);
 bool cellBoundaryCrossesGeoLoop(const GeoLoop *geoloop, const BBox *loopBBox,
                                 const CellBoundary *boundary,
                                 const BBox *boundaryBBox);
-bool lineIntersectsLine(const LatLng *a1, const LatLng *a2, const LatLng *b1,
-                        const LatLng *b2);
+bool lineCrossesLine(const LatLng *a1, const LatLng *a2, const LatLng *b1,
+                     const LatLng *b2);
 
 // The following functions are created via macro in polygonAlgos.h,
 // so their signatures are documented here:

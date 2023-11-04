@@ -50,8 +50,7 @@
  */
 H3Error validatePolygonFlags(uint32_t flags) {
     if (flags & (~FLAG_CONTAINMENT_MODE_MASK) ||
-        !(FLAG_GET_CONTAINMENT_MODE(flags) == CENTER_CONTAINMENT ||
-          FLAG_GET_CONTAINMENT_MODE(flags) == FULL_CONTAINMENT)) {
+        FLAG_GET_CONTAINMENT_MODE(flags) >= INVALID_CONTAINMENT) {
         return E_OPTION_INVALID;
     }
     return E_SUCCESS;
@@ -131,6 +130,33 @@ bool cellBoundaryInsidePolygon(const GeoPolygon *geoPolygon, const BBox *bboxes,
 }
 
 /**
+ * Whether any part of a cell boundary crosses a polygon. Crossing in this case
+ * means whether any line segments intersect; it does not include containment.
+ * @param  geoPolygon The polygon to test
+ * @param  bboxes     The bboxes for the main geoloop and each of its holes
+ * @param  boundary   The cell boundary to test
+ * @return            Whether the cell boundary is contained
+ */
+bool cellBoundaryCrossesPolygon(const GeoPolygon *geoPolygon,
+                                const BBox *bboxes,
+                                const CellBoundary *boundary,
+                                const BBox *boundaryBBox) {
+    // Check for line intersections with outer loop
+    if (cellBoundaryCrossesGeoLoop(&(geoPolygon->geoloop), &bboxes[0], boundary,
+                                   boundaryBBox)) {
+        return true;
+    }
+    // Check for line intersections with any hole
+    for (int i = 0; i < geoPolygon->numHoles; i++) {
+        if (cellBoundaryCrossesGeoLoop(&(geoPolygon->holes[i]), &bboxes[i + 1],
+                                       boundary, boundaryBBox)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
  * Whether a cell boundary crosses a geo loop. Crossing in this case means
  * whether any line segments intersect; it does not include containment.
  * @param  geoloop  Geo loop to test
@@ -182,7 +208,7 @@ bool cellBoundaryCrossesGeoLoop(const GeoLoop *geoloop, const BBox *loopBBox,
         }
 
         for (int j = 0; j < normalBoundary.numVerts; j++) {
-            if (lineIntersectsLine(
+            if (lineCrossesLine(
                     &loop1, &loop2, &normalBoundary.verts[j],
                     &normalBoundary.verts[(j + 1) % normalBoundary.numVerts])) {
                 return true;
@@ -202,8 +228,8 @@ bool cellBoundaryCrossesGeoLoop(const GeoLoop *geoloop, const BBox *loopBBox,
  * @param  b2 End of line B
  * @return    Whether the lines intersect
  */
-bool lineIntersectsLine(const LatLng *a1, const LatLng *a2, const LatLng *b1,
-                        const LatLng *b2) {
+bool lineCrossesLine(const LatLng *a1, const LatLng *a2, const LatLng *b1,
+                     const LatLng *b2) {
     double denom = ((b2->lng - b1->lng) * (a2->lat - a1->lat) -
                     (b2->lat - b1->lat) * (a2->lng - a1->lng));
     if (!denom) return false;

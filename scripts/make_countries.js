@@ -131,6 +131,7 @@ async function makeCountries(sourceUrl, targetPath) {
 #include "h3api.h"
 #include "mathExtensions.h"
 #include "polyfill.h"
+#include "polygon.h"
 
 const GeoPolygon COUNTRIES[${polygons.length}] = {${
   polygons.map((poly, i) => formatGeoPolygon(poly, names[i])).join(',')
@@ -149,13 +150,25 @@ for (int res = 0; res < MAX_RES + 1; res++) {
 
   BENCHMARK(polygonToCells_AllCountries1, 5, {
     for (int index = 0; index < ${polygons.length}; index++) {
-      H3_EXPORT(polygonToCells)(&COUNTRIES[index], res, 0, hexagons);
+      H3_EXPORT(polygonToCells)(&COUNTRIES[index], res, CENTER_CONTAINMENT, hexagons);
     }
   });
 
   BENCHMARK(polygonToCells_AllCountries2, 5, {
     for (int index = 0; index < ${polygons.length}; index++) {
-      H3_EXPORT(polygonToCellsExperimental)(&COUNTRIES[index], res, 0, hexagons);
+      H3_EXPORT(polygonToCellsExperimental)(&COUNTRIES[index], res, CENTER_CONTAINMENT, hexagons);
+    }
+  });
+
+  BENCHMARK(polygonToCells_AllCountries3, 5, {
+    for (int index = 0; index < ${polygons.length}; index++) {
+      H3_EXPORT(polygonToCellsExperimental)(&COUNTRIES[index], res, FULL_CONTAINMENT, hexagons);
+    }
+  });
+
+  BENCHMARK(polygonToCells_AllCountries4, 5, {
+    for (int index = 0; index < ${polygons.length}; index++) {
+      H3_EXPORT(polygonToCellsExperimental)(&COUNTRIES[index], res, OVERLAPPING, hexagons);
     }
   });
 

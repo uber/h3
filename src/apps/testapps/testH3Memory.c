@@ -26,6 +26,7 @@
 #include "h3api.h"
 #include "latLng.h"
 #include "polyfill.h"
+#include "polygon.h"
 #include "test.h"
 #include "utility.h"
 
@@ -230,22 +231,22 @@ SUITE(h3Memory) {
         sfGeoPolygon.numHoles = 0;
 
         int64_t numHexagons;
-        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(&sfGeoPolygon, 9, 0,
-                                                         &numHexagons));
+        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(
+            &sfGeoPolygon, 9, CENTER_CONTAINMENT, &numHexagons));
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         resetMemoryCounters(0);
         failAlloc = true;
-        H3Error err = H3_EXPORT(polygonToCellsExperimental)(&sfGeoPolygon, 9, 0,
-                                                            hexagons);
+        H3Error err = H3_EXPORT(polygonToCellsExperimental)(
+            &sfGeoPolygon, 9, CENTER_CONTAINMENT, hexagons);
         t_assert(err == E_MEMORY_ALLOC,
                  "polygonToCellsExperimental failed (1)");
         t_assert(actualAllocCalls == 1, "alloc called once");
         t_assert(actualFreeCalls == 0, "free not called");
 
         resetMemoryCounters(1);
-        err = H3_EXPORT(polygonToCellsExperimental)(&sfGeoPolygon, 9, 0,
-                                                    hexagons);
+        err = H3_EXPORT(polygonToCellsExperimental)(
+            &sfGeoPolygon, 9, CENTER_CONTAINMENT, hexagons);
         t_assert(err == E_SUCCESS, "polygonToCellsExperimental succeeded (1)");
         t_assert(actualAllocCalls == 1, "alloc called one time");
         t_assert(actualFreeCalls == 1, "free called one time");
