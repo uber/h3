@@ -22,6 +22,7 @@
 #include "h3Index.h"
 #include "latLng.h"
 #include "polyfill.h"
+#include "polygon.h"
 #include "test.h"
 #include "utility.h"
 
@@ -172,6 +173,21 @@ SUITE(polygonToCells) {
         free(hexagons);
     }
 
+    TEST(polygonToCellsFullContainment) {
+        int64_t numHexagons;
+        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(
+            &sfGeoPolygon, 9, FULL_CONTAINMENT, &numHexagons));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+
+        t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
+            &sfGeoPolygon, 9, FULL_CONTAINMENT, hexagons));
+        int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
+
+        t_assert(actualNumIndexes == 1175,
+                 "got expected polygonToCells size (full containment mode)");
+        free(hexagons);
+    }
+
     TEST(polygonToCellsHole) {
         int64_t numHexagons;
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(&holeGeoPolygon, 9, 0,
@@ -184,6 +200,22 @@ SUITE(polygonToCells) {
 
         t_assert(actualNumIndexes == 1214,
                  "got expected polygonToCells size (hole)");
+        free(hexagons);
+    }
+
+    TEST(polygonToCellsHoleFullContainment) {
+        int64_t numHexagons;
+        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(
+            &holeGeoPolygon, 9, FULL_CONTAINMENT, &numHexagons));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+
+        t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
+            &holeGeoPolygon, 9, FULL_CONTAINMENT, hexagons));
+        int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
+
+        t_assert(
+            actualNumIndexes == 1118,
+            "got expected polygonToCells size (hole, full containment mode)");
         free(hexagons);
     }
 
