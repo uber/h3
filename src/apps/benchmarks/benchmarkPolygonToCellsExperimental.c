@@ -125,28 +125,28 @@ H3Index *hexagons;
 
 BENCHMARK(polygonToCellsSF, 500, {
     H3_EXPORT(maxPolygonToCellsSize)
-    (&sfGeoPolygon, 9, CENTER_CONTAINMENT, &numHexagons);
+    (&sfGeoPolygon, 9, CONTAINMENT_CENTER, &numHexagons);
     hexagons = calloc(numHexagons, sizeof(H3Index));
     H3_EXPORT(polygonToCellsExperimental)
-    (&sfGeoPolygon, 9, CENTER_CONTAINMENT, hexagons);
+    (&sfGeoPolygon, 9, CONTAINMENT_CENTER, hexagons);
     free(hexagons);
 });
 
 BENCHMARK(polygonToCellsAlameda, 500, {
     H3_EXPORT(maxPolygonToCellsSize)
-    (&alamedaGeoPolygon, 9, CENTER_CONTAINMENT, &numHexagons);
+    (&alamedaGeoPolygon, 9, CONTAINMENT_CENTER, &numHexagons);
     hexagons = calloc(numHexagons, sizeof(H3Index));
     H3_EXPORT(polygonToCellsExperimental)
-    (&alamedaGeoPolygon, 9, CENTER_CONTAINMENT, hexagons);
+    (&alamedaGeoPolygon, 9, CONTAINMENT_CENTER, hexagons);
     free(hexagons);
 });
 
 BENCHMARK(polygonToCellsSouthernExpansion, 10, {
     H3_EXPORT(maxPolygonToCellsSize)
-    (&southernGeoPolygon, 9, CENTER_CONTAINMENT, &numHexagons);
+    (&southernGeoPolygon, 9, CONTAINMENT_CENTER, &numHexagons);
     hexagons = calloc(numHexagons, sizeof(H3Index));
     H3_EXPORT(polygonToCellsExperimental)
-    (&southernGeoPolygon, 9, CENTER_CONTAINMENT, hexagons);
+    (&southernGeoPolygon, 9, CONTAINMENT_CENTER, hexagons);
     free(hexagons);
 });
 

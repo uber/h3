@@ -232,13 +232,13 @@ SUITE(h3Memory) {
 
         int64_t numHexagons;
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(
-            &sfGeoPolygon, 9, CENTER_CONTAINMENT, &numHexagons));
+            &sfGeoPolygon, 9, CONTAINMENT_CENTER, &numHexagons));
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         resetMemoryCounters(0);
         failAlloc = true;
         H3Error err = H3_EXPORT(polygonToCellsExperimental)(
-            &sfGeoPolygon, 9, CENTER_CONTAINMENT, hexagons);
+            &sfGeoPolygon, 9, CONTAINMENT_CENTER, hexagons);
         t_assert(err == E_MEMORY_ALLOC,
                  "polygonToCellsExperimental failed (1)");
         t_assert(actualAllocCalls == 1, "alloc called once");
@@ -246,7 +246,7 @@ SUITE(h3Memory) {
 
         resetMemoryCounters(1);
         err = H3_EXPORT(polygonToCellsExperimental)(
-            &sfGeoPolygon, 9, CENTER_CONTAINMENT, hexagons);
+            &sfGeoPolygon, 9, CONTAINMENT_CENTER, hexagons);
         t_assert(err == E_SUCCESS, "polygonToCellsExperimental succeeded (1)");
         t_assert(actualAllocCalls == 1, "alloc called one time");
         t_assert(actualFreeCalls == 1, "free called one time");

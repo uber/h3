@@ -414,7 +414,7 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
 
         // Target res: Do a fine-grained check
         if (cellRes == iter->_res) {
-            if (mode == CENTER_CONTAINMENT || mode == OVERLAPPING) {
+            if (mode == CONTAINMENT_CENTER || mode == CONTAINMENT_OVERLAPPING) {
                 // Check if the cell center is inside the polygon
                 LatLng center;
                 H3Error centerErr = H3_EXPORT(cellToLatLng)(cell, &center);
@@ -429,7 +429,7 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
                     return;
                 }
             }
-            if (mode == FULL_CONTAINMENT || mode == OVERLAPPING) {
+            if (mode == CONTAINMENT_FULL || mode == CONTAINMENT_OVERLAPPING) {
                 CellBoundary boundary;
                 H3Error boundaryErr =
                     H3_EXPORT(cellToBoundary)(cell, &boundary);
@@ -444,7 +444,7 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
                     return;
                 }
                 // Check if the cell is fully contained by the polygon
-                if (mode == FULL_CONTAINMENT &&
+                if (mode == CONTAINMENT_FULL &&
                     cellBoundaryInsidePolygon(iter->_polygon, iter->_bboxes,
                                               &boundary, &bbox)) {
                     // Set to next output
@@ -454,7 +454,7 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
                 // For overlap, we've already checked for center point inclusion
                 // above; if that failed, we only need to check for line
                 // intersection
-                else if (mode == OVERLAPPING &&
+                else if (mode == CONTAINMENT_OVERLAPPING &&
                          cellBoundaryCrossesPolygon(
                              iter->_polygon, iter->_bboxes, &boundary, &bbox)) {
                     // Set to next output

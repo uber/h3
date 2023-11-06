@@ -50,7 +50,7 @@
  */
 H3Error validatePolygonFlags(uint32_t flags) {
     if (flags & (~FLAG_CONTAINMENT_MODE_MASK) ||
-        FLAG_GET_CONTAINMENT_MODE(flags) >= INVALID_CONTAINMENT) {
+        FLAG_GET_CONTAINMENT_MODE(flags) >= CONTAINMENT_INVALID) {
         return E_OPTION_INVALID;
     }
     return E_SUCCESS;

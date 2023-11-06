@@ -45,10 +45,10 @@
  * the `flags` bit field.
  */
 typedef enum {
-    CENTER_CONTAINMENT = 0,
-    FULL_CONTAINMENT = 1,
-    OVERLAPPING = 2,
-    INVALID_CONTAINMENT = 3
+    CONTAINMENT_CENTER = 0,       ///< Cell center is contained in the shape
+    CONTAINMENT_FULL = 1,         ///< Cell is fully contained in the shape
+    CONTAINMENT_OVERLAPPING = 2,  ///< Cell overlaps the shape at any point
+    CONTAINMENT_INVALID = 3  ///< This mode is invalid and should not be used
 } ContainmentMode;
 
 // 1s in the 4 bits defining the polyfill containment mode, 0s elsewhere
