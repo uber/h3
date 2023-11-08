@@ -280,12 +280,12 @@ SUITE(polygonToCells) {
 
     TEST(polygonToCellsContainsPolygon_CenterContained) {
         // Contains the center point of a res 4 cell
-        static LatLng centerVerts[] = {{0.6595645, -2.1353315},
-                                       {0.6595645, -2.1353314},
-                                       {0.6595644, -2.1353314},
-                                       {0.6595644, -2.1353314265}};
-        static GeoLoop centerGeoLoop = {.numVerts = 6, .verts = centerVerts};
-        static GeoPolygon centerGeoPolygon;
+        LatLng centerVerts[] = {{0.6595645, -2.1353315},
+                                {0.6595645, -2.1353314},
+                                {0.6595644, -2.1353314},
+                                {0.6595644, -2.1353314265}};
+        GeoLoop centerGeoLoop = {.numVerts = 6, .verts = centerVerts};
+        GeoPolygon centerGeoPolygon;
         centerGeoPolygon.geoloop = centerGeoLoop;
         centerGeoPolygon.numHoles = 0;
 
