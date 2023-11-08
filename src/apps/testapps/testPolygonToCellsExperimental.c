@@ -173,7 +173,7 @@ SUITE(polygonToCells) {
         free(hexagons);
     }
 
-    TEST(polygonToCellsFullContainment) {
+    TEST(polygonToCells_FullContainment) {
         int64_t numHexagons;
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(
             &sfGeoPolygon, 9, CONTAINMENT_FULL, &numHexagons));
@@ -188,7 +188,7 @@ SUITE(polygonToCells) {
         free(hexagons);
     }
 
-    TEST(polygonToCellsOverlapping) {
+    TEST(polygonToCells_Overlapping) {
         int64_t numHexagons;
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(
             &sfGeoPolygon, 9, CONTAINMENT_OVERLAPPING, &numHexagons));
@@ -261,6 +261,77 @@ SUITE(polygonToCells) {
 
         t_assert(actualNumIndexes == 0,
                  "got expected polygonToCells size (empty)");
+        free(hexagons);
+    }
+
+    TEST(polygonToCellsContainsPolygon) {
+        int64_t numHexagons;
+        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(
+            &sfGeoPolygon, 4, CONTAINMENT_CENTER, &numHexagons));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+
+        t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
+            &sfGeoPolygon, 4, CONTAINMENT_CENTER, hexagons));
+        int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
+
+        t_assert(actualNumIndexes == 0, "got expected polygonToCells size");
+        free(hexagons);
+    }
+
+    TEST(polygonToCellsContainsPolygon_CenterContained) {
+        // Contains the center point of a res 4 cell
+        static LatLng centerVerts[] = {{0.6595645, -2.1353315},
+                                       {0.6595645, -2.1353314},
+                                       {0.6595644, -2.1353314},
+                                       {0.6595644, -2.1353314265}};
+        static GeoLoop centerGeoLoop = {.numVerts = 6, .verts = centerVerts};
+        static GeoPolygon centerGeoPolygon;
+        centerGeoPolygon.geoloop = centerGeoLoop;
+        centerGeoPolygon.numHoles = 0;
+
+        int64_t numHexagons;
+        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(
+            &centerGeoPolygon, 4, CONTAINMENT_CENTER, &numHexagons));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+
+        t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
+            &centerGeoPolygon, 4, CONTAINMENT_CENTER, hexagons));
+        int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
+
+        t_assert(actualNumIndexes == 1, "got expected polygonToCells size");
+        t_assert(hexagons[0] == 0x8428309ffffffff, "got expected hexagon");
+
+        free(hexagons);
+    }
+
+    TEST(polygonToCellsContainsPolygon_FullContainment) {
+        int64_t numHexagons;
+        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(
+            &sfGeoPolygon, 4, CONTAINMENT_FULL, &numHexagons));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+
+        t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
+            &sfGeoPolygon, 4, CONTAINMENT_FULL, hexagons));
+        int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
+
+        t_assert(actualNumIndexes == 0,
+                 "got expected polygonToCells size (full containment mode)");
+        free(hexagons);
+    }
+
+    TEST(polygonToCellsContainsPolygon_Overlapping) {
+        int64_t numHexagons;
+        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(
+            &sfGeoPolygon, 4, CONTAINMENT_OVERLAPPING, &numHexagons));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+
+        t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
+            &sfGeoPolygon, 4, CONTAINMENT_OVERLAPPING, hexagons));
+        int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
+
+        t_assert(actualNumIndexes == 1,
+                 "got expected polygonToCells size (overlapping mode)");
+        t_assert(hexagons[0] == 0x8428309ffffffff, "got expected hexagon");
         free(hexagons);
     }
 

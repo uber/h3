@@ -429,6 +429,24 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
                     return;
                 }
             }
+            if (mode == CONTAINMENT_OVERLAPPING) {
+                // For overlapping, we need to do a quick check to determine
+                // whether the polygon is wholly contained by the cell. We check
+                // the first polygon vertex, which if it is contained could also
+                // mean we simply intersect.
+                H3Index polygonCell;
+                H3Error polygonCellErr = H3_EXPORT(latLngToCell)(
+                    &(iter->_polygon->geoloop.verts[0]), cellRes, &polygonCell);
+                if (polygonCellErr != E_SUCCESS) {
+                    iterErrorPolygonCompact(iter, polygonCellErr);
+                    return;
+                }
+                if (polygonCell == cell) {
+                    // Set to next output
+                    iter->cell = cell;
+                    return;
+                }
+            }
             if (mode == CONTAINMENT_FULL || mode == CONTAINMENT_OVERLAPPING) {
                 CellBoundary boundary;
                 H3Error boundaryErr =
