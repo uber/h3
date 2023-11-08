@@ -284,7 +284,7 @@ SUITE(polygonToCells) {
                                 {0.6595645, -2.1353314},
                                 {0.6595644, -2.1353314},
                                 {0.6595644, -2.1353314265}};
-        GeoLoop centerGeoLoop = {.numVerts = 6, .verts = centerVerts};
+        GeoLoop centerGeoLoop = {.numVerts = 4, .verts = centerVerts};
         GeoPolygon centerGeoPolygon;
         centerGeoPolygon.geoloop = centerGeoLoop;
         centerGeoPolygon.numHoles = 0;
