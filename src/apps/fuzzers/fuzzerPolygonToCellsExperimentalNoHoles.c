@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Uber Technologies, Inc.
+ * Copyright 2023 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 /** @file
- * @brief Fuzzer program for polygonToCells and related functions, without holes
+ * @brief Fuzzer program for polygonToCellsExperimental and related functions,
+ * without holes
  */
 
 #include "aflHarness.h"
 #include "h3api.h"
+#include "polyfill.h"
 #include "polygon.h"
 #include "utility.h"
 
@@ -30,7 +32,7 @@ void run(GeoPolygon *geoPolygon, uint32_t flags, int res) {
     H3Error err = H3_EXPORT(maxPolygonToCellsSize)(geoPolygon, res, flags, &sz);
     if (!err && sz < MAX_SZ) {
         H3Index *out = calloc(sz, sizeof(H3Index));
-        H3_EXPORT(polygonToCells)(geoPolygon, res, flags, out);
+        H3_EXPORT(polygonToCellsExperimental)(geoPolygon, res, flags, out);
         free(out);
     }
 }
@@ -52,7 +54,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     geoPolygon.geoloop.verts = (LatLng *)(data + 1);
 
     for (uint32_t flags = 0; flags < CONTAINMENT_INVALID; flags++) {
-        run(&geoPolygon, 0, res);
+        run(&geoPolygon, flags, res);
     }
 
     return 0;

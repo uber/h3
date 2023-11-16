@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 /** @file
- * @brief Fuzzer program for polygonToCellsExperimental and related functions
+ * @brief Fuzzer program for polygonToCells2 and related functions
  */
 
 #include "aflHarness.h"
 #include "h3api.h"
+#include "polyfill.h"
 #include "polygon.h"
 #include "utility.h"
 
@@ -56,7 +57,7 @@ void run(GeoPolygon *geoPolygon, uint32_t flags, int res) {
     H3Error err = H3_EXPORT(maxPolygonToCellsSize)(geoPolygon, res, flags, &sz);
     if (!err && sz < MAX_SZ) {
         H3Index *out = calloc(sz, sizeof(H3Index));
-        H3_EXPORT(polygonToCells)(geoPolygon, res, flags, out);
+        H3_EXPORT(polygonToCellsExperimental)(geoPolygon, res, flags, out);
         free(out);
     }
 }
@@ -92,9 +93,9 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 
     for (uint32_t flags = 0; flags < CONTAINMENT_INVALID; flags++) {
         geoPolygon.numHoles = originalNumHoles;
-        run(&geoPolygon, 0, res);
+        run(&geoPolygon, flags, res);
         geoPolygon.numHoles = 0;
-        run(&geoPolygon, 0, res);
+        run(&geoPolygon, flags, res);
     }
     free(geoPolygon.holes);
 
