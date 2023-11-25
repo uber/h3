@@ -95,6 +95,21 @@ SUITE(polyfillInternal) {
         t_assert(iter.cell == H3_NULL,
                  "Got null output for invalid cell at res");
 
+        iter = iterInitPolygonCompact(&sfGeoPolygon, 9, CONTAINMENT_FULL);
+        t_assertSuccess(iter.error);
+
+        // Give the iterator a cell with a bad base cell, at the target res
+        // (full containment)
+        cell = 0x89283470003ffff;
+        H3_SET_BASE_CELL(cell, 123);
+        iter.cell = cell;
+
+        iterStepPolygonCompact(&iter);
+        t_assert(iter.error == E_CELL_INVALID,
+                 "Got expected error for invalid cell");
+        t_assert(iter.cell == H3_NULL,
+                 "Got null output for invalid cell at res");
+
         iter = iterInitPolygonCompact(&sfGeoPolygon, 9, CONTAINMENT_CENTER);
         t_assertSuccess(iter.error);
 
