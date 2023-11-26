@@ -457,7 +457,9 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
                 }
                 BBox bbox;
                 H3Error bboxErr = cellToBBox(cell, &bbox, false);
-                if (bboxErr) {
+                if (NEVER(bboxErr != E_SUCCESS)) {
+                    // Should be unreachable - invalid cells would be caught in
+                    // the previous boundaryErr
                     iterErrorPolygonCompact(iter, bboxErr);
                     return;
                 }
