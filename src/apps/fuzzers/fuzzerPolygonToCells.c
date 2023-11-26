@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Uber Technologies, Inc.
+ * Copyright 2022-2023 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /** @file
- * @brief Fuzzer program for polygonToCellsExperimental and related functions
+ * @brief Fuzzer program for polygonToCells and related functions
  */
 
 #include "aflHarness.h"
