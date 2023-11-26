@@ -140,6 +140,16 @@ bool bboxEquals(const BBox *b1, const BBox *b2) {
            b1->east == b2->east && b1->west == b2->west;
 }
 
+CellBoundary bboxToCellBoundary(const BBox *bbox) {
+    // Convert bbox to cell boundary, CCW vertex order
+    CellBoundary bboxBoundary = {.numVerts = 4,
+                                 .verts = {{bbox->north, bbox->east},
+                                           {bbox->north, bbox->west},
+                                           {bbox->south, bbox->west},
+                                           {bbox->south, bbox->east}}};
+    return bboxBoundary;
+}
+
 /**
  * _hexRadiusKm returns the radius of a given hexagon in Km
  *

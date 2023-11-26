@@ -48,7 +48,8 @@ typedef enum {
     CONTAINMENT_CENTER = 0,       ///< Cell center is contained in the shape
     CONTAINMENT_FULL = 1,         ///< Cell is fully contained in the shape
     CONTAINMENT_OVERLAPPING = 2,  ///< Cell overlaps the shape at any point
-    CONTAINMENT_INVALID = 3  ///< This mode is invalid and should not be used
+    CONTAINMENT_OVERLAPPING_BBOX = 3,  ///< Cell bounding box overlaps shape
+    CONTAINMENT_INVALID = 4  ///< This mode is invalid and should not be used
 } ContainmentMode;
 
 // 1s in the 4 bits defining the polyfill containment mode, 0s elsewhere
