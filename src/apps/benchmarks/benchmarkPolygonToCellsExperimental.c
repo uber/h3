@@ -17,6 +17,7 @@
 #include "benchmark.h"
 #include "h3api.h"
 #include "polyfill.h"
+#include "polygon.h"
 
 // Fixtures
 LatLng sfVerts[] = {
@@ -122,24 +123,84 @@ southernGeoPolygon.geoloop = southernGeoLoop;
 int64_t numHexagons;
 H3Index *hexagons;
 
-BENCHMARK(polygonToCellsSF, 500, {
-    H3_EXPORT(maxPolygonToCellsSize)(&sfGeoPolygon, 9, 0, &numHexagons);
+BENCHMARK(polygonToCellsSF_Center, 500, {
+    H3_EXPORT(maxPolygonToCellsSize)
+    (&sfGeoPolygon, 9, CONTAINMENT_CENTER, &numHexagons);
     hexagons = calloc(numHexagons, sizeof(H3Index));
-    H3_EXPORT(polygonToCellsExperimental)(&sfGeoPolygon, 9, 0, hexagons);
+    H3_EXPORT(polygonToCellsExperimental)
+    (&sfGeoPolygon, 9, CONTAINMENT_CENTER, hexagons);
     free(hexagons);
 });
 
-BENCHMARK(polygonToCellsAlameda, 500, {
-    H3_EXPORT(maxPolygonToCellsSize)(&alamedaGeoPolygon, 9, 0, &numHexagons);
+BENCHMARK(polygonToCellsSF_Full, 500, {
+    H3_EXPORT(maxPolygonToCellsSize)
+    (&sfGeoPolygon, 9, CONTAINMENT_FULL, &numHexagons);
     hexagons = calloc(numHexagons, sizeof(H3Index));
-    H3_EXPORT(polygonToCellsExperimental)(&alamedaGeoPolygon, 9, 0, hexagons);
+    H3_EXPORT(polygonToCellsExperimental)
+    (&sfGeoPolygon, 9, CONTAINMENT_FULL, hexagons);
     free(hexagons);
 });
 
-BENCHMARK(polygonToCellsSouthernExpansion, 10, {
-    H3_EXPORT(maxPolygonToCellsSize)(&southernGeoPolygon, 9, 0, &numHexagons);
+BENCHMARK(polygonToCellsSF_Overlapping, 500, {
+    H3_EXPORT(maxPolygonToCellsSize)
+    (&sfGeoPolygon, 9, CONTAINMENT_OVERLAPPING, &numHexagons);
     hexagons = calloc(numHexagons, sizeof(H3Index));
-    H3_EXPORT(polygonToCellsExperimental)(&southernGeoPolygon, 9, 0, hexagons);
+    H3_EXPORT(polygonToCellsExperimental)
+    (&sfGeoPolygon, 9, CONTAINMENT_OVERLAPPING, hexagons);
+    free(hexagons);
+});
+
+BENCHMARK(polygonToCellsAlameda_Center, 500, {
+    H3_EXPORT(maxPolygonToCellsSize)
+    (&alamedaGeoPolygon, 9, CONTAINMENT_CENTER, &numHexagons);
+    hexagons = calloc(numHexagons, sizeof(H3Index));
+    H3_EXPORT(polygonToCellsExperimental)
+    (&alamedaGeoPolygon, 9, CONTAINMENT_CENTER, hexagons);
+    free(hexagons);
+});
+
+BENCHMARK(polygonToCellsAlameda_Full, 500, {
+    H3_EXPORT(maxPolygonToCellsSize)
+    (&alamedaGeoPolygon, 9, CONTAINMENT_FULL, &numHexagons);
+    hexagons = calloc(numHexagons, sizeof(H3Index));
+    H3_EXPORT(polygonToCellsExperimental)
+    (&alamedaGeoPolygon, 9, CONTAINMENT_FULL, hexagons);
+    free(hexagons);
+});
+
+BENCHMARK(polygonToCellsAlameda_Overlapping, 500, {
+    H3_EXPORT(maxPolygonToCellsSize)
+    (&alamedaGeoPolygon, 9, CONTAINMENT_OVERLAPPING, &numHexagons);
+    hexagons = calloc(numHexagons, sizeof(H3Index));
+    H3_EXPORT(polygonToCellsExperimental)
+    (&alamedaGeoPolygon, 9, CONTAINMENT_OVERLAPPING, hexagons);
+    free(hexagons);
+});
+
+BENCHMARK(polygonToCellsSouthernExpansion_Center, 10, {
+    H3_EXPORT(maxPolygonToCellsSize)
+    (&southernGeoPolygon, 9, CONTAINMENT_CENTER, &numHexagons);
+    hexagons = calloc(numHexagons, sizeof(H3Index));
+    H3_EXPORT(polygonToCellsExperimental)
+    (&southernGeoPolygon, 9, CONTAINMENT_CENTER, hexagons);
+    free(hexagons);
+});
+
+BENCHMARK(polygonToCellsSouthernExpansion_Full, 10, {
+    H3_EXPORT(maxPolygonToCellsSize)
+    (&southernGeoPolygon, 9, CONTAINMENT_FULL, &numHexagons);
+    hexagons = calloc(numHexagons, sizeof(H3Index));
+    H3_EXPORT(polygonToCellsExperimental)
+    (&southernGeoPolygon, 9, CONTAINMENT_FULL, hexagons);
+    free(hexagons);
+});
+
+BENCHMARK(polygonToCellsSouthernExpansion_Overlapping, 10, {
+    H3_EXPORT(maxPolygonToCellsSize)
+    (&southernGeoPolygon, 9, CONTAINMENT_OVERLAPPING, &numHexagons);
+    hexagons = calloc(numHexagons, sizeof(H3Index));
+    H3_EXPORT(polygonToCellsExperimental)
+    (&southernGeoPolygon, 9, CONTAINMENT_OVERLAPPING, hexagons);
     free(hexagons);
 });
 

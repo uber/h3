@@ -626,55 +626,55 @@ SUITE(polygonInternal) {
         H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
     }
 
-    TEST(lineIntersectsLine) {
+    TEST(lineCrossesLine) {
         LatLng lines1[4] = {{0, 0}, {1, 1}, {0, 1}, {1, 0}};
         t_assert(
-            lineIntersectsLine(&lines1[0], &lines1[1], &lines1[2], &lines1[3]),
+            lineCrossesLine(&lines1[0], &lines1[1], &lines1[2], &lines1[3]),
             "diagonal intersection");
 
         LatLng lines2[4] = {{1, 1}, {0, 0}, {1, 0}, {0, 1}};
         t_assert(
-            lineIntersectsLine(&lines2[0], &lines2[1], &lines2[2], &lines2[3]),
+            lineCrossesLine(&lines2[0], &lines2[1], &lines2[2], &lines2[3]),
             "diagonal intersection, reverse vertexes");
 
         LatLng lines3[4] = {{0.5, 0}, {0.5, 1}, {0, 0.5}, {1, 0.5}};
         t_assert(
-            lineIntersectsLine(&lines3[0], &lines3[1], &lines3[2], &lines3[3]),
+            lineCrossesLine(&lines3[0], &lines3[1], &lines3[2], &lines3[3]),
             "horizontal/vertical intersection");
 
         LatLng lines4[4] = {{0.5, 1}, {0.5, 0}, {1, 0.5}, {0, 0.5}};
         t_assert(
-            lineIntersectsLine(&lines4[0], &lines4[1], &lines4[2], &lines4[3]),
+            lineCrossesLine(&lines4[0], &lines4[1], &lines4[2], &lines4[3]),
             "horizontal/vertical intersection, reverse vertexes");
 
         LatLng lines5[4] = {{0, 0}, {0.4, 0.4}, {0, 1}, {1, 0}};
         t_assert(
-            !lineIntersectsLine(&lines5[0], &lines5[1], &lines5[2], &lines5[3]),
+            !lineCrossesLine(&lines5[0], &lines5[1], &lines5[2], &lines5[3]),
             "diagonal non-intersection, below");
 
         LatLng lines6[4] = {{0.6, 0.6}, {1, 1}, {0, 1}, {1, 0}};
         t_assert(
-            !lineIntersectsLine(&lines6[0], &lines6[1], &lines6[2], &lines6[3]),
+            !lineCrossesLine(&lines6[0], &lines6[1], &lines6[2], &lines6[3]),
             "diagonal non-intersection, above");
 
         LatLng lines7[4] = {{0.5, 0}, {0.5, 1}, {0, 0.5}, {0.4, 0.5}};
         t_assert(
-            !lineIntersectsLine(&lines7[0], &lines7[1], &lines7[2], &lines7[3]),
+            !lineCrossesLine(&lines7[0], &lines7[1], &lines7[2], &lines7[3]),
             "horizontal/vertical non-intersection, below");
 
         LatLng lines8[4] = {{0.5, 0}, {0.5, 1}, {0.6, 0.5}, {1, 0.5}};
         t_assert(
-            !lineIntersectsLine(&lines8[0], &lines8[1], &lines8[2], &lines8[3]),
+            !lineCrossesLine(&lines8[0], &lines8[1], &lines8[2], &lines8[3]),
             "horizontal/vertical non-intersection, above");
 
         LatLng lines9[4] = {{0.5, 0}, {0.5, 0.4}, {0, 0.5}, {1, 0.5}};
         t_assert(
-            !lineIntersectsLine(&lines9[0], &lines9[1], &lines9[2], &lines9[3]),
+            !lineCrossesLine(&lines9[0], &lines9[1], &lines9[2], &lines9[3]),
             "horizontal/vertical non-intersection, left");
 
         LatLng lines10[4] = {{0.5, 0.6}, {0.5, 1}, {0, 0.5}, {1, 0.5}};
-        t_assert(!lineIntersectsLine(&lines10[0], &lines10[1], &lines10[2],
-                                     &lines10[3]),
+        t_assert(!lineCrossesLine(&lines10[0], &lines10[1], &lines10[2],
+                                  &lines10[3]),
                  "horizontal/vertical non-intersection, right");
     }
 

@@ -354,8 +354,9 @@ IterCellsPolygonCompact iterInitPolygonCompact(const GeoPolygon *polygon,
         return iter;
     }
 
-    if (flags != 0) {
-        iterErrorPolygonCompact(&iter, E_OPTION_INVALID);
+    H3Error flagErr = validatePolygonFlags(flags);
+    if (flagErr) {
+        iterErrorPolygonCompact(&iter, flagErr);
         return iter;
     }
 
@@ -406,23 +407,80 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
         iter->_started = true;
     }
 
+    ContainmentMode mode = FLAG_GET_CONTAINMENT_MODE(iter->_flags);
+
     while (cell) {
         int cellRes = H3_GET_RESOLUTION(cell);
 
         // Target res: Do a fine-grained check
         if (cellRes == iter->_res) {
-            // Check if the cell is in the polygon
-            // TODO: Handle other polyfill modes here
-            LatLng center;
-            H3Error centerErr = H3_EXPORT(cellToLatLng)(cell, &center);
-            if (NEVER(centerErr != E_SUCCESS)) {
-                iterErrorPolygonCompact(iter, centerErr);
-                return;
+            if (mode == CONTAINMENT_CENTER || mode == CONTAINMENT_OVERLAPPING) {
+                // Check if the cell center is inside the polygon
+                LatLng center;
+                H3Error centerErr = H3_EXPORT(cellToLatLng)(cell, &center);
+                if (centerErr != E_SUCCESS) {
+                    iterErrorPolygonCompact(iter, centerErr);
+                    return;
+                }
+                if (pointInsidePolygon(iter->_polygon, iter->_bboxes,
+                                       &center)) {
+                    // Set to next output
+                    iter->cell = cell;
+                    return;
+                }
             }
-            if (pointInsidePolygon(iter->_polygon, iter->_bboxes, &center)) {
-                // Set to next output
-                iter->cell = cell;
-                return;
+            if (mode == CONTAINMENT_OVERLAPPING) {
+                // For overlapping, we need to do a quick check to determine
+                // whether the polygon is wholly contained by the cell. We check
+                // the first polygon vertex, which if it is contained could also
+                // mean we simply intersect.
+                H3Index polygonCell;
+                H3Error polygonCellErr = H3_EXPORT(latLngToCell)(
+                    &(iter->_polygon->geoloop.verts[0]), cellRes, &polygonCell);
+                if (polygonCellErr != E_SUCCESS) {
+                    iterErrorPolygonCompact(iter, polygonCellErr);
+                    return;
+                }
+                if (polygonCell == cell) {
+                    // Set to next output
+                    iter->cell = cell;
+                    return;
+                }
+            }
+            if (mode == CONTAINMENT_FULL || mode == CONTAINMENT_OVERLAPPING) {
+                CellBoundary boundary;
+                H3Error boundaryErr =
+                    H3_EXPORT(cellToBoundary)(cell, &boundary);
+                if (boundaryErr != E_SUCCESS) {
+                    iterErrorPolygonCompact(iter, boundaryErr);
+                    return;
+                }
+                BBox bbox;
+                H3Error bboxErr = cellToBBox(cell, &bbox, false);
+                if (NEVER(bboxErr != E_SUCCESS)) {
+                    // Should be unreachable - invalid cells would be caught in
+                    // the previous boundaryErr
+                    iterErrorPolygonCompact(iter, bboxErr);
+                    return;
+                }
+                // Check if the cell is fully contained by the polygon
+                if (mode == CONTAINMENT_FULL &&
+                    cellBoundaryInsidePolygon(iter->_polygon, iter->_bboxes,
+                                              &boundary, &bbox)) {
+                    // Set to next output
+                    iter->cell = cell;
+                    return;
+                }
+                // For overlap, we've already checked for center point inclusion
+                // above; if that failed, we only need to check for line
+                // intersection
+                else if (mode == CONTAINMENT_OVERLAPPING &&
+                         cellBoundaryCrossesPolygon(
+                             iter->_polygon, iter->_bboxes, &boundary, &bbox)) {
+                    // Set to next output
+                    iter->cell = cell;
+                    return;
+                }
             }
         }
 
