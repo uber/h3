@@ -735,12 +735,9 @@ H3Error H3_EXPORT(maxPolygonToCellsSizeExperimental)(const GeoPolygon *polygon,
     *out = 0;
     int64_t childrenSize;
     for (; iter.cell; iterStepPolygonCompact(&iter)) {
-        if (iter.error) {
-            return iter.error;
-        }
         H3_EXPORT(cellToChildrenSize)(iter.cell, res, &childrenSize);
         *out += childrenSize;
     }
 
-    return E_SUCCESS;
+    return iter.error;
 }

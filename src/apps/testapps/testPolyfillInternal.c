@@ -68,10 +68,10 @@ SUITE(polyfillInternal) {
         IterCellsPolygonCompact iter;
         H3Index cell;
 
+        // Give the iterator a cell with a bad base cell
         iter = iterInitPolygonCompact(&sfGeoPolygon, 9, CONTAINMENT_CENTER);
         t_assertSuccess(iter.error);
 
-        // Give the iterator a cell with a bad base cell
         cell = 0x85283473fffffff;
         H3_SET_BASE_CELL(cell, 123);
         iter.cell = cell;
@@ -81,10 +81,10 @@ SUITE(polyfillInternal) {
                  "Got expected error for invalid cell");
         t_assert(iter.cell == H3_NULL, "Got null output for invalid cell");
 
+        // Give the iterator a cell with a bad base cell, at the target res
         iter = iterInitPolygonCompact(&sfGeoPolygon, 9, CONTAINMENT_CENTER);
         t_assertSuccess(iter.error);
 
-        // Give the iterator a cell with a bad base cell, at the target res
         cell = 0x89283470003ffff;
         H3_SET_BASE_CELL(cell, 123);
         iter.cell = cell;
@@ -94,12 +94,12 @@ SUITE(polyfillInternal) {
                  "Got expected error for invalid cell");
         t_assert(iter.cell == H3_NULL,
                  "Got null output for invalid cell at res");
-
-        iter = iterInitPolygonCompact(&sfGeoPolygon, 9, CONTAINMENT_FULL);
-        t_assertSuccess(iter.error);
 
         // Give the iterator a cell with a bad base cell, at the target res
         // (full containment)
+        iter = iterInitPolygonCompact(&sfGeoPolygon, 9, CONTAINMENT_FULL);
+        t_assertSuccess(iter.error);
+
         cell = 0x89283470003ffff;
         H3_SET_BASE_CELL(cell, 123);
         iter.cell = cell;
@@ -110,12 +110,28 @@ SUITE(polyfillInternal) {
         t_assert(iter.cell == H3_NULL,
                  "Got null output for invalid cell at res");
 
-        iter = iterInitPolygonCompact(&sfGeoPolygon, 9, CONTAINMENT_CENTER);
+        // Give the iterator a cell with a bad base cell, at the target res
+        // (overlapping bounding box)
+        iter = iterInitPolygonCompact(&sfGeoPolygon, 9,
+                                      CONTAINMENT_OVERLAPPING_BBOX);
         t_assertSuccess(iter.error);
+
+        cell = 0x89283470003ffff;
+        H3_SET_BASE_CELL(cell, 123);
+        iter.cell = cell;
+
+        iterStepPolygonCompact(&iter);
+        t_assert(iter.error == E_CELL_INVALID,
+                 "Got expected error for invalid cell");
+        t_assert(iter.cell == H3_NULL,
+                 "Got null output for invalid cell at res");
 
         // Give the iterator a cell that's too fine for a child check,
         // and a target resolution that allows this to run. This cell has
         // to be inside the polygon to reach the error.
+        iter = iterInitPolygonCompact(&sfGeoPolygon, 9, CONTAINMENT_CENTER);
+        t_assertSuccess(iter.error);
+
         cell = 0x8f283080dcb019a;
         iter.cell = cell;
         iter._res = 42;
