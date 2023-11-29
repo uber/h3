@@ -140,9 +140,8 @@ const GeoPolygon COUNTRIES[${polygons.length}] = {${
 BEGIN_BENCHMARKS();
 
 int MAX_RES = 5;
-// Max size of largest polygon at res 5, rounded up with padding
-int64_t numHexagons = 400000;
-H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+int64_t numHexagons;
+H3Index *hexagons;
 
 for (int res = 0; res < MAX_RES + 1; res++) {
 
@@ -150,31 +149,41 @@ for (int res = 0; res < MAX_RES + 1; res++) {
 
   BENCHMARK(polygonToCells_AllCountries1, 5, {
     for (int index = 0; index < ${polygons.length}; index++) {
+      H3_EXPORT(maxPolygonToCellsSize)(&COUNTRIES[index], res, CONTAINMENT_CENTER, &numHexagons);
+      hexagons = calloc(numHexagons, sizeof(H3Index));
       H3_EXPORT(polygonToCells)(&COUNTRIES[index], res, CONTAINMENT_CENTER, hexagons);
+      free(hexagons);
     }
   });
 
   BENCHMARK(polygonToCells_AllCountries2, 5, {
     for (int index = 0; index < ${polygons.length}; index++) {
+      H3_EXPORT(maxPolygonToCellsSizeExperimental)(&COUNTRIES[index], res, CONTAINMENT_CENTER, &numHexagons);
+      hexagons = calloc(numHexagons, sizeof(H3Index));
       H3_EXPORT(polygonToCellsExperimental)(&COUNTRIES[index], res, CONTAINMENT_CENTER, hexagons);
+      free(hexagons);
     }
   });
 
   BENCHMARK(polygonToCells_AllCountries3, 5, {
     for (int index = 0; index < ${polygons.length}; index++) {
+      H3_EXPORT(maxPolygonToCellsSizeExperimental)(&COUNTRIES[index], res, CONTAINMENT_CENTER, &numHexagons);
+      hexagons = calloc(numHexagons, sizeof(H3Index));
       H3_EXPORT(polygonToCellsExperimental)(&COUNTRIES[index], res, CONTAINMENT_FULL, hexagons);
     }
   });
 
   BENCHMARK(polygonToCells_AllCountries4, 5, {
     for (int index = 0; index < ${polygons.length}; index++) {
+      H3_EXPORT(maxPolygonToCellsSizeExperimental)(&COUNTRIES[index], res, CONTAINMENT_CENTER, &numHexagons);
+      hexagons = calloc(numHexagons, sizeof(H3Index));
       H3_EXPORT(polygonToCellsExperimental)(&COUNTRIES[index], res, CONTAINMENT_OVERLAPPING, hexagons);
+      free(hexagons);
     }
   });
 
 }
 
-free(hexagons);
 
 END_BENCHMARKS();
   `
