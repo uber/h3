@@ -560,7 +560,7 @@ SUITE(polygonToCells) {
 
     TEST(invalidFlags) {
         int64_t numHexagons;
-        for (uint32_t flags = 3; flags <= 32; flags++) {
+        for (uint32_t flags = CONTAINMENT_INVALID; flags <= 32; flags++) {
             t_assert(
                 H3_EXPORT(maxPolygonToCellsSize)(
                     &sfGeoPolygon, 9, flags, &numHexagons) == E_OPTION_INVALID,
@@ -570,7 +570,7 @@ SUITE(polygonToCells) {
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(
             &sfGeoPolygon, 9, CONTAINMENT_CENTER, &numHexagons));
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
-        for (uint32_t flags = 3; flags <= 32; flags++) {
+        for (uint32_t flags = CONTAINMENT_INVALID; flags <= 32; flags++) {
             t_assert(H3_EXPORT(polygonToCellsExperimental)(
                          &sfGeoPolygon, 9, flags, hexagons) == E_OPTION_INVALID,
                      "Flags other than polyfill modes are invalid for "
