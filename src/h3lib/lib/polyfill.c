@@ -683,6 +683,12 @@ H3Error H3_EXPORT(polygonToCellsExperimental)(const GeoPolygon *polygon,
 
 static int MAX_SIZE_CELL_THRESHOLD = 100;
 
+static double getAverageCellArea(int res) {
+    double hexAreaKm2;
+    H3_EXPORT(getHexagonAreaAvgKm2)(res, &hexAreaKm2);
+    return hexAreaKm2;
+}
+
 /**
  * maxPolygonToCellsSize returns the number of cells to allocate space for
  * when performing a polygonToCells on the given GeoJSON-like data structure.
@@ -714,13 +720,17 @@ H3Error H3_EXPORT(maxPolygonToCellsSizeExperimental)(const GeoPolygon *polygon,
     // Determine the res for the size estimate, based on a (very) rough estimate
     // of the number of cells at various resolutions that would fit in the
     // polygon. All we need here is a general order of magnitude.
-    double hexAreaKm2;
-    do {
+    while (iter._res > 0 &&
+           polygonBBoxAreaKm2 / getAverageCellArea(iter._res - 1) >
+               MAX_SIZE_CELL_THRESHOLD) {
         iter._res--;
-        H3_EXPORT(getHexagonAreaAvgKm2)(iter._res, &hexAreaKm2);
-    } while (polygonBBoxAreaKm2 / hexAreaKm2 > MAX_SIZE_CELL_THRESHOLD);
+    }
 
-    // Now run the polyfill, counting the output in the target res
+    // Now run the polyfill, counting the output in the target res.
+    // We have to take the first step outside the loop, to get the first
+    // valid output cell
+    iterStepPolygonCompact(&iter);
+
     *out = 0;
     int64_t childrenSize;
     for (; iter.cell; iterStepPolygonCompact(&iter)) {
