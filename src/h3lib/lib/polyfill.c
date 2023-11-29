@@ -681,7 +681,7 @@ H3Error H3_EXPORT(polygonToCellsExperimental)(const GeoPolygon *polygon,
     return iter.error;
 }
 
-static int MAX_SIZE_CELL_THRESHOLD = 100;
+static int MAX_SIZE_CELL_THRESHOLD = 10;
 
 static double getAverageCellArea(int res) {
     double hexAreaKm2;
