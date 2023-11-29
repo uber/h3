@@ -574,7 +574,7 @@ SUITE(polygonToCells) {
             t_assert(H3_EXPORT(polygonToCellsExperimental)(
                          &sfGeoPolygon, 9, flags, hexagons) == E_OPTION_INVALID,
                      "Flags other than polyfill modes are invalid for "
-                     "polygonToCells");
+                     "polygonToCellsExperimental");
         }
         free(hexagons);
     }

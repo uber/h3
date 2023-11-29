@@ -700,15 +700,16 @@ static double getAverageCellArea(int res) {
 H3Error H3_EXPORT(maxPolygonToCellsSizeExperimental)(const GeoPolygon *polygon,
                                                      int res, uint32_t flags,
                                                      int64_t *out) {
-    // Initialize the iterator without stepping, so we can adjust the res before
-    // we start. Note that we also ignore the flags and use the faster
-    // overlapping-bbox mode.
-    IterCellsPolygonCompact iter =
-        _iterInitPolygonCompact(polygon, res, CONTAINMENT_OVERLAPPING_BBOX);
+    // Initialize the iterator without stepping, so we can adjust the res and
+    // flags before we start
+    IterCellsPolygonCompact iter = _iterInitPolygonCompact(polygon, res, flags);
 
     if (iter.error) {
         return iter.error;
     }
+
+    // Ignore the requested flags and use the faster overlapping-bbox mode
+    iter._flags = CONTAINMENT_OVERLAPPING_BBOX;
 
     // Get a (very) rough area of the polygon bounding box
     BBox *polygonBBox = &iter._bboxes[0];
