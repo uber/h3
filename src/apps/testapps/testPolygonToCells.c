@@ -22,6 +22,7 @@
 #include "constants.h"
 #include "h3Index.h"
 #include "latLng.h"
+#include "polygon.h"
 #include "test.h"
 #include "utility.h"
 
@@ -461,7 +462,7 @@ SUITE(polygonToCells) {
 
     TEST(invalidFlags) {
         int64_t numHexagons;
-        for (uint32_t flags = 3; flags <= 32; flags++) {
+        for (uint32_t flags = CONTAINMENT_INVALID; flags <= 32; flags++) {
             t_assert(
                 H3_EXPORT(maxPolygonToCellsSize)(
                     &sfGeoPolygon, 9, flags, &numHexagons) == E_OPTION_INVALID,
@@ -471,7 +472,7 @@ SUITE(polygonToCells) {
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(&sfGeoPolygon, 9, 0,
                                                          &numHexagons));
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
-        for (uint32_t flags = 3; flags <= 32; flags++) {
+        for (uint32_t flags = CONTAINMENT_INVALID; flags <= 32; flags++) {
             t_assert(H3_EXPORT(polygonToCells)(&sfGeoPolygon, 9, flags,
                                                hexagons) == E_OPTION_INVALID,
                      "Flags other than polyfill modes are invalid for "
