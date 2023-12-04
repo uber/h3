@@ -43,6 +43,7 @@ bool bboxContains(const BBox *bbox, const LatLng *point);
 bool bboxContainsBBox(const BBox *a, const BBox *b);
 bool bboxOverlapsBBox(const BBox *a, const BBox *b);
 bool bboxEquals(const BBox *b1, const BBox *b2);
+CellBoundary bboxToCellBoundary(const BBox *bbox);
 H3Error bboxHexEstimate(const BBox *bbox, int res, int64_t *out);
 H3Error lineHexEstimate(const LatLng *origin, const LatLng *destination,
                         int res, int64_t *out);

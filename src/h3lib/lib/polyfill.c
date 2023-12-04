@@ -316,28 +316,11 @@ static H3Index nextCell(H3Index cell) {
 }
 
 /**
- * Initialize a IterCellsPolygonCompact struct representing the sequence of
- * compact cells within the target polygon. The test for including edge cells is
- * defined by the polyfill mode passed in the `flags` argument.
- *
- * Initialization of this object may fail, in which case the `error` property
- * will be set and all iteration will return H3_NULL. It is the responsibility
- * of the caller to check the error property after initialization.
- *
- * At any point in the iteration, starting once the struct is initialized, the
- * output value can be accessed through the `cell` property.
- *
- * Note that initializing the iterator allocates memory. If an iterator is
- * exhausted or returns an error that memory is released; otherwise it must be
- * released manually with iterDestroyPolygonCompact.
- *
- * @param  polygon Polygon to fill with compact cells
- * @param  res     Finest resolution for output cells
- * @param  flags   Bit mask of option flags
- * @return         Initialized iterator, with the first value available
+ * Internal function - initialize the iterator without stepping to the first
+ * value
  */
-IterCellsPolygonCompact iterInitPolygonCompact(const GeoPolygon *polygon,
-                                               int res, uint32_t flags) {
+static IterCellsPolygonCompact _iterInitPolygonCompact(
+    const GeoPolygon *polygon, int res, uint32_t flags) {
     IterCellsPolygonCompact iter = {// Initialize output properties. The first
                                     // valid cell will be set in iterStep
                                     .cell = baseCellNumToCell(0),
@@ -368,6 +351,34 @@ IterCellsPolygonCompact iterInitPolygonCompact(const GeoPolygon *polygon,
         return iter;
     }
     bboxesFromGeoPolygon(polygon, iter._bboxes);
+
+    return iter;
+}
+
+/**
+ * Initialize a IterCellsPolygonCompact struct representing the sequence of
+ * compact cells within the target polygon. The test for including edge cells is
+ * defined by the polyfill mode passed in the `flags` argument.
+ *
+ * Initialization of this object may fail, in which case the `error` property
+ * will be set and all iteration will return H3_NULL. It is the responsibility
+ * of the caller to check the error property after initialization.
+ *
+ * At any point in the iteration, starting once the struct is initialized, the
+ * output value can be accessed through the `cell` property.
+ *
+ * Note that initializing the iterator allocates memory. If an iterator is
+ * exhausted or returns an error that memory is released; otherwise it must be
+ * released manually with iterDestroyPolygonCompact.
+ *
+ * @param  polygon Polygon to fill with compact cells
+ * @param  res     Finest resolution for output cells
+ * @param  flags   Bit mask of option flags
+ * @return         Initialized iterator, with the first value available
+ */
+IterCellsPolygonCompact iterInitPolygonCompact(const GeoPolygon *polygon,
+                                               int res, uint32_t flags) {
+    IterCellsPolygonCompact iter = _iterInitPolygonCompact(polygon, res, flags);
 
     // Start the iterator by taking the first step.
     // This is necessary to have a valid value after initialization.
@@ -482,6 +493,32 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
                     return;
                 }
             }
+            if (mode == CONTAINMENT_OVERLAPPING_BBOX) {
+                // Get a bounding box containing all the cell's children, so
+                // this can work for the max size calculation
+                BBox bbox;
+                H3Error bboxErr = cellToBBox(cell, &bbox, true);
+                if (bboxErr) {
+                    iterErrorPolygonCompact(iter, bboxErr);
+                    return;
+                }
+                if (bboxOverlapsBBox(&iter->_bboxes[0], &bbox)) {
+                    CellBoundary bboxBoundary = bboxToCellBoundary(&bbox);
+                    if (
+                        // cell bbox contains the polygon
+                        bboxContainsBBox(&bbox, &iter->_bboxes[0]) ||
+                        // polygon contains cell bbox
+                        pointInsidePolygon(iter->_polygon, iter->_bboxes,
+                                           &bboxBoundary.verts[0]) ||
+                        // polygon crosses cell bbox
+                        cellBoundaryCrossesPolygon(iter->_polygon,
+                                                   iter->_bboxes, &bboxBoundary,
+                                                   &bbox)) {
+                        iter->cell = cell;
+                        return;
+                    }
+                }
+            }
         }
 
         // Coarser cell: Check the bounding box
@@ -496,13 +533,7 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
             if (bboxOverlapsBBox(&iter->_bboxes[0], &bbox)) {
                 // Quick check for possible containment
                 if (bboxContainsBBox(&iter->_bboxes[0], &bbox)) {
-                    // Convert bbox to cell boundary, CCW vertex order
-                    CellBoundary bboxBoundary = {
-                        .numVerts = 4,
-                        .verts = {{bbox.north, bbox.east},
-                                  {bbox.north, bbox.west},
-                                  {bbox.south, bbox.west},
-                                  {bbox.south, bbox.east}}};
+                    CellBoundary bboxBoundary = bboxToCellBoundary(&bbox);
                     // Do a fine-grained, more expensive check on the polygon
                     if (cellBoundaryInsidePolygon(iter->_polygon, iter->_bboxes,
                                                   &bboxBoundary, &bbox)) {
@@ -647,5 +678,66 @@ H3Error H3_EXPORT(polygonToCellsExperimental)(const GeoPolygon *polygon,
     for (; iter.cell; iterStepPolygon(&iter)) {
         out[i++] = iter.cell;
     }
+    return iter.error;
+}
+
+static int MAX_SIZE_CELL_THRESHOLD = 10;
+
+static double getAverageCellArea(int res) {
+    double hexAreaKm2;
+    H3_EXPORT(getHexagonAreaAvgKm2)(res, &hexAreaKm2);
+    return hexAreaKm2;
+}
+
+/**
+ * maxPolygonToCellsSize returns the number of cells to allocate space for
+ * when performing a polygonToCells on the given GeoJSON-like data structure.
+ * @param geoPolygon A GeoJSON-like data structure indicating the poly to fill
+ * @param res Hexagon resolution (0-15)
+ * @param out number of cells to allocate for
+ * @return 0 (E_SUCCESS) on success.
+ */
+H3Error H3_EXPORT(maxPolygonToCellsSizeExperimental)(const GeoPolygon *polygon,
+                                                     int res, uint32_t flags,
+                                                     int64_t *out) {
+    // Initialize the iterator without stepping, so we can adjust the res and
+    // flags (after they are validated by the initialization) before we start
+    IterCellsPolygonCompact iter = _iterInitPolygonCompact(polygon, res, flags);
+
+    if (iter.error) {
+        return iter.error;
+    }
+
+    // Ignore the requested flags and use the faster overlapping-bbox mode
+    iter._flags = CONTAINMENT_OVERLAPPING_BBOX;
+
+    // Get a (very) rough area of the polygon bounding box
+    BBox *polygonBBox = &iter._bboxes[0];
+    double polygonBBoxAreaKm2 =
+        bboxHeightRads(polygonBBox) * bboxWidthRads(polygonBBox) /
+        cos(fmin(fabs(polygonBBox->north), fabs(polygonBBox->south))) *
+        EARTH_RADIUS_KM * EARTH_RADIUS_KM;
+
+    // Determine the res for the size estimate, based on a (very) rough estimate
+    // of the number of cells at various resolutions that would fit in the
+    // polygon. All we need here is a general order of magnitude.
+    while (iter._res > 0 &&
+           polygonBBoxAreaKm2 / getAverageCellArea(iter._res - 1) >
+               MAX_SIZE_CELL_THRESHOLD) {
+        iter._res--;
+    }
+
+    // Now run the polyfill, counting the output in the target res.
+    // We have to take the first step outside the loop, to get the first
+    // valid output cell
+    iterStepPolygonCompact(&iter);
+
+    *out = 0;
+    int64_t childrenSize;
+    for (; iter.cell; iterStepPolygonCompact(&iter)) {
+        H3_EXPORT(cellToChildrenSize)(iter.cell, res, &childrenSize);
+        *out += childrenSize;
+    }
+
     return iter.error;
 }
