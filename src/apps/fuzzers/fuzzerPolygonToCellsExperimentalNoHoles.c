@@ -29,7 +29,8 @@ const int MAX_SZ = 4000000;
 
 void run(GeoPolygon *geoPolygon, uint32_t flags, int res) {
     int64_t sz;
-    H3Error err = H3_EXPORT(maxPolygonToCellsSize)(geoPolygon, res, flags, &sz);
+    H3Error err = H3_EXPORT(maxPolygonToCellsSizeExperimental)(geoPolygon, res,
+                                                               flags, &sz);
     if (!err && sz < MAX_SZ) {
         H3Index *out = calloc(sz, sizeof(H3Index));
         H3_EXPORT(polygonToCellsExperimental)(geoPolygon, res, flags, out);
