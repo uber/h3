@@ -701,7 +701,7 @@ H3Error H3_EXPORT(maxPolygonToCellsSizeExperimental)(const GeoPolygon *polygon,
                                                      int res, uint32_t flags,
                                                      int64_t *out) {
     // Initialize the iterator without stepping, so we can adjust the res and
-    // flags before we start
+    // flags (after they are validated by the initialization) before we start
     IterCellsPolygonCompact iter = _iterInitPolygonCompact(polygon, res, flags);
 
     if (iter.error) {
