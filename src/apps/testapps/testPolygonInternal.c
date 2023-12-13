@@ -854,4 +854,47 @@ SUITE(polygonInternal) {
                  "not inside when within hole");
         free(bboxes);
     }
+
+    TEST(cellBoundaryInsidePolygon_notInsideContains) {
+        LatLng verts[] = {{0.6, 0.6}, {0.6, 0.4}, {0.4, 0.4}, {0.4, 0.6}};
+        GeoLoop geoloop = {.numVerts = 4, .verts = verts};
+
+        GeoPolygon polygon = {.geoloop = geoloop, .numHoles = 0};
+        BBox *bboxes = calloc(sizeof(BBox), 1);
+        bboxesFromGeoPolygon(&polygon, bboxes);
+
+        CellBoundary boundary = {.numVerts = 4,
+                                 .verts = {{0, 0}, {0, 1}, {1, 1}, {1, 0}}};
+        BBox boundaryBBox = {0, 1, 0, 1};
+
+        t_assert(!cellBoundaryInsidePolygon(&polygon, bboxes, &boundary,
+                                            &boundaryBBox),
+                 "not inside when it contains outer");
+        free(bboxes);
+    }
+
+    TEST(cellBoundaryInsidePolygon_notInsideContainsHole) {
+        LatLng verts[] = {{0, 0}, {0, 1}, {1, 1}, {1, 0}};
+        GeoLoop geoloop = {.numVerts = 4, .verts = verts};
+
+        LatLng holeVerts[] = {{0.6, 0.6}, {0.6, 0.4}, {0.4, 0.4}, {0.4, 0.6}};
+
+        GeoLoop holeGeoLoop = {.numVerts = 4, .verts = holeVerts};
+
+        GeoPolygon polygon = {
+            .geoloop = geoloop, .numHoles = 1, .holes = &holeGeoLoop};
+
+        BBox *bboxes = calloc(sizeof(BBox), 2);
+        bboxesFromGeoPolygon(&polygon, bboxes);
+
+        CellBoundary boundary = {
+            .numVerts = 4,
+            .verts = {{0.9, 0.9}, {0.9, 0.1}, {0.1, 0.1}, {0.1, 0.9}}};
+        BBox boundaryBBox = {0.9, 0.1, 0.9, 0.1};
+
+        t_assert(!cellBoundaryInsidePolygon(&polygon, bboxes, &boundary,
+                                            &boundaryBBox),
+                 "not inside when it contains hole");
+        free(bboxes);
+    }
 }

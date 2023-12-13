@@ -119,9 +119,20 @@ bool cellBoundaryInsidePolygon(const GeoPolygon *geoPolygon, const BBox *bboxes,
                                    boundaryBBox)) {
         return false;
     }
-    // Check for line intersections with any hole
+
+    // Convert boundary to geoloop for point-inside check
+    const GeoLoop boundaryLoop = {.numVerts = boundary->numVerts,
+                                  // Without this cast, the compiler complains
+                                  // that using const LatLng[] here discards
+                                  // qualifiers. But this should be safe in
+                                  // context, all downstream usage expects const
+                                  .verts = (LatLng *)boundary->verts};
+
+    // Check for line intersections with, or containment of, any hole
     for (int i = 0; i < geoPolygon->numHoles; i++) {
-        if (cellBoundaryCrossesGeoLoop(&(geoPolygon->holes[i]), &bboxes[i + 1],
+        if (pointInsideGeoLoop(&boundaryLoop, boundaryBBox,
+                               &geoPolygon->holes[i].verts[0]) ||
+            cellBoundaryCrossesGeoLoop(&(geoPolygon->holes[i]), &bboxes[i + 1],
                                        boundary, boundaryBBox)) {
             return false;
         }
