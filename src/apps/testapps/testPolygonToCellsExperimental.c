@@ -277,8 +277,7 @@ SUITE(polygonToCells) {
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
             &polygon, 6, CONTAINMENT_CENTER, hexagons));
 
-        // This is the cell inside San Marino, which should not be included in
-        // output
+        // This is the cell inside San Marino (i.e. inside the hole)
         H3Index holeCell = 0x861ea3cefffffff;
 
         int found = 0;
