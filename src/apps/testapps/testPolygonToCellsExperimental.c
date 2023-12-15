@@ -249,6 +249,46 @@ SUITE(polygonToCells) {
         free(hexagons);
     }
 
+    TEST(polygonToCellsHoleParentIssue) {
+        // This checks a specific issue where the bounding box of the parent
+        // cell fully contains the hole.
+        LatLng outer[] = {{0.7774570821346158, 0.19441847890170674},
+                          {0.7528853613617879, 0.19441847890170674},
+                          {0.7528853613617879, 0.23497118026107888},
+                          {0.7774570821346158, 0.23497118026107888}};
+        LatLng sanMarino[] = {{0.7662242554877188, 0.21790879024779208},
+                              {0.7660964275733029, 0.21688101821117023},
+                              {0.7668029019479251, 0.21636628570817204},
+                              {0.7676380769015895, 0.21713838446266925},
+                              {0.7677659048160054, 0.21823092566783267},
+                              {0.7671241996099247, 0.2184218123281233},
+                              {0.7662242554877188, 0.21790879024779208}};
+        GeoPolygon polygon = {
+            .geoloop = {.numVerts = ARRAY_SIZE(outer), .verts = outer},
+            .numHoles = 1,
+            .holes = (GeoLoop[]){
+                {.numVerts = ARRAY_SIZE(sanMarino), .verts = sanMarino}}};
+
+        int64_t numHexagons;
+        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+            &polygon, 6, CONTAINMENT_CENTER, &numHexagons));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+
+        t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
+            &polygon, 6, CONTAINMENT_CENTER, hexagons));
+
+        // This is the cell inside San Marino (i.e. inside the hole)
+        H3Index holeCell = 0x861ea3cefffffff;
+
+        int found = 0;
+        for (int64_t i = 0; i < numHexagons; i++) {
+            if (hexagons[i] == holeCell) found = 1;
+        }
+
+        t_assert(!found, "Did not include cell in hole");
+        free(hexagons);
+    }
+
     TEST(polygonToCellsEmpty) {
         int64_t numHexagons;
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
