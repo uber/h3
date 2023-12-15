@@ -46,6 +46,9 @@ static LatLng emptyVerts[] = {{0.659966917655, -2.1364398519394},
 static GeoLoop emptyGeoLoop = {.numVerts = 3, .verts = emptyVerts};
 static GeoPolygon emptyGeoPolygon;
 
+static GeoLoop nullGeoLoop = {.numVerts = 0};
+static GeoPolygon nullGeoPolygon;
+
 static LatLng invalidVerts[] = {{INFINITY, INFINITY}, {-INFINITY, -INFINITY}};
 static GeoLoop invalidGeoLoop = {.numVerts = 2, .verts = invalidVerts};
 static GeoPolygon invalidGeoPolygon;
@@ -146,6 +149,9 @@ SUITE(polygonToCells) {
 
     emptyGeoPolygon.geoloop = emptyGeoLoop;
     emptyGeoPolygon.numHoles = 0;
+
+    nullGeoPolygon.geoloop = nullGeoLoop;
+    nullGeoPolygon.numHoles = 0;
 
     invalidGeoPolygon.geoloop = invalidGeoLoop;
     invalidGeoPolygon.numHoles = 0;
@@ -304,48 +310,63 @@ SUITE(polygonToCells) {
         free(hexagons);
     }
 
-    TEST(polygonToCellsEmptyContainsOverlapping) {
+    TEST(polygonToCellsNull) {
         int64_t numHexagons;
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
-            &emptyGeoPolygon, 9, CONTAINMENT_OVERLAPPING, &numHexagons));
+            &nullGeoPolygon, 9, CONTAINMENT_CENTER, &numHexagons));
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &emptyGeoPolygon, 9, CONTAINMENT_OVERLAPPING, hexagons));
+            &nullGeoPolygon, 9, CONTAINMENT_CENTER, hexagons));
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         t_assert(actualNumIndexes == 0,
-                 "got expected polygonToCells size (empty overlapping)");
+                 "got expected polygonToCells size (null center)");
         free(hexagons);
     }
 
-    TEST(polygonToCellsEmpty) {
+    TEST(polygonToCellsEmptyContainsOverlapping) {
         int64_t numHexagons;
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
-            &emptyGeoPolygon, 9, CONTAINMENT_FULL, &numHexagons));
+            &nullGeoPolygon, 9, CONTAINMENT_OVERLAPPING, &numHexagons));
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &emptyGeoPolygon, 9, CONTAINMENT_FULL, hexagons));
+            &nullGeoPolygon, 9, CONTAINMENT_OVERLAPPING, hexagons));
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         t_assert(actualNumIndexes == 0,
-                 "got expected polygonToCells size (empty full)");
+                 "got expected polygonToCells size (null overlapping)");
+        free(hexagons);
+    }
+
+    TEST(polygonToCellsEmptyFull) {
+        int64_t numHexagons;
+        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+            &nullGeoPolygon, 9, CONTAINMENT_FULL, &numHexagons));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+
+        t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
+            &nullGeoPolygon, 9, CONTAINMENT_FULL, hexagons));
+        int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
+
+        t_assert(actualNumIndexes == 0,
+                 "got expected polygonToCells size (null full)");
         free(hexagons);
     }
 
     TEST(polygonToCellsEmptyOverlappingBbox) {
         int64_t numHexagons;
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
-            &emptyGeoPolygon, 9, CONTAINMENT_OVERLAPPING_BBOX, &numHexagons));
+            &nullGeoPolygon, 9, CONTAINMENT_OVERLAPPING_BBOX, &numHexagons));
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &emptyGeoPolygon, 9, CONTAINMENT_OVERLAPPING_BBOX, hexagons));
+            &nullGeoPolygon, 9, CONTAINMENT_OVERLAPPING_BBOX, hexagons));
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         t_assert(actualNumIndexes == 0,
-                 "got expected polygonToCells size (empty overlapping bbox)");
+                 "got expected polygonToCells size (null overlapping bbox)");
         free(hexagons);
     }
 

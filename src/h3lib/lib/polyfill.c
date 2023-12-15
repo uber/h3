@@ -418,6 +418,12 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
         iter->_started = true;
     }
 
+    if (iter->_polygon->geoloop.numVerts == 0) {
+        // Nothing can be returned in this case
+        iterDestroyPolygonCompact(iter);
+        return;
+    }
+
     ContainmentMode mode = FLAG_GET_CONTAINMENT_MODE(iter->_flags);
 
     while (cell) {
@@ -446,6 +452,7 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
                 // the first polygon vertex, which if it is contained could also
                 // mean we simply intersect.
                 H3Index polygonCell;
+                // Deferencing verts[0] is safe because we check numVerts above
                 H3Error polygonCellErr = H3_EXPORT(latLngToCell)(
                     &(iter->_polygon->geoloop.verts[0]), cellRes, &polygonCell);
                 if (polygonCellErr != E_SUCCESS) {
