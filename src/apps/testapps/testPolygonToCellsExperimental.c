@@ -300,7 +300,52 @@ SUITE(polygonToCells) {
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         t_assert(actualNumIndexes == 0,
-                 "got expected polygonToCells size (empty)");
+                 "got expected polygonToCells size (empty center)");
+        free(hexagons);
+    }
+
+    TEST(polygonToCellsEmptyContainsOverlapping) {
+        int64_t numHexagons;
+        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+            &emptyGeoPolygon, 9, CONTAINMENT_OVERLAPPING, &numHexagons));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+
+        t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
+            &emptyGeoPolygon, 9, CONTAINMENT_OVERLAPPING, hexagons));
+        int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
+
+        t_assert(actualNumIndexes == 0,
+                 "got expected polygonToCells size (empty overlapping)");
+        free(hexagons);
+    }
+
+    TEST(polygonToCellsEmpty) {
+        int64_t numHexagons;
+        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+            &emptyGeoPolygon, 9, CONTAINMENT_FULL, &numHexagons));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+
+        t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
+            &emptyGeoPolygon, 9, CONTAINMENT_FULL, hexagons));
+        int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
+
+        t_assert(actualNumIndexes == 0,
+                 "got expected polygonToCells size (empty full)");
+        free(hexagons);
+    }
+
+    TEST(polygonToCellsEmptyOverlappingBbox) {
+        int64_t numHexagons;
+        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+            &emptyGeoPolygon, 9, CONTAINMENT_OVERLAPPING_BBOX, &numHexagons));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+
+        t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
+            &emptyGeoPolygon, 9, CONTAINMENT_OVERLAPPING_BBOX, hexagons));
+        int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
+
+        t_assert(actualNumIndexes == 0,
+                 "got expected polygonToCells size (empty overlapping bbox)");
         free(hexagons);
     }
 
