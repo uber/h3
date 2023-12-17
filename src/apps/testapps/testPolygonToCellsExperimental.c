@@ -49,7 +49,7 @@ static GeoPolygon emptyGeoPolygon;
 static GeoLoop nullGeoLoop = {.numVerts = 0};
 static GeoPolygon nullGeoPolygon;
 
-static GeoPolygon emptyGeoPolygonWithNullHole;
+static GeoPolygon sfGeoPolygonWithNullHole;
 
 static LatLng invalidVerts[] = {{INFINITY, INFINITY}, {-INFINITY, -INFINITY}};
 static GeoLoop invalidGeoLoop = {.numVerts = 2, .verts = invalidVerts};
@@ -155,9 +155,9 @@ SUITE(polygonToCells) {
     nullGeoPolygon.geoloop = nullGeoLoop;
     nullGeoPolygon.numHoles = 0;
 
-    emptyGeoPolygonWithNullHole.geoloop = emptyGeoLoop;
-    emptyGeoPolygonWithNullHole.numHoles = 1;
-    emptyGeoPolygonWithNullHole.holes = &nullGeoLoop;
+    sfGeoPolygonWithNullHole.geoloop = sfGeoLoop;
+    sfGeoPolygonWithNullHole.numHoles = 1;
+    sfGeoPolygonWithNullHole.holes = &nullGeoLoop;
 
     invalidGeoPolygon.geoloop = invalidGeoLoop;
     invalidGeoPolygon.numHoles = 0;
@@ -316,34 +316,34 @@ SUITE(polygonToCells) {
         free(hexagons);
     }
 
-    TEST(polygonToCellsEmptyWithNullHole) {
+    TEST(polygonToCellssfWithNullHole) {
         for (uint32_t flags = 0; flags < CONTAINMENT_INVALID; flags++) {
             // Confirm that the same number of cells are returned with and
             // without an empty hole
             int64_t numHexagonsWithoutHole;
             t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
-                &emptyGeoPolygon, 9, flags, &numHexagonsWithoutHole));
+                &sfGeoPolygon, 9, flags, &numHexagonsWithoutHole));
             H3Index *hexagonsWithoutHole =
                 calloc(numHexagonsWithoutHole, sizeof(H3Index));
 
             t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-                &emptyGeoPolygon, 9, flags, hexagonsWithoutHole));
+                &sfGeoPolygon, 9, flags, hexagonsWithoutHole));
             int64_t actualNumIndexesWithoutHole = countNonNullIndexes(
                 hexagonsWithoutHole, numHexagonsWithoutHole);
             free(hexagonsWithoutHole);
 
             int64_t numHexagons;
             t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
-                &emptyGeoPolygonWithNullHole, 9, flags, &numHexagons));
+                &sfGeoPolygonWithNullHole, 9, flags, &numHexagons));
             H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
             t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-                &emptyGeoPolygonWithNullHole, 9, flags, hexagons));
+                &sfGeoPolygonWithNullHole, 9, flags, hexagons));
             int64_t actualNumIndexes =
                 countNonNullIndexes(hexagons, numHexagons);
 
             t_assert(actualNumIndexes == actualNumIndexesWithoutHole,
-                     "got expected polygonToCells size (empty with null hole)");
+                     "got expected polygonToCells size (sf with null hole)");
             free(hexagons);
         }
     }
