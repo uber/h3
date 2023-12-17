@@ -317,18 +317,35 @@ SUITE(polygonToCells) {
     }
 
     TEST(polygonToCellsEmptyWithNullHole) {
-        int64_t numHexagons;
-        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
-            &emptyGeoPolygonWithNullHole, 9, CONTAINMENT_CENTER, &numHexagons));
-        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+        for (uint32_t flags = 0; flags < CONTAINMENT_INVALID; flags++) {
+            // Confirm that the same number of cells are returned with and
+            // without an empty hole
+            int64_t numHexagonsWithoutHole;
+            t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+                &emptyGeoPolygon, 9, flags, &numHexagonsWithoutHole));
+            H3Index *hexagonsWithoutHole =
+                calloc(numHexagonsWithoutHole, sizeof(H3Index));
 
-        t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &emptyGeoPolygonWithNullHole, 9, CONTAINMENT_CENTER, hexagons));
-        int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
+            t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
+                &emptyGeoPolygon, 9, flags, hexagonsWithoutHole));
+            int64_t actualNumIndexesWithoutHole = countNonNullIndexes(
+                hexagonsWithoutHole, numHexagonsWithoutHole);
+            free(hexagonsWithoutHole);
 
-        t_assert(actualNumIndexes == 0,
-                 "got expected polygonToCells size (empty with null hole)");
-        free(hexagons);
+            int64_t numHexagons;
+            t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+                &emptyGeoPolygonWithNullHole, 9, flags, &numHexagons));
+            H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+
+            t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
+                &emptyGeoPolygonWithNullHole, 9, flags, hexagons));
+            int64_t actualNumIndexes =
+                countNonNullIndexes(hexagons, numHexagons);
+
+            t_assert(actualNumIndexes == actualNumIndexesWithoutHole,
+                     "got expected polygonToCells size (empty with null hole)");
+            free(hexagons);
+        }
     }
 
     TEST(polygonToCellsNull) {
