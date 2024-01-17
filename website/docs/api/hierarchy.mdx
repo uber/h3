@@ -432,7 +432,7 @@ h3.uncompactCells(cells, res)
 function example() {
   const cell = '85283473fffffff';
   const nearby = h3.gridDisk(cell, 4);
-  const compacted = h3.compact(nearby);
+  const compacted = h3.compactCells(nearby);
   return h3.uncompactCells(compacted, 5);
 }
 ```
