@@ -75,6 +75,10 @@ As a C library, bindings can be made to call H3 functions from different program
 
 - [wookay/H3.jl](https://github.com/wookay/H3.jl)
 
+## Kinetica
+
+- [H3 Functions](https://docs.kinetica.com/7.1/sql/query/#h3-functions)
+
 ## OCaml
 
 - [travisbrady/ocaml-h3](https://github.com/travisbrady/ocaml-h3)
