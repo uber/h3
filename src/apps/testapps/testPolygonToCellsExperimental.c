@@ -49,6 +49,12 @@ static GeoPolygon emptyGeoPolygon;
 static GeoLoop nullGeoLoop = {.numVerts = 0};
 static GeoPolygon nullGeoPolygon;
 
+static LatLng singleVert[] = {
+    {-2458342481021883972259660398208400791736363001944288341450980211606536535492675816838520454729626606617401537208948885147545930079455247090683734597891092223711178354749340595418656865312221132096067702544124896034621453367423118181128977366942366333665280.000000,
+     -2458343740331028994843467164510968055426643495662759512417906485158670133931720348722610840257947672725818463095310525347561848316357826117675135273725409046652087471434926446163500402816566116551621419239229327985229318738203409398420671266791854901821440.000000}};
+static GeoLoop singleVertGeoLoop = {.numVerts = 1, .verts = singleVert};
+static GeoPolygon singleVertGeoPolygon;
+
 static GeoPolygon sfGeoPolygonWithNullHole;
 
 static LatLng invalidVerts[] = {{INFINITY, INFINITY}, {-INFINITY, -INFINITY}};
@@ -154,6 +160,9 @@ SUITE(polygonToCells) {
 
     nullGeoPolygon.geoloop = nullGeoLoop;
     nullGeoPolygon.numHoles = 0;
+
+    singleVertGeoPolygon.geoloop = singleVertGeoLoop;
+    singleVertGeoPolygon.numHoles = 0;
 
     sfGeoPolygonWithNullHole.geoloop = sfGeoLoop;
     sfGeoPolygonWithNullHole.numHoles = 1;
@@ -363,6 +372,26 @@ SUITE(polygonToCells) {
             t_assert(actualNumIndexes == 0,
                      "got expected polygonToCells size (null)");
             free(hexagons);
+        }
+    }
+
+    TEST(polygonToCellsSingleVert) {
+        for (int res = 0; res < MAX_H3_RES; res++) {
+            for (uint32_t flags = 0; flags < CONTAINMENT_INVALID; flags++) {
+                int64_t numHexagons;
+                t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+                    &singleVertGeoPolygon, res, flags, &numHexagons));
+                H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+
+                t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
+                    &singleVertGeoPolygon, res, flags, hexagons));
+                int64_t actualNumIndexes =
+                    countNonNullIndexes(hexagons, numHexagons);
+
+                t_assert(actualNumIndexes == 0,
+                         "got expected polygonToCells size (null)");
+                free(hexagons);
+            }
         }
     }
 
