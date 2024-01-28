@@ -52,7 +52,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     geoPolygon.geoloop.verts = (LatLng *)(data + 1);
 
     for (uint32_t flags = 0; flags < CONTAINMENT_INVALID; flags++) {
-        run(&geoPolygon, 0, res);
+        run(&geoPolygon, flags, res);
     }
 
     return 0;
