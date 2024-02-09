@@ -130,10 +130,12 @@ bool cellBoundaryInsidePolygon(const GeoPolygon *geoPolygon, const BBox *bboxes,
 
     // Check for line intersections with, or containment of, any hole
     for (int i = 0; i < geoPolygon->numHoles; i++) {
-        if (pointInsideGeoLoop(&boundaryLoop, boundaryBBox,
-                               &geoPolygon->holes[i].verts[0]) ||
-            cellBoundaryCrossesGeoLoop(&(geoPolygon->holes[i]), &bboxes[i + 1],
-                                       boundary, boundaryBBox)) {
+        // If the hole has no verts, it is not possible to intersect
+        if (geoPolygon->holes[i].numVerts > 0 &&
+            (pointInsideGeoLoop(&boundaryLoop, boundaryBBox,
+                                &geoPolygon->holes[i].verts[0]) ||
+             cellBoundaryCrossesGeoLoop(&(geoPolygon->holes[i]), &bboxes[i + 1],
+                                        boundary, boundaryBBox))) {
             return false;
         }
     }
