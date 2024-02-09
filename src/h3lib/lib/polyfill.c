@@ -418,6 +418,12 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
         iter->_started = true;
     }
 
+    // Short-circuit iteration for 0-vert polygon
+    if (iter->_polygon->geoloop.numVerts == 0) {
+        iterDestroyPolygonCompact(iter);
+        return;
+    }
+
     ContainmentMode mode = FLAG_GET_CONTAINMENT_MODE(iter->_flags);
 
     while (cell) {
@@ -700,6 +706,17 @@ static double getAverageCellArea(int res) {
 H3Error H3_EXPORT(maxPolygonToCellsSizeExperimental)(const GeoPolygon *polygon,
                                                      int res, uint32_t flags,
                                                      int64_t *out) {
+    // Special case: 0-vertex polygon
+    if (polygon->geoloop.numVerts == 0) {
+        *out = 0;
+        return E_SUCCESS;
+    }
+    // Special case: 1-vertex polygon
+    if (polygon->geoloop.numVerts == 1) {
+        *out = 1;
+        return E_SUCCESS;
+    }
+
     // Initialize the iterator without stepping, so we can adjust the res and
     // flags (after they are validated by the initialization) before we start
     IterCellsPolygonCompact iter = _iterInitPolygonCompact(polygon, res, flags);
