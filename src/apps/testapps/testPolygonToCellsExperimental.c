@@ -190,7 +190,7 @@ SUITE(polygonToCells) {
     lineGeoPolygon.geoloop = lineGeoLoop;
     lineGeoPolygon.numHoles = 0;
 
-    TEST(polygonToCells) {
+    TEST(polygonToCells_CenterContainment) {
         int64_t numHexagons;
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
             &sfGeoPolygon, 9, CONTAINMENT_CENTER, &numHexagons));
@@ -249,7 +249,7 @@ SUITE(polygonToCells) {
         free(hexagons);
     }
 
-    TEST(polygonToCellsHole) {
+    TEST(polygonToCellsHole_CenterContainment) {
         int64_t numHexagons;
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
             &holeGeoPolygon, 9, CONTAINMENT_CENTER, &numHexagons));
@@ -264,7 +264,7 @@ SUITE(polygonToCells) {
         free(hexagons);
     }
 
-    TEST(polygonToCellsHoleFullContainment) {
+    TEST(polygonToCellsHole_FullContainment) {
         int64_t numHexagons;
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
             &holeGeoPolygon, 9, CONTAINMENT_FULL, &numHexagons));
@@ -280,7 +280,7 @@ SUITE(polygonToCells) {
         free(hexagons);
     }
 
-    TEST(polygonToCellsHoleOverlapping) {
+    TEST(polygonToCellsHole_Overlapping) {
         int64_t numHexagons;
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
             &holeGeoPolygon, 9, CONTAINMENT_OVERLAPPING, &numHexagons));
@@ -295,7 +295,7 @@ SUITE(polygonToCells) {
         free(hexagons);
     }
 
-    TEST(polygonToCellsHoleOverlappingBBox) {
+    TEST(polygonToCellsHole_OverlappingBBox) {
         int64_t numHexagons;
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
             &holeGeoPolygon, 9, CONTAINMENT_OVERLAPPING_BBOX, &numHexagons));
@@ -380,7 +380,7 @@ SUITE(polygonToCells) {
         free(hexagons);
     }
 
-    TEST(polygonToCellsContainsPolygon_CenterContained) {
+    TEST(polygonToCellsContainsPolygon_CenterContainment) {
         // Contains the center point of a res 4 cell
         LatLng centerVerts[] = {{0.6595645, -2.1353315},
                                 {0.6595645, -2.1353314},
@@ -706,7 +706,7 @@ SUITE(polygonToCells) {
         }
     }
 
-    TEST(polygonToCellsPointPolygon) {
+    TEST(polygonToCellsPointPolygon_CenterContainment) {
         for (int res = 0; res < MAX_H3_RES; res++) {
             int64_t numHexagons;
             t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
@@ -725,7 +725,7 @@ SUITE(polygonToCells) {
         }
     }
 
-    TEST(polygonToCellsPointPolygon_full) {
+    TEST(polygonToCellsPointPolygon_FullContainment) {
         for (int res = 0; res < MAX_H3_RES; res++) {
             int64_t numHexagons;
             t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
@@ -744,7 +744,7 @@ SUITE(polygonToCells) {
         }
     }
 
-    TEST(polygonToCellsPointPolygon_overlapping) {
+    TEST(polygonToCellsPointPolygon_Overlapping) {
         for (int res = 0; res < MAX_H3_RES; res++) {
             int64_t numHexagons;
             t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
@@ -763,7 +763,7 @@ SUITE(polygonToCells) {
         }
     }
 
-    TEST(polygonToCellsPointPolygon_overlappingBBox) {
+    TEST(polygonToCellsPointPolygon_OverlappingBBox) {
         for (int res = 0; res < MAX_H3_RES; res++) {
             int64_t numHexagons;
             t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
@@ -807,7 +807,7 @@ SUITE(polygonToCells) {
         }
     }
 
-    TEST(polygonToCellsLinePolygon) {
+    TEST(polygonToCellsLinePolygon_CenterContainment) {
         int64_t numHexagons;
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
             &lineGeoPolygon, 9, CONTAINMENT_CENTER, &numHexagons));
@@ -821,7 +821,7 @@ SUITE(polygonToCells) {
         free(hexagons);
     }
 
-    TEST(polygonToCellsLinePolygon_full) {
+    TEST(polygonToCellsLinePolygon_FullContainment) {
         int64_t numHexagons;
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
             &lineGeoPolygon, 9, CONTAINMENT_FULL, &numHexagons));
@@ -835,7 +835,7 @@ SUITE(polygonToCells) {
         free(hexagons);
     }
 
-    TEST(polygonToCellsLinePolygon_overlapping) {
+    TEST(polygonToCellsLinePolygon_Overlapping) {
         int64_t numHexagons;
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
             &lineGeoPolygon, 9, CONTAINMENT_OVERLAPPING, &numHexagons));
@@ -849,7 +849,7 @@ SUITE(polygonToCells) {
         free(hexagons);
     }
 
-    TEST(polygonToCellsLinePolygon_overlappingBBox) {
+    TEST(polygonToCellsLinePolygon_OverlappingBBox) {
         int64_t numHexagons;
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
             &lineGeoPolygon, 9, CONTAINMENT_OVERLAPPING_BBOX, &numHexagons));
@@ -863,7 +863,7 @@ SUITE(polygonToCells) {
         free(hexagons);
     }
 
-    TEST(polygonToCellsNullHole) {
+    TEST(polygonToCellsNullHole_CenterContainment) {
         int64_t numHexagons;
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
             &nullHoleGeoPolygon, 9, CONTAINMENT_CENTER, &numHexagons));
@@ -879,7 +879,7 @@ SUITE(polygonToCells) {
         free(hexagons);
     }
 
-    TEST(polygonToCellsNullHole_full) {
+    TEST(polygonToCellsNullHole_FullContainment) {
         int64_t numHexagons;
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
             &nullHoleGeoPolygon, 9, CONTAINMENT_FULL, &numHexagons));
@@ -895,7 +895,7 @@ SUITE(polygonToCells) {
         free(hexagons);
     }
 
-    TEST(polygonToCellsNullHole_overlapping) {
+    TEST(polygonToCellsNullHole_Overlapping) {
         int64_t numHexagons;
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
             &nullHoleGeoPolygon, 9, CONTAINMENT_OVERLAPPING, &numHexagons));
@@ -911,7 +911,7 @@ SUITE(polygonToCells) {
         free(hexagons);
     }
 
-    TEST(polygonToCellsNullHole_overlappingBBox) {
+    TEST(polygonToCellsNullHole_OverlappingBBox) {
         int64_t numHexagons;
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
             &nullHoleGeoPolygon, 9, CONTAINMENT_OVERLAPPING_BBOX,
@@ -928,7 +928,7 @@ SUITE(polygonToCells) {
         free(hexagons);
     }
 
-    TEST(polygonToCellsPointHole) {
+    TEST(polygonToCellsPointHole_CenterContainment) {
         int64_t numHexagons;
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
             &pointHoleGeoPolygon, 9, CONTAINMENT_CENTER, &numHexagons));
@@ -944,7 +944,7 @@ SUITE(polygonToCells) {
         free(hexagons);
     }
 
-    TEST(polygonToCellsPointHole_full) {
+    TEST(polygonToCellsPointHole_FullContainment) {
         int64_t numHexagons;
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
             &pointHoleGeoPolygon, 9, CONTAINMENT_FULL, &numHexagons));
@@ -960,7 +960,7 @@ SUITE(polygonToCells) {
         free(hexagons);
     }
 
-    TEST(polygonToCellsPointHole_overlapping) {
+    TEST(polygonToCellsPointHole_Overlapping) {
         int64_t numHexagons;
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
             &pointHoleGeoPolygon, 9, CONTAINMENT_OVERLAPPING, &numHexagons));
@@ -976,7 +976,7 @@ SUITE(polygonToCells) {
         free(hexagons);
     }
 
-    TEST(polygonToCellsPointHole_overlappingBBox) {
+    TEST(polygonToCellsPointHole_OverlappingBBox) {
         int64_t numHexagons;
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
             &pointHoleGeoPolygon, 9, CONTAINMENT_OVERLAPPING_BBOX,
@@ -993,7 +993,7 @@ SUITE(polygonToCells) {
         free(hexagons);
     }
 
-    TEST(polygonToCellsLineHole) {
+    TEST(polygonToCellsLineHole_CenterContainment) {
         int64_t numHexagons;
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
             &lineHoleGeoPolygon, 9, CONTAINMENT_CENTER, &numHexagons));
@@ -1009,7 +1009,7 @@ SUITE(polygonToCells) {
         free(hexagons);
     }
 
-    TEST(polygonToCellsLineHole_full) {
+    TEST(polygonToCellsLineHole_FullContainment) {
         int64_t numHexagons;
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
             &lineHoleGeoPolygon, 9, CONTAINMENT_FULL, &numHexagons));
@@ -1025,7 +1025,7 @@ SUITE(polygonToCells) {
         free(hexagons);
     }
 
-    TEST(polygonToCellsLineHole_overlapping) {
+    TEST(polygonToCellsLineHole_Overlapping) {
         int64_t numHexagons;
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
             &lineHoleGeoPolygon, 9, CONTAINMENT_OVERLAPPING, &numHexagons));
@@ -1041,7 +1041,7 @@ SUITE(polygonToCells) {
         free(hexagons);
     }
 
-    TEST(polygonToCellsLineHole_overlappingBBox) {
+    TEST(polygonToCellsLineHole_OverlappingBBox) {
         int64_t numHexagons;
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
             &lineHoleGeoPolygon, 9, CONTAINMENT_OVERLAPPING_BBOX,
