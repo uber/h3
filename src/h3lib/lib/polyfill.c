@@ -248,7 +248,7 @@ H3Error cellToBBox(H3Index cell, BBox *out, bool coverChildren) {
         out->north = M_PI_2;
     }
 
-    // Cell that contains the north pole
+    // Cell that contains the south pole
     if (cell == SOUTH_POLE_CELLS[res]) {
         out->south = -M_PI_2;
     }
@@ -446,24 +446,6 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
                     return;
                 }
             }
-            if (mode == CONTAINMENT_OVERLAPPING) {
-                // For overlapping, we need to do a quick check to determine
-                // whether the polygon is wholly contained by the cell. We check
-                // the first polygon vertex, which if it is contained could also
-                // mean we simply intersect.
-                H3Index polygonCell;
-                H3Error polygonCellErr = H3_EXPORT(latLngToCell)(
-                    &(iter->_polygon->geoloop.verts[0]), cellRes, &polygonCell);
-                if (polygonCellErr != E_SUCCESS) {
-                    iterErrorPolygonCompact(iter, polygonCellErr);
-                    return;
-                }
-                if (polygonCell == cell) {
-                    // Set to next output
-                    iter->cell = cell;
-                    return;
-                }
-            }
             if (mode == CONTAINMENT_FULL || mode == CONTAINMENT_OVERLAPPING) {
                 CellBoundary boundary;
                 H3Error boundaryErr =
@@ -487,16 +469,44 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
                     // Set to next output
                     iter->cell = cell;
                     return;
-                }
-                // For overlap, we've already checked for center point inclusion
-                // above; if that failed, we only need to check for line
-                // intersection
-                else if (mode == CONTAINMENT_OVERLAPPING &&
-                         cellBoundaryCrossesPolygon(
-                             iter->_polygon, iter->_bboxes, &boundary, &bbox)) {
-                    // Set to next output
-                    iter->cell = cell;
-                    return;
+                } else if (mode == CONTAINMENT_OVERLAPPING) {
+                    // For overlapping, we need to do a quick check to determine
+                    // whether the polygon is wholly contained by the cell. We
+                    // check the first polygon vertex, which if it is contained
+                    // could also mean we simply intersect.
+
+                    // Deferencing verts[0] is safe because we check numVerts
+                    // above
+                    LatLng firstVertex = iter->_polygon->geoloop.verts[0];
+
+                    // We have to check the bounding box first, because
+                    // out-of-bounds values will yield false positives with
+                    // latLngToCell
+                    if (bboxContains(&bbox, &firstVertex)) {
+                        H3Index polygonCell;
+                        H3Error polygonCellErr = H3_EXPORT(latLngToCell)(
+                            &firstVertex, cellRes, &polygonCell);
+                        if (NEVER(polygonCellErr != E_SUCCESS)) {
+                            // This should be unreachable after the bboxContains
+                            // check
+                            iterErrorPolygonCompact(iter, polygonCellErr);
+                            return;
+                        }
+                        if (polygonCell == cell) {
+                            // Set to next output
+                            iter->cell = cell;
+                            return;
+                        }
+                    }
+                    // We've already checked for center point inclusion above;
+                    // if that failed, we only need to check for line
+                    // intersection
+                    if (cellBoundaryCrossesPolygon(
+                            iter->_polygon, iter->_bboxes, &boundary, &bbox)) {
+                        // Set to next output
+                        iter->cell = cell;
+                        return;
+                    }
                 }
             }
             if (mode == CONTAINMENT_OVERLAPPING_BBOX) {
@@ -709,11 +719,6 @@ H3Error H3_EXPORT(maxPolygonToCellsSizeExperimental)(const GeoPolygon *polygon,
     // Special case: 0-vertex polygon
     if (polygon->geoloop.numVerts == 0) {
         *out = 0;
-        return E_SUCCESS;
-    }
-    // Special case: 1-vertex polygon
-    if (polygon->geoloop.numVerts == 1) {
-        *out = 1;
         return E_SUCCESS;
     }
 
