@@ -800,7 +800,6 @@ SUITE(polygonToCells) {
                 int64_t actualNumIndexes =
                     countNonNullIndexes(hexagons, numHexagons);
 
-                h3Println(hexagons[0]);
                 t_assert(actualNumIndexes == 0,
                          "got expected polygonToCells size");
                 free(hexagons);

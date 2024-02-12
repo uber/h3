@@ -207,6 +207,8 @@ static BBox RES0_BBOXES[NUM_BASE_CELLS] = {
     {-1.20305471830087, -1.52480158339146, -0.60112285060716,
      2.53494381704943}};
 
+static BBox VALID_RANGE_BBOX = {M_PI_2, -M_PI_2, M_PI, -M_PI};
+
 /**
  * For a given cell, return its bounding box. If coverChildren is true, the bbox
  * will be guaranteed to contain its children at any finer resolution. Note that
@@ -446,6 +448,36 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
                     return;
                 }
             }
+            if (mode == CONTAINMENT_OVERLAPPING) {
+                // For overlapping, we need to do a quick check to determine
+                // whether the polygon is wholly contained by the cell. We
+                // check the first polygon vertex, which if it is contained
+                // could also mean we simply intersect.
+
+                // Deferencing verts[0] is safe because we check numVerts above
+                LatLng firstVertex = iter->_polygon->geoloop.verts[0];
+
+                // We have to check whether the point is in the expected range
+                // first, because out-of-bounds values will yield false
+                // positives with latLngToCell
+                if (bboxContains(&VALID_RANGE_BBOX, &firstVertex)) {
+                    H3Index polygonCell;
+                    H3Error polygonCellErr = H3_EXPORT(latLngToCell)(
+                        &(iter->_polygon->geoloop.verts[0]), cellRes,
+                        &polygonCell);
+                    if (NEVER(polygonCellErr != E_SUCCESS)) {
+                        // This should be unreachable with the bboxContains
+                        // check
+                        iterErrorPolygonCompact(iter, polygonCellErr);
+                        return;
+                    }
+                    if (polygonCell == cell) {
+                        // Set to next output
+                        iter->cell = cell;
+                        return;
+                    }
+                }
+            }
             if (mode == CONTAINMENT_FULL || mode == CONTAINMENT_OVERLAPPING) {
                 CellBoundary boundary;
                 H3Error boundaryErr =
@@ -456,7 +488,7 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
                 }
                 BBox bbox;
                 H3Error bboxErr = cellToBBox(cell, &bbox, false);
-                if (NEVER(bboxErr != E_SUCCESS)) {
+                if ((bboxErr != E_SUCCESS)) {
                     // Should be unreachable - invalid cells would be caught in
                     // the previous boundaryErr
                     iterErrorPolygonCompact(iter, bboxErr);
@@ -469,44 +501,16 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
                     // Set to next output
                     iter->cell = cell;
                     return;
-                } else if (mode == CONTAINMENT_OVERLAPPING) {
-                    // For overlapping, we need to do a quick check to determine
-                    // whether the polygon is wholly contained by the cell. We
-                    // check the first polygon vertex, which if it is contained
-                    // could also mean we simply intersect.
-
-                    // Deferencing verts[0] is safe because we check numVerts
-                    // above
-                    LatLng firstVertex = iter->_polygon->geoloop.verts[0];
-
-                    // We have to check the bounding box first, because
-                    // out-of-bounds values will yield false positives with
-                    // latLngToCell
-                    if (bboxContains(&bbox, &firstVertex)) {
-                        H3Index polygonCell;
-                        H3Error polygonCellErr = H3_EXPORT(latLngToCell)(
-                            &firstVertex, cellRes, &polygonCell);
-                        if (NEVER(polygonCellErr != E_SUCCESS)) {
-                            // This should be unreachable after the bboxContains
-                            // check
-                            iterErrorPolygonCompact(iter, polygonCellErr);
-                            return;
-                        }
-                        if (polygonCell == cell) {
-                            // Set to next output
-                            iter->cell = cell;
-                            return;
-                        }
-                    }
-                    // We've already checked for center point inclusion above;
-                    // if that failed, we only need to check for line
-                    // intersection
-                    if (cellBoundaryCrossesPolygon(
-                            iter->_polygon, iter->_bboxes, &boundary, &bbox)) {
-                        // Set to next output
-                        iter->cell = cell;
-                        return;
-                    }
+                }
+                // For overlap, we've already checked for center point inclusion
+                // above; if that failed, we only need to check for line
+                // intersection
+                else if (mode == CONTAINMENT_OVERLAPPING &&
+                         cellBoundaryCrossesPolygon(
+                             iter->_polygon, iter->_bboxes, &boundary, &bbox)) {
+                    // Set to next output
+                    iter->cell = cell;
+                    return;
                 }
             }
             if (mode == CONTAINMENT_OVERLAPPING_BBOX) {
