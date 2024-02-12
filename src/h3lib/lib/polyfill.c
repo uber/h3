@@ -466,8 +466,7 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
                         &(iter->_polygon->geoloop.verts[0]), cellRes,
                         &polygonCell);
                     if (NEVER(polygonCellErr != E_SUCCESS)) {
-                        // This should be unreachable with the bboxContains
-                        // check
+                        // This should be unreachable with the bbox check
                         iterErrorPolygonCompact(iter, polygonCellErr);
                         return;
                     }
@@ -488,7 +487,7 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
                 }
                 BBox bbox;
                 H3Error bboxErr = cellToBBox(cell, &bbox, false);
-                if ((bboxErr != E_SUCCESS)) {
+                if (NEVER(bboxErr != E_SUCCESS)) {
                     // Should be unreachable - invalid cells would be caught in
                     // the previous boundaryErr
                     iterErrorPolygonCompact(iter, bboxErr);
