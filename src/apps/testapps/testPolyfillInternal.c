@@ -36,14 +36,6 @@ static GeoPolygon sfGeoPolygon = {
                                     {0.6599990002976, -2.1376771158464}}},
     .numHoles = 0};
 
-static GeoPolygon invalidGeoPolygon = {
-    .geoloop = {.numVerts = 4,
-                .verts = (LatLng[]){{NAN, -2.1364398519396},
-                                    {0.6595011102219, NAN},
-                                    {NAN, -2.1354884206045},
-                                    {0.6581220034068, NAN}}},
-    .numHoles = 0};
-
 SUITE(polyfillInternal) {
     TEST(iterInitPolygonCompact_errors) {
         IterCellsPolygonCompact iter;
@@ -139,24 +131,6 @@ SUITE(polyfillInternal) {
         iterStepPolygonCompact(&iter);
         t_assert(iter.error == E_RES_DOMAIN,
                  "Got expected error for too-fine cell");
-        t_assert(iter.cell == H3_NULL, "Got null output for invalid cell");
-    }
-
-    TEST(iterStepPolygonCompact_invalidPolygonErrors) {
-        IterCellsPolygonCompact iter;
-
-        // Start with a good polygon, otherwise we error out early
-        iter =
-            iterInitPolygonCompact(&sfGeoPolygon, 5, CONTAINMENT_OVERLAPPING);
-        t_assertSuccess(iter.error);
-
-        // Give the iterator a bad polygon and a cell at target res
-        iter._polygon = &invalidGeoPolygon;
-        iter.cell = 0x85283473fffffff;
-
-        iterStepPolygonCompact(&iter);
-        t_assert(iter.error == E_LATLNG_DOMAIN,
-                 "Got expected error for invalid polygon");
         t_assert(iter.cell == H3_NULL, "Got null output for invalid cell");
     }
 
