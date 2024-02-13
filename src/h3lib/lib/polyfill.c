@@ -207,6 +207,8 @@ static BBox RES0_BBOXES[NUM_BASE_CELLS] = {
     {-1.20305471830087, -1.52480158339146, -0.60112285060716,
      2.53494381704943}};
 
+static BBox VALID_RANGE_BBOX = {M_PI_2, -M_PI_2, M_PI, -M_PI};
+
 /**
  * For a given cell, return its bounding box. If coverChildren is true, the bbox
  * will be guaranteed to contain its children at any finer resolution. Note that
@@ -248,7 +250,7 @@ H3Error cellToBBox(H3Index cell, BBox *out, bool coverChildren) {
         out->north = M_PI_2;
     }
 
-    // Cell that contains the north pole
+    // Cell that contains the south pole
     if (cell == SOUTH_POLE_CELLS[res]) {
         out->south = -M_PI_2;
     }
@@ -448,20 +450,31 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
             }
             if (mode == CONTAINMENT_OVERLAPPING) {
                 // For overlapping, we need to do a quick check to determine
-                // whether the polygon is wholly contained by the cell. We check
-                // the first polygon vertex, which if it is contained could also
-                // mean we simply intersect.
-                H3Index polygonCell;
-                H3Error polygonCellErr = H3_EXPORT(latLngToCell)(
-                    &(iter->_polygon->geoloop.verts[0]), cellRes, &polygonCell);
-                if (polygonCellErr != E_SUCCESS) {
-                    iterErrorPolygonCompact(iter, polygonCellErr);
-                    return;
-                }
-                if (polygonCell == cell) {
-                    // Set to next output
-                    iter->cell = cell;
-                    return;
+                // whether the polygon is wholly contained by the cell. We
+                // check the first polygon vertex, which if it is contained
+                // could also mean we simply intersect.
+
+                // Deferencing verts[0] is safe because we check numVerts above
+                LatLng firstVertex = iter->_polygon->geoloop.verts[0];
+
+                // We have to check whether the point is in the expected range
+                // first, because out-of-bounds values will yield false
+                // positives with latLngToCell
+                if (bboxContains(&VALID_RANGE_BBOX, &firstVertex)) {
+                    H3Index polygonCell;
+                    H3Error polygonCellErr = H3_EXPORT(latLngToCell)(
+                        &(iter->_polygon->geoloop.verts[0]), cellRes,
+                        &polygonCell);
+                    if (NEVER(polygonCellErr != E_SUCCESS)) {
+                        // This should be unreachable with the bbox check
+                        iterErrorPolygonCompact(iter, polygonCellErr);
+                        return;
+                    }
+                    if (polygonCell == cell) {
+                        // Set to next output
+                        iter->cell = cell;
+                        return;
+                    }
                 }
             }
             if (mode == CONTAINMENT_FULL || mode == CONTAINMENT_OVERLAPPING) {
@@ -709,11 +722,6 @@ H3Error H3_EXPORT(maxPolygonToCellsSizeExperimental)(const GeoPolygon *polygon,
     // Special case: 0-vertex polygon
     if (polygon->geoloop.numVerts == 0) {
         *out = 0;
-        return E_SUCCESS;
-    }
-    // Special case: 1-vertex polygon
-    if (polygon->geoloop.numVerts == 1) {
-        *out = 1;
         return E_SUCCESS;
     }
 
