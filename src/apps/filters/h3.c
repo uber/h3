@@ -164,7 +164,7 @@ bool generalHelp(int argc, char *argv[]) {
     };
     Arg *args[] = {&helpArg, &cellToLatLngArg, &latLngToCellArg,
                    &cellToBoundaryArg};
-    #define ARGLEN 4
+#define ARGLEN 4
 
     const char *helpText =
         "Please use one of the subcommands listed to perform an H3 "
