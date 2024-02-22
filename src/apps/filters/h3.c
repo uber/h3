@@ -164,11 +164,13 @@ bool generalHelp(int argc, char *argv[]) {
     };
     Arg *args[] = {&helpArg, &cellToLatLngArg, &latLngToCellArg,
                    &cellToBoundaryArg};
+    #define ARGLEN 4
+
     const char *helpText =
         "Please use one of the subcommands listed to perform an H3 "
         "calculation. Use h3 <SUBCOMMAND> --help for details on the usage of "
         "any subcommand.";
-    return parseArgs(argc, argv, 4, args, &helpArg, helpText);
+    return parseArgs(argc, argv, ARGLEN, args, &helpArg, helpText);
 }
 
 int main(int argc, char *argv[]) {
