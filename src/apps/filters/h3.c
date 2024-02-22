@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Uber Technologies, Inc.
+ * Copyright 2021, 2024 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,10 @@ bool cellToLatLngCmd(int argc, char *argv[]) {
         return helpArg.found;
     }
     LatLng ll;
-    H3_EXPORT(cellToLatLng)(cell, &ll);
+    int err = H3_EXPORT(cellToLatLng)(cell, &ll);
+    if (err) {
+        return false;
+    }
     printf("%.10lf, %.10lf\n", H3_EXPORT(radsToDegs)(ll.lat),
            H3_EXPORT(radsToDegs)(ll.lng));
     return true;
@@ -110,6 +113,38 @@ bool latLngToCellCmd(int argc, char *argv[]) {
     return true;
 }
 
+bool cellToBoundaryCmd(int argc, char* argv[]) {
+    Arg cellToBoundaryArg = {
+        .names = {"cellToBoundary"},
+        .required = true,
+        .helpText = "Convert an H3 cell to an array of latitude/longitude coordinates defining its boundary",
+    };
+    Arg helpArg = ARG_HELP;
+    DEFINE_CELL_ARG(cell, cellArg);
+    Arg *args[] = {&cellToBoundaryArg, &helpArg, &cellArg};
+    if (parseArgs(argc, argv, 3, args, &helpArg,
+                  "Convert an H3 cell to an array of latitude/longitude coordinates defining its boundary")) {
+        return helpArg.found;
+    }
+    CellBoundary cb;
+    int err = H3_EXPORT(cellToBoundary)(cell, &cb);
+    if (err) {
+        return false;
+    }
+    // TODO: Is it better to use brackets or parentheses for the output?
+    printf("[\n");
+    for (int i = 0; i < cb.numVerts; i++) {
+        LatLng *ll = &cb.verts[i];
+        printf(
+            "  [%.10lf, %.10lf],\n",
+            H3_EXPORT(radsToDegs)(ll->lat),
+            H3_EXPORT(radsToDegs)(ll->lng)
+        );
+    }
+    printf("]\n");
+    return true;
+}
+
 bool generalHelp(int argc, char *argv[]) {
     Arg helpArg = ARG_HELP;
     Arg cellToLatLngArg = {
@@ -121,12 +156,16 @@ bool generalHelp(int argc, char *argv[]) {
         .helpText =
             "Convert degrees latitude/longitude coordinate to an H3 cell.",
     };
-    Arg *args[] = {&helpArg, &cellToLatLngArg, &latLngToCellArg};
+    Arg cellToBoundaryArg = {
+        .names = {"cellToBoundary"},
+        .helpText = "Convert an H3 cell to an array of latitude/longitude coordinates defining its boundary",
+    };
+    Arg *args[] = {&helpArg, &cellToLatLngArg, &latLngToCellArg, &cellToBoundaryArg};
     const char *helpText =
         "Please use one of the subcommands listed to perform an H3 "
         "calculation. Use h3 <SUBCOMMAND> --help for details on the usage of "
         "any subcommand.";
-    return parseArgs(argc, argv, 3, args, &helpArg, helpText);
+    return parseArgs(argc, argv, 4, args, &helpArg, helpText);
 }
 
 int main(int argc, char *argv[]) {
@@ -138,6 +177,9 @@ int main(int argc, char *argv[]) {
         return 0;
     }
     if (has("latLngToCell", 1, argv) && latLngToCellCmd(argc, argv)) {
+        return 0;
+    }
+    if (has("cellToBoundary", 1, argv) && cellToBoundaryCmd(argc, argv)) {
         return 0;
     }
     if (generalHelp(argc, argv)) {
