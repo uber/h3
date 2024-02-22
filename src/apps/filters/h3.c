@@ -53,7 +53,7 @@ bool cellToLatLngCmd(int argc, char *argv[]) {
         return helpArg.found;
     }
     LatLng ll;
-    int err = H3_EXPORT(cellToLatLng)(cell, &ll);
+    H3Error err = H3_EXPORT(cellToLatLng)(cell, &ll);
     if (err) {
         return false;
     }
@@ -130,7 +130,7 @@ bool cellToBoundaryCmd(int argc, char *argv[]) {
         return helpArg.found;
     }
     CellBoundary cb;
-    int err = H3_EXPORT(cellToBoundary)(cell, &cb);
+    H3Error err = H3_EXPORT(cellToBoundary)(cell, &cb);
     if (err) {
         return false;
     }
