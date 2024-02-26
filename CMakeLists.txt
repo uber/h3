@@ -593,10 +593,11 @@ endif()
 # Installation (https://github.com/forexample/package-example)
 
 # Layout. This works for all platforms:
-#   * <prefix>/lib/cmake/<PROJECT-NAME>
-#   * <prefix>/lib/
+#   * <prefix>/<CMAKE_INSTALL_LIBDIR>/cmake/<PROJECT-NAME>
+#   * <prefix>/<CMAKE_INSTALL_LIBDIR>/
 #   * <prefix>/include/
-set(config_install_dir "lib/cmake/${PROJECT_NAME}")
+include(GNUInstallDirs)
+set(config_install_dir "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
 set(include_install_dir "include")
 
 set(generated_dir "${CMAKE_CURRENT_BINARY_DIR}/generated")
@@ -632,7 +633,7 @@ configure_package_config_file(
 )
 
 # Targets:
-#   * <prefix>/lib/libh3.so
+#   * <prefix>/<CMAKE_INSTALL_LIBDIR>/libh3.so
 #   * header location after install: <prefix>/include/h3/h3api.h
 #   * headers can be included by C++ code `#include <h3/h3api.h>`
 # Installing the library and filters system-wide.
@@ -647,8 +648,8 @@ install(
     TARGETS h3
     EXPORT "${TARGETS_EXPORT_NAME}"
     COMPONENT libh3
-    LIBRARY DESTINATION "lib"
-    ARCHIVE DESTINATION "lib"
+    LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+    ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
     RUNTIME DESTINATION "bin"
     INCLUDES DESTINATION "${include_install_dir}"
 )
@@ -663,8 +664,8 @@ install(
 )
 
 # Config
-#   * <prefix>/lib/cmake/h3/h3Config.cmake
-#   * <prefix>/lib/cmake/h3/h3ConfigVersion.cmake
+#   * <prefix>/<CMAKE_INSTALL_LIBDIR>/cmake/h3/h3Config.cmake
+#   * <prefix>/<CMAKE_INSTALL_LIBDIR>/cmake/h3/h3ConfigVersion.cmake
 install(
     FILES "${project_config}" "${version_config}"
     DESTINATION "${config_install_dir}"
@@ -672,7 +673,7 @@ install(
 )
 
 # Config
-#   * <prefix>/lib/cmake/h3/h3Targets.cmake
+#   * <prefix>/<CMAKE_INSTALL_LIBDIR>/cmake/h3/h3Targets.cmake
 install(
     EXPORT "${TARGETS_EXPORT_NAME}"
     NAMESPACE "${namespace}"
