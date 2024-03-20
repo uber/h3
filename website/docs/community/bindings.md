@@ -111,10 +111,6 @@ As a C library, bindings can be made to call H3 functions from different program
 - [crazycapivara/h3-r](https://github.com/crazycapivara/h3-r)
 - [obrl-soil/h3jsr](https://github.com/obrl-soil/h3jsr)
 
-## SQL Server
-
-- [tbbuck/H3.net.SqlClr](https://github.com/tbbuck/H3.net.SqlClr)
-
 ## Ruby
 
 - [seanhandley/h3_ruby](https://github.com/seanhandley/h3_ruby)
@@ -133,6 +129,10 @@ As a C library, bindings can be made to call H3 functions from different program
 ## SQLite3
 
 - [isaacbrodsky/h3-sqlite3](https://github.com/isaacbrodsky/h3-sqlite3)
+
+## SQL Server
+
+- [tbbuck/H3.net.SqlClr](https://github.com/tbbuck/H3.net.SqlClr)
 
 ## Spark
 
