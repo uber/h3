@@ -48,7 +48,7 @@ bool cellToLatLngCmd(int argc, char *argv[]) {
     Arg helpArg = ARG_HELP;
     DEFINE_CELL_ARG(cell, cellArg);
     Arg *args[] = {&cellToLatLngArg, &helpArg, &cellArg};
-    if (parseArgs(argc, argv, 3, args, &helpArg,
+    if (parseArgs(argc, argv, sizeof(args) / sizeof(Arg *), args, &helpArg,
                   "Convert an H3 cell to a latitude/longitude coordinate")) {
         return helpArg.found;
     }
@@ -57,7 +57,9 @@ bool cellToLatLngCmd(int argc, char *argv[]) {
     if (err) {
         return false;
     }
-    printf("%.10lf, %.10lf\n", H3_EXPORT(radsToDegs)(ll.lat),
+    // Using WKT formatting for the output. TODO: Add support for JSON
+    // formatting
+    printf("POINT(%.10lf %.10lf)\n", H3_EXPORT(radsToDegs)(ll.lat),
            H3_EXPORT(radsToDegs)(ll.lng));
     return true;
 }
@@ -95,7 +97,7 @@ bool latLngToCellCmd(int argc, char *argv[]) {
 
     Arg *args[] = {&latLngToCellArg, &helpArg, &resArg, &latArg, &lngArg};
     if (parseArgs(
-            argc, argv, 5, args, &helpArg,
+            argc, argv, sizeof(args) / sizeof(Arg *), args, &helpArg,
             "Convert degrees latitude/longitude coordinate to an H3 cell.")) {
         return helpArg.found;
     }
@@ -105,6 +107,7 @@ bool latLngToCellCmd(int argc, char *argv[]) {
     H3Index c;
     H3Error e = H3_EXPORT(latLngToCell)(&ll, res, &c);
 
+    // TODO: Add support for JSON formatting
     if (e == E_SUCCESS) {
         h3Println(c);
     } else {
@@ -124,7 +127,7 @@ bool cellToBoundaryCmd(int argc, char *argv[]) {
     Arg helpArg = ARG_HELP;
     DEFINE_CELL_ARG(cell, cellArg);
     Arg *args[] = {&cellToBoundaryArg, &helpArg, &cellArg};
-    if (parseArgs(argc, argv, 3, args, &helpArg,
+    if (parseArgs(argc, argv, sizeof(args) / sizeof(Arg *), args, &helpArg,
                   "Convert an H3 cell to an array of latitude/longitude "
                   "coordinates defining its boundary")) {
         return helpArg.found;
@@ -134,14 +137,17 @@ bool cellToBoundaryCmd(int argc, char *argv[]) {
     if (err) {
         return false;
     }
-    // TODO: Is it better to use brackets or parentheses for the output?
-    printf("[\n");
+    // Using WKT formatting for the output. TODO: Add support for JSON
+    // formatting
+    printf("POLYGON((");
     for (int i = 0; i < cb.numVerts; i++) {
         LatLng *ll = &cb.verts[i];
-        printf("  [%.10lf, %.10lf],\n", H3_EXPORT(radsToDegs)(ll->lat),
+        printf("%.10lf %.10lf, ", H3_EXPORT(radsToDegs)(ll->lat),
                H3_EXPORT(radsToDegs)(ll->lng));
     }
-    printf("]\n");
+    // WKT has the first and last points match, so re-print the first one
+    printf("%.10lf %.10lf))\n", H3_EXPORT(radsToDegs)(cb.verts[0].lat),
+           H3_EXPORT(radsToDegs)(cb.verts[0].lng));
     return true;
 }
 
@@ -164,13 +170,13 @@ bool generalHelp(int argc, char *argv[]) {
     };
     Arg *args[] = {&helpArg, &cellToLatLngArg, &latLngToCellArg,
                    &cellToBoundaryArg};
-#define ARGLEN 4
 
     const char *helpText =
         "Please use one of the subcommands listed to perform an H3 "
         "calculation. Use h3 <SUBCOMMAND> --help for details on the usage of "
         "any subcommand.";
-    return parseArgs(argc, argv, ARGLEN, args, &helpArg, helpText);
+    return parseArgs(argc, argv, sizeof(args) / sizeof(Arg *), args, &helpArg,
+                     helpText);
 }
 
 int main(int argc, char *argv[]) {
