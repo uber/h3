@@ -59,8 +59,8 @@ bool cellToLatLngCmd(int argc, char *argv[]) {
     }
     // Using WKT formatting for the output. TODO: Add support for JSON
     // formatting
-    printf("POINT(%.10lf %.10lf)\n", H3_EXPORT(radsToDegs)(ll.lat),
-           H3_EXPORT(radsToDegs)(ll.lng));
+    printf("POINT(%.10lf %.10lf)\n", H3_EXPORT(radsToDegs)(ll.lng),
+           H3_EXPORT(radsToDegs)(ll.lat));
     return true;
 }
 
@@ -142,12 +142,12 @@ bool cellToBoundaryCmd(int argc, char *argv[]) {
     printf("POLYGON((");
     for (int i = 0; i < cb.numVerts; i++) {
         LatLng *ll = &cb.verts[i];
-        printf("%.10lf %.10lf, ", H3_EXPORT(radsToDegs)(ll->lat),
-               H3_EXPORT(radsToDegs)(ll->lng));
+        printf("%.10lf %.10lf, ", H3_EXPORT(radsToDegs)(ll->lng),
+               H3_EXPORT(radsToDegs)(ll->lat));
     }
     // WKT has the first and last points match, so re-print the first one
-    printf("%.10lf %.10lf))\n", H3_EXPORT(radsToDegs)(cb.verts[0].lat),
-           H3_EXPORT(radsToDegs)(cb.verts[0].lng));
+    printf("%.10lf %.10lf))\n", H3_EXPORT(radsToDegs)(cb.verts[0].lng),
+           H3_EXPORT(radsToDegs)(cb.verts[0].lat));
     return true;
 }
 

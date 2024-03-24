@@ -228,9 +228,9 @@ add_h3_test(testGridDistanceExhaustive src/apps/testapps/testGridDistanceExhaust
 add_h3_test(testH3CellAreaExhaustive src/apps/testapps/testH3CellAreaExhaustive.c)
 add_h3_test(testCellToBBoxExhaustive src/apps/testapps/testCellToBBoxExhaustive.c)
 
-add_h3_cli_test(testCliCellToLatLng "cellToLatLng -c 8928342e20fffff" "POINT(37.5012466151 -122.5003039349)")
+add_h3_cli_test(testCliCellToLatLng "cellToLatLng -c 8928342e20fffff" "POINT(-122.5003039349 37.5012466151)")
 add_h3_cli_test(testCliLatLngToCell "latLngToCell --lat 20 --lng 123 -r 2" "824b9ffffffffff")
-add_h3_cli_test(testCliCellToBoundary "cellToBoundary -c 8928342e20fffff" "POLYGON((37.4997389893 -122.4990471431, 37.5014245698 -122.4979805011, 37.5029321860 -122.4992373065, 37.5027541980 -122.5015607527, 37.5010686174 -122.5026273256, 37.4995610248 -122.5013705214, 37.4997389893 -122.4990471431))")
+add_h3_cli_test(testCliCellToBoundary "cellToBoundary -c 8928342e20fffff" "POLYGON((-122.4990471431 37.4997389893, -122.4979805011 37.5014245698, -122.4992373065 37.5029321860, -122.5015607527 37.5027541980, -122.5026273256 37.5010686174, -122.5013705214 37.4995610248, -122.4990471431 37.4997389893))")
 
 if(BUILD_ALLOC_TESTS)
     add_h3_library(h3WithTestAllocators test_prefix_)
