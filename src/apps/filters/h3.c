@@ -43,13 +43,13 @@ bool cellToLatLngCmd(int argc, char *argv[]) {
     Arg cellToLatLngArg = {
         .names = {"cellToLatLng"},
         .required = true,
-        .helpText = "Convert an H3 cell to a latitude/longitude coordinate",
+        .helpText = "Convert an H3 cell to a WKT POINT coordinate",
     };
     Arg helpArg = ARG_HELP;
     DEFINE_CELL_ARG(cell, cellArg);
     Arg *args[] = {&cellToLatLngArg, &helpArg, &cellArg};
     if (parseArgs(argc, argv, sizeof(args) / sizeof(Arg *), args, &helpArg,
-                  "Convert an H3 cell to a latitude/longitude coordinate")) {
+                  "Convert an H3 cell to a WKT POINT coordinate")) {
         return helpArg.found;
     }
     LatLng ll;
@@ -120,16 +120,14 @@ bool cellToBoundaryCmd(int argc, char *argv[]) {
     Arg cellToBoundaryArg = {
         .names = {"cellToBoundary"},
         .required = true,
-        .helpText =
-            "Convert an H3 cell to an array of latitude/longitude coordinates "
-            "defining its boundary",
+        .helpText = "Convert an H3 cell to a WKT POLYGON defining its boundary",
     };
     Arg helpArg = ARG_HELP;
     DEFINE_CELL_ARG(cell, cellArg);
     Arg *args[] = {&cellToBoundaryArg, &helpArg, &cellArg};
-    if (parseArgs(argc, argv, sizeof(args) / sizeof(Arg *), args, &helpArg,
-                  "Convert an H3 cell to an array of latitude/longitude "
-                  "coordinates defining its boundary")) {
+    if (parseArgs(
+            argc, argv, sizeof(args) / sizeof(Arg *), args, &helpArg,
+            "Convert an H3 cell to a WKT POLYGON defining its boundary")) {
         return helpArg.found;
     }
     CellBoundary cb;
@@ -155,7 +153,7 @@ bool generalHelp(int argc, char *argv[]) {
     Arg helpArg = ARG_HELP;
     Arg cellToLatLngArg = {
         .names = {"cellToLatLng"},
-        .helpText = "Convert an H3 cell to a latitude/longitude coordinate",
+        .helpText = "Convert an H3 cell to a WKT POINT coordinate",
     };
     Arg latLngToCellArg = {
         .names = {"latLngToCell"},
@@ -164,9 +162,7 @@ bool generalHelp(int argc, char *argv[]) {
     };
     Arg cellToBoundaryArg = {
         .names = {"cellToBoundary"},
-        .helpText =
-            "Convert an H3 cell to an array of latitude/longitude coordinates "
-            "defining its boundary",
+        .helpText = "Convert an H3 cell to a WKT POLYGON defining its boundary",
     };
     Arg *args[] = {&helpArg, &cellToLatLngArg, &latLngToCellArg,
                    &cellToBoundaryArg};
