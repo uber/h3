@@ -11,8 +11,8 @@ such as the H3 core library.
 
 The public API of H3 is covered in the following fuzzers:
 
-| Function | File or status
-| -------- | --------------
+| Function | File
+| -------- | ----
 | latLngToCell | [fuzzerLatLngToCell](./fuzzerLatLngToCell.c)
 | cellToLatLng |  [fuzzerCellToLatLng](./fuzzerCellToLatLng.c)
 | cellToBoundary | [fuzzerCellToLatLng](./fuzzerCellToLatLng.c)
@@ -20,7 +20,8 @@ The public API of H3 is covered in the following fuzzers:
 | gridDiskDistances | [fuzzerGridDisk](./fuzzerGridDisk.c)
 | gridRingUnsafe | [fuzzerGridDisk](./fuzzerGridDisk.c)
 | gridDisksUnsafe | [fuzzerGridDisk](./fuzzerGridDisk.c)
-| polygonToCells | [fuzzerPoylgonToCells](./fuzzerPolygonToCells.c)
+| polygonToCells | [fuzzerPoylgonToCells](./fuzzerPolygonToCells.c) [fuzzerPoylgonToCellsNoHoles](./fuzzerPolygonToCellsNoHoles.c)
+| polygonToCellsExperimental | [fuzzerPoylgonToCellsExperimental](./fuzzerPolygonToCellsExperimental.c) [fuzzerPoylgonToCellsExperimentalNoHoles](./fuzzerPolygonToCellsExperimentalNoHoles.c)
 | h3SetToMultiPolygon | [fuzzerH3SetToLinkedGeo](./fuzzerH3SetToLinkedGeo.c)
 | degsToRads | Trivial
 | radsToDegs | Trivial
