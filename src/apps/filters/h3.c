@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Uber Technologies, Inc.
+ * Copyright 2021, 2024 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,19 +43,24 @@ bool cellToLatLngCmd(int argc, char *argv[]) {
     Arg cellToLatLngArg = {
         .names = {"cellToLatLng"},
         .required = true,
-        .helpText = "Convert an H3 cell to a latitude/longitude coordinate",
+        .helpText = "Convert an H3 cell to a WKT POINT coordinate",
     };
     Arg helpArg = ARG_HELP;
     DEFINE_CELL_ARG(cell, cellArg);
     Arg *args[] = {&cellToLatLngArg, &helpArg, &cellArg};
-    if (parseArgs(argc, argv, 3, args, &helpArg,
-                  "Convert an H3 cell to a latitude/longitude coordinate")) {
+    if (parseArgs(argc, argv, sizeof(args) / sizeof(Arg *), args, &helpArg,
+                  "Convert an H3 cell to a WKT POINT coordinate")) {
         return helpArg.found;
     }
     LatLng ll;
-    H3_EXPORT(cellToLatLng)(cell, &ll);
-    printf("%.10lf, %.10lf\n", H3_EXPORT(radsToDegs)(ll.lat),
-           H3_EXPORT(radsToDegs)(ll.lng));
+    H3Error err = H3_EXPORT(cellToLatLng)(cell, &ll);
+    if (err) {
+        return false;
+    }
+    // Using WKT formatting for the output. TODO: Add support for JSON
+    // formatting
+    printf("POINT(%.10lf %.10lf)\n", H3_EXPORT(radsToDegs)(ll.lng),
+           H3_EXPORT(radsToDegs)(ll.lat));
     return true;
 }
 
@@ -92,7 +97,7 @@ bool latLngToCellCmd(int argc, char *argv[]) {
 
     Arg *args[] = {&latLngToCellArg, &helpArg, &resArg, &latArg, &lngArg};
     if (parseArgs(
-            argc, argv, 5, args, &helpArg,
+            argc, argv, sizeof(args) / sizeof(Arg *), args, &helpArg,
             "Convert degrees latitude/longitude coordinate to an H3 cell.")) {
         return helpArg.found;
     }
@@ -102,6 +107,7 @@ bool latLngToCellCmd(int argc, char *argv[]) {
     H3Index c;
     H3Error e = H3_EXPORT(latLngToCell)(&ll, res, &c);
 
+    // TODO: Add support for JSON formatting
     if (e == E_SUCCESS) {
         h3Println(c);
     } else {
@@ -110,23 +116,63 @@ bool latLngToCellCmd(int argc, char *argv[]) {
     return true;
 }
 
+bool cellToBoundaryCmd(int argc, char *argv[]) {
+    Arg cellToBoundaryArg = {
+        .names = {"cellToBoundary"},
+        .required = true,
+        .helpText = "Convert an H3 cell to a WKT POLYGON defining its boundary",
+    };
+    Arg helpArg = ARG_HELP;
+    DEFINE_CELL_ARG(cell, cellArg);
+    Arg *args[] = {&cellToBoundaryArg, &helpArg, &cellArg};
+    if (parseArgs(
+            argc, argv, sizeof(args) / sizeof(Arg *), args, &helpArg,
+            "Convert an H3 cell to a WKT POLYGON defining its boundary")) {
+        return helpArg.found;
+    }
+    CellBoundary cb;
+    H3Error err = H3_EXPORT(cellToBoundary)(cell, &cb);
+    if (err) {
+        return false;
+    }
+    // Using WKT formatting for the output. TODO: Add support for JSON
+    // formatting
+    printf("POLYGON((");
+    for (int i = 0; i < cb.numVerts; i++) {
+        LatLng *ll = &cb.verts[i];
+        printf("%.10lf %.10lf, ", H3_EXPORT(radsToDegs)(ll->lng),
+               H3_EXPORT(radsToDegs)(ll->lat));
+    }
+    // WKT has the first and last points match, so re-print the first one
+    printf("%.10lf %.10lf))\n", H3_EXPORT(radsToDegs)(cb.verts[0].lng),
+           H3_EXPORT(radsToDegs)(cb.verts[0].lat));
+    return true;
+}
+
 bool generalHelp(int argc, char *argv[]) {
     Arg helpArg = ARG_HELP;
     Arg cellToLatLngArg = {
         .names = {"cellToLatLng"},
-        .helpText = "Convert an H3 cell to a latitude/longitude coordinate",
+        .helpText = "Convert an H3 cell to a WKT POINT coordinate",
     };
     Arg latLngToCellArg = {
         .names = {"latLngToCell"},
         .helpText =
             "Convert degrees latitude/longitude coordinate to an H3 cell.",
     };
-    Arg *args[] = {&helpArg, &cellToLatLngArg, &latLngToCellArg};
+    Arg cellToBoundaryArg = {
+        .names = {"cellToBoundary"},
+        .helpText = "Convert an H3 cell to a WKT POLYGON defining its boundary",
+    };
+    Arg *args[] = {&helpArg, &cellToLatLngArg, &latLngToCellArg,
+                   &cellToBoundaryArg};
+
     const char *helpText =
         "Please use one of the subcommands listed to perform an H3 "
         "calculation. Use h3 <SUBCOMMAND> --help for details on the usage of "
         "any subcommand.";
-    return parseArgs(argc, argv, 3, args, &helpArg, helpText);
+    return parseArgs(argc, argv, sizeof(args) / sizeof(Arg *), args, &helpArg,
+                     helpText);
 }
 
 int main(int argc, char *argv[]) {
@@ -138,6 +184,9 @@ int main(int argc, char *argv[]) {
         return 0;
     }
     if (has("latLngToCell", 1, argv) && latLngToCellCmd(argc, argv)) {
+        return 0;
+    }
+    if (has("cellToBoundary", 1, argv) && cellToBoundaryCmd(argc, argv)) {
         return 0;
     }
     if (generalHelp(argc, argv)) {

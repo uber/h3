@@ -180,8 +180,9 @@ set(EXAMPLE_SOURCE_FILES
     examples/neighbors.c
     examples/compactCells.c
     examples/edge.c)
+set(H3_BIN_SOURCE_FILES
+    src/apps/filters/h3.c)
 set(OTHER_SOURCE_FILES
-    src/apps/filters/h3.c
     src/apps/filters/cellToLatLng.c
     src/apps/filters/cellToLocalIj.c
     src/apps/filters/localIjToCell.c
@@ -289,7 +290,7 @@ set(OTHER_SOURCE_FILES
     src/apps/benchmarks/benchmarkH3Api.c)
 
 set(ALL_SOURCE_FILES
-    ${LIB_SOURCE_FILES} ${APP_SOURCE_FILES} ${TEST_APP_SOURCE_FILES} ${OTHER_SOURCE_FILES})
+    ${LIB_SOURCE_FILES} ${APP_SOURCE_FILES} ${TEST_APP_SOURCE_FILES} ${H3_BIN_SOURCE_FILES} ${OTHER_SOURCE_FILES})
 
 # This is done for quality control purposes (to detect if any source files are missing from
 # our list), but is not done as the authoritative list as per CMake developer recommendations.
