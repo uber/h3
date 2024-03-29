@@ -35,47 +35,51 @@
 #include "h3Index.h"
 #include "utility.h"
 
+#define PARSE()                                                             \
+    if (parseArgs(argc, argv, sizeof(args) / sizeof(Arg *), args, &helpArg, \
+                  args[0]->helpText)) {                                     \
+        return E_SUCCESS;                                                   \
+    }
+
 bool has(char *subcommand, int level, char *argv[]) {
     return strcasecmp(subcommand, argv[level]) == 0;
 }
 
-bool cellToLatLngCmd(int argc, char *argv[]) {
-    Arg cellToLatLngArg = {
-        .names = {"cellToLatLng"},
-        .required = true,
-        .helpText = "Convert an H3 cell to a WKT POINT coordinate",
-    };
-    Arg helpArg = ARG_HELP;
+Arg helpArg = ARG_HELP;
+Arg cellToLatLngArg = {
+    .names = {"cellToLatLng"},
+    .helpText = "Convert an H3 cell to a WKT POINT coordinate",
+};
+Arg latLngToCellArg = {
+    .names = {"latLngToCell"},
+    .helpText = "Convert degrees latitude/longitude coordinate to an H3 cell.",
+};
+Arg cellToBoundaryArg = {
+    .names = {"cellToBoundary"},
+    .helpText = "Convert an H3 cell to a WKT POLYGON defining its boundary",
+};
+
+H3Error cellToLatLngCmd(int argc, char *argv[]) {
     DEFINE_CELL_ARG(cell, cellArg);
     Arg *args[] = {&cellToLatLngArg, &helpArg, &cellArg};
-    if (parseArgs(argc, argv, sizeof(args) / sizeof(Arg *), args, &helpArg,
-                  "Convert an H3 cell to a WKT POINT coordinate")) {
-        return helpArg.found;
-    }
+    PARSE();
     LatLng ll;
     H3Error err = H3_EXPORT(cellToLatLng)(cell, &ll);
     if (err) {
-        return false;
+        return err;
     }
     // Using WKT formatting for the output. TODO: Add support for JSON
     // formatting
     printf("POINT(%.10lf %.10lf)\n", H3_EXPORT(radsToDegs)(ll.lng),
            H3_EXPORT(radsToDegs)(ll.lat));
-    return true;
+    return E_SUCCESS;
 }
 
-bool latLngToCellCmd(int argc, char *argv[]) {
+H3Error latLngToCellCmd(int argc, char *argv[]) {
     int res = 0;
     double lat = 0;
     double lng = 0;
 
-    Arg latLngToCellArg = {
-        .names = {"latLngToCell"},
-        .required = true,
-        .helpText =
-            "Convert degrees latitude/longitude coordinate to an H3 cell.",
-    };
-    Arg helpArg = ARG_HELP;
     Arg resArg = {.names = {"-r", "--resolution"},
                   .required = true,
                   .scanFormat = "%d",
@@ -96,11 +100,7 @@ bool latLngToCellCmd(int argc, char *argv[]) {
                   .helpText = "Longitude in degrees."};
 
     Arg *args[] = {&latLngToCellArg, &helpArg, &resArg, &latArg, &lngArg};
-    if (parseArgs(
-            argc, argv, sizeof(args) / sizeof(Arg *), args, &helpArg,
-            "Convert degrees latitude/longitude coordinate to an H3 cell.")) {
-        return helpArg.found;
-    }
+    PARSE();
     LatLng ll = {.lat = H3_EXPORT(degsToRads)(lat),
                  .lng = H3_EXPORT(degsToRads)(lng)};
 
@@ -111,29 +111,20 @@ bool latLngToCellCmd(int argc, char *argv[]) {
     if (e == E_SUCCESS) {
         h3Println(c);
     } else {
-        h3Println(H3_NULL);
+        h3Println(
+            H3_NULL);  // TODO: Should we print a better error message here?
     }
-    return true;
+    return e;
 }
 
-bool cellToBoundaryCmd(int argc, char *argv[]) {
-    Arg cellToBoundaryArg = {
-        .names = {"cellToBoundary"},
-        .required = true,
-        .helpText = "Convert an H3 cell to a WKT POLYGON defining its boundary",
-    };
-    Arg helpArg = ARG_HELP;
+H3Error cellToBoundaryCmd(int argc, char *argv[]) {
     DEFINE_CELL_ARG(cell, cellArg);
     Arg *args[] = {&cellToBoundaryArg, &helpArg, &cellArg};
-    if (parseArgs(
-            argc, argv, sizeof(args) / sizeof(Arg *), args, &helpArg,
-            "Convert an H3 cell to a WKT POLYGON defining its boundary")) {
-        return helpArg.found;
-    }
+    PARSE();
     CellBoundary cb;
     H3Error err = H3_EXPORT(cellToBoundary)(cell, &cb);
     if (err) {
-        return false;
+        return err;
     }
     // Using WKT formatting for the output. TODO: Add support for JSON
     // formatting
@@ -146,24 +137,10 @@ bool cellToBoundaryCmd(int argc, char *argv[]) {
     // WKT has the first and last points match, so re-print the first one
     printf("%.10lf %.10lf))\n", H3_EXPORT(radsToDegs)(cb.verts[0].lng),
            H3_EXPORT(radsToDegs)(cb.verts[0].lat));
-    return true;
+    return E_SUCCESS;
 }
 
 bool generalHelp(int argc, char *argv[]) {
-    Arg helpArg = ARG_HELP;
-    Arg cellToLatLngArg = {
-        .names = {"cellToLatLng"},
-        .helpText = "Convert an H3 cell to a WKT POINT coordinate",
-    };
-    Arg latLngToCellArg = {
-        .names = {"latLngToCell"},
-        .helpText =
-            "Convert degrees latitude/longitude coordinate to an H3 cell.",
-    };
-    Arg cellToBoundaryArg = {
-        .names = {"cellToBoundary"},
-        .helpText = "Convert an H3 cell to a WKT POLYGON defining its boundary",
-    };
     Arg *args[] = {&helpArg, &cellToLatLngArg, &latLngToCellArg,
                    &cellToBoundaryArg};
 
@@ -180,14 +157,14 @@ int main(int argc, char *argv[]) {
         printf("Please use h3 --help to see how to use this command.\n");
         return 1;
     }
-    if (has("cellToLatLng", 1, argv) && cellToLatLngCmd(argc, argv)) {
-        return 0;
+    if (has("cellToLatLng", 1, argv)) {
+        return cellToLatLngCmd(argc, argv);
     }
-    if (has("latLngToCell", 1, argv) && latLngToCellCmd(argc, argv)) {
-        return 0;
+    if (has("latLngToCell", 1, argv)) {
+        return latLngToCellCmd(argc, argv);
     }
-    if (has("cellToBoundary", 1, argv) && cellToBoundaryCmd(argc, argv)) {
-        return 0;
+    if (has("cellToBoundary", 1, argv)) {
+        return cellToBoundaryCmd(argc, argv);
     }
     if (generalHelp(argc, argv)) {
         return 0;
