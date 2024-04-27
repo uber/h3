@@ -20,5 +20,5 @@ Before we can merge your changes, you must agree to the [Uber Contributor Licens
 In addition to making pull requests and Github issues on the @uber/h3 repository, there are other ways you can contribute. Here are some suggestions:
 
 * Writing and updating the [documentation website](./website/docs/).
-* Writing [bindings](./dev-docs/creating_bindings.md) for your preferred language.
+* Writing [bindings](./website/docs/community/bindings.md) for your preferred language.
 * Writing components so that your preferred GIS, mapping, or visualization system can display H3 indexes.
