@@ -101,10 +101,15 @@ Used for [renaming the public API](./usage#function-renaming).
 
 If enabled, CMake will print which CTest test case corresponds to which input file.
 
+## ENABLE_WARNINGS
+
+Whether to enable all compiler warnings. (i.e. [`-Wall`](https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wall))
+
 ## WARNINGS_AS_ERRORS
 
 Whether to treat compiler warnings as errors. While a useful tool for ensuring software quality, this should not be enabled
-for production builds as compiler warnings can change unexpectedly between versions.
+for production builds as compiler warnings can change unexpectedly between versions. This is intended to be used with
+`ENABLE_WARNINGS` on.
 
 ## WRAP_VALGRIND
 
