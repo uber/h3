@@ -630,9 +630,9 @@ H3Error H3_EXPORT(gridPathCellsSize)(H3Index start, H3Index end,
  * @param ijk IJK coord struct, modified in place
  */
 static void cubeRound(double i, double j, double k, CoordIJK *ijk) {
-    int ri = round(i);
-    int rj = round(j);
-    int rk = round(k);
+    int ri = (int)round(i);
+    int rj = (int)round(j);
+    int rk = (int)round(k);
 
     double iDiff = fabs((double)ri - i);
     double jDiff = fabs((double)rj - j);

@@ -70,8 +70,8 @@ void _hex2dToCoordIJK(const Vec2d *v, CoordIJK *h) {
     x1 = a1 + x2 / 2.0;
 
     // check if we have the center of a hex
-    m1 = x1;
-    m2 = x2;
+    m1 = (int)x1;
+    m2 = (int)x2;
 
     // otherwise round correctly
     r1 = x1 - m1;
@@ -130,11 +130,11 @@ void _hex2dToCoordIJK(const Vec2d *v, CoordIJK *h) {
         {
             long long int axisi = h->j / 2;
             long long int diff = h->i - axisi;
-            h->i = h->i - 2.0 * diff;
+            h->i = (int)(h->i - 2.0 * diff);
         } else {
             long long int axisi = (h->j + 1) / 2;
             long long int diff = h->i - axisi;
-            h->i = h->i - (2.0 * diff + 1);
+            h->i = (int)(h->i - (2.0 * diff + 1));
         }
     }
 

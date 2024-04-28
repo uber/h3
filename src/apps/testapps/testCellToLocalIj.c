@@ -201,7 +201,7 @@ SUITE(h3ToLocalIj) {
 
     TEST(invalid_negativeIj) {
         H3Index index = 0x200f202020202020;
-        CoordIJ ij = {.i = -14671840, .j = -2147483648};
+        CoordIJ ij = {.i = -14671840, .j = INT32_MIN};
         H3Index out;
         t_assert(H3_EXPORT(localIjToCell)(index, &ij, 0, &out) == E_FAILED,
                  "Negative I and J components fail");

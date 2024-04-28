@@ -20,6 +20,7 @@
 #ifndef MATHEXTENSIONS_H
 #define MATHEXTENSIONS_H
 
+#include <stdbool.h>
 #include <stdint.h>
 
 /**
@@ -28,12 +29,22 @@
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 
 /** Evaluates to true if a + b would overflow for int32 */
-#define ADD_INT32S_OVERFLOWS(a, b) \
-    ((a) > 0 ? (INT32_MAX - (a) < (b)) : (INT32_MIN - (a) > (b)))
+static inline bool ADD_INT32S_OVERFLOWS(int32_t a, int32_t b) {
+    if (a > 0) {
+        return INT32_MAX - a < b;
+    } else {
+        return INT32_MIN - a > b;
+    }
+}
 
 /** Evaluates to true if a - b would overflow for int32 */
-#define SUB_INT32S_OVERFLOWS(a, b) \
-    ((a) >= 0 ? (INT32_MIN + (a) >= (b)) : (INT32_MAX + (a) + 1 < (b)))
+static inline bool SUB_INT32S_OVERFLOWS(int32_t a, int32_t b) {
+    if (a >= 0) {
+        return INT32_MIN + a >= b;
+    } else {
+        return INT32_MAX + a + 1 < b;
+    }
+}
 
 // Internal functions
 int64_t _ipow(int64_t base, int64_t exp);
