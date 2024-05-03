@@ -35,7 +35,7 @@
 #include "h3Index.h"
 #include "utility.h"
 
-#define PARSE()                                                             \
+#define PARSE_SUBCOMMAND(argc, argv, args)                                  \
     if (parseArgs(argc, argv, sizeof(args) / sizeof(Arg *), args, &helpArg, \
                   args[0]->helpText)) {                                     \
         return E_SUCCESS;                                                   \
@@ -62,7 +62,7 @@ Arg cellToBoundaryArg = {
 H3Error cellToLatLngCmd(int argc, char *argv[]) {
     DEFINE_CELL_ARG(cell, cellArg);
     Arg *args[] = {&cellToLatLngArg, &helpArg, &cellArg};
-    PARSE();
+    PARSE_SUBCOMMAND(argc, argv, args);
     LatLng ll;
     H3Error err = H3_EXPORT(cellToLatLng)(cell, &ll);
     if (err) {
@@ -100,7 +100,7 @@ H3Error latLngToCellCmd(int argc, char *argv[]) {
                   .helpText = "Longitude in degrees."};
 
     Arg *args[] = {&latLngToCellArg, &helpArg, &resArg, &latArg, &lngArg};
-    PARSE();
+    PARSE_SUBCOMMAND(argc, argv, args);
     LatLng ll = {.lat = H3_EXPORT(degsToRads)(lat),
                  .lng = H3_EXPORT(degsToRads)(lng)};
 
@@ -120,7 +120,7 @@ H3Error latLngToCellCmd(int argc, char *argv[]) {
 H3Error cellToBoundaryCmd(int argc, char *argv[]) {
     DEFINE_CELL_ARG(cell, cellArg);
     Arg *args[] = {&cellToBoundaryArg, &helpArg, &cellArg};
-    PARSE();
+    PARSE_SUBCOMMAND(argc, argv, args);
     CellBoundary cb;
     H3Error err = H3_EXPORT(cellToBoundary)(cell, &cb);
     if (err) {
