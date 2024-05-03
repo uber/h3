@@ -68,7 +68,7 @@ export default function IndexPage() {
     <Layout title="Home" description="deck.gl">
       <Home HeroExample={HeroExample}>
         <div style={{position: 'relative'}}>
-          <FeatureImage src={`${baseUrl}images/maps.jpg`} />
+          {/* <FeatureImage src={`${baseUrl}images/maps.jpg`} /> */}
           <TextContainer>
             <h2>
               H3 is a discrete global grid system for indexing locations into a hexagonal grid.

@@ -27,7 +27,6 @@ export const BannerContainer = styled(Container)`
   height: auto;
   padding-left: 4rem;
   z-index: 0;
-  pointer-events: none;
 `;
 
 export const HeroExampleContainer = styled.div`
