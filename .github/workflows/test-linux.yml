@@ -33,7 +33,7 @@ jobs:
       - name: Install Doxygen
         run: |
           sudo apt update
-          sudo apt-get install doxygen graphviz clang-format-11
+          sudo apt-get install doxygen graphviz clang-format-14
 
       - name: Configure build
         run: cmake -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DWARNINGS_AS_ERRORS=ON .
@@ -41,7 +41,7 @@ jobs:
       - name: Formatting check
         working-directory: build
         run: |
-          clang-format-11 --version
+          clang-format-14 --version
           make format
           git diff --exit-code
 
@@ -93,7 +93,7 @@ jobs:
       - name: Install Doxygen
         run: |
           sudo apt update
-          sudo apt-get install doxygen graphviz clang-format-11
+          sudo apt-get install doxygen graphviz clang-format-14
 
       - name: Configure build
         run: cmake -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DWARNINGS_AS_ERRORS=ON -DCMAKE_C_FLAGS="${{ matrix.compile_opt }}" .
@@ -101,7 +101,7 @@ jobs:
       - name: Formatting check
         working-directory: build
         run: |
-          clang-format-11 --version
+          clang-format-14 --version
           make format
           git diff --exit-code
 
