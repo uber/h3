@@ -241,7 +241,7 @@ SUBCOMMAND(stringToInt, "Converts an H3 index in string form to integer form") {
     if (err) {
         return err;
     }
-    printf("%lu", c);
+    printf("%" PRIu64, c);
     return E_SUCCESS;
 }
 
@@ -249,7 +249,7 @@ SUBCOMMAND(intToString, "Converts an H3 index in int form to string form") {
     H3Index rawCell;
     Arg rawCellArg = {.names = {"-c", "--cell"},
                       .required = true,
-                      .scanFormat = "%lu",
+                      .scanFormat = "%" PRIu64,
                       .valueName = "cell",
                       .value = &rawCell,
                       .helpText = "H3 Cell Index"};
