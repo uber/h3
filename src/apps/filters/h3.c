@@ -79,8 +79,10 @@ struct Subcommand {
             "usage of "                                                   \
             "any subcommand.";                                            \
         if (parseArgs(argc, argv, arglen, args, &helpArg, helpText)) {    \
+            free(args);                                                   \
             return E_SUCCESS;                                             \
         } else {                                                          \
+            free(args);                                                   \
             return E_FAILED;                                              \
         }                                                                 \
     }
@@ -239,9 +241,11 @@ SUBCOMMAND(stringToInt, "Converts an H3 index in string form to integer form") {
     H3Index c;
     H3Error err = H3_EXPORT(stringToH3)(rawCell, &c);
     if (err) {
+        free(rawCell);
         return err;
     }
     printf("%" PRIu64, c);
+    free(rawCell);
     return E_SUCCESS;
 }
 
@@ -302,6 +306,10 @@ SUBCOMMAND(getIcosahedronFaces,
     }
     int *faces = calloc(faceCount, sizeof(int));
     err = H3_EXPORT(getIcosahedronFaces)(cell, faces);
+    if (err) {
+        free(faces);
+        return err;
+    }
     bool hasPrinted = false;
     for (int i = 0; i < faceCount - 1; i++) {
         if (faces[i] != -1) {
@@ -318,6 +326,7 @@ SUBCOMMAND(getIcosahedronFaces,
         }
         printf("%i", faces[faceCount - 1]);
     }
+    free(faces);
     return E_SUCCESS;
 }
 
