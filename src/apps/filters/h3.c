@@ -277,6 +277,17 @@ SUBCOMMAND(isResClassIII,
     DEFINE_CELL_ARG(cell, cellArg);
     Arg *args[] = {&isResClassIIIArg, &helpArg, &cellArg};
     PARSE_SUBCOMMAND(argc, argv, args);
+    // TODO: Should there be a general `isValidIndex`?
+    H3Error cellErr = H3_EXPORT(isValidCell)(cell);
+    H3Error edgeErr = H3_EXPORT(isValidDirectedEdge)(cell);
+    H3Error vertErr = H3_EXPORT(isValidVertex)(cell);
+    if (cellErr && edgeErr && vertErr) {
+        // Not exactly sure how to handle this
+        return cellErr | edgeErr | vertErr;
+    }
+    // If we got here, we can use `getResolution` safely, as this is one of the
+    // few functions that doesn't do any error handling (for some reason? I
+    // don't see how this would ever be in a hot loop anywhere.
     bool isClassIII = H3_EXPORT(isResClassIII)(cell);
     printf("%s", isClassIII ? "true" : "false");
     return E_SUCCESS;
@@ -288,6 +299,17 @@ SUBCOMMAND(
     DEFINE_CELL_ARG(cell, cellArg);
     Arg *args[] = {&isPentagonArg, &helpArg, &cellArg};
     PARSE_SUBCOMMAND(argc, argv, args);
+    // TODO: Should there be a general `isValidIndex`?
+    H3Error cellErr = H3_EXPORT(isValidCell)(cell);
+    H3Error edgeErr = H3_EXPORT(isValidDirectedEdge)(cell);
+    H3Error vertErr = H3_EXPORT(isValidVertex)(cell);
+    if (cellErr && edgeErr && vertErr) {
+        // Not exactly sure how to handle this
+        return cellErr | edgeErr | vertErr;
+    }
+    // If we got here, we can use `getResolution` safely, as this is one of the
+    // few functions that doesn't do any error handling (for some reason? I
+    // don't see how this would ever be in a hot loop anywhere.
     bool is = H3_EXPORT(isPentagon)(cell);
     printf("%s", is ? "true" : "false");
     return E_SUCCESS;
