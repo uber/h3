@@ -125,7 +125,10 @@ module.exports = {
           },
         },
         theme: {
-          customCss: require.resolve('./src/css/custom.css'),
+          customCss: [
+            require.resolve('./src/css/custom.css'),
+            require.resolve('./node_modules/maplibre-gl/dist/maplibre-gl.css'),
+          ],
         },
       },
     ],
