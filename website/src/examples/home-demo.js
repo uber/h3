@@ -68,6 +68,11 @@ export function App({
       getLineWidth: 2,
       lineWidthMinPixels: 2,
       highPrecision: true,
+      lineWidthUnits: 'pixels',
+      getDashArray: [5, 1],
+      dashJustified: true,
+      dashGapPickable: true,
+      extensions: [new PathStyleExtension({dash: true})]
     }),
     new H3HexagonLayer({
       id: "res2",
@@ -80,6 +85,7 @@ export function App({
       getLineWidth: 1,
       lineWidthMinPixels: 1,
       highPrecision: true,
+      lineWidthUnits: 'pixels',
       getDashArray: [5, 5],
       dashJustified: true,
       dashGapPickable: true,
