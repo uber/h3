@@ -56,7 +56,7 @@ struct Subcommand {
 #define SUBCOMMANDS_INDEX                        \
     H3Error generalHelp(int argc, char *argv[]); \
     struct Subcommand subcommands[] = {
-#define SUBCMD(s) {.name = #s, .arg = &s##Arg, .subcommand = &s##Cmd},
+#define SUBCOMMAND_INDEX(s) {.name = #s, .arg = &s##Arg, .subcommand = &s##Cmd},
 
 #define END_SUBCOMMANDS_INDEX                                             \
     {.name = "--help", .arg = &helpArg, .subcommand = generalHelp}, {     \
@@ -196,8 +196,7 @@ SUBCOMMAND(getResolution, "Extracts the resolution (0 - 15) from the H3 cell") {
     H3Error edgeErr = H3_EXPORT(isValidDirectedEdge)(cell);
     H3Error vertErr = H3_EXPORT(isValidVertex)(cell);
     if (cellErr && edgeErr && vertErr) {
-        // Not exactly sure how to handle this
-        return cellErr | edgeErr | vertErr;
+        return cellErr;
     }
     // If we got here, we can use `getResolution` safely, as this is one of the
     // few functions that doesn't do any error handling (for some reason? I
@@ -217,8 +216,7 @@ SUBCOMMAND(getBaseCellNumber,
     H3Error edgeErr = H3_EXPORT(isValidDirectedEdge)(cell);
     H3Error vertErr = H3_EXPORT(isValidVertex)(cell);
     if (cellErr && edgeErr && vertErr) {
-        // Not exactly sure how to handle this
-        return cellErr | edgeErr | vertErr;
+        return cellErr;
     }
     // If we got here, we can use `getResolution` safely, as this is one of the
     // few functions that doesn't do any error handling (for some reason? I
@@ -282,8 +280,7 @@ SUBCOMMAND(isResClassIII,
     H3Error edgeErr = H3_EXPORT(isValidDirectedEdge)(cell);
     H3Error vertErr = H3_EXPORT(isValidVertex)(cell);
     if (cellErr && edgeErr && vertErr) {
-        // Not exactly sure how to handle this
-        return cellErr | edgeErr | vertErr;
+        return cellErr;
     }
     // If we got here, we can use `getResolution` safely, as this is one of the
     // few functions that doesn't do any error handling (for some reason? I
@@ -304,8 +301,7 @@ SUBCOMMAND(
     H3Error edgeErr = H3_EXPORT(isValidDirectedEdge)(cell);
     H3Error vertErr = H3_EXPORT(isValidVertex)(cell);
     if (cellErr && edgeErr && vertErr) {
-        // Not exactly sure how to handle this
-        return cellErr | edgeErr | vertErr;
+        return cellErr;
     }
     // If we got here, we can use `getResolution` safely, as this is one of the
     // few functions that doesn't do any error handling (for some reason? I
@@ -356,19 +352,19 @@ SUBCOMMAND(getIcosahedronFaces,
 SUBCOMMANDS_INDEX
 
 /// Indexing subcommands
-SUBCMD(cellToLatLng)
-SUBCMD(latLngToCell)
-SUBCMD(cellToBoundary)
+SUBCOMMAND_INDEX(cellToLatLng)
+SUBCOMMAND_INDEX(latLngToCell)
+SUBCOMMAND_INDEX(cellToBoundary)
 
 /// Inspection subcommands
-SUBCMD(getResolution)
-SUBCMD(getBaseCellNumber)
-SUBCMD(stringToInt)
-SUBCMD(intToString)
-SUBCMD(isValidCell)
-SUBCMD(isResClassIII)
-SUBCMD(isPentagon)
-SUBCMD(getIcosahedronFaces)
+SUBCOMMAND_INDEX(getResolution)
+SUBCOMMAND_INDEX(getBaseCellNumber)
+SUBCOMMAND_INDEX(stringToInt)
+SUBCOMMAND_INDEX(intToString)
+SUBCOMMAND_INDEX(isValidCell)
+SUBCOMMAND_INDEX(isResClassIII)
+SUBCOMMAND_INDEX(isPentagon)
+SUBCOMMAND_INDEX(getIcosahedronFaces)
 
 END_SUBCOMMANDS_INDEX
 
