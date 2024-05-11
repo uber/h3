@@ -348,6 +348,320 @@ SUBCOMMAND(getIcosahedronFaces,
     return E_SUCCESS;
 }
 
+/// Traversal subcommands
+
+SUBCOMMAND(
+    gridDisk,
+    "Returns a JSON array of a H3 cells within 'k' steps of the origin cell") {
+    DEFINE_CELL_ARG(cell, cellArg);
+    int k = 0;
+    Arg kArg = {.names = {"-k"},
+                .required = true,
+                .scanFormat = "%d",
+                .valueName = "distance",
+                .value = &k,
+                .helpText = "Maximum grid distance for the output set"};
+    Arg *args[] = {&gridDiskArg, &helpArg, &cellArg, &kArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    int64_t len = 0;
+    H3Error err = H3_EXPORT(maxGridDiskSize)(k, &len);
+    if (err) {
+        return err;
+    }
+    H3Index *out = calloc(len, sizeof(H3Index));
+    err = H3_EXPORT(gridDisk)(cell, k, out);
+    if (err) {
+        free(out);
+        return err;
+    }
+    printf(
+        "[ \"%" PRIx64 "\"",
+        out[0]);  // TODO: Theoretically this may be zero, but I know it isn't
+    for (int64_t i = 1; i < len; i++) {
+        if (out[i] != 0) {
+            printf(", \"%" PRIx64 "\"", out[i]);
+        }
+    }
+    free(out);
+    printf(" ]");
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(
+    gridDiskDistances,
+    "Returns a JSON array of arrays of H3 cells, each array containing cells "
+    "'k' steps away from the origin cell, based on the outer array index") {
+    DEFINE_CELL_ARG(cell, cellArg);
+    int k = 0;
+    Arg kArg = {.names = {"-k"},
+                .required = true,
+                .scanFormat = "%d",
+                .valueName = "distance",
+                .value = &k,
+                .helpText = "Maximum grid distance for the output set"};
+    Arg prettyArg = {
+        .names = {"-p", "--pretty-print"},
+        .required = false,
+        .helpText =
+            "Determine if the JSON output should be pretty printed or not"};
+    Arg *args[] = {&gridDiskDistancesArg, &helpArg, &cellArg, &kArg,
+                   &prettyArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    bool pretty = prettyArg.found;
+    int64_t len = 0;
+    H3Error err = H3_EXPORT(maxGridDiskSize)(k, &len);
+    if (err) {
+        return err;
+    }
+    H3Index *out = calloc(len, sizeof(H3Index));
+    int *distances = calloc(len, sizeof(int));
+    err = H3_EXPORT(gridDiskDistances)(cell, k, out, distances);
+    if (err) {
+        free(out);
+        free(distances);
+        return err;
+    }
+    // Man, I wish JSON allowed trailing commas
+    printf("[%s", pretty ? "\n" : "");
+    for (int i = 0; i <= k; i++) {
+        printf("%s[%s", /* prefix */ pretty ? "  " : "",
+               /* suffix */ pretty ? "\n" : "");
+        // We need to figure out how many cells are in each ring. Because of
+        // pentagons, we can't hardwire this, unfortunately
+        int count = 0;
+        for (int j = 0; j < len; j++) {
+            if (distances[j] == i && out[j] != 0) {
+                count++;
+            }
+        }
+        // On the second loop, we output cells with a comma except for the last
+        // one, which we now know
+        int cellNum = 0;
+        for (int j = 0; j < len; j++) {
+            if (distances[j] == i && out[j] != 0) {
+                cellNum++;
+                printf("%s\"%" PRIx64 "\"", pretty ? "    " : "", out[j]);
+                if (cellNum == count) {
+                    if (pretty) {
+                        printf("\n");
+                    }
+                } else {
+                    printf(",%s", pretty ? "\n" : "");
+                }
+            }
+        }
+        // Similarly, we need to check which iteration of the outer array we're
+        // on and include a comma or not
+        if (i == k) {
+            printf("%s]%s", /* prefix */ pretty ? "  " : "",
+                   /* suffix */ pretty ? "\n" : "");
+        } else {
+            printf("%s],%s", /* prefix */ pretty ? "  " : "",
+                   /* suffix */ pretty ? "\n" : "");
+        }
+    }
+    printf("]\n");  // Always print the newline here so the terminal prompt gets
+                    // its own line
+    free(out);
+    free(distances);
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(gridRing,
+           "Returns a JSON array of H3 cells, each cell 'k' steps away from "
+           "the origin cell") {
+    DEFINE_CELL_ARG(cell, cellArg);
+    int k = 0;
+    Arg kArg = {.names = {"-k"},
+                .required = true,
+                .scanFormat = "%d",
+                .valueName = "distance",
+                .value = &k,
+                .helpText = "Maximum grid distance for the output set"};
+    Arg *args[] = {&gridRingArg, &helpArg, &cellArg, &kArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    int64_t len = k == 0 ? 1 : 6 * k;  // The length is fixed for gridRingUnsafe
+                                       // since it doesn't support pentagons
+    H3Index *out = calloc(len, sizeof(H3Index));
+    H3Error err = H3_EXPORT(gridRingUnsafe)(cell, k, out);
+    if (err) {
+        // For the CLI, we'll just do things less efficiently if there's an
+        // error here. If you use `gridDiskDistances` and only pay attention to
+        // the last array, it's equivalent to a "safe" gridRing call, but
+        // consumes a lot more temporary memory to do it
+        int64_t templen = 0;
+        err = H3_EXPORT(maxGridDiskSize)(k, &templen);
+        if (err) {
+            // But we abort if anything fails in here
+            free(out);
+            return err;
+        }
+        H3Index *temp = calloc(templen, sizeof(H3Index));
+        int *distances = calloc(templen, sizeof(int));
+        err = H3_EXPORT(gridDiskDistances)(cell, k, temp, distances);
+        if (err) {
+            free(out);
+            free(temp);
+            free(distances);
+            return err;
+        }
+        // Now, we first re-zero the `out` array in case there's garbage
+        // anywhere in it from the failed computation. Then we scan through the
+        // gridDisk output and copy the indexes that are the correct distance
+        // in. We *should* only be in this path when there's a pentagon
+        // involved, so we expect the true length of the array to be less than
+        // what was allocated for `out` in this scenario.
+        for (int i = 0; i < len; i++) {
+            out[i] = 0;
+        }
+        int64_t count = 0;
+        for (int64_t i = 0; i < templen; i++) {
+            if (distances[i] == k && temp[i] != 0) {
+                out[count] = temp[i];
+                count++;
+            }
+        }
+        len = count;
+        free(temp);
+        free(distances);
+    }
+    // Now that we have the correct data, however we got it, we can print it out
+    printf("[ \"%" PRIx64 "\"", out[0]);
+    for (int64_t i = 1; i < len; i++) {
+        if (out[i] != 0) {
+            printf(", \"%" PRIx64 "\"", out[i]);
+        }
+    }
+    free(out);
+    printf(" ]");
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(gridPathCells,
+           "Returns a JSON array of H3 cells from the origin cell to the "
+           "destination cell (inclusive)") {
+    H3Index origin = 0;
+    Arg originArg = {.names = {"-o", "--origin"},
+                     .required = true,
+                     .scanFormat = "%" PRIx64,
+                     .valueName = "cell",
+                     .value = &origin,
+                     .helpText = "The origin H3 cell"};
+    H3Index destination = 0;
+    Arg destinationArg = {.names = {"-d", "--destination"},
+                          .required = true,
+                          .scanFormat = "%" PRIx64,
+                          .valueName = "cell",
+                          .value = &destination,
+                          .helpText = "The destination H3 cell"};
+    Arg *args[] = {&gridPathCellsArg, &helpArg, &originArg, &destinationArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    int64_t len = 0;
+    H3Error err = H3_EXPORT(gridPathCellsSize)(origin, destination, &len);
+    if (err) {
+        return err;
+    }
+    H3Index *out = calloc(len, sizeof(H3Index));
+    err = H3_EXPORT(gridPathCells)(origin, destination, out);
+    if (err) {
+        free(out);
+        return err;
+    }
+    printf("[ \"%" PRIx64 "\"", out[0]);
+    for (int64_t i = 1; i < len; i++) {
+        if (out[i] != 0) {
+            printf(", \"%" PRIx64 "\"", out[i]);
+        }
+    }
+    free(out);
+    printf(" ]");
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(gridDistance,
+           "Returns the number of steps along the grid to move from the origin "
+           "cell to the destination cell") {
+    H3Index origin = 0;
+    Arg originArg = {.names = {"-o", "--origin"},
+                     .required = true,
+                     .scanFormat = "%" PRIx64,
+                     .valueName = "cell",
+                     .value = &origin,
+                     .helpText = "The origin H3 cell"};
+    H3Index destination = 0;
+    Arg destinationArg = {.names = {"-d", "--destination"},
+                          .required = true,
+                          .scanFormat = "%" PRIx64,
+                          .valueName = "cell",
+                          .value = &destination,
+                          .helpText = "The destination H3 cell"};
+    Arg *args[] = {&gridDistanceArg, &helpArg, &originArg, &destinationArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    int64_t distance = 0;
+    H3Error err = H3_EXPORT(gridDistance)(origin, destination, &distance);
+    if (err) {
+        return err;
+    }
+    printf("%" PRIx64, distance);
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(cellToLocalIj,
+           "Returns the IJ coordinate for a cell anchored to an origin cell") {
+    DEFINE_CELL_ARG(cell, cellArg);
+    H3Index origin = 0;
+    Arg originArg = {.names = {"-o", "--origin"},
+                     .required = true,
+                     .scanFormat = "%" PRIx64,
+                     .valueName = "cell",
+                     .value = &origin,
+                     .helpText = "The origin H3 cell"};
+    Arg *args[] = {&cellToLocalIjArg, &helpArg, &cellArg, &originArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    CoordIJ out = {0};
+    H3Error err = H3_EXPORT(cellToLocalIj)(origin, cell, 0, &out);
+    if (err) {
+        return err;
+    }
+    printf("[%i, %i]\n", out.i, out.j);
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(localIjToCell,
+           "Returns the H3 index from a local IJ coordinate anchored to an "
+           "origin cell") {
+    H3Index origin = 0;
+    Arg originArg = {.names = {"-o", "--origin"},
+                     .required = true,
+                     .scanFormat = "%" PRIx64,
+                     .valueName = "cell",
+                     .value = &origin,
+                     .helpText = "The origin H3 cell"};
+    int i, j;
+    Arg iArg = {.names = {"-i"},
+                .required = true,
+                .scanFormat = "%d",
+                .valueName = "i",
+                .value = &i,
+                .helpText = "The I dimension of the IJ coordinate"};
+    Arg jArg = {.names = {"-j"},
+                .required = true,
+                .scanFormat = "%d",
+                .valueName = "j",
+                .value = &j,
+                .helpText = "The J dimension of the IJ coordinate"};
+    Arg *args[] = {&localIjToCellArg, &helpArg, &originArg, &iArg, &jArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    CoordIJ in = {.i = i, .j = j};
+    H3Index out = 0;
+    H3Error err = H3_EXPORT(localIjToCell)(origin, &in, 0, &out);
+    if (err) {
+        return err;
+    }
+    h3Println(out);
+    return E_SUCCESS;
+}
+
 // TODO: Is there any way to avoid this particular piece of duplication?
 SUBCOMMANDS_INDEX
 
@@ -365,6 +679,15 @@ SUBCOMMAND_INDEX(isValidCell)
 SUBCOMMAND_INDEX(isResClassIII)
 SUBCOMMAND_INDEX(isPentagon)
 SUBCOMMAND_INDEX(getIcosahedronFaces)
+
+/// Traversal subcommands
+SUBCOMMAND_INDEX(gridDisk)
+SUBCOMMAND_INDEX(gridDiskDistances)
+SUBCOMMAND_INDEX(gridRing)
+SUBCOMMAND_INDEX(gridPathCells)
+SUBCOMMAND_INDEX(gridDistance)
+SUBCOMMAND_INDEX(cellToLocalIj)
+SUBCOMMAND_INDEX(localIjToCell)
 
 END_SUBCOMMANDS_INDEX
 
