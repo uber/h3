@@ -170,6 +170,7 @@ for (int res = 0; res < MAX_RES + 1; res++) {
       H3_EXPORT(maxPolygonToCellsSizeExperimental)(&COUNTRIES[index], res, CONTAINMENT_CENTER, &numHexagons);
       hexagons = calloc(numHexagons, sizeof(H3Index));
       H3_EXPORT(polygonToCellsExperimental)(&COUNTRIES[index], res, CONTAINMENT_FULL, hexagons);
+      free(hexagons);
     }
   });
 
