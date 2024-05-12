@@ -191,7 +191,7 @@ export function HomeExplorerInternal({ children }) {
       setGeolocationStatus("Locating...");
       navigator.geolocation.getCurrentPosition((position) => {
         setUserInput(`${position.coords.latitude}, ${position.coords.longitude}`)
-        setGeolocationStatus("Located");
+        setGeolocationStatus("");
       }, () => {
         setGeolocationStatus("Error");
       });
