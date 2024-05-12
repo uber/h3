@@ -1,21 +1,20 @@
 
-import React, {Component, useEffect, useMemo, useRef, useState} from 'react';
-import {Map} from 'react-map-gl/maplibre';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Map } from 'react-map-gl/maplibre';
 import DeckGL from '@deck.gl/react';
-import {H3HexagonLayer} from '@deck.gl/geo-layers';
-import {PathStyleExtension} from '@deck.gl/extensions';
-import {getRes0Cells, isValidCell, uncompactCells} from 'h3-js';
+import { H3HexagonLayer } from '@deck.gl/geo-layers';
+import { PathStyleExtension } from '@deck.gl/extensions';
+import { getRes0Cells, isValidCell, uncompactCells } from 'h3-js';
 import styled from 'styled-components';
-import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
-import {Banner, BannerContainer, HeroExampleContainer} from './styled';
+import { Banner, BannerContainer, HeroExampleContainer } from './styled';
 import BrowserOnly from '@docusaurus/BrowserOnly';
 
 const INITIAL_VIEW_STATE = {
-  longitude: -74,
-  latitude: 40.72,
-  zoom: 13,
-  pitch: 45,
-  bearing: 0
+  longitude: -74.012,
+  latitude: 40.705,
+  zoom: 2.5,
+  pitch: 0,
+  bearing: 0,
 };
 
 const MAP_STYLE = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json';
@@ -42,9 +41,9 @@ export function App({
   mapStyle = MAP_STYLE,
 }) {
   const deckRef = useRef();
-  const res0Cells = useMemo(() => getRes0Cells().map((hex) => ({hex})), []);
-  const res1Cells = useMemo(() => uncompactCells(getRes0Cells(), 1).map((hex) => ({hex})), []);
-  const res2Cells = useMemo(() => uncompactCells(getRes0Cells(), 2).map((hex) => ({hex})), []);
+  const res0Cells = useMemo(() => getRes0Cells().map((hex) => ({ hex })), []);
+  const res1Cells = useMemo(() => uncompactCells(getRes0Cells(), 1).map((hex) => ({ hex })), []);
+  const res2Cells = useMemo(() => uncompactCells(getRes0Cells(), 2).map((hex) => ({ hex })), []);
   const userValidHex = useMemo(() => isValidCell(hex), [hex]);
   useEffect(() => {
     if (userValidHex && deckRef.current) {
@@ -52,9 +51,9 @@ export function App({
     }
   }, [hex, userValidHex]);
 
-  const layers = userValidHex? [new H3HexagonLayer({
+  const layers = userValidHex ? [new H3HexagonLayer({
     id: "userhex",
-    data: [{hex}],
+    data: [{ hex }],
     getHexagon: (d) => d.hex,
     extruded: false,
     filled: false,
@@ -91,7 +90,7 @@ export function App({
       getDashArray: [5, 1],
       dashJustified: true,
       dashGapPickable: true,
-      extensions: [new PathStyleExtension({dash: true})]
+      extensions: [new PathStyleExtension({ dash: true })]
     }),
     new H3HexagonLayer({
       id: "res2",
@@ -108,7 +107,7 @@ export function App({
       getDashArray: [5, 5],
       dashJustified: true,
       dashGapPickable: true,
-      extensions: [new PathStyleExtension({dash: true})]
+      extensions: [new PathStyleExtension({ dash: true })]
     })
   ];
 
@@ -124,36 +123,7 @@ export function App({
   );
 }
 
-class Explorer extends Component {
-  static mapStyle = undefined; // MAPBOX_STYLES.LIGHT;
-
-  constructor(props) {
-    super(props);
-
-    this.initialViewState = {
-      longitude: -74.012,
-      latitude: 40.705,
-      zoom: 2.5,
-      pitch: 0,
-      bearing: 0
-    };
-  }
-
-  render() {
-    const {data, ...otherProps} = this.props;
-
-    return (
-      <DemoContainer>
-        <App
-            {...otherProps}
-            initialViewState={this.initialViewState}
-        />
-      </DemoContainer>
-    );
-  }
-}
-
-export default function HomeExplorer({children}) {
+export default function HomeExplorer({ children }) {
   const [hex, setHex] = useState("");
 
   // Note: The Layout "wrapper" component adds header and footer etc
@@ -161,15 +131,19 @@ export default function HomeExplorer({children}) {
     <>
       <Banner>
         <BrowserOnly>
-          {() => <HeroExampleContainer><Explorer
-            hex={hex}
-          /></HeroExampleContainer>}
+          {() => <HeroExampleContainer>
+            <DemoContainer>
+              <App
+                hex={hex}
+              />
+            </DemoContainer>
+          </HeroExampleContainer>}
         </BrowserOnly>
         <BannerContainer>
           {/* <ProjectName>{siteConfig.title}</ProjectName>
           <p>{siteConfig.tagline}</p>
           <GetStartedLink href="./docs/get-started/getting-started">GET STARTED</GetStartedLink> */}
-          <input type="text" value={hex} onChange={(e) => {setHex(e.target.value);}}/>
+          <input type="text" value={hex} onChange={(e) => { setHex(e.target.value); }} />
         </BannerContainer>
       </Banner>
       {children}
