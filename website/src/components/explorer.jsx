@@ -4,9 +4,9 @@ import { Map } from 'react-map-gl/maplibre';
 import DeckGL from '@deck.gl/react';
 import { H3HexagonLayer } from '@deck.gl/geo-layers';
 import { PathStyleExtension } from '@deck.gl/extensions';
-import { getRes0Cells, isValidCell, uncompactCells } from 'h3-js';
+import { getRes0Cells, isValidCell, uncompactCells, latLngToCell } from 'h3-js';
 import styled from 'styled-components';
-import { Banner, BannerContainer, HeroExampleContainer } from './styled';
+import { Banner, BannerContainer, HeroExampleContainer, ProjectName } from './styled';
 import BrowserOnly from '@docusaurus/BrowserOnly';
 
 const INITIAL_VIEW_STATE = {
@@ -35,8 +35,35 @@ const DemoContainer = styled.div`
   }
 `;
 
+function fullyTrim(str) {
+  if (!str) {
+    return "";
+  }
+
+  return str.trim();
+}
+
+function fullyUnwrap(str) {
+  if (!str) {
+    return "";
+  }
+
+  str = str.trim();
+  // Remove any JSON wrapper stuff
+  str = str.replaceAll('[', ' ');
+  str = str.replaceAll(']', ' ');
+  str = str.replaceAll('"', ' ');
+  str = str.replaceAll('"', ' ');
+
+  // Remove any Python set wrapper
+  str = str.replaceAll('{', ' ');
+  str = str.replaceAll('}', ' ');
+
+  return str;
+}
+
 export function App({
-  hex = undefined,
+  userInput = undefined,
   initialViewState = INITIAL_VIEW_STATE,
   mapStyle = MAP_STYLE,
 }) {
@@ -44,16 +71,48 @@ export function App({
   const res0Cells = useMemo(() => getRes0Cells().map((hex) => ({ hex })), []);
   const res1Cells = useMemo(() => uncompactCells(getRes0Cells(), 1).map((hex) => ({ hex })), []);
   const res2Cells = useMemo(() => uncompactCells(getRes0Cells(), 2).map((hex) => ({ hex })), []);
-  const userValidHex = useMemo(() => isValidCell(hex), [hex]);
+  const splitUserInput = useMemo(() => {
+    if (userInput) {
+      const unwrapAnyArray = fullyUnwrap(userInput);
+      const split = unwrapAnyArray.split(/[^,\w]/);
+      console.log(split);
+      const result = [];
+
+      for (let i = 0; i < split.length; i++) {
+        const currentInput = fullyTrim(split[i]);
+        const nextInput = fullyTrim(split[i + 1]);
+
+        if (isValidCell(currentInput)) {
+          result.push(currentInput);
+        } else if (i < split.length - 1 && Number.isFinite(Number.parseFloat(currentInput)) && Number.isFinite(Number.parseFloat(nextInput))) {
+          const lat = Number.parseFloat(currentInput);
+          const lng = Number.parseFloat(nextInput);
+
+          for (let res = 0; res < 16; res++) {
+            result.push(latLngToCell(lat, lng, res));
+          }
+
+          // consumed, skip next coordinate
+          i++;
+        }
+      }
+
+      return result;
+    }
+
+    return [];
+  }, [userInput]);
+
+  const userValidHex = useMemo(() => splitUserInput.map(isValidCell).includes(true), [splitUserInput]);
   useEffect(() => {
     if (userValidHex && deckRef.current) {
-      //TODO: zoom to bounds here...
+      // TODO: zoom to bounds here...
     }
-  }, [hex, userValidHex]);
+  }, [userInput, userValidHex]);
 
   const layers = userValidHex ? [new H3HexagonLayer({
     id: "userhex",
-    data: [{ hex }],
+    data: splitUserInput.map((hex) => ({ hex })),
     getHexagon: (d) => d.hex,
     extruded: false,
     filled: false,
@@ -124,7 +183,7 @@ export function App({
 }
 
 export default function HomeExplorer({ children }) {
-  const [hex, setHex] = useState("");
+  const [userInput, setUserInput] = useState("");
 
   // Note: The Layout "wrapper" component adds header and footer etc
   return (
@@ -134,16 +193,16 @@ export default function HomeExplorer({ children }) {
           {() => <HeroExampleContainer>
             <DemoContainer>
               <App
-                hex={hex}
+                userInput={userInput}
               />
             </DemoContainer>
           </HeroExampleContainer>}
         </BrowserOnly>
         <BannerContainer>
-          {/* <ProjectName>{siteConfig.title}</ProjectName>
-          <p>{siteConfig.tagline}</p>
-          <GetStartedLink href="./docs/get-started/getting-started">GET STARTED</GetStartedLink> */}
-          <input type="text" value={hex} onChange={(e) => { setHex(e.target.value); }} />
+          <ProjectName>H3</ProjectName>
+          <p>Enter coordinates or cell IDs</p>
+          {/* <GetStartedLink href="./docs/get-started/getting-started">GET STARTED</GetStartedLink> */}
+          <input type="text" value={userInput} onChange={(e) => { setUserInput(e.target.value); }} placeholder='822d57fffffffff' />
         </BannerContainer>
       </Banner>
       {children}

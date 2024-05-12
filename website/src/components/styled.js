@@ -27,6 +27,7 @@ export const BannerContainer = styled(Container)`
   height: auto;
   padding-left: 4rem;
   z-index: 0;
+  width: auto;
 `;
 
 export const HeroExampleContainer = styled.div`
@@ -45,7 +46,7 @@ export const Section = styled.section`
 `;
 
 export const ProjectName = styled.h1`
-  font-size: 5em;
+  font-size: 3em;
   line-height: 1;
   text-transform: uppercase;
   letter-spacing: 4px;
