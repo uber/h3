@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import {Banner, BannerContainer, HeroExampleContainer, ProjectName, GetStartedLink} from './styled';
+import BrowserOnly from '@docusaurus/BrowserOnly';
 
 export default function renderPage({HeroExample, children}) {
   const {siteConfig} = useDocusaurusContext();
@@ -11,9 +12,11 @@ export default function renderPage({HeroExample, children}) {
   return (
     <>
       <Banner>
-        <HeroExampleContainer>{HeroExample && <HeroExample
-          hex={hex}
-        />}</HeroExampleContainer>
+        <BrowserOnly>
+          {() => <HeroExampleContainer>{HeroExample && <HeroExample
+            hex={hex}
+          />}</HeroExampleContainer>}
+        </BrowserOnly>
         <BannerContainer>
           {/* <ProjectName>{siteConfig.title}</ProjectName>
           <p>{siteConfig.tagline}</p>
