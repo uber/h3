@@ -1,5 +1,5 @@
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Map } from 'react-map-gl/maplibre';
 import DeckGL from '@deck.gl/react';
 import { H3HexagonLayer } from '@deck.gl/geo-layers';
@@ -53,7 +53,8 @@ function fullyUnwrap(str) {
   str = str.replaceAll('[', ' ');
   str = str.replaceAll(']', ' ');
   str = str.replaceAll('"', ' ');
-  str = str.replaceAll('"', ' ');
+  str = str.replaceAll("'", ' ');
+  str = str.replaceAll(",", ' ');
 
   // Remove any Python set wrapper
   str = str.replaceAll('{', ' ');
@@ -74,8 +75,7 @@ export function App({
   const splitUserInput = useMemo(() => {
     if (userInput) {
       const unwrapAnyArray = fullyUnwrap(userInput);
-      const split = unwrapAnyArray.split(/[^,\w]/);
-      console.log(split);
+      const split = unwrapAnyArray.split(/\s/).filter((str) => str !== "");
       const result = [];
 
       for (let i = 0; i < split.length; i++) {
@@ -182,29 +182,57 @@ export function App({
   );
 }
 
-export default function HomeExplorer({ children }) {
+export function HomeExplorerInternal({ children }) {
   const [userInput, setUserInput] = useState("");
+  const [geolocationStatus, setGeolocationStatus] = useState("");
+
+  const doGeoLocation = useCallback(async () => {
+    if ("geolocation" in navigator) {
+      setGeolocationStatus("Locating...");
+      navigator.geolocation.getCurrentPosition((position) => {
+        setUserInput(`${position.coords.latitude}, ${position.coords.longitude}`)
+        setGeolocationStatus("Located");
+      }, () => {
+        setGeolocationStatus("Error");
+      });
+    } else {
+      setGeolocationStatus("No location services");
+    }
+  }, [setUserInput]);
 
   // Note: The Layout "wrapper" component adds header and footer etc
   return (
     <>
       <Banner>
-        <BrowserOnly>
-          {() => <HeroExampleContainer>
-            <DemoContainer>
-              <App
-                userInput={userInput}
-              />
-            </DemoContainer>
-          </HeroExampleContainer>}
-        </BrowserOnly>
+        <HeroExampleContainer>
+          <DemoContainer>
+            <App
+              userInput={userInput}
+            />
+          </DemoContainer>
+        </HeroExampleContainer>
         <BannerContainer>
           <ProjectName>H3</ProjectName>
           <p>Enter coordinates or cell IDs</p>
           {/* <GetStartedLink href="./docs/get-started/getting-started">GET STARTED</GetStartedLink> */}
           <input type="text" value={userInput} onChange={(e) => { setUserInput(e.target.value); }} placeholder='822d57fffffffff' />
+          <p>
+            <input type="button" value="Where am I?" onClick={doGeoLocation} />
+            {geolocationStatus}
+          </p>
         </BannerContainer>
       </Banner>
+      {children}
+    </>
+  );
+}
+
+export default function HomeExplorer({ children }) {
+  return (
+    <>
+      <BrowserOnly>
+        {() => <HomeExplorerInternal />}
+      </BrowserOnly>
       {children}
     </>
   );
