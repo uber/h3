@@ -1,0 +1,1 @@
+add_h3_cli_test(testCliGetIcosahedronFaces "getIcosahedronFaces -c 81743ffffffffff" "3, 8, 13, 9, 4")

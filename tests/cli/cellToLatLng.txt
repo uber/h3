@@ -1,0 +1,1 @@
+add_h3_cli_test(testCliCellToLatLng "cellToLatLng -c 8928342e20fffff" "POINT(-122.5003039349 37.5012466151)")

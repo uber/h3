@@ -1,0 +1,2 @@
+add_h3_cli_test(testCliIsValidCell "isValidCell -c 85283473fffffff" "true")
+add_h3_cli_test(testCliIsNotValidCell "isValidCell -c 85283473ffff" "false")
