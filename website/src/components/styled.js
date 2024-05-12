@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import {isMobile} from '../common';
+import {isMobile} from './common';
 
 export const Banner = styled.section`
   position: relative;

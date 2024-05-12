@@ -1,28 +1,7 @@
 import React from 'react';
-import {Home} from '../components';
-import useBaseUrl from '@docusaurus/useBaseUrl';
+import {HomeExplorer} from '../components';
 import styled from 'styled-components';
 import Layout from '@theme/Layout';
-
-import HeroExample from '../examples/home-demo';
-
-const FeatureImage = styled.div`
-  position: absolute;
-  height: 100%;
-  width: 50%;
-  top: 0;
-  right: 0;
-  z-index: -1;
-  border-top: solid 200px transparent;
-  background-image: url(${props => props.src});
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: right top;
-
-  @media screen and (max-width: 768px) {
-    display: none;
-  }
-`;
 
 const TextContainer = styled.div`
   max-width: 800px;
@@ -62,13 +41,10 @@ const TextContainer = styled.div`
 `;
 
 export default function IndexPage() {
-  const baseUrl = useBaseUrl('/');
-
   return (
-    <Layout title="Home" description="deck.gl">
-      <Home HeroExample={HeroExample}>
+    <Layout title="Home" description="H3">
+      <HomeExplorer>
         <div style={{position: 'relative'}}>
-          {/* <FeatureImage src={`${baseUrl}images/maps.jpg`} /> */}
           <TextContainer>
             <h2>
               H3 is a discrete global grid system for indexing locations into a hexagonal grid.
@@ -80,7 +56,7 @@ export default function IndexPage() {
             <p>H3 enables a range of algorithms and optimizations based on the grid, including nearest neighbors, shortest path, gradient smoothing, and more.</p>
           </TextContainer>
         </div>
-      </Home>
+      </HomeExplorer>
     </Layout>
   );
 }

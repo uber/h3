@@ -1,11 +1,14 @@
-import {makeExample} from '../components';
 
-import React, {Component, useEffect, useMemo, useRef} from 'react';
+import React, {Component, useEffect, useMemo, useRef, useState} from 'react';
 import {Map} from 'react-map-gl/maplibre';
 import DeckGL from '@deck.gl/react';
 import {H3HexagonLayer} from '@deck.gl/geo-layers';
 import {PathStyleExtension} from '@deck.gl/extensions';
 import {getRes0Cells, isValidCell, uncompactCells} from 'h3-js';
+import styled from 'styled-components';
+import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
+import {Banner, BannerContainer, HeroExampleContainer} from './styled';
+import BrowserOnly from '@docusaurus/BrowserOnly';
 
 const INITIAL_VIEW_STATE = {
   longitude: -74,
@@ -16,6 +19,22 @@ const INITIAL_VIEW_STATE = {
 };
 
 const MAP_STYLE = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json';
+
+const DemoContainer = styled.div`
+  height: 100%;
+  .tooltip,
+  .deck-tooltip {
+    position: absolute;
+    padding: 4px 12px;
+    background: rgba(0, 0, 0, 0.8);
+    color: var(--ifm-color-white);
+    max-width: 300px;
+    font-size: 12px;
+    z-index: 9;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+`;
 
 export function App({
   hex = undefined,
@@ -105,7 +124,7 @@ export function App({
   );
 }
 
-class HomeDemo extends Component {
+class Explorer extends Component {
   static mapStyle = undefined; // MAPBOX_STYLES.LIGHT;
 
   constructor(props) {
@@ -124,12 +143,36 @@ class HomeDemo extends Component {
     const {data, ...otherProps} = this.props;
 
     return (
-      <App
-        {...otherProps}
-        initialViewState={this.initialViewState}
-      />
+      <DemoContainer>
+        <App
+            {...otherProps}
+            initialViewState={this.initialViewState}
+        />
+      </DemoContainer>
     );
   }
 }
 
-export default makeExample(HomeDemo, {isInteractive: false, style: {}});
+export default function HomeExplorer({children}) {
+  const [hex, setHex] = useState("");
+
+  // Note: The Layout "wrapper" component adds header and footer etc
+  return (
+    <>
+      <Banner>
+        <BrowserOnly>
+          {() => <HeroExampleContainer><Explorer
+            hex={hex}
+          /></HeroExampleContainer>}
+        </BrowserOnly>
+        <BannerContainer>
+          {/* <ProjectName>{siteConfig.title}</ProjectName>
+          <p>{siteConfig.tagline}</p>
+          <GetStartedLink href="./docs/get-started/getting-started">GET STARTED</GetStartedLink> */}
+          <input type="text" value={hex} onChange={(e) => {setHex(e.target.value);}}/>
+        </BannerContainer>
+      </Banner>
+      {children}
+    </>
+  );
+}
