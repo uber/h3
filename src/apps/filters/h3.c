@@ -374,12 +374,20 @@ SUBCOMMAND(
         free(out);
         return err;
     }
-    printf(
-        "[ \"%" PRIx64 "\"",
-        out[0]);  // TODO: Theoretically this may be zero, but I know it isn't
-    for (int64_t i = 1; i < len; i++) {
+    // Since we don't know *actually* how many cells are in the output (usually
+    // the max, but sometimes not), we need to do a quick scan to figure out the
+    // true length in order to properly serialize to a JSON array
+    int64_t trueLen = 0;
+    for (int64_t i = 0; i < len; i++) {
         if (out[i] != 0) {
-            printf(", \"%" PRIx64 "\"", out[i]);
+            trueLen++;
+        }
+    }
+    printf("[ ");
+    for (int64_t i = 0, j = 0; i < len; i++) {
+        if (out[i] != 0) {
+            j++;
+            printf("\"%" PRIx64 "\"%s", out[i], j == trueLen ? "" : ", ");
         }
     }
     free(out);
