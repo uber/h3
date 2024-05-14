@@ -90,7 +90,12 @@ struct Subcommand {
 #define DISPATCH_SUBCOMMAND()                                                \
     for (int i = 0; i < sizeof(subcommands) / sizeof(subcommands[0]); i++) { \
         if (has(subcommands[i].name, 1, argv)) {                             \
-            return subcommands[i].subcommand(argc, argv);                    \
+            H3Error err = subcommands[i].subcommand(argc, argv);             \
+            if (err > 0) {                                                   \
+                fprintf(stderr, "Error %i: %s", err,                         \
+                        H3_EXPORT(describeH3Error)(err));                    \
+            }                                                                \
+            return err;                                                      \
         }                                                                    \
     }
 
@@ -107,6 +112,10 @@ SUBCOMMAND(cellToLatLng, "Convert an H3Cell to a WKT POINT coordinate") {
     Arg *args[] = {&cellToLatLngArg, &helpArg, &cellArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     LatLng ll;
+    int valid = H3_EXPORT(isValidCell)(cell);
+    if (valid == 0) {
+        return E_CELL_INVALID;
+    }
     H3Error err = H3_EXPORT(cellToLatLng)(cell, &ll);
     if (err) {
         return err;
@@ -167,6 +176,10 @@ SUBCOMMAND(cellToBoundary,
     Arg *args[] = {&cellToBoundaryArg, &helpArg, &cellArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     CellBoundary cb;
+    int valid = H3_EXPORT(isValidCell)(cell);
+    if (valid == 0) {
+        return E_CELL_INVALID;
+    }
     H3Error err = H3_EXPORT(cellToBoundary)(cell, &cb);
     if (err) {
         return err;
