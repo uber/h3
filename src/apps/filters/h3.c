@@ -91,7 +91,7 @@ struct Subcommand {
     for (int i = 0; i < sizeof(subcommands) / sizeof(subcommands[0]); i++) { \
         if (has(subcommands[i].name, 1, argv)) {                             \
             H3Error err = subcommands[i].subcommand(argc, argv);             \
-            if (err > 0) {                                                   \
+            if (err != 0) {                                                  \
                 fprintf(stderr, "Error %i: %s", err,                         \
                         H3_EXPORT(describeH3Error)(err));                    \
             }                                                                \

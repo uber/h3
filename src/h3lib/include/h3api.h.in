@@ -109,7 +109,7 @@ typedef enum {
  * @{
  */
 /** @brief converts the provided H3Error value into a description string */
-DECLSPEC char *H3_EXPORT(describeH3Error)(H3Error err);
+DECLSPEC const char *H3_EXPORT(describeH3Error)(H3Error err);
 /** @} */
 
 /* library version numbers generated from VERSION file */

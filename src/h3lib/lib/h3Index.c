@@ -53,11 +53,12 @@ static char *H3ErrorDescriptions[] = {
     "Mode or flags argument was not valid"};
 
 /**
- * Returns the string describing the H3Error
+ * Returns the string describing the H3Error. This string is internally
+ * allocated and should not be `free`d.
  * @param err The H3 error.
  * @return The string describing the H3Error
  */
-char *H3_EXPORT(describeH3Error)(H3Error err) {
+const char *H3_EXPORT(describeH3Error)(H3Error err) {
     if (err >= 0 && err <= 15) {  // TODO: Better way to bounds check here?
         return H3ErrorDescriptions[err];
     } else {
