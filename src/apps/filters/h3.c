@@ -92,7 +92,7 @@ struct Subcommand {
         if (has(subcommands[i].name, 1, argv)) {                             \
             H3Error err = subcommands[i].subcommand(argc, argv);             \
             if (err != 0) {                                                  \
-                fprintf(stderr, "Error %i: %s", err,                         \
+                fprintf(stderr, "Error %i: %s\n", err,                       \
                         H3_EXPORT(describeH3Error)(err));                    \
             }                                                                \
             return err;                                                      \
@@ -404,7 +404,7 @@ SUBCOMMAND(
         }
     }
     free(out);
-    printf(" ]");
+    printf(" ]\n");
     return E_SUCCESS;
 }
 
@@ -554,7 +554,7 @@ SUBCOMMAND(gridRing,
         }
     }
     free(out);
-    printf(" ]");
+    printf(" ]\n");
     return E_SUCCESS;
 }
 
@@ -595,7 +595,7 @@ SUBCOMMAND(gridPathCells,
         }
     }
     free(out);
-    printf(" ]");
+    printf(" ]\n");
     return E_SUCCESS;
 }
 
@@ -623,7 +623,7 @@ SUBCOMMAND(gridDistance,
     if (err) {
         return err;
     }
-    printf("%" PRIx64, distance);
+    printf("%" PRIx64 "\n", distance);
     return E_SUCCESS;
 }
 
