@@ -31,16 +31,21 @@
 SUITE(describeH3Error) {
     TEST(noError) {
         H3Error err = E_SUCCESS;
-        t_assert(strcmp(H3_EXPORT(describeH3Error)(err), "Success") == 0, "got expected success message");
+        t_assert(strcmp(H3_EXPORT(describeH3Error)(err), "Success") == 0,
+                 "got expected success message");
     }
 
     TEST(invalidCell) {
         H3Error err = E_CELL_INVALID;
-        t_assert(strcmp(H3_EXPORT(describeH3Error)(err), "Cell argument was not valid") == 0, "got expected error message");
+        t_assert(strcmp(H3_EXPORT(describeH3Error)(err),
+                        "Cell argument was not valid") == 0,
+                 "got expected error message");
     }
 
     TEST(invalidH3Error) {
-        H3Error err = 9001; // Will probably never hit this
-        t_assert(strcmp(H3_EXPORT(describeH3Error)(err), "Invalid error code") == 0, "got expected failure message");
+        H3Error err = 9001;  // Will probably never hit this
+        t_assert(
+            strcmp(H3_EXPORT(describeH3Error)(err), "Invalid error code") == 0,
+            "got expected failure message");
     }
 }
