@@ -5,7 +5,7 @@ import DeckGL from '@deck.gl/react';
 import { H3HexagonLayer } from '@deck.gl/geo-layers';
 import { PathStyleExtension } from '@deck.gl/extensions';
 import { WebMercatorViewport, FlyToInterpolator } from '@deck.gl/core';
-import { getRes0Cells, isValidCell, uncompactCells, latLngToCell, cellToBoundary, cellToParent, getResolution, cellToChildren, gridDisk } from 'h3-js';
+import { getRes0Cells, isValidCell, uncompactCells, latLngToCell, cellToBoundary, cellToParent, getResolution, cellToChildren, gridDisk, getBaseCellNumber, isPentagon, getIcosahedronFaces, cellToLatLng, cellToCenterChild } from 'h3-js';
 import styled from 'styled-components';
 import { Banner, BannerContainer, HeroExampleContainer } from './styled';
 import BrowserOnly from '@docusaurus/BrowserOnly';
@@ -178,6 +178,10 @@ export function App({
       getLineWidth: 3,
       lineWidthMinPixels: 3,
       highPrecision: true,
+      pickable: true,
+      filled: true,
+      // transparent fill purely for picking
+      getFillColor: [0, 0, 0, 0],
     }),
     new H3HexagonLayer({
       id: "res1",
@@ -194,7 +198,7 @@ export function App({
       getDashArray: [5, 1],
       dashJustified: true,
       dashGapPickable: true,
-      extensions: [new PathStyleExtension({ dash: true })]
+      extensions: [new PathStyleExtension({ dash: true })],
     }),
     new H3HexagonLayer({
       id: "res2",
@@ -211,21 +215,27 @@ export function App({
       getDashArray: [5, 5],
       dashJustified: true,
       dashGapPickable: true,
-      extensions: [new PathStyleExtension({ dash: true })]
+      extensions: [new PathStyleExtension({ dash: true })],
     })
   ];
 
   const getTooltip = useCallback(({ object }) => {
     if (object && object.hex) {
+      const res = getResolution(object.hex);
+      const baseCell = getBaseCellNumber(object.hex);
+      const pent = isPentagon(object.hex);
+      const faces = getIcosahedronFaces(object.hex).join(", ");
+      const coords = cellToLatLng(object.hex).map((n) => n.toPrecision((res / 3) + 7)).join(", ");
+      // TODO: show the sequence of indexing digits
       return {
-        html: `<tt>${object.hex}</tt>`
+        html: `<tt>${object.hex}</tt><br/>Resolution: <tt>${res}</tt><br/>Base cell: <tt>${baseCell}</tt><br/>Pentagon: <tt>${pent}</tt><br/>Faces: <tt>${faces}</tt><br/>Center: <tt>${coords}</tt>`
       };
     }
   }, []);
 
   const onClick = useCallback(({ object }) => {
     if (object && object.hex) {
-      // TODO: click to copy??
+      // TODO: click to copy?
       objectOnClick({ hex: object.hex });
     }
   }, []);
@@ -297,6 +307,15 @@ export function HomeExplorerInternal({ children }) {
     }
     safeSetUserInput([...newHexes].join(","));
   }, [userInput, safeSetUserInput]);
+  const doMapCenterChild = useCallback(() => {
+    const hexes = doSplitUserInput(userInput);
+    const newHexes = new Set();
+    for (const hex of hexes) {
+      const newResolution = getResolution(hex) + 1;
+      newHexes.add(cellToCenterChild(hex, newResolution > 15 ? 15 : newResolution));
+    }
+    safeSetUserInput([...newHexes].join(","));
+  }, [userInput, safeSetUserInput]);
   const doMapNeighbors = useCallback(() => {
     const hexes = doSplitUserInput(userInput);
     const newHexes = new Set();
@@ -329,6 +348,7 @@ export function HomeExplorerInternal({ children }) {
           <p style={{ marginTop: "1rem", marginBottom: 0 }}>
             <input type="button" value="Parents" onClick={doMapParents} style={{ marginRight: "0.5rem" }} />
             <input type="button" value="Children" onClick={doMapChildren} style={{ marginRight: "0.5rem" }} />
+            <input type="button" value="Center" onClick={doMapCenterChild} style={{ marginRight: "0.5rem" }} />
             <input type="button" value="Neighbors" onClick={doMapNeighbors} style={{ marginRight: "0.5rem" }} />
           </p>
           <p style={{ marginTop: "1rem", marginBottom: 0 }}>
