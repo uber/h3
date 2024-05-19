@@ -1,2 +1,1 @@
-
-export {default as HomeExplorer} from './explorer';
+export { default as HomeExplorer } from "./explorer";

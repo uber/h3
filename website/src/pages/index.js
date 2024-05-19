@@ -1,7 +1,7 @@
-import React from 'react';
-import {HomeExplorer} from '../components';
-import styled from 'styled-components';
-import Layout from '@theme/Layout';
+import React from "react";
+import { HomeExplorer } from "../components";
+import styled from "styled-components";
+import Layout from "@theme/Layout";
 
 const TextContainer = styled.div`
   max-width: 800px;
@@ -44,17 +44,31 @@ export default function IndexPage() {
   return (
     <Layout title="Home" description="H3">
       <HomeExplorer>
-        <div style={{position: 'relative'}}>
+        <div style={{ position: "relative" }}>
           <TextContainer>
             <h2>
-              H3 is a discrete global grid system for indexing locations into a hexagonal grid.
+              H3 is a discrete global grid system for indexing locations into a
+              hexagonal grid.
             </h2>
             <hr className="short" />
 
-            <p>H3 is a discrete global grid system for indexing locations into a hexagonal grid, developed at Uber.</p>
-            <p>Coordinates can be indexed to cell IDs that each represent a unique cell.</p>
-            <p>Indexed data can be quickly joined across disparate datasets and aggregated at different levels of precision.</p>
-            <p>H3 enables a range of algorithms and optimizations based on the grid, including nearest neighbors, shortest path, gradient smoothing, and more.</p>
+            <p>
+              H3 is a discrete global grid system for indexing locations into a
+              hexagonal grid, developed at Uber.
+            </p>
+            <p>
+              Coordinates can be indexed to cell IDs that each represent a
+              unique cell.
+            </p>
+            <p>
+              Indexed data can be quickly joined across disparate datasets and
+              aggregated at different levels of precision.
+            </p>
+            <p>
+              H3 enables a range of algorithms and optimizations based on the
+              grid, including nearest neighbors, shortest path, gradient
+              smoothing, and more.
+            </p>
           </TextContainer>
         </div>
       </HomeExplorer>

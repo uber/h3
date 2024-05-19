@@ -1,5 +1,5 @@
-import styled from 'styled-components';
-import { isMobile } from './common';
+import styled from "styled-components";
+import { isMobile } from "./common";
 
 export const Banner = styled.section`
   position: relative;
@@ -71,7 +71,9 @@ export const GetStartedLink = styled.a`
   pointer-events: all;
   display: inline-block;
   text-decoration: none;
-  transition: background-color 250ms ease-in, color 250ms ease-in;
+  transition:
+    background-color 250ms ease-in,
+    color 250ms ease-in;
   border: solid 2px var(--ifm-color-primary);
   color: var(--ifm-color-gray-900);
   border-image: linear-gradient(
