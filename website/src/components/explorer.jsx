@@ -197,17 +197,17 @@ export function App({
       let maxY = -Infinity;
 
       for (const hex of splitUserInput) {
-        const coords = cellToBoundary(hex);
+        const coords = cellToBoundary(hex, true);
         for (const coord of coords) {
-          if (coord[1] < minX) {
-            minX = coord[1];
-          } else if (coord[1] > maxX) {
-            maxX = coord[1];
+          if (coord[0] < minX) {
+            minX = coord[0];
+          } else if (coord[0] > maxX) {
+            maxX = coord[0];
           }
-          if (coord[0] < minY) {
-            minY = coord[0];
-          } else if (coord[0] > maxY) {
-            maxY = coord[0];
+          if (coord[1] < minY) {
+            minY = coord[1];
+          } else if (coord[1] > maxY) {
+            maxY = coord[1];
           }
         }
       }
@@ -239,75 +239,75 @@ export function App({
 
   const layers = userValidHex
     ? [
-        new H3HexagonLayer({
-          id: "userhex",
-          data: splitUserInput.map((hex) => ({ hex })),
-          getHexagon: (d) => d.hex,
-          extruded: false,
-          filled: false,
-          stroked: true,
-          getLineColor: [0, 0, 0],
-          getLineWidth: 3,
-          lineWidthMinPixels: 3,
-          highPrecision: true,
-          pickable: true,
-          filled: true,
-          // transparent fill purely for picking
-          getFillColor: [0, 0, 0, 0],
-        }),
-      ]
+      new H3HexagonLayer({
+        id: "userhex",
+        data: splitUserInput.map((hex) => ({ hex })),
+        getHexagon: (d) => d.hex,
+        extruded: false,
+        filled: false,
+        stroked: true,
+        getLineColor: [0, 0, 0],
+        getLineWidth: 3,
+        lineWidthMinPixels: 3,
+        highPrecision: true,
+        pickable: true,
+        filled: true,
+        // transparent fill purely for picking
+        getFillColor: [0, 0, 0, 0],
+      }),
+    ]
     : [
-        new H3HexagonLayer({
-          id: "res0",
-          data: res0Cells,
-          getHexagon: (d) => d.hex,
-          extruded: false,
-          filled: false,
-          stroked: true,
-          getLineColor: [0, 0, 0],
-          getLineWidth: 3,
-          lineWidthMinPixels: 3,
-          highPrecision: true,
-          pickable: true,
-          filled: true,
-          // transparent fill purely for picking
-          getFillColor: [0, 0, 0, 0],
-        }),
-        new H3HexagonLayer({
-          id: "res1",
-          data: res1Cells,
-          getHexagon: (d) => d.hex,
-          extruded: false,
-          filled: false,
-          stroked: true,
-          getLineColor: [0, 0, 0],
-          getLineWidth: 2,
-          lineWidthMinPixels: 2,
-          highPrecision: true,
-          lineWidthUnits: "pixels",
-          getDashArray: [5, 1],
-          dashJustified: true,
-          dashGapPickable: true,
-          extensions: [new PathStyleExtension({ dash: true })],
-        }),
-        new H3HexagonLayer({
-          id: "res2",
-          data: res2Cells,
-          getHexagon: (d) => d.hex,
-          extruded: false,
-          filled: false,
-          stroked: true,
-          getLineColor: [0, 0, 0],
-          getLineWidth: 1,
-          lineWidthMinPixels: 1,
-          highPrecision: true,
-          lineWidthUnits: "pixels",
-          getDashArray: [5, 5],
-          dashJustified: true,
-          dashGapPickable: true,
-          extensions: [new PathStyleExtension({ dash: true })],
-        }),
-      ];
+      new H3HexagonLayer({
+        id: "res0",
+        data: res0Cells,
+        getHexagon: (d) => d.hex,
+        extruded: false,
+        filled: false,
+        stroked: true,
+        getLineColor: [0, 0, 0],
+        getLineWidth: 3,
+        lineWidthMinPixels: 3,
+        highPrecision: true,
+        pickable: true,
+        filled: true,
+        // transparent fill purely for picking
+        getFillColor: [0, 0, 0, 0],
+      }),
+      new H3HexagonLayer({
+        id: "res1",
+        data: res1Cells,
+        getHexagon: (d) => d.hex,
+        extruded: false,
+        filled: false,
+        stroked: true,
+        getLineColor: [0, 0, 0],
+        getLineWidth: 2,
+        lineWidthMinPixels: 2,
+        highPrecision: true,
+        lineWidthUnits: "pixels",
+        getDashArray: [5, 1],
+        dashJustified: true,
+        dashGapPickable: true,
+        extensions: [new PathStyleExtension({ dash: true })],
+      }),
+      new H3HexagonLayer({
+        id: "res2",
+        data: res2Cells,
+        getHexagon: (d) => d.hex,
+        extruded: false,
+        filled: false,
+        stroked: true,
+        getLineColor: [0, 0, 0],
+        getLineWidth: 1,
+        lineWidthMinPixels: 1,
+        highPrecision: true,
+        lineWidthUnits: "pixels",
+        getDashArray: [5, 5],
+        dashJustified: true,
+        dashGapPickable: true,
+        extensions: [new PathStyleExtension({ dash: true })],
+      }),
+    ];
 
   const getTooltip = useCallback(({ object }) => {
     if (object && object.hex) {
@@ -478,12 +478,12 @@ export function HomeExplorerInternal({ children }) {
               onClick={doMapChildren}
               style={{ marginRight: "0.5rem" }}
             />
-            <input
+            {/* <input
               type="button"
-              value="Center"
+              value="Center Child"
               onClick={doMapCenterChild}
               style={{ marginRight: "0.5rem" }}
-            />
+            /> */}
             <input
               type="button"
               value="Neighbors"
