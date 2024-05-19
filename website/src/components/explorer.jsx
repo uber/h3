@@ -5,7 +5,7 @@ import DeckGL from '@deck.gl/react';
 import { H3HexagonLayer } from '@deck.gl/geo-layers';
 import { PathStyleExtension } from '@deck.gl/extensions';
 import { WebMercatorViewport, FlyToInterpolator } from '@deck.gl/core';
-import { getRes0Cells, isValidCell, uncompactCells, latLngToCell, cellToBoundary, cellToParent, getResolution, cellToChildren, gridDisk, getBaseCellNumber, isPentagon, getIcosahedronFaces, cellToLatLng, cellToCenterChild } from 'h3-js';
+import { getRes0Cells, isValidCell, uncompactCells, latLngToCell, cellToBoundary, cellToParent, getResolution, cellToChildren, gridDisk, getBaseCellNumber, isPentagon, getIcosahedronFaces, cellToLatLng, cellToCenterChild, h3IndexToSplitLong } from 'h3-js';
 import styled from 'styled-components';
 import { Banner, BannerContainer, HeroExampleContainer } from './styled';
 import BrowserOnly from '@docusaurus/BrowserOnly';
@@ -36,6 +36,43 @@ const DemoContainer = styled.div`
     white-space: nowrap;
   }
 `;
+
+function h3IndexToDigits(h) {
+  const THREE_BITS = 0x1 | 0x2 | 0x4;
+  const split = h3IndexToSplitLong(h);
+  const digit1 = (split[1] >> 0xa) & THREE_BITS;
+  const digit2 = (split[1] >> 0x7) & THREE_BITS;
+  const digit3 = (split[1] >> 0x4) & THREE_BITS;
+  const digit4 = (split[1] >> 0x1) & THREE_BITS;
+  const digit5 = ((split[1] & 0x1) << 2) | ((split[0] >> 0x1e) & 0x3)
+  const digit6 = (split[0] >> 0x1b) & THREE_BITS;
+  const digit7 = (split[0] >> 0x18) & THREE_BITS;
+  const digit8 = (split[0] >> 0x15) & THREE_BITS;
+  const digit9 = (split[0] >> 0x12) & THREE_BITS;
+  const digit10 = (split[0] >> 0xf) & THREE_BITS;
+  const digit11 = (split[0] >> 0xc) & THREE_BITS;
+  const digit12 = (split[0] >> 0x9) & THREE_BITS;
+  const digit13 = (split[0] >> 0x6) & THREE_BITS;
+  const digit14 = (split[0] >> 0x3) & THREE_BITS;
+  const digit15 = split[0] & THREE_BITS;
+  return [
+    digit1,
+    digit2,
+    digit3,
+    digit4,
+    digit5,
+    digit6,
+    digit7,
+    digit8,
+    digit9,
+    digit10,
+    digit11,
+    digit12,
+    digit13,
+    digit14,
+    digit15,
+  ];
+}
 
 function fullyTrim(str) {
   if (!str) {
@@ -226,9 +263,10 @@ export function App({
       const pent = isPentagon(object.hex);
       const faces = getIcosahedronFaces(object.hex).join(", ");
       const coords = cellToLatLng(object.hex).map((n) => n.toPrecision((res / 3) + 7)).join(", ");
-      // TODO: show the sequence of indexing digits
+      const digits = res === 0 ? "(none)" : h3IndexToDigits(object.hex).slice(0, res).join("");
+
       return {
-        html: `<tt>${object.hex}</tt><br/>Resolution: <tt>${res}</tt><br/>Base cell: <tt>${baseCell}</tt><br/>Pentagon: <tt>${pent}</tt><br/>Faces: <tt>${faces}</tt><br/>Center: <tt>${coords}</tt>`
+        html: `<tt>${object.hex}</tt><br/>Resolution: <tt>${res}</tt><br/>Base cell: <tt>${baseCell}</tt><br/>Pentagon: <tt>${pent}</tt><br/>Icosa Faces: <tt>${faces}</tt><br/>Center: <tt>${coords}</tt><br/>Indexing Digits: <tt>${digits}</tt>`
       };
     }
   }, []);
