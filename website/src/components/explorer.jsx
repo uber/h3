@@ -329,6 +329,14 @@ export function App({
     }
   }, []);
 
+  const getCursor = useCallback(({ isHovering }) => {
+    if (isHovering) {
+      return "pointer";
+    } else {
+      return "auto";
+    }
+  }, []);
+
   const onClick = useCallback(({ object }) => {
     if (object && object.hex) {
       // TODO: click to copy?
@@ -343,6 +351,7 @@ export function App({
       initialViewState={currentInitialViewState}
       controller={true}
       getTooltip={getTooltip}
+      getCursor={getCursor}
       onClick={onClick}
     >
       <Map reuseMaps mapStyle={mapStyle} />
