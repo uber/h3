@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import {isMobile} from './common';
+import { isMobile } from './common';
 
 export const Banner = styled.section`
   position: relative;
@@ -23,11 +23,14 @@ export const Container = styled.div`
 
 export const BannerContainer = styled(Container)`
   position: absolute;
-  bottom: 0;
+  bottom: 2rem;
   height: auto;
-  padding-left: 4rem;
+  left: 2rem;
   z-index: 0;
   width: auto;
+  background-color: white;
+  border-radius: 20px;
+  padding: 1rem;
 `;
 
 export const HeroExampleContainer = styled.div`
@@ -45,6 +48,7 @@ export const Section = styled.section`
   }
 `;
 
+// TODO: Unused
 export const ProjectName = styled.h1`
   font-size: 3em;
   line-height: 1;
@@ -55,6 +59,7 @@ export const ProjectName = styled.h1`
   margin-bottom: 16px;
 `;
 
+// TODO: Unused
 export const GetStartedLink = styled.a`
   pointer-events: all;
   font-size: 12px;

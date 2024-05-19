@@ -4,10 +4,12 @@ import { Map } from 'react-map-gl/maplibre';
 import DeckGL from '@deck.gl/react';
 import { H3HexagonLayer } from '@deck.gl/geo-layers';
 import { PathStyleExtension } from '@deck.gl/extensions';
-import { getRes0Cells, isValidCell, uncompactCells, latLngToCell } from 'h3-js';
+import { WebMercatorViewport, FlyToInterpolator } from '@deck.gl/core';
+import { getRes0Cells, isValidCell, uncompactCells, latLngToCell, cellToBoundary } from 'h3-js';
 import styled from 'styled-components';
-import { Banner, BannerContainer, HeroExampleContainer, ProjectName } from './styled';
+import { Banner, BannerContainer, HeroExampleContainer } from './styled';
 import BrowserOnly from '@docusaurus/BrowserOnly';
+import copy from 'copy-text-to-clipboard';
 
 const INITIAL_VIEW_STATE = {
   longitude: -74.012,
@@ -67,7 +69,9 @@ export function App({
   userInput = undefined,
   initialViewState = INITIAL_VIEW_STATE,
   mapStyle = MAP_STYLE,
+  objectOnClick = undefined,
 }) {
+  const [currentInitialViewState, setCurrentInitialViewState] = useState(initialViewState);
   const deckRef = useRef();
   const res0Cells = useMemo(() => getRes0Cells().map((hex) => ({ hex })), []);
   const res1Cells = useMemo(() => uncompactCells(getRes0Cells(), 1).map((hex) => ({ hex })), []);
@@ -88,6 +92,7 @@ export function App({
           const lat = Number.parseFloat(currentInput);
           const lng = Number.parseFloat(nextInput);
 
+          // Note this order is important for picking to work correctly
           for (let res = 0; res < 16; res++) {
             result.push(latLngToCell(lat, lng, res));
           }
@@ -106,9 +111,41 @@ export function App({
   const userValidHex = useMemo(() => splitUserInput.map(isValidCell).includes(true), [splitUserInput]);
   useEffect(() => {
     if (userValidHex && deckRef.current) {
-      // TODO: zoom to bounds here...
+      const { width, height } = deckRef.current.deck;
+
+      const viewport = new WebMercatorViewport({ width, height });
+      let minX = Infinity;
+      let minY = Infinity;
+      let maxX = -Infinity;
+      let maxY = -Infinity;
+
+      for (const hex of splitUserInput) {
+        const coords = cellToBoundary(hex);
+        for (const coord of coords) {
+          if (coord[1] < minX) {
+            minX = coord[1];
+          } else if (coord[1] > maxX) {
+            maxX = coord[1];
+          }
+          if (coord[0] < minY) {
+            minY = coord[0];
+          } else if (coord[0] > maxY) {
+            maxY = coord[0];
+          }
+        }
+      }
+
+      if (Number.isFinite(minX) && Number.isFinite(minY) && Number.isFinite(maxX) && Number.isFinite(maxY)) {
+        const { latitude, longitude, zoom } = viewport.fitBounds([[minX, minY], [maxX, maxY]], { padding: 100 });
+
+        setCurrentInitialViewState({
+          latitude, longitude, zoom,
+          transitionInterpolator: new FlyToInterpolator(),
+          transitionDuration: 1600,
+        });
+      }
     }
-  }, [userInput, userValidHex]);
+  }, [userInput, userValidHex, splitUserInput]);
 
   const layers = userValidHex ? [new H3HexagonLayer({
     id: "userhex",
@@ -121,6 +158,10 @@ export function App({
     getLineWidth: 3,
     lineWidthMinPixels: 3,
     highPrecision: true,
+    pickable: true,
+    filled: true,
+    // transparent fill purely for picking
+    getFillColor: [0, 0, 0, 0],
   })] : [
     new H3HexagonLayer({
       id: "res0",
@@ -170,12 +211,29 @@ export function App({
     })
   ];
 
+  const getTooltip = useCallback(({ object }) => {
+    if (object && object.hex) {
+      return {
+        html: `<tt>${object.hex}</tt>`
+      };
+    }
+  }, []);
+
+  const onClick = useCallback(({ object }) => {
+    if (object && object.hex) {
+      // TODO: click to copy??
+      objectOnClick({ hex: object.hex });
+    }
+  }, []);
+
   return (
     <DeckGL
       ref={deckRef}
       layers={layers}
-      initialViewState={initialViewState}
+      initialViewState={currentInitialViewState}
       controller={true}
+      getTooltip={getTooltip}
+      onClick={onClick}
     >
       <Map reuseMaps mapStyle={mapStyle} />
     </DeckGL>
@@ -200,6 +258,10 @@ export function HomeExplorerInternal({ children }) {
     }
   }, [setUserInput]);
 
+  const objectOnClick = useCallback(({ hex }) => {
+    setUserInput(hex);
+  }, [setUserInput]);
+
   // Note: The Layout "wrapper" component adds header and footer etc
   return (
     <>
@@ -208,16 +270,17 @@ export function HomeExplorerInternal({ children }) {
           <DemoContainer>
             <App
               userInput={userInput}
+              objectOnClick={objectOnClick}
             />
           </DemoContainer>
         </HeroExampleContainer>
         <BannerContainer>
-          <ProjectName>H3</ProjectName>
-          <p>Enter coordinates or cell IDs</p>
+          {/* <ProjectName>H3</ProjectName> */}
+          <p style={{ marginBottom: 0 }}>Enter coordinates or cell IDs</p>
           {/* <GetStartedLink href="./docs/get-started/getting-started">GET STARTED</GetStartedLink> */}
           <input type="text" value={userInput} onChange={(e) => { setUserInput(e.target.value); }} placeholder='822d57fffffffff' />
-          <p>
-            <input type="button" value="Where am I?" onClick={doGeoLocation} />
+          <p style={{ marginTop: "1rem", marginBottom: 0 }}>
+            <input type="button" value="Where am I?" onClick={doGeoLocation} style={{ marginRight: "0.5rem" }} />
             {geolocationStatus}
           </p>
         </BannerContainer>
