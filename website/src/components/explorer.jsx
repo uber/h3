@@ -5,7 +5,7 @@ import DeckGL from '@deck.gl/react';
 import { H3HexagonLayer } from '@deck.gl/geo-layers';
 import { PathStyleExtension } from '@deck.gl/extensions';
 import { WebMercatorViewport, FlyToInterpolator } from '@deck.gl/core';
-import { getRes0Cells, isValidCell, uncompactCells, latLngToCell, cellToBoundary } from 'h3-js';
+import { getRes0Cells, isValidCell, uncompactCells, latLngToCell, cellToBoundary, cellToParent, getResolution, cellToChildren, gridDisk } from 'h3-js';
 import styled from 'styled-components';
 import { Banner, BannerContainer, HeroExampleContainer } from './styled';
 import BrowserOnly from '@docusaurus/BrowserOnly';
@@ -65,6 +65,38 @@ function fullyUnwrap(str) {
   return str;
 }
 
+function doSplitUserInput(userInput) {
+  if (userInput) {
+    const unwrapAnyArray = fullyUnwrap(userInput);
+    const split = unwrapAnyArray.split(/\s/).filter((str) => str !== "");
+    const result = [];
+
+    for (let i = 0; i < split.length; i++) {
+      const currentInput = fullyTrim(split[i]);
+      const nextInput = fullyTrim(split[i + 1]);
+
+      if (isValidCell(currentInput)) {
+        result.push(currentInput);
+      } else if (i < split.length - 1 && Number.isFinite(Number.parseFloat(currentInput)) && Number.isFinite(Number.parseFloat(nextInput))) {
+        const lat = Number.parseFloat(currentInput);
+        const lng = Number.parseFloat(nextInput);
+
+        // Note this order is important for picking to work correctly
+        for (let res = 0; res < 16; res++) {
+          result.push(latLngToCell(lat, lng, res));
+        }
+
+        // consumed, skip next coordinate
+        i++;
+      }
+    }
+
+    return result;
+  }
+
+  return [];
+}
+
 export function App({
   userInput = undefined,
   initialViewState = INITIAL_VIEW_STATE,
@@ -77,35 +109,7 @@ export function App({
   const res1Cells = useMemo(() => uncompactCells(getRes0Cells(), 1).map((hex) => ({ hex })), []);
   const res2Cells = useMemo(() => uncompactCells(getRes0Cells(), 2).map((hex) => ({ hex })), []);
   const splitUserInput = useMemo(() => {
-    if (userInput) {
-      const unwrapAnyArray = fullyUnwrap(userInput);
-      const split = unwrapAnyArray.split(/\s/).filter((str) => str !== "");
-      const result = [];
-
-      for (let i = 0; i < split.length; i++) {
-        const currentInput = fullyTrim(split[i]);
-        const nextInput = fullyTrim(split[i + 1]);
-
-        if (isValidCell(currentInput)) {
-          result.push(currentInput);
-        } else if (i < split.length - 1 && Number.isFinite(Number.parseFloat(currentInput)) && Number.isFinite(Number.parseFloat(nextInput))) {
-          const lat = Number.parseFloat(currentInput);
-          const lng = Number.parseFloat(nextInput);
-
-          // Note this order is important for picking to work correctly
-          for (let res = 0; res < 16; res++) {
-            result.push(latLngToCell(lat, lng, res));
-          }
-
-          // consumed, skip next coordinate
-          i++;
-        }
-      }
-
-      return result;
-    }
-
-    return [];
+    return doSplitUserInput(userInput);
   }, [userInput]);
 
   const userValidHex = useMemo(() => splitUserInput.map(isValidCell).includes(true), [splitUserInput]);
@@ -136,7 +140,7 @@ export function App({
       }
 
       if (Number.isFinite(minX) && Number.isFinite(minY) && Number.isFinite(maxX) && Number.isFinite(maxY)) {
-        const { latitude, longitude, zoom } = viewport.fitBounds([[minX, minY], [maxX, maxY]], { padding: 100 });
+        const { latitude, longitude, zoom } = viewport.fitBounds([[minX, minY], [maxX, maxY]], { padding: 48 });
 
         setCurrentInitialViewState({
           latitude, longitude, zoom,
@@ -262,6 +266,49 @@ export function HomeExplorerInternal({ children }) {
     setUserInput(hex);
   }, [setUserInput]);
 
+  const safeSetUserInput = useCallback((newUserInput) => {
+    const allCommas = newUserInput.match(/,/g) || [];
+    if (allCommas.length > 10000) {
+      if (!confirm(`This would render about ${allCommas.length} hexagons, are you sure? This can cause a lot of slowdown or crash your tab.`)) {
+        return;
+      }
+    }
+    setUserInput(newUserInput);
+  }, [setUserInput]);
+
+  const doMapParents = useCallback(() => {
+    const hexes = doSplitUserInput(userInput);
+    const newHexes = new Set();
+    for (const hex of hexes) {
+      const newResolution = getResolution(hex) - 1;
+      newHexes.add(cellToParent(hex, newResolution < 0 ? 0 : newResolution));
+    }
+    safeSetUserInput([...newHexes].join(","));
+  }, [userInput, safeSetUserInput]);
+  const doMapChildren = useCallback(() => {
+    const hexes = doSplitUserInput(userInput);
+    const newHexes = new Set();
+    for (const hex of hexes) {
+      const newResolution = getResolution(hex) + 1;
+      const children = cellToChildren(hex, newResolution > 15 ? 15 : newResolution);
+      for (const child of children) {
+        newHexes.add(child);
+      }
+    }
+    safeSetUserInput([...newHexes].join(","));
+  }, [userInput, safeSetUserInput]);
+  const doMapNeighbors = useCallback(() => {
+    const hexes = doSplitUserInput(userInput);
+    const newHexes = new Set();
+    for (const hex of hexes) {
+      const neighbors = gridDisk(hex, 1);
+      for (const neighbor of neighbors) {
+        newHexes.add(neighbor);
+      }
+    }
+    safeSetUserInput([...newHexes].join(","));
+  }, [userInput, safeSetUserInput]);
+
   // Note: The Layout "wrapper" component adds header and footer etc
   return (
     <>
@@ -279,6 +326,11 @@ export function HomeExplorerInternal({ children }) {
           <p style={{ marginBottom: 0 }}>Enter coordinates or cell IDs</p>
           {/* <GetStartedLink href="./docs/get-started/getting-started">GET STARTED</GetStartedLink> */}
           <input type="text" value={userInput} onChange={(e) => { setUserInput(e.target.value); }} placeholder='822d57fffffffff' />
+          <p style={{ marginTop: "1rem", marginBottom: 0 }}>
+            <input type="button" value="Parents" onClick={doMapParents} style={{ marginRight: "0.5rem" }} />
+            <input type="button" value="Children" onClick={doMapChildren} style={{ marginRight: "0.5rem" }} />
+            <input type="button" value="Neighbors" onClick={doMapNeighbors} style={{ marginRight: "0.5rem" }} />
+          </p>
           <p style={{ marginTop: "1rem", marginBottom: 0 }}>
             <input type="button" value="Where am I?" onClick={doGeoLocation} style={{ marginRight: "0.5rem" }} />
             {geolocationStatus}
