@@ -1098,4 +1098,4 @@ function example() {
 </TabItem>
 </Tabs>
 
-Converts degrees to radians.
+Provides a human-readable description of an H3Error error code. This function cannot fail, as it just returns a string stating that the H3Error value is itself invalid and allocates zero memory to do so. But because of this it attempting to `free` the returned string will itself cause a failure.

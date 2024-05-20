@@ -35,22 +35,24 @@
  *  @brief An array of strings describing each of the H3ErrorCodes enum values
  */
 static char *H3ErrorDescriptions[] = {
-    "Success",
+    /* E_SUCCESS */ "Success",
+    /* E_FAILED */
     "The operation failed but a more specific error is not available",
-    "Argument was outside of acceptable range",
+    /* E_DOMAIN */ "Argument was outside of acceptable range",
+    /* E_LATLNG_DOMAIN */
     "Latitude or longitude arguments were outside of acceptable range",
-    "Resolution argument was outside of acceptable range",
-    "Cell argument was not valid",
-    "Directed edge argument was not valid",
-    "Undirected edge argument was not valid",
-    "Vertex argument was not valid",
-    "Pentagon distortion was encountered",
-    "Duplicate input",
-    "Cell arguments were not neighbors",
-    "Cell arguments had incompatible resolutions",
-    "Memory allocation failed",
-    "Bounds of provided memory were insufficient",
-    "Mode or flags argument was not valid"};
+    /* E_RES_DOMAIN */ "Resolution argument was outside of acceptable range",
+    /* E_CELL_INVALID */ "Cell argument was not valid",
+    /* E_DIR_EDGE_INVALID */ "Directed edge argument was not valid",
+    /* E_UNDIR_EDGE_INVALID */ "Undirected edge argument was not valid",
+    /* E_VERTEX_INVALID */ "Vertex argument was not valid",
+    /* E_PENTAGON */ "Pentagon distortion was encountered",
+    /* E_DUPLICATE_INPUT */ "Duplicate input",
+    /* E_NOT_NEIGHBORS */ "Cell arguments were not neighbors",
+    /* E_RES_MISMATCH */ "Cell arguments had incompatible resolutions",
+    /* E_MEMORY_ALLOC */ "Memory allocation failed",
+    /* E_MEMORY_BOUNDS */ "Bounds of provided memory were insufficient",
+    /* E_OPTION_INVALID */ "Mode or flags argument was not valid"};
 
 /**
  * Returns the string describing the H3Error. This string is internally
