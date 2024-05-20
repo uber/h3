@@ -26,9 +26,16 @@ import {
   cellToLatLng,
   cellToCenterChild,
   h3IndexToSplitLong,
+  cellArea,
+  edgeLength,
+  originToDirectedEdges,
+  UNITS,
 } from "h3-js";
 import styled from "styled-components";
 import { Banner, BannerContainer, HeroExampleContainer } from "./styled";
+import { useQueryState } from "use-location-state";
+
+const MAX_CELLS_ON_PAGE = 10000;
 
 const INITIAL_VIEW_STATE = {
   longitude: -74.012,
@@ -156,6 +163,13 @@ function doSplitUserInput(userInput) {
   }
 
   return [];
+}
+
+// Idea adapted from https://observablehq.com/@nrabinowitz/h3-index-inspector
+function cellUnits(hex) {
+  return getResolution(hex) < 8
+    ? { area: UNITS.km2, dist: UNITS.km }
+    : { area: UNITS.m2, dist: UNITS.m };
 }
 
 export function App({
@@ -309,6 +323,7 @@ export function App({
 
   const getTooltip = useCallback(({ object }) => {
     if (object && object.hex) {
+      const units = cellUnits(object.hex);
       const res = getResolution(object.hex);
       const baseCell = getBaseCellNumber(object.hex);
       const pent = isPentagon(object.hex);
@@ -320,9 +335,27 @@ export function App({
         res === 0
           ? "(none)"
           : h3IndexToDigits(object.hex).slice(0, res).join("");
+      const boundary = cellToBoundary(object.hex);
+      const area = cellArea(object.hex, units.area);
+      const edgeLengths = originToDirectedEdges(object.hex).map((e) =>
+        edgeLength(e, units.dist),
+      );
+      const meanEdgeLength =
+        edgeLengths.reduce((prev, curr) =>
+          prev !== undefined ? prev + curr : curr,
+        ) / edgeLengths.length;
 
       return {
-        html: `<tt>${object.hex}</tt><br/>Resolution: <tt>${res}</tt><br/>Base cell: <tt>${baseCell}</tt><br/>Pentagon: <tt>${pent}</tt><br/>Icosa Faces: <tt>${faces}</tt><br/>Center: <tt>${coords}</tt><br/>Indexing Digits: <tt>${digits}</tt>`,
+        html: `<tt>${object.hex}</tt><br/>
+Resolution: <tt>${res}</tt><br/>
+Base cell: <tt>${baseCell}</tt><br/>
+Pentagon: <tt>${pent}</tt><br/>
+Icosa Faces: <tt>${faces}</tt><br/>
+Center: <tt>${coords}</tt><br/>
+# of Boundary Verts: <tt>${boundary.length}</tt><br/>
+Cell Area: <tt>${area}</tt> ${units.area}<br/>
+Mean Edge Length: <tt>${meanEdgeLength}</tt> ${units.dist}<br/>
+Indexing Digits: <tt>${digits}</tt>`,
       };
     }
   }, []);
@@ -358,7 +391,7 @@ export function App({
 }
 
 export default function HomeExporer({ children }) {
-  const [userInput, setUserInput] = useState("");
+  const [userInput, setUserInput] = useQueryState("hex", "");
   const [geolocationStatus, setGeolocationStatus] = useState("");
 
   const doGeoLocation = useCallback(async () => {
@@ -390,10 +423,10 @@ export default function HomeExporer({ children }) {
   const safeSetUserInput = useCallback(
     (newUserInput) => {
       const allCommas = newUserInput.match(/,/g) || [];
-      if (allCommas.length > 10000) {
+      if (allCommas.length > MAX_CELLS_ON_PAGE) {
         if (
           !confirm(
-            `This would render about ${allCommas.length} hexagons, are you sure? This can cause a lot of slowdown or crash your tab.`,
+            `This would render about ${allCommas.length + 1} hexagons, are you sure? This can cause slowdown or even crash your tab.`,
           )
         ) {
           return;

@@ -31,7 +31,8 @@
     "react-map-gl": "^7.1.7",
     "rehype-katex": "4",
     "remark-math": "3",
-    "styled-components": "^6.1.9"
+    "styled-components": "^6.1.9",
+    "use-location-state": "^3.1.2"
   },
   "browserslist": {
     "production": [

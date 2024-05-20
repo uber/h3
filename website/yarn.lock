@@ -7291,6 +7291,11 @@ quadbin@^0.2.0:
   dependencies:
     "@mapbox/tile-cover" "3.0.1"
 
+query-state-core@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/query-state-core/-/query-state-core-3.1.0.tgz#e73d508c74068acc7d7c8576b993a6334e498079"
+  integrity sha512-92ZOQw7TW3yVZYk4V7K7CrRhvXTjbGW6nP9PshtY2yaGkixoGsbGi+DAgDaaxN7VaErYUmLjOmNmU64QQvg4mA==
+
 queue-microtask@^1.2.2:
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/queue-microtask/-/queue-microtask-1.2.3.tgz#4929228bbc724dfac43e0efb058caf7b6cfb6243"
@@ -8851,6 +8856,13 @@ use-latest@^1.2.1:
   integrity sha512-xA+AVm/Wlg3e2P/JiItTziwS7FK92LWrDB0p+hgXloIMuVCeJJ8v6f0eeHyPZaJrM+usM1FkFfbNCrJGs8A/zw==
   dependencies:
     use-isomorphic-layout-effect "^1.1.1"
+
+use-location-state@^3.1.2:
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/use-location-state/-/use-location-state-3.1.2.tgz#5ce8229824be345d037de0e7e2f07611d4f3dff5"
+  integrity sha512-zHZMRkFhswmMuEnSaqYKfTT13i7WIPJWyVGt+/wiVW8lna5MaLIq0uV9+oG5ZJ+oG1BooO0NsE2lJHJfzbfZpA==
+  dependencies:
+    query-state-core "^3.1.0"
 
 use-sync-external-store@^1.2.0:
   version "1.2.2"
