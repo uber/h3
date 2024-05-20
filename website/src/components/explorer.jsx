@@ -29,8 +29,6 @@ import {
 } from "h3-js";
 import styled from "styled-components";
 import { Banner, BannerContainer, HeroExampleContainer } from "./styled";
-import BrowserOnly from "@docusaurus/BrowserOnly";
-import copy from "copy-text-to-clipboard";
 
 const INITIAL_VIEW_STATE = {
   longitude: -74.012,
@@ -359,7 +357,7 @@ export function App({
   );
 }
 
-export function HomeExplorerInternal({ children }) {
+export default function HomeExporer({ children }) {
   const [userInput, setUserInput] = useState("");
   const [geolocationStatus, setGeolocationStatus] = useState("");
 
@@ -511,15 +509,6 @@ export function HomeExplorerInternal({ children }) {
           </p>
         </BannerContainer>
       </Banner>
-      {children}
-    </>
-  );
-}
-
-export default function HomeExplorer({ children }) {
-  return (
-    <>
-      <BrowserOnly>{() => <HomeExplorerInternal />}</BrowserOnly>
       {children}
     </>
   );
