@@ -1,3 +1,5 @@
+// Contains code adapted from https://observablehq.com/@nrabinowitz/h3-index-inspector under the ISC license
+
 import React, {
   useCallback,
   useEffect,
@@ -162,7 +164,6 @@ function doSplitUserInput(userInput) {
   return [];
 }
 
-// Idea adapted from https://observablehq.com/@nrabinowitz/h3-index-inspector
 function cellUnits(hex) {
   return getResolution(hex) < 8
     ? { area: UNITS.km2, dist: UNITS.km }
@@ -192,7 +193,7 @@ export function App({
 
   useEffect(() => {
     // TODO: This doesn't set the viewport right on restoring state
-    // TODO: Do not do this on manual selection
+    // TODO: Do not do this on manual (click on map) selection
     if (userValidHex && deckRef.current) {
       const { width, height } = deckRef.current.deck;
 
@@ -374,7 +375,7 @@ function ClickableH3Index({ hex, setUserInput }) {
 
 function ClickableH3IndexList({ hexes, setUserInput, showAll = true }) {
   const onShowAllClick = useCallback(() => {
-    setUserInput(hexes.join(","));
+    setUserInput(hexes.join(", "));
   }, [hexes, setUserInput]);
   return (
     <>
@@ -494,6 +495,7 @@ export default function HomeExporer({ children }) {
       setGeolocationStatus("Locating...");
       navigator.geolocation.getCurrentPosition(
         (position) => {
+          // TODO: Consider using the accuracy to select resolution
           const newHexes = [];
           for (let res = 0; res <= 15; res++) {
             newHexes.push(
@@ -580,14 +582,14 @@ export default function HomeExporer({ children }) {
           </DemoContainer>
         </HeroExampleContainer>
         <BannerContainer>
-          <input
+          <textarea
             type="text"
             value={userInput}
             onChange={(e) => {
               setUserInput(e.target.value);
             }}
             placeholder="Click on map or enter cell IDs"
-            style={{ marginRight: "0.5rem" }}
+            style={{ marginRight: "0.5rem", width: "50%", height: "3em", minHeight: "2em", maxWidth: "100%" }}
           />
           <input
             type="button"
