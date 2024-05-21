@@ -58,37 +58,37 @@ struct Subcommand {
     struct Subcommand subcommands[] = {
 #define SUBCOMMAND_INDEX(s) {.name = #s, .arg = &s##Arg, .subcommand = &s##Cmd},
 
-#define END_SUBCOMMANDS_INDEX                                             \
-    {.name = "--help", .arg = &helpArg, .subcommand = generalHelp}, {     \
-        .name = "-h", .arg = &helpArg, .subcommand = generalHelp          \
-    }                                                                     \
-    }                                                                     \
-    ;                                                                     \
-                                                                          \
-    H3Error generalHelp(int argc, char *argv[]) {                         \
-        int arglen = sizeof(subcommands) / sizeof(subcommands[0]) - 1;    \
-        Arg **args = calloc(arglen, sizeof(Arg *));                       \
-        if (args == NULL) {                                               \
-            printf("Failed to allocate memory for argument parsing");     \
-            exit(1);                                                      \
-        }                                                                 \
-        args[0] = &helpArg;                                               \
-        for (int i = 0; i < arglen - 1; i++) {                            \
-            args[i + 1] = subcommands[i].arg;                             \
-        }                                                                 \
-                                                                          \
-        const char *helpText =                                            \
-            "Please use one of the subcommands listed to perform an H3 "  \
-            "calculation. Use h3 <SUBCOMMAND> --help for details on the " \
-            "usage of "                                                   \
-            "any subcommand.";                                            \
-        if (parseArgs(argc, argv, arglen, args, &helpArg, helpText)) {    \
-            free(args);                                                   \
-            return E_SUCCESS;                                             \
-        } else {                                                          \
-            free(args);                                                   \
-            return E_FAILED;                                              \
-        }                                                                 \
+#define END_SUBCOMMANDS_INDEX                                                  \
+    {.name = "--help", .arg = &helpArg, .subcommand = generalHelp}, {          \
+        .name = "-h", .arg = &helpArg, .subcommand = generalHelp               \
+    }                                                                          \
+    }                                                                          \
+    ;                                                                          \
+                                                                               \
+    H3Error generalHelp(int argc, char *argv[]) {                              \
+        int arglen = sizeof(subcommands) / sizeof(subcommands[0]) - 1;         \
+        Arg **args = calloc(arglen, sizeof(Arg *));                            \
+        if (args == NULL) {                                                    \
+            fprintf(stderr, "Failed to allocate memory for argument parsing"); \
+            exit(1);                                                           \
+        }                                                                      \
+        args[0] = &helpArg;                                                    \
+        for (int i = 0; i < arglen - 1; i++) {                                 \
+            args[i + 1] = subcommands[i].arg;                                  \
+        }                                                                      \
+                                                                               \
+        const char *helpText =                                                 \
+            "Please use one of the subcommands listed to perform an H3 "       \
+            "calculation. Use h3 <SUBCOMMAND> --help for details on the "      \
+            "usage of "                                                        \
+            "any subcommand.";                                                 \
+        if (parseArgs(argc, argv, arglen, args, &helpArg, helpText)) {         \
+            free(args);                                                        \
+            return E_SUCCESS;                                                  \
+        } else {                                                               \
+            free(args);                                                        \
+            return E_FAILED;                                                   \
+        }                                                                      \
     }
 
 #define DISPATCH_SUBCOMMAND()                                                \
@@ -246,7 +246,7 @@ SUBCOMMAND(getBaseCellNumber,
 SUBCOMMAND(stringToInt, "Converts an H3 index in string form to integer form") {
     char *rawCell = calloc(16, sizeof(char));
     if (rawCell == NULL) {
-        printf("Failed to allocate memory for the H3 index");
+        fprintf(stderr, "Failed to allocate memory for the H3 index");
         exit(1);
     }
     Arg rawCellArg = {.names = {"-c", "--cell"},
@@ -345,7 +345,7 @@ SUBCOMMAND(getIcosahedronFaces,
     }
     int *faces = calloc(faceCount, sizeof(int));
     if (faces == NULL) {
-        printf("Failed to allocate memory for the icosahedron faces");
+        fprintf(stderr, "Failed to allocate memory for the icosahedron faces");
         exit(1);
     }
     err = H3_EXPORT(getIcosahedronFaces)(cell, faces);
@@ -395,7 +395,7 @@ SUBCOMMAND(
     }
     H3Index *out = calloc(len, sizeof(H3Index));
     if (out == NULL) {
-        printf("Failed to allocate memory for the output H3 cells");
+        fprintf(stderr, "Failed to allocate memory for the output H3 cells");
         exit(1);
     }
     err = H3_EXPORT(gridDisk)(cell, k, out);
@@ -452,12 +452,12 @@ SUBCOMMAND(
     }
     H3Index *out = calloc(len, sizeof(H3Index));
     if (out == NULL) {
-        printf("Failed to allocate memory for the H3 cells");
+        fprintf(stderr, "Failed to allocate memory for the H3 cells");
         exit(1);
     }
     int *distances = calloc(len, sizeof(int));
     if (distances == NULL) {
-        printf("Failed to allocate memory for the distances");
+        fprintf(stderr, "Failed to allocate memory for the distances");
         exit(1);
     }
     err = H3_EXPORT(gridDiskDistances)(cell, k, out, distances);
@@ -529,7 +529,7 @@ SUBCOMMAND(gridRing,
                                        // since it doesn't support pentagons
     H3Index *out = calloc(len, sizeof(H3Index));
     if (out == NULL) {
-        printf("Failed to allocate memory for the output H3 indexes");
+        fprintf(stderr, "Failed to allocate memory for the output H3 indexes");
         exit(1);
     }
     H3Error err = H3_EXPORT(gridRingUnsafe)(cell, k, out);
@@ -547,16 +547,16 @@ SUBCOMMAND(gridRing,
         }
         H3Index *temp = calloc(templen, sizeof(H3Index));
         if (temp == NULL) {
-            printf(
-                "Failed to allocate memory for a temporary hashset of H3 "
-                "indexes");
+            fprintf(stderr,
+                    "Failed to allocate memory for a temporary hashset of H3 "
+                    "indexes");
             exit(1);
         }
         int *distances = calloc(templen, sizeof(int));
         if (distances == NULL) {
-            printf(
-                "Failed to allocate memory for the distances of the H3 "
-                "indexes");
+            fprintf(stderr,
+                    "Failed to allocate memory for the distances of the H3 "
+                    "indexes");
             exit(1);
         }
         err = H3_EXPORT(gridDiskDistances)(cell, k, temp, distances);
@@ -624,7 +624,7 @@ SUBCOMMAND(gridPathCells,
     }
     H3Index *out = calloc(len, sizeof(H3Index));
     if (out == NULL) {
-        printf("Failed to allocate memory for the output H3 indexes");
+        fprintf(stderr, "Failed to allocate memory for the output H3 indexes");
         exit(1);
     }
     err = H3_EXPORT(gridPathCells)(origin, destination, out);
