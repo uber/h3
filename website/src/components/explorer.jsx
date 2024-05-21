@@ -24,7 +24,6 @@ import {
   isPentagon,
   getIcosahedronFaces,
   cellToLatLng,
-  cellToCenterChild,
   h3IndexToSplitLong,
   cellArea,
   edgeLength,
@@ -34,8 +33,6 @@ import {
 import styled from "styled-components";
 import { Banner, BannerContainer, HeroExampleContainer } from "./styled";
 import { useQueryState } from "use-location-state";
-
-const MAX_CELLS_ON_PAGE = 10000;
 
 const INITIAL_VIEW_STATE = {
   longitude: -74.012,
@@ -173,10 +170,12 @@ function cellUnits(hex) {
 }
 
 export function App({
-  userInput = undefined,
+  userInput = [],
+  userValidHex = false,
   initialViewState = INITIAL_VIEW_STATE,
   mapStyle = MAP_STYLE,
   objectOnClick = undefined,
+  coordinateOnClick = undefined,
 }) {
   const [currentInitialViewState, setCurrentInitialViewState] =
     useState(initialViewState);
@@ -190,15 +189,10 @@ export function App({
     () => uncompactCells(getRes0Cells(), 2).map((hex) => ({ hex })),
     [],
   );
-  const splitUserInput = useMemo(() => {
-    return doSplitUserInput(userInput);
-  }, [userInput]);
 
-  const userValidHex = useMemo(
-    () => splitUserInput.map(isValidCell).includes(true),
-    [splitUserInput],
-  );
   useEffect(() => {
+    // TODO: This doesn't set the viewport right on restoring state
+    // TODO: Do not do this on manual selection
     if (userValidHex && deckRef.current) {
       const { width, height } = deckRef.current.deck;
 
@@ -208,7 +202,7 @@ export function App({
       let maxX = -Infinity;
       let maxY = -Infinity;
 
-      for (const hex of splitUserInput) {
+      for (const hex of userInput) {
         const coords = cellToBoundary(hex, true);
         for (const coord of coords) {
           if (coord[0] < minX) {
@@ -228,7 +222,9 @@ export function App({
         Number.isFinite(minX) &&
         Number.isFinite(minY) &&
         Number.isFinite(maxX) &&
-        Number.isFinite(maxY)
+        Number.isFinite(maxY) &&
+        width > 1 &&
+        height > 1
       ) {
         const { latitude, longitude, zoom } = viewport.fitBounds(
           [
@@ -247,13 +243,13 @@ export function App({
         });
       }
     }
-  }, [userInput, userValidHex, splitUserInput]);
+  }, [userInput, userValidHex]);
 
   const layers = userValidHex
     ? [
         new H3HexagonLayer({
           id: "userhex",
-          data: splitUserInput.map((hex) => ({ hex })),
+          data: userInput.map((hex) => ({ hex })),
           getHexagon: (d) => d.hex,
           extruded: false,
           filled: false,
@@ -265,7 +261,7 @@ export function App({
           pickable: true,
           filled: true,
           // transparent fill purely for picking
-          getFillColor: [0, 0, 0, 0],
+          getFillColor: [0, 0, 0, 30],
         }),
       ]
     : [
@@ -280,10 +276,6 @@ export function App({
           getLineWidth: 3,
           lineWidthMinPixels: 3,
           highPrecision: true,
-          pickable: true,
-          filled: true,
-          // transparent fill purely for picking
-          getFillColor: [0, 0, 0, 0],
         }),
         new H3HexagonLayer({
           id: "res1",
@@ -323,39 +315,8 @@ export function App({
 
   const getTooltip = useCallback(({ object }) => {
     if (object && object.hex) {
-      const units = cellUnits(object.hex);
-      const res = getResolution(object.hex);
-      const baseCell = getBaseCellNumber(object.hex);
-      const pent = isPentagon(object.hex);
-      const faces = getIcosahedronFaces(object.hex).join(", ");
-      const coords = cellToLatLng(object.hex)
-        .map((n) => n.toPrecision(res / 3 + 7))
-        .join(", ");
-      const digits =
-        res === 0
-          ? "(none)"
-          : h3IndexToDigits(object.hex).slice(0, res).join("");
-      const boundary = cellToBoundary(object.hex);
-      const area = cellArea(object.hex, units.area);
-      const edgeLengths = originToDirectedEdges(object.hex).map((e) =>
-        edgeLength(e, units.dist),
-      );
-      const meanEdgeLength =
-        edgeLengths.reduce((prev, curr) =>
-          prev !== undefined ? prev + curr : curr,
-        ) / edgeLengths.length;
-
       return {
-        html: `<tt>${object.hex}</tt><br/>
-Resolution: <tt>${res}</tt><br/>
-Base cell: <tt>${baseCell}</tt><br/>
-Pentagon: <tt>${pent}</tt><br/>
-Icosa Faces: <tt>${faces}</tt><br/>
-Center: <tt>${coords}</tt><br/>
-# of Boundary Verts: <tt>${boundary.length}</tt><br/>
-Cell Area: <tt>${area}</tt> ${units.area}<br/>
-Mean Edge Length: <tt>${meanEdgeLength}</tt> ${units.dist}<br/>
-Indexing Digits: <tt>${digits}</tt>`,
+        html: `<tt>${object.hex}</tt>`,
       };
     }
   }, []);
@@ -368,12 +329,21 @@ Indexing Digits: <tt>${digits}</tt>`,
     }
   }, []);
 
-  const onClick = useCallback(({ object }) => {
-    if (object && object.hex) {
-      // TODO: click to copy?
-      objectOnClick({ hex: object.hex });
-    }
-  }, []);
+  const onClick = useCallback(
+    ({ object, coordinate }) => {
+      if (object && object.hex) {
+        // TODO: click to copy?
+        if (objectOnClick) {
+          objectOnClick({ hex: object.hex });
+        }
+      } else {
+        if (coordinateOnClick) {
+          coordinateOnClick(coordinate);
+        }
+      }
+    },
+    [objectOnClick, coordinateOnClick],
+  );
 
   return (
     <DeckGL
@@ -390,6 +360,131 @@ Indexing Digits: <tt>${digits}</tt>`,
   );
 }
 
+function ClickableH3Index({ hex, setUserInput }) {
+  const onClick = useCallback(() => {
+    setUserInput(hex);
+  }, [hex, setUserInput]);
+
+  return (
+    <a onClick={onClick} style={{ cursor: "pointer" }}>
+      {hex}
+    </a>
+  );
+}
+
+function ClickableH3IndexList({ hexes, setUserInput, showAll = true }) {
+  const onShowAllClick = useCallback(() => {
+    setUserInput(hexes.join(","));
+  }, [hexes, setUserInput]);
+  return (
+    <>
+      {hexes.map((hex, index) => {
+        const link = (
+          <ClickableH3Index key={index} setUserInput={setUserInput} hex={hex} />
+        );
+        if (index === 0) {
+          return link;
+        } else {
+          return <span key={index}>, {link}</span>;
+        }
+      })}
+      {showAll ? (
+        <>
+          &nbsp;
+          <a onClick={onShowAllClick} style={{ cursor: "pointer" }}>
+            (show all)
+          </a>
+        </>
+      ) : (
+        <></>
+      )}
+    </>
+  );
+}
+
+function SelectedHexDetails({ setUserInput, splitUserInput }) {
+  if (splitUserInput.length === 1) {
+    const hex = splitUserInput[0];
+    const units = cellUnits(hex);
+    const res = getResolution(hex);
+    const baseCell = getBaseCellNumber(hex);
+    const pent = isPentagon(hex);
+    const faces = getIcosahedronFaces(hex).join(", ");
+    const coords = cellToLatLng(hex)
+      .map((n) => n.toPrecision(res / 3 + 7))
+      .join(", ");
+    const digits =
+      res === 0 ? "(none)" : h3IndexToDigits(hex).slice(0, res).join("");
+    const boundary = cellToBoundary(hex);
+    const area = cellArea(hex, units.area);
+    const edgeLengths = originToDirectedEdges(hex).map((e) =>
+      edgeLength(e, units.dist),
+    );
+    const meanEdgeLength =
+      edgeLengths.reduce((prev, curr) =>
+        prev !== undefined ? prev + curr : curr,
+      ) / edgeLengths.length;
+    const parent = res !== 0 && cellToParent(hex, res - 1);
+    const children = res !== 15 && cellToChildren(hex, res + 1);
+    const neighbors = new Set(gridDisk(hex, 1));
+    neighbors.delete(hex);
+
+    return (
+      <p>
+        Resolution: <tt>{res}</tt>
+        <br />
+        Center: <tt>{coords}</tt>
+        <br />
+        Parent:{" "}
+        {parent ? (
+          <ClickableH3Index hex={parent} setUserInput={setUserInput} />
+        ) : (
+          <tt>(none)</tt>
+        )}
+        <br />
+        Children:{" "}
+        {children ? (
+          <ClickableH3IndexList hexes={children} setUserInput={setUserInput} />
+        ) : (
+          <tt>(none)</tt>
+        )}
+        <br />
+        Neighbors:{" "}
+        <ClickableH3IndexList
+          hexes={[...neighbors]}
+          setUserInput={setUserInput}
+        />
+        <br />
+        <details>
+          <summary>Details</summary>
+          Base cell: <tt>{baseCell}</tt>
+          <br />
+          Pentagon: <tt>{`${pent}`}</tt>
+          <br />
+          Icosa Faces: <tt>{faces}</tt>
+          <br /># of Boundary Verts: <tt>{boundary.length}</tt>
+          <br />
+          Cell Area: <tt>{area}</tt> {units.area}
+          <br />
+          Mean Edge Length: <tt>{meanEdgeLength}</tt> {units.dist}
+          <br />
+          Indexing Digits: <tt>{digits}</tt>
+        </details>
+      </p>
+    );
+  } else {
+    return (
+      <p>
+        <ClickableH3IndexList
+          hexes={splitUserInput}
+          setUserInput={setUserInput}
+          showAll={false}
+        />
+      </p>
+    );
+  }
+}
+
 export default function HomeExporer({ children }) {
   const [userInput, setUserInput] = useQueryState("hex", "");
   const [geolocationStatus, setGeolocationStatus] = useState("");
@@ -399,9 +494,17 @@ export default function HomeExporer({ children }) {
       setGeolocationStatus("Locating...");
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          setUserInput(
-            `${position.coords.latitude}, ${position.coords.longitude}`,
-          );
+          const newHexes = [];
+          for (let res = 0; res <= 15; res++) {
+            newHexes.push(
+              latLngToCell(
+                position.coords.latitude,
+                position.coords.longitude,
+                res,
+              ),
+            );
+          }
+          setUserInput(newHexes.join(", "));
           setGeolocationStatus("");
         },
         () => {
@@ -413,76 +516,54 @@ export default function HomeExporer({ children }) {
     }
   }, [setUserInput]);
 
+  const splitUserInput = useMemo(() => {
+    return doSplitUserInput(userInput);
+  }, [userInput]);
+  const userValidHex = useMemo(
+    () => splitUserInput.map(isValidCell).includes(true),
+    [splitUserInput],
+  );
+  const constantResolution = useMemo(() => {
+    const resAsSet = new Set(splitUserInput.map(getResolution));
+    if (resAsSet.size === 1) {
+      return [...resAsSet][0];
+    } else {
+      return undefined;
+    }
+  }, [splitUserInput]);
+
   const objectOnClick = useCallback(
     ({ hex }) => {
-      setUserInput(hex);
+      const asSet = new Set(splitUserInput);
+      if (!asSet.delete(hex)) {
+        asSet.add(hex);
+      }
+      setUserInput([...asSet].join(", "));
     },
-    [setUserInput],
+    [splitUserInput, setUserInput],
   );
-
-  const safeSetUserInput = useCallback(
-    (newUserInput) => {
-      const allCommas = newUserInput.match(/,/g) || [];
-      if (allCommas.length > MAX_CELLS_ON_PAGE) {
-        if (
-          !confirm(
-            `This would render about ${allCommas.length + 1} hexagons, are you sure? This can cause slowdown or even crash your tab.`,
-          )
-        ) {
-          return;
+  const coordinateOnClick = useCallback(
+    (coordinate) => {
+      if (constantResolution !== undefined) {
+        const asSet = new Set(splitUserInput);
+        asSet.add(
+          latLngToCell(coordinate[1], coordinate[0], constantResolution),
+        );
+        setUserInput([...asSet].join(", "));
+      } else if (splitUserInput.length === 0) {
+        // TODO: Detect desired resolution based on zoom?
+        const newHexes = [];
+        for (let res = 0; res <= 15; res++) {
+          newHexes.push(latLngToCell(coordinate[1], coordinate[0], res));
         }
+        const prev = splitUserInput.length
+          ? `${splitUserInput.join(", ")},`
+          : "";
+        setUserInput(`${prev}${newHexes.join(", ")}`);
       }
-      setUserInput(newUserInput);
     },
-    [setUserInput],
+    [splitUserInput, setUserInput, constantResolution],
   );
-
-  const doMapParents = useCallback(() => {
-    const hexes = doSplitUserInput(userInput);
-    const newHexes = new Set();
-    for (const hex of hexes) {
-      const newResolution = getResolution(hex) - 1;
-      newHexes.add(cellToParent(hex, newResolution < 0 ? 0 : newResolution));
-    }
-    safeSetUserInput([...newHexes].join(","));
-  }, [userInput, safeSetUserInput]);
-  const doMapChildren = useCallback(() => {
-    const hexes = doSplitUserInput(userInput);
-    const newHexes = new Set();
-    for (const hex of hexes) {
-      const newResolution = getResolution(hex) + 1;
-      const children = cellToChildren(
-        hex,
-        newResolution > 15 ? 15 : newResolution,
-      );
-      for (const child of children) {
-        newHexes.add(child);
-      }
-    }
-    safeSetUserInput([...newHexes].join(","));
-  }, [userInput, safeSetUserInput]);
-  const doMapCenterChild = useCallback(() => {
-    const hexes = doSplitUserInput(userInput);
-    const newHexes = new Set();
-    for (const hex of hexes) {
-      const newResolution = getResolution(hex) + 1;
-      newHexes.add(
-        cellToCenterChild(hex, newResolution > 15 ? 15 : newResolution),
-      );
-    }
-    safeSetUserInput([...newHexes].join(","));
-  }, [userInput, safeSetUserInput]);
-  const doMapNeighbors = useCallback(() => {
-    const hexes = doSplitUserInput(userInput);
-    const newHexes = new Set();
-    for (const hex of hexes) {
-      const neighbors = gridDisk(hex, 1);
-      for (const neighbor of neighbors) {
-        newHexes.add(neighbor);
-      }
-    }
-    safeSetUserInput([...newHexes].join(","));
-  }, [userInput, safeSetUserInput]);
 
   // Note: The Layout "wrapper" component adds header and footer etc
   return (
@@ -490,56 +571,39 @@ export default function HomeExporer({ children }) {
       <Banner>
         <HeroExampleContainer>
           <DemoContainer>
-            <App userInput={userInput} objectOnClick={objectOnClick} />
+            <App
+              userInput={splitUserInput}
+              userValidHex={userValidHex}
+              objectOnClick={objectOnClick}
+              coordinateOnClick={coordinateOnClick}
+            />
           </DemoContainer>
         </HeroExampleContainer>
         <BannerContainer>
-          {/* <ProjectName>H3</ProjectName> */}
-          <p style={{ marginBottom: 0 }}>Enter coordinates or cell IDs</p>
-          {/* <GetStartedLink href="./docs/get-started/getting-started">GET STARTED</GetStartedLink> */}
           <input
             type="text"
             value={userInput}
             onChange={(e) => {
               setUserInput(e.target.value);
             }}
-            placeholder="822d57fffffffff"
+            placeholder="Click on map or enter cell IDs"
+            style={{ marginRight: "0.5rem" }}
           />
-          <p style={{ marginTop: "1rem", marginBottom: 0 }}>
-            <input
-              type="button"
-              value="Parents"
-              onClick={doMapParents}
-              style={{ marginRight: "0.5rem" }}
+          <input
+            type="button"
+            value="Where am I?"
+            onClick={doGeoLocation}
+            style={{ marginRight: "0.5rem" }}
+          />
+          {geolocationStatus}
+          {splitUserInput.length ? (
+            <SelectedHexDetails
+              splitUserInput={splitUserInput}
+              setUserInput={setUserInput}
             />
-            <input
-              type="button"
-              value="Children"
-              onClick={doMapChildren}
-              style={{ marginRight: "0.5rem" }}
-            />
-            {/* <input
-              type="button"
-              value="Center Child"
-              onClick={doMapCenterChild}
-              style={{ marginRight: "0.5rem" }}
-            /> */}
-            <input
-              type="button"
-              value="Neighbors"
-              onClick={doMapNeighbors}
-              style={{ marginRight: "0.5rem" }}
-            />
-          </p>
-          <p style={{ marginTop: "1rem", marginBottom: 0 }}>
-            <input
-              type="button"
-              value="Where am I?"
-              onClick={doGeoLocation}
-              style={{ marginRight: "0.5rem" }}
-            />
-            {geolocationStatus}
-          </p>
+          ) : (
+            <></>
+          )}
         </BannerContainer>
       </Banner>
       {children}

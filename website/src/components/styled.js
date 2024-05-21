@@ -25,9 +25,12 @@ export const BannerContainer = styled(Container)`
   position: absolute;
   bottom: 2rem;
   height: auto;
+  max-height: 90%;
+  overflow-y: scroll;
   left: 2rem;
   z-index: 0;
   width: auto;
+  max-width: 40%;
   background-color: white;
   border-radius: 20px;
   padding: 1rem;
@@ -45,51 +48,5 @@ export const HeroExampleContainer = styled.div`
 export const Section = styled.section`
   &:nth-child(2n + 1) {
     background: var(--ifm-color-gray-300);
-  }
-`;
-
-// TODO: Unused
-export const ProjectName = styled.h1`
-  font-size: 3em;
-  line-height: 1;
-  text-transform: uppercase;
-  letter-spacing: 4px;
-  font-weight: 700;
-  margin: 0;
-  margin-bottom: 16px;
-`;
-
-// TODO: Unused
-export const GetStartedLink = styled.a`
-  pointer-events: all;
-  font-size: 12px;
-  line-height: 44px;
-  letter-spacing: 2px;
-  font-weight: bold;
-  margin: 24px 0;
-  padding: 0 4rem;
-  pointer-events: all;
-  display: inline-block;
-  text-decoration: none;
-  transition:
-    background-color 250ms ease-in,
-    color 250ms ease-in;
-  border: solid 2px var(--ifm-color-primary);
-  color: var(--ifm-color-gray-900);
-  border-image: linear-gradient(
-    to right,
-    var(--ifm-color-gray-700) 0%,
-    var(--ifm-color-gray-400) 100%
-  );
-  border-image-slice: 2;
-  &:visited {
-    color: var(--ifm-color-gray-900);
-  }
-  &:active {
-    color: var(--ifm-color-white);
-  }
-  &:hover {
-    color: var(--ifm-color-white);
-    background-color: var(--ifm-color-primary);
   }
 `;
