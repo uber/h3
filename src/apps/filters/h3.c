@@ -68,6 +68,10 @@ struct Subcommand {
     H3Error generalHelp(int argc, char *argv[]) {                         \
         int arglen = sizeof(subcommands) / sizeof(subcommands[0]) - 1;    \
         Arg **args = calloc(arglen, sizeof(Arg *));                       \
+        if (args == NULL) {                                               \
+            printf("Failed to allocate memory for argument parsing");     \
+            exit(1);                                                      \
+        }                                                                 \
         args[0] = &helpArg;                                               \
         for (int i = 0; i < arglen - 1; i++) {                            \
             args[i + 1] = subcommands[i].arg;                             \
@@ -241,6 +245,10 @@ SUBCOMMAND(getBaseCellNumber,
 
 SUBCOMMAND(stringToInt, "Converts an H3 index in string form to integer form") {
     char *rawCell = calloc(16, sizeof(char));
+    if (rawCell == NULL) {
+        printf("Failed to allocate memory for the H3 index");
+        exit(1);
+    }
     Arg rawCellArg = {.names = {"-c", "--cell"},
                       .required = true,
                       .scanFormat = "%s",
@@ -336,6 +344,10 @@ SUBCOMMAND(getIcosahedronFaces,
         return err;
     }
     int *faces = calloc(faceCount, sizeof(int));
+    if (faces == NULL) {
+        printf("Failed to allocate memory for the icosahedron faces");
+        exit(1);
+    }
     err = H3_EXPORT(getIcosahedronFaces)(cell, faces);
     if (err) {
         free(faces);
@@ -382,6 +394,10 @@ SUBCOMMAND(
         return err;
     }
     H3Index *out = calloc(len, sizeof(H3Index));
+    if (out == NULL) {
+        printf("Failed to allocate memory for the output H3 cells");
+        exit(1);
+    }
     err = H3_EXPORT(gridDisk)(cell, k, out);
     if (err) {
         free(out);
@@ -435,7 +451,15 @@ SUBCOMMAND(
         return err;
     }
     H3Index *out = calloc(len, sizeof(H3Index));
+    if (out == NULL) {
+        printf("Failed to allocate memory for the H3 cells");
+        exit(1);
+    }
     int *distances = calloc(len, sizeof(int));
+    if (distances == NULL) {
+        printf("Failed to allocate memory for the distances");
+        exit(1);
+    }
     err = H3_EXPORT(gridDiskDistances)(cell, k, out, distances);
     if (err) {
         free(out);
@@ -504,6 +528,10 @@ SUBCOMMAND(gridRing,
     int64_t len = k == 0 ? 1 : 6 * k;  // The length is fixed for gridRingUnsafe
                                        // since it doesn't support pentagons
     H3Index *out = calloc(len, sizeof(H3Index));
+    if (out == NULL) {
+        printf("Failed to allocate memory for the output H3 indexes");
+        exit(1);
+    }
     H3Error err = H3_EXPORT(gridRingUnsafe)(cell, k, out);
     if (err) {
         // For the CLI, we'll just do things less efficiently if there's an
@@ -518,7 +546,19 @@ SUBCOMMAND(gridRing,
             return err;
         }
         H3Index *temp = calloc(templen, sizeof(H3Index));
+        if (temp == NULL) {
+            printf(
+                "Failed to allocate memory for a temporary hashset of H3 "
+                "indexes");
+            exit(1);
+        }
         int *distances = calloc(templen, sizeof(int));
+        if (distances == NULL) {
+            printf(
+                "Failed to allocate memory for the distances of the H3 "
+                "indexes");
+            exit(1);
+        }
         err = H3_EXPORT(gridDiskDistances)(cell, k, temp, distances);
         if (err) {
             free(out);
@@ -583,6 +623,10 @@ SUBCOMMAND(gridPathCells,
         return err;
     }
     H3Index *out = calloc(len, sizeof(H3Index));
+    if (out == NULL) {
+        printf("Failed to allocate memory for the output H3 indexes");
+        exit(1);
+    }
     err = H3_EXPORT(gridPathCells)(origin, destination, out);
     if (err) {
         free(out);
