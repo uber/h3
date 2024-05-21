@@ -1,6 +1,22 @@
 import styled from "styled-components";
 import { isMobile } from "./common";
 
+export const DemoContainer = styled.div`
+  height: 100%;
+  .tooltip,
+  .deck-tooltip {
+    position: absolute;
+    padding: 4px 12px;
+    background: rgba(0, 0, 0, 0.8);
+    color: var(--ifm-color-white);
+    max-width: 300px;
+    font-size: 12px;
+    z-index: 9;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+`;
+
 export const Banner = styled.section`
   position: relative;
   height: 30rem;
