@@ -18,8 +18,9 @@ import {
   UNITS,
 } from "h3-js";
 
+const THREE_BITS = 7; // 1 | 2 | 4
+
 function h3IndexToDigits(h) {
-  const THREE_BITS = 0x1 | 0x2 | 0x4;
   const split = h3IndexToSplitLong(h);
   const digit1 = (split[1] >> 0xa) & THREE_BITS;
   const digit2 = (split[1] >> 0x7) & THREE_BITS;
