@@ -46,7 +46,7 @@ export const BannerContainer = styled(Container)`
   left: 2rem;
   z-index: 0;
   width: auto;
-  max-width: 40%;
+  max-width: 20em;
   background-color: white;
   border-radius: 20px;
   padding: 1rem;

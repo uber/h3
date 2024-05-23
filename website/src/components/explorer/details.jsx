@@ -104,7 +104,12 @@ function ClickableH3IndexList({ hexes, setUserInput, showAll = true }) {
   );
 }
 
-export function SelectedHexDetails({ setUserInput, splitUserInput }) {
+export function SelectedHexDetails({
+  setUserInput,
+  splitUserInput,
+  showNavigation = true,
+  showDetails = true,
+}) {
   if (splitUserInput.length === 1) {
     const hex = splitUserInput[0];
     const units = cellUnits(hex);
@@ -132,51 +137,64 @@ export function SelectedHexDetails({ setUserInput, splitUserInput }) {
     neighbors.delete(hex);
 
     return (
-      <p>
+      <p style={{ marginBottom: "0" }}>
         Resolution: <tt>{res}</tt>
         <br />
-        Center: <tt>{coords}</tt>
-        <br />
-        Parent:{" "}
-        {parent ? (
-          <ClickableH3Index hex={parent} setUserInput={setUserInput} />
+        Lat./Lon.: <tt>{coords}</tt>
+        {showNavigation ? (
+          <>
+            <br />
+            Parent:{" "}
+            {parent ? (
+              <ClickableH3Index hex={parent} setUserInput={setUserInput} />
+            ) : (
+              <tt>(none)</tt>
+            )}
+            <br />
+            Children:{" "}
+            {children ? (
+              <ClickableH3IndexList
+                hexes={children}
+                setUserInput={setUserInput}
+              />
+            ) : (
+              <tt>(none)</tt>
+            )}
+            <br />
+            Neighbors:{" "}
+            <ClickableH3IndexList
+              hexes={[...neighbors]}
+              setUserInput={setUserInput}
+            />
+            <br />
+          </>
         ) : (
-          <tt>(none)</tt>
+          <></>
         )}
-        <br />
-        Children:{" "}
-        {children ? (
-          <ClickableH3IndexList hexes={children} setUserInput={setUserInput} />
+        {showDetails ? (
+          <details>
+            <summary>Details</summary>
+            Base cell: <tt>{baseCell}</tt>
+            <br />
+            Pentagon: <tt>{`${pent}`}</tt>
+            <br />
+            Icosa Faces: <tt>{faces}</tt>
+            <br /># of Boundary Verts: <tt>{boundary.length}</tt>
+            <br />
+            Cell Area: <tt>{area}</tt> {units.area}
+            <br />
+            Mean Edge Length: <tt>{meanEdgeLength}</tt> {units.dist}
+            <br />
+            Indexing Digits: <tt>{digits}</tt>
+          </details>
         ) : (
-          <tt>(none)</tt>
+          <></>
         )}
-        <br />
-        Neighbors:{" "}
-        <ClickableH3IndexList
-          hexes={[...neighbors]}
-          setUserInput={setUserInput}
-        />
-        <br />
-        <details>
-          <summary>Details</summary>
-          Base cell: <tt>{baseCell}</tt>
-          <br />
-          Pentagon: <tt>{`${pent}`}</tt>
-          <br />
-          Icosa Faces: <tt>{faces}</tt>
-          <br /># of Boundary Verts: <tt>{boundary.length}</tt>
-          <br />
-          Cell Area: <tt>{area}</tt> {units.area}
-          <br />
-          Mean Edge Length: <tt>{meanEdgeLength}</tt> {units.dist}
-          <br />
-          Indexing Digits: <tt>{digits}</tt>
-        </details>
       </p>
     );
   } else {
     return (
-      <p>
+      <p style={{ marginBottom: "0" }}>
         <ClickableH3IndexList
           hexes={splitUserInput}
           setUserInput={setUserInput}

@@ -42,6 +42,7 @@ function fullyUnwrap(str) {
 
 function doSplitUserInput(userInput) {
   if (userInput) {
+    // TODO: support WKT, GeoJSON inputs here too
     const unwrapAnyArray = fullyUnwrap(userInput);
     const split = unwrapAnyArray.split(/\s/).filter((str) => str !== "");
     const result = [];
@@ -181,10 +182,11 @@ export default function HomeExporer({ children }) {
             placeholder="Click on map or enter cell IDs"
             style={{
               marginRight: "0.5rem",
-              width: "50%",
               height: "3em",
               minHeight: "2em",
-              maxWidth: "100%",
+              maxHeight: "10em",
+              width: "100%",
+              resize: "vertical",
             }}
           />
           <input
@@ -198,6 +200,8 @@ export default function HomeExporer({ children }) {
             <SelectedHexDetails
               splitUserInput={splitUserInput}
               setUserInput={setUserInput}
+              showNavigation={false}
+              showDetails={false}
             />
           ) : (
             <></>
