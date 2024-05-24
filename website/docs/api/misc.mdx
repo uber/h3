@@ -1057,3 +1057,45 @@ function example() {
 
 Gives the "great circle" or "haversine" distance between pairs of
 LatLng points (lat/lng pairs) in radians.
+
+## describeH3Error 
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+char *describeH3Error(H3Error err);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+:::note
+
+Just read the `.message` property from the caught error, instead.
+
+:::
+
+```js live
+function example() {
+  let errorMessage = ""
+  try {
+    h3.cellToChildrenSize("asdf", 9);
+  } catch (e) {
+    errorMessage = e.message;
+  }
+  return errorMessage;
+}
+```
+
+</TabItem>
+</Tabs>
+
+Provides a human-readable description of an H3Error error code. This function cannot fail, as it just returns a string stating that the H3Error value is itself invalid and does not allocate memory to do so. Do not call `free` on the result of this function.

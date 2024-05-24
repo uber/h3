@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 Uber Technologies, Inc.
+ * Copyright 2016-2021, 2024 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,43 @@
 #include "h3Assert.h"
 #include "iterators.h"
 #include "mathExtensions.h"
+
+/** @var H3ErrorDescriptions
+ *  @brief An array of strings describing each of the H3ErrorCodes enum values
+ */
+static char *H3ErrorDescriptions[] = {
+    /* E_SUCCESS */ "Success",
+    /* E_FAILED */
+    "The operation failed but a more specific error is not available",
+    /* E_DOMAIN */ "Argument was outside of acceptable range",
+    /* E_LATLNG_DOMAIN */
+    "Latitude or longitude arguments were outside of acceptable range",
+    /* E_RES_DOMAIN */ "Resolution argument was outside of acceptable range",
+    /* E_CELL_INVALID */ "Cell argument was not valid",
+    /* E_DIR_EDGE_INVALID */ "Directed edge argument was not valid",
+    /* E_UNDIR_EDGE_INVALID */ "Undirected edge argument was not valid",
+    /* E_VERTEX_INVALID */ "Vertex argument was not valid",
+    /* E_PENTAGON */ "Pentagon distortion was encountered",
+    /* E_DUPLICATE_INPUT */ "Duplicate input",
+    /* E_NOT_NEIGHBORS */ "Cell arguments were not neighbors",
+    /* E_RES_MISMATCH */ "Cell arguments had incompatible resolutions",
+    /* E_MEMORY_ALLOC */ "Memory allocation failed",
+    /* E_MEMORY_BOUNDS */ "Bounds of provided memory were insufficient",
+    /* E_OPTION_INVALID */ "Mode or flags argument was not valid"};
+
+/**
+ * Returns the string describing the H3Error. This string is internally
+ * allocated and should not be `free`d.
+ * @param err The H3 error.
+ * @return The string describing the H3Error
+ */
+const char *H3_EXPORT(describeH3Error)(H3Error err) {
+    if (err >= 0 && err <= 15) {  // TODO: Better way to bounds check here?
+        return H3ErrorDescriptions[err];
+    } else {
+        return "Invalid error code";
+    }
+}
 
 /**
  * Returns the H3 resolution of an H3 index.

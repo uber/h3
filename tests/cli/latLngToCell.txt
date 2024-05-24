@@ -1,0 +1,1 @@
+add_h3_cli_test(testCliLatLngToCell "latLngToCell --lat 20 --lng 123 -r 2" "824b9ffffffffff")
