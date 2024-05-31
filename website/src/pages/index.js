@@ -51,14 +51,11 @@ export default function IndexPage() {
       </BrowserOnly>
       <div style={{ position: "relative" }}>
         <TextContainer>
-          <h2>
-            H3 is a discrete global grid system for indexing locations into a
-            hexagonal grid.
-          </h2>
+          <h2>H3 indexes points and shapes into a hexagonal grid.</h2>
           <hr className="short" />
 
           <p>
-            H3 is a discrete global grid system for indexing locations into a
+            H3 is a discrete global grid system for indexing geographies into a
             hexagonal grid, developed at Uber.
           </p>
           <p>

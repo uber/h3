@@ -87,17 +87,13 @@ export default function HomeExporer({ children }) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           // TODO: Consider using the accuracy to select resolution
-          const newHexes = [];
-          for (let res = 0; res <= 15; res++) {
-            newHexes.push(
-              latLngToCell(
-                position.coords.latitude,
-                position.coords.longitude,
-                res,
-              ),
-            );
-          }
-          setUserInput(newHexes.join(", "));
+          setUserInput(
+            latLngToCell(
+              position.coords.latitude,
+              position.coords.longitude,
+              11,
+            ),
+          );
           setGeolocationStatus("");
         },
         () => {
@@ -201,7 +197,7 @@ export default function HomeExporer({ children }) {
               splitUserInput={splitUserInput}
               setUserInput={setUserInput}
               showNavigation={false}
-              showDetails={false}
+              showDetails={true}
             />
           ) : (
             <></>

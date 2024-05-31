@@ -138,9 +138,7 @@ export function SelectedHexDetails({
 
     return (
       <p style={{ marginBottom: "0" }}>
-        Resolution: <tt>{res}</tt>
-        <br />
-        Lat./Lon.: <tt>{coords}</tt>
+        Lat./Lng.: <tt>{coords}</tt>
         {showNavigation ? (
           <>
             <br />
@@ -174,11 +172,13 @@ export function SelectedHexDetails({
         {showDetails ? (
           <details>
             <summary>Details</summary>
+            Resolution: <tt>{res}</tt>
+            <br />
             Base cell: <tt>{baseCell}</tt>
             <br />
             Pentagon: <tt>{`${pent}`}</tt>
             <br />
-            Icosa Faces: <tt>{faces}</tt>
+            Icosa Face IDs: <tt>{faces}</tt>
             <br /># of Boundary Verts: <tt>{boundary.length}</tt>
             <br />
             Cell Area: <tt>{area}</tt> {units.area}
