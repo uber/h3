@@ -87,7 +87,7 @@ export function ExplorerMap({
             [minX, minY],
             [maxX, maxY],
           ],
-          { padding: 48 },
+          { padding: 96 },
         );
 
         setCurrentInitialViewState({

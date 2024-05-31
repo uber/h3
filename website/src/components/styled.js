@@ -3,6 +3,9 @@ import { isMobile } from "./common";
 
 export const DemoContainer = styled.div`
   height: 100%;
+  ${isMobile} {
+    height: 40vh;
+  }
   .tooltip,
   .deck-tooltip {
     position: absolute;
@@ -24,7 +27,7 @@ export const Banner = styled.section`
   color: var(--ifm-color-gray-900);
   z-index: 0;
   ${isMobile} {
-    height: 80vh;
+    height: 40vh;
   }
 `;
 
@@ -59,6 +62,9 @@ export const HeroExampleContainer = styled.div`
   right: 0;
   bottom: 0;
   z-index: -1;
+  ${isMobile} {
+    pointer-events: none;
+  }
 `;
 
 export const Section = styled.section`
