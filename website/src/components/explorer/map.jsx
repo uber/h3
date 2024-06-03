@@ -193,7 +193,7 @@ export function ExplorerMap({
         }
       } else {
         if (coordinateOnClick) {
-          coordinateOnClick({coordinate, zoom: viewport.zoom});
+          coordinateOnClick({ coordinate, zoom: viewport.zoom });
         }
       }
     },

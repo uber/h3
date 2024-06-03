@@ -136,7 +136,7 @@ export default function HomeExporer({ children }) {
     [splitUserInput, setUserInput],
   );
   const coordinateOnClick = useCallback(
-    ({coordinate, zoom}) => {
+    ({ coordinate, zoom }) => {
       if (constantResolution !== undefined) {
         const asSet = new Set(splitUserInput);
         asSet.add(
@@ -145,7 +145,9 @@ export default function HomeExporer({ children }) {
         setUserInput([...asSet].join(", "));
       } else if (splitUserInput.length === 0) {
         const detectedRes = zoomToResolution(zoom);
-        setUserInput(`${latLngToCell(coordinate[1], coordinate[0], detectedRes)}`);
+        setUserInput(
+          `${latLngToCell(coordinate[1], coordinate[0], detectedRes)}`,
+        );
       }
     },
     [splitUserInput, setUserInput, constantResolution],
