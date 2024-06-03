@@ -77,6 +77,10 @@ function doSplitUserInput(userInput) {
   return [];
 }
 
+function zoomToResolution(zoom) {
+  return Math.max(Math.min(zoom / 1.5, 15), 0);
+}
+
 export default function HomeExporer({ children }) {
   const [userInput, setUserInput] = useQueryState("hex", "");
   const [geolocationStatus, setGeolocationStatus] = useState("");
@@ -132,7 +136,7 @@ export default function HomeExporer({ children }) {
     [splitUserInput, setUserInput],
   );
   const coordinateOnClick = useCallback(
-    (coordinate) => {
+    ({coordinate, zoom}) => {
       if (constantResolution !== undefined) {
         const asSet = new Set(splitUserInput);
         asSet.add(
@@ -140,15 +144,8 @@ export default function HomeExporer({ children }) {
         );
         setUserInput([...asSet].join(", "));
       } else if (splitUserInput.length === 0) {
-        // TODO: Detect desired resolution based on zoom?
-        const newHexes = [];
-        for (let res = 0; res <= 15; res++) {
-          newHexes.push(latLngToCell(coordinate[1], coordinate[0], res));
-        }
-        const prev = splitUserInput.length
-          ? `${splitUserInput.join(", ")},`
-          : "";
-        setUserInput(`${prev}${newHexes.join(", ")}`);
+        const detectedRes = zoomToResolution(zoom);
+        setUserInput(`${latLngToCell(coordinate[1], coordinate[0], detectedRes)}`);
       }
     },
     [splitUserInput, setUserInput, constantResolution],

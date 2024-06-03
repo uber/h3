@@ -185,7 +185,7 @@ export function ExplorerMap({
   }, []);
 
   const onClick = useCallback(
-    ({ object, coordinate }) => {
+    ({ object, coordinate, viewport }) => {
       if (object && object.hex) {
         // TODO: click to copy?
         if (objectOnClick) {
@@ -193,7 +193,7 @@ export function ExplorerMap({
         }
       } else {
         if (coordinateOnClick) {
-          coordinateOnClick(coordinate);
+          coordinateOnClick({coordinate, zoom: viewport.zoom});
         }
       }
     },
