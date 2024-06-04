@@ -727,6 +727,557 @@ SUBCOMMAND(localIjToCell,
     return E_SUCCESS;
 }
 
+/// Hierarchical subcommands
+
+SUBCOMMAND(cellToParent,
+           "Returns the H3 index that is the parent (or higher) of the "
+           "provided cell") {
+    DEFINE_CELL_ARG(cell, cellArg);
+    int res = 0;
+    Arg resArg = {.names = {"-r", "--resolution"},
+                  .required = true,
+                  .scanFormat = "%d",
+                  .valueName = "res",
+                  .value = &res,
+                  .helpText =
+                      "Resolution, 0-14 inclusive, excluding 15 as it can "
+                      "never be a parent"};
+    Arg *args[] = {&cellToParentArg, &helpArg, &cellArg, &resArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    H3Index parent;
+    int valid = H3_EXPORT(isValidCell)(cell);
+    if (valid == 0) {
+        return E_CELL_INVALID;
+    }
+    H3Error err = H3_EXPORT(cellToParent)(cell, res, &parent);
+    if (err) {
+        return err;
+    }
+    h3Println(parent);
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(cellToChildren,
+           "Returns a JSON array of H3 indexes that are the children (or "
+           "lower) of the provided cell") {
+    // TODO: This function contains a lot of code that is very similar to
+    // `gridDisk`. If this happens again we should DRY them.
+    DEFINE_CELL_ARG(cell, cellArg);
+    int res = 0;
+    Arg resArg = {.names = {"-r", "--resolution"},
+                  .required = true,
+                  .scanFormat = "%d",
+                  .valueName = "res",
+                  .value = &res,
+                  .helpText =
+                      "Resolution, 1-15 inclusive, excluding 0 as it can "
+                      "never be a child"};
+    Arg *args[] = {&cellToChildrenArg, &helpArg, &cellArg, &resArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    int64_t len = 0;
+    H3Error err = H3_EXPORT(cellToChildrenSize)(cell, res, &len);
+    if (err) {
+        return err;
+    }
+    H3Index *out = calloc(len, sizeof(H3Index));
+    if (out == NULL) {
+        fprintf(stderr, "Failed to allocate memory for the output H3 cells");
+        exit(1);
+    }
+    err = H3_EXPORT(cellToChildren)(cell, res, out);
+    if (err) {
+        free(out);
+        return err;
+    }
+    // Since we don't know *actually* how many cells are in the output (usually
+    // the max, but sometimes not), we need to do a quick scan to figure out the
+    // true length in order to properly serialize to a JSON array
+    int64_t trueLen = 0;
+    for (int64_t i = 0; i < len; i++) {
+        if (out[i] != 0) {
+            trueLen++;
+        }
+    }
+    printf("[ ");
+    for (int64_t i = 0, j = 0; i < len; i++) {
+        if (out[i] != 0) {
+            j++;
+            printf("\"%" PRIx64 "\"%s", out[i], j == trueLen ? "" : ", ");
+        }
+    }
+    free(out);
+    printf(" ]\n");
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(cellToChildrenSize,
+           "Returns the maximum number of children for a given cell at the "
+           "specified child resolution") {
+    // TODO: Do we want to include this subcommand or no? It can be useful to
+    // let someone decide for themselves if they really want to run the command
+    // and get a potentially massive number of cells as the output, but is that
+    // a concern a CLI user would have? They'd probably just ^C it.
+    DEFINE_CELL_ARG(cell, cellArg);
+    int res = 0;
+    Arg resArg = {.names = {"-r", "--resolution"},
+                  .required = true,
+                  .scanFormat = "%d",
+                  .valueName = "res",
+                  .value = &res,
+                  .helpText =
+                      "Resolution, 1-15 inclusive, excluding 0 as it can "
+                      "never be a child"};
+    Arg *args[] = {&cellToChildrenSizeArg, &helpArg, &cellArg, &resArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    int64_t len = 0;
+    H3Error err = H3_EXPORT(cellToChildrenSize)(cell, res, &len);
+    if (err) {
+        return err;
+    }
+    printf("%" PRId64, len);
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(
+    cellToCenterChild,
+    "Returns the H3 index that is the centrally-placed child (or lower) of the "
+    "provided cell") {
+    DEFINE_CELL_ARG(cell, cellArg);
+    int res = 0;
+    Arg resArg = {.names = {"-r", "--resolution"},
+                  .required = true,
+                  .scanFormat = "%d",
+                  .valueName = "res",
+                  .value = &res,
+                  .helpText =
+                      "Resolution, 1-15 inclusive, excluding 0 as it can "
+                      "never be a child"};
+    Arg *args[] = {&cellToCenterChildArg, &helpArg, &cellArg, &resArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    H3Index centerChild;
+    int valid = H3_EXPORT(isValidCell)(cell);
+    if (valid == 0) {
+        return E_CELL_INVALID;
+    }
+    H3Error err = H3_EXPORT(cellToCenterChild)(cell, res, &centerChild);
+    if (err) {
+        return err;
+    }
+    h3Println(centerChild);
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(
+    cellToChildPos,
+    "Returns the position of the child cell within an ordered list of all "
+    "children of the cell's parent at the specified child resolution") {
+    DEFINE_CELL_ARG(cell, cellArg);
+    int res = 0;
+    Arg resArg = {.names = {"-r", "--resolution"},
+                  .required = true,
+                  .scanFormat = "%d",
+                  .valueName = "res",
+                  .value = &res,
+                  .helpText =
+                      "Resolution, 1-15 inclusive, excluding 0 as it can "
+                      "never be a child"};
+    Arg *args[] = {&cellToChildPosArg, &helpArg, &cellArg, &resArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    int64_t len = 0;
+    H3Error err = H3_EXPORT(cellToChildPos)(cell, res, &len);
+    if (err) {
+        return err;
+    }
+    printf("%" PRId64, len);
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(childPosToCell,
+           "Returns the child cell at a given position and resolution within "
+           "an ordered list of all children of the parent cell") {
+    DEFINE_CELL_ARG(cell, cellArg);
+    int res = 0;
+    Arg resArg = {.names = {"-r", "--resolution"},
+                  .required = true,
+                  .scanFormat = "%d",
+                  .valueName = "res",
+                  .value = &res,
+                  .helpText =
+                      "Resolution, 1-15 inclusive, excluding 0 as it can "
+                      "never be a child"};
+    int64_t pos;
+    Arg posArg = {
+        .names = {"-p", "--position"},
+        .required = true,
+        .scanFormat = "%d",
+        .valueName = "pos",
+        .value = &pos,
+        .helpText =
+            "The child position within the set of children of the parent cell"};
+    Arg *args[] = {&childPosToCellArg, &helpArg, &cellArg, &resArg, &posArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    H3Index child;
+    int valid = H3_EXPORT(isValidCell)(cell);
+    if (valid == 0) {
+        return E_CELL_INVALID;
+    }
+    H3Error err = H3_EXPORT(childPosToCell)(pos, cell, res, &child);
+    if (err) {
+        return err;
+    }
+    h3Println(child);
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(compactCells,
+           "Compacts the provided set of cells as best as possible. The set of "
+           "input cells must all share the same resolution. The compacted "
+           "cells will be printed one per line to stdout.") {
+    char filename[1024] = {0};  // More than Windows, lol
+    Arg filenameArg = {
+        .names = {"-f", "--file"},
+        .scanFormat = "%1023c",
+        .valueName = "FILENAME",
+        .value = &filename,
+        .helpText =
+            "The file to load the cells from. Use -- to read from stdin."};
+    char cellStrs[1501] = {
+        0};  // Supports up to 100 cells at a time with zero padding
+    Arg cellStrsArg = {.names = {"-c", "--cells"},
+                       .scanFormat = "%1500c",
+                       .valueName = "CELLS",
+                       .value = &cellStrs,
+                       .helpText =
+                           "The cells to compact. Up to 100 cells if provided "
+                           "as hexadecimals with zero padding."};
+    Arg *args[] = {&compactCellsArg, &helpArg, &filenameArg, &cellStrsArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    if (!filenameArg.found && !cellStrsArg.found) {
+        fprintf(stderr,
+                "You must provide either a file to read from or a set of cells "
+                "to compact to use compactCells");
+        exit(1);
+    }
+    // We use the same consumption logic for both kinds of input, and in fact
+    // use the cellStrs char array as out input buffer for the file path. The
+    // only difference between the two is when we reach the end of the buffer.
+    // If there's a non-null file pointer, we start from the last successful
+    // consumption from the buffer and move the data following it to the
+    // beginning of the buffer, then we read some of the file after that and
+    // slap it on after that and continue the consumption loops, while the other
+    // path just ends at that point. As we have no idea how many cells we're
+    // going to load, we allocate enough for 128 cells, but if that's not
+    // enough, we also have to re-allocate double the number of cells, copy them
+    // over, and free the old buffer of cells. Doing this manually since we want
+    // to keep the build process for H3 simple and C's stdlib is pretty bare.
+    H3Index *cells = calloc(128, sizeof(H3Index));
+    FILE *fp = 0;
+    int cellStrsOffset = 0;
+    int cellsOffset = 0;
+    int cellsLen = 128;
+    bool isStdin = false;
+    if (filenameArg.found) {
+        if (strcmp(filename, "--") == 0) {
+            fp = stdin;
+            isStdin = true;
+        } else {
+            fp = fopen(filename, "r");
+        }
+        if (fp == 0) {
+            fprintf(stderr, "The specified file does not exist.");
+            exit(1);
+        }
+        // Do the initial population of data from the file
+        if (fread(cellStrs, 1, 1500, fp) == 0) {
+            fprintf(stderr, "The specified file is empty.");
+            exit(1);
+        }
+    }
+    do {
+        // Always start from the beginning of the buffer
+        cellStrsOffset = 0;
+        int lastGoodOffset = 0;
+        while (cellStrsOffset < 1485) {  // Keep consuming as much as possible
+            H3Index cell = 0;
+            while (cell == 0 && cellStrsOffset < 1485) {
+                // Grab 15 characters and then scan to see if it has an H3 index
+                // in it
+                char possibleIndex[16] = {0};
+                bool badChar = false;
+                for (int i = 0; i < 15; i++) {
+                    char c = cellStrs[i + cellStrsOffset];
+                    if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') ||
+                        (c >= 'A' && c <= 'F')) {
+                        possibleIndex[i] = c;
+                    } else {
+                        // Encountered a bad character, set the offset after
+                        // this character as the next to check
+                        cellStrsOffset += i + 1;
+                        badChar = true;
+                        break;
+                    }
+                    possibleIndex[i] = cellStrs[i + cellStrsOffset];
+                }
+                if (!badChar) {
+                    if (sscanf(possibleIndex, "%" PRIx64, &cell) != 0) {
+                        // We can jump ahead 15 chars. The while loop check will
+                        // make sure we don't overwrite this cell with another
+                        // one
+                        cellStrsOffset += 15;
+                        lastGoodOffset = cellStrsOffset;
+                    } else {
+                        // This *shouldn't* happen, I think? But try again if
+                        // necessary
+                        cellStrsOffset++;
+                    }
+                }
+            }
+            // If we still don't have a cell and we've reached the end, we reset
+            // the offset and `continue` to trigger another read
+            if (cell == 0 && cellStrsOffset == 1500) {
+                cellStrsOffset = 0;
+                continue;
+            }
+            // Otherwise, we have a cell to shove into the cells array.
+            cells[cellsOffset] = cell;
+            cellsOffset++;
+            // Potentially grow our array
+            if (cellsOffset == cellsLen) {
+                cellsLen *= 2;
+                H3Index *newCells = calloc(cellsLen, sizeof(H3Index));
+                for (int i = 0; i < cellsOffset; i++) {
+                    newCells[i] = cells[i];
+                }
+                free(cells);
+                cells = newCells;
+            }
+        }
+        // In case there's a valid H3 index that was unfortunately split between
+        // buffer reads, we take from the lastGoodOffset and copy the rest to
+        // the beginning of the buffer so it can be re-assembled on the next
+        // file read. However, we also know that a valid H3 index is 15
+        // characters long, so if the lastGoodOffset is 15 or more characters
+        // away from 1500, we only need to copy those final 14 bytes from the
+        // end, so if lastGoodOffset is 1485 or less, we force it to 1485 and
+        // then move the chunk as specified to the beginning and adjust the
+        // cellStrsOffset.
+        if (lastGoodOffset < 1485) {
+            lastGoodOffset = 1485;
+        }
+        for (int i = 0; i < 1500 - lastGoodOffset; i++) {
+            cellStrs[i] = cellStrs[i + lastGoodOffset];
+        }
+        cellStrsOffset = 1500 - lastGoodOffset;
+    } while (fp != 0 && fread(cellStrs + cellStrsOffset, 1,
+                              1500 - cellStrsOffset, fp) != 0);
+    if (fp != 0 && !isStdin) {
+        fclose(fp);
+    }
+    // Now that we have the cells in a buffer and the actual cell count in
+    // cellsOffset, we can feed this to the H3 C API
+    H3Index *compactedSet = calloc(cellsOffset, sizeof(H3Index));
+    H3Error err = H3_EXPORT(compactCells)(cells, compactedSet, cellsOffset);
+    if (err) {
+        free(cells);
+        free(compactedSet);
+        return err;
+    }
+    // We have a compacted set! Let's print them out
+    for (int i = 0; i < cellsOffset; i++) {
+        if (compactedSet[i] == 0) {
+            continue;
+        }
+        h3Println(compactedSet[i]);
+    }
+    free(cells);
+    free(compactedSet);
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(uncompactCells,
+           "Unompacts the provided set of compacted cells."
+           "The uncompacted "
+           "cells will be printed one per line to stdout.") {
+    // TODO: *Most* of this logic is shared with compactCells. See about DRYing
+    // it.
+    char filename[1024] = {0};  // More than Windows, lol
+    Arg filenameArg = {
+        .names = {"-f", "--file"},
+        .scanFormat = "%1023c",
+        .valueName = "FILENAME",
+        .value = &filename,
+        .helpText =
+            "The file to load the cells from. Use -- to read from stdin."};
+    char cellStrs[1501] = {
+        0};  // Supports up to 100 cells at a time with zero padding
+    Arg cellStrsArg = {
+        .names = {"-c", "--cells"},
+        .scanFormat = "%1500c",
+        .valueName = "CELLS",
+        .value = &cellStrs,
+        .helpText =
+            "The cells to uncompact. Up to 100 cells if provided "
+            "as hexadecimals with zero padding."};
+    int res = 0;
+    Arg resArg = {.names = {"-r", "--resolution"},
+                  .required = true,
+                  .scanFormat = "%d",
+                  .valueName = "res",
+                  .value = &res,
+                  .helpText =
+                      "Resolution, 0-15 inclusive, that the compacted set "
+                      "should be uncompacted to. Must be greater than or equal "
+                      "to the highest resolution within the compacted set."};
+    Arg *args[] = {&uncompactCellsArg, &helpArg, &filenameArg, &cellStrsArg,
+                   &resArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    if (!filenameArg.found && !cellStrsArg.found) {
+        fprintf(stderr,
+                "You must provide either a file to read from or a set of cells "
+                "to compact to use uncompactCells");
+        exit(1);
+    }
+    // We use the same consumption logic for both kinds of input, and in fact
+    // use the cellStrs char array as out input buffer for the file path. The
+    // only difference between the two is when we reach the end of the buffer.
+    // If there's a non-null file pointer, we start from the last successful
+    // consumption from the buffer and move the data following it to the
+    // beginning of the buffer, then we read some of the file after that and
+    // slap it on after that and continue the consumption loops, while the other
+    // path just ends at that point. As we have no idea how many cells we're
+    // going to load, we allocate enough for 128 cells, but if that's not
+    // enough, we also have to re-allocate double the number of cells, copy them
+    // over, and free the old buffer of cells. Doing this manually since we want
+    // to keep the build process for H3 simple and C's stdlib is pretty bare.
+    H3Index *cells = calloc(128, sizeof(H3Index));
+    FILE *fp = 0;
+    int cellStrsOffset = 0;
+    int cellsOffset = 0;
+    int cellsLen = 128;
+    bool isStdin = false;
+    if (filenameArg.found) {
+        if (strcmp(filename, "--") == 0) {
+            fp = stdin;
+            isStdin = true;
+        } else {
+            fp = fopen(filename, "r");
+        }
+        if (fp == 0) {
+            fprintf(stderr, "The specified file does not exist.");
+            exit(1);
+        }
+        // Do the initial population of data from the file
+        if (fread(cellStrs, 1, 1500, fp) == 0) {
+            fprintf(stderr, "The specified file is empty.");
+            exit(1);
+        }
+    }
+    do {
+        // Always start from the beginning of the buffer
+        cellStrsOffset = 0;
+        int lastGoodOffset = 0;
+        while (cellStrsOffset < 1485) {  // Keep consuming as much as possible
+            H3Index cell = 0;
+            while (cell == 0 && cellStrsOffset < 1485) {
+                // Grab 15 characters and then scan to see if it has an H3 index
+                // in it
+                char possibleIndex[16] = {0};
+                bool badChar = false;
+                for (int i = 0; i < 15 && !badChar; i++) {
+                    char c = cellStrs[i + cellStrsOffset];
+                    if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') ||
+                        (c >= 'A' && c <= 'F')) {
+                        possibleIndex[i] = c;
+                    } else {
+                        // Encountered a bad character, set the offset after
+                        // this character as the next to check
+                        cellStrsOffset += i + 1;
+                        badChar = true;
+                    }
+                    possibleIndex[i] = cellStrs[i + cellStrsOffset];
+                }
+                if (!badChar) {
+                    if (sscanf(possibleIndex, "%" PRIx64, &cell) != 0) {
+                        // We can jump ahead 15 chars. The while loop check will
+                        // make sure we don't overwrite this cell with another
+                        // one
+                        cellStrsOffset += 15;
+                        lastGoodOffset = cellStrsOffset;
+                    }
+                } else {
+                    cell = 0;
+                }
+            }
+            // If we still don't have a cell and we've reached the end, we reset
+            // the offset and `continue` to trigger another read
+            if (cell == 0 && cellStrsOffset == 1500) {
+                cellStrsOffset = 0;
+                continue;
+            }
+            // Otherwise, we have a cell to shove into the cells array.
+            cells[cellsOffset] = cell;
+            cellsOffset++;
+            // Potentially grow our array
+            if (cellsOffset == cellsLen) {
+                cellsLen *= 2;
+                H3Index *newCells = calloc(cellsLen, sizeof(H3Index));
+                for (int i = 0; i < cellsOffset; i++) {
+                    newCells[i] = cells[i];
+                }
+                free(cells);
+                cells = newCells;
+            }
+        }
+        // In case there's a valid H3 index that was unfortunately split between
+        // buffer reads, we take from the lastGoodOffset and copy the rest to
+        // the beginning of the buffer so it can be re-assembled on the next
+        // file read. However, we also know that a valid H3 index is 15
+        // characters long, so if the lastGoodOffset is 15 or more characters
+        // away from 1500, we only need to copy those final 14 bytes from the
+        // end, so if lastGoodOffset is 1485 or less, we force it to 1485 and
+        // then move the chunk as specified to the beginning and adjust the
+        // cellStrsOffset.
+        if (lastGoodOffset < 1485) {
+            lastGoodOffset = 1485;
+        }
+        for (int i = 0; i < 1500 - lastGoodOffset; i++) {
+            cellStrs[i] = cellStrs[i + lastGoodOffset];
+        }
+        cellStrsOffset = 1500 - lastGoodOffset;
+    } while (fp != 0 && fread(cellStrs + cellStrsOffset, 1,
+                              1500 - cellStrsOffset, fp) != 0);
+    if (fp != 0 && !isStdin) {
+        fclose(fp);
+    }
+    // Now that we have the cells in a buffer and the actual cell count in
+    // cellsOffset, we can feed this to the H3 C API
+    int64_t uncompactedSize = 0;
+    H3Error err = H3_EXPORT(uncompactCellsSize)(cells, cellsOffset, res,
+                                                &uncompactedSize);
+    if (err) {
+        free(cells);
+        return err;
+    }
+    H3Index *uncompactedSet = calloc(uncompactedSize, sizeof(H3Index));
+    err = H3_EXPORT(uncompactCells)(cells, cellsOffset, uncompactedSet,
+                                    uncompactedSize, res);
+    if (err) {
+        free(cells);
+        free(uncompactedSet);
+        return err;
+    }
+    // We have a compacted set! Let's print them out
+    for (int i = 0; i < uncompactedSize; i++) {
+        if (uncompactedSet[i] == 0) {
+            continue;
+        }
+        h3Println(uncompactedSet[i]);
+    }
+    free(cells);
+    free(uncompactedSet);
+    return E_SUCCESS;
+}
+
 // TODO: Is there any way to avoid this particular piece of duplication?
 SUBCOMMANDS_INDEX
 
@@ -753,6 +1304,16 @@ SUBCOMMAND_INDEX(gridPathCells)
 SUBCOMMAND_INDEX(gridDistance)
 SUBCOMMAND_INDEX(cellToLocalIj)
 SUBCOMMAND_INDEX(localIjToCell)
+
+/// Hierarchical subcommands
+SUBCOMMAND_INDEX(cellToParent)
+SUBCOMMAND_INDEX(cellToChildren)
+SUBCOMMAND_INDEX(cellToChildrenSize)
+SUBCOMMAND_INDEX(cellToCenterChild)
+SUBCOMMAND_INDEX(cellToChildPos)
+SUBCOMMAND_INDEX(childPosToCell)
+SUBCOMMAND_INDEX(compactCells)
+SUBCOMMAND_INDEX(uncompactCells)
 
 END_SUBCOMMANDS_INDEX
 
