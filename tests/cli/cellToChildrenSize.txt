@@ -1,0 +1,1 @@
+add_h3_cli_test(testCliCellToChildrenSize "cellToChildrenSize -c 85283473fffffff -r 6" "7")
