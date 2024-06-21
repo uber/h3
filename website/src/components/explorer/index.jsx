@@ -1,6 +1,6 @@
 // Contains code adapted from https://observablehq.com/@nrabinowitz/h3-index-inspector under the ISC license
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo } from "react";
 import { isValidCell, latLngToCell, getResolution } from "h3-js";
 import {
   Banner,
@@ -11,6 +11,7 @@ import {
 import { useQueryState } from "use-location-state";
 import { SelectedHexDetails } from "./details";
 import { ExplorerMap } from "./map";
+import { WhereAmIButton } from "./where-am-i";
 
 function fullyTrim(str) {
   if (!str) {
@@ -83,31 +84,6 @@ function zoomToResolution(zoom) {
 
 export default function HomeExporer({ children }) {
   const [userInput, setUserInput] = useQueryState("hex", "");
-  const [geolocationStatus, setGeolocationStatus] = useState("");
-
-  const doGeoLocation = useCallback(async () => {
-    if ("geolocation" in navigator) {
-      setGeolocationStatus("Locating...");
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          // TODO: Consider using the accuracy to select resolution
-          setUserInput(
-            latLngToCell(
-              position.coords.latitude,
-              position.coords.longitude,
-              11,
-            ),
-          );
-          setGeolocationStatus("");
-        },
-        () => {
-          setGeolocationStatus("Error");
-        },
-      );
-    } else {
-      setGeolocationStatus("No location services");
-    }
-  }, [setUserInput]);
 
   const splitUserInput = useMemo(() => {
     return doSplitUserInput(userInput);
@@ -184,13 +160,6 @@ export default function HomeExporer({ children }) {
               resize: "vertical",
             }}
           />
-          <input
-            type="button"
-            value="Where am I?"
-            onClick={doGeoLocation}
-            style={{ marginRight: "0.5rem" }}
-          />
-          {geolocationStatus}
           {splitUserInput.length ? (
             <SelectedHexDetails
               splitUserInput={splitUserInput}
@@ -202,6 +171,7 @@ export default function HomeExporer({ children }) {
             <></>
           )}
         </BannerContainer>
+        <WhereAmIButton setUserInput={setUserInput} />
       </Banner>
       {children}
     </>

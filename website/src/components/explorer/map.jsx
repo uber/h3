@@ -35,6 +35,7 @@ export function ExplorerMap({
 }) {
   const [currentInitialViewState, setCurrentInitialViewState] =
     useState(initialViewState);
+  const [deckLoaded, setDeckLoaded] = useState(false);
   const deckRef = useRef();
   const res0Cells = useMemo(() => getRes0Cells().map((hex) => ({ hex })), []);
   const res1Cells = useMemo(
@@ -99,7 +100,7 @@ export function ExplorerMap({
         });
       }
     }
-  }, [userInput, userValidHex]);
+  }, [userInput, userValidHex, deckLoaded]);
 
   const layers = userValidHex
     ? [
@@ -209,6 +210,7 @@ export function ExplorerMap({
       getTooltip={getTooltip}
       getCursor={getCursor}
       onClick={onClick}
+      onLoad={() => setDeckLoaded(true)}
     >
       <Map reuseMaps mapStyle={mapStyle} />
     </DeckGL>
