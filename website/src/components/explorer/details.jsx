@@ -114,23 +114,26 @@ export function SelectedHexDetails({
     const hex = splitUserInput[0];
     const units = cellUnits(hex);
     const res = getResolution(hex);
+    const floatPrecision = res / 3 + 7;
+
     const baseCell = getBaseCellNumber(hex);
     const pent = isPentagon(hex);
     const faces = getIcosahedronFaces(hex).join(", ");
     const coords = cellToLatLng(hex)
-      .map((n) => n.toPrecision(res / 3 + 7))
+      .map((n) => n.toPrecision(floatPrecision))
       .join(", ");
     const digits =
       res === 0 ? "(none)" : h3IndexToDigits(hex).slice(0, res).join("");
     const boundary = cellToBoundary(hex);
-    const area = cellArea(hex, units.area);
+    const area = cellArea(hex, units.area).toPrecision(floatPrecision);
     const edgeLengths = originToDirectedEdges(hex).map((e) =>
       edgeLength(e, units.dist),
     );
-    const meanEdgeLength =
+    const meanEdgeLength = (
       edgeLengths.reduce((prev, curr) =>
         prev !== undefined ? prev + curr : curr,
-      ) / edgeLengths.length;
+      ) / edgeLengths.length
+    ).toPrecision(floatPrecision);
     const parent = res !== 0 && cellToParent(hex, res - 1);
     const children = res !== 15 && cellToChildren(hex, res + 1);
     const neighbors = new Set(gridDisk(hex, 1));
