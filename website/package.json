@@ -22,7 +22,7 @@
     "@mdx-js/react": "^1.6.22",
     "deck.gl": "^9.0.12",
     "global": "^4.4.0",
-    "h3-js": "^4.0.0",
+    "h3-js": "4.1.0",
     "h3-jsv3": "npm:h3-js@^3.7.1",
     "maplibre-gl": "^4.1.3",
     "prettier": "^3.2.5",

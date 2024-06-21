@@ -213,6 +213,7 @@ add_h3_test(testBaseCellsInternal src/apps/testapps/testBaseCellsInternal.c)
 add_h3_test(testPentagonIndexes src/apps/testapps/testPentagonIndexes.c)
 add_h3_test(testH3IteratorsInternal src/apps/testapps/testH3IteratorsInternal.c)
 add_h3_test(testMathExtensionsInternal src/apps/testapps/testMathExtensionsInternal.c)
+add_h3_test(testDescribeH3Error src/apps/testapps/testDescribeH3Error.c)
 
 add_h3_test_with_arg(testH3NeighborRotations src/apps/testapps/testH3NeighborRotations.c 0)
 add_h3_test_with_arg(testH3NeighborRotations src/apps/testapps/testH3NeighborRotations.c 1)
@@ -228,9 +229,10 @@ add_h3_test(testGridDistanceExhaustive src/apps/testapps/testGridDistanceExhaust
 add_h3_test(testH3CellAreaExhaustive src/apps/testapps/testH3CellAreaExhaustive.c)
 add_h3_test(testCellToBBoxExhaustive src/apps/testapps/testCellToBBoxExhaustive.c)
 
-add_h3_cli_test(testCliCellToLatLng "cellToLatLng -c 8928342e20fffff" "POINT(-122.5003039349 37.5012466151)")
-add_h3_cli_test(testCliLatLngToCell "latLngToCell --lat 20 --lng 123 -r 2" "824b9ffffffffff")
-add_h3_cli_test(testCliCellToBoundary "cellToBoundary -c 8928342e20fffff" "POLYGON((-122.4990471431 37.4997389893, -122.4979805011 37.5014245698, -122.4992373065 37.5029321860, -122.5015607527 37.5027541980, -122.5026273256 37.5010686174, -122.5013705214 37.4995610248, -122.4990471431 37.4997389893))")
+file(GLOB cli_tests tests/cli/*.txt)
+foreach(file ${cli_tests})
+  include(${file})
+endforeach()
 
 if(BUILD_ALLOC_TESTS)
     add_h3_library(h3WithTestAllocators test_prefix_)

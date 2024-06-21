@@ -1,0 +1,1 @@
+add_h3_cli_test(testCliIsPentagon "isPentagon -c 85283473fffffff" "false")
