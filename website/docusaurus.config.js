@@ -27,7 +27,7 @@ module.exports = {
         {
           to: 'docs',
           activeBaseRegex: 'docs(/)$',
-          label: 'Intro',
+          label: 'About',
           position: 'left',
         },
         {
@@ -83,12 +83,29 @@ module.exports = {
           title: 'Community',
           items: [
             {
+              label: 'Slack',
+              href: 'https://join.slack.com/t/h3-core/shared_invite/zt-g6u5r1hf-W_~uVJmfeiWtMQuBGc1NNg',
+            },
+            {
               label: 'Stack Overflow',
               href: 'https://stackoverflow.com/questions/tagged/h3',
             },
+          ],
+        },
+        {
+          title: 'Bindings',
+          items: [
             {
-              label: 'Slack',
-              href: 'https://join.slack.com/t/h3-core/shared_invite/zt-g6u5r1hf-W_~uVJmfeiWtMQuBGc1NNg',
+              label: 'Python',
+              href: 'https://uber.github.io/h3-py/',
+            },
+            {
+              label: 'JavaScript',
+              href: 'https://github.com/uber/h3-js',
+            },
+            {
+              label: 'More bindings',
+              href: 'docs/community/bindings',
             },
           ],
         },
@@ -125,7 +142,10 @@ module.exports = {
           },
         },
         theme: {
-          customCss: require.resolve('./src/css/custom.css'),
+          customCss: [
+            require.resolve('./src/css/custom.css'),
+            require.resolve('./node_modules/mapbox-gl/dist/mapbox-gl.css'),
+          ],
         },
       },
     ],
@@ -137,4 +157,7 @@ module.exports = {
           crossorigin: "anonymous",
       },
   ],
+  customFields: {
+    mapboxAccessToken: process.env.MapboxAccessToken
+  },
 };

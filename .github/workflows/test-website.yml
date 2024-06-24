@@ -28,5 +28,11 @@ jobs:
           yarn
           yarn build
 
+      - name: Formatting check
+        working-directory: website
+        run: |
+          yarn format
+          git diff --exit-code
+
       - name: Submit FOSSA report
         run: if [ -n "${{ secrets.FOSSA_API_KEY }}" ]; then fossa; fi
