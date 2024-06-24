@@ -7,12 +7,13 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { Map } from "react-map-gl/maplibre";
+import { Map } from "react-map-gl";
 import DeckGL from "@deck.gl/react";
 import { H3HexagonLayer } from "@deck.gl/geo-layers";
 import { PathStyleExtension } from "@deck.gl/extensions";
 import { WebMercatorViewport, FlyToInterpolator } from "@deck.gl/core";
 import { getRes0Cells, uncompactCells, cellToBoundary } from "h3-js";
+import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 
 const INITIAL_VIEW_STATE = {
   longitude: -74.012,
@@ -22,8 +23,7 @@ const INITIAL_VIEW_STATE = {
   bearing: 0,
 };
 
-const MAP_STYLE =
-  "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
+const MAP_STYLE = "mapbox://styles/ibrodsky/clxqms2fb03cz01qj9aopa7t9";
 
 export function ExplorerMap({
   userInput = [],
@@ -33,6 +33,7 @@ export function ExplorerMap({
   objectOnClick = undefined,
   coordinateOnClick = undefined,
 }) {
+  const context = useDocusaurusContext();
   const [currentInitialViewState, setCurrentInitialViewState] =
     useState(initialViewState);
   const [deckLoaded, setDeckLoaded] = useState(false);
@@ -48,8 +49,6 @@ export function ExplorerMap({
   );
 
   useEffect(() => {
-    // TODO: This doesn't set the viewport right on restoring state
-    // TODO: Do not do this on manual (click on map) selection
     if (userValidHex && deckRef.current) {
       const { width, height } = deckRef.current.deck;
 
@@ -212,7 +211,13 @@ export function ExplorerMap({
       onClick={onClick}
       onLoad={() => setDeckLoaded(true)}
     >
-      <Map reuseMaps mapStyle={mapStyle} />
+      <Map
+        reuseMaps
+        interactive={false}
+        projection={"mercator"}
+        mapboxAccessToken={context.siteConfig.customFields.mapboxAccessToken}
+        mapStyle={mapStyle}
+      />
     </DeckGL>
   );
 }

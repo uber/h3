@@ -144,7 +144,7 @@ module.exports = {
         theme: {
           customCss: [
             require.resolve('./src/css/custom.css'),
-            require.resolve('./node_modules/maplibre-gl/dist/maplibre-gl.css'),
+            require.resolve('./node_modules/mapbox-gl/dist/mapbox-gl.css'),
           ],
         },
       },
@@ -157,4 +157,7 @@ module.exports = {
           crossorigin: "anonymous",
       },
   ],
+  customFields: {
+    mapboxAccessToken: process.env.MapboxAccessToken
+  },
 };
