@@ -66,7 +66,7 @@
 /** scaling factor from hex2d resolution 0 unit length
  * (or distance between adjacent cell center points
  * on the plane) to gnomonic unit length. */
-#define     RES0_U_GNOMONIC 0.38196601125010500003
+#define RES0_U_GNOMONIC 0.38196601125010500003
 #define INV_RES0_U_GNOMONIC 2.61803398874989588842
 
 /** max H3 resolution; H3 version 1 has 16 resolutions, numbered 0 through 15 */
