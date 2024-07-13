@@ -66,7 +66,7 @@ void _hex2dToCoordIJK(const Vec2d *v, CoordIJK *h) {
     a2 = fabsl(v->y);
 
     // first do a reverse conversion
-    x2 = a2 / M_SIN60;
+    x2 = a2 * M_RSIN60;
     x1 = a1 + x2 / 2.0;
 
     // check if we have the center of a hex
