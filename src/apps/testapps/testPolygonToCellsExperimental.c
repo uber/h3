@@ -31,49 +31,97 @@ static LatLng sfVerts[] = {
     {0.659966917655, -2.1364398519396},  {0.6595011102219, -2.1359434279405},
     {0.6583348114025, -2.1354884206045}, {0.6581220034068, -2.1382437718946},
     {0.6594479998527, -2.1384597563896}, {0.6599990002976, -2.1376771158464}};
-static GeoLoop sfGeoLoop = {.numVerts = 6, .verts = sfVerts};
-static GeoPolygon sfGeoPolygon;
 
-static LatLng holeVerts[] = {{0.6595072188743, -2.1371053983433},
+static GeoPolygon sfGeoPolygon = {
+    .geoloop = {.numVerts = ARRAY_SIZE(sfVerts), .verts = sfVerts}};
+
+static GeoPolygon holeGeoPolygon = {
+    .geoloop = {.numVerts = ARRAY_SIZE(sfVerts), .verts = sfVerts},
+    .numHoles = 1,
+    .holes = (GeoLoop[]){
+        {.numVerts = 3,
+         .verts = (LatLng[]){{0.6595072188743, -2.1371053983433},
                              {0.6591482046471, -2.1373141048153},
-                             {0.6592295020837, -2.1365222838402}};
-static GeoLoop holeGeoLoop = {.numVerts = 3, .verts = holeVerts};
-static GeoPolygon holeGeoPolygon;
+                             {0.6592295020837, -2.1365222838402}}}}};
 
-static LatLng emptyVerts[] = {{0.659966917655, -2.1364398519394},
-                              {0.659966917656, -2.1364398519395},
-                              {0.659966917657, -2.1364398519396}};
-static GeoLoop emptyGeoLoop = {.numVerts = 3, .verts = emptyVerts};
-static GeoPolygon emptyGeoPolygon;
+static GeoPolygon emptyGeoPolygon = {
+    .geoloop = {.numVerts = 3,
+                .verts = (LatLng[]){{0.659966917655, -2.1364398519394},
+                                    {0.659966917656, -2.1364398519395},
+                                    {0.659966917657, -2.1364398519396}}}};
 
-static LatLng invalidVerts[] = {{INFINITY, INFINITY}, {-INFINITY, -INFINITY}};
-static GeoLoop invalidGeoLoop = {.numVerts = 2, .verts = invalidVerts};
-static GeoPolygon invalidGeoPolygon;
+static GeoPolygon nonFiniteGeoPolygon = {
+    .geoloop = {
+        .numVerts = 2,
+        .verts = (LatLng[]){{INFINITY, INFINITY}, {-INFINITY, -INFINITY}}}};
 
-static LatLng outOfBoundsVert[] = {{-2000, -2000}};
-static GeoLoop outOfBoundsVertGeoLoop = {.numVerts = 1,
-                                         .verts = outOfBoundsVert};
-static GeoPolygon outOfBoundsVertGeoPolygon;
+static GeoPolygon nanGeoPolygon = {
+    .geoloop = {.numVerts = 2, .verts = (LatLng[]){{NAN, NAN}, {-NAN, -NAN}}}};
 
-static LatLng invalid2Verts[] = {{NAN, NAN}, {-NAN, -NAN}};
-static GeoLoop invalid2GeoLoop = {.numVerts = 2, .verts = invalid2Verts};
-static GeoPolygon invalid2GeoPolygon;
+static GeoPolygon outOfBoundsVertGeoPolygon = {
+    .geoloop = {.numVerts = 1, .verts = (LatLng[]){{-2000, -2000}}}};
 
-static GeoLoop nullGeoLoop = {.numVerts = 0};
-static GeoPolygon nullGeoPolygon;
+static GeoPolygon nullGeoPolygon = {.geoloop = {.numVerts = 0}};
 
 static LatLng pointVerts[] = {{0.6595072188743, -2.1371053983433}};
-static GeoLoop pointGeoLoop = {.numVerts = 1, .verts = pointVerts};
-static GeoPolygon pointGeoPolygon;
+static GeoPolygon pointGeoPolygon = {
+    .geoloop = {.numVerts = ARRAY_SIZE(pointVerts), .verts = pointVerts}};
 
 static LatLng lineVerts[] = {{0.6595072188743, -2.1371053983433},
                              {0.6591482046471, -2.1373141048153}};
-static GeoLoop lineGeoLoop = {.numVerts = 2, .verts = lineVerts};
-static GeoPolygon lineGeoPolygon;
+static GeoPolygon lineGeoPolygon = {
+    .geoloop = {.numVerts = ARRAY_SIZE(lineVerts), .verts = lineVerts}};
 
-static GeoPolygon nullHoleGeoPolygon;
-static GeoPolygon pointHoleGeoPolygon;
-static GeoPolygon lineHoleGeoPolygon;
+static GeoPolygon nullHoleGeoPolygon = {
+    .geoloop = {.numVerts = ARRAY_SIZE(sfVerts), .verts = sfVerts},
+    .numHoles = 1,
+    .holes = (GeoLoop[]){{.numVerts = 0}}};
+
+static GeoPolygon pointHoleGeoPolygon = {
+    .geoloop = {.numVerts = ARRAY_SIZE(sfVerts), .verts = sfVerts},
+    .numHoles = 1,
+    .holes =
+        (GeoLoop[]){{.numVerts = ARRAY_SIZE(pointVerts), .verts = pointVerts}}};
+static GeoPolygon lineHoleGeoPolygon = {
+    .geoloop = {.numVerts = ARRAY_SIZE(sfVerts), .verts = sfVerts},
+    .numHoles = 1,
+    .holes =
+        (GeoLoop[]){{.numVerts = ARRAY_SIZE(lineVerts), .verts = lineVerts}}};
+
+static GeoPolygon fuzzerFailure = {
+    .geoloop = {.numVerts = 1, .verts = (LatLng[]){{0.000000000, 0.000000000}}},
+    .numHoles = 5,
+    .holes = (GeoLoop[]){
+        {.numVerts = 9,
+         .verts =
+             (LatLng[]){
+                 {0.000000000, -0.000000000},
+                 {-0.000000000,
+                  2748442886721409313719038754629364176612174103396910975667688045384466158239047111515156119908354033028732640897702389786583276177564900289955662483960102912.000000000},
+                 {-0.000000000, -0.000000000},
+                 {-0.000000000, -0.000000000},
+                 {-0.000000000, -0.000000000},
+                 {-0.000000000, -0.000000000},
+                 {-0.000000000, -0.000000000},
+                 {-0.000000000, 0.000000000},
+                 {0.000000000, 0.000000000}}},
+        {.numVerts = 0, .verts = (LatLng[]){}},
+        {.numVerts = 0, .verts = (LatLng[]){}},
+        {.numVerts = 0, .verts = (LatLng[]){}},
+        {.numVerts = 0, .verts = (LatLng[]){}}}};
+
+/**
+ * Count the number of cells a polyfill would return, without allocating
+ * any memory for them.
+ */
+static H3Error countPolygonToCellsExperimental(const GeoPolygon *polygon,
+                                               int res, uint32_t flags,
+                                               int64_t *out) {
+    IterCellsPolygon iter = iterInitPolygon(polygon, res, flags);
+    *out = 0;
+    for (; iter.cell; iterStepPolygon(&iter)) *out += 1;
+    return iter.error;
+}
 
 /**
  * Return true if the cell crosses the meridian.
@@ -150,45 +198,30 @@ static void fillIndex_assertions(H3Index h) {
 }
 
 SUITE(polygonToCells) {
-    sfGeoPolygon.geoloop = sfGeoLoop;
-    sfGeoPolygon.numHoles = 0;
+    TEST(maxPolygonToCellsSize) {
+        GeoPolygon testPolygon[] = {
+            sfGeoPolygon,   holeGeoPolygon,      nullGeoPolygon,
+            lineGeoPolygon, pointGeoPolygon,     pointHoleGeoPolygon,
+            nanGeoPolygon,  nonFiniteGeoPolygon, fuzzerFailure};
+        for (int i = 0; i < ARRAY_SIZE(testPolygon); i++) {
+            for (uint32_t flags = 0; flags < CONTAINMENT_INVALID; flags++) {
+                for (int res = 0; res < 11; res++) {
+                    int64_t estimate;
+                    t_assertSuccess(
+                        H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+                            &testPolygon[i], 9, flags, &estimate));
 
-    holeGeoPolygon.geoloop = sfGeoLoop;
-    holeGeoPolygon.numHoles = 1;
-    holeGeoPolygon.holes = &holeGeoLoop;
+                    int64_t exact;
+                    t_assertSuccess(H3_EXPORT(countPolygonToCellsExperimental)(
+                        &testPolygon[i], 9, flags, &exact));
 
-    nullHoleGeoPolygon.geoloop = sfGeoLoop;
-    nullHoleGeoPolygon.numHoles = 1;
-    nullHoleGeoPolygon.holes = &nullGeoLoop;
-
-    pointHoleGeoPolygon.geoloop = sfGeoLoop;
-    pointHoleGeoPolygon.numHoles = 1;
-    pointHoleGeoPolygon.holes = &pointGeoLoop;
-
-    lineHoleGeoPolygon.geoloop = sfGeoLoop;
-    lineHoleGeoPolygon.numHoles = 1;
-    lineHoleGeoPolygon.holes = &lineGeoLoop;
-
-    emptyGeoPolygon.geoloop = emptyGeoLoop;
-    emptyGeoPolygon.numHoles = 0;
-
-    invalidGeoPolygon.geoloop = invalidGeoLoop;
-    invalidGeoPolygon.numHoles = 0;
-
-    invalid2GeoPolygon.geoloop = invalid2GeoLoop;
-    invalid2GeoPolygon.numHoles = 0;
-
-    outOfBoundsVertGeoPolygon.geoloop = outOfBoundsVertGeoLoop;
-    outOfBoundsVertGeoPolygon.numHoles = 0;
-
-    nullGeoPolygon.geoloop = nullGeoLoop;
-    nullGeoPolygon.numHoles = 0;
-
-    pointGeoPolygon.geoloop = pointGeoLoop;
-    pointGeoPolygon.numHoles = 0;
-
-    lineGeoPolygon.geoloop = lineGeoLoop;
-    lineGeoPolygon.numHoles = 0;
+                    printf("exact: %lld | estimate: %lld\n", exact, estimate);
+                    t_assert(exact <= estimate,
+                             "estimate is sufficently large for polyfill");
+                }
+            }
+        }
+    }
 
     TEST(polygonToCells_CenterContainment) {
         int64_t numHexagons;
@@ -685,23 +718,28 @@ SUITE(polygonToCells) {
         free(hexagons);
     }
 
-    TEST(polygonToCellsNullPolygon) {
-        for (int res = 0; res < MAX_H3_RES; res++) {
-            for (uint32_t flags = 0; flags < CONTAINMENT_INVALID; flags++) {
-                int64_t numHexagons;
-                t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
-                    &nullGeoPolygon, res, flags, &numHexagons));
-                t_assert(numHexagons == 0, "got expected estimated size");
-                H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+    TEST(polygonToCellsInvalidPolygon) {
+        GeoPolygon invalidPolys[] = {nullGeoPolygon, nonFiniteGeoPolygon,
+                                     nanGeoPolygon};
+        for (int i = 0; i < ARRAY_SIZE(invalidPolys); i++) {
+            for (int res = 0; res < MAX_H3_RES; res++) {
+                for (uint32_t flags = 0; flags < CONTAINMENT_INVALID; flags++) {
+                    int64_t numHexagons;
+                    t_assertSuccess(
+                        H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+                            &invalidPolys[i], res, flags, &numHexagons));
+                    t_assert(numHexagons == 0, "got expected estimated size");
+                    H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
-                t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-                    &nullGeoPolygon, res, flags, hexagons));
-                int64_t actualNumIndexes =
-                    countNonNullIndexes(hexagons, numHexagons);
+                    t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
+                        &invalidPolys[i], res, flags, hexagons));
+                    int64_t actualNumIndexes =
+                        countNonNullIndexes(hexagons, numHexagons);
 
-                t_assert(actualNumIndexes == 0,
-                         "got expected polygonToCells size");
-                free(hexagons);
+                    t_assert(actualNumIndexes == 0,
+                             "got expected polygonToCells size");
+                    free(hexagons);
+                }
             }
         }
     }
