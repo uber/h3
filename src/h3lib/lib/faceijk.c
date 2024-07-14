@@ -33,7 +33,7 @@
 #include "vec3d.h"
 
 /** square root of 7 and inverse square root of 7 */
-#define M_SQRT7  2.6457513110645905905016157536392604257102
+#define M_SQRT7 2.6457513110645905905016157536392604257102
 #define M_RSQRT7 0.37796447300922722721451653623418006081576
 
 /** @brief icosahedron face centers in lat/lng radians */
