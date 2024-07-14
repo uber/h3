@@ -211,12 +211,7 @@ export function ExplorerMap({
       onClick={onClick}
       onLoad={() => setDeckLoaded(true)}
     >
-      <Map
-        reuseMaps
-        interactive
-        projection={"mercator"}
-        mapStyle={mapStyle}
-      />
+      <Map reuseMaps interactive projection={"mercator"} mapStyle={mapStyle} />
     </DeckGL>
   );
 }
