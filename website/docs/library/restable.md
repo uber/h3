@@ -251,7 +251,3 @@ has notebooks for producing the
 [average cell area table](https://github.com/uber/h3-py-notebooks/blob/master/notebooks/stats_tables/avg_area_table.ipynb)
 and the
 [min/max area table](https://github.com/uber/h3-py-notebooks/blob/master/notebooks/stats_tables/extreme_hex_area.ipynb).
-
-### Edge lengths
-
-todo
