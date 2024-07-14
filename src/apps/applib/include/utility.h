@@ -49,6 +49,7 @@ void cellBoundaryPrint(const CellBoundary *b);
 void cellBoundaryPrintln(const CellBoundary *b);
 void bboxPrint(const BBox *bbox);
 void bboxPrintln(const BBox *bbox);
+void geoPolygonPrintln(const GeoPolygon *geoPolygon);
 
 void randomGeo(LatLng *p);
 

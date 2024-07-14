@@ -130,6 +130,42 @@ void bboxPrintln(const BBox *bbox) {
     printf("\n");
 }
 
+static void geoLoopPrint(const GeoLoop *loop) {
+    printf("{\n");
+    printf("  .numVerts = %d", loop->numVerts);
+    if (loop->numVerts > 0) {
+        printf(", .verts = (LatLng[]){\n");
+        for (int v = 0; v < loop->numVerts; v++) {
+            printf("{%.4lf, %.4lf}", loop->verts[v].lat, loop->verts[v].lng);
+            if (v < loop->numVerts - 1) {
+                printf(",\n");
+            }
+        }
+        printf("}");
+    }
+    printf("}");
+}
+
+void geoPolygonPrintln(const GeoPolygon *geoPolygon) {
+    printf("{\n");
+    printf("  .geoloop = ");
+    geoLoopPrint(&(geoPolygon->geoloop));
+    printf(",\n");
+    printf("  .numHoles = %d", geoPolygon->numHoles);
+    if (geoPolygon->numHoles > 0) {
+        printf(",\n  .holes = (GeoLoop[]){");
+        for (int i = 0; i < geoPolygon->numHoles; i++) {
+            geoLoopPrint(&(geoPolygon->holes[i]));
+            if (i < geoPolygon->numHoles - 1) {
+                printf(",");
+            }
+        }
+        printf("}\n");
+    }
+
+    printf("}\n");
+}
+
 /**
  * Apply callback for every unidirectional edge at the given resolution.
  */

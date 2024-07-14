@@ -36,6 +36,28 @@ const int MAX_RES = 15;
 const int MAX_SZ = 4000000;
 const int MAX_HOLES = 100;
 
+static GeoPolygon fuzzerFailure = {
+    .geoloop = {.numVerts = 1, .verts = (LatLng[]){{0.000000, 0.000000}}},
+    .numHoles = 5,
+    .holes = (GeoLoop[]){
+        {.numVerts = 9,
+         .verts =
+             (LatLng[]){
+                 {0.000000, -0.000000},
+                 {-0.000000,
+                  2748442886721409313719038754629364176612174103396910975667688045384466158239047111515156119908354033028732640897702389786583276177564900289955662483960102912.000000},
+                 {-0.000000, -0.000000},
+                 {-0.000000, -0.000000},
+                 {-0.000000, -0.000000},
+                 {-0.000000, -0.000000},
+                 {-0.000000, -0.000000},
+                 {-0.000000, 0.000000},
+                 {0.000000, 0.000000}}},
+        {.numVerts = 0},
+        {.numVerts = 0},
+        {.numVerts = 0},
+        {.numVerts = 0}}};
+
 int populateGeoLoop(GeoLoop *g, const uint8_t *data, size_t *offset,
                     size_t size) {
     if (size < *offset + sizeof(int)) {
@@ -52,10 +74,26 @@ int populateGeoLoop(GeoLoop *g, const uint8_t *data, size_t *offset,
     return 0;
 }
 
+static H3Error countPolygonToCellsExperimental(const GeoPolygon *polygon,
+                                               int res, uint32_t flags,
+                                               int64_t *out) {
+    IterCellsPolygon iter = iterInitPolygon(polygon, res, flags);
+    *out = 0;
+    for (; iter.cell; iterStepPolygon(&iter)) *out += 1;
+    return iter.error;
+}
+
 void run(GeoPolygon *geoPolygon, uint32_t flags, int res) {
     int64_t sz;
     H3Error err = H3_EXPORT(maxPolygonToCellsSizeExperimental)(geoPolygon, res,
                                                                flags, &sz);
+
+    geoPolygonPrintln(geoPolygon);
+    printf("estimate: %lld\n", sz);
+    int64_t exact;
+    H3_EXPORT(countPolygonToCellsExperimental)(geoPolygon, res, flags, &exact);
+    printf("exact: %lld\n", exact);
+
     if (!err && sz < MAX_SZ) {
         H3Index *out = calloc(sz, sizeof(H3Index));
         H3_EXPORT(polygonToCellsExperimental)(geoPolygon, res, flags, out);
@@ -93,6 +131,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     }
 
     for (uint32_t flags = 0; flags < CONTAINMENT_INVALID; flags++) {
+        run(&fuzzerFailure, flags, res);
         geoPolygon.numHoles = originalNumHoles;
         run(&geoPolygon, flags, res);
         geoPolygon.numHoles = 0;
