@@ -1000,15 +1000,14 @@ SUBCOMMAND(compactCells,
         while (cellStrsOffset < 1485) {  // Keep consuming as much as possible
             H3Index cell = 0;
             while (cell == 0 && cellStrsOffset < 1485) {
-                // Grab 15 characters and then scan to see if it has an H3 index
-                // in it
-                char possibleIndex[16] = {0};
+                // A valid H3 cell is exactly 15 hexadecomical characters.
+                // Determine if we have a match, otherwise increment
                 bool badChar = false;
                 for (int i = 0; i < 15; i++) {
                     char c = cellStrs[i + cellStrsOffset];
                     if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') ||
                         (c >= 'A' && c <= 'F')) {
-                        possibleIndex[i] = c;
+                        // Do nothing
                     } else {
                         // Encountered a bad character, set the offset after
                         // this character as the next to check
@@ -1016,19 +1015,20 @@ SUBCOMMAND(compactCells,
                         badChar = true;
                         break;
                     }
-                    possibleIndex[i] = cellStrs[i + cellStrsOffset];
                 }
                 if (!badChar) {
-                    if (sscanf(possibleIndex, "%" PRIx64, &cell) != 0) {
+                    if (sscanf(cellStrs + cellStrsOffset, "%" PRIx64, &cell) !=
+                        0) {
                         // We can jump ahead 15 chars. The while loop check will
                         // make sure we don't overwrite this cell with another
                         // one
                         cellStrsOffset += 15;
                         lastGoodOffset = cellStrsOffset;
                     } else {
-                        // This *shouldn't* happen, I think? But try again if
-                        // necessary
-                        cellStrsOffset++;
+                        // This *shouldn't* happen because it should have been
+                        // caught in the for loop above, but move to the next
+                        // character and try again if it somehow does
+                        return E_FAILED;
                     }
                 }
             }
@@ -1179,33 +1179,32 @@ SUBCOMMAND(uncompactCells,
         while (cellStrsOffset < 1485) {  // Keep consuming as much as possible
             H3Index cell = 0;
             while (cell == 0 && cellStrsOffset < 1485) {
-                // Grab 15 characters and then scan to see if it has an H3 index
-                // in it
-                char possibleIndex[16] = {0};
+                // A valid H3 cell is exactly 15 hexadecomical characters.
+                // Determine if we have a match, otherwise increment
                 bool badChar = false;
                 for (int i = 0; i < 15 && !badChar; i++) {
                     char c = cellStrs[i + cellStrsOffset];
                     if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') ||
                         (c >= 'A' && c <= 'F')) {
-                        possibleIndex[i] = c;
+                        // Do nothing
                     } else {
                         // Encountered a bad character, set the offset after
                         // this character as the next to check
                         cellStrsOffset += i + 1;
                         badChar = true;
                     }
-                    possibleIndex[i] = cellStrs[i + cellStrsOffset];
                 }
                 if (!badChar) {
-                    if (sscanf(possibleIndex, "%" PRIx64, &cell) != 0) {
+                    if (sscanf(cellStrs + cellStrsOffset, "%" PRIx64, &cell) !=
+                        0) {
                         // We can jump ahead 15 chars. The while loop check will
                         // make sure we don't overwrite this cell with another
                         // one
                         cellStrsOffset += 15;
                         lastGoodOffset = cellStrsOffset;
+                    } else {
+                        return E_FAILED;
                     }
-                } else {
-                    cell = 0;
                 }
             }
             // If we still don't have a cell and we've reached the end, we reset
