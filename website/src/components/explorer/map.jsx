@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { Map } from "react-map-gl/maplibre";
+import { Map } from "react-map-gl";
 import DeckGL from "@deck.gl/react";
 import { H3HexagonLayer } from "@deck.gl/geo-layers";
 import { PathStyleExtension } from "@deck.gl/extensions";
@@ -23,7 +23,7 @@ const INITIAL_VIEW_STATE = {
   bearing: 0,
 };
 
-const MAP_STYLE = "https://tiles.stadiamaps.com/styles/alidade_smooth.json";
+const MAP_STYLE = "mapbox://styles/ibrodsky/clxqms2fb03cz01qj9aopa7t9";
 
 export function ExplorerMap({
   userInput = [],
@@ -211,7 +211,13 @@ export function ExplorerMap({
       onClick={onClick}
       onLoad={() => setDeckLoaded(true)}
     >
-      <Map reuseMaps interactive projection={"mercator"} mapStyle={mapStyle} />
+      <Map
+        reuseMaps
+        interactive={false}
+        projection={"mercator"}
+        mapboxAccessToken={context.siteConfig.customFields.mapboxAccessToken}
+        mapStyle={mapStyle}
+      />
     </DeckGL>
   );
 }
