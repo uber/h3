@@ -23,7 +23,7 @@ const INITIAL_VIEW_STATE = {
   bearing: 0,
 };
 
-const MAP_STYLE = "mapbox://styles/ibrodsky/clxqms2fb03cz01qj9aopa7t9";
+const MAP_STYLE = "mapbox://styles/mapbox/light-v11";
 
 export function ExplorerMap({
   userInput = [],
