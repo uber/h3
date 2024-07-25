@@ -51,9 +51,7 @@ export default function IndexPage() {
       </BrowserOnly>
       <div style={{ position: "relative" }}>
         <TextContainer>
-          <h2>
-            H3 indexes geospatial points and shapes into a hexagonal grid.
-          </h2>
+          <h2>H3 indexes points and shapes into a hexagonal grid.</h2>
           <hr className="short" />
 
           <p>
