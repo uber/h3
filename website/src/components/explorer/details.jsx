@@ -82,12 +82,12 @@ function ClickableH3IndexList({ hexes, setUserInput, showAll = true }) {
     <>
       {hexes.map((hex, index) => {
         const link = (
-          <ClickableH3Index key={index} setUserInput={setUserInput} hex={hex} />
+          <ClickableH3Index key={hex} setUserInput={setUserInput} hex={hex} />
         );
         if (index === 0) {
           return link;
         } else {
-          return <span key={index}>, {link}</span>;
+          return <span key={hex}>, {link}</span>;
         }
       })}
       {showAll ? (
@@ -136,12 +136,11 @@ export function SelectedHexDetails({
     ).toPrecision(floatPrecision);
     const parent = res !== 0 && cellToParent(hex, res - 1);
     const children = res !== 15 && cellToChildren(hex, res + 1);
-    const neighbors = new Set(gridDisk(hex, 1));
-    neighbors.delete(hex);
+    const neighbors = gridDisk(hex, 1).filter((n) => n !== hex);
 
     return (
       <p style={{ marginBottom: "0" }}>
-        Lat./Lng.: <tt>{coords}</tt>
+        Lat./Lng.: <code>{coords}</code>
         {showNavigation ? (
           <>
             <br />
@@ -149,7 +148,7 @@ export function SelectedHexDetails({
             {parent ? (
               <ClickableH3Index hex={parent} setUserInput={setUserInput} />
             ) : (
-              <tt>(none)</tt>
+              <code>(none)</code>
             )}
             <br />
             Children:{" "}
@@ -159,12 +158,12 @@ export function SelectedHexDetails({
                 setUserInput={setUserInput}
               />
             ) : (
-              <tt>(none)</tt>
+              <code>(none)</code>
             )}
             <br />
             Neighbors:{" "}
             <ClickableH3IndexList
-              hexes={[...neighbors]}
+              hexes={neighbors}
               setUserInput={setUserInput}
             />
             <br />
@@ -175,20 +174,20 @@ export function SelectedHexDetails({
         {showDetails ? (
           <details>
             <summary>Details</summary>
-            Resolution: <tt>{res}</tt>
+            Resolution: <code>{res}</code>
             <br />
-            Base cell: <tt>{baseCell}</tt>
+            Base cell: <code>{baseCell}</code>
             <br />
-            Pentagon: <tt>{`${pent}`}</tt>
+            Pentagon: <code>{`${pent}`}</code>
             <br />
-            Icosa Face IDs: <tt>{faces}</tt>
-            <br /># of Boundary Verts: <tt>{boundary.length}</tt>
+            Icosa Face IDs: <code>{faces}</code>
+            <br /># of Boundary Verts: <code>{boundary.length}</code>
             <br />
-            Cell Area: <tt>{area}</tt> {units.area}
+            Cell Area: <code>{area}</code> {units.area}
             <br />
-            Mean Edge Length: <tt>{meanEdgeLength}</tt> {units.dist}
+            Mean Edge Length: <code>{meanEdgeLength}</code> {units.dist}
             <br />
-            Indexing Digits: <tt>{digits}</tt>
+            Indexing Digits: <code>{digits}</code>
           </details>
         ) : (
           <></>
