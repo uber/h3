@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import Layout from "@theme/Layout";
 import BrowserOnly from "@docusaurus/BrowserOnly";
+import { HomeExplorer } from "../components";
 
 const TextContainer = styled.div`
   max-width: 800px;
@@ -43,12 +44,7 @@ const TextContainer = styled.div`
 export default function IndexPage() {
   return (
     <Layout title="Home" description="H3">
-      <BrowserOnly>
-        {() => {
-          const HomeExplorer = require("../components").HomeExplorer;
-          return <HomeExplorer />;
-        }}
-      </BrowserOnly>
+      <BrowserOnly>{() => <HomeExplorer />}</BrowserOnly>
       <div style={{ position: "relative" }}>
         <TextContainer>
           <h2>H3 indexes points and shapes into a hexagonal grid.</h2>
