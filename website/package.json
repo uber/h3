@@ -11,21 +11,28 @@
     "clear": "docusaurus clear",
     "serve": "docusaurus serve",
     "write-translations": "docusaurus write-translations",
-    "write-heading-ids": "docusaurus write-heading-ids"
+    "write-heading-ids": "docusaurus write-heading-ids",
+    "format": "prettier --write src"
   },
   "dependencies": {
     "@babel/helper-get-function-arity": "^7.16.7",
-    "@docusaurus/core": "^2.0.1",
-    "@docusaurus/preset-classic": "^2.0.1",
-    "@docusaurus/theme-live-codeblock": "^2.0.1",
+    "@docusaurus/core": "^2.2.0",
+    "@docusaurus/preset-classic": "^2.2.0",
+    "@docusaurus/theme-live-codeblock": "^2.2.0",
     "@mdx-js/react": "^1.6.22",
+    "deck.gl": "^9.0.12",
     "global": "^4.4.0",
     "h3-js": "4.1.0",
     "h3-jsv3": "npm:h3-js@^3.7.1",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
+    "mapbox-gl": "^3.4.0",
+    "prettier": "^3.2.5",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-map-gl": "^7.1.7",
     "rehype-katex": "4",
-    "remark-math": "3"
+    "remark-math": "3",
+    "styled-components": "^6.1.9",
+    "use-location-state": "^3.1.2"
   },
   "browserslist": {
     "production": [
