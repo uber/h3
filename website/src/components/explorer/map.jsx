@@ -171,7 +171,7 @@ export function ExplorerMap({
   const getTooltip = useCallback(({ object }) => {
     if (object && object.hex) {
       return {
-        html: `<code>${object.hex}</code>`,
+        html: `<tt>${object.hex}</tt>`,
       };
     }
   }, []);

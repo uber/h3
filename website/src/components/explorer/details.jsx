@@ -140,7 +140,7 @@ export function SelectedHexDetails({
 
     return (
       <p style={{ marginBottom: "0" }}>
-        Lat./Lng.: <code>{coords}</code>
+        Lat./Lng.: <tt>{coords}</tt>
         {showNavigation ? (
           <>
             <br />
@@ -148,7 +148,7 @@ export function SelectedHexDetails({
             {parent ? (
               <ClickableH3Index hex={parent} setUserInput={setUserInput} />
             ) : (
-              <code>(none)</code>
+              <tt>(none)</tt>
             )}
             <br />
             Children:{" "}
@@ -158,7 +158,7 @@ export function SelectedHexDetails({
                 setUserInput={setUserInput}
               />
             ) : (
-              <code>(none)</code>
+              <tt>(none)</tt>
             )}
             <br />
             Neighbors:{" "}
@@ -174,20 +174,20 @@ export function SelectedHexDetails({
         {showDetails ? (
           <details>
             <summary>Details</summary>
-            Resolution: <code>{res}</code>
+            Resolution: <tt>{res}</tt>
             <br />
-            Base cell: <code>{baseCell}</code>
+            Base cell: <tt>{baseCell}</tt>
             <br />
-            Pentagon: <code>{`${pent}`}</code>
+            Pentagon: <tt>{`${pent}`}</tt>
             <br />
-            Icosa Face IDs: <code>{faces}</code>
-            <br /># of Boundary Verts: <code>{boundary.length}</code>
+            Icosa Face IDs: <tt>{faces}</tt>
+            <br /># of Boundary Verts: <tt>{boundary.length}</tt>
             <br />
-            Cell Area: <code>{area}</code> {units.area}
+            Cell Area: <tt>{area}</tt> {units.area}
             <br />
-            Mean Edge Length: <code>{meanEdgeLength}</code> {units.dist}
+            Mean Edge Length: <tt>{meanEdgeLength}</tt> {units.dist}
             <br />
-            Indexing Digits: <code>{digits}</code>
+            Indexing Digits: <tt>{digits}</tt>
           </details>
         ) : (
           <></>
