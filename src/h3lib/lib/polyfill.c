@@ -702,11 +702,11 @@ H3Error H3_EXPORT(polygonToCellsExperimental)(const GeoPolygon *polygon,
     IterCellsPolygon iter = iterInitPolygon(polygon, res, flags);
     int64_t i = 0;
     for (; iter.cell; iterStepPolygon(&iter)) {
-        out[i++] = iter.cell;
         if (i >= maxSize) {
             iterDestroyPolygon(&iter);
             return E_FAILED;
         }
+        out[i++] = iter.cell;
     }
     return iter.error;
 }
