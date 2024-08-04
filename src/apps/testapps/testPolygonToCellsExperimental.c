@@ -686,7 +686,7 @@ SUITE(polygonToCells) {
     }
 
     TEST(polygonToCellsNullPolygon) {
-        for (int res = 0; res < MAX_H3_RES; res++) {
+        for (int res = 0; res <= MAX_H3_RES; res++) {
             for (uint32_t flags = 0; flags < CONTAINMENT_INVALID; flags++) {
                 int64_t numHexagons;
                 t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
@@ -707,7 +707,7 @@ SUITE(polygonToCells) {
     }
 
     TEST(polygonToCellsPointPolygon_CenterContainment) {
-        for (int res = 0; res < MAX_H3_RES; res++) {
+        for (int res = 0; res <= MAX_H3_RES; res++) {
             int64_t numHexagons;
             t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
                 &pointGeoPolygon, res, CONTAINMENT_CENTER, &numHexagons));
@@ -726,7 +726,7 @@ SUITE(polygonToCells) {
     }
 
     TEST(polygonToCellsPointPolygon_FullContainment) {
-        for (int res = 0; res < MAX_H3_RES; res++) {
+        for (int res = 0; res <= MAX_H3_RES; res++) {
             int64_t numHexagons;
             t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
                 &pointGeoPolygon, res, CONTAINMENT_FULL, &numHexagons));
@@ -745,7 +745,7 @@ SUITE(polygonToCells) {
     }
 
     TEST(polygonToCellsPointPolygon_Overlapping) {
-        for (int res = 0; res < MAX_H3_RES; res++) {
+        for (int res = 0; res <= MAX_H3_RES; res++) {
             int64_t numHexagons;
             t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
                 &pointGeoPolygon, res, CONTAINMENT_OVERLAPPING, &numHexagons));
@@ -764,7 +764,7 @@ SUITE(polygonToCells) {
     }
 
     TEST(polygonToCellsPointPolygon_OverlappingBBox) {
-        for (int res = 0; res < MAX_H3_RES; res++) {
+        for (int res = 0; res <= MAX_H3_RES; res++) {
             int64_t numHexagons;
             t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
                 &pointGeoPolygon, res, CONTAINMENT_OVERLAPPING_BBOX,
@@ -785,7 +785,7 @@ SUITE(polygonToCells) {
     }
 
     TEST(polygonToCellsOutOfBoundsPolygon) {
-        for (int res = 0; res < MAX_H3_RES; res++) {
+        for (int res = 0; res <= MAX_H3_RES; res++) {
             for (uint32_t flags = 0; flags < CONTAINMENT_INVALID; flags++) {
                 int64_t numHexagons;
                 t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(

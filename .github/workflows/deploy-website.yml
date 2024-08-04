@@ -20,6 +20,8 @@ jobs:
 
       - name: Website Build
         working-directory: website
+        env:
+          MapboxAccessToken: ${{ secrets.MapboxAccessToken }}
         run: |
           yarn
           yarn build

@@ -130,6 +130,10 @@ As a C library, bindings can be made to call H3 functions from different program
 
 - [isaacbrodsky/h3-sqlite3](https://github.com/isaacbrodsky/h3-sqlite3)
 
+## SQL Server
+
+- [tbbuck/H3.net.SqlClr](https://github.com/tbbuck/H3.net.SqlClr)
+
 ## Spark
 
 - [kevinschaich/h3-pyspark](https://github.com/kevinschaich/h3-pyspark)

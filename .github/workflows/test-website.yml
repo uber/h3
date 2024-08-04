@@ -24,9 +24,17 @@ jobs:
 
       - name: Test Website Build
         working-directory: website
+        env:
+          MapboxAccessToken: ${{ secrets.MapboxAccessToken }}
         run: |
           yarn
           yarn build
+
+      - name: Formatting check
+        working-directory: website
+        run: |
+          yarn format
+          git diff --exit-code
 
       - name: Submit FOSSA report
         run: if [ -n "${{ secrets.FOSSA_API_KEY }}" ]; then fossa; fi

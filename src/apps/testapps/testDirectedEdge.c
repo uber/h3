@@ -213,7 +213,7 @@ SUITE(directedEdge) {
         H3Index pentagon;
         H3Index edge;
 
-        for (int res = 0; res < MAX_H3_RES; res++) {
+        for (int res = 0; res <= MAX_H3_RES; res++) {
             t_assertSuccess(H3_EXPORT(getPentagons)(res, pentagons));
             for (int p = 0; p < NUM_PENTAGONS; p++) {
                 pentagon = pentagons[p];
@@ -342,7 +342,7 @@ SUITE(directedEdge) {
         const int expectedVertices[][2] = {{3, 4}, {1, 2}, {2, 3},
                                            {5, 0}, {4, 5}, {0, 1}};
 
-        for (int res = 0; res < MAX_H3_RES; res++) {
+        for (int res = 0; res <= MAX_H3_RES; res++) {
             t_assertSuccess(H3_EXPORT(latLngToCell)(&sfGeo, res, &sf));
             t_assertSuccess(H3_EXPORT(cellToBoundary)(sf, &boundary));
             t_assertSuccess(H3_EXPORT(originToDirectedEdges)(sf, edges));
@@ -371,7 +371,7 @@ SUITE(directedEdge) {
         const int expectedVertices[][3] = {{-1, -1, -1}, {2, 3, 4}, {4, 5, 6},
                                            {8, 9, 0},    {6, 7, 8}, {0, 1, 2}};
 
-        for (int res = 1; res < MAX_H3_RES; res += 2) {
+        for (int res = 1; res <= MAX_H3_RES; res += 2) {
             setH3Index(&pentagon, res, 24, 0);
             t_assertSuccess(H3_EXPORT(cellToBoundary)(pentagon, &boundary));
             t_assertSuccess(H3_EXPORT(originToDirectedEdges)(pentagon, edges));
@@ -409,7 +409,7 @@ SUITE(directedEdge) {
         const int expectedVertices[][3] = {{-1, -1}, {1, 2}, {2, 3},
                                            {4, 0},   {3, 4}, {0, 1}};
 
-        for (int res = 0; res < MAX_H3_RES; res += 2) {
+        for (int res = 0; res <= MAX_H3_RES; res += 2) {
             setH3Index(&pentagon, res, 24, 0);
             t_assertSuccess(H3_EXPORT(cellToBoundary)(pentagon, &boundary));
             t_assertSuccess(H3_EXPORT(originToDirectedEdges)(pentagon, edges));

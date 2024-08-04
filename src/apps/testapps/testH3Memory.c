@@ -81,7 +81,7 @@ void *test_prefix_realloc(void *ptr, size_t size) {
 
 void test_prefix_free(void *ptr) {
     actualFreeCalls++;
-    return free(ptr);
+    free(ptr);
 }
 
 H3Index sunnyvale = 0x89283470c27ffff;

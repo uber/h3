@@ -18,7 +18,7 @@ Coverage information is collected in Coveralls. Because of the self-contained na
 
 | Operating system | Compiler    | Build type     | Processor architecture | Special notes
 | ---------------- | ----------- | -------------- | ---------------------- | -------------
-| Linux (Ubuntu)   | Clang       | Debug, Release | x64                    | clang-format-11 is used to ensure all code is consistently formatted
+| Linux (Ubuntu)   | Clang       | Debug, Release | x64                    | clang-format-14 is used to ensure all code is consistently formatted
 | Linux            | Clang       | Debug          | x64                    | An additional copy of the job runs with [Valgrind](https://valgrind.org/)
 | Linux            | Clang       | Debug          | x64                    | An additional copy of the job runs with coverage reporting, and excerising the `H3_PREFIX` mechanism.
 | Linux            | gcc         | Debug, Release | x64                    |

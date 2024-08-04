@@ -104,6 +104,14 @@ typedef enum {
     E_OPTION_INVALID = 15  // Mode or flags argument was not valid.
 } H3ErrorCodes;
 
+/** @defgroup describeH3Error describeH3Error
+ * Functions for describeH3Error
+ * @{
+ */
+/** @brief converts the provided H3Error value into a description string */
+DECLSPEC const char *H3_EXPORT(describeH3Error)(H3Error err);
+/** @} */
+
 /* library version numbers generated from VERSION file */
 // clang-format off
 #define H3_VERSION_MAJOR @H3_VERSION_MAJOR@

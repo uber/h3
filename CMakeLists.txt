@@ -90,11 +90,18 @@ endif()
 
 set(H3_COMPILE_FLAGS "")
 set(H3_LINK_FLAGS "")
+option(ENABLE_WARNINGS "Enables compiler warnings" ON)
+if(ENABLE_WARNINGS)
+    if(WIN32)
+        list(APPEND H3_COMPILE_FLAGS /W2)
+    else()
+        list(APPEND H3_COMPILE_FLAGS -Wall)
+    endif()
+endif()
+
 if(NOT WIN32)
     # Compiler options are set only on non-Windows, since these options
     # are not correct for MSVC.
-    list(APPEND H3_COMPILE_FLAGS -Wall)
-
     list(APPEND H3_COMPILE_FLAGS $<$<CONFIG:Debug>:-gdwarf-2 -g3 -O0 -fno-inline -fno-eliminate-unused-debug-types>)
 
     if(ENABLE_COVERAGE)
@@ -107,9 +114,13 @@ if(NOT WIN32)
         list(APPEND H3_COMPILE_FLAGS -fsanitize=fuzzer,address,undefined)
         list(APPEND H3_LINK_FLAGS -fsanitize=fuzzer,address,undefined)
     endif()
+endif()
 
-    option(WARNINGS_AS_ERRORS "Warnings are treated as errors" OFF)
-    if(WARNINGS_AS_ERRORS)
+option(WARNINGS_AS_ERRORS "Warnings are treated as errors" OFF)
+if(WARNINGS_AS_ERRORS)
+    if(WIN32)
+        list(APPEND H3_COMPILE_FLAGS /WX)
+    else()
         list(APPEND H3_COMPILE_FLAGS -Werror)
     endif()
 endif()
@@ -180,8 +191,9 @@ set(EXAMPLE_SOURCE_FILES
     examples/neighbors.c
     examples/compactCells.c
     examples/edge.c)
+set(H3_BIN_SOURCE_FILES
+    src/apps/filters/h3.c)
 set(OTHER_SOURCE_FILES
-    src/apps/filters/h3.c
     src/apps/filters/cellToLatLng.c
     src/apps/filters/cellToLocalIj.c
     src/apps/filters/localIjToCell.c
@@ -250,6 +262,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testH3Memory.c
     src/apps/testapps/testH3IteratorsInternal.c
     src/apps/testapps/testMathExtensionsInternal.c
+    src/apps/testapps/testDescribeH3Error.c
     src/apps/miscapps/cellToBoundaryHier.c
     src/apps/miscapps/cellToLatLngHier.c
     src/apps/miscapps/generateBaseCellNeighbors.c
@@ -291,7 +304,7 @@ set(OTHER_SOURCE_FILES
     src/apps/benchmarks/benchmarkH3Api.c)
 
 set(ALL_SOURCE_FILES
-    ${LIB_SOURCE_FILES} ${APP_SOURCE_FILES} ${TEST_APP_SOURCE_FILES} ${OTHER_SOURCE_FILES})
+    ${LIB_SOURCE_FILES} ${APP_SOURCE_FILES} ${TEST_APP_SOURCE_FILES} ${H3_BIN_SOURCE_FILES} ${OTHER_SOURCE_FILES})
 
 # This is done for quality control purposes (to detect if any source files are missing from
 # our list), but is not done as the authoritative list as per CMake developer recommendations.
@@ -371,8 +384,8 @@ endfunction()
 add_h3_library(h3 "")
 
 # Automatic code formatting
-# Give preference to clang-format-11
-find_program(CLANG_FORMAT_PATH NAMES clang-format-11 clang-format)
+# Give preference to clang-format-14
+find_program(CLANG_FORMAT_PATH NAMES clang-format-14 clang-format)
 cmake_dependent_option(
     ENABLE_FORMAT "Enable running clang-format before compiling" ON
     "CLANG_FORMAT_PATH" OFF)
@@ -597,10 +610,11 @@ endif()
 # Installation (https://github.com/forexample/package-example)
 
 # Layout. This works for all platforms:
-#   * <prefix>/lib/cmake/<PROJECT-NAME>
-#   * <prefix>/lib/
+#   * <prefix>/<CMAKE_INSTALL_LIBDIR>/cmake/<PROJECT-NAME>
+#   * <prefix>/<CMAKE_INSTALL_LIBDIR>/
 #   * <prefix>/include/
-set(config_install_dir "lib/cmake/${PROJECT_NAME}")
+include(GNUInstallDirs)
+set(config_install_dir "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
 set(include_install_dir "include")
 
 set(generated_dir "${CMAKE_CURRENT_BINARY_DIR}/generated")
@@ -636,7 +650,7 @@ configure_package_config_file(
 )
 
 # Targets:
-#   * <prefix>/lib/libh3.so
+#   * <prefix>/<CMAKE_INSTALL_LIBDIR>/libh3.so
 #   * header location after install: <prefix>/include/h3/h3api.h
 #   * headers can be included by C++ code `#include <h3/h3api.h>`
 # Installing the library and filters system-wide.
@@ -651,8 +665,8 @@ install(
     TARGETS h3
     EXPORT "${TARGETS_EXPORT_NAME}"
     COMPONENT libh3
-    LIBRARY DESTINATION "lib"
-    ARCHIVE DESTINATION "lib"
+    LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+    ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
     RUNTIME DESTINATION "bin"
     INCLUDES DESTINATION "${include_install_dir}"
 )
@@ -667,8 +681,8 @@ install(
 )
 
 # Config
-#   * <prefix>/lib/cmake/h3/h3Config.cmake
-#   * <prefix>/lib/cmake/h3/h3ConfigVersion.cmake
+#   * <prefix>/<CMAKE_INSTALL_LIBDIR>/cmake/h3/h3Config.cmake
+#   * <prefix>/<CMAKE_INSTALL_LIBDIR>/cmake/h3/h3ConfigVersion.cmake
 install(
     FILES "${project_config}" "${version_config}"
     DESTINATION "${config_install_dir}"
@@ -676,7 +690,7 @@ install(
 )
 
 # Config
-#   * <prefix>/lib/cmake/h3/h3Targets.cmake
+#   * <prefix>/<CMAKE_INSTALL_LIBDIR>/cmake/h3/h3Targets.cmake
 install(
     EXPORT "${TARGETS_EXPORT_NAME}"
     NAMESPACE "${namespace}"

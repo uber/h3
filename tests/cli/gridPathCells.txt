@@ -1,0 +1,1 @@
+add_h3_cli_test(testCliGridPathCells "gridPathCells -o 85283473fffffff -d 8528342bfffffff" "[ \"85283473fffffff\", \"85283477fffffff\", \"8528342bfffffff\" ]")
