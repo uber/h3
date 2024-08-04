@@ -703,7 +703,7 @@ H3Error H3_EXPORT(polygonToCellsExperimental)(const GeoPolygon *polygon,
     int64_t i = 0;
     for (; iter.cell; iterStepPolygon(&iter)) {
         out[i++] = iter.cell;
-        if (i > maxSize) {
+        if (i >= maxSize) {
             iterDestroyPolygon(&iter);
             return E_FAILED;
         }
