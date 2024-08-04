@@ -121,6 +121,11 @@ bool GENERIC_LOOP_ALGO(pointInside)(const TYPE *loop, const BBox *bbox,
             lng -= DBL_EPSILON;
         }
 
+        // Illegal input, reject.
+        if (fabs(aLng) > M_2PI || fabs(bLng) > M_2PI) {
+            return false;
+        }
+
         // For the latitude of the point, compute the longitude of the
         // point that lies on the line segment defined by a and b
         // This is done by computing the percent above a the lat is,
