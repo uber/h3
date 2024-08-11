@@ -223,7 +223,9 @@ export function ExplorerMap({
       getCursor={getCursor}
       onClick={onClick}
       onLoad={() => setDeckLoaded(true)}
-      controller={{dragPan: windowWidth && windowWidth >= MOBILE_CUTOFF_WINDOW_WIDTH}}
+      controller={{
+        dragPan: windowWidth && windowWidth >= MOBILE_CUTOFF_WINDOW_WIDTH,
+      }}
       touchAction="pan-y"
     >
       <Map
