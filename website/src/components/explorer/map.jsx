@@ -14,6 +14,7 @@ import { PathStyleExtension } from "@deck.gl/extensions";
 import { WebMercatorViewport, FlyToInterpolator } from "@deck.gl/core";
 import { getRes0Cells, uncompactCells, cellToBoundary } from "h3-js";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
+import { MOBILE_CUTOFF_WINDOW_WIDTH } from "../common";
 
 const INITIAL_VIEW_STATE = {
   longitude: -74.012,
@@ -47,6 +48,18 @@ export function ExplorerMap({
     () => uncompactCells(getRes0Cells(), 2).map((hex) => ({ hex })),
     [],
   );
+  const [windowWidth, setWindowWidth] = useState(null);
+
+  useEffect(() => {
+    const updateWidth = () => {
+      setWindowWidth(window.width);
+    };
+
+    updateWidth();
+
+    window.addEventListener("resize", updateWidth);
+    return () => window.removeEventListener("resize", updateWidth);
+  }, [setWindowWidth]);
 
   useEffect(() => {
     if (userValidHex && deckRef.current) {
@@ -111,8 +124,9 @@ export function ExplorerMap({
           filled: false,
           stroked: true,
           getLineColor: [0, 0, 0],
-          getLineWidth: 3,
-          lineWidthMinPixels: 3,
+          getLineWidth: 2,
+          lineWidthUnits: "pixels",
+          lineWidthMinPixels: 2,
           highPrecision: true,
           pickable: true,
           filled: true,
@@ -205,11 +219,14 @@ export function ExplorerMap({
       ref={deckRef}
       layers={layers}
       initialViewState={currentInitialViewState}
-      controller={true}
       getTooltip={getTooltip}
       getCursor={getCursor}
       onClick={onClick}
       onLoad={() => setDeckLoaded(true)}
+      controller={{
+        dragPan: windowWidth && windowWidth >= MOBILE_CUTOFF_WINDOW_WIDTH,
+      }}
+      touchAction="pan-y"
     >
       <Map
         reuseMaps

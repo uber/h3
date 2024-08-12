@@ -62,9 +62,6 @@ export const HeroExampleContainer = styled.div`
   right: 0;
   bottom: 0;
   z-index: -1;
-  ${isMobile} {
-    pointer-events: none;
-  }
 `;
 
 export const Section = styled.section`
