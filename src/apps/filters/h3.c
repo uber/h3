@@ -946,42 +946,38 @@ H3Index *readCellsFromFile(FILE *fp, char *buffer, int *totalCells) {
         // Always start from the beginning of the buffer
         bufferOffset = 0;
         int lastGoodOffset = 0;
+        H3Index cell = 0;
         while (bufferOffset < 1485) {  // Keep consuming as much as possible
-            H3Index cell = 0;
-            while (cell == 0 && bufferOffset < 1485) {
-                // A valid H3 cell is exactly 15 hexadecomical characters.
-                // Determine if we have a match, otherwise increment
-                bool badChar = false;
-                int scanlen = 0;
-                sscanf(buffer + bufferOffset, "%" PRIx64 "%n", &cell, &scanlen);
-                if (scanlen != 15) {
-                    badChar = true;
-                }
-                if (!badChar) {
-                    bufferOffset += 16;
-                    lastGoodOffset = bufferOffset;
-                } else {
-                    bufferOffset += 1;
-                }
+            // A valid H3 cell is exactly 15 hexadecomical characters.
+            // Determine if we have a match, otherwise increment
+            int scanlen = 0;
+            sscanf(buffer + bufferOffset, "%" PRIx64 "%n", &cell, &scanlen);
+            if (scanlen != 15) {
+                cell = 0;
+                bufferOffset += 1;
+            } else {
+                bufferOffset += 16;
+                lastGoodOffset = bufferOffset;
             }
             // If we still don't have a cell and we've reached the end, we reset
             // the offset and `continue` to trigger another read
             if (cell == 0 && bufferOffset == 1500) {
                 bufferOffset = 0;
                 continue;
-            }
-            // Otherwise, we have a cell to shove into the cells array.
-            cells[cellsOffset] = cell;
-            cellsOffset += 1;
-            // Potentially grow our array
-            if (cellsOffset == cellsLen) {
-                cellsLen *= 2;
-                H3Index *newCells = calloc(cellsLen, sizeof(H3Index));
-                for (int i = 0; i < cellsOffset; i++) {
-                    newCells[i] = cells[i];
+            } else if (cell != 0) {
+                // Otherwise, we have a cell to shove into the cells array.
+                cells[cellsOffset] = cell;
+                cellsOffset += 1;
+                // Potentially grow our array
+                if (cellsOffset == cellsLen) {
+                    cellsLen *= 2;
+                    H3Index *newCells = calloc(cellsLen, sizeof(H3Index));
+                    for (int i = 0; i < cellsOffset; i++) {
+                        newCells[i] = cells[i];
+                    }
+                    free(cells);
+                    cells = newCells;
                 }
-                free(cells);
-                cells = newCells;
             }
         }
         // In case there's a valid H3 index that was unfortunately split between
