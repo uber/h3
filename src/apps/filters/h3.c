@@ -952,33 +952,16 @@ H3Index *readCellsFromFile(FILE *fp, char *buffer, int *totalCells) {
                 // A valid H3 cell is exactly 15 hexadecomical characters.
                 // Determine if we have a match, otherwise increment
                 bool badChar = false;
-                for (int i = 0; i < 15; i++) {
-                    char c = buffer[i + bufferOffset];
-                    if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') ||
-                        (c >= 'A' && c <= 'F')) {
-                        // Do nothing
-                    } else {
-                        // Encountered a bad character, set the offset after
-                        // this character as the next to check
-                        bufferOffset += i + 1;
-                        badChar = true;
-                        break;
-                    }
+                int scanlen = 0;
+                sscanf(buffer + bufferOffset, "%" PRIx64 "%n", &cell, &scanlen);
+                if (scanlen != 15) {
+                    badChar = true;
                 }
                 if (!badChar) {
-                    if (sscanf(buffer + bufferOffset, "%" PRIx64, &cell) != 0) {
-                        // We can jump ahead 15 chars. The while loop check will
-                        // make sure we don't overwrite this cell with another
-                        // one
-                        bufferOffset += 15;
-                        lastGoodOffset = bufferOffset;
-                    } else {
-                        // This *shouldn't* happen because it should have been
-                        // caught in the for loop above, but move to the next
-                        // character and try again if it somehow does
-                        free(cells);
-                        return 0;
-                    }
+                    bufferOffset += 16;
+                    lastGoodOffset = bufferOffset;
+                } else {
+                    bufferOffset += 1;
                 }
             }
             // If we still don't have a cell and we've reached the end, we reset
@@ -992,7 +975,6 @@ H3Index *readCellsFromFile(FILE *fp, char *buffer, int *totalCells) {
             cellsOffset += 1;
             // Potentially grow our array
             if (cellsOffset == cellsLen) {
-                printf("Growing the array?\n");
                 cellsLen *= 2;
                 H3Index *newCells = calloc(cellsLen, sizeof(H3Index));
                 for (int i = 0; i < cellsOffset; i++) {
