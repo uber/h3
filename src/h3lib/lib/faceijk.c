@@ -393,7 +393,7 @@ void _geoToHex2d(const LatLng *g, int res, int *face, Vec2d *v) {
     _geoToClosestFace(g, face, &sqd);
 
     // cos(r) = 1 - 2 * sin^2(r/2) = 1 - 2 * (sqd / 4) = 1 - sqd/2
-    double r = acos(1 - sqd / 2);
+    double r = acos(1 - sqd * 0.5);
 
     if (r < EPSILON) {
         v->x = v->y = 0.0;
@@ -413,7 +413,7 @@ void _geoToHex2d(const LatLng *g, int res, int *face, Vec2d *v) {
     r = tan(r);
 
     // scale for current resolution length u
-    r /= RES0_U_GNOMONIC;
+    r *= INV_RES0_U_GNOMONIC;
     for (int i = 0; i < res; i++) r *= M_SQRT7;
 
     // we now have (r, theta) in hex2d with theta ccw from x-axes

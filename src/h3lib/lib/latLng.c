@@ -169,8 +169,8 @@ double normalizeLng(const double lng,
  * @return    the great circle distance in radians between a and b
  */
 double H3_EXPORT(greatCircleDistanceRads)(const LatLng *a, const LatLng *b) {
-    double sinLat = sin((b->lat - a->lat) / 2.0);
-    double sinLng = sin((b->lng - a->lng) / 2.0);
+    double sinLat = sin((b->lat - a->lat) * 0.5);
+    double sinLng = sin((b->lng - a->lng) * 0.5);
 
     double A = sinLat * sinLat + cos(a->lat) * cos(b->lat) * sinLng * sinLng;
 
@@ -355,12 +355,12 @@ H3Error H3_EXPORT(getNumCells)(int res, int64_t *out) {
  * @return     area in radians^2 of triangle on unit sphere
  */
 double triangleEdgeLengthsToArea(double a, double b, double c) {
-    double s = (a + b + c) / 2;
+    double s = (a + b + c) * 0.5;
 
-    a = (s - a) / 2;
-    b = (s - b) / 2;
-    c = (s - c) / 2;
-    s = s / 2;
+    a = (s - a) * 0.5;
+    b = (s - b) * 0.5;
+    c = (s - c) * 0.5;
+    s = s * 0.5;
 
     return 4 * atan(sqrt(tan(s) * tan(a) * tan(b) * tan(c)));
 }
