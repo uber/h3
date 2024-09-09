@@ -703,12 +703,9 @@ H3Error H3_EXPORT(gridPathCells)(H3Index start, H3Index end, H3Index *out) {
     ijkToCube(&endIjk);
 
     double invDistance = distance ? 1.0 / (double)distance : 0;
-    double iStep =
-        distance ? (double)(endIjk.i - startIjk.i) * invDistance : 0;
-    double jStep =
-        distance ? (double)(endIjk.j - startIjk.j) * invDistance : 0;
-    double kStep =
-        distance ? (double)(endIjk.k - startIjk.k) * invDistance : 0;
+    double iStep = distance ? (double)(endIjk.i - startIjk.i) * invDistance : 0;
+    double jStep = distance ? (double)(endIjk.j - startIjk.j) * invDistance : 0;
+    double kStep = distance ? (double)(endIjk.k - startIjk.k) * invDistance : 0;
 
     CoordIJK currentIjk = {startIjk.i, startIjk.j, startIjk.k};
     for (int64_t n = 0; n <= distance; n++) {
