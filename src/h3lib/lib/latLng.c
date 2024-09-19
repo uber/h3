@@ -258,9 +258,10 @@ void _geoAzDistanceRads(const LatLng *p1, double az, double distance,
             p2->lat = -M_PI_2;
             p2->lng = 0.0;
         } else {
-            sinlng = sin(az) * sin(distance) / cos(p2->lat);
+            double invcosp2lat = 1.0 / cos(p2->lat);
+            sinlng = sin(az) * sin(distance) * invcosp2lat;
             coslng = (cos(distance) - sin(p1->lat) * sin(p2->lat)) /
-                     cos(p1->lat) / cos(p2->lat);
+                     cos(p1->lat) * invcosp2lat;
             if (sinlng > 1.0) sinlng = 1.0;
             if (sinlng < -1.0) sinlng = -1.0;
             if (coslng > 1.0) coslng = 1.0;
