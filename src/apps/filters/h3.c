@@ -929,7 +929,7 @@ SUBCOMMAND(childPosToCell,
     return E_SUCCESS;
 }
 
-H3Index *readCellsFromFile(FILE *fp, char *buffer, int *totalCells) {
+H3Index *readCellsFromFile(FILE *fp, char *buffer, size_t *totalCells) {
     // It's assumed the buffer is a character array of size 1501 to support up
     // to 100 cells at a time. If the file pointer is a null pointer, we assume
     // the buffer has all of the possible cells already stored in it and go from
