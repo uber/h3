@@ -57,10 +57,10 @@ bool bboxIsTransmeridian(const BBox *bbox) { return bbox->east < bbox->west; }
  * @param center Output center coordinate
  */
 void bboxCenter(const BBox *bbox, LatLng *center) {
-    center->lat = (bbox->north + bbox->south) / 2.0;
+    center->lat = (bbox->north + bbox->south) * 0.5;
     // If the bbox crosses the antimeridian, shift east 360 degrees
     double east = bboxIsTransmeridian(bbox) ? bbox->east + M_2PI : bbox->east;
-    center->lng = constrainLng((east + bbox->west) / 2.0);
+    center->lng = constrainLng((east + bbox->west) * 0.5);
 }
 
 /**
@@ -265,8 +265,8 @@ H3Error lineHexEstimate(const LatLng *origin, const LatLng *destination,
 void scaleBBox(BBox *bbox, double scale) {
     double width = bboxWidthRads(bbox);
     double height = bboxHeightRads(bbox);
-    double widthBuffer = (width * scale - width) / 2;
-    double heightBuffer = (height * scale - height) / 2;
+    double widthBuffer = (width * scale - width) * 0.5;
+    double heightBuffer = (height * scale - height) * 0.5;
     // Scale north and south, clamping to latitude domain
     bbox->north += heightBuffer;
     if (bbox->north > M_PI_2) bbox->north = M_PI_2;

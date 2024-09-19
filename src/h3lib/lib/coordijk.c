@@ -345,8 +345,8 @@ H3Error _upAp7Checked(CoordIJK *ijk) {
         }
     }
 
-    ijk->i = (int)lround(((i * 3) - j) / 7.0);
-    ijk->j = (int)lround((i + (j * 2)) / 7.0);
+    ijk->i = (int)lround(((i * 3) - j) * M_ONESEVENTH);
+    ijk->j = (int)lround((i + (j * 2)) * M_ONESEVENTH);
     ijk->k = 0;
 
     // Expected not to be reachable, because max + min or max - min would need
@@ -393,8 +393,8 @@ H3Error _upAp7rChecked(CoordIJK *ijk) {
         }
     }
 
-    ijk->i = (int)lround(((i * 2) + j) / 7.0);
-    ijk->j = (int)lround(((j * 3) - i) / 7.0);
+    ijk->i = (int)lround(((i * 2) + j) * M_ONESEVENTH);
+    ijk->j = (int)lround(((j * 3) - i) * M_ONESEVENTH);
     ijk->k = 0;
 
     // Expected not to be reachable, because max + min or max - min would need
@@ -417,8 +417,8 @@ void _upAp7(CoordIJK *ijk) {
     int i = ijk->i - ijk->k;
     int j = ijk->j - ijk->k;
 
-    ijk->i = (int)lround((3 * i - j) / 7.0);
-    ijk->j = (int)lround((i + 2 * j) / 7.0);
+    ijk->i = (int)lround((3 * i - j) * M_ONESEVENTH);
+    ijk->j = (int)lround((i + 2 * j) * M_ONESEVENTH);
     ijk->k = 0;
     _ijkNormalize(ijk);
 }
@@ -434,8 +434,8 @@ void _upAp7r(CoordIJK *ijk) {
     int i = ijk->i - ijk->k;
     int j = ijk->j - ijk->k;
 
-    ijk->i = (int)lround((2 * i + j) / 7.0);
-    ijk->j = (int)lround((3 * j - i) / 7.0);
+    ijk->i = (int)lround((2 * i + j) * M_ONESEVENTH);
+    ijk->j = (int)lround((3 * j - i) * M_ONESEVENTH);
     ijk->k = 0;
     _ijkNormalize(ijk);
 }
