@@ -1049,7 +1049,7 @@ SUBCOMMAND(compactCells,
             exit(1);
         }
     }
-    int cellsOffset = 0;
+    size_t cellsOffset = 0;
     H3Index *cells = readCellsFromFile(fp, cellStrs, &cellsOffset);
     if (fp != 0 && !isStdin) {
         fclose(fp);
@@ -1152,7 +1152,7 @@ SUBCOMMAND(uncompactCells,
             exit(1);
         }
     }
-    int cellsOffset = 0;
+    size_t cellsOffset = 0;
     H3Index *cells = readCellsFromFile(fp, cellStrs, &cellsOffset);
     if (fp != 0 && !isStdin) {
         fclose(fp);
