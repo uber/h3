@@ -50,6 +50,9 @@
 /** one third **/
 #define M_ONETHIRD 0.333333333333333333333333333333333333333
 
+/** one seventh (1/7) **/
+#define M_ONESEVENTH 0.14285714285714285714285714285714285
+
 /** rotation angle between Class II and Class III resolution axes
  * (asin(sqrt(3.0 / 28.0))) */
 #define M_AP7_ROT_RADS 0.333473172251832115336090755351601070065900389
