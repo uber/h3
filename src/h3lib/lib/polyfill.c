@@ -433,7 +433,8 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
 
         // Target res: Do a fine-grained check
         if (cellRes == iter->_res) {
-            if (mode == CONTAINMENT_CENTER || mode == CONTAINMENT_OVERLAPPING) {
+            if (mode == CONTAINMENT_CENTER || mode == CONTAINMENT_OVERLAPPING ||
+                mode == CONTAINMENT_OVERLAPPING_BBOX) {
                 // Check if the cell center is inside the polygon
                 LatLng center;
                 H3Error centerErr = H3_EXPORT(cellToLatLng)(cell, &center);
@@ -478,7 +479,8 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
                     }
                 }
             }
-            if (mode == CONTAINMENT_FULL || mode == CONTAINMENT_OVERLAPPING) {
+            if (mode == CONTAINMENT_FULL || mode == CONTAINMENT_OVERLAPPING ||
+                mode == CONTAINMENT_OVERLAPPING_BBOX) {
                 CellBoundary boundary;
                 H3Error boundaryErr =
                     H3_EXPORT(cellToBoundary)(cell, &boundary);
@@ -495,7 +497,8 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
                     return;
                 }
                 // Check if the cell is fully contained by the polygon
-                if (mode == CONTAINMENT_FULL &&
+                if ((mode == CONTAINMENT_FULL ||
+                     mode == CONTAINMENT_OVERLAPPING_BBOX) &&
                     cellBoundaryInsidePolygon(iter->_polygon, iter->_bboxes,
                                               &boundary, &bbox)) {
                     // Set to next output
@@ -505,7 +508,8 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
                 // For overlap, we've already checked for center point inclusion
                 // above; if that failed, we only need to check for line
                 // intersection
-                else if (mode == CONTAINMENT_OVERLAPPING &&
+                else if ((mode == CONTAINMENT_OVERLAPPING ||
+                          mode == CONTAINMENT_OVERLAPPING_BBOX) &&
                          cellBoundaryCrossesPolygon(
                              iter->_polygon, iter->_bboxes, &boundary, &bbox)) {
                     // Set to next output
@@ -693,9 +697,24 @@ void iterDestroyPolygon(IterCellsPolygon *iter) {
 H3Error H3_EXPORT(polygonToCellsExperimental)(const GeoPolygon *polygon,
                                               int res, uint32_t flags,
                                               H3Index *out) {
+#ifndef NDEBUG
+    int64_t maxSize;
+    H3Error sizeError = H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+        polygon, res, flags, &maxSize);
+    if (sizeError) {
+        return sizeError;
+    }
+#endif
+
     IterCellsPolygon iter = iterInitPolygon(polygon, res, flags);
     int64_t i = 0;
     for (; iter.cell; iterStepPolygon(&iter)) {
+#ifndef NDEBUG
+        if (NEVER(i >= maxSize)) {
+            iterDestroyPolygon(&iter);
+            return E_FAILED;
+        }
+#endif
         out[i++] = iter.cell;
     }
     return iter.error;
