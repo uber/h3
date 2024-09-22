@@ -698,6 +698,9 @@ H3Error H3_EXPORT(polygonToCellsExperimental)(const GeoPolygon *polygon,
                                               int res, uint32_t flags,
                                               H3Index *out) {
 #ifdef H3_POLYGON_TO_CELLS_ASSERT
+    // TODO: This is incompatible with testH3Memory, since it will make more
+    // allocations. This is just for debugging that the algorithm is not
+    // exceeding its buffer size.
     int64_t maxSize;
     H3Error sizeError = H3_EXPORT(maxPolygonToCellsSizeExperimental)(
         polygon, res, flags, &maxSize);
