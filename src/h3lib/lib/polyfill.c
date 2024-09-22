@@ -448,7 +448,8 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
                     return;
                 }
             }
-            if (mode == CONTAINMENT_OVERLAPPING) {
+            if (mode == CONTAINMENT_OVERLAPPING ||
+                mode == CONTAINMENT_OVERLAPPING_BBOX) {
                 // For overlapping, we need to do a quick check to determine
                 // whether the polygon is wholly contained by the cell. We
                 // check the first polygon vertex, which if it is contained
@@ -702,7 +703,7 @@ H3Error H3_EXPORT(polygonToCellsExperimental)(const GeoPolygon *polygon,
     IterCellsPolygon iter = iterInitPolygon(polygon, res, flags);
     int64_t i = 0;
     for (; iter.cell; iterStepPolygon(&iter)) {
-        if (i >= maxSize) {
+        if (NEVER(i >= maxSize)) {
             iterDestroyPolygon(&iter);
             return E_FAILED;
         }
