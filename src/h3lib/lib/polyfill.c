@@ -697,7 +697,7 @@ void iterDestroyPolygon(IterCellsPolygon *iter) {
 H3Error H3_EXPORT(polygonToCellsExperimental)(const GeoPolygon *polygon,
                                               int res, uint32_t flags,
                                               H3Index *out) {
-#ifndef NDEBUG
+#ifdef H3_POLYGON_TO_CELLS_ASSERT
     int64_t maxSize;
     H3Error sizeError = H3_EXPORT(maxPolygonToCellsSizeExperimental)(
         polygon, res, flags, &maxSize);
@@ -709,7 +709,7 @@ H3Error H3_EXPORT(polygonToCellsExperimental)(const GeoPolygon *polygon,
     IterCellsPolygon iter = iterInitPolygon(polygon, res, flags);
     int64_t i = 0;
     for (; iter.cell; iterStepPolygon(&iter)) {
-#ifndef NDEBUG
+#ifdef H3_POLYGON_TO_CELLS_ASSERT
         if (NEVER(i >= maxSize)) {
             iterDestroyPolygon(&iter);
             return E_FAILED;
