@@ -92,8 +92,8 @@ SUITE(compactCells) {
     }
 
     TEST(allRes1) {
-        int64_t numRes0 = 122;
-        int64_t numRes1 = 842;
+        const int64_t numRes0 = 122;
+        const int64_t numRes1 = 842;
         H3Index cells0[numRes0];
         H3Index cells1[numRes1];
 
