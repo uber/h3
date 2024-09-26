@@ -92,11 +92,20 @@ SUITE(compactCells) {
     }
 
     TEST(allRes1) {
-        H3Index cells0[122];
+        int64_t numRes0 = 122;
+        int64_t numRes1 = 842;
+        H3Index cells0[numRes0];
+        H3Index cells1[numRes1];
 
         H3_EXPORT(getRes0Cells)(&cells0);
+        t_assert(cells0[0] == 0x8001fffffffffff, "got expected first res0 cell");
 
-        t_assert(cells0[0] == 0x8001fffffffffff, "got expected parent");
+        t_assertSuccess(
+            H3_EXPORT(uncompactCells)(cells0, numRes0, cells1, numRes1, 1));
+
+        H3Index out[numRes1];
+        // also dies at 41!
+        t_assertSuccess(H3_EXPORT(compactCells)(cells1, out, numRes1));
     }
 
     TEST(res0) {
