@@ -91,7 +91,7 @@ SUITE(compactCells) {
         free(children);
     }
 
-    TEST(allRes0children) {
+    TEST(allRes1) {
         H3Index cells0[122];
 
         H3_EXPORT(getRes0Cells)(&cells0);
