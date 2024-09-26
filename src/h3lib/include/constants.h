@@ -19,58 +19,59 @@
 
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
+#include <math.h>
 
 #ifndef M_PI
 /** pi */
-#define M_PI 3.14159265358979323846
+static const double M_PI = 3.14159265358979323846;
 #endif
 
 #ifndef M_PI_2
 /** pi / 2.0 */
-#define M_PI_2 1.5707963267948966
+static const double M_PI_2  = M_PI / 2.0;
 #endif
 
 /** 2.0 * PI */
-#define M_2PI 6.28318530717958647692528676655900576839433
+static const double M_2PI = 2.0 * M_PI;
 
 /** pi / 180 */
-#define M_PI_180 0.0174532925199432957692369076848861271111
+static const double M_PI_180 = M_PI / 180.0;
 /** 180 / pi */
-#define M_180_PI 57.29577951308232087679815481410517033240547
+static const double M_180_PI = 180 / M_PI;
 
 /** threshold epsilon */
-#define EPSILON 0.0000000000000001
+static const double EPSILON = 0.0000000000000001;
 /** sqrt(3) / 2.0 */
-#define M_SQRT3_2 0.8660254037844386467637231707529361834714
+static const double M_SQRT3_2 = sqrt(3) / 2.0;
 /** sin(60') */
-#define M_SIN60 M_SQRT3_2
+static const double M_SIN60 = M_SQRT3_2;
 /** 1/sin(60') **/
-#define M_RSIN60 1.1547005383792515290182975610039149112953
+static const double M_RSIN60 = 1.0 / M_SQRT3_2;
 
 /** one third **/
-#define M_ONETHIRD 0.333333333333333333333333333333333333333
+static const double M_ONETHIRD = 1.0 / 3.0;
 
 /** one seventh (1/7) **/
-#define M_ONESEVENTH 0.14285714285714285714285714285714285
+static const double M_ONESEVENTH = 1.0 / 7.0;
 
 /** rotation angle between Class II and Class III resolution axes
  * (asin(sqrt(3.0 / 28.0))) */
-#define M_AP7_ROT_RADS 0.333473172251832115336090755351601070065900389
+static const double M_AP7_ROT_RADS = asin(sqrt(3.0 / 28.0));
 
 /** sin(M_AP7_ROT_RADS) */
-#define M_SIN_AP7_ROT 0.3273268353539885718950318
+static const double M_SIN_AP7_ROT = sin(asin(sqrt(3.0 / 28.0)));
 
 /** cos(M_AP7_ROT_RADS) */
-#define M_COS_AP7_ROT 0.9449111825230680680167902
+static const double M_COS_AP7_ROT = cos(asin(sqrt(3.0 / 28.0)));
 
 /** earth radius in kilometers using WGS84 authalic radius */
-#define EARTH_RADIUS_KM 6371.007180918475
+static const double EARTH_RADIUS_KM = 6371.007180918475;
 
 /** scaling factor from hex2d resolution 0 unit length
  * (or distance between adjacent cell center points
  * on the plane) to gnomonic unit length. */
-#define RES0_U_GNOMONIC 0.38196601125010500003
-#define INV_RES0_U_GNOMONIC 2.61803398874989588842
+static const double RES0_U_GNOMONIC = 0.38196601125010500003;
+static const double INV_RES0_U_GNOMONIC = 1.0 / RES0_U_GNOMONIC;
 
 /** max H3 resolution; H3 version 1 has 16 resolutions, numbered 0 through 15 */
 #define MAX_H3_RES 15
