@@ -94,8 +94,9 @@ SUITE(compactCells) {
     TEST(allRes1) {
         const int64_t numRes0 = 122;
         const int64_t numRes1 = 842;
-        H3Index cells0[numRes0];
-        H3Index cells1[numRes1];
+        H3Index *cells0 = calloc(numRes0, sizeof(H3Index));
+        H3Index *cells1 = calloc(numRes1, sizeof(H3Index));
+        H3Index *out = calloc(numRes1, sizeof(H3Index));
 
         H3_EXPORT(getRes0Cells)(cells0);
         t_assert(cells0[0] == 0x8001fffffffffff,
@@ -103,8 +104,6 @@ SUITE(compactCells) {
 
         t_assertSuccess(
             H3_EXPORT(uncompactCells)(cells0, numRes0, cells1, numRes1, 1));
-
-        H3Index out[numRes1];
 
         // Fails at compactCells.
         // However:
@@ -114,6 +113,10 @@ SUITE(compactCells) {
         t_assertSuccess(H3_EXPORT(compactCells)(cells1, out, numUncompacted));
 
         // TODO: check that output matches cells0
+
+        free(cells0);
+        free(cells1);
+        free(out);
     }
 
     TEST(res0) {
