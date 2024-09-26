@@ -77,7 +77,7 @@ SUITE(cellsToLinkedMultiPolygon) {
         H3Index kids[] = {0x81ea3ffffffffff, 0x81eabffffffffff,
                           0x81eafffffffffff, 0x81eb3ffffffffff,
                           0x81eb7ffffffffff, 0x81ebbffffffffff};
-        int numCells = ARRAY_SIZE(set);
+        int numCells = ARRAY_SIZE(kids);
 
         LinkedGeoPolygon polygon;
         t_assertSuccess(
