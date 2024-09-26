@@ -91,6 +91,14 @@ SUITE(compactCells) {
         free(children);
     }
 
+    TEST(allRes0children) {
+        H3Index cells0[122];
+
+        H3_EXPORT(getRes0Cells)(&cells0);
+
+        t_assert(cells0[0] == 0x8001fffffffffff, "got expected parent");
+    }
+
     TEST(res0) {
         int hexCount = NUM_BASE_CELLS;
 
