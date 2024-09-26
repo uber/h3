@@ -97,7 +97,7 @@ SUITE(compactCells) {
         H3Index cells0[numRes0];
         H3Index cells1[numRes1];
 
-        H3_EXPORT(getRes0Cells)(&cells0);
+        H3_EXPORT(getRes0Cells)(cells0);
         t_assert(cells0[0] == 0x8001fffffffffff,
                  "got expected first res0 cell");
 
