@@ -98,14 +98,22 @@ SUITE(compactCells) {
         H3Index cells1[numRes1];
 
         H3_EXPORT(getRes0Cells)(&cells0);
-        t_assert(cells0[0] == 0x8001fffffffffff, "got expected first res0 cell");
+        t_assert(cells0[0] == 0x8001fffffffffff,
+                 "got expected first res0 cell");
 
         t_assertSuccess(
             H3_EXPORT(uncompactCells)(cells0, numRes0, cells1, numRes1, 1));
 
         H3Index out[numRes1];
-        // also dies at 41!
-        t_assertSuccess(H3_EXPORT(compactCells)(cells1, out, numRes1));
+
+        // Fails at compactCells.
+        // However:
+        //   Passes if numUncompacted <= 40
+        //   Fails  if numUncompacted >= 41.
+        int64_t numUncompacted = numRes1;
+        t_assertSuccess(H3_EXPORT(compactCells)(cells1, out, numUncompacted));
+
+        // TODO: check that output matches cells0
     }
 
     TEST(res0) {
