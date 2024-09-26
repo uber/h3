@@ -31,8 +31,7 @@ BENCHMARK(latLngToCell, 10000, { H3_EXPORT(latLngToCell)(&coord, 9, &h); });
 
 BENCHMARK(cellToLatLng, 10000, { H3_EXPORT(cellToLatLng)(hex, &outCoord); });
 
-BENCHMARK(cellToBoundary, 10000, {
-    H3_EXPORT(cellToBoundary)(hex, &outBoundary);
-});
+BENCHMARK(cellToBoundary, 10000,
+          { H3_EXPORT(cellToBoundary)(hex, &outBoundary); });
 
 END_BENCHMARKS();
