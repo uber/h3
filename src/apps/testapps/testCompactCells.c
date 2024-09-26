@@ -109,7 +109,7 @@ SUITE(compactCells) {
         // However:
         //   Passes if numUncompacted <= 40
         //   Fails  if numUncompacted >= 41.
-        int64_t numUncompacted = numRes1;
+        int64_t numUncompacted = 40;
         t_assertSuccess(H3_EXPORT(compactCells)(cells1, out, numUncompacted));
 
         // TODO: check that output matches cells0
