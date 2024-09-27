@@ -83,7 +83,7 @@ SUITE(cellsToLinkedMultiPolygon) {
         t_assertSuccess(
             H3_EXPORT(cellsToLinkedMultiPolygon)(kids, numCells, &polygon));
 
-        // Since these are the children of a cell, we exepect a single loop with
+        // Since these are the children of a cell, we expect a single loop with
         // no holes.
         t_assert(countLinkedLoops(&polygon) == 1, "1 loop added to polygon");
 
