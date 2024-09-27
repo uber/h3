@@ -8,11 +8,12 @@ on:
 
 jobs:
   tests:
-    name: Test Compile ${{ matrix.build_type }}
-    runs-on: macos-latest
+    name: Test Compile ${{ matrix.build_type }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
+        os: [macos-12, macos-13, macos-latest]
         build_type: ["Debug", "Release"]
 
     steps:
