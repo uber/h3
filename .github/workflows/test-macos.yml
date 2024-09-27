@@ -12,6 +12,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     strategy:
+      fail-fast: false
       matrix:
         os: [macos-12, macos-13, macos-latest]
         build_type: ["Debug", "Release"]
