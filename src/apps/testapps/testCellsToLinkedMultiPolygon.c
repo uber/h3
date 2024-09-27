@@ -72,7 +72,7 @@ SUITE(cellsToLinkedMultiPolygon) {
         H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
     }
 
-    TEST(pentagonChldren) {
+    TEST(pentagonChildren) {
         // children of pentagon 0x80ebfffffffffff
         H3Index kids[] = {0x81ea3ffffffffff, 0x81eabffffffffff,
                           0x81eafffffffffff, 0x81eb3ffffffffff,
