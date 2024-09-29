@@ -487,7 +487,7 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
                     H3Index parent;
                     H3Error parentError =
                         H3_EXPORT(cellToParent)(currIndex, parentRes, &parent);
-                    if (parentError) {
+                    if (NEVER(parentError)) {
                         H3_MEMORY(free)(compactableHexes);
                         H3_MEMORY(free)(remainingHexes);
                         H3_MEMORY(free)(hashSetArray);
