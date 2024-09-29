@@ -113,19 +113,17 @@ SUITE(compactCells) {
         int64_t numUncompacted = numRes1;
         t_assertSuccess(H3_EXPORT(compactCells)(cells1, out, numUncompacted));
 
-        memset(out, 0, sizeof(H3Index) * numRes1);
-
-        numUncompacted = 44;
-        t_assertSuccess(
-            H3_EXPORT(compactCells)(&cells1[80], out, numUncompacted));
-
-        memset(out, 0, sizeof(H3Index) * numRes1);
-
-        numUncompacted = 43;
-        t_assertSuccess(
-            H3_EXPORT(compactCells)(&cells1[80], out, numUncompacted));
-
         // TODO: check that output matches cells0
+
+        for (int64_t offset = 0; offset < numRes1; offset++) {
+            for (numUncompacted = numRes1 - offset; numUncompacted >= 0;
+                 numUncompacted--) {
+                memset(out, 0, sizeof(H3Index) * numRes1);
+
+                t_assertSuccess(H3_EXPORT(compactCells)(&cells1[offset], out,
+                                                        numUncompacted));
+            }
+        }
 
         free(cells0);
         free(cells1);
