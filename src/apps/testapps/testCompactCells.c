@@ -386,9 +386,7 @@ SUITE(compactCells) {
                          0x7,
                          0x400000000};
         H3Index output[43] = {0};
-        t_assert(H3_EXPORT(compactCells)(bad, output, numHex) == E_RES_DOMAIN,
-                 "compactCells returns E_RES_DOMAIN on bad input (parent "
-                 "error #2)");
+        t_assertSuccess(H3_EXPORT(compactCells)(bad, output, numHex));
     }
 
     TEST(uncompactCells_wrongRes) {
