@@ -15,6 +15,7 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "constants.h"
 #include "h3Index.h"
@@ -111,6 +112,18 @@ SUITE(compactCells) {
         //   Fails  if numUncompacted >= 41.
         int64_t numUncompacted = numRes1;
         t_assertSuccess(H3_EXPORT(compactCells)(cells1, out, numUncompacted));
+
+        memset(out, 0, sizeof(H3Index) * numRes1);
+
+        numUncompacted = 44;
+        t_assertSuccess(
+            H3_EXPORT(compactCells)(&cells1[80], out, numUncompacted));
+
+        memset(out, 0, sizeof(H3Index) * numRes1);
+
+        numUncompacted = 43;
+        t_assertSuccess(
+            H3_EXPORT(compactCells)(&cells1[80], out, numUncompacted));
 
         // TODO: check that output matches cells0
 
