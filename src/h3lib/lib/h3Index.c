@@ -480,43 +480,49 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
             H3Index currIndex = remainingHexes[i];
             // TODO: This case is coverable (reachable by fuzzer)
             if (currIndex != H3_NULL) {
-                H3Index parent;
-                H3Error parentError =
-                    H3_EXPORT(cellToParent)(currIndex, parentRes, &parent);
-                if (parentError) {
-                    H3_MEMORY(free)(compactableHexes);
-                    H3_MEMORY(free)(remainingHexes);
-                    H3_MEMORY(free)(hashSetArray);
-                    return parentError;
-                }
-                // Modulus hash the parent into the temp array
-                // to determine if this index was included in
-                // the compactableHexes array
-                int loc = (int)(parent % numRemainingHexes);
-                int loopCount = 0;
                 bool isUncompactable = true;
-                do {
-                    if (NEVER(loopCount > numRemainingHexes)) {
-                        // This case should not be possible because at most one
-                        // index is placed into hashSetArray per input hexagon.
+                // Resolution 0 cells always uncompactable, and trying to take
+                // the res -1 parent of a cell is invalid.
+                if (parentRes >= 0) {
+                    H3Index parent;
+                    H3Error parentError =
+                        H3_EXPORT(cellToParent)(currIndex, parentRes, &parent);
+                    if (NEVER(parentError)) {
                         H3_MEMORY(free)(compactableHexes);
                         H3_MEMORY(free)(remainingHexes);
                         H3_MEMORY(free)(hashSetArray);
-                        return E_FAILED;
+                        return parentError;
                     }
-                    H3Index tempIndex =
-                        hashSetArray[loc] & H3_RESERVED_MASK_NEGATIVE;
-                    if (tempIndex == parent) {
-                        int count = H3_GET_RESERVED_BITS(hashSetArray[loc]) + 1;
-                        if (count == 7) {
-                            isUncompactable = false;
+                    // Modulus hash the parent into the temp array
+                    // to determine if this index was included in
+                    // the compactableHexes array
+                    int loc = (int)(parent % numRemainingHexes);
+                    int loopCount = 0;
+                    do {
+                        if (NEVER(loopCount > numRemainingHexes)) {
+                            // This case should not be possible because at most
+                            // one index is placed into hashSetArray per input
+                            // hexagon.
+                            H3_MEMORY(free)(compactableHexes);
+                            H3_MEMORY(free)(remainingHexes);
+                            H3_MEMORY(free)(hashSetArray);
+                            return E_FAILED;
                         }
-                        break;
-                    } else {
-                        loc = (loc + 1) % numRemainingHexes;
-                    }
-                    loopCount++;
-                } while (hashSetArray[loc] != parent);
+                        H3Index tempIndex =
+                            hashSetArray[loc] & H3_RESERVED_MASK_NEGATIVE;
+                        if (tempIndex == parent) {
+                            int count =
+                                H3_GET_RESERVED_BITS(hashSetArray[loc]) + 1;
+                            if (count == 7) {
+                                isUncompactable = false;
+                            }
+                            break;
+                        } else {
+                            loc = (loc + 1) % numRemainingHexes;
+                        }
+                        loopCount++;
+                    } while (hashSetArray[loc] != parent);
+                }
                 if (isUncompactable) {
                     compactedSetOffset[uncompactableCount] = remainingHexes[i];
                     uncompactableCount++;
