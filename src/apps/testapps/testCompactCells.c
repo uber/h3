@@ -106,17 +106,58 @@ SUITE(compactCells) {
         t_assertSuccess(
             H3_EXPORT(uncompactCells)(cells0, numRes0, cells1, numRes1, 1));
 
-        // Fails at compactCells.
-        // However:
-        //   Passes if numUncompacted <= 40
-        //   Fails  if numUncompacted >= 41.
         int64_t numUncompacted = numRes1;
         t_assertSuccess(H3_EXPORT(compactCells)(cells1, out, numUncompacted));
 
-        // TODO: check that output matches cells0
+        // Assert that the output of this function matches exactly the set of
+        // res 0 cells
+        size_t foundCount = 0;
+        for (size_t res1Idx = 0; res1Idx < numRes1; res1Idx++) {
+            H3Index compactedCell = out[res1Idx];
 
+            if (compactedCell) {
+                for (size_t res1DupIdx = 0; res1DupIdx < res1Idx;
+                     res1DupIdx++) {
+                    t_assert(out[res1DupIdx] != compactedCell,
+                             "Duplicated output found");
+                }
+
+                bool found = false;
+                for (size_t res0Idx = 0; res0Idx < numRes0; res0Idx++) {
+                    if (cells0[res0Idx] == compactedCell) {
+                        found = true;
+                        break;
+                    }
+                }
+                t_assert(found, "Res 0 cell is found");
+                foundCount++;
+            }
+        }
+        t_assert(foundCount == numRes0, "all res 0 cells found");
+
+        free(cells0);
+        free(cells1);
+        free(out);
+    }
+
+    TEST(allRes1_variousRanges) {
+        const int64_t numRes0 = 122;
+        const int64_t numRes1 = 842;
+        H3Index *cells0 = calloc(numRes0, sizeof(H3Index));
+        H3Index *cells1 = calloc(numRes1, sizeof(H3Index));
+        H3Index *out = calloc(numRes1, sizeof(H3Index));
+
+        H3_EXPORT(getRes0Cells)(cells0);
+        t_assert(cells0[0] == 0x8001fffffffffff,
+                 "got expected first res0 cell");
+
+        t_assertSuccess(
+            H3_EXPORT(uncompactCells)(cells0, numRes0, cells1, numRes1, 1));
+
+        // Test various (but not all possible combinations) ranges of res 1
+        // cells
         for (int64_t offset = 0; offset < numRes1; offset++) {
-            for (numUncompacted = numRes1 - offset; numUncompacted >= 0;
+            for (int64_t numUncompacted = numRes1 - offset; numUncompacted >= 0;
                  numUncompacted--) {
                 memset(out, 0, sizeof(H3Index) * numRes1);
 
