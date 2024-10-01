@@ -6,10 +6,13 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+### Fixed
+- Fixed compacting all or many resolution 1 cells (#919)
+
 ### Changed
 - Replace internal algorithm for `polygonToCells` with a new version that is more memory-efficient (#785)
 - Reorganize tests into public / internal. (#762)
-- Performance enhancement for aarch64, may improve other platforms (#790, #792, #852, #905)
+- Performance enhancement for aarch64, may improve other platforms (#790, #792, #852, #905, #913)
 - `clang-format` upgraded to version 14. (#834)
 - Fixed tests that incorrectly did not test resolution 15. (#820)
 - Use `CMAKE_INSTALL_LIBDIR` when choosing where to install library files. (#819)

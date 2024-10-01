@@ -837,12 +837,13 @@ H3Error _getEdgeHexagons(const GeoLoop *geoloop, int64_t numHexagons, int res,
         }
         for (int64_t j = 0; j < numHexesEstimate; j++) {
             LatLng interpolate;
+            double invNumHexesEst = 1.0 / numHexesEstimate;
             interpolate.lat =
-                (origin.lat * (numHexesEstimate - j) / numHexesEstimate) +
-                (destination.lat * j / numHexesEstimate);
+                (origin.lat * (numHexesEstimate - j) * invNumHexesEst) +
+                (destination.lat * j * invNumHexesEst);
             interpolate.lng =
-                (origin.lng * (numHexesEstimate - j) / numHexesEstimate) +
-                (destination.lng * j / numHexesEstimate);
+                (origin.lng * (numHexesEstimate - j) * invNumHexesEst) +
+                (destination.lng * j * invNumHexesEst);
             H3Index pointHex;
             H3Error e = H3_EXPORT(latLngToCell)(&interpolate, res, &pointHex);
             if (e) {
