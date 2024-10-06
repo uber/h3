@@ -331,7 +331,6 @@ H3Error H3_EXPORT(cellToCenterChild)(H3Index h, int childRes, H3Index *child) {
  * contiguous regions exist in the set at all and no compression possible)
  * @return an error code on bad input data
  */
-// todo: update internal implementation for int64_t
 H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
                                 const int64_t numHexes) {
     if (numHexes == 0) {
@@ -340,7 +339,7 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
     int res = H3_GET_RESOLUTION(h3Set[0]);
     if (res == 0) {
         // No compaction possible, just copy the set to output
-        for (int i = 0; i < numHexes; i++) {
+        for (int64_t i = 0; i < numHexes; i++) {
             compactedSet[i] = h3Set[i];
         }
         return E_SUCCESS;
@@ -356,7 +355,7 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
         return E_MEMORY_ALLOC;
     }
     H3Index *compactedSetOffset = compactedSet;
-    int numRemainingHexes = numHexes;
+    int64_t numRemainingHexes = numHexes;
     while (numRemainingHexes) {
         res = H3_GET_RESOLUTION(remainingHexes[0]);
         int parentRes = res - 1;
@@ -367,7 +366,7 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
             // Put the parents of the hexagons into the temp array
             // via a hashing mechanism, and use the reserved bits
             // to track how many times a parent is duplicated
-            for (int i = 0; i < numRemainingHexes; i++) {
+            for (int64_t i = 0; i < numRemainingHexes; i++) {
                 H3Index currIndex = remainingHexes[i];
                 // TODO: This case is coverable (reachable by fuzzer)
                 if (currIndex != 0) {
@@ -393,8 +392,8 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
                         return parentError;
                     }
                     // Modulus hash the parent into the temp array
-                    int loc = (int)(parent % numRemainingHexes);
-                    int loopCount = 0;
+                    int64_t loc = (int64_t)(parent % numRemainingHexes);
+                    int64_t loopCount = 0;
                     while (hashSetArray[loc] != 0) {
                         if (NEVER(loopCount > numRemainingHexes)) {
                             // This case should not be possible because at
@@ -438,8 +437,8 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
 
         // Determine which parent hexagons have a complete set
         // of children and put them in the compactableHexes array
-        int compactableCount = 0;
-        int maxCompactableCount =
+        int64_t compactableCount = 0;
+        int64_t maxCompactableCount =
             numRemainingHexes / 6;  // Somehow all pentagons; conservative
         if (maxCompactableCount == 0) {
             memcpy(compactedSetOffset, remainingHexes,
@@ -453,7 +452,7 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
             H3_MEMORY(free)(hashSetArray);
             return E_MEMORY_ALLOC;
         }
-        for (int i = 0; i < numRemainingHexes; i++) {
+        for (int64_t i = 0; i < numRemainingHexes; i++) {
             if (hashSetArray[i] == 0) continue;
             int count = H3_GET_RESERVED_BITS(hashSetArray[i]) + 1;
             // Include the deleted direction for pentagons as implicitly "there"
@@ -475,8 +474,8 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
         }
         // Uncompactable hexes are immediately copied into the
         // output compactedSetOffset
-        int uncompactableCount = 0;
-        for (int i = 0; i < numRemainingHexes; i++) {
+        int64_t uncompactableCount = 0;
+        for (int64_t i = 0; i < numRemainingHexes; i++) {
             H3Index currIndex = remainingHexes[i];
             // TODO: This case is coverable (reachable by fuzzer)
             if (currIndex != H3_NULL) {
@@ -496,8 +495,8 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
                     // Modulus hash the parent into the temp array
                     // to determine if this index was included in
                     // the compactableHexes array
-                    int loc = (int)(parent % numRemainingHexes);
-                    int loopCount = 0;
+                    int64_t loc = (int64_t)(parent % numRemainingHexes);
+                    int64_t loopCount = 0;
                     do {
                         if (NEVER(loopCount > numRemainingHexes)) {
                             // This case should not be possible because at most

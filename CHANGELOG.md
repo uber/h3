@@ -10,6 +10,7 @@ The public API of this library consists of the functions declared in file
 - Fixed compacting all or many resolution 1 cells (#919)
 
 ### Changed
+- `compactCells` internally uses int64 for array indexing. (#920)
 - Replace internal algorithm for `polygonToCells` with a new version that is more memory-efficient (#785)
 - Reorganize tests into public / internal. (#762)
 - Performance enhancement for aarch64, may improve other platforms (#790, #792, #852, #905, #913)
