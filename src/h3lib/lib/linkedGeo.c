@@ -78,6 +78,7 @@ LinkedLatLng *addLinkedCoord(LinkedGeoLoop *loop, H3Index vertex) {
     LinkedLatLng *coord = H3_MEMORY(malloc)(sizeof(*coord));
     assert(coord != NULL);
     LatLng vertexLatLng;
+    // TODO: Also add the distrortion vertex here
     H3Error err = H3_EXPORT(vertexToLatLng)(vertex, &vertexLatLng);
     if (NEVER(err)) {
         return NULL;

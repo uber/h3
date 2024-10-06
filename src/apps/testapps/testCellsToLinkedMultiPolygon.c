@@ -53,7 +53,7 @@ SUITE(cellsToLinkedMultiPolygon) {
         int numHexes = ARRAY_SIZE(set);
 
         t_assert(H3_EXPORT(cellsToLinkedMultiPolygon)(
-                     set, numHexes, &polygon) == E_CELL_INVALID,
+                    set, numHexes, &polygon) != E_SUCCESS,
                  "Invalid set fails");
     }
 

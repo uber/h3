@@ -1094,7 +1094,7 @@ H3Error h3SetToVertexGraph(const H3Index *h3Set, const int numHexes,
     initVertexGraph(graph, numBuckets, res);
     // Iterate through every hexagon
     for (int i = 0; i < numHexes; i++) {
-        H3Error vertexesError = H3_EXPORT(cellToVertexes)(h3Set[i], &vertices);
+        H3Error vertexesError = H3_EXPORT(cellToVertexes)(h3Set[i], vertices);
         if (vertexesError) {
             // Destroy vertex graph as caller will not know to do so.
             destroyVertexGraph(graph);
@@ -1106,14 +1106,12 @@ H3Error h3SetToVertexGraph(const H3Index *h3Set, const int numHexes,
                 continue;
             }
             int next = j + 1;
-            for (int nextOffset = 0; nextOffset < NUM_HEX_VERTS; nextOffset++) {
-                if (vertices[(next + nextOffset) % NUM_HEX_VERTS] == H3_NULL) {
-                    next = (next + nextOffset) % NUM_HEX_VERTS;
-                    break;
-                }
+            if (vertices[next % NUM_HEX_VERTS] == H3_NULL) {
+                // There can only be one deleted vertex, for pentagons, so just advance past it.
+                next++;
             }
             fromVtx = vertices[j];
-            toVtx = vertices[next];
+            toVtx = vertices[next % NUM_HEX_VERTS];
             // If we've seen this edge already, it will be reversed
             // TODO: Wrong order of parameters
             edge = findNodeForEdge(graph, toVtx, fromVtx);
