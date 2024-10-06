@@ -11,8 +11,8 @@ such as the H3 core library.
 
 The public API of H3 is covered in the following fuzzers:
 
-| Function | File or status
-| -------- | --------------
+| Function | File
+| -------- | ----
 | areNeighborCells | [fuzzerDirectedEdge](./fuzzerDirectedEdge.c)
 | cellArea | [fuzzerCellArea](./fuzzerCellArea.c)
 | cellToBoundary | [fuzzerCellToLatLng](./fuzzerCellToLatLng.c)
@@ -60,6 +60,7 @@ The public API of H3 is covered in the following fuzzers:
 | localIjToCell | [fuzzerLocalIj](./fuzzerLocalIj.c)
 | originToDirectedEdges | [fuzzerDirectedEdge](./fuzzerDirectedEdge.c)
 | polygonToCells | [fuzzerPoylgonToCells](./fuzzerPolygonToCells.c)
+| polygonToCellsExperimental | [fuzzerPoylgonToCellsExperimental](./fuzzerPolygonToCellsExperimental.c) [fuzzerPoylgonToCellsExperimentalNoHoles](./fuzzerPolygonToCellsExperimentalNoHoles.c)
 | radsToDegs | Trivial
 | stringToH3 | [fuzzerIndexIO](./fuzzerIndexIO.c)
 | uncompactCells | [fuzzerCompact](./fuzzerCompact.c)

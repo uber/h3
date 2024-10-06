@@ -1,0 +1,1 @@
+add_h3_cli_test(testCliCellToChildren "cellToChildren -c 85283473fffffff -r 6" "[ \"862834707ffffff\", \"86283470fffffff\", \"862834717ffffff\", \"86283471fffffff\", \"862834727ffffff\", \"86283472fffffff\", \"862834737ffffff\" ]")
