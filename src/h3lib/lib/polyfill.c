@@ -433,7 +433,8 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
 
         // Target res: Do a fine-grained check
         if (cellRes == iter->_res) {
-            if (mode == CONTAINMENT_CENTER || mode == CONTAINMENT_OVERLAPPING) {
+            if (mode == CONTAINMENT_CENTER || mode == CONTAINMENT_OVERLAPPING ||
+                mode == CONTAINMENT_OVERLAPPING_BBOX) {
                 // Check if the cell center is inside the polygon
                 LatLng center;
                 H3Error centerErr = H3_EXPORT(cellToLatLng)(cell, &center);
@@ -448,7 +449,8 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
                     return;
                 }
             }
-            if (mode == CONTAINMENT_OVERLAPPING) {
+            if (mode == CONTAINMENT_OVERLAPPING ||
+                mode == CONTAINMENT_OVERLAPPING_BBOX) {
                 // For overlapping, we need to do a quick check to determine
                 // whether the polygon is wholly contained by the cell. We
                 // check the first polygon vertex, which if it is contained
@@ -477,7 +479,8 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
                     }
                 }
             }
-            if (mode == CONTAINMENT_FULL || mode == CONTAINMENT_OVERLAPPING) {
+            if (mode == CONTAINMENT_FULL || mode == CONTAINMENT_OVERLAPPING ||
+                mode == CONTAINMENT_OVERLAPPING_BBOX) {
                 CellBoundary boundary;
                 H3Error boundaryErr =
                     H3_EXPORT(cellToBoundary)(cell, &boundary);
@@ -494,7 +497,8 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
                     return;
                 }
                 // Check if the cell is fully contained by the polygon
-                if (mode == CONTAINMENT_FULL &&
+                if ((mode == CONTAINMENT_FULL ||
+                     mode == CONTAINMENT_OVERLAPPING_BBOX) &&
                     cellBoundaryInsidePolygon(iter->_polygon, iter->_bboxes,
                                               &boundary, &bbox)) {
                     // Set to next output
@@ -692,9 +696,27 @@ void iterDestroyPolygon(IterCellsPolygon *iter) {
 H3Error H3_EXPORT(polygonToCellsExperimental)(const GeoPolygon *polygon,
                                               int res, uint32_t flags,
                                               H3Index *out) {
+#ifdef H3_POLYGON_TO_CELLS_ASSERT
+    // TODO: This is incompatible with testH3Memory, since it will make more
+    // allocations. This is just for debugging that the algorithm is not
+    // exceeding its buffer size.
+    int64_t maxSize;
+    H3Error sizeError = H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+        polygon, res, flags, &maxSize);
+    if (sizeError) {
+        return sizeError;
+    }
+#endif
+
     IterCellsPolygon iter = iterInitPolygon(polygon, res, flags);
     int64_t i = 0;
     for (; iter.cell; iterStepPolygon(&iter)) {
+#ifdef H3_POLYGON_TO_CELLS_ASSERT
+        if (NEVER(i >= maxSize)) {
+            iterDestroyPolygon(&iter);
+            return E_FAILED;
+        }
+#endif
         out[i++] = iter.cell;
     }
     return iter.error;

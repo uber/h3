@@ -10,6 +10,7 @@
 /lib/
 # Travis CI build directory
 /build/
+/build*/
 # Local build directories
 /Debug/
 /Release/
