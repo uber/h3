@@ -62,25 +62,17 @@ void destroyVertexGraph(VertexGraph *graph) {
 /**
  * Get an integer hash for a lat/lng point, at a precision determined
  * by the current hexagon resolution.
- * TODO: Light testing suggests this might not be sufficient at resolutions
- * finer than 10. Design a better hash function if performance and collisions
- * seem to be an issue here.
  * @param  vertex     Lat/lng vertex to hash
- * @param  res        Resolution of the hexagon the vertex belongs to
  * @param  numBuckets Number of buckets in the graph
  * @return            Integer hash
  */
-uint32_t _hashVertex(const LatLng *vertex, int res, int numBuckets) {
-    // Simple hash: Take the sum of the lat and lng with a precision level
-    // determined by the resolution, converted to int, modulo bucket count.
-    return (uint32_t)fmod(fabs((vertex->lat + vertex->lng) * pow(10, 15 - res)),
-                          numBuckets);
+uint32_t _hashVertex(H3Index vertex, int numBuckets) {
+    return (uint32_t)(vertex % numBuckets);
 }
 
-void _initVertexNode(VertexNode *node, const LatLng *fromVtx,
-                     const LatLng *toVtx) {
-    node->from = *fromVtx;
-    node->to = *toVtx;
+void _initVertexNode(VertexNode *node, H3Index fromVtx, H3Index toVtx) {
+    node->from = fromVtx;
+    node->to = toVtx;
     node->next = NULL;
 }
 
@@ -91,14 +83,13 @@ void _initVertexNode(VertexNode *node, const LatLng *fromVtx,
  * @param toVtx   End vertex
  * @return        Pointer to the new node
  */
-VertexNode *addVertexNode(VertexGraph *graph, const LatLng *fromVtx,
-                          const LatLng *toVtx) {
+VertexNode *addVertexNode(VertexGraph *graph, H3Index fromVtx, H3Index toVtx) {
     // Make the new node
     VertexNode *node = H3_MEMORY(malloc)(sizeof(VertexNode));
     assert(node != NULL);
     _initVertexNode(node, fromVtx, toVtx);
     // Determine location
-    uint32_t index = _hashVertex(fromVtx, graph->res, graph->numBuckets);
+    uint32_t index = _hashVertex(fromVtx, graph->numBuckets);
     // Check whether there's an existing node in that spot
     VertexNode *currentNode = graph->buckets[index];
     if (currentNode == NULL) {
@@ -108,8 +99,7 @@ VertexNode *addVertexNode(VertexGraph *graph, const LatLng *fromVtx,
         // Find the end of the list
         do {
             // Check the the edge we're adding doesn't already exist
-            if (geoAlmostEqual(&currentNode->from, fromVtx) &&
-                geoAlmostEqual(&currentNode->to, toVtx)) {
+            if (currentNode->from == fromVtx && currentNode->to == toVtx) {
                 // already exists, bail
                 H3_MEMORY(free)(node);
                 return currentNode;
@@ -134,7 +124,7 @@ VertexNode *addVertexNode(VertexGraph *graph, const LatLng *fromVtx,
  */
 int removeVertexNode(VertexGraph *graph, VertexNode *node) {
     // Determine location
-    uint32_t index = _hashVertex(&node->from, graph->res, graph->numBuckets);
+    uint32_t index = _hashVertex(node->from, graph->numBuckets);
     VertexNode *currentNode = graph->buckets[index];
     int found = 0;
     if (currentNode != NULL) {
@@ -168,17 +158,17 @@ int removeVertexNode(VertexGraph *graph, VertexNode *node) {
  * @param  toVtx   End vertex, or NULL if we don't care
  * @return         Pointer to the vertex node, if found
  */
-VertexNode *findNodeForEdge(const VertexGraph *graph, const LatLng *fromVtx,
-                            const LatLng *toVtx) {
+VertexNode *findNodeForEdge(const VertexGraph *graph, H3Index fromVtx,
+                            H3Index toVtx) {
     // Determine location
-    uint32_t index = _hashVertex(fromVtx, graph->res, graph->numBuckets);
+    uint32_t index = _hashVertex(fromVtx, graph->numBuckets);
     // Check whether there's an existing node in that spot
     VertexNode *node = graph->buckets[index];
     if (node != NULL) {
         // Look through the list and see if we find the edge
         do {
-            if (geoAlmostEqual(&node->from, fromVtx) &&
-                (toVtx == NULL || geoAlmostEqual(&node->to, toVtx))) {
+            if (node->from == fromVtx &&
+                (toVtx == H3_NULL || node->to == toVtx)) {
                 return node;
             }
             node = node->next;
@@ -194,8 +184,8 @@ VertexNode *findNodeForEdge(const VertexGraph *graph, const LatLng *fromVtx,
  * @param  fromVtx Start vertex
  * @return         Pointer to the vertex node, if found
  */
-VertexNode *findNodeForVertex(const VertexGraph *graph, const LatLng *fromVtx) {
-    return findNodeForEdge(graph, fromVtx, NULL);
+VertexNode *findNodeForVertex(const VertexGraph *graph, H3Index fromVtx) {
+    return findNodeForEdge(graph, fromVtx, H3_NULL);
 }
 
 /**
