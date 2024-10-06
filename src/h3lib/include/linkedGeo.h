@@ -51,7 +51,7 @@ H3Error normalizeMultiPolygon(LinkedGeoPolygon *root);
 LinkedGeoPolygon *addNewLinkedPolygon(LinkedGeoPolygon *polygon);
 LinkedGeoLoop *addNewLinkedLoop(LinkedGeoPolygon *polygon);
 LinkedGeoLoop *addLinkedLoop(LinkedGeoPolygon *polygon, LinkedGeoLoop *loop);
-LinkedLatLng *addLinkedCoord(LinkedGeoLoop *loop, const LatLng *vertex);
+LinkedLatLng *addLinkedCoord(LinkedGeoLoop *loop, H3Index vertex);
 int countLinkedPolygons(LinkedGeoPolygon *polygon);
 int countLinkedLoops(LinkedGeoPolygon *polygon);
 int countLinkedCoords(LinkedGeoLoop *loop);

@@ -1077,9 +1077,9 @@ H3Error H3_EXPORT(polygonToCells)(const GeoPolygon *geoPolygon, int res,
  */
 H3Error h3SetToVertexGraph(const H3Index *h3Set, const int numHexes,
                            VertexGraph *graph) {
-    CellBoundary vertices;
-    LatLng *fromVtx;
-    LatLng *toVtx;
+    H3Index vertices[NUM_HEX_VERTS] = {0};
+    H3Index fromVtx;
+    H3Index toVtx;
     VertexNode *edge;
     if (numHexes < 1) {
         // We still need to init the graph, or calls to destroyVertexGraph will
@@ -1094,17 +1094,28 @@ H3Error h3SetToVertexGraph(const H3Index *h3Set, const int numHexes,
     initVertexGraph(graph, numBuckets, res);
     // Iterate through every hexagon
     for (int i = 0; i < numHexes; i++) {
-        H3Error boundaryErr = H3_EXPORT(cellToBoundary)(h3Set[i], &vertices);
-        if (boundaryErr) {
+        H3Error vertexesError = H3_EXPORT(cellToVertexes)(h3Set[i], &vertices);
+        if (vertexesError) {
             // Destroy vertex graph as caller will not know to do so.
             destroyVertexGraph(graph);
-            return boundaryErr;
+            return vertexesError;
         }
         // iterate through every edge
-        for (int j = 0; j < vertices.numVerts; j++) {
-            fromVtx = &vertices.verts[j];
-            toVtx = &vertices.verts[(j + 1) % vertices.numVerts];
+        for (int j = 0; j < NUM_HEX_VERTS; j++) {
+            if (vertices[j] == H3_NULL) {
+                continue;
+            }
+            int next = j + 1;
+            for (int nextOffset = 0; nextOffset < NUM_HEX_VERTS; nextOffset++) {
+                if (vertices[(next + nextOffset) % NUM_HEX_VERTS] == H3_NULL) {
+                    next = (next + nextOffset) % NUM_HEX_VERTS;
+                    break;
+                }
+            }
+            fromVtx = vertices[j];
+            toVtx = vertices[next];
             // If we've seen this edge already, it will be reversed
+            // TODO: Wrong order of parameters
             edge = findNodeForEdge(graph, toVtx, fromVtx);
             if (edge != NULL) {
                 // If we've seen it, drop it. No edge is shared by more than 2
@@ -1132,17 +1143,17 @@ void _vertexGraphToLinkedGeo(VertexGraph *graph, LinkedGeoPolygon *out) {
     *out = (LinkedGeoPolygon){0};
     LinkedGeoLoop *loop;
     VertexNode *edge;
-    LatLng nextVtx;
+    H3Index nextVtx;
     // Find the next unused entry point
     while ((edge = firstVertexNode(graph)) != NULL) {
         loop = addNewLinkedLoop(out);
         // Walk the graph to get the outline
         do {
-            addLinkedCoord(loop, &edge->from);
+            addLinkedCoord(loop, edge->from);
             nextVtx = edge->to;
             // Remove frees the node, so we can't use edge after this
             removeVertexNode(graph, edge);
-            edge = findNodeForVertex(graph, &nextVtx);
+            edge = findNodeForVertex(graph, nextVtx);
         } while (edge);
     }
 }
