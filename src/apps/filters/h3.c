@@ -1205,11 +1205,11 @@ H3Error polygonStringToGeoPolygon(FILE *fp, char *polygonString,
     int64_t curVert = 0;
     int64_t curLoop = 0;
     LatLng *verts = calloc(numVerts, sizeof(LatLng));
-    int64_t strPos = 0;
+    int strPos = 0;
     while (polygonString[strPos] != 0) {
         // Load more of the file if we've hit our buffer limit
         if (strPos == 1500 && fp != 0) {
-            int res = fread(polygonString, 0, 1500, fp);
+            int res = fread(polygonString, 1, 1500, fp);
             strPos = 0;
             // If we didn't get any data from the file, we're done.
             if (res == 0) {
@@ -1287,11 +1287,47 @@ H3Error polygonStringToGeoPolygon(FILE *fp, char *polygonString,
             strPos++;
             continue;
         } else {
-            // TODO: We've encountered an unexpected character. This may mean we
-            // need to read more of the file and put the remainder of this
-            // buffer as part of the next buffer. Or it could mean that we
-            // should just skip forward a character and try again.
-            strPos++;
+            if (strPos != 0 && fp != 0) {
+                // Scan the remaining of the current buffer for `0`. If not
+                // found, then we grab a new chunk and append to the remainder
+                // of the existing buffer. Otherwise, just skip unknown
+                // characters.
+                bool endOfFile = false;
+                for (int i = strPos; i <= 1500; i++) {
+                    if (polygonString[strPos] == 0) {
+                        endOfFile = true;
+                        break;
+                    }
+                }
+                if (endOfFile) {
+                    strPos++;
+                } else {
+                    // Move the end of this buffer to the beginning
+                    for (int i = strPos; i <= 1500; i++) {
+                        polygonString[i - strPos] = polygonString[strPos];
+                    }
+                    // Set the string position to the end of the buffer
+                    strPos = 1500 - strPos;
+                    // Grab up to the remaining size of the buffer and fill it
+                    // into the file
+                    int res =
+                        fread(polygonString + strPos, 1, 1500 - strPos, fp);
+                    if (res == 0) {
+                        // If we got nothing new from the file, just treat this
+                        // as a character to skip over and write an explicit 0
+                        // to the old end.
+                        polygonString[strPos] = 0;
+                        strPos = 1;
+                        continue;
+                    } else {
+                        // If we got something new, reset the position to 0 and
+                        // try again.
+                        strPos = 0;
+                    }
+                }
+            } else {
+                strPos++;
+            }
         }
     }
     return E_SUCCESS;
