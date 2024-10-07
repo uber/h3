@@ -1308,7 +1308,7 @@ SUBCOMMAND(
         .valueName = "FILENAME",
         .value = &filename,
         .helpText =
-            "The file to load the cells from. Use -- to read from stdin."};
+            "The file to load the polygon from. Use -- to read from stdin."};
     char polygonStr[1501] = {0};  // Up to 100 cells with zero padding
     Arg polygonStrArg = {
         .names = {"-p", "--polygon"},
@@ -1394,7 +1394,7 @@ SUBCOMMAND(maxPolygonToCellsSize,
         .valueName = "FILENAME",
         .value = &filename,
         .helpText =
-            "The file to load the cells from. Use -- to read from stdin."};
+            "The file to load the polygon from. Use -- to read from stdin."};
     char polygonStr[1501] = {0};  // Up to 100 cells with zero padding
     Arg polygonStrArg = {
         .names = {"-p", "--polygon"},
