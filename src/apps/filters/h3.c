@@ -1208,7 +1208,7 @@ H3Error polygonStringToGeoPolygon(FILE *fp, char *polygonString,
     int strPos = 0;
     while (polygonString[strPos] != 0) {
         // Load more of the file if we've hit our buffer limit
-        if (strPos == 1500 && fp != 0) {
+        if (strPos >= 1500 && fp != 0) {
             int res = fread(polygonString, 1, 1500, fp);
             strPos = 0;
             // If we didn't get any data from the file, we're done.
@@ -1260,9 +1260,12 @@ H3Error polygonStringToGeoPolygon(FILE *fp, char *polygonString,
         // value, then store the lat, lng pair
         double lat, lng;
         int count;
-        int res = sscanf(polygonString + strPos, "%lf%*[, \n]%lf%n", &lat, &lng,
-                         &count);
-        if (count > 0 && res != 0) {
+        // Must grab the closing ] or we might accidentally parse a partial
+        // float across buffer boundaries
+        char closeBracket[2] = "]";
+        int res = sscanf(polygonString + strPos, "%lf%*[, \n]%lf%1[]]%n", &lat,
+                         &lng, &closeBracket[0], &count);
+        if (count > 0 && res == 3) {
             verts[curVert].lat = H3_EXPORT(degsToRads)(lat);
             verts[curVert].lng = H3_EXPORT(degsToRads)(lng);
             curVert++;
@@ -1279,6 +1282,7 @@ H3Error polygonStringToGeoPolygon(FILE *fp, char *polygonString,
                 numVerts *= 2;
             }
             strPos += count;
+            curDepth--;
             continue;
         }
         // Check for whitespace and skip it if we reach this point.
@@ -1304,26 +1308,30 @@ H3Error polygonStringToGeoPolygon(FILE *fp, char *polygonString,
                 } else {
                     // Move the end of this buffer to the beginning
                     for (int i = strPos; i <= 1500; i++) {
-                        polygonString[i - strPos] = polygonString[strPos];
+                        polygonString[i - strPos] = polygonString[i];
                     }
                     // Set the string position to the end of the buffer
                     strPos = 1500 - strPos;
                     // Grab up to the remaining size of the buffer and fill it
                     // into the file
-                    int res =
-                        fread(polygonString + strPos, 1, 1500 - strPos, fp);
+                    // Did you know that if the amount you want to read from
+                    // the file buffer is larger than the buffer itself,
+                    // fread can choose to give you squat and not the
+                    // remainder of the file as you'd expect from the
+                    // documentation? This was a surprise to me and a
+                    // significant amount of wasted time to figure out how
+                    // to tackle. C leaves *way* too much as undefined
+                    // behavior to be nice to work with...
+                    int64_t i = 0;
+                    int res;
+                    do {
+                        res = fread(polygonString + strPos + i, 1, 1, fp);
+                        i++;
+                    } while (i < 1500 - strPos && res != 0);
                     if (res == 0) {
-                        // If we got nothing new from the file, just treat this
-                        // as a character to skip over and write an explicit 0
-                        // to the old end.
-                        polygonString[strPos] = 0;
-                        strPos = 1;
-                        continue;
-                    } else {
-                        // If we got something new, reset the position to 0 and
-                        // try again.
-                        strPos = 0;
+                        polygonString[strPos + i - 1] = 0;
                     }
+                    strPos = 0;
                 }
             } else {
                 strPos++;
