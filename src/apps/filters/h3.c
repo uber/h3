@@ -1497,7 +1497,7 @@ SUBCOMMAND(maxPolygonToCellsSize,
     if (err != E_SUCCESS) {
         return err;
     }
-    printf("%ld\n", cellsSize);
+    printf("%" PRId64 "\n", cellsSize);
     return E_SUCCESS;
 }
 
