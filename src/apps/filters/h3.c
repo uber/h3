@@ -1240,13 +1240,16 @@ H3Error polygonStringToGeoPolygon(FILE *fp, char *polygonString,
                     out->geoloop.verts = verts;
                     out->geoloop.numVerts = curVert;
                 } else {
-                    GeoLoop *holes = calloc(++(out->numHoles), sizeof(GeoLoop));
-                    for (int i = 0; i < out->numHoles - 1; i++) {
+                    GeoLoop *holes = calloc(out->numHoles + 1, sizeof(GeoLoop));
+                    for (int i = 0; i < out->numHoles; i++) {
                         holes[i].numVerts = out->holes[i].numVerts;
                         holes[i].verts = out->holes[i].verts;
                     }
                     free(out->holes);
+                    holes[out->numHoles].verts = verts;
+                    holes[out->numHoles].numVerts = curVert;
                     out->holes = holes;
+                    out->numHoles++;
                 }
                 curLoop++;
                 curVert = 0;
@@ -1338,6 +1341,7 @@ H3Error polygonStringToGeoPolygon(FILE *fp, char *polygonString,
             }
         }
     }
+    free(verts);
     return E_SUCCESS;
 }
 
@@ -1400,10 +1404,10 @@ SUBCOMMAND(
     }
     GeoPolygon polygon = {0};
     H3Error err = polygonStringToGeoPolygon(fp, polygonStr, &polygon);
+    if (fp != 0 && !isStdin) {
+        fclose(fp);
+    }
     if (err != E_SUCCESS) {
-        if (!isStdin) {
-            fclose(fp);
-        }
         return err;
     }
     int64_t cellsSize = 0;
@@ -1413,6 +1417,11 @@ SUBCOMMAND(
     }
     H3Index *cells = calloc(cellsSize, sizeof(H3Index));
     err = H3_EXPORT(polygonToCells)(&polygon, res, 0, cells);
+    for (int i = 0; i < polygon.numHoles; i++) {
+        free(polygon.holes[i].verts);
+    }
+    free(polygon.holes);
+    free(polygon.geoloop.verts);
     if (err != E_SUCCESS) {
         free(cells);
         return err;
@@ -1486,14 +1495,19 @@ SUBCOMMAND(maxPolygonToCellsSize,
     }
     GeoPolygon polygon = {0};
     H3Error err = polygonStringToGeoPolygon(fp, polygonStr, &polygon);
+    if (fp != 0 && !isStdin) {
+        fclose(fp);
+    }
     if (err != E_SUCCESS) {
-        if (!isStdin) {
-            fclose(fp);
-        }
         return err;
     }
     int64_t cellsSize = 0;
     err = H3_EXPORT(maxPolygonToCellsSize)(&polygon, res, 0, &cellsSize);
+    for (int i = 0; i < polygon.numHoles; i++) {
+        free(polygon.holes[i].verts);
+    }
+    free(polygon.holes);
+    free(polygon.geoloop.verts);
     if (err != E_SUCCESS) {
         return err;
     }
