@@ -1232,7 +1232,7 @@ H3Error polygonStringToGeoPolygon(FILE *fp, char *polygonString,
                 break;
             }
             strPos++;
-            // We may need to set upa  new geoloop at this point. If the
+            // We may need to set up a new geoloop at this point. If the
             // curDepth <= maxDepth - 2 then we increment the curLoop and get a
             // new one set up.
             if (curDepth <= maxDepth - 2) {
