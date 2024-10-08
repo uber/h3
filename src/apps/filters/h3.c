@@ -1290,7 +1290,7 @@ H3Error polygonStringToGeoPolygon(FILE *fp, char *polygonString,
         }
         // Check for whitespace and skip it if we reach this point.
         if (polygonString[strPos] == ',' || polygonString[strPos] == ' ' ||
-            polygonString[strPos] == '\n') {
+            polygonString[strPos] == '\n' || polygonString[strPos] == '\t') {
             strPos++;
             continue;
         } else {
