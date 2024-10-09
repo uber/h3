@@ -1829,6 +1829,37 @@ SUBCOMMAND(cellToVertex,
     return E_SUCCESS;
 }
 
+SUBCOMMAND(cellToVertexes,
+           "Returns all of the vertexes from the specified cell") {
+    DEFINE_CELL_ARG(cell, cellArg);
+    Arg *args[] = {&cellToVertexesArg, &cellArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    H3Index out[6] = {0};
+    // This one is pretty loose about the inputs it accepts, so let's validate
+    // for it
+    bool isValid = H3_EXPORT(isValidCell)(cell);
+    if (!isValid) {
+        return E_CELL_INVALID;
+    }
+    H3Error err = H3_EXPORT(cellToVertexes)(cell, &out[0]);
+    if (err != E_SUCCESS) {
+        return err;
+    }
+    printf("[");
+    bool hasPrinted = false;
+    for (int i = 0; i < 6; i++) {
+        if (out[i] > 0) {
+            if (hasPrinted) {
+                printf(", ");
+            }
+            printf("%" PRIx64, out[i]);
+            hasPrinted = true;
+        }
+    }
+    printf("]\n");
+    return E_SUCCESS;
+}
+
 // TODO: Is there any way to avoid this particular piece of duplication?
 SUBCOMMANDS_INDEX
 
@@ -1883,6 +1914,7 @@ SUBCOMMAND_INDEX(directedEdgeToBoundary)
 
 /// Vertex subcommands
 SUBCOMMAND_INDEX(cellToVertex)
+SUBCOMMAND_INDEX(cellToVertexes)
 
 END_SUBCOMMANDS_INDEX
 
