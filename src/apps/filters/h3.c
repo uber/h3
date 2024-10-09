@@ -1262,7 +1262,7 @@ H3Error polygonStringToGeoPolygon(FILE *fp, char *polygonString,
         // comma, and more optional whitespace, and a second floating point
         // value, then store the lat, lng pair
         double lat, lng;
-        int count;
+        int count = 0;
         // Must grab the closing ] or we might accidentally parse a partial
         // float across buffer boundaries
         char closeBracket[2] = "]";
