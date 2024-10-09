@@ -1860,6 +1860,26 @@ SUBCOMMAND(cellToVertexes,
     return E_SUCCESS;
 }
 
+SUBCOMMAND(vertexToLatLng, "Returns the lat, lng pair for the given vertex") {
+    DEFINE_CELL_ARG(cell, cellArg);
+    Arg *args[] = {&vertexToLatLngArg, &cellArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    bool isValid = H3_EXPORT(isValidVertex)(cell);
+    if (!isValid) {
+        return E_VERTEX_INVALID;
+    }
+    LatLng ll;
+    H3Error err = H3_EXPORT(vertexToLatLng)(cell, &ll);
+    if (err) {
+        return err;
+    }
+    // Using WKT formatting for the output. TODO: Add support for JSON
+    // formatting
+    printf("POINT(%.10lf %.10lf)\n", H3_EXPORT(radsToDegs)(ll.lng),
+           H3_EXPORT(radsToDegs)(ll.lat));
+    return E_SUCCESS;
+}
+
 // TODO: Is there any way to avoid this particular piece of duplication?
 SUBCOMMANDS_INDEX
 
@@ -1915,6 +1935,7 @@ SUBCOMMAND_INDEX(directedEdgeToBoundary)
 /// Vertex subcommands
 SUBCOMMAND_INDEX(cellToVertex)
 SUBCOMMAND_INDEX(cellToVertexes)
+SUBCOMMAND_INDEX(vertexToLatLng)
 
 END_SUBCOMMANDS_INDEX
 

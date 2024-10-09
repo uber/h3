@@ -1,0 +1,2 @@
+add_h3_cli_test(testCliVertexToLatLng "vertexToLatLng -c 22528340bfffffff" "POINT(-121.9150803271 37.2713558667)")
+add_h3_cli_test(testCliNotVertexToLatLng "vertexToLatLng -c 85283473fffffff 2>&1" "Error 8: Vertex argument was not valid")
