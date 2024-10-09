@@ -1799,6 +1799,36 @@ SUBCOMMAND(directedEdgeToBoundary,
     return E_SUCCESS;
 }
 
+/// Vertex subcommands
+
+SUBCOMMAND(cellToVertex,
+           "Returns the vertex for the specified cell and vertex index. Must "
+           "be 0-5 for hexagons, 0-4 for pentagons") {
+    DEFINE_CELL_ARG(cell, cellArg);
+    int vertIndex = 0;
+    Arg vertIndexArg = {
+        .names = {"-v", "--vertex"},
+        .required = true,
+        .scanFormat = "%d",
+        .valueName = "INDEX",
+        .value = &vertIndex,
+        .helpText = "Vertex index number. 0-5 for hexagons, 0-4 for pentagons"};
+    Arg *args[] = {&cellToVertexArg, &cellArg, &vertIndexArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    // This function also doesn't sanitize its inputs correctly
+    bool isValid = H3_EXPORT(isValidCell)(cell);
+    if (!isValid) {
+        return E_CELL_INVALID;
+    }
+    H3Index out = 0;
+    H3Error err = H3_EXPORT(cellToVertex)(cell, vertIndex, &out);
+    if (err) {
+        return err;
+    }
+    printf("%" PRIx64 "\n", out);
+    return E_SUCCESS;
+}
+
 // TODO: Is there any way to avoid this particular piece of duplication?
 SUBCOMMANDS_INDEX
 
@@ -1850,6 +1880,9 @@ SUBCOMMAND_INDEX(getDirectedEdgeDestination)
 SUBCOMMAND_INDEX(directedEdgeToCells)
 SUBCOMMAND_INDEX(originToDirectedEdges)
 SUBCOMMAND_INDEX(directedEdgeToBoundary)
+
+/// Vertex subcommands
+SUBCOMMAND_INDEX(cellToVertex)
 
 END_SUBCOMMANDS_INDEX
 
