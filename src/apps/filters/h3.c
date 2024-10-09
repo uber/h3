@@ -1632,6 +1632,37 @@ SUBCOMMAND(cellsToMultiPolygon,
     return E_SUCCESS;
 }
 
+/// Directed edge subcommands
+
+SUBCOMMAND(areNeighborCells,
+           "Determines if the provided H3 cells are neighbors (have a shared "
+           "border)") {
+    H3Index origin, destination;
+    Arg originCellArg = {.names = {"-o", "--origin"},
+                         .required = true,
+                         .scanFormat = "%" PRIx64,
+                         .valueName = "CELL",
+                         .value = &origin,
+                         .helpText = "Origin H3 Cell"};
+    Arg destinationCellArg = {.names = {"-d", "--destination"},
+                              .required = true,
+                              .scanFormat = "%" PRIx64,
+                              .valueName = "CELL",
+                              .value = &destination,
+                              .helpText = "Destination H3 Cell"};
+    Arg *args[] = {&areNeighborCellsArg, &originCellArg, &destinationCellArg,
+                   &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    int areNeighbors = 0;
+    H3Error err =
+        H3_EXPORT(areNeighborCells)(origin, destination, &areNeighbors);
+    if (err != E_SUCCESS) {
+        return err;
+    }
+    printf(areNeighbors ? "true\n" : "false\n");
+    return E_SUCCESS;
+}
+
 // TODO: Is there any way to avoid this particular piece of duplication?
 SUBCOMMANDS_INDEX
 
@@ -1673,6 +1704,9 @@ SUBCOMMAND_INDEX(uncompactCells)
 SUBCOMMAND_INDEX(polygonToCells)
 SUBCOMMAND_INDEX(maxPolygonToCellsSize)
 SUBCOMMAND_INDEX(cellsToMultiPolygon)
+
+/// Directed Edge subcommands
+SUBCOMMAND_INDEX(areNeighborCells)
 
 END_SUBCOMMANDS_INDEX
 
