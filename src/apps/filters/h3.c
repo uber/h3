@@ -1775,6 +1775,30 @@ SUBCOMMAND(originToDirectedEdges,
     return E_SUCCESS;
 }
 
+SUBCOMMAND(directedEdgeToBoundary,
+           "Provides the coordinates defining the directed edge") {
+    DEFINE_CELL_ARG(cell, cellArg);
+    Arg *args[] = {&directedEdgeToBoundaryArg, &cellArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    CellBoundary cb = {0};
+    H3Error err = H3_EXPORT(directedEdgeToBoundary)(cell, &cb);
+    if (err) {
+        return err;
+    }
+    // Using WKT formatting for the output. TODO: Add support for JSON
+    // formatting
+    printf("POLYGON((");
+    for (int i = 0; i < cb.numVerts; i++) {
+        LatLng *ll = &cb.verts[i];
+        printf("%.10lf %.10lf, ", H3_EXPORT(radsToDegs)(ll->lng),
+               H3_EXPORT(radsToDegs)(ll->lat));
+    }
+    // WKT has the first and last points match, so re-print the first one
+    printf("%.10lf %.10lf))\n", H3_EXPORT(radsToDegs)(cb.verts[0].lng),
+           H3_EXPORT(radsToDegs)(cb.verts[0].lat));
+    return E_SUCCESS;
+}
+
 // TODO: Is there any way to avoid this particular piece of duplication?
 SUBCOMMANDS_INDEX
 
@@ -1825,6 +1849,7 @@ SUBCOMMAND_INDEX(getDirectedEdgeOrigin)
 SUBCOMMAND_INDEX(getDirectedEdgeDestination)
 SUBCOMMAND_INDEX(directedEdgeToCells)
 SUBCOMMAND_INDEX(originToDirectedEdges)
+SUBCOMMAND_INDEX(directedEdgeToBoundary)
 
 END_SUBCOMMANDS_INDEX
 
