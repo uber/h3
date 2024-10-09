@@ -1,0 +1,2 @@
+add_h3_cli_test(testCliGetDirectedEdgeDestination "getDirectedEdgeDestination -c 115283473fffffff" "85283477fffffff")
+add_h3_cli_test(testCliDoNotGetDirectedEdgeDestination "getDirectedEdgeDestination -c 85283473fffffff 2>&1" "Error 6: Directed edge argument was not valid")
