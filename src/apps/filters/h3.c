@@ -1880,6 +1880,16 @@ SUBCOMMAND(vertexToLatLng, "Returns the lat, lng pair for the given vertex") {
     return E_SUCCESS;
 }
 
+SUBCOMMAND(isValidVertex,
+           "Checks if the provided H3 vertex is actually valid") {
+    DEFINE_CELL_ARG(cell, cellArg);
+    Arg *args[] = {&isValidVertexArg, &helpArg, &cellArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    bool isValid = H3_EXPORT(isValidVertex)(cell);
+    printf("%s", isValid ? "true\n" : "false\n");
+    return E_SUCCESS;
+}
+
 // TODO: Is there any way to avoid this particular piece of duplication?
 SUBCOMMANDS_INDEX
 
@@ -1936,6 +1946,7 @@ SUBCOMMAND_INDEX(directedEdgeToBoundary)
 SUBCOMMAND_INDEX(cellToVertex)
 SUBCOMMAND_INDEX(cellToVertexes)
 SUBCOMMAND_INDEX(vertexToLatLng)
+SUBCOMMAND_INDEX(isValidVertex)
 
 END_SUBCOMMANDS_INDEX
 
