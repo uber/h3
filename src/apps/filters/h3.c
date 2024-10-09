@@ -1890,6 +1890,36 @@ SUBCOMMAND(isValidVertex,
     return E_SUCCESS;
 }
 
+/// Miscellaneous subcommands
+
+SUBCOMMAND(degsToRads, "Converts degrees to radians") {
+    double deg = 0;
+    Arg degArg = {.names = {"-d", "--degree"},
+                  .required = true,
+                  .scanFormat = "%lf",
+                  .valueName = "DEG",
+                  .value = &deg,
+                  .helpText = "Angle in degrees"};
+    Arg *args[] = {&degsToRadsArg, &degArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    printf("%.10lf\n", H3_EXPORT(degsToRads)(deg));
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(radsToDegs, "Converts radians to degrees") {
+    double rad = 0;
+    Arg radArg = {.names = {"-r", "--radian"},
+                  .required = true,
+                  .scanFormat = "%lf",
+                  .valueName = "RAD",
+                  .value = &rad,
+                  .helpText = "Angle in radians"};
+    Arg *args[] = {&radsToDegsArg, &radArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    printf("%.10lf\n", H3_EXPORT(radsToDegs)(rad));
+    return E_SUCCESS;
+}
+
 // TODO: Is there any way to avoid this particular piece of duplication?
 SUBCOMMANDS_INDEX
 
@@ -1947,6 +1977,10 @@ SUBCOMMAND_INDEX(cellToVertex)
 SUBCOMMAND_INDEX(cellToVertexes)
 SUBCOMMAND_INDEX(vertexToLatLng)
 SUBCOMMAND_INDEX(isValidVertex)
+
+/// Miscellaneous subcommands
+SUBCOMMAND_INDEX(degsToRads)
+SUBCOMMAND_INDEX(radsToDegs)
 
 END_SUBCOMMANDS_INDEX
 
