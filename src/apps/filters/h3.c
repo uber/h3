@@ -1701,6 +1701,20 @@ SUBCOMMAND(isValidDirectedEdge,
     return E_SUCCESS;
 }
 
+SUBCOMMAND(getDirectedEdgeOrigin,
+           "Returns the origin cell from the directed edge") {
+    DEFINE_CELL_ARG(cell, cellArg);
+    Arg *args[] = {&getDirectedEdgeOriginArg, &cellArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    H3Index out = 0;
+    H3Error err = H3_EXPORT(getDirectedEdgeOrigin)(cell, &out);
+    if (err != E_SUCCESS) {
+        return err;
+    }
+    printf("%" PRIx64 "\n", out);
+    return E_SUCCESS;
+}
+
 // TODO: Is there any way to avoid this particular piece of duplication?
 SUBCOMMANDS_INDEX
 
@@ -1747,6 +1761,7 @@ SUBCOMMAND_INDEX(cellsToMultiPolygon)
 SUBCOMMAND_INDEX(areNeighborCells)
 SUBCOMMAND_INDEX(cellsToDirectedEdge)
 SUBCOMMAND_INDEX(isValidDirectedEdge)
+SUBCOMMAND_INDEX(getDirectedEdgeOrigin)
 
 END_SUBCOMMANDS_INDEX
 
