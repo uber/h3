@@ -1663,6 +1663,34 @@ SUBCOMMAND(areNeighborCells,
     return E_SUCCESS;
 }
 
+SUBCOMMAND(cellsToDirectedEdge,
+           "Converts neighboring cells into a directed edge index (or errors "
+           "if they are not neighbors)") {
+    H3Index origin, destination;
+    Arg originCellArg = {.names = {"-o", "--origin"},
+                         .required = true,
+                         .scanFormat = "%" PRIx64,
+                         .valueName = "CELL",
+                         .value = &origin,
+                         .helpText = "Origin H3 Cell"};
+    Arg destinationCellArg = {.names = {"-d", "--destination"},
+                              .required = true,
+                              .scanFormat = "%" PRIx64,
+                              .valueName = "CELL",
+                              .value = &destination,
+                              .helpText = "Destination H3 Cell"};
+    Arg *args[] = {&cellsToDirectedEdgeArg, &originCellArg, &destinationCellArg,
+                   &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    H3Index out = 0;
+    H3Error err = H3_EXPORT(cellsToDirectedEdge)(origin, destination, &out);
+    if (err != E_SUCCESS) {
+        return err;
+    }
+    printf("%" PRIx64 "\n", out);
+    return E_SUCCESS;
+}
+
 // TODO: Is there any way to avoid this particular piece of duplication?
 SUBCOMMANDS_INDEX
 
@@ -1707,6 +1735,7 @@ SUBCOMMAND_INDEX(cellsToMultiPolygon)
 
 /// Directed Edge subcommands
 SUBCOMMAND_INDEX(areNeighborCells)
+SUBCOMMAND_INDEX(cellsToDirectedEdge)
 
 END_SUBCOMMANDS_INDEX
 
