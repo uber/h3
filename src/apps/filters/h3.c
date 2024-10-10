@@ -2402,6 +2402,22 @@ SUBCOMMAND(greatCircleDistanceM,
     return E_SUCCESS;
 }
 
+SUBCOMMAND(describeH3Error,
+           "Returns a description of the provided H3 error code number, or "
+           "indicates the number is itself invalid.") {
+    H3Error err = E_SUCCESS;
+    Arg errArg = {.names = {"-e", "--error"},
+                  .required = true,
+                  .scanFormat = "%d",
+                  .valueName = "CODE",
+                  .value = &err,
+                  .helpText = "H3 Error code to describe"};
+    Arg *args[] = {&describeH3ErrorArg, &errArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    printf("%s\n", H3_EXPORT(describeH3Error)(err));
+    return E_SUCCESS;
+}
+
 // TODO: Is there any way to avoid this particular piece of duplication?
 SUBCOMMANDS_INDEX
 
@@ -2480,6 +2496,7 @@ SUBCOMMAND_INDEX(pentagonCount)
 SUBCOMMAND_INDEX(greatCircleDistanceRads)
 SUBCOMMAND_INDEX(greatCircleDistanceKm)
 SUBCOMMAND_INDEX(greatCircleDistanceM)
+SUBCOMMAND_INDEX(describeH3Error)
 
 END_SUBCOMMANDS_INDEX
 
