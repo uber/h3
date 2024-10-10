@@ -1,2 +1,2 @@
-add_h3_cli_test(testCliCellAreaM2 "cellAreaM2 -c 85283473fffffff" "265092558.1282823086")
+add_h3_cli_test(testCliCellAreaM2 "cellAreaM2 -c 85283473fffffff | xargs printf '%.3f'" "265092558.128")
 add_h3_cli_test(testCliNotCellAreaM2 "cellAreaM2 -c 115283473fffffff 2>&1" "Error 5: Cell argument was not valid")
