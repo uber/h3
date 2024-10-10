@@ -1,0 +1,2 @@
+add_h3_cli_test(testCliGetNumCells "getNumCells -r 0" "122")
+add_h3_cli_test(testCliDontGetNumCells "getNumCells -r 20 2>&1" "Error 4: Resolution argument was outside of acceptable range")

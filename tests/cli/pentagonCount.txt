@@ -1,0 +1,1 @@
+add_h3_cli_test(testCliPentagonCount "pentagonCount" "12")

@@ -1,0 +1,2 @@
+add_h3_cli_test(testCliGetHexagonAreaAvgM2 "getHexagonAreaAvgM2 -r 0" "4357449416078.3901367188")
+add_h3_cli_test(testCliDontGetHexagonAreaAvgM2 "getHexagonAreaAvgM2 -r 20 2>&1" "Error 4: Resolution argument was outside of acceptable range")
