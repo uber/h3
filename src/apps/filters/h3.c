@@ -2143,6 +2143,29 @@ SUBCOMMAND(getNumCells,
     return E_SUCCESS;
 }
 
+SUBCOMMAND(getRes0Cells, "Returns all of the resolution 0 cells") {
+    Arg *args[] = {&getRes0CellsArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    H3Index *out = calloc(122, sizeof(H3Index));
+    H3Error err = H3_EXPORT(getRes0Cells)(out);
+    if (err != E_SUCCESS) {
+        return err;
+    }
+    printf("[");
+    bool hasPrinted = false;
+    for (int i = 0; i < 122; i++) {
+        if (out[i] > 0) {
+            if (hasPrinted) {
+                printf(", ");
+            }
+            printf("%" PRIx64, out[i]);
+            hasPrinted = true;
+        }
+    }
+    printf("]\n");
+    return E_SUCCESS;
+}
+
 // TODO: Is there any way to avoid this particular piece of duplication?
 SUBCOMMANDS_INDEX
 
@@ -2215,6 +2238,7 @@ SUBCOMMAND_INDEX(edgeLengthRads)
 SUBCOMMAND_INDEX(edgeLengthKm)
 SUBCOMMAND_INDEX(edgeLengthM)
 SUBCOMMAND_INDEX(getNumCells)
+SUBCOMMAND_INDEX(getRes0Cells)
 
 END_SUBCOMMANDS_INDEX
 
