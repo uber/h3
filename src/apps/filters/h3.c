@@ -2181,6 +2181,13 @@ SUBCOMMAND(getPentagons,
     return E_SUCCESS;
 }
 
+SUBCOMMAND(pentagonCount, "Returns 12") {
+    Arg *args[] = {&pentagonCountArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    printf("12\n");
+    return E_SUCCESS;
+}
+
 // TODO: Is there any way to avoid this particular piece of duplication?
 SUBCOMMANDS_INDEX
 
@@ -2255,6 +2262,7 @@ SUBCOMMAND_INDEX(edgeLengthM)
 SUBCOMMAND_INDEX(getNumCells)
 SUBCOMMAND_INDEX(getRes0Cells)
 SUBCOMMAND_INDEX(getPentagons)
+SUBCOMMAND_INDEX(pentagonCount)
 
 END_SUBCOMMANDS_INDEX
 
