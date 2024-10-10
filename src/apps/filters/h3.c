@@ -2133,6 +2133,7 @@ SUBCOMMAND(getRes0Cells, "Returns all of the resolution 0 cells") {
     H3Index *out = calloc(122, sizeof(H3Index));
     H3Error err = H3_EXPORT(getRes0Cells)(out);
     if (err != E_SUCCESS) {
+        free(out);
         return err;
     }
     printf("[");
@@ -2165,6 +2166,7 @@ SUBCOMMAND(getPentagons,
     H3Index *out = calloc(12, sizeof(H3Index));
     H3Error err = H3_EXPORT(getPentagons)(res, out);
     if (err != E_SUCCESS) {
+        free(out);
         return err;
     }
     printf("[");
