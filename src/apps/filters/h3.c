@@ -1962,6 +1962,26 @@ SUBCOMMAND(getHexagonAreaAvgM2,
     return E_SUCCESS;
 }
 
+SUBCOMMAND(cellAreaRads2,
+           "The exact area of a specific cell in square radians") {
+    DEFINE_CELL_ARG(cell, cellArg);
+    Arg *args[] = {&cellAreaRads2Arg, &cellArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    // This one is pretty loose about the inputs it accepts, so let's validate
+    // for it
+    bool isValid = H3_EXPORT(isValidCell)(cell);
+    if (!isValid) {
+        return E_CELL_INVALID;
+    }
+    double area = 0;
+    H3Error err = H3_EXPORT(cellAreaRads2)(cell, &area);
+    if (err) {
+        return err;
+    }
+    printf("%.10lf\n", area);
+    return E_SUCCESS;
+}
+
 // TODO: Is there any way to avoid this particular piece of duplication?
 SUBCOMMANDS_INDEX
 
@@ -2025,6 +2045,7 @@ SUBCOMMAND_INDEX(degsToRads)
 SUBCOMMAND_INDEX(radsToDegs)
 SUBCOMMAND_INDEX(getHexagonAreaAvgKm2)
 SUBCOMMAND_INDEX(getHexagonAreaAvgM2)
+SUBCOMMAND_INDEX(cellAreaRads2)
 
 END_SUBCOMMANDS_INDEX
 
