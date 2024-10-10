@@ -1941,6 +1941,27 @@ SUBCOMMAND(getHexagonAreaAvgKm2,
     return E_SUCCESS;
 }
 
+SUBCOMMAND(getHexagonAreaAvgM2,
+           "The average area in square meters for a hexagon of a given "
+           "resolution (excludes pentagons)") {
+    int res = 0;
+    Arg resArg = {.names = {"-r", "--resolution"},
+                  .required = true,
+                  .scanFormat = "%d",
+                  .valueName = "res",
+                  .value = &res,
+                  .helpText = "Resolution, 0-15 inclusive."};
+    Arg *args[] = {&getHexagonAreaAvgM2Arg, &resArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    double area = 0;
+    H3Error err = H3_EXPORT(getHexagonAreaAvgM2)(res, &area);
+    if (err) {
+        return err;
+    }
+    printf("%.10lf\n", area);
+    return E_SUCCESS;
+}
+
 // TODO: Is there any way to avoid this particular piece of duplication?
 SUBCOMMANDS_INDEX
 
@@ -2003,6 +2024,7 @@ SUBCOMMAND_INDEX(isValidVertex)
 SUBCOMMAND_INDEX(degsToRads)
 SUBCOMMAND_INDEX(radsToDegs)
 SUBCOMMAND_INDEX(getHexagonAreaAvgKm2)
+SUBCOMMAND_INDEX(getHexagonAreaAvgM2)
 
 END_SUBCOMMANDS_INDEX
 
