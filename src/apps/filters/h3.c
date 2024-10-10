@@ -2147,6 +2147,7 @@ SUBCOMMAND(getRes0Cells, "Returns all of the resolution 0 cells") {
         }
     }
     printf("]\n");
+    free(out);
     return E_SUCCESS;
 }
 
@@ -2178,6 +2179,7 @@ SUBCOMMAND(getPentagons,
         }
     }
     printf("]\n");
+    free(out);
     return E_SUCCESS;
 }
 
@@ -2251,6 +2253,11 @@ SUBCOMMAND(greatCircleDistanceRads,
     double distance = H3_EXPORT(greatCircleDistanceRads)(
         &polygon.geoloop.verts[0], &polygon.geoloop.verts[1]);
     printf("%.10lf\n", distance);
+    for (int i = 0; i < polygon.numHoles; i++) {
+        free(polygon.holes[i].verts);
+    }
+    free(polygon.holes);
+    free(polygon.geoloop.verts);
     return E_SUCCESS;
 }
 
@@ -2317,6 +2324,11 @@ SUBCOMMAND(greatCircleDistanceKm,
     double distance = H3_EXPORT(greatCircleDistanceKm)(
         &polygon.geoloop.verts[0], &polygon.geoloop.verts[1]);
     printf("%.10lf\n", distance);
+    for (int i = 0; i < polygon.numHoles; i++) {
+        free(polygon.holes[i].verts);
+    }
+    free(polygon.holes);
+    free(polygon.geoloop.verts);
     return E_SUCCESS;
 }
 
@@ -2383,6 +2395,11 @@ SUBCOMMAND(greatCircleDistanceM,
     double distance = H3_EXPORT(greatCircleDistanceM)(
         &polygon.geoloop.verts[0], &polygon.geoloop.verts[1]);
     printf("%.10lf\n", distance);
+    for (int i = 0; i < polygon.numHoles; i++) {
+        free(polygon.holes[i].verts);
+    }
+    free(polygon.holes);
+    free(polygon.geoloop.verts);
     return E_SUCCESS;
 }
 
