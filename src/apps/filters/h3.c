@@ -2166,6 +2166,37 @@ SUBCOMMAND(getRes0Cells, "Returns all of the resolution 0 cells") {
     return E_SUCCESS;
 }
 
+SUBCOMMAND(getPentagons,
+           "Returns all of the pentagons at the specified resolution") {
+    int res = 0;
+    Arg resArg = {.names = {"-r", "--resolution"},
+                  .required = true,
+                  .scanFormat = "%d",
+                  .valueName = "res",
+                  .value = &res,
+                  .helpText = "Resolution, 0-15 inclusive."};
+    Arg *args[] = {&getPentagonsArg, &resArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    H3Index *out = calloc(12, sizeof(H3Index));
+    H3Error err = H3_EXPORT(getPentagons)(res, out);
+    if (err != E_SUCCESS) {
+        return err;
+    }
+    printf("[");
+    bool hasPrinted = false;
+    for (int i = 0; i < 12; i++) {
+        if (out[i] > 0) {
+            if (hasPrinted) {
+                printf(", ");
+            }
+            printf("%" PRIx64, out[i]);
+            hasPrinted = true;
+        }
+    }
+    printf("]\n");
+    return E_SUCCESS;
+}
+
 // TODO: Is there any way to avoid this particular piece of duplication?
 SUBCOMMANDS_INDEX
 
@@ -2239,6 +2270,7 @@ SUBCOMMAND_INDEX(edgeLengthKm)
 SUBCOMMAND_INDEX(edgeLengthM)
 SUBCOMMAND_INDEX(getNumCells)
 SUBCOMMAND_INDEX(getRes0Cells)
+SUBCOMMAND_INDEX(getPentagons)
 
 END_SUBCOMMANDS_INDEX
 
