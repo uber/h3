@@ -2204,6 +2204,72 @@ SUBCOMMAND(pentagonCount, "Returns 12") {
     return E_SUCCESS;
 }
 
+SUBCOMMAND(greatCircleDistanceKm,
+           "Calculates the 'great circle' or 'haversine' distance between two "
+           "lat, lng points, in kilometers") {
+    char filename[1024] = {0};  // More than Windows, lol
+    Arg filenameArg = {.names = {"-f", "--file"},
+                       .scanFormat = "%1023c",
+                       .valueName = "FILENAME",
+                       .value = &filename,
+                       .helpText =
+                           "The file to load the coordinates from. Use -- to "
+                           "read from stdin."};
+    char coordinateStr[1501] = {0};
+    Arg coordinateStrArg = {
+        .names = {"-c", "--coordinates"},
+        .scanFormat = "%1500c",
+        .valueName = "ARRAY",
+        .value = &coordinateStr,
+        .helpText =
+            "The array of coordinates to convert. Up to 1500 characters."};
+    Arg *args[] = {&greatCircleDistanceKmArg, &filenameArg, &coordinateStrArg,
+                   &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    if (!filenameArg.found && !coordinateStrArg.found) {
+        fprintf(
+            stderr,
+            "You must provide either a file to read from or a coordinate array "
+            "to use greatCircleDistanceKm");
+        exit(1);
+    }
+    FILE *fp = 0;
+    bool isStdin = false;
+    if (filenameArg.found) {
+        if (strcmp(filename, "--") == 0) {
+            fp = stdin;
+            isStdin = true;
+        } else {
+            fp = fopen(filename, "r");
+        }
+        if (fp == 0) {
+            fprintf(stderr, "The specified file does not exist.");
+            exit(1);
+        }
+        // Do the initial population of data from the file
+        if (fread(coordinateStr, 1, 1500, fp) == 0) {
+            fprintf(stderr, "The specified file is empty.");
+            exit(1);
+        }
+    }
+    GeoPolygon polygon = {0};
+    H3Error err = polygonStringToGeoPolygon(fp, coordinateStr, &polygon);
+    if (fp != 0 && !isStdin) {
+        fclose(fp);
+    }
+    if (err != E_SUCCESS) {
+        return err;
+    }
+    if (polygon.numHoles > 0 || polygon.geoloop.numVerts != 2) {
+        fprintf(stderr, "Only two pairs of coordinates should be provided.");
+        exit(1);
+    }
+    double distance = H3_EXPORT(greatCircleDistanceKm)(
+        &polygon.geoloop.verts[0], &polygon.geoloop.verts[1]);
+    printf("%.10lf\n", distance);
+    return E_SUCCESS;
+}
+
 // TODO: Is there any way to avoid this particular piece of duplication?
 SUBCOMMANDS_INDEX
 
@@ -2279,6 +2345,7 @@ SUBCOMMAND_INDEX(getNumCells)
 SUBCOMMAND_INDEX(getRes0Cells)
 SUBCOMMAND_INDEX(getPentagons)
 SUBCOMMAND_INDEX(pentagonCount)
+SUBCOMMAND_INDEX(greatCircleDistanceKm)
 
 END_SUBCOMMANDS_INDEX
 
