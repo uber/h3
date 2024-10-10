@@ -2107,6 +2107,26 @@ SUBCOMMAND(edgeLengthM,
     return E_SUCCESS;
 }
 
+SUBCOMMAND(getNumCells,
+           "The number of unique H3 cells for a specified resolution") {
+    int res = 0;
+    Arg resArg = {.names = {"-r", "--resolution"},
+                  .required = true,
+                  .scanFormat = "%d",
+                  .valueName = "res",
+                  .value = &res,
+                  .helpText = "Resolution, 0-15 inclusive."};
+    Arg *args[] = {&getNumCellsArg, &resArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    int64_t numCells = 0;
+    H3Error err = H3_EXPORT(getNumCells)(res, &numCells);
+    if (err) {
+        return err;
+    }
+    printf("%" PRIu64 "\n", numCells);
+    return E_SUCCESS;
+}
+
 // TODO: Is there any way to avoid this particular piece of duplication?
 SUBCOMMANDS_INDEX
 
@@ -2178,6 +2198,7 @@ SUBCOMMAND_INDEX(getHexagonEdgeLengthAvgM)
 SUBCOMMAND_INDEX(edgeLengthRads)
 SUBCOMMAND_INDEX(edgeLengthKm)
 SUBCOMMAND_INDEX(edgeLengthM)
+SUBCOMMAND_INDEX(getNumCells)
 
 END_SUBCOMMANDS_INDEX
 
