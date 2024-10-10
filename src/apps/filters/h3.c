@@ -2063,6 +2063,26 @@ SUBCOMMAND(getHexagonEdgeLengthAvgM,
     return E_SUCCESS;
 }
 
+SUBCOMMAND(edgeLengthKm,
+           "The exact edge length of a specific directed edge in kilometers") {
+    DEFINE_CELL_ARG(cell, cellArg);
+    Arg *args[] = {&edgeLengthKmArg, &cellArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    // This one is pretty loose about the inputs it accepts, so let's validate
+    // for it
+    bool isValid = H3_EXPORT(isValidDirectedEdge)(cell);
+    if (!isValid) {
+        return E_DIR_EDGE_INVALID;
+    }
+    double length = 0;
+    H3Error err = H3_EXPORT(edgeLengthKm)(cell, &length);
+    if (err) {
+        return err;
+    }
+    printf("%.10lf\n", length);
+    return E_SUCCESS;
+}
+
 // TODO: Is there any way to avoid this particular piece of duplication?
 SUBCOMMANDS_INDEX
 
@@ -2131,6 +2151,7 @@ SUBCOMMAND_INDEX(cellAreaKm2)
 SUBCOMMAND_INDEX(cellAreaM2)
 SUBCOMMAND_INDEX(getHexagonEdgeLengthAvgKm)
 SUBCOMMAND_INDEX(getHexagonEdgeLengthAvgM)
+SUBCOMMAND_INDEX(edgeLengthKm)
 
 END_SUBCOMMANDS_INDEX
 
