@@ -2139,7 +2139,7 @@ SUBCOMMAND(getNumCells,
     if (err) {
         return err;
     }
-    printf("%" PRIu64 "\n", numCells);
+    printf("%" PRId64 "\n", numCells);
     return E_SUCCESS;
 }
 
