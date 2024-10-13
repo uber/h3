@@ -1290,7 +1290,8 @@ H3Error polygonStringToGeoPolygon(FILE *fp, char *polygonString,
         }
         // Check for whitespace and skip it if we reach this point.
         if (polygonString[strPos] == ',' || polygonString[strPos] == ' ' ||
-            polygonString[strPos] == '\n' || polygonString[strPos] == '\t') {
+            polygonString[strPos] == '\n' || polygonString[strPos] == '\t' ||
+            polygonString[strPos] == '\r') {
             strPos++;
             continue;
         } else {
@@ -1371,9 +1372,8 @@ SUBCOMMAND(
                   .valueName = "res",
                   .value = &res,
                   .helpText =
-                      "Resolution, 0-15 inclusive, that the compacted set "
-                      "should be uncompacted to. Must be greater than or equal "
-                      "to the highest resolution within the compacted set."};
+                      "Resolution, 0-15 inclusive, that the polygon "
+                      "should be converted to."};
     Arg *args[] = {&polygonToCellsArg, &helpArg, &filenameArg, &polygonStrArg,
                    &resArg};
     PARSE_SUBCOMMAND(argc, argv, args);
@@ -1439,7 +1439,7 @@ SUBCOMMAND(
 
 SUBCOMMAND(maxPolygonToCellsSize,
            "Returns the maximum number of cells that could be needed to cover "
-           "the polygon. Will always be more than actually necessary") {
+           "the polygon. Will always be equal or more than actually necessary") {
     char filename[1024] = {0};  // More than Windows, lol
     Arg filenameArg = {
         .names = {"-f", "--file"},
@@ -1462,16 +1462,15 @@ SUBCOMMAND(maxPolygonToCellsSize,
                   .valueName = "res",
                   .value = &res,
                   .helpText =
-                      "Resolution, 0-15 inclusive, that the compacted set "
-                      "should be uncompacted to. Must be greater than or equal "
-                      "to the highest resolution within the compacted set."};
+                      "Resolution, 0-15 inclusive, that the polygon "
+                      "should be converted to."};
     Arg *args[] = {&maxPolygonToCellsSizeArg, &helpArg, &filenameArg,
                    &polygonStrArg, &resArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     if (!filenameArg.found && !polygonStrArg.found) {
         fprintf(stderr,
                 "You must provide either a file to read from or a polygon "
-                "to cover to use polygonToCells");
+                "to cover to use maxPolygonToCellsSize");
         exit(1);
     }
     FILE *fp = 0;
@@ -1516,7 +1515,7 @@ SUBCOMMAND(maxPolygonToCellsSize,
 }
 
 SUBCOMMAND(cellsToMultiPolygon,
-           "Returns a polygon (array of lat, lng points, or array of arrays of "
+           "Returns a polygon (array of arrays of "
            "lat, lng points) for a set of cells") {
     char filename[1024] = {0};  // More than Windows, lol
     Arg filenameArg = {
@@ -1532,7 +1531,7 @@ SUBCOMMAND(cellsToMultiPolygon,
                        .valueName = "CELLS",
                        .value = &cellStrs,
                        .helpText =
-                           "The cells to compact. Up to 100 cells if provided "
+                           "The cells to convert. Up to 100 cells if provided "
                            "as hexadecimals with zero padding."};
     Arg *args[] = {&cellsToMultiPolygonArg, &helpArg, &filenameArg,
                    &cellStrsArg};
@@ -1540,7 +1539,7 @@ SUBCOMMAND(cellsToMultiPolygon,
     if (!filenameArg.found && !cellStrsArg.found) {
         fprintf(stderr,
                 "You must provide either a file to read from or a set of cells "
-                "to compact to use compactCells");
+                "to convert to use cellsToMultiPolygon");
         exit(1);
     }
     FILE *fp = 0;
