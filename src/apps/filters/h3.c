@@ -1437,9 +1437,10 @@ SUBCOMMAND(
     return E_SUCCESS;
 }
 
-SUBCOMMAND(maxPolygonToCellsSize,
-           "Returns the maximum number of cells that could be needed to cover "
-           "the polygon. Will always be equal or more than actually necessary") {
+SUBCOMMAND(
+    maxPolygonToCellsSize,
+    "Returns the maximum number of cells that could be needed to cover "
+    "the polygon. Will always be equal or more than actually necessary") {
     char filename[1024] = {0};  // More than Windows, lol
     Arg filenameArg = {
         .names = {"-f", "--file"},
