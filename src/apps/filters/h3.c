@@ -2230,7 +2230,7 @@ SUBCOMMAND(greatCircleDistanceRads,
     Arg *args[] = {&greatCircleDistanceRadsArg, &filenameArg, &coordinateStrArg,
                    &helpArg};
     PARSE_SUBCOMMAND(argc, argv, args);
-    if (!filenameArg.found && !coordinateStrArg.found) {
+    if (filenameArg.found == coordinateStrArg.found) {
         fprintf(
             stderr,
             "You must provide either a file to read from or a coordinate array "
@@ -2301,7 +2301,7 @@ SUBCOMMAND(greatCircleDistanceKm,
     Arg *args[] = {&greatCircleDistanceKmArg, &filenameArg, &coordinateStrArg,
                    &helpArg};
     PARSE_SUBCOMMAND(argc, argv, args);
-    if (!filenameArg.found && !coordinateStrArg.found) {
+    if (filenameArg.found == coordinateStrArg.found) {
         fprintf(
             stderr,
             "You must provide either a file to read from or a coordinate array "
@@ -2372,7 +2372,7 @@ SUBCOMMAND(greatCircleDistanceM,
     Arg *args[] = {&greatCircleDistanceMArg, &filenameArg, &coordinateStrArg,
                    &helpArg};
     PARSE_SUBCOMMAND(argc, argv, args);
-    if (!filenameArg.found && !coordinateStrArg.found) {
+    if (filenameArg.found == coordinateStrArg.found) {
         fprintf(
             stderr,
             "You must provide either a file to read from or a coordinate array "
