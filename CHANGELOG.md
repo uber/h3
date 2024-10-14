@@ -7,7 +7,7 @@ The public API of this library consists of the functions declared in file
 
 ## [Unreleased]
 ### Added
-- `h3` binary for shell scripts ready for use (#931)
+- `h3` binary for shell scripts ready for use (#818, #826, #846, #923, #924, #931)
 
 ### Fixed
 - Fixed compacting all or many resolution 1 cells (#919)
