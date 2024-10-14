@@ -2251,7 +2251,7 @@ SUBCOMMAND(greatCircleDistanceRads,
             exit(1);
         }
         // Do the initial population of data from the file
-        if (fread(coordinateStr, 1, 1500, fp) == 0) {
+        if (fread(coordinateStr, 1, BUFFER_SIZE, fp) == 0) {
             fprintf(stderr, "The specified file is empty.");
             exit(1);
         }
@@ -2322,7 +2322,7 @@ SUBCOMMAND(greatCircleDistanceKm,
             exit(1);
         }
         // Do the initial population of data from the file
-        if (fread(coordinateStr, 1, 1500, fp) == 0) {
+        if (fread(coordinateStr, 1, BUFFER_SIZE, fp) == 0) {
             fprintf(stderr, "The specified file is empty.");
             exit(1);
         }
@@ -2393,7 +2393,7 @@ SUBCOMMAND(greatCircleDistanceM,
             exit(1);
         }
         // Do the initial population of data from the file
-        if (fread(coordinateStr, 1, 1500, fp) == 0) {
+        if (fread(coordinateStr, 1, BUFFER_SIZE, fp) == 0) {
             fprintf(stderr, "The specified file is empty.");
             exit(1);
         }
