@@ -1381,7 +1381,7 @@ SUBCOMMAND(
     Arg *args[] = {&polygonToCellsArg, &helpArg, &filenameArg, &polygonStrArg,
                    &resArg};
     PARSE_SUBCOMMAND(argc, argv, args);
-    if (!filenameArg.found && !polygonStrArg.found) {
+    if (filenameArg.found == polygonStrArg.found) {
         fprintf(stderr,
                 "You must provide either a file to read from or a polygon "
                 "to cover to use polygonToCells");
@@ -1472,7 +1472,7 @@ SUBCOMMAND(
     Arg *args[] = {&maxPolygonToCellsSizeArg, &helpArg, &filenameArg,
                    &polygonStrArg, &resArg};
     PARSE_SUBCOMMAND(argc, argv, args);
-    if (!filenameArg.found && !polygonStrArg.found) {
+    if (filenameArg.found == polygonStrArg.found) {
         fprintf(stderr,
                 "You must provide either a file to read from or a polygon "
                 "to cover to use maxPolygonToCellsSize");
@@ -1541,7 +1541,7 @@ SUBCOMMAND(cellsToMultiPolygon,
     Arg *args[] = {&cellsToMultiPolygonArg, &helpArg, &filenameArg,
                    &cellStrsArg};
     PARSE_SUBCOMMAND(argc, argv, args);
-    if (!filenameArg.found && !cellStrsArg.found) {
+    if (filenameArg.found == polygonStrArg.found) {
         fprintf(stderr,
                 "You must provide either a file to read from or a set of cells "
                 "to convert to use cellsToMultiPolygon");
