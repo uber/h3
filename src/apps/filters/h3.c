@@ -1541,7 +1541,7 @@ SUBCOMMAND(cellsToMultiPolygon,
     Arg *args[] = {&cellsToMultiPolygonArg, &helpArg, &filenameArg,
                    &cellStrsArg};
     PARSE_SUBCOMMAND(argc, argv, args);
-    if (filenameArg.found == polygonStrArg.found) {
+    if (filenameArg.found == cellStrsArg.found) {
         fprintf(stderr,
                 "You must provide either a file to read from or a set of cells "
                 "to convert to use cellsToMultiPolygon");
