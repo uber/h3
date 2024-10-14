@@ -37,6 +37,10 @@
 #include "h3Index.h"
 #include "utility.h"
 
+#define BUFFER_SIZE 1500
+#define BUFFER_SIZE_LESS_CELL 1485
+#define BUFFER_SIZE_WITH_NULL 1501
+
 #define PARSE_SUBCOMMAND(argc, argv, args)                                  \
     if (parseArgs(argc, argv, sizeof(args) / sizeof(Arg *), args, &helpArg, \
                   args[0]->helpText)) {                                     \
@@ -947,7 +951,8 @@ H3Index *readCellsFromFile(FILE *fp, char *buffer, size_t *totalCells) {
         bufferOffset = 0;
         int lastGoodOffset = 0;
         H3Index cell = 0;
-        while (bufferOffset < 1485) {  // Keep consuming as much as possible
+        while (bufferOffset <
+               BUFFER_SIZE_LESS_CELL) {  // Keep consuming as much as possible
             // A valid H3 cell is exactly 15 hexadecomical characters.
             // Determine if we have a match, otherwise increment
             int scanlen = 0;
@@ -961,7 +966,7 @@ H3Index *readCellsFromFile(FILE *fp, char *buffer, size_t *totalCells) {
             }
             // If we still don't have a cell and we've reached the end, we reset
             // the offset and `continue` to trigger another read
-            if (cell == 0 && bufferOffset == 1500) {
+            if (cell == 0 && bufferOffset == BUFFER_SIZE) {
                 bufferOffset = 0;
                 continue;
             } else if (cell != 0) {
@@ -989,15 +994,15 @@ H3Index *readCellsFromFile(FILE *fp, char *buffer, size_t *totalCells) {
         // end, so if lastGoodOffset is 1485 or less, we force it to 1485 and
         // then move the chunk as specified to the beginning and adjust the
         // cellStrsOffset.
-        if (lastGoodOffset < 1485) {
-            lastGoodOffset = 1485;
+        if (lastGoodOffset < BUFFER_SIZE_LESS_CELL) {
+            lastGoodOffset = BUFFER_SIZE_LESS_CELL;
         }
-        for (int i = 0; i < 1500 - lastGoodOffset; i++) {
+        for (int i = 0; i < BUFFER_SIZE - lastGoodOffset; i++) {
             buffer[i] = buffer[i + lastGoodOffset];
         }
-        bufferOffset = 1500 - lastGoodOffset;
-    } while (fp != 0 &&
-             fread(buffer + bufferOffset, 1, 1500 - bufferOffset, fp) != 0);
+        bufferOffset = BUFFER_SIZE - lastGoodOffset;
+    } while (fp != 0 && fread(buffer + bufferOffset, 1,
+                              BUFFER_SIZE - bufferOffset, fp) != 0);
     *totalCells = cellsOffset;
     return cells;
 }
@@ -1014,8 +1019,10 @@ SUBCOMMAND(compactCells,
         .value = &filename,
         .helpText =
             "The file to load the cells from. Use -- to read from stdin."};
-    char cellStrs[1501] = {0};  // Up to 100 cells with zero padding
+    char cellStrs[BUFFER_SIZE_WITH_NULL] = {
+        0};  // Up to 100 cells with zero padding
     Arg cellStrsArg = {.names = {"-c", "--cells"},
+                       // TODO: Can I use `BUFFER_SIZE` here somehow?
                        .scanFormat = "%1500c",
                        .valueName = "CELLS",
                        .value = &cellStrs,
@@ -1044,7 +1051,7 @@ SUBCOMMAND(compactCells,
             exit(1);
         }
         // Do the initial population of data from the file
-        if (fread(cellStrs, 1, 1500, fp) == 0) {
+        if (fread(cellStrs, 1, BUFFER_SIZE, fp) == 0) {
             fprintf(stderr, "The specified file is empty.");
             exit(1);
         }
@@ -1092,7 +1099,7 @@ SUBCOMMAND(uncompactCells,
         .value = &filename,
         .helpText =
             "The file to load the cells from. Use -- to read from stdin."};
-    char cellStrs[1501] = {
+    char cellStrs[BUFFER_SIZE_WITH_NULL] = {
         0};  // Supports up to 100 cells at a time with zero padding
     Arg cellStrsArg = {
         .names = {"-c", "--cells"},
@@ -1147,7 +1154,7 @@ SUBCOMMAND(uncompactCells,
             exit(1);
         }
         // Do the initial population of data from the file
-        if (fread(cellStrs, 1, 1500, fp) == 0) {
+        if (fread(cellStrs, 1, BUFFER_SIZE, fp) == 0) {
             fprintf(stderr, "The specified file is empty.");
             exit(1);
         }
@@ -1189,6 +1196,442 @@ SUBCOMMAND(uncompactCells,
     return E_SUCCESS;
 }
 
+/// Region subcommands
+
+H3Error polygonStringToGeoPolygon(FILE *fp, char *polygonString,
+                                  GeoPolygon *out) {
+    // There are two kinds of valid input, an array of arrays of lat, lng values
+    // defining a singular polygon loop, or an array of array of arrays of lat,
+    // lng values defining a polygon and zero or more holes. Which kind of input
+    // this is can be determined by the `[` depth reached before the first
+    // floating point number is found. This means either 2 or 3 `[`s at the
+    // beginning are valid, and nothing more than that.
+    int8_t maxDepth = 0;
+    int8_t curDepth = 0;
+    int64_t numVerts = 6;
+    int64_t curVert = 0;
+    int64_t curLoop = 0;
+    LatLng *verts = calloc(numVerts, sizeof(LatLng));
+    int strPos = 0;
+    while (polygonString[strPos] != 0) {
+        // Load more of the file if we've hit our buffer limit
+        if (strPos >= BUFFER_SIZE && fp != 0) {
+            int result = fread(polygonString, 1, BUFFER_SIZE, fp);
+            strPos = 0;
+            // If we didn't get any data from the file, we're done.
+            if (result == 0) {
+                break;
+            }
+        }
+        // Try to match `[` first
+        if (polygonString[strPos] == '[') {
+            curDepth++;
+            if (curDepth > maxDepth) {
+                maxDepth = curDepth;
+            }
+            if (curDepth > 4) {
+                // This is beyond the depth for a valid input, so we abort early
+                return E_FAILED;
+            }
+            strPos++;
+            continue;
+        }
+        // Similar matching for `]`
+        if (polygonString[strPos] == ']') {
+            curDepth--;
+            if (curDepth < 0) {
+                break;
+            }
+            strPos++;
+            // We may need to set up a new geoloop at this point. If the
+            // curDepth <= maxDepth - 2 then we increment the curLoop and get a
+            // new one set up.
+            if (curDepth <= maxDepth - 2) {
+                if (curLoop == 0) {
+                    out->geoloop.verts = verts;
+                    out->geoloop.numVerts = curVert;
+                } else {
+                    GeoLoop *holes = calloc(out->numHoles + 1, sizeof(GeoLoop));
+                    if (holes == 0) {
+                        return E_MEMORY_ALLOC;
+                    }
+                    for (int i = 0; i < out->numHoles; i++) {
+                        holes[i].numVerts = out->holes[i].numVerts;
+                        holes[i].verts = out->holes[i].verts;
+                    }
+                    free(out->holes);
+                    holes[out->numHoles].verts = verts;
+                    holes[out->numHoles].numVerts = curVert;
+                    out->holes = holes;
+                    out->numHoles++;
+                }
+                curLoop++;
+                curVert = 0;
+                numVerts = 6;
+                verts = calloc(numVerts, sizeof(LatLng));
+            }
+            continue;
+        }
+        // Try to grab a floating point value followed by optional whitespace, a
+        // comma, and more optional whitespace, and a second floating point
+        // value, then store the lat, lng pair
+        double lat, lng;
+        int count = 0;
+        // Must grab the closing ] or we might accidentally parse a partial
+        // float across buffer boundaries
+        char closeBracket[2] = "]";
+        int result = sscanf(polygonString + strPos, "%lf%*[, \n]%lf%1[]]%n",
+                            &lat, &lng, &closeBracket[0], &count);
+        if (count > 0 && result == 3) {
+            verts[curVert].lat = H3_EXPORT(degsToRads)(lat);
+            verts[curVert].lng = H3_EXPORT(degsToRads)(lng);
+            curVert++;
+            // Create a new vert buffer, copy the old buffer, and free it, if
+            // necessary
+            if (curVert == numVerts) {
+                LatLng *newVerts = calloc(numVerts * 2, sizeof(LatLng));
+                for (int i = 0; i < numVerts; i++) {
+                    newVerts[i].lat = verts[i].lat;
+                    newVerts[i].lng = verts[i].lng;
+                }
+                free(verts);
+                verts = newVerts;
+                numVerts *= 2;
+            }
+            strPos += count;
+            curDepth--;
+            continue;
+        }
+        // Check for whitespace and skip it if we reach this point.
+        if (polygonString[strPos] == ',' || polygonString[strPos] == ' ' ||
+            polygonString[strPos] == '\n' || polygonString[strPos] == '\t' ||
+            polygonString[strPos] == '\r') {
+            strPos++;
+            continue;
+        }
+        if (strPos != 0 && fp != 0) {
+            // Scan the remaining of the current buffer for `0`. If not
+            // found, then we grab a new chunk and append to the remainder
+            // of the existing buffer. Otherwise, just skip unknown
+            // characters.
+            bool endOfFile = false;
+            for (int i = strPos; i <= BUFFER_SIZE; i++) {
+                if (polygonString[strPos] == 0) {
+                    endOfFile = true;
+                    break;
+                }
+            }
+            if (endOfFile) {
+                strPos++;
+            } else {
+                // Move the end of this buffer to the beginning
+                for (int i = strPos; i <= BUFFER_SIZE; i++) {
+                    polygonString[i - strPos] = polygonString[i];
+                }
+                // Set the string position to the end of the buffer
+                strPos = BUFFER_SIZE - strPos;
+                // Grab up to the remaining size of the buffer and fill it
+                // into the file
+                // Did you know that if the amount you want to read from
+                // the file buffer is larger than the buffer itself,
+                // fread can choose to give you squat and not the
+                // remainder of the file as you'd expect from the
+                // documentation? This was a surprise to me and a
+                // significant amount of wasted time to figure out how
+                // to tackle. C leaves *way* too much as undefined
+                // behavior to be nice to work with...
+                int64_t i = 0;
+                int result;
+                do {
+                    result = fread(polygonString + strPos + i, 1, 1, fp);
+                    i++;
+                } while (i < BUFFER_SIZE - strPos && result != 0);
+                if (result == 0) {
+                    polygonString[strPos + i - 1] = 0;
+                }
+                strPos = 0;
+            }
+        } else {
+            strPos++;
+        }
+    }
+    free(verts);
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(
+    polygonToCells,
+    "Converts a polygon (array of lat, lng points, or array of arrays of lat, "
+    "lng points) into a set of covering cells at the specified resolution") {
+    char filename[1024] = {0};  // More than Windows, lol
+    Arg filenameArg = {
+        .names = {"-f", "--file"},
+        .scanFormat = "%1023c",
+        .valueName = "FILENAME",
+        .value = &filename,
+        .helpText =
+            "The file to load the polygon from. Use -- to read from stdin."};
+    char polygonStr[BUFFER_SIZE_WITH_NULL] = {
+        0};  // Up to 100 cells with zero padding
+    Arg polygonStrArg = {
+        .names = {"-p", "--polygon"},
+        .scanFormat = "%1500c",
+        .valueName = "POLYGON",
+        .value = &polygonStr,
+        .helpText = "The polygon to convert. Up to 1500 characters."};
+    int res = 0;
+    Arg resArg = {.names = {"-r", "--resolution"},
+                  .required = true,
+                  .scanFormat = "%d",
+                  .valueName = "res",
+                  .value = &res,
+                  .helpText =
+                      "Resolution, 0-15 inclusive, that the polygon "
+                      "should be converted to."};
+    Arg *args[] = {&polygonToCellsArg, &helpArg, &filenameArg, &polygonStrArg,
+                   &resArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    if (filenameArg.found == polygonStrArg.found) {
+        fprintf(stderr,
+                "You must provide either a file to read from or a polygon "
+                "to cover to use polygonToCells");
+        exit(1);
+    }
+    FILE *fp = 0;
+    bool isStdin = false;
+    if (filenameArg.found) {
+        if (strcmp(filename, "--") == 0) {
+            fp = stdin;
+            isStdin = true;
+        } else {
+            fp = fopen(filename, "r");
+        }
+        if (fp == 0) {
+            fprintf(stderr, "The specified file does not exist.");
+            exit(1);
+        }
+        // Do the initial population of data from the file
+        if (fread(polygonStr, 1, BUFFER_SIZE, fp) == 0) {
+            fprintf(stderr, "The specified file is empty.");
+            exit(1);
+        }
+    }
+    GeoPolygon polygon = {0};
+    H3Error err = polygonStringToGeoPolygon(fp, polygonStr, &polygon);
+    if (fp != 0 && !isStdin) {
+        fclose(fp);
+    }
+    if (err != E_SUCCESS) {
+        return err;
+    }
+    int64_t cellsSize = 0;
+    err = H3_EXPORT(maxPolygonToCellsSize)(&polygon, res, 0, &cellsSize);
+    if (err != E_SUCCESS) {
+        return err;
+    }
+    H3Index *cells = calloc(cellsSize, sizeof(H3Index));
+    err = H3_EXPORT(polygonToCells)(&polygon, res, 0, cells);
+    for (int i = 0; i < polygon.numHoles; i++) {
+        free(polygon.holes[i].verts);
+    }
+    free(polygon.holes);
+    free(polygon.geoloop.verts);
+    if (err != E_SUCCESS) {
+        free(cells);
+        return err;
+    }
+    // We can print out the cells
+    for (int i = 0; i < cellsSize; i++) {
+        if (cells[i] == 0) {
+            continue;
+        }
+        h3Println(cells[i]);
+    }
+    free(cells);
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(
+    maxPolygonToCellsSize,
+    "Returns the maximum number of cells that could be needed to cover "
+    "the polygon. Will always be equal or more than actually necessary") {
+    char filename[1024] = {0};  // More than Windows, lol
+    Arg filenameArg = {
+        .names = {"-f", "--file"},
+        .scanFormat = "%1023c",
+        .valueName = "FILENAME",
+        .value = &filename,
+        .helpText =
+            "The file to load the polygon from. Use -- to read from stdin."};
+    char polygonStr[BUFFER_SIZE_WITH_NULL] = {
+        0};  // Up to 100 cells with zero padding
+    Arg polygonStrArg = {
+        .names = {"-p", "--polygon"},
+        .scanFormat = "%1500c",
+        .valueName = "POLYGON",
+        .value = &polygonStr,
+        .helpText = "The polygon to convert. Up to 1500 characters."};
+    int res = 0;
+    Arg resArg = {.names = {"-r", "--resolution"},
+                  .required = true,
+                  .scanFormat = "%d",
+                  .valueName = "res",
+                  .value = &res,
+                  .helpText =
+                      "Resolution, 0-15 inclusive, that the polygon "
+                      "should be converted to."};
+    Arg *args[] = {&maxPolygonToCellsSizeArg, &helpArg, &filenameArg,
+                   &polygonStrArg, &resArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    if (filenameArg.found == polygonStrArg.found) {
+        fprintf(stderr,
+                "You must provide either a file to read from or a polygon "
+                "to cover to use maxPolygonToCellsSize");
+        exit(1);
+    }
+    FILE *fp = 0;
+    bool isStdin = false;
+    if (filenameArg.found) {
+        if (strcmp(filename, "--") == 0) {
+            fp = stdin;
+            isStdin = true;
+        } else {
+            fp = fopen(filename, "r");
+        }
+        if (fp == 0) {
+            fprintf(stderr, "The specified file does not exist.");
+            exit(1);
+        }
+        // Do the initial population of data from the file
+        if (fread(polygonStr, 1, BUFFER_SIZE, fp) == 0) {
+            fprintf(stderr, "The specified file is empty.");
+            exit(1);
+        }
+    }
+    GeoPolygon polygon = {0};
+    H3Error err = polygonStringToGeoPolygon(fp, polygonStr, &polygon);
+    if (fp != 0 && !isStdin) {
+        fclose(fp);
+    }
+    if (err != E_SUCCESS) {
+        return err;
+    }
+    int64_t cellsSize = 0;
+    err = H3_EXPORT(maxPolygonToCellsSize)(&polygon, res, 0, &cellsSize);
+    for (int i = 0; i < polygon.numHoles; i++) {
+        free(polygon.holes[i].verts);
+    }
+    free(polygon.holes);
+    free(polygon.geoloop.verts);
+    if (err != E_SUCCESS) {
+        return err;
+    }
+    printf("%" PRId64 "\n", cellsSize);
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(cellsToMultiPolygon,
+           "Returns a polygon (array of arrays of "
+           "lat, lng points) for a set of cells") {
+    char filename[1024] = {0};  // More than Windows, lol
+    Arg filenameArg = {
+        .names = {"-f", "--file"},
+        .scanFormat = "%1023c",
+        .valueName = "FILENAME",
+        .value = &filename,
+        .helpText =
+            "The file to load the cells from. Use -- to read from stdin."};
+    char cellStrs[BUFFER_SIZE_WITH_NULL] = {
+        0};  // Up to 100 cells with zero padding
+    Arg cellStrsArg = {.names = {"-c", "--cells"},
+                       .scanFormat = "%1500c",
+                       .valueName = "CELLS",
+                       .value = &cellStrs,
+                       .helpText =
+                           "The cells to convert. Up to 100 cells if provided "
+                           "as hexadecimals with zero padding."};
+    Arg *args[] = {&cellsToMultiPolygonArg, &helpArg, &filenameArg,
+                   &cellStrsArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    if (filenameArg.found == cellStrsArg.found) {
+        fprintf(stderr,
+                "You must provide either a file to read from or a set of cells "
+                "to convert to use cellsToMultiPolygon");
+        exit(1);
+    }
+    FILE *fp = 0;
+    bool isStdin = false;
+    if (filenameArg.found) {
+        if (strcmp(filename, "--") == 0) {
+            fp = stdin;
+            isStdin = true;
+        } else {
+            fp = fopen(filename, "r");
+        }
+        if (fp == 0) {
+            fprintf(stderr, "The specified file does not exist.");
+            exit(1);
+        }
+        // Do the initial population of data from the file
+        if (fread(cellStrs, 1, BUFFER_SIZE, fp) == 0) {
+            fprintf(stderr, "The specified file is empty.");
+            exit(1);
+        }
+    }
+    size_t cellsOffset = 0;
+    H3Index *cells = readCellsFromFile(fp, cellStrs, &cellsOffset);
+    if (fp != 0 && !isStdin) {
+        fclose(fp);
+    }
+    if (cells == NULL) {
+        return E_FAILED;
+    }
+    LinkedGeoPolygon out = {0};
+    H3Error err =
+        H3_EXPORT(cellsToLinkedMultiPolygon)(cells, cellsOffset, &out);
+    if (err) {
+        free(cells);
+        H3_EXPORT(destroyLinkedMultiPolygon)(&out);
+        return err;
+    }
+    printf("[");
+    LinkedGeoPolygon *currPoly = &out;
+    while (currPoly) {
+        printf("[");
+        LinkedGeoLoop *currLoop = currPoly->first;
+        while (currLoop) {
+            printf("[");
+            LinkedLatLng *currLatLng = currLoop->first;
+            while (currLatLng) {
+                printf("[%f, %f]",
+                       H3_EXPORT(radsToDegs)(currLatLng->vertex.lat),
+                       H3_EXPORT(radsToDegs)(currLatLng->vertex.lng));
+                currLatLng = currLatLng->next;
+                if (currLatLng) {
+                    printf(", ");
+                }
+            }
+            currLoop = currLoop->next;
+            if (currLoop) {
+                printf("], ");
+            } else {
+                printf("]");
+            }
+        }
+        currPoly = currPoly->next;
+        if (currPoly) {
+            printf("], ");
+        } else {
+            printf("]");
+        }
+    }
+    printf("]");
+    printf("\n");
+    free(cells);
+    H3_EXPORT(destroyLinkedMultiPolygon)(&out);
+    return E_SUCCESS;
+}
+
 // TODO: Is there any way to avoid this particular piece of duplication?
 SUBCOMMANDS_INDEX
 
@@ -1225,6 +1668,11 @@ SUBCOMMAND_INDEX(cellToChildPos)
 SUBCOMMAND_INDEX(childPosToCell)
 SUBCOMMAND_INDEX(compactCells)
 SUBCOMMAND_INDEX(uncompactCells)
+
+/// Region subcommands
+SUBCOMMAND_INDEX(polygonToCells)
+SUBCOMMAND_INDEX(maxPolygonToCellsSize)
+SUBCOMMAND_INDEX(cellsToMultiPolygon)
 
 END_SUBCOMMANDS_INDEX
 
