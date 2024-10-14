@@ -37,6 +37,10 @@
 #include "h3Index.h"
 #include "utility.h"
 
+#define BUFFER_SIZE 1500
+#define BUFFER_SIZE_LESS_CELL 1485
+#define BUFFER_SIZE_WITH_NULL 1501
+
 #define PARSE_SUBCOMMAND(argc, argv, args)                                  \
     if (parseArgs(argc, argv, sizeof(args) / sizeof(Arg *), args, &helpArg, \
                   args[0]->helpText)) {                                     \
@@ -947,7 +951,8 @@ H3Index *readCellsFromFile(FILE *fp, char *buffer, size_t *totalCells) {
         bufferOffset = 0;
         int lastGoodOffset = 0;
         H3Index cell = 0;
-        while (bufferOffset < 1485) {  // Keep consuming as much as possible
+        while (bufferOffset <
+               BUFFER_SIZE_LESS_CELL) {  // Keep consuming as much as possible
             // A valid H3 cell is exactly 15 hexadecomical characters.
             // Determine if we have a match, otherwise increment
             int scanlen = 0;
@@ -961,7 +966,7 @@ H3Index *readCellsFromFile(FILE *fp, char *buffer, size_t *totalCells) {
             }
             // If we still don't have a cell and we've reached the end, we reset
             // the offset and `continue` to trigger another read
-            if (cell == 0 && bufferOffset == 1500) {
+            if (cell == 0 && bufferOffset == BUFFER_SIZE) {
                 bufferOffset = 0;
                 continue;
             } else if (cell != 0) {
@@ -989,15 +994,15 @@ H3Index *readCellsFromFile(FILE *fp, char *buffer, size_t *totalCells) {
         // end, so if lastGoodOffset is 1485 or less, we force it to 1485 and
         // then move the chunk as specified to the beginning and adjust the
         // cellStrsOffset.
-        if (lastGoodOffset < 1485) {
-            lastGoodOffset = 1485;
+        if (lastGoodOffset < BUFFER_SIZE_LESS_CELL) {
+            lastGoodOffset = BUFFER_SIZE_LESS_CELL;
         }
-        for (int i = 0; i < 1500 - lastGoodOffset; i++) {
+        for (int i = 0; i < BUFFER_SIZE - lastGoodOffset; i++) {
             buffer[i] = buffer[i + lastGoodOffset];
         }
-        bufferOffset = 1500 - lastGoodOffset;
-    } while (fp != 0 &&
-             fread(buffer + bufferOffset, 1, 1500 - bufferOffset, fp) != 0);
+        bufferOffset = BUFFER_SIZE - lastGoodOffset;
+    } while (fp != 0 && fread(buffer + bufferOffset, 1,
+                              BUFFER_SIZE - bufferOffset, fp) != 0);
     *totalCells = cellsOffset;
     return cells;
 }
@@ -1014,8 +1019,10 @@ SUBCOMMAND(compactCells,
         .value = &filename,
         .helpText =
             "The file to load the cells from. Use -- to read from stdin."};
-    char cellStrs[1501] = {0};  // Up to 100 cells with zero padding
+    char cellStrs[BUFFER_SIZE_WITH_NULL] = {
+        0};  // Up to 100 cells with zero padding
     Arg cellStrsArg = {.names = {"-c", "--cells"},
+                       // TODO: Can I use `BUFFER_SIZE` here somehow?
                        .scanFormat = "%1500c",
                        .valueName = "CELLS",
                        .value = &cellStrs,
@@ -1044,7 +1051,7 @@ SUBCOMMAND(compactCells,
             exit(1);
         }
         // Do the initial population of data from the file
-        if (fread(cellStrs, 1, 1500, fp) == 0) {
+        if (fread(cellStrs, 1, BUFFER_SIZE, fp) == 0) {
             fprintf(stderr, "The specified file is empty.");
             exit(1);
         }
@@ -1092,7 +1099,7 @@ SUBCOMMAND(uncompactCells,
         .value = &filename,
         .helpText =
             "The file to load the cells from. Use -- to read from stdin."};
-    char cellStrs[1501] = {
+    char cellStrs[BUFFER_SIZE_WITH_NULL] = {
         0};  // Supports up to 100 cells at a time with zero padding
     Arg cellStrsArg = {
         .names = {"-c", "--cells"},
@@ -1147,7 +1154,7 @@ SUBCOMMAND(uncompactCells,
             exit(1);
         }
         // Do the initial population of data from the file
-        if (fread(cellStrs, 1, 1500, fp) == 0) {
+        if (fread(cellStrs, 1, BUFFER_SIZE, fp) == 0) {
             fprintf(stderr, "The specified file is empty.");
             exit(1);
         }
@@ -1208,11 +1215,11 @@ H3Error polygonStringToGeoPolygon(FILE *fp, char *polygonString,
     int strPos = 0;
     while (polygonString[strPos] != 0) {
         // Load more of the file if we've hit our buffer limit
-        if (strPos >= 1500 && fp != 0) {
-            int res = fread(polygonString, 1, 1500, fp);
+        if (strPos >= BUFFER_SIZE && fp != 0) {
+            int result = fread(polygonString, 1, BUFFER_SIZE, fp);
             strPos = 0;
             // If we didn't get any data from the file, we're done.
-            if (res == 0) {
+            if (result == 0) {
                 break;
             }
         }
@@ -1245,6 +1252,9 @@ H3Error polygonStringToGeoPolygon(FILE *fp, char *polygonString,
                     out->geoloop.numVerts = curVert;
                 } else {
                     GeoLoop *holes = calloc(out->numHoles + 1, sizeof(GeoLoop));
+                    if (holes == 0) {
+                        return E_MEMORY_ALLOC;
+                    }
                     for (int i = 0; i < out->numHoles; i++) {
                         holes[i].numVerts = out->holes[i].numVerts;
                         holes[i].verts = out->holes[i].verts;
@@ -1270,9 +1280,9 @@ H3Error polygonStringToGeoPolygon(FILE *fp, char *polygonString,
         // Must grab the closing ] or we might accidentally parse a partial
         // float across buffer boundaries
         char closeBracket[2] = "]";
-        int res = sscanf(polygonString + strPos, "%lf%*[, \n]%lf%1[]]%n", &lat,
-                         &lng, &closeBracket[0], &count);
-        if (count > 0 && res == 3) {
+        int result = sscanf(polygonString + strPos, "%lf%*[, \n]%lf%1[]]%n",
+                            &lat, &lng, &closeBracket[0], &count);
+        if (count > 0 && result == 3) {
             verts[curVert].lat = H3_EXPORT(degsToRads)(lat);
             verts[curVert].lng = H3_EXPORT(degsToRads)(lng);
             curVert++;
@@ -1298,52 +1308,51 @@ H3Error polygonStringToGeoPolygon(FILE *fp, char *polygonString,
             polygonString[strPos] == '\r') {
             strPos++;
             continue;
-        } else {
-            if (strPos != 0 && fp != 0) {
-                // Scan the remaining of the current buffer for `0`. If not
-                // found, then we grab a new chunk and append to the remainder
-                // of the existing buffer. Otherwise, just skip unknown
-                // characters.
-                bool endOfFile = false;
-                for (int i = strPos; i <= 1500; i++) {
-                    if (polygonString[strPos] == 0) {
-                        endOfFile = true;
-                        break;
-                    }
+        }
+        if (strPos != 0 && fp != 0) {
+            // Scan the remaining of the current buffer for `0`. If not
+            // found, then we grab a new chunk and append to the remainder
+            // of the existing buffer. Otherwise, just skip unknown
+            // characters.
+            bool endOfFile = false;
+            for (int i = strPos; i <= BUFFER_SIZE; i++) {
+                if (polygonString[strPos] == 0) {
+                    endOfFile = true;
+                    break;
                 }
-                if (endOfFile) {
-                    strPos++;
-                } else {
-                    // Move the end of this buffer to the beginning
-                    for (int i = strPos; i <= 1500; i++) {
-                        polygonString[i - strPos] = polygonString[i];
-                    }
-                    // Set the string position to the end of the buffer
-                    strPos = 1500 - strPos;
-                    // Grab up to the remaining size of the buffer and fill it
-                    // into the file
-                    // Did you know that if the amount you want to read from
-                    // the file buffer is larger than the buffer itself,
-                    // fread can choose to give you squat and not the
-                    // remainder of the file as you'd expect from the
-                    // documentation? This was a surprise to me and a
-                    // significant amount of wasted time to figure out how
-                    // to tackle. C leaves *way* too much as undefined
-                    // behavior to be nice to work with...
-                    int64_t i = 0;
-                    int res;
-                    do {
-                        res = fread(polygonString + strPos + i, 1, 1, fp);
-                        i++;
-                    } while (i < 1500 - strPos && res != 0);
-                    if (res == 0) {
-                        polygonString[strPos + i - 1] = 0;
-                    }
-                    strPos = 0;
-                }
-            } else {
-                strPos++;
             }
+            if (endOfFile) {
+                strPos++;
+            } else {
+                // Move the end of this buffer to the beginning
+                for (int i = strPos; i <= BUFFER_SIZE; i++) {
+                    polygonString[i - strPos] = polygonString[i];
+                }
+                // Set the string position to the end of the buffer
+                strPos = BUFFER_SIZE - strPos;
+                // Grab up to the remaining size of the buffer and fill it
+                // into the file
+                // Did you know that if the amount you want to read from
+                // the file buffer is larger than the buffer itself,
+                // fread can choose to give you squat and not the
+                // remainder of the file as you'd expect from the
+                // documentation? This was a surprise to me and a
+                // significant amount of wasted time to figure out how
+                // to tackle. C leaves *way* too much as undefined
+                // behavior to be nice to work with...
+                int64_t i = 0;
+                int result;
+                do {
+                    result = fread(polygonString + strPos + i, 1, 1, fp);
+                    i++;
+                } while (i < BUFFER_SIZE - strPos && result != 0);
+                if (result == 0) {
+                    polygonString[strPos + i - 1] = 0;
+                }
+                strPos = 0;
+            }
+        } else {
+            strPos++;
         }
     }
     free(verts);
@@ -1362,7 +1371,8 @@ SUBCOMMAND(
         .value = &filename,
         .helpText =
             "The file to load the polygon from. Use -- to read from stdin."};
-    char polygonStr[1501] = {0};  // Up to 100 cells with zero padding
+    char polygonStr[BUFFER_SIZE_WITH_NULL] = {
+        0};  // Up to 100 cells with zero padding
     Arg polygonStrArg = {
         .names = {"-p", "--polygon"},
         .scanFormat = "%1500c",
@@ -1401,7 +1411,7 @@ SUBCOMMAND(
             exit(1);
         }
         // Do the initial population of data from the file
-        if (fread(polygonStr, 1, 1500, fp) == 0) {
+        if (fread(polygonStr, 1, BUFFER_SIZE, fp) == 0) {
             fprintf(stderr, "The specified file is empty.");
             exit(1);
         }
@@ -1453,7 +1463,8 @@ SUBCOMMAND(
         .value = &filename,
         .helpText =
             "The file to load the polygon from. Use -- to read from stdin."};
-    char polygonStr[1501] = {0};  // Up to 100 cells with zero padding
+    char polygonStr[BUFFER_SIZE_WITH_NULL] = {
+        0};  // Up to 100 cells with zero padding
     Arg polygonStrArg = {
         .names = {"-p", "--polygon"},
         .scanFormat = "%1500c",
@@ -1492,7 +1503,7 @@ SUBCOMMAND(
             exit(1);
         }
         // Do the initial population of data from the file
-        if (fread(polygonStr, 1, 1500, fp) == 0) {
+        if (fread(polygonStr, 1, BUFFER_SIZE, fp) == 0) {
             fprintf(stderr, "The specified file is empty.");
             exit(1);
         }
@@ -1530,7 +1541,8 @@ SUBCOMMAND(cellsToMultiPolygon,
         .value = &filename,
         .helpText =
             "The file to load the cells from. Use -- to read from stdin."};
-    char cellStrs[1501] = {0};  // Up to 100 cells with zero padding
+    char cellStrs[BUFFER_SIZE_WITH_NULL] = {
+        0};  // Up to 100 cells with zero padding
     Arg cellStrsArg = {.names = {"-c", "--cells"},
                        .scanFormat = "%1500c",
                        .valueName = "CELLS",
@@ -1561,7 +1573,7 @@ SUBCOMMAND(cellsToMultiPolygon,
             exit(1);
         }
         // Do the initial population of data from the file
-        if (fread(cellStrs, 1, 1500, fp) == 0) {
+        if (fread(cellStrs, 1, BUFFER_SIZE, fp) == 0) {
             fprintf(stderr, "The specified file is empty.");
             exit(1);
         }
