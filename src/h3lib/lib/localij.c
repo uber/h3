@@ -525,13 +525,13 @@ H3Error localIjkToCell(H3Index origin, const CoordIJK *ijk, H3Index *out) {
  * @param out ij coordinates of the index will be placed here on success
  * @return 0 on success, or another value on failure.
  */
-H3Error H3_EXPORT(cellToLocalIj)(H3Index origin, H3Index h3, uint32_t mode,
+H3Error H3_EXPORT(cellToLocalIj)(H3Index origin, H3Index index, uint32_t mode,
                                  CoordIJ *out) {
     if (mode != 0) {
         return E_OPTION_INVALID;
     }
     CoordIJK ijk;
-    H3Error failed = cellToLocalIjk(origin, h3, &ijk);
+    H3Error failed = cellToLocalIjk(origin, index, &ijk);
     if (failed) {
         return failed;
     }
@@ -554,9 +554,9 @@ H3Error H3_EXPORT(cellToLocalIj)(H3Index origin, H3Index h3, uint32_t mode,
  * to be compatible across different versions of H3.
  *
  * @param origin An anchoring index for the ij coordinate system.
- * @param out ij coordinates to index.
+ * @param ij ij coordinates to index.
  * @param mode Mode, must be 0
- * @param index Index will be placed here on success.
+ * @param out Index will be placed here on success.
  * @return 0 on success, or another value on failure.
  */
 H3Error H3_EXPORT(localIjToCell)(H3Index origin, const CoordIJ *ij,
@@ -582,16 +582,17 @@ H3Error H3_EXPORT(localIjToCell)(H3Index origin, const CoordIJ *ij,
  *
  * @param origin Index to find the distance from.
  * @param index Index to find the distance to.
- * @return The distance, or a negative number if the library could not
- * compute the distance.
+ * @param out The distance in cells
+ * @returns E_SUCCESS on success, or another value if the library cannot compute
+ * the distance.
  */
-H3Error H3_EXPORT(gridDistance)(H3Index origin, H3Index h3, int64_t *out) {
+H3Error H3_EXPORT(gridDistance)(H3Index origin, H3Index index, int64_t *out) {
     CoordIJK originIjk, h3Ijk;
     H3Error originError = cellToLocalIjk(origin, origin, &originIjk);
     if (originError) {
         return originError;
     }
-    H3Error destError = cellToLocalIjk(origin, h3, &h3Ijk);
+    H3Error destError = cellToLocalIjk(origin, index, &h3Ijk);
     if (destError) {
         return destError;
     }

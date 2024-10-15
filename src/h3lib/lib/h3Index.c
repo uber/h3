@@ -89,8 +89,7 @@ int H3_EXPORT(getBaseCellNumber)(H3Index h) { return H3_GET_BASE_CELL(h); }
 /**
  * Converts a string representation of an H3 index into an H3 index.
  * @param str The string representation of an H3 index.
- * @return The H3 index corresponding to the string argument, or H3_NULL if
- * invalid.
+ * @param out Output: The H3 index corresponding to the string argument
  */
 H3Error H3_EXPORT(stringToH3)(const char *str, H3Index *out) {
     H3Index h = H3_NULL;
@@ -187,8 +186,7 @@ void setH3Index(H3Index *hp, int res, int baseCell, Direction initDigit) {
  *
  * @param h H3Index to find parent of
  * @param parentRes The resolution to switch to (parent, grandparent, etc)
- *
- * @return H3Index of the parent, or H3_NULL if you actually asked for a child
+ * @param out Output: H3Index of the parent
  */
 H3Error H3_EXPORT(cellToParent)(H3Index h, int parentRes, H3Index *out) {
     int childRes = H3_GET_RESOLUTION(h);
@@ -231,9 +229,8 @@ static bool _hasChildAtRes(H3Index h, int childRes) {
  *
  * @param h         H3Index to find the number of children of
  * @param childRes  The child resolution you're interested in
- *
- * @return int      Exact number of children (handles hexagons and pentagons
- *                  correctly)
+ * @param out      Output: exact number of children (handles hexagons and
+ * pentagons correctly)
  */
 H3Error H3_EXPORT(cellToChildrenSize)(H3Index h, int childRes, int64_t *out) {
     if (!_hasChildAtRes(h, childRes)) return E_RES_DOMAIN;
@@ -331,7 +328,6 @@ H3Error H3_EXPORT(cellToCenterChild)(H3Index h, int childRes, H3Index *child) {
  * contiguous regions exist in the set at all and no compression possible)
  * @return an error code on bad input data
  */
-// todo: update internal implementation for int64_t
 H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
                                 const int64_t numHexes) {
     if (numHexes == 0) {
@@ -340,7 +336,7 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
     int res = H3_GET_RESOLUTION(h3Set[0]);
     if (res == 0) {
         // No compaction possible, just copy the set to output
-        for (int i = 0; i < numHexes; i++) {
+        for (int64_t i = 0; i < numHexes; i++) {
             compactedSet[i] = h3Set[i];
         }
         return E_SUCCESS;
@@ -356,7 +352,7 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
         return E_MEMORY_ALLOC;
     }
     H3Index *compactedSetOffset = compactedSet;
-    int numRemainingHexes = numHexes;
+    int64_t numRemainingHexes = numHexes;
     while (numRemainingHexes) {
         res = H3_GET_RESOLUTION(remainingHexes[0]);
         int parentRes = res - 1;
@@ -367,7 +363,7 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
             // Put the parents of the hexagons into the temp array
             // via a hashing mechanism, and use the reserved bits
             // to track how many times a parent is duplicated
-            for (int i = 0; i < numRemainingHexes; i++) {
+            for (int64_t i = 0; i < numRemainingHexes; i++) {
                 H3Index currIndex = remainingHexes[i];
                 // TODO: This case is coverable (reachable by fuzzer)
                 if (currIndex != 0) {
@@ -393,8 +389,8 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
                         return parentError;
                     }
                     // Modulus hash the parent into the temp array
-                    int loc = (int)(parent % numRemainingHexes);
-                    int loopCount = 0;
+                    int64_t loc = (int64_t)(parent % numRemainingHexes);
+                    int64_t loopCount = 0;
                     while (hashSetArray[loc] != 0) {
                         if (NEVER(loopCount > numRemainingHexes)) {
                             // This case should not be possible because at
@@ -438,8 +434,8 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
 
         // Determine which parent hexagons have a complete set
         // of children and put them in the compactableHexes array
-        int compactableCount = 0;
-        int maxCompactableCount =
+        int64_t compactableCount = 0;
+        int64_t maxCompactableCount =
             numRemainingHexes / 6;  // Somehow all pentagons; conservative
         if (maxCompactableCount == 0) {
             memcpy(compactedSetOffset, remainingHexes,
@@ -453,7 +449,7 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
             H3_MEMORY(free)(hashSetArray);
             return E_MEMORY_ALLOC;
         }
-        for (int i = 0; i < numRemainingHexes; i++) {
+        for (int64_t i = 0; i < numRemainingHexes; i++) {
             if (hashSetArray[i] == 0) continue;
             int count = H3_GET_RESERVED_BITS(hashSetArray[i]) + 1;
             // Include the deleted direction for pentagons as implicitly "there"
@@ -475,8 +471,8 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
         }
         // Uncompactable hexes are immediately copied into the
         // output compactedSetOffset
-        int uncompactableCount = 0;
-        for (int i = 0; i < numRemainingHexes; i++) {
+        int64_t uncompactableCount = 0;
+        for (int64_t i = 0; i < numRemainingHexes; i++) {
             H3Index currIndex = remainingHexes[i];
             // TODO: This case is coverable (reachable by fuzzer)
             if (currIndex != H3_NULL) {
@@ -496,8 +492,8 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
                     // Modulus hash the parent into the temp array
                     // to determine if this index was included in
                     // the compactableHexes array
-                    int loc = (int)(parent % numRemainingHexes);
-                    int loopCount = 0;
+                    int64_t loc = (int64_t)(parent % numRemainingHexes);
+                    int64_t loopCount = 0;
                     do {
                         if (NEVER(loopCount > numRemainingHexes)) {
                             // This case should not be possible because at most
@@ -548,8 +544,8 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
  *
  * Skips elements that are H3_NULL (i.e., 0).
  *
- * @param   compactSet  Set of compacted cells
- * @param   numCompact  The number of cells in the input compacted set
+ * @param   compactedSet  Set of compacted cells
+ * @param   numCompacted  The number of cells in the input compacted set
  * @param   outSet      Output array for decompressed cells (preallocated)
  * @param   numOut      The size of the output array to bound check against
  * @param   res         The H3 resolution to decompress to
@@ -578,7 +574,7 @@ H3Error H3_EXPORT(uncompactCells)(const H3Index *compactedSet,
  * the exact size of the uncompacted set of hexagons.
  *
  * @param   compactedSet  Set of hexagons
- * @param   numHexes      The number of hexes in the input set
+ * @param   numCompacted  The number of hexes in the input set
  * @param   res           The hexagon resolution to decompress to
  * @param   out           The number of hexagons to allocate memory for
  * @returns E_SUCCESS on success, or another value on error
@@ -1115,6 +1111,10 @@ static H3Error validateChildPos(int64_t childPos, H3Index parent,
 /**
  * Returns the position of the cell within an ordered list of all children of
  * the cell's parent at the specified resolution
+ * @param child Child cell index
+ * @param parentRes Resolution of the parent cell to find the position within
+ * @param out Output: The position of the child cell within its parents cell
+ * list of children
  */
 H3Error H3_EXPORT(cellToChildPos)(H3Index child, int parentRes, int64_t *out) {
     int childRes = H3_GET_RESOLUTION(child);
@@ -1190,7 +1190,12 @@ H3Error H3_EXPORT(cellToChildPos)(H3Index child, int parentRes, int64_t *out) {
 
 /**
  * Returns the child cell at a given position within an ordered list of all
- * children at the specified resolution */
+ * children at the specified resolution
+ * @param childPos Position within the ordered list
+ * @param parent Parent cell of the cell index to find
+ * @param childRes Resolution of the child cell index
+ * @param child Output: child cell index
+ */
 H3Error H3_EXPORT(childPosToCell)(int64_t childPos, H3Index parent,
                                   int childRes, H3Index *child) {
     // Validate resolution
