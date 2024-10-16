@@ -223,7 +223,7 @@ SUBCOMMAND(getResolution, "Extracts the resolution (0 - 15) from the H3 cell") {
     // few functions that doesn't do any error handling (for some reason? I
     // don't see how this would ever be in a hot loop anywhere.
     int res = H3_EXPORT(getResolution)(cell);
-    printf("%i", res);
+    printf("%i\n", res);
     return E_SUCCESS;
 }
 
@@ -243,7 +243,7 @@ SUBCOMMAND(getBaseCellNumber,
     // few functions that doesn't do any error handling (for some reason? I
     // don't see how this would ever be in a hot loop anywhere.
     int baseCell = H3_EXPORT(getBaseCellNumber)(cell);
-    printf("%i", baseCell);
+    printf("%i\n", baseCell);
     return E_SUCCESS;
 }
 
@@ -267,7 +267,7 @@ SUBCOMMAND(stringToInt, "Converts an H3 index in string form to integer form") {
         free(rawCell);
         return err;
     }
-    printf("%" PRIu64, c);
+    printf("%" PRIu64 "\n", c);
     free(rawCell);
     return E_SUCCESS;
 }
@@ -291,7 +291,7 @@ SUBCOMMAND(isValidCell, "Checks if the provided H3 index is actually valid") {
     Arg *args[] = {&isValidCellArg, &helpArg, &cellArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     bool isValid = H3_EXPORT(isValidCell)(cell);
-    printf("%s", isValid ? "true" : "false");
+    printf("%s\n", isValid ? "true" : "false");
     return E_SUCCESS;
 }
 
@@ -311,7 +311,7 @@ SUBCOMMAND(isResClassIII,
     // few functions that doesn't do any error handling (for some reason? I
     // don't see how this would ever be in a hot loop anywhere.
     bool isClassIII = H3_EXPORT(isResClassIII)(cell);
-    printf("%s", isClassIII ? "true" : "false");
+    printf("%s\n", isClassIII ? "true" : "false");
     return E_SUCCESS;
 }
 
@@ -332,7 +332,7 @@ SUBCOMMAND(
     // few functions that doesn't do any error handling (for some reason? I
     // don't see how this would ever be in a hot loop anywhere.
     bool is = H3_EXPORT(isPentagon)(cell);
-    printf("%s", is ? "true" : "false");
+    printf("%s\n", is ? "true" : "false");
     return E_SUCCESS;
 }
 
@@ -373,6 +373,7 @@ SUBCOMMAND(getIcosahedronFaces,
         }
         printf("%i", faces[faceCount - 1]);
     }
+    printf("\n");
     free(faces);
     return E_SUCCESS;
 }
@@ -838,7 +839,7 @@ SUBCOMMAND(cellToChildrenSize,
     if (err) {
         return err;
     }
-    printf("%" PRId64, len);
+    printf("%" PRId64 "\n", len);
     return E_SUCCESS;
 }
 
@@ -892,7 +893,7 @@ SUBCOMMAND(
     if (err) {
         return err;
     }
-    printf("%" PRId64, len);
+    printf("%" PRId64 "\n", len);
     return E_SUCCESS;
 }
 
@@ -1625,8 +1626,7 @@ SUBCOMMAND(cellsToMultiPolygon,
             printf("]");
         }
     }
-    printf("]");
-    printf("\n");
+    printf("]\n");
     free(cells);
     H3_EXPORT(destroyLinkedMultiPolygon)(&out);
     return E_SUCCESS;
@@ -1740,7 +1740,7 @@ SUBCOMMAND(
     if (err != E_SUCCESS) {
         return err;
     }
-    printf("[%" PRIx64 ", %" PRIx64 "]\n", out[0], out[1]);
+    printf("[\"%" PRIx64 "\", \"%" PRIx64 "\"]\n", out[0], out[1]);
     return E_SUCCESS;
 }
 
@@ -1767,7 +1767,7 @@ SUBCOMMAND(originToDirectedEdges,
             if (hasPrinted) {
                 printf(", ");
             }
-            printf("%" PRIx64, out[i]);
+            printf("\"%" PRIx64 "\"", out[i]);
             hasPrinted = true;
         }
     }
@@ -1852,7 +1852,7 @@ SUBCOMMAND(cellToVertexes,
             if (hasPrinted) {
                 printf(", ");
             }
-            printf("%" PRIx64, out[i]);
+            printf("\"%" PRIx64 "\"", out[i]);
             hasPrinted = true;
         }
     }
@@ -2159,7 +2159,7 @@ SUBCOMMAND(getRes0Cells, "Returns all of the resolution 0 cells") {
             if (hasPrinted) {
                 printf(", ");
             }
-            printf("%" PRIx64, out[i]);
+            printf("\"%" PRIx64 "\"", out[i]);
             hasPrinted = true;
         }
     }
@@ -2192,7 +2192,7 @@ SUBCOMMAND(getPentagons,
             if (hasPrinted) {
                 printf(", ");
             }
-            printf("%" PRIx64, out[i]);
+            printf("\"%" PRIx64 "\"", out[i]);
             hasPrinted = true;
         }
     }
