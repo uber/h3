@@ -1,0 +1,2 @@
+add_h3_cli_test(testCliGetPentagons "getPentagons -r 0" "[8009fffffffffff, 801dfffffffffff, 8031fffffffffff, 804dfffffffffff, 8063fffffffffff, 8075fffffffffff, 807ffffffffffff, 8091fffffffffff, 80a7fffffffffff, 80c3fffffffffff, 80d7fffffffffff, 80ebfffffffffff]")
+add_h3_cli_test(testCliDontGetPentagons "getPentagons -r 20 2>&1" "Error 4: Resolution argument was outside of acceptable range")

@@ -1632,6 +1632,811 @@ SUBCOMMAND(cellsToMultiPolygon,
     return E_SUCCESS;
 }
 
+/// Directed edge subcommands
+
+SUBCOMMAND(areNeighborCells,
+           "Determines if the provided H3 cells are neighbors (have a shared "
+           "border)") {
+    H3Index origin, destination;
+    Arg originCellArg = {.names = {"-o", "--origin"},
+                         .required = true,
+                         .scanFormat = "%" PRIx64,
+                         .valueName = "CELL",
+                         .value = &origin,
+                         .helpText = "Origin H3 Cell"};
+    Arg destinationCellArg = {.names = {"-d", "--destination"},
+                              .required = true,
+                              .scanFormat = "%" PRIx64,
+                              .valueName = "CELL",
+                              .value = &destination,
+                              .helpText = "Destination H3 Cell"};
+    Arg *args[] = {&areNeighborCellsArg, &originCellArg, &destinationCellArg,
+                   &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    int areNeighbors = 0;
+    H3Error err =
+        H3_EXPORT(areNeighborCells)(origin, destination, &areNeighbors);
+    if (err != E_SUCCESS) {
+        return err;
+    }
+    printf(areNeighbors ? "true\n" : "false\n");
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(cellsToDirectedEdge,
+           "Converts neighboring cells into a directed edge index (or errors "
+           "if they are not neighbors)") {
+    H3Index origin, destination;
+    Arg originCellArg = {.names = {"-o", "--origin"},
+                         .required = true,
+                         .scanFormat = "%" PRIx64,
+                         .valueName = "CELL",
+                         .value = &origin,
+                         .helpText = "Origin H3 Cell"};
+    Arg destinationCellArg = {.names = {"-d", "--destination"},
+                              .required = true,
+                              .scanFormat = "%" PRIx64,
+                              .valueName = "CELL",
+                              .value = &destination,
+                              .helpText = "Destination H3 Cell"};
+    Arg *args[] = {&cellsToDirectedEdgeArg, &originCellArg, &destinationCellArg,
+                   &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    H3Index out = 0;
+    H3Error err = H3_EXPORT(cellsToDirectedEdge)(origin, destination, &out);
+    if (err != E_SUCCESS) {
+        return err;
+    }
+    printf("%" PRIx64 "\n", out);
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(isValidDirectedEdge,
+           "Checks if the provided H3 directed edge is actually valid") {
+    DEFINE_CELL_ARG(cell, cellArg);
+    Arg *args[] = {&isValidDirectedEdgeArg, &helpArg, &cellArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    bool isValid = H3_EXPORT(isValidDirectedEdge)(cell);
+    printf("%s", isValid ? "true\n" : "false\n");
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(getDirectedEdgeOrigin,
+           "Returns the origin cell from the directed edge") {
+    DEFINE_CELL_ARG(cell, cellArg);
+    Arg *args[] = {&getDirectedEdgeOriginArg, &cellArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    H3Index out = 0;
+    H3Error err = H3_EXPORT(getDirectedEdgeOrigin)(cell, &out);
+    if (err != E_SUCCESS) {
+        return err;
+    }
+    printf("%" PRIx64 "\n", out);
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(getDirectedEdgeDestination,
+           "Returns the destination cell from the directed edge") {
+    DEFINE_CELL_ARG(cell, cellArg);
+    Arg *args[] = {&getDirectedEdgeDestinationArg, &cellArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    H3Index out = 0;
+    H3Error err = H3_EXPORT(getDirectedEdgeDestination)(cell, &out);
+    if (err != E_SUCCESS) {
+        return err;
+    }
+    printf("%" PRIx64 "\n", out);
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(
+    directedEdgeToCells,
+    "Returns the origin, destination pair of cells from the directed edge") {
+    DEFINE_CELL_ARG(cell, cellArg);
+    Arg *args[] = {&directedEdgeToCellsArg, &cellArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    H3Index out[2] = {0};
+    H3Error err = H3_EXPORT(directedEdgeToCells)(cell, &out[0]);
+    if (err != E_SUCCESS) {
+        return err;
+    }
+    printf("[%" PRIx64 ", %" PRIx64 "]\n", out[0], out[1]);
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(originToDirectedEdges,
+           "Returns all of the directed edges from the specified origin cell") {
+    DEFINE_CELL_ARG(cell, cellArg);
+    Arg *args[] = {&originToDirectedEdgesArg, &cellArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    H3Index out[6] = {0};
+    // This one is pretty loose about the inputs it accepts, so let's validate
+    // for it
+    bool isValid = H3_EXPORT(isValidCell)(cell);
+    if (!isValid) {
+        return E_CELL_INVALID;
+    }
+    H3Error err = H3_EXPORT(originToDirectedEdges)(cell, &out[0]);
+    if (err != E_SUCCESS) {
+        return err;
+    }
+    printf("[");
+    bool hasPrinted = false;
+    for (int i = 0; i < 6; i++) {
+        if (out[i] > 0) {
+            if (hasPrinted) {
+                printf(", ");
+            }
+            printf("%" PRIx64, out[i]);
+            hasPrinted = true;
+        }
+    }
+    printf("]\n");
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(directedEdgeToBoundary,
+           "Provides the coordinates defining the directed edge") {
+    DEFINE_CELL_ARG(cell, cellArg);
+    Arg *args[] = {&directedEdgeToBoundaryArg, &cellArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    CellBoundary cb = {0};
+    H3Error err = H3_EXPORT(directedEdgeToBoundary)(cell, &cb);
+    if (err) {
+        return err;
+    }
+    // Using WKT formatting for the output. TODO: Add support for JSON
+    // formatting
+    printf("POLYGON((");
+    for (int i = 0; i < cb.numVerts; i++) {
+        LatLng *ll = &cb.verts[i];
+        printf("%.10lf %.10lf, ", H3_EXPORT(radsToDegs)(ll->lng),
+               H3_EXPORT(radsToDegs)(ll->lat));
+    }
+    // WKT has the first and last points match, so re-print the first one
+    printf("%.10lf %.10lf))\n", H3_EXPORT(radsToDegs)(cb.verts[0].lng),
+           H3_EXPORT(radsToDegs)(cb.verts[0].lat));
+    return E_SUCCESS;
+}
+
+/// Vertex subcommands
+
+SUBCOMMAND(cellToVertex,
+           "Returns the vertex for the specified cell and vertex index. Must "
+           "be 0-5 for hexagons, 0-4 for pentagons") {
+    DEFINE_CELL_ARG(cell, cellArg);
+    int vertIndex = 0;
+    Arg vertIndexArg = {
+        .names = {"-v", "--vertex"},
+        .required = true,
+        .scanFormat = "%d",
+        .valueName = "INDEX",
+        .value = &vertIndex,
+        .helpText = "Vertex index number. 0-5 for hexagons, 0-4 for pentagons"};
+    Arg *args[] = {&cellToVertexArg, &cellArg, &vertIndexArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    // This function also doesn't sanitize its inputs correctly
+    bool isValid = H3_EXPORT(isValidCell)(cell);
+    if (!isValid) {
+        return E_CELL_INVALID;
+    }
+    H3Index out = 0;
+    H3Error err = H3_EXPORT(cellToVertex)(cell, vertIndex, &out);
+    if (err) {
+        return err;
+    }
+    printf("%" PRIx64 "\n", out);
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(cellToVertexes,
+           "Returns all of the vertexes from the specified cell") {
+    DEFINE_CELL_ARG(cell, cellArg);
+    Arg *args[] = {&cellToVertexesArg, &cellArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    H3Index out[6] = {0};
+    // This one is pretty loose about the inputs it accepts, so let's validate
+    // for it
+    bool isValid = H3_EXPORT(isValidCell)(cell);
+    if (!isValid) {
+        return E_CELL_INVALID;
+    }
+    H3Error err = H3_EXPORT(cellToVertexes)(cell, &out[0]);
+    if (err != E_SUCCESS) {
+        return err;
+    }
+    printf("[");
+    bool hasPrinted = false;
+    for (int i = 0; i < 6; i++) {
+        if (out[i] > 0) {
+            if (hasPrinted) {
+                printf(", ");
+            }
+            printf("%" PRIx64, out[i]);
+            hasPrinted = true;
+        }
+    }
+    printf("]\n");
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(vertexToLatLng, "Returns the lat, lng pair for the given vertex") {
+    DEFINE_CELL_ARG(cell, cellArg);
+    Arg *args[] = {&vertexToLatLngArg, &cellArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    bool isValid = H3_EXPORT(isValidVertex)(cell);
+    if (!isValid) {
+        return E_VERTEX_INVALID;
+    }
+    LatLng ll;
+    H3Error err = H3_EXPORT(vertexToLatLng)(cell, &ll);
+    if (err) {
+        return err;
+    }
+    // Using WKT formatting for the output. TODO: Add support for JSON
+    // formatting
+    printf("POINT(%.10lf %.10lf)\n", H3_EXPORT(radsToDegs)(ll.lng),
+           H3_EXPORT(radsToDegs)(ll.lat));
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(isValidVertex,
+           "Checks if the provided H3 vertex is actually valid") {
+    DEFINE_CELL_ARG(cell, cellArg);
+    Arg *args[] = {&isValidVertexArg, &helpArg, &cellArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    bool isValid = H3_EXPORT(isValidVertex)(cell);
+    printf("%s", isValid ? "true\n" : "false\n");
+    return E_SUCCESS;
+}
+
+/// Miscellaneous subcommands
+
+SUBCOMMAND(degsToRads, "Converts degrees to radians") {
+    double deg = 0;
+    Arg degArg = {.names = {"-d", "--degree"},
+                  .required = true,
+                  .scanFormat = "%lf",
+                  .valueName = "DEG",
+                  .value = &deg,
+                  .helpText = "Angle in degrees"};
+    Arg *args[] = {&degsToRadsArg, &degArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    printf("%.10lf\n", H3_EXPORT(degsToRads)(deg));
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(radsToDegs, "Converts radians to degrees") {
+    double rad = 0;
+    Arg radArg = {.names = {"-r", "--radian"},
+                  .required = true,
+                  .scanFormat = "%lf",
+                  .valueName = "RAD",
+                  .value = &rad,
+                  .helpText = "Angle in radians"};
+    Arg *args[] = {&radsToDegsArg, &radArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    printf("%.10lf\n", H3_EXPORT(radsToDegs)(rad));
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(getHexagonAreaAvgKm2,
+           "The average area in square kilometers for a hexagon of a given "
+           "resolution (excludes pentagons)") {
+    int res = 0;
+    Arg resArg = {.names = {"-r", "--resolution"},
+                  .required = true,
+                  .scanFormat = "%d",
+                  .valueName = "res",
+                  .value = &res,
+                  .helpText = "Resolution, 0-15 inclusive."};
+    Arg *args[] = {&getHexagonAreaAvgKm2Arg, &resArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    double area = 0;
+    H3Error err = H3_EXPORT(getHexagonAreaAvgKm2)(res, &area);
+    if (err) {
+        return err;
+    }
+    printf("%.10lf\n", area);
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(getHexagonAreaAvgM2,
+           "The average area in square meters for a hexagon of a given "
+           "resolution (excludes pentagons)") {
+    int res = 0;
+    Arg resArg = {.names = {"-r", "--resolution"},
+                  .required = true,
+                  .scanFormat = "%d",
+                  .valueName = "res",
+                  .value = &res,
+                  .helpText = "Resolution, 0-15 inclusive."};
+    Arg *args[] = {&getHexagonAreaAvgM2Arg, &resArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    double area = 0;
+    H3Error err = H3_EXPORT(getHexagonAreaAvgM2)(res, &area);
+    if (err) {
+        return err;
+    }
+    printf("%.10lf\n", area);
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(cellAreaRads2,
+           "The exact area of a specific cell in square radians") {
+    DEFINE_CELL_ARG(cell, cellArg);
+    Arg *args[] = {&cellAreaRads2Arg, &cellArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    // This one is pretty loose about the inputs it accepts, so let's validate
+    // for it
+    bool isValid = H3_EXPORT(isValidCell)(cell);
+    if (!isValid) {
+        return E_CELL_INVALID;
+    }
+    double area = 0;
+    H3Error err = H3_EXPORT(cellAreaRads2)(cell, &area);
+    if (err) {
+        return err;
+    }
+    printf("%.10lf\n", area);
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(cellAreaKm2,
+           "The exact area of a specific cell in square kilometers") {
+    DEFINE_CELL_ARG(cell, cellArg);
+    Arg *args[] = {&cellAreaKm2Arg, &cellArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    // This one is pretty loose about the inputs it accepts, so let's validate
+    // for it
+    bool isValid = H3_EXPORT(isValidCell)(cell);
+    if (!isValid) {
+        return E_CELL_INVALID;
+    }
+    double area = 0;
+    H3Error err = H3_EXPORT(cellAreaKm2)(cell, &area);
+    if (err) {
+        return err;
+    }
+    printf("%.10lf\n", area);
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(cellAreaM2, "The exact area of a specific cell in square meters") {
+    DEFINE_CELL_ARG(cell, cellArg);
+    Arg *args[] = {&cellAreaM2Arg, &cellArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    // This one is pretty loose about the inputs it accepts, so let's validate
+    // for it
+    bool isValid = H3_EXPORT(isValidCell)(cell);
+    if (!isValid) {
+        return E_CELL_INVALID;
+    }
+    double area = 0;
+    H3Error err = H3_EXPORT(cellAreaM2)(cell, &area);
+    if (err) {
+        return err;
+    }
+    printf("%.10lf\n", area);
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(getHexagonEdgeLengthAvgKm,
+           "The average hexagon edge length in kilometers of a given "
+           "resolution (excludes pentagons)") {
+    int res = 0;
+    Arg resArg = {.names = {"-r", "--resolution"},
+                  .required = true,
+                  .scanFormat = "%d",
+                  .valueName = "res",
+                  .value = &res,
+                  .helpText = "Resolution, 0-15 inclusive."};
+    Arg *args[] = {&getHexagonEdgeLengthAvgKmArg, &resArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    double area = 0;
+    H3Error err = H3_EXPORT(getHexagonEdgeLengthAvgKm)(res, &area);
+    if (err) {
+        return err;
+    }
+    printf("%.10lf\n", area);
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(getHexagonEdgeLengthAvgM,
+           "The average hexagon edge length in meters of a given "
+           "resolution (excludes pentagons)") {
+    int res = 0;
+    Arg resArg = {.names = {"-r", "--resolution"},
+                  .required = true,
+                  .scanFormat = "%d",
+                  .valueName = "res",
+                  .value = &res,
+                  .helpText = "Resolution, 0-15 inclusive."};
+    Arg *args[] = {&getHexagonEdgeLengthAvgMArg, &resArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    double area = 0;
+    H3Error err = H3_EXPORT(getHexagonEdgeLengthAvgM)(res, &area);
+    if (err) {
+        return err;
+    }
+    printf("%.10lf\n", area);
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(edgeLengthRads,
+           "The exact edge length of a specific directed edge in radians") {
+    DEFINE_CELL_ARG(cell, cellArg);
+    Arg *args[] = {&edgeLengthRadsArg, &cellArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    // This one is pretty loose about the inputs it accepts, so let's validate
+    // for it
+    bool isValid = H3_EXPORT(isValidDirectedEdge)(cell);
+    if (!isValid) {
+        return E_DIR_EDGE_INVALID;
+    }
+    double length = 0;
+    H3Error err = H3_EXPORT(edgeLengthRads)(cell, &length);
+    if (err) {
+        return err;
+    }
+    printf("%.10lf\n", length);
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(edgeLengthKm,
+           "The exact edge length of a specific directed edge in kilometers") {
+    DEFINE_CELL_ARG(cell, cellArg);
+    Arg *args[] = {&edgeLengthKmArg, &cellArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    // This one is pretty loose about the inputs it accepts, so let's validate
+    // for it
+    bool isValid = H3_EXPORT(isValidDirectedEdge)(cell);
+    if (!isValid) {
+        return E_DIR_EDGE_INVALID;
+    }
+    double length = 0;
+    H3Error err = H3_EXPORT(edgeLengthKm)(cell, &length);
+    if (err) {
+        return err;
+    }
+    printf("%.10lf\n", length);
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(edgeLengthM,
+           "The exact edge length of a specific directed edge in meters") {
+    DEFINE_CELL_ARG(cell, cellArg);
+    Arg *args[] = {&edgeLengthMArg, &cellArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    // This one is pretty loose about the inputs it accepts, so let's validate
+    // for it
+    bool isValid = H3_EXPORT(isValidDirectedEdge)(cell);
+    if (!isValid) {
+        return E_DIR_EDGE_INVALID;
+    }
+    double length = 0;
+    H3Error err = H3_EXPORT(edgeLengthM)(cell, &length);
+    if (err) {
+        return err;
+    }
+    printf("%.10lf\n", length);
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(getNumCells,
+           "The number of unique H3 cells for a specified resolution") {
+    int res = 0;
+    Arg resArg = {.names = {"-r", "--resolution"},
+                  .required = true,
+                  .scanFormat = "%d",
+                  .valueName = "res",
+                  .value = &res,
+                  .helpText = "Resolution, 0-15 inclusive."};
+    Arg *args[] = {&getNumCellsArg, &resArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    int64_t numCells = 0;
+    H3Error err = H3_EXPORT(getNumCells)(res, &numCells);
+    if (err) {
+        return err;
+    }
+    printf("%" PRId64 "\n", numCells);
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(getRes0Cells, "Returns all of the resolution 0 cells") {
+    Arg *args[] = {&getRes0CellsArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    H3Index *out = calloc(122, sizeof(H3Index));
+    H3Error err = H3_EXPORT(getRes0Cells)(out);
+    if (err != E_SUCCESS) {
+        free(out);
+        return err;
+    }
+    printf("[");
+    bool hasPrinted = false;
+    for (int i = 0; i < 122; i++) {
+        if (out[i] > 0) {
+            if (hasPrinted) {
+                printf(", ");
+            }
+            printf("%" PRIx64, out[i]);
+            hasPrinted = true;
+        }
+    }
+    printf("]\n");
+    free(out);
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(getPentagons,
+           "Returns all of the pentagons at the specified resolution") {
+    int res = 0;
+    Arg resArg = {.names = {"-r", "--resolution"},
+                  .required = true,
+                  .scanFormat = "%d",
+                  .valueName = "res",
+                  .value = &res,
+                  .helpText = "Resolution, 0-15 inclusive."};
+    Arg *args[] = {&getPentagonsArg, &resArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    H3Index *out = calloc(12, sizeof(H3Index));
+    H3Error err = H3_EXPORT(getPentagons)(res, out);
+    if (err != E_SUCCESS) {
+        free(out);
+        return err;
+    }
+    printf("[");
+    bool hasPrinted = false;
+    for (int i = 0; i < 12; i++) {
+        if (out[i] > 0) {
+            if (hasPrinted) {
+                printf(", ");
+            }
+            printf("%" PRIx64, out[i]);
+            hasPrinted = true;
+        }
+    }
+    printf("]\n");
+    free(out);
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(pentagonCount, "Returns 12") {
+    Arg *args[] = {&pentagonCountArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    printf("12\n");
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(greatCircleDistanceRads,
+           "Calculates the 'great circle' or 'haversine' distance between two "
+           "lat, lng points, in radians") {
+    char filename[1024] = {0};  // More than Windows, lol
+    Arg filenameArg = {.names = {"-f", "--file"},
+                       .scanFormat = "%1023c",
+                       .valueName = "FILENAME",
+                       .value = &filename,
+                       .helpText =
+                           "The file to load the coordinates from. Use -- to "
+                           "read from stdin."};
+    char coordinateStr[1501] = {0};
+    Arg coordinateStrArg = {
+        .names = {"-c", "--coordinates"},
+        .scanFormat = "%1500c",
+        .valueName = "ARRAY",
+        .value = &coordinateStr,
+        .helpText =
+            "The array of coordinates to convert. Up to 1500 characters."};
+    Arg *args[] = {&greatCircleDistanceRadsArg, &filenameArg, &coordinateStrArg,
+                   &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    if (filenameArg.found == coordinateStrArg.found) {
+        fprintf(
+            stderr,
+            "You must provide either a file to read from or a coordinate array "
+            "to use greatCircleDistanceRads");
+        exit(1);
+    }
+    FILE *fp = 0;
+    bool isStdin = false;
+    if (filenameArg.found) {
+        if (strcmp(filename, "--") == 0) {
+            fp = stdin;
+            isStdin = true;
+        } else {
+            fp = fopen(filename, "r");
+        }
+        if (fp == 0) {
+            fprintf(stderr, "The specified file does not exist.");
+            exit(1);
+        }
+        // Do the initial population of data from the file
+        if (fread(coordinateStr, 1, BUFFER_SIZE, fp) == 0) {
+            fprintf(stderr, "The specified file is empty.");
+            exit(1);
+        }
+    }
+    GeoPolygon polygon = {0};
+    H3Error err = polygonStringToGeoPolygon(fp, coordinateStr, &polygon);
+    if (fp != 0 && !isStdin) {
+        fclose(fp);
+    }
+    if (err != E_SUCCESS) {
+        return err;
+    }
+    if (polygon.numHoles > 0 || polygon.geoloop.numVerts != 2) {
+        fprintf(stderr, "Only two pairs of coordinates should be provided.");
+        exit(1);
+    }
+    double distance = H3_EXPORT(greatCircleDistanceRads)(
+        &polygon.geoloop.verts[0], &polygon.geoloop.verts[1]);
+    printf("%.10lf\n", distance);
+    for (int i = 0; i < polygon.numHoles; i++) {
+        free(polygon.holes[i].verts);
+    }
+    free(polygon.holes);
+    free(polygon.geoloop.verts);
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(greatCircleDistanceKm,
+           "Calculates the 'great circle' or 'haversine' distance between two "
+           "lat, lng points, in kilometers") {
+    char filename[1024] = {0};  // More than Windows, lol
+    Arg filenameArg = {.names = {"-f", "--file"},
+                       .scanFormat = "%1023c",
+                       .valueName = "FILENAME",
+                       .value = &filename,
+                       .helpText =
+                           "The file to load the coordinates from. Use -- to "
+                           "read from stdin."};
+    char coordinateStr[1501] = {0};
+    Arg coordinateStrArg = {
+        .names = {"-c", "--coordinates"},
+        .scanFormat = "%1500c",
+        .valueName = "ARRAY",
+        .value = &coordinateStr,
+        .helpText =
+            "The array of coordinates to convert. Up to 1500 characters."};
+    Arg *args[] = {&greatCircleDistanceKmArg, &filenameArg, &coordinateStrArg,
+                   &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    if (filenameArg.found == coordinateStrArg.found) {
+        fprintf(
+            stderr,
+            "You must provide either a file to read from or a coordinate array "
+            "to use greatCircleDistanceKm");
+        exit(1);
+    }
+    FILE *fp = 0;
+    bool isStdin = false;
+    if (filenameArg.found) {
+        if (strcmp(filename, "--") == 0) {
+            fp = stdin;
+            isStdin = true;
+        } else {
+            fp = fopen(filename, "r");
+        }
+        if (fp == 0) {
+            fprintf(stderr, "The specified file does not exist.");
+            exit(1);
+        }
+        // Do the initial population of data from the file
+        if (fread(coordinateStr, 1, BUFFER_SIZE, fp) == 0) {
+            fprintf(stderr, "The specified file is empty.");
+            exit(1);
+        }
+    }
+    GeoPolygon polygon = {0};
+    H3Error err = polygonStringToGeoPolygon(fp, coordinateStr, &polygon);
+    if (fp != 0 && !isStdin) {
+        fclose(fp);
+    }
+    if (err != E_SUCCESS) {
+        return err;
+    }
+    if (polygon.numHoles > 0 || polygon.geoloop.numVerts != 2) {
+        fprintf(stderr, "Only two pairs of coordinates should be provided.");
+        exit(1);
+    }
+    double distance = H3_EXPORT(greatCircleDistanceKm)(
+        &polygon.geoloop.verts[0], &polygon.geoloop.verts[1]);
+    printf("%.10lf\n", distance);
+    for (int i = 0; i < polygon.numHoles; i++) {
+        free(polygon.holes[i].verts);
+    }
+    free(polygon.holes);
+    free(polygon.geoloop.verts);
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(greatCircleDistanceM,
+           "Calculates the 'great circle' or 'haversine' distance between two "
+           "lat, lng points, in meters") {
+    char filename[1024] = {0};  // More than Windows, lol
+    Arg filenameArg = {.names = {"-f", "--file"},
+                       .scanFormat = "%1023c",
+                       .valueName = "FILENAME",
+                       .value = &filename,
+                       .helpText =
+                           "The file to load the coordinates from. Use -- to "
+                           "read from stdin."};
+    char coordinateStr[1501] = {0};
+    Arg coordinateStrArg = {
+        .names = {"-c", "--coordinates"},
+        .scanFormat = "%1500c",
+        .valueName = "ARRAY",
+        .value = &coordinateStr,
+        .helpText =
+            "The array of coordinates to convert. Up to 1500 characters."};
+    Arg *args[] = {&greatCircleDistanceMArg, &filenameArg, &coordinateStrArg,
+                   &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    if (filenameArg.found == coordinateStrArg.found) {
+        fprintf(
+            stderr,
+            "You must provide either a file to read from or a coordinate array "
+            "to use greatCircleDistanceM");
+        exit(1);
+    }
+    FILE *fp = 0;
+    bool isStdin = false;
+    if (filenameArg.found) {
+        if (strcmp(filename, "--") == 0) {
+            fp = stdin;
+            isStdin = true;
+        } else {
+            fp = fopen(filename, "r");
+        }
+        if (fp == 0) {
+            fprintf(stderr, "The specified file does not exist.");
+            exit(1);
+        }
+        // Do the initial population of data from the file
+        if (fread(coordinateStr, 1, BUFFER_SIZE, fp) == 0) {
+            fprintf(stderr, "The specified file is empty.");
+            exit(1);
+        }
+    }
+    GeoPolygon polygon = {0};
+    H3Error err = polygonStringToGeoPolygon(fp, coordinateStr, &polygon);
+    if (fp != 0 && !isStdin) {
+        fclose(fp);
+    }
+    if (err != E_SUCCESS) {
+        return err;
+    }
+    if (polygon.numHoles > 0 || polygon.geoloop.numVerts != 2) {
+        fprintf(stderr, "Only two pairs of coordinates should be provided.");
+        exit(1);
+    }
+    double distance = H3_EXPORT(greatCircleDistanceM)(
+        &polygon.geoloop.verts[0], &polygon.geoloop.verts[1]);
+    printf("%.10lf\n", distance);
+    for (int i = 0; i < polygon.numHoles; i++) {
+        free(polygon.holes[i].verts);
+    }
+    free(polygon.holes);
+    free(polygon.geoloop.verts);
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(describeH3Error,
+           "Returns a description of the provided H3 error code number, or "
+           "indicates the number is itself invalid.") {
+    H3Error err = E_SUCCESS;
+    Arg errArg = {.names = {"-e", "--error"},
+                  .required = true,
+                  .scanFormat = "%d",
+                  .valueName = "CODE",
+                  .value = &err,
+                  .helpText = "H3 Error code to describe"};
+    Arg *args[] = {&describeH3ErrorArg, &errArg, &helpArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    printf("%s\n", H3_EXPORT(describeH3Error)(err));
+    return E_SUCCESS;
+}
+
 // TODO: Is there any way to avoid this particular piece of duplication?
 SUBCOMMANDS_INDEX
 
@@ -1673,6 +2478,44 @@ SUBCOMMAND_INDEX(uncompactCells)
 SUBCOMMAND_INDEX(polygonToCells)
 SUBCOMMAND_INDEX(maxPolygonToCellsSize)
 SUBCOMMAND_INDEX(cellsToMultiPolygon)
+
+/// Directed Edge subcommands
+SUBCOMMAND_INDEX(areNeighborCells)
+SUBCOMMAND_INDEX(cellsToDirectedEdge)
+SUBCOMMAND_INDEX(isValidDirectedEdge)
+SUBCOMMAND_INDEX(getDirectedEdgeOrigin)
+SUBCOMMAND_INDEX(getDirectedEdgeDestination)
+SUBCOMMAND_INDEX(directedEdgeToCells)
+SUBCOMMAND_INDEX(originToDirectedEdges)
+SUBCOMMAND_INDEX(directedEdgeToBoundary)
+
+/// Vertex subcommands
+SUBCOMMAND_INDEX(cellToVertex)
+SUBCOMMAND_INDEX(cellToVertexes)
+SUBCOMMAND_INDEX(vertexToLatLng)
+SUBCOMMAND_INDEX(isValidVertex)
+
+/// Miscellaneous subcommands
+SUBCOMMAND_INDEX(degsToRads)
+SUBCOMMAND_INDEX(radsToDegs)
+SUBCOMMAND_INDEX(getHexagonAreaAvgKm2)
+SUBCOMMAND_INDEX(getHexagonAreaAvgM2)
+SUBCOMMAND_INDEX(cellAreaRads2)
+SUBCOMMAND_INDEX(cellAreaKm2)
+SUBCOMMAND_INDEX(cellAreaM2)
+SUBCOMMAND_INDEX(getHexagonEdgeLengthAvgKm)
+SUBCOMMAND_INDEX(getHexagonEdgeLengthAvgM)
+SUBCOMMAND_INDEX(edgeLengthRads)
+SUBCOMMAND_INDEX(edgeLengthKm)
+SUBCOMMAND_INDEX(edgeLengthM)
+SUBCOMMAND_INDEX(getNumCells)
+SUBCOMMAND_INDEX(getRes0Cells)
+SUBCOMMAND_INDEX(getPentagons)
+SUBCOMMAND_INDEX(pentagonCount)
+SUBCOMMAND_INDEX(greatCircleDistanceRads)
+SUBCOMMAND_INDEX(greatCircleDistanceKm)
+SUBCOMMAND_INDEX(greatCircleDistanceM)
+SUBCOMMAND_INDEX(describeH3Error)
 
 END_SUBCOMMANDS_INDEX
 
