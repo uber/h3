@@ -2696,7 +2696,7 @@ SUBCOMMAND(greatCircleDistanceRads,
            "Calculates the 'great circle' or 'haversine' distance between two "
            "lat, lng points, in radians") {
     char filename[1024] = {0};  // More than Windows, lol
-    Arg filenameArg = {.names = {"-f", "--file"},
+    Arg filenameArg = {.names = {"-i", "--file"},
                        .scanFormat = "%1023c",
                        .valueName = "FILENAME",
                        .value = &filename,
@@ -2767,7 +2767,7 @@ SUBCOMMAND(greatCircleDistanceKm,
            "Calculates the 'great circle' or 'haversine' distance between two "
            "lat, lng points, in kilometers") {
     char filename[1024] = {0};  // More than Windows, lol
-    Arg filenameArg = {.names = {"-f", "--file"},
+    Arg filenameArg = {.names = {"-i", "--file"},
                        .scanFormat = "%1023c",
                        .valueName = "FILENAME",
                        .value = &filename,
@@ -2838,7 +2838,7 @@ SUBCOMMAND(greatCircleDistanceM,
            "Calculates the 'great circle' or 'haversine' distance between two "
            "lat, lng points, in meters") {
     char filename[1024] = {0};  // More than Windows, lol
-    Arg filenameArg = {.names = {"-f", "--file"},
+    Arg filenameArg = {.names = {"-i", "--file"},
                        .scanFormat = "%1023c",
                        .valueName = "FILENAME",
                        .value = &filename,
