@@ -7,6 +7,7 @@ The public API of this library consists of the functions declared in file
 
 ## [Unreleased]
 ### Added
+- Added experimental new algorithm for `polygonToCells`, called `polygonToCellsExperimental`, that supports more containment flags and is more memory-efficient (#785, #800)
 - `h3` binary for shell scripts ready for use (#818, #826, #846, #923, #924, #931, #933)
 
 ### Fixed
@@ -14,7 +15,6 @@ The public API of this library consists of the functions declared in file
 
 ### Changed
 - `compactCells` internally uses int64 for array indexing. (#920)
-- Replace internal algorithm for `polygonToCells` with a new version that is more memory-efficient (#785)
 - Reorganize tests into public / internal. (#762)
 - Performance enhancement for aarch64, may improve other platforms (#790, #792, #852, #905, #913)
 - `clang-format` upgraded to version 14. (#834)
