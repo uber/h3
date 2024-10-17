@@ -71,13 +71,14 @@ H3 4.1.0
 	latLngToCell	Convert degrees latitude/longitude coordinate to an H3 cell
 	-h, --help	Show this help message.
 	-r, --resolution <res>	Required. Resolution, 0-15 inclusive.
-	--lat, --latitude <lat>Required. Latitude in degrees.
+	--lat, --latitude <lat>	Required. Latitude in degrees.
 	--lng, --longitude <lng>	Required. Longitude in degrees.
+	-f, --format <FMT>	'json' for "CELL"\n, 'newline' for CELL\n (Default: json)
 ```
 
 ```bash
 $ h3 latLngToCell --lat 45 --lng 40 -r 2
-822d57fffffffff
+"822d57fffffffff"
 ```
 
 </TabItem>
@@ -141,17 +142,18 @@ h3.cell_to_latlng(cell)
 
 ```sh
 $ h3 cellToLatLng --help
-h3: Convert an H3Cell to a WKT POINT coordinate
+h3: Convert an H3Cell to a coordinate
 H3 4.1.0
 
-	cellToLatLng	Convert an H3Cell to a WKT POINT coordinate
+	cellToLatLng	Convert an H3Cell to a coordinate
 	-h, --help	Show this help message.
 	-c, --cell <index>	Required. H3 Cell
+	-f, --format <FMT>	'json' for [lat, lng], 'wkt' for a WKT POINT, 'newline' for lat\nlng\n (Default: json)
 ```
 
 ```bash
 $ h3 cellToLatLng -c 85283473fffffff
-POINT(-121.9763759726 37.3457933754)
+[37.3457933754, -121.9763759726]
 ```
 
 </TabItem>
@@ -221,17 +223,18 @@ h3.cell_to_boundary(cell, geo_json=False)
 
 ```sh
 $ h3 cellToBoundary --help
-h3: Convert an H3 cell to a WKT POLYGON defining its boundary
+h3: Convert an H3 cell to a polygon defining its boundary
 H3 4.1.0
 
-	cellToBoundary	Convert an H3 cell to a WKT POLYGON defining its boundary
+	cellToBoundary	Convert an H3 cell to a polygon defining its boundary
 	-h, --help	Show this help message.
 	-c, --cell <index>	Required. H3 Cell
+	-f, --format <FMT>	'json' for [[lat, lng], ...], 'wkt' for a WKT POLYGON, 'newline' for lat\nlng\n... (Default: json)
 ```
 
 ```bash
 $ h3 cellToBoundary -c 85283473fffffff
-POLYGON((-121.9150803271 37.2713558667, -121.8622232890 37.3539264509, -121.9235499963 37.4283411861, -122.0377349643 37.4201286777, -122.0904289290 37.3375560844, -122.0291013092 37.2631979746, -121.9150803271 37.2713558667))
+[[37.2713558667, -121.9150803271], [37.3539264509, -121.8622232890], [37.4283411861, -121.9235499963], [37.4201286777, -122.0377349643], [37.3375560844, -122.0904289290], [37.2631979746, -122.0291013092]]
 ```
 
 </TabItem>

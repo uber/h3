@@ -72,6 +72,7 @@ H3 4.1.0
 	-o, --origin <CELL>	Required. Origin H3 Cell
 	-d, --destination <CELL>	Required. Destination H3 Cell
 	-h, --help	Show this help message.
+	-f, --format <FMT>	'json' for true or false, 'numeric' for 1 or 0 (Default: json)
 ```
 
 ```bash
@@ -147,11 +148,12 @@ H3 4.1.0
 	-o, --origin <CELL>	Required. Origin H3 Cell
 	-d, --destination <CELL>	Required. Destination H3 Cell
 	-h, --help	Show this help message.
+	-f, --format <FMT>	'json' for "CELL"\n, 'newline' for CELL\n (Default: json)
 ```
 
 ```bash
 $ h3 cellsToDirectedEdge -o 85283473fffffff -d 85283477fffffff
-115283473fffffff
+"115283473fffffff"
 ```
 
 </TabItem>
@@ -221,6 +223,7 @@ H3 4.1.0
 	isValidDirectedEdge	Checks if the provided H3 directed edge is actually valid
 	-h, --help	Show this help message.
 	-c, --cell <index>	Required. H3 Cell
+	-f, --format <FMT>	'json' for true or false, 'numeric' for 1 or 0 (Default: json)
 ```
 
 ```bash
@@ -294,11 +297,12 @@ H3 4.1.0
 	getDirectedEdgeOrigin	Returns the origin cell from the directed edge
 	-c, --cell <index>	Required. H3 Cell
 	-h, --help	Show this help message.
+	-f, --format <FMT>	'json' for "CELL"\n, 'newline' for CELL\n (Default: json)
 ```
 
 ```bash
 $ h3 getDirectedEdgeOrigin -c 115283473fffffff
-85283473fffffff
+"85283473fffffff"
 ```
 
 </TabItem>
@@ -365,11 +369,12 @@ H3 4.1.0
 	getDirectedEdgeDestination	Returns the destination cell from the directed edge
 	-c, --cell <index>	Required. H3 Cell
 	-h, --help	Show this help message.
+	-f, --format <FMT>	'json' for "CELL"\n, 'newline' for CELL\n (Default: json)
 ```
 
 ```bash
 $ h3 getDirectedEdgeDestination -c 115283473fffffff
-85283477fffffff
+"85283477fffffff"
 ```
 
 </TabItem>
@@ -436,6 +441,7 @@ H3 4.1.0
 	directedEdgeToCells	Returns the origin, destination pair of cells from the directed edge
 	-c, --cell <index>	Required. H3 Cell
 	-h, --help	Show this help message.
+	-f, --format <FMT>	'json' for ["CELL", ...], 'newline' for CELL\n... (Default: json)
 ```
 
 ```bash
@@ -508,6 +514,7 @@ H3 4.1.0
 	originToDirectedEdges	Returns all of the directed edges from the specified origin cell
 	-c, --cell <index>	Required. H3 Cell
 	-h, --help	Show this help message.
+	-f, --format <FMT>	'json' for ["CELL", ...], 'newline' for CELL\n... (Default: json)
 ```
 
 ```bash
@@ -581,11 +588,12 @@ H3 4.1.0
 	directedEdgeToBoundary	Provides the coordinates defining the directed edge
 	-c, --cell <index>	Required. H3 Cell
 	-h, --help	Show this help message.
+	-f, --format <FMT>	'json' for [[lat, lng], ...], 'wkt' for a WKT POLYGON, 'newline' for lat\nlng\n... (Default: json)
 ```
 
 ```bash
 $ h3 directedEdgeToBoundary -c 115283473fffffff
-POLYGON((-122.0377349643 37.4201286777, -122.0904289290 37.3375560844, -122.0377349643 37.4201286777))
+[[37.4201286777, -122.0377349643], [37.3375560844, -122.0904289290]]
 ```
 
 </TabItem>
