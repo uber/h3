@@ -64,13 +64,14 @@ h3.grid_disk(origin, k)
 
 ```sh
 $ h3 gridDisk --help
-h3: Returns a JSON array of a H3 cells within 'k' steps of the origin cell
+h3: Returns an array of a H3 cells within 'k' steps of the origin cell
 H3 4.1.0
 
-	gridDisk	Returns a JSON array of a H3 cells within 'k' steps of the origin cell
+	gridDisk	Returns an array of a H3 cells within 'k' steps of the origin cell
 	-h, --help	Show this help message.
 	-c, --cell <index>	Required. H3 Cell
 	-k <distance>	Required. Maximum grid distance for the output set
+	-f, --format <FMT>	'json' for ["CELL", ...], 'newline' for CELL\n... (Default: json)
 ```
 
 ```bash
@@ -204,19 +205,19 @@ h3.grid_disk_distances(origin, k)
 
 ```sh
 $ h3 gridDiskDistances --help
-h3: Returns a JSON array of arrays of H3 cells, each array containing cells 'k' steps away from the origin cell, based on the outer array index
+h3: Returns an array of arrays of H3 cells, each array containing cells 'k' steps away from the origin cell, based on the outer array index
 H3 4.1.0
 
-	gridDiskDistances	Returns a JSON array of arrays of H3 cells, each array containing cells 'k' steps away from the origin cell, based on the outer array index
+	gridDiskDistances	Returns an array of arrays of H3 cells, each array containing cells 'k' steps away from the origin cell, based on the outer array index
 	-h, --help	Show this help message.
 	-c, --cell <index>	Required. H3 Cell
 	-k <distance>	Required. Maximum grid distance for the output set
-	-p, --pretty-print	Determine if the JSON output should be pretty printed or not
+	-f, --format <FMT>	'json' for [["CELL", ...], ...], 'newline' for CELL\n with an extra newline between rings (Default: json)
 ```
 
 ```bash
 $ h3 gridDiskDistances -k 5 -c 85283473fffffff
-[["85283473fffffff"],["85283447fffffff","8528347bfffffff","85283463fffffff","85283477fffffff","8528340ffffffff","8528340bfffffff"],["85283457fffffff","85283443fffffff","8528344ffffffff","852836b7fffffff","8528346bfffffff","8528346ffffffff","85283467fffffff","8528342bfffffff","8528343bfffffff","85283407fffffff","85283403fffffff","8528341bfffffff"],["852834cffffffff","85283453fffffff","8528345bfffffff","8528344bfffffff","852836b3fffffff","852836a3fffffff","852836a7fffffff","852830d3fffffff","852830d7fffffff","8528309bfffffff","85283093fffffff","8528342ffffffff","85283423fffffff","85283433fffffff","852834abfffffff","85283417fffffff","85283413fffffff","852834c7fffffff"],["852834c3fffffff","852834cbfffffff","8529a927fffffff","8529a92ffffffff","85283697fffffff","85283687fffffff","852836bbfffffff","852836abfffffff","852836affffffff","852830dbfffffff","852830c3fffffff","852830c7fffffff","8528308bfffffff","85283083fffffff","85283097fffffff","8528355bfffffff","85283427fffffff","85283437fffffff","852834affffffff","852834a3fffffff","852834bbfffffff","8528348ffffffff","8528348bfffffff","852834d7fffffff"],["852834d3fffffff","852834dbfffffff","8529a937fffffff","8529a923fffffff","8529a92bfffffff","85283693fffffff","85283683fffffff","8528368ffffffff","85283617fffffff","85283607fffffff","85283633fffffff","85283637fffffff","852830cbfffffff","852830cffffffff","8528301bfffffff","85283013fffffff","8528308ffffffff","85283087fffffff","8528354bfffffff","85283543fffffff","85283553fffffff","852835cbfffffff","852835dbfffffff","852834a7fffffff","852834b7fffffff","852834b3fffffff","85283487fffffff","85283483fffffff","8528349bfffffff","85291a6ffffffff"]]
+[["85283473fffffff"], ["85283447fffffff", "8528347bfffffff", "85283463fffffff", "85283477fffffff", "8528340ffffffff", "8528340bfffffff"], ["85283457fffffff", "85283443fffffff", "8528344ffffffff", "852836b7fffffff", "8528346bfffffff", "8528346ffffffff", "85283467fffffff", "8528342bfffffff", "8528343bfffffff", "85283407fffffff", "85283403fffffff", "8528341bfffffff"], ["852834cffffffff", "85283453fffffff", "8528345bfffffff", "8528344bfffffff", "852836b3fffffff", "852836a3fffffff", "852836a7fffffff", "852830d3fffffff", "852830d7fffffff", "8528309bfffffff", "85283093fffffff", "8528342ffffffff", "85283423fffffff", "85283433fffffff", "852834abfffffff", "85283417fffffff", "85283413fffffff", "852834c7fffffff"], ["852834c3fffffff", "852834cbfffffff", "8529a927fffffff", "8529a92ffffffff", "85283697fffffff", "85283687fffffff", "852836bbfffffff", "852836abfffffff", "852836affffffff", "852830dbfffffff", "852830c3fffffff", "852830c7fffffff", "8528308bfffffff", "85283083fffffff", "85283097fffffff", "8528355bfffffff", "85283427fffffff", "85283437fffffff", "852834affffffff", "852834a3fffffff", "852834bbfffffff", "8528348ffffffff", "8528348bfffffff", "852834d7fffffff"], ["852834d3fffffff", "852834dbfffffff", "8529a937fffffff", "8529a923fffffff", "8529a92bfffffff", "85283693fffffff", "85283683fffffff", "8528368ffffffff", "85283617fffffff", "85283607fffffff", "85283633fffffff", "85283637fffffff", "852830cbfffffff", "852830cffffffff", "8528301bfffffff", "85283013fffffff", "8528308ffffffff", "85283087fffffff", "8528354bfffffff", "85283543fffffff", "85283553fffffff", "852835cbfffffff", "852835dbfffffff", "852834a7fffffff", "852834b7fffffff", "852834b3fffffff", "85283487fffffff", "85283483fffffff", "8528349bfffffff", "85291a6ffffffff"]]
 ```
 
 </TabItem>
@@ -557,13 +558,14 @@ The shell uses `gridRingUnsafe` internally to generate the results, but on failu
 
 ```sh
 $ h3 gridRing --help
-h3: Returns a JSON array of H3 cells, each cell 'k' steps away from the origin cell
+h3: Returns an array of H3 cells, each cell 'k' steps away from the origin cell
 H3 4.1.0
 
-	gridRing	Returns a JSON array of H3 cells, each cell 'k' steps away from the origin cell
+	gridRing	Returns an array of H3 cells, each cell 'k' steps away from the origin cell
 	-h, --help	Show this help message.
 	-c, --cell <index>	Required. H3 Cell
 	-k <distance>	Required. Maximum grid distance for the output set
+	-f, --format <FMT>	'json' for ["CELL", ...], 'newline' for CELL\n... (Default: json)
 ```
 
 ```bash
@@ -632,13 +634,14 @@ h3.grid_path_cells(start, end)
 
 ```sh
 $ h3 gridPathCells --help
-h3: Returns a JSON array of H3 cells from the origin cell to the destination cell (inclusive)
+h3: Returns an array of H3 cells from the origin cell to the destination cell (inclusive)
 H3 4.1.0
 
-	gridPathCells	Returns a JSON array of H3 cells from the origin cell to the destination cell (inclusive)
+	gridPathCells	Returns an array of H3 cells from the origin cell to the destination cell (inclusive)
 	-h, --help	Show this help message.
 	-o, --origin <cell>	Required. The origin H3 cell
 	-d, --destination <cell>	Required. The destination H3 cell
+	-f, --format <FMT>	'json' for ["CELL", ...], 'newline' for CELL\n... (Default: json)
 ```
 
 ```bash
@@ -868,6 +871,7 @@ H3 4.1.0
 	-h, --help	Show this help message.
 	-c, --cell <index>	Required. H3 Cell
 	-o, --origin <cell>	Required. The origin H3 cell
+	-f, --format <FMT>	'json' for [I, J], 'newline' for I\nJ\n (Default: json)
 ```
 
 ```bash
@@ -947,11 +951,12 @@ H3 4.1.0
 	-o, --origin <cell>	Required. The origin H3 cell
 	-i <i>	Required. The I dimension of the IJ coordinate
 	-j <j>	Required. The J dimension of the IJ coordinate
+	-f, --format <FMT>	'json' for "CELL"\n, 'newline' for CELL\n (Default: json)
 ```
 
 ```bash
 $ h3 localIjToCell -o 85283473fffffff -i 0 -j 0
-85280003fffffff
+"85280003fffffff"
 ```
 
 </TabItem>

@@ -71,11 +71,12 @@ H3 4.1.0
 	-c, --cell <index>	Required. H3 Cell
 	-v, --vertex <INDEX>	Required. Vertex index number. 0-5 for hexagons, 0-4 for pentagons
 	-h, --help	Show this help message.
+	-f, --format <FMT>	'json' for "CELL"\n, 'newline' for CELL\n (Default: json)
 ```
 
 ```bash
 $ h3 cellToVertex -v 2 -c 85283473fffffff
-205283463fffffff
+"205283463fffffff"
 ```
 
 </TabItem>
@@ -143,11 +144,12 @@ H3 4.1.0
 	cellToVertexes	Returns all of the vertexes from the specified cell
 	-c, --cell <index>	Required. H3 Cell
 	-h, --help	Show this help message.
+	-f, --format <FMT>	'json' for ["CELL", ...], 'newline' for CELL\n... (Default: json)
 ```
 
 ```bash
 $ h3 cellToVertexes -c 85283473fffffff
-["22528340bfffffff", "235283447fffffff", "205283463fffffff", "255283463fffffff", "22528340ffffffff", "23528340bfffffff"]
+[ "22528340bfffffff", "235283447fffffff", "205283463fffffff", "255283463fffffff", "22528340ffffffff", "23528340bfffffff" ]
 ```
 
 </TabItem>
@@ -217,11 +219,12 @@ H3 4.1.0
 	vertexToLatLng	Returns the lat, lng pair for the given vertex
 	-c, --cell <index>	Required. H3 Cell
 	-h, --help	Show this help message.
+	-f, --format <FMT>	'json' for [lat, lng], 'wkt' for a WKT POINT, 'newline' for lat\nlng\n (Default: json)
 ```
 
 ```bash
 $ h3 vertexToLatLng -c 255283463fffffff
-POINT(-122.0377349643 37.4201286777)
+[37.4201286777, -122.0377349643]
 ```
 
 </TabItem>
@@ -288,6 +291,7 @@ H3 4.1.0
 	isValidVertex	Checks if the provided H3 vertex is actually valid
 	-h, --help	Show this help message.
 	-c, --cell <index>	Required. H3 Cell
+	-f, --format <FMT>	'json' for true or false, 'numeric' for 1 or 0 (Default: json)
 ```
 
 ```bash
