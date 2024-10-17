@@ -116,7 +116,7 @@ Arg helpArg = ARG_HELP;
 #define DEFINE_FORMAT_ARG(desc)                   \
     char format[8] = {0};                         \
     Arg formatArg = {.names = {"-f", "--format"}, \
-                     .scanFormat = "%s",          \
+                     .scanFormat = "%7s",         \
                      .value = format,             \
                      .valueName = "FMT",          \
                      .helpText = desc}
