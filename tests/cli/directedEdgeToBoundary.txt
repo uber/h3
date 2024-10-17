@@ -1,2 +1,2 @@
-add_h3_cli_test(testCliDirectedEdgeToBoundary "directedEdgeToBoundary -c 115283473fffffff" "POLYGON((-122.0377349643 37.4201286777, -122.0904289290 37.3375560844, -122.0377349643 37.4201286777))")
+add_h3_cli_test(testCliDirectedEdgeToBoundary "directedEdgeToBoundary -c 115283473fffffff -f wkt" "LINESTRING (-122.0377349643 37.4201286777, -122.0904289290 37.3375560844)")
 add_h3_cli_test(testCliNotDirectedEdgeToBoundary "directedEdgeToBoundary -c 85283473fffffff 2>&1" "Error 6: Directed edge argument was not valid")
