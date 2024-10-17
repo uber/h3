@@ -1,2 +1,2 @@
-add_h3_cli_test(testCliCellToLatLng "cellToLatLng -c 8928342e20fffff" "POINT(-122.5003039349 37.5012466151)")
+add_h3_cli_test(testCliCellToLatLng "cellToLatLng -c 8928342e20fffff -f wkt" "POINT(-122.5003039349 37.5012466151)")
 add_h3_cli_test(testCliInvalidCellToLatLng "cellToLatLng -c asdf 2>&1" "Error 5: Cell argument was not valid")

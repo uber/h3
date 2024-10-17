@@ -1,2 +1,2 @@
-add_h3_cli_test(testCliCellToVertex "cellToVertex -c 85283473fffffff -v 0" "22528340bfffffff")
+add_h3_cli_test(testCliCellToVertex "cellToVertex -c 85283473fffffff -v 0 -f newline" "22528340bfffffff")
 add_h3_cli_test(testCliNotCellToVertex "cellToVertex -c 115283473fffffff -v 0 2>&1" "Error 5: Cell argument was not valid")

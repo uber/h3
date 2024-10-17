@@ -113,11 +113,22 @@ bool has(char *subcommand, int level, char *argv[]) {
 
 Arg helpArg = ARG_HELP;
 
+#define DEFINE_FORMAT_ARG(desc)                   \
+    char format[8] = {0};                         \
+    Arg formatArg = {.names = {"-f", "--format"}, \
+                     .scanFormat = "%7s",         \
+                     .value = format,             \
+                     .valueName = "FMT",          \
+                     .helpText = desc}
+
 /// Indexing subcommands
 
-SUBCOMMAND(cellToLatLng, "Convert an H3Cell to a WKT POINT coordinate") {
+SUBCOMMAND(cellToLatLng, "Convert an H3Cell to a coordinate") {
+    DEFINE_FORMAT_ARG(
+        "'json' for [lat, lng], 'wkt' for a WKT POINT, 'newline' for "
+        "lat\\nlng\\n (Default: json)");
     DEFINE_CELL_ARG(cell, cellArg);
-    Arg *args[] = {&cellToLatLngArg, &helpArg, &cellArg};
+    Arg *args[] = {&cellToLatLngArg, &helpArg, &cellArg, &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     LatLng ll;
     int valid = H3_EXPORT(isValidCell)(cell);
@@ -128,15 +139,28 @@ SUBCOMMAND(cellToLatLng, "Convert an H3Cell to a WKT POINT coordinate") {
     if (err) {
         return err;
     }
-    // Using WKT formatting for the output. TODO: Add support for JSON
-    // formatting
-    printf("POINT(%.10lf %.10lf)\n", H3_EXPORT(radsToDegs)(ll.lng),
-           H3_EXPORT(radsToDegs)(ll.lat));
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        printf("[%.10lf, %.10lf]\n", H3_EXPORT(radsToDegs)(ll.lat),
+               H3_EXPORT(radsToDegs)(ll.lng));
+    } else if (strcmp(format, "wkt") == 0) {
+        // Using WKT formatting for the output. TODO: Add support for JSON
+        // formatting
+        printf("POINT(%.10lf %.10lf)\n", H3_EXPORT(radsToDegs)(ll.lng),
+               H3_EXPORT(radsToDegs)(ll.lat));
+    } else if (strcmp(format, "newline") == 0) {
+        printf("%.10lf\n%.10lf\n", H3_EXPORT(radsToDegs)(ll.lat),
+               H3_EXPORT(radsToDegs)(ll.lng));
+    } else {
+        return E_FAILED;
+    }
     return E_SUCCESS;
 }
 
 SUBCOMMAND(latLngToCell,
            "Convert degrees latitude/longitude coordinate to an H3 cell") {
+    DEFINE_FORMAT_ARG(
+        "'json' for \"CELL\"\\n, 'newline' for CELL\\n "
+        "(Default: json)");
     int res = 0;
     double lat = 0;
     double lng = 0;
@@ -160,28 +184,35 @@ SUBCOMMAND(latLngToCell,
                   .value = &lng,
                   .helpText = "Longitude in degrees."};
 
-    Arg *args[] = {&latLngToCellArg, &helpArg, &resArg, &latArg, &lngArg};
+    Arg *args[] = {&latLngToCellArg, &helpArg, &resArg,
+                   &latArg,          &lngArg,  &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     LatLng ll = {.lat = H3_EXPORT(degsToRads)(lat),
                  .lng = H3_EXPORT(degsToRads)(lng)};
 
     H3Index c;
-    H3Error e = H3_EXPORT(latLngToCell)(&ll, res, &c);
+    H3Error err = H3_EXPORT(latLngToCell)(&ll, res, &c);
+    if (err) {
+        return err;
+    }
 
-    // TODO: Add support for JSON formatting
-    if (e == E_SUCCESS) {
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        printf("\"%" PRIx64 "\"\n", c);
+    } else if (strcmp(format, "newline") == 0) {
         h3Println(c);
     } else {
-        h3Println(
-            H3_NULL);  // TODO: Should we print a better error message here?
+        return E_FAILED;
     }
-    return e;
+    return E_SUCCESS;
 }
 
 SUBCOMMAND(cellToBoundary,
-           "Convert an H3 cell to a WKT POLYGON defining its boundary") {
+           "Convert an H3 cell to a polygon defining its boundary") {
+    DEFINE_FORMAT_ARG(
+        "'json' for [[lat, lng], ...], 'wkt' for a WKT POLYGON, 'newline' for "
+        "lat\\nlng\\n... (Default: json)");
     DEFINE_CELL_ARG(cell, cellArg);
-    Arg *args[] = {&cellToBoundaryArg, &helpArg, &cellArg};
+    Arg *args[] = {&cellToBoundaryArg, &helpArg, &cellArg, &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     CellBoundary cb;
     int valid = H3_EXPORT(isValidCell)(cell);
@@ -192,17 +223,35 @@ SUBCOMMAND(cellToBoundary,
     if (err) {
         return err;
     }
-    // Using WKT formatting for the output. TODO: Add support for JSON
-    // formatting
-    printf("POLYGON((");
-    for (int i = 0; i < cb.numVerts; i++) {
-        LatLng *ll = &cb.verts[i];
-        printf("%.10lf %.10lf, ", H3_EXPORT(radsToDegs)(ll->lng),
-               H3_EXPORT(radsToDegs)(ll->lat));
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        printf("[");
+        for (int i = 0; i < cb.numVerts - 1; i++) {
+            LatLng *ll = &cb.verts[i];
+            printf("[%.10lf, %.10lf], ", H3_EXPORT(radsToDegs)(ll->lat),
+                   H3_EXPORT(radsToDegs)(ll->lng));
+        }
+        printf("[%.10lf, %.10lf]]\n",
+               H3_EXPORT(radsToDegs)(cb.verts[cb.numVerts - 1].lat),
+               H3_EXPORT(radsToDegs)(cb.verts[cb.numVerts - 1].lng));
+    } else if (strcmp(format, "wkt") == 0) {
+        printf("POLYGON((");
+        for (int i = 0; i < cb.numVerts; i++) {
+            LatLng *ll = &cb.verts[i];
+            printf("%.10lf %.10lf, ", H3_EXPORT(radsToDegs)(ll->lng),
+                   H3_EXPORT(radsToDegs)(ll->lat));
+        }
+        // WKT has the first and last points match, so re-print the first one
+        printf("%.10lf %.10lf))\n", H3_EXPORT(radsToDegs)(cb.verts[0].lng),
+               H3_EXPORT(radsToDegs)(cb.verts[0].lat));
+    } else if (strcmp(format, "newline") == 0) {
+        for (int i = 0; i < cb.numVerts; i++) {
+            LatLng *ll = &cb.verts[i];
+            printf("%.10lf\n%.10lf\n", H3_EXPORT(radsToDegs)(ll->lat),
+                   H3_EXPORT(radsToDegs)(ll->lng));
+        }
+    } else {
+        return E_FAILED;
     }
-    // WKT has the first and last points match, so re-print the first one
-    printf("%.10lf %.10lf))\n", H3_EXPORT(radsToDegs)(cb.verts[0].lng),
-           H3_EXPORT(radsToDegs)(cb.verts[0].lat));
     return E_SUCCESS;
 }
 
@@ -287,18 +336,28 @@ SUBCOMMAND(intToString, "Converts an H3 index in int form to string form") {
 }
 
 SUBCOMMAND(isValidCell, "Checks if the provided H3 index is actually valid") {
+    DEFINE_FORMAT_ARG(
+        "'json' for true or false, 'numeric' for 1 or 0 (Default: json)");
     DEFINE_CELL_ARG(cell, cellArg);
-    Arg *args[] = {&isValidCellArg, &helpArg, &cellArg};
+    Arg *args[] = {&isValidCellArg, &helpArg, &cellArg, &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     bool isValid = H3_EXPORT(isValidCell)(cell);
-    printf("%s\n", isValid ? "true" : "false");
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        printf("%s\n", isValid ? "true" : "false");
+    } else if (strcmp(format, "numeric") == 0) {
+        printf("%d\n", isValid);
+    } else {
+        return E_FAILED;
+    }
     return E_SUCCESS;
 }
 
 SUBCOMMAND(isResClassIII,
            "Checks if the provided H3 index has a Class III orientation") {
+    DEFINE_FORMAT_ARG(
+        "'json' for true or false, 'numeric' for 1 or 0 (Default: json)");
     DEFINE_CELL_ARG(cell, cellArg);
-    Arg *args[] = {&isResClassIIIArg, &helpArg, &cellArg};
+    Arg *args[] = {&isResClassIIIArg, &helpArg, &cellArg, &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     // TODO: Should there be a general `isValidIndex`?
     H3Error cellErr = H3_EXPORT(isValidCell)(cell);
@@ -311,15 +370,23 @@ SUBCOMMAND(isResClassIII,
     // few functions that doesn't do any error handling (for some reason? I
     // don't see how this would ever be in a hot loop anywhere.
     bool isClassIII = H3_EXPORT(isResClassIII)(cell);
-    printf("%s\n", isClassIII ? "true" : "false");
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        printf("%s\n", isClassIII ? "true" : "false");
+    } else if (strcmp(format, "numeric") == 0) {
+        printf("%d\n", isClassIII);
+    } else {
+        return E_FAILED;
+    }
     return E_SUCCESS;
 }
 
 SUBCOMMAND(
     isPentagon,
     "Checks if the provided H3 index is a pentagon instead of a hexagon") {
+    DEFINE_FORMAT_ARG(
+        "'json' for true or false, 'numeric' for 1 or 0 (Default: json)");
     DEFINE_CELL_ARG(cell, cellArg);
-    Arg *args[] = {&isPentagonArg, &helpArg, &cellArg};
+    Arg *args[] = {&isPentagonArg, &helpArg, &cellArg, &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     // TODO: Should there be a general `isValidIndex`?
     H3Error cellErr = H3_EXPORT(isValidCell)(cell);
@@ -332,15 +399,24 @@ SUBCOMMAND(
     // few functions that doesn't do any error handling (for some reason? I
     // don't see how this would ever be in a hot loop anywhere.
     bool is = H3_EXPORT(isPentagon)(cell);
-    printf("%s\n", is ? "true" : "false");
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        printf("%s\n", is ? "true" : "false");
+    } else if (strcmp(format, "numeric") == 0) {
+        printf("%d\n", is);
+    } else {
+        return E_FAILED;
+    }
     return E_SUCCESS;
 }
 
 SUBCOMMAND(getIcosahedronFaces,
            "Returns the icosahedron face numbers (0 - 19) that the H3 index "
            "intersects") {
+    DEFINE_FORMAT_ARG(
+        "'json' for [faceNum, ...], 'newline' for faceNum\\n... (Default: "
+        "json)");
     DEFINE_CELL_ARG(cell, cellArg);
-    Arg *args[] = {&getIcosahedronFacesArg, &helpArg, &cellArg};
+    Arg *args[] = {&getIcosahedronFacesArg, &helpArg, &cellArg, &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     int faceCount;
     H3Error err = H3_EXPORT(maxFaceCount)(cell, &faceCount);
@@ -357,23 +433,35 @@ SUBCOMMAND(getIcosahedronFaces,
         free(faces);
         return err;
     }
-    bool hasPrinted = false;
-    for (int i = 0; i < faceCount - 1; i++) {
-        if (faces[i] != -1) {
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        bool hasPrinted = false;
+        printf("[");
+        for (int i = 0; i < faceCount - 1; i++) {
+            if (faces[i] != -1) {
+                if (hasPrinted) {
+                    printf(", ");
+                }
+                printf("%i", faces[i]);
+                hasPrinted = true;
+            }
+        }
+        if (faces[faceCount - 1] != -1) {
             if (hasPrinted) {
                 printf(", ");
             }
-            printf("%i", faces[i]);
-            hasPrinted = true;
+            printf("%i", faces[faceCount - 1]);
         }
-    }
-    if (faces[faceCount - 1] != -1) {
-        if (hasPrinted) {
-            printf(", ");
+        printf("]\n");
+    } else if (strcmp(format, "newline") == 0) {
+        for (int i = 0; i < faceCount; i++) {
+            if (faces[i] != -1) {
+                printf("%i\n", faces[i]);
+            }
         }
-        printf("%i", faces[faceCount - 1]);
+    } else {
+        free(faces);
+        return E_FAILED;
     }
-    printf("\n");
     free(faces);
     return E_SUCCESS;
 }
@@ -382,7 +470,9 @@ SUBCOMMAND(getIcosahedronFaces,
 
 SUBCOMMAND(
     gridDisk,
-    "Returns a JSON array of a H3 cells within 'k' steps of the origin cell") {
+    "Returns an array of a H3 cells within 'k' steps of the origin cell") {
+    DEFINE_FORMAT_ARG(
+        "'json' for [\"CELL\", ...], 'newline' for CELL\\n... (Default: json)");
     DEFINE_CELL_ARG(cell, cellArg);
     int k = 0;
     Arg kArg = {.names = {"-k"},
@@ -391,7 +481,7 @@ SUBCOMMAND(
                 .valueName = "distance",
                 .value = &k,
                 .helpText = "Maximum grid distance for the output set"};
-    Arg *args[] = {&gridDiskArg, &helpArg, &cellArg, &kArg};
+    Arg *args[] = {&gridDiskArg, &helpArg, &cellArg, &kArg, &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     int64_t len = 0;
     H3Error err = H3_EXPORT(maxGridDiskSize)(k, &len);
@@ -408,31 +498,47 @@ SUBCOMMAND(
         free(out);
         return err;
     }
-    // Since we don't know *actually* how many cells are in the output (usually
-    // the max, but sometimes not), we need to do a quick scan to figure out the
-    // true length in order to properly serialize to a JSON array
-    int64_t trueLen = 0;
-    for (int64_t i = 0; i < len; i++) {
-        if (out[i] != 0) {
-            trueLen++;
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        // Since we don't know *actually* how many cells are in the output
+        // (usually the max, but sometimes not), we need to do a quick scan to
+        // figure out the true length in order to properly serialize to a JSON
+        // array
+        int64_t trueLen = 0;
+        for (int64_t i = 0; i < len; i++) {
+            if (out[i] != 0) {
+                trueLen++;
+            }
         }
-    }
-    printf("[ ");
-    for (int64_t i = 0, j = 0; i < len; i++) {
-        if (out[i] != 0) {
-            j++;
-            printf("\"%" PRIx64 "\"%s", out[i], j == trueLen ? "" : ", ");
+        printf("[ ");
+        for (int64_t i = 0, j = 0; i < len; i++) {
+            if (out[i] != 0) {
+                j++;
+                printf("\"%" PRIx64 "\"%s", out[i], j == trueLen ? "" : ", ");
+            }
         }
+        printf(" ]\n");
+    } else if (strcmp(format, "newline") == 0) {
+        for (int64_t i = 0; i < len; i++) {
+            if (out[i] != 0) {
+                h3Println(out[i]);
+            }
+        }
+    } else {
+        free(out);
+        return E_FAILED;
     }
+
     free(out);
-    printf(" ]\n");
     return E_SUCCESS;
 }
 
 SUBCOMMAND(
     gridDiskDistances,
-    "Returns a JSON array of arrays of H3 cells, each array containing cells "
+    "Returns an array of arrays of H3 cells, each array containing cells "
     "'k' steps away from the origin cell, based on the outer array index") {
+    DEFINE_FORMAT_ARG(
+        "'json' for [[\"CELL\", ...], ...], 'newline' for CELL\\n with an "
+        "extra newline between rings (Default: json)");
     DEFINE_CELL_ARG(cell, cellArg);
     int k = 0;
     Arg kArg = {.names = {"-k"},
@@ -441,15 +547,9 @@ SUBCOMMAND(
                 .valueName = "distance",
                 .value = &k,
                 .helpText = "Maximum grid distance for the output set"};
-    Arg prettyArg = {
-        .names = {"-p", "--pretty-print"},
-        .required = false,
-        .helpText =
-            "Determine if the JSON output should be pretty printed or not"};
     Arg *args[] = {&gridDiskDistancesArg, &helpArg, &cellArg, &kArg,
-                   &prettyArg};
+                   &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
-    bool pretty = prettyArg.found;
     int64_t len = 0;
     H3Error err = H3_EXPORT(maxGridDiskSize)(k, &len);
     if (err) {
@@ -471,55 +571,67 @@ SUBCOMMAND(
         free(distances);
         return err;
     }
-    // Man, I wish JSON allowed trailing commas
-    printf("[%s", pretty ? "\n" : "");
-    for (int i = 0; i <= k; i++) {
-        printf("%s[%s", /* prefix */ pretty ? "  " : "",
-               /* suffix */ pretty ? "\n" : "");
-        // We need to figure out how many cells are in each ring. Because of
-        // pentagons, we can't hardwire this, unfortunately
-        int count = 0;
-        for (int j = 0; j < len; j++) {
-            if (distances[j] == i && out[j] != 0) {
-                count++;
-            }
-        }
-        // On the second loop, we output cells with a comma except for the last
-        // one, which we now know
-        int cellNum = 0;
-        for (int j = 0; j < len; j++) {
-            if (distances[j] == i && out[j] != 0) {
-                cellNum++;
-                printf("%s\"%" PRIx64 "\"", pretty ? "    " : "", out[j]);
-                if (cellNum == count) {
-                    if (pretty) {
-                        printf("\n");
-                    }
-                } else {
-                    printf(",%s", pretty ? "\n" : "");
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        // Man, I wish JSON allowed trailing commas
+        printf("[");
+        for (int i = 0; i <= k; i++) {
+            printf("[");
+            // We need to figure out how many cells are in each ring. Because of
+            // pentagons, we can't hardwire this, unfortunately
+            int count = 0;
+            for (int j = 0; j < len; j++) {
+                if (distances[j] == i && out[j] != 0) {
+                    count++;
                 }
             }
+            // On the second loop, we output cells with a comma except for the
+            // last one, which we now know
+            int cellNum = 0;
+            for (int j = 0; j < len; j++) {
+                if (distances[j] == i && out[j] != 0) {
+                    cellNum++;
+                    printf("\"%" PRIx64 "\"", out[j]);
+                    if (cellNum != count) {
+                        printf(", ");
+                    }
+                }
+            }
+            // Similarly, we need to check which iteration of the outer array
+            // we're on and include a comma or not
+            if (i == k) {
+                printf("]");
+            } else {
+                printf("], ");
+            }
         }
-        // Similarly, we need to check which iteration of the outer array we're
-        // on and include a comma or not
-        if (i == k) {
-            printf("%s]%s", /* prefix */ pretty ? "  " : "",
-                   /* suffix */ pretty ? "\n" : "");
-        } else {
-            printf("%s],%s", /* prefix */ pretty ? "  " : "",
-                   /* suffix */ pretty ? "\n" : "");
+        printf("]\n");  // Always print the newline here so the terminal prompt
+                        // gets its own line
+    } else if (strcmp(format, "newline") == 0) {
+        for (int i = 0; i <= k; i++) {
+            for (int j = 0; j < len; j++) {
+                if (distances[j] == i && out[j] != 0) {
+                    h3Println(out[j]);
+                }
+            }
+            if (i < k) {
+                printf("\n");
+            }
         }
+    } else {
+        free(out);
+        free(distances);
+        return E_FAILED;
     }
-    printf("]\n");  // Always print the newline here so the terminal prompt gets
-                    // its own line
     free(out);
     free(distances);
     return E_SUCCESS;
 }
 
 SUBCOMMAND(gridRing,
-           "Returns a JSON array of H3 cells, each cell 'k' steps away from "
+           "Returns an array of H3 cells, each cell 'k' steps away from "
            "the origin cell") {
+    DEFINE_FORMAT_ARG(
+        "'json' for [\"CELL\", ...], 'newline' for CELL\\n... (Default: json)");
     DEFINE_CELL_ARG(cell, cellArg);
     int k = 0;
     Arg kArg = {.names = {"-k"},
@@ -528,7 +640,7 @@ SUBCOMMAND(gridRing,
                 .valueName = "distance",
                 .value = &k,
                 .helpText = "Maximum grid distance for the output set"};
-    Arg *args[] = {&gridRingArg, &helpArg, &cellArg, &kArg};
+    Arg *args[] = {&gridRingArg, &helpArg, &cellArg, &kArg, &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     int64_t len = k == 0 ? 1 : 6 * k;  // The length is fixed for gridRingUnsafe
                                        // since it doesn't support pentagons
@@ -592,20 +704,31 @@ SUBCOMMAND(gridRing,
         free(distances);
     }
     // Now that we have the correct data, however we got it, we can print it out
-    printf("[ \"%" PRIx64 "\"", out[0]);
-    for (int64_t i = 1; i < len; i++) {
-        if (out[i] != 0) {
-            printf(", \"%" PRIx64 "\"", out[i]);
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        printf("[ \"%" PRIx64 "\"", out[0]);
+        for (int64_t i = 1; i < len; i++) {
+            if (out[i] != 0) {
+                printf(", \"%" PRIx64 "\"", out[i]);
+            }
         }
+        printf(" ]\n");
+    } else if (strcmp(format, "newline") == 0) {
+        for (int64_t i = 0; i < len; i++) {
+            h3Println(out[i]);
+        }
+    } else {
+        free(out);
+        return E_FAILED;
     }
     free(out);
-    printf(" ]\n");
     return E_SUCCESS;
 }
 
 SUBCOMMAND(gridPathCells,
-           "Returns a JSON array of H3 cells from the origin cell to the "
+           "Returns an array of H3 cells from the origin cell to the "
            "destination cell (inclusive)") {
+    DEFINE_FORMAT_ARG(
+        "'json' for [\"CELL\", ...], 'newline' for CELL\\n... (Default: json)");
     H3Index origin = 0;
     Arg originArg = {.names = {"-o", "--origin"},
                      .required = true,
@@ -620,7 +743,8 @@ SUBCOMMAND(gridPathCells,
                           .valueName = "cell",
                           .value = &destination,
                           .helpText = "The destination H3 cell"};
-    Arg *args[] = {&gridPathCellsArg, &helpArg, &originArg, &destinationArg};
+    Arg *args[] = {&gridPathCellsArg, &helpArg, &originArg, &destinationArg,
+                   &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     int64_t len = 0;
     H3Error err = H3_EXPORT(gridPathCellsSize)(origin, destination, &len);
@@ -637,14 +761,23 @@ SUBCOMMAND(gridPathCells,
         free(out);
         return err;
     }
-    printf("[ \"%" PRIx64 "\"", out[0]);
-    for (int64_t i = 1; i < len; i++) {
-        if (out[i] != 0) {
-            printf(", \"%" PRIx64 "\"", out[i]);
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        printf("[ \"%" PRIx64 "\"", out[0]);
+        for (int64_t i = 1; i < len; i++) {
+            if (out[i] != 0) {
+                printf(", \"%" PRIx64 "\"", out[i]);
+            }
         }
+        printf(" ]\n");
+    } else if (strcmp(format, "newline") == 0) {
+        for (int64_t i = 0; i < len; i++) {
+            h3Println(out[i]);
+        }
+    } else {
+        free(out);
+        return E_FAILED;
     }
     free(out);
-    printf(" ]\n");
     return E_SUCCESS;
 }
 
@@ -678,6 +811,8 @@ SUBCOMMAND(gridDistance,
 
 SUBCOMMAND(cellToLocalIj,
            "Returns the IJ coordinate for a cell anchored to an origin cell") {
+    DEFINE_FORMAT_ARG(
+        "'json' for [I, J], 'newline' for I\\nJ\\n (Default: json)");
     DEFINE_CELL_ARG(cell, cellArg);
     H3Index origin = 0;
     Arg originArg = {.names = {"-o", "--origin"},
@@ -686,20 +821,29 @@ SUBCOMMAND(cellToLocalIj,
                      .valueName = "cell",
                      .value = &origin,
                      .helpText = "The origin H3 cell"};
-    Arg *args[] = {&cellToLocalIjArg, &helpArg, &cellArg, &originArg};
+    Arg *args[] = {&cellToLocalIjArg, &helpArg, &cellArg, &originArg,
+                   &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     CoordIJ out = {0};
     H3Error err = H3_EXPORT(cellToLocalIj)(origin, cell, 0, &out);
     if (err) {
         return err;
     }
-    printf("[%i, %i]\n", out.i, out.j);
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        printf("[%i, %i]\n", out.i, out.j);
+    } else if (strcmp(format, "newline") == 0) {
+        printf("%i\n%i\n", out.i, out.j);
+    } else {
+        return E_FAILED;
+    }
     return E_SUCCESS;
 }
 
 SUBCOMMAND(localIjToCell,
            "Returns the H3 index from a local IJ coordinate anchored to an "
            "origin cell") {
+    DEFINE_FORMAT_ARG(
+        "'json' for \"CELL\"\\n, 'newline' for CELL\\n (Default: json)");
     H3Index origin = 0;
     Arg originArg = {.names = {"-o", "--origin"},
                      .required = true,
@@ -720,7 +864,8 @@ SUBCOMMAND(localIjToCell,
                 .valueName = "j",
                 .value = &j,
                 .helpText = "The J dimension of the IJ coordinate"};
-    Arg *args[] = {&localIjToCellArg, &helpArg, &originArg, &iArg, &jArg};
+    Arg *args[] = {&localIjToCellArg, &helpArg, &originArg, &iArg, &jArg,
+                   &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     CoordIJ in = {.i = i, .j = j};
     H3Index out = 0;
@@ -728,7 +873,13 @@ SUBCOMMAND(localIjToCell,
     if (err) {
         return err;
     }
-    h3Println(out);
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        printf("\"%" PRIx64 "\"\n", out);
+    } else if (strcmp(format, "newline") == 0) {
+        h3Println(out);
+    } else {
+        return E_FAILED;
+    }
     return E_SUCCESS;
 }
 
@@ -737,6 +888,8 @@ SUBCOMMAND(localIjToCell,
 SUBCOMMAND(cellToParent,
            "Returns the H3 index that is the parent (or higher) of the "
            "provided cell") {
+    DEFINE_FORMAT_ARG(
+        "'json' for \"CELL\"\\n, 'newline' for CELL\\n (Default: json)");
     DEFINE_CELL_ARG(cell, cellArg);
     int res = 0;
     Arg resArg = {.names = {"-r", "--resolution"},
@@ -747,7 +900,7 @@ SUBCOMMAND(cellToParent,
                   .helpText =
                       "Resolution, 0-14 inclusive, excluding 15 as it can "
                       "never be a parent"};
-    Arg *args[] = {&cellToParentArg, &helpArg, &cellArg, &resArg};
+    Arg *args[] = {&cellToParentArg, &helpArg, &cellArg, &resArg, &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     H3Index parent;
     int valid = H3_EXPORT(isValidCell)(cell);
@@ -758,15 +911,23 @@ SUBCOMMAND(cellToParent,
     if (err) {
         return err;
     }
-    h3Println(parent);
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        printf("\"%" PRIx64 "\"\n", parent);
+    } else if (strcmp(format, "newline") == 0) {
+        h3Println(parent);
+    } else {
+        return E_FAILED;
+    }
     return E_SUCCESS;
 }
 
 SUBCOMMAND(cellToChildren,
-           "Returns a JSON array of H3 indexes that are the children (or "
+           "Returns an array of H3 indexes that are the children (or "
            "lower) of the provided cell") {
     // TODO: This function contains a lot of code that is very similar to
     // `gridDisk`. If this happens again we should DRY them.
+    DEFINE_FORMAT_ARG(
+        "'json' for [\"CELL\", ...], 'newline' for CELL\\n... (Default: json)");
     DEFINE_CELL_ARG(cell, cellArg);
     int res = 0;
     Arg resArg = {.names = {"-r", "--resolution"},
@@ -777,7 +938,7 @@ SUBCOMMAND(cellToChildren,
                   .helpText =
                       "Resolution, 1-15 inclusive, excluding 0 as it can "
                       "never be a child"};
-    Arg *args[] = {&cellToChildrenArg, &helpArg, &cellArg, &resArg};
+    Arg *args[] = {&cellToChildrenArg, &helpArg, &cellArg, &resArg, &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     int64_t len = 0;
     H3Error err = H3_EXPORT(cellToChildrenSize)(cell, res, &len);
@@ -794,24 +955,37 @@ SUBCOMMAND(cellToChildren,
         free(out);
         return err;
     }
-    // Since we don't know *actually* how many cells are in the output (usually
-    // the max, but sometimes not), we need to do a quick scan to figure out the
-    // true length in order to properly serialize to a JSON array
-    int64_t trueLen = 0;
-    for (int64_t i = 0; i < len; i++) {
-        if (out[i] != 0) {
-            trueLen++;
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        // Since we don't know *actually* how many cells are in the output
+        // (usually the max, but sometimes not), we need to do a quick scan to
+        // figure out the true length in order to properly serialize to a JSON
+        // array
+        int64_t trueLen = 0;
+        for (int64_t i = 0; i < len; i++) {
+            if (out[i] != 0) {
+                trueLen++;
+            }
         }
-    }
-    printf("[ ");
-    for (int64_t i = 0, j = 0; i < len; i++) {
-        if (out[i] != 0) {
-            j++;
-            printf("\"%" PRIx64 "\"%s", out[i], j == trueLen ? "" : ", ");
+        printf("[ ");
+        for (int64_t i = 0, j = 0; i < len; i++) {
+            if (out[i] != 0) {
+                j++;
+                printf("\"%" PRIx64 "\"%s", out[i], j == trueLen ? "" : ", ");
+            }
         }
+        printf(" ]\n");
+    } else if (strcmp(format, "newline") == 0) {
+        for (int64_t i = 0; i < len; i++) {
+            if (out[i] != 0) {
+                h3Println(out[i]);
+            }
+        }
+    } else {
+        free(out);
+        return E_FAILED;
     }
+
     free(out);
-    printf(" ]\n");
     return E_SUCCESS;
 }
 
@@ -847,6 +1021,8 @@ SUBCOMMAND(
     cellToCenterChild,
     "Returns the H3 index that is the centrally-placed child (or lower) of the "
     "provided cell") {
+    DEFINE_FORMAT_ARG(
+        "'json' for \"CELL\"\\n, 'newline' for CELL\\n (Default: json)");
     DEFINE_CELL_ARG(cell, cellArg);
     int res = 0;
     Arg resArg = {.names = {"-r", "--resolution"},
@@ -857,7 +1033,8 @@ SUBCOMMAND(
                   .helpText =
                       "Resolution, 1-15 inclusive, excluding 0 as it can "
                       "never be a child"};
-    Arg *args[] = {&cellToCenterChildArg, &helpArg, &cellArg, &resArg};
+    Arg *args[] = {&cellToCenterChildArg, &helpArg, &cellArg, &resArg,
+                   &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     H3Index centerChild;
     int valid = H3_EXPORT(isValidCell)(cell);
@@ -868,7 +1045,13 @@ SUBCOMMAND(
     if (err) {
         return err;
     }
-    h3Println(centerChild);
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        printf("\"%" PRIx64 "\"\n", centerChild);
+    } else if (strcmp(format, "newline") == 0) {
+        h3Println(centerChild);
+    } else {
+        return E_FAILED;
+    }
     return E_SUCCESS;
 }
 
@@ -900,6 +1083,8 @@ SUBCOMMAND(
 SUBCOMMAND(childPosToCell,
            "Returns the child cell at a given position and resolution within "
            "an ordered list of all children of the parent cell") {
+    DEFINE_FORMAT_ARG(
+        "'json' for \"CELL\"\\n, 'newline' for CELL\\n (Default: json)");
     DEFINE_CELL_ARG(cell, cellArg);
     int res = 0;
     Arg resArg = {.names = {"-r", "--resolution"},
@@ -919,7 +1104,8 @@ SUBCOMMAND(childPosToCell,
         .value = &pos,
         .helpText =
             "The child position within the set of children of the parent cell"};
-    Arg *args[] = {&childPosToCellArg, &helpArg, &cellArg, &resArg, &posArg};
+    Arg *args[] = {&childPosToCellArg, &helpArg, &cellArg, &resArg, &posArg,
+                   &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     H3Index child;
     int valid = H3_EXPORT(isValidCell)(cell);
@@ -930,7 +1116,13 @@ SUBCOMMAND(childPosToCell,
     if (err) {
         return err;
     }
-    h3Println(child);
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        printf("\"%" PRIx64 "\"\n", child);
+    } else if (strcmp(format, "newline") == 0) {
+        h3Println(child);
+    } else {
+        return E_FAILED;
+    }
     return E_SUCCESS;
 }
 
@@ -1010,11 +1202,12 @@ H3Index *readCellsFromFile(FILE *fp, char *buffer, size_t *totalCells) {
 
 SUBCOMMAND(compactCells,
            "Compacts the provided set of cells as best as possible. The set of "
-           "input cells must all share the same resolution. The compacted "
-           "cells will be printed one per line to stdout.") {
+           "input cells must all share the same resolution.") {
+    DEFINE_FORMAT_ARG(
+        "'json' for [\"CELL\", ...], 'newline' for CELL\\n... (Default: json)");
     char filename[1024] = {0};  // More than Windows, lol
     Arg filenameArg = {
-        .names = {"-f", "--file"},
+        .names = {"-i", "--file"},
         .scanFormat = "%1023c",
         .valueName = "FILENAME",
         .value = &filename,
@@ -1030,7 +1223,8 @@ SUBCOMMAND(compactCells,
                        .helpText =
                            "The cells to compact. Up to 100 cells if provided "
                            "as hexadecimals with zero padding."};
-    Arg *args[] = {&compactCellsArg, &helpArg, &filenameArg, &cellStrsArg};
+    Arg *args[] = {&compactCellsArg, &helpArg, &filenameArg, &cellStrsArg,
+                   &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     if (!filenameArg.found && !cellStrsArg.found) {
         fprintf(stderr,
@@ -1074,13 +1268,38 @@ SUBCOMMAND(compactCells,
         free(compactedSet);
         return err;
     }
-    // We have a compacted set! Let's print them out
-    for (int i = 0; i < cellsOffset; i++) {
-        if (compactedSet[i] == 0) {
-            continue;
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        // Since we don't know *actually* how many cells are in the output
+        // (usually the max, but sometimes not), we need to do a quick scan to
+        // figure out the true length in order to properly serialize to a JSON
+        // array
+        int64_t trueLen = 0;
+        for (int64_t i = 0; i < cellsOffset; i++) {
+            if (compactedSet[i] != 0) {
+                trueLen++;
+            }
         }
-        h3Println(compactedSet[i]);
+        printf("[ ");
+        for (int64_t i = 0, j = 0; i < cellsOffset; i++) {
+            if (compactedSet[i] != 0) {
+                j++;
+                printf("\"%" PRIx64 "\"%s", compactedSet[i],
+                       j == trueLen ? "" : ", ");
+            }
+        }
+        printf(" ]\n");
+    } else if (strcmp(format, "newline") == 0) {
+        for (int64_t i = 0; i < cellsOffset; i++) {
+            if (compactedSet[i] != 0) {
+                h3Println(compactedSet[i]);
+            }
+        }
+    } else {
+        free(cells);
+        free(compactedSet);
+        return E_FAILED;
     }
+
     free(cells);
     free(compactedSet);
     return E_SUCCESS;
@@ -1092,9 +1311,11 @@ SUBCOMMAND(uncompactCells,
            "cells will be printed one per line to stdout.") {
     // TODO: *Most* of this logic is shared with compactCells. See about DRYing
     // it.
+    DEFINE_FORMAT_ARG(
+        "'json' for [\"CELL\", ...], 'newline' for CELL\\n... (Default: json)");
     char filename[1024] = {0};  // More than Windows, lol
     Arg filenameArg = {
-        .names = {"-f", "--file"},
+        .names = {"-i", "--file"},
         .scanFormat = "%1023c",
         .valueName = "FILENAME",
         .value = &filename,
@@ -1120,8 +1341,8 @@ SUBCOMMAND(uncompactCells,
                       "Resolution, 0-15 inclusive, that the compacted set "
                       "should be uncompacted to. Must be greater than or equal "
                       "to the highest resolution within the compacted set."};
-    Arg *args[] = {&uncompactCellsArg, &helpArg, &filenameArg, &cellStrsArg,
-                   &resArg};
+    Arg *args[] = {&uncompactCellsArg, &helpArg, &filenameArg,
+                   &cellStrsArg,       &resArg,  &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     if (!filenameArg.found && !cellStrsArg.found) {
         fprintf(stderr,
@@ -1185,13 +1406,38 @@ SUBCOMMAND(uncompactCells,
         free(uncompactedSet);
         return err;
     }
-    // We have a compacted set! Let's print them out
-    for (int i = 0; i < uncompactedSize; i++) {
-        if (uncompactedSet[i] == 0) {
-            continue;
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        // Since we don't know *actually* how many cells are in the output
+        // (usually the max, but sometimes not), we need to do a quick scan to
+        // figure out the true length in order to properly serialize to a JSON
+        // array
+        int64_t trueLen = 0;
+        for (int64_t i = 0; i < uncompactedSize; i++) {
+            if (uncompactedSet[i] != 0) {
+                trueLen++;
+            }
         }
-        h3Println(uncompactedSet[i]);
+        printf("[ ");
+        for (int64_t i = 0, j = 0; i < uncompactedSize; i++) {
+            if (uncompactedSet[i] != 0) {
+                j++;
+                printf("\"%" PRIx64 "\"%s", uncompactedSet[i],
+                       j == trueLen ? "" : ", ");
+            }
+        }
+        printf(" ]\n");
+    } else if (strcmp(format, "newline") == 0) {
+        for (int64_t i = 0; i < uncompactedSize; i++) {
+            if (uncompactedSet[i] != 0) {
+                h3Println(uncompactedSet[i]);
+            }
+        }
+    } else {
+        free(cells);
+        free(uncompactedSet);
+        return E_FAILED;
     }
+
     free(cells);
     free(uncompactedSet);
     return E_SUCCESS;
@@ -1364,9 +1610,11 @@ SUBCOMMAND(
     polygonToCells,
     "Converts a polygon (array of lat, lng points, or array of arrays of lat, "
     "lng points) into a set of covering cells at the specified resolution") {
+    DEFINE_FORMAT_ARG(
+        "'json' for [\"CELL\", ...], 'newline' for CELL\\n... (Default: json)");
     char filename[1024] = {0};  // More than Windows, lol
     Arg filenameArg = {
-        .names = {"-f", "--file"},
+        .names = {"-i", "--file"},
         .scanFormat = "%1023c",
         .valueName = "FILENAME",
         .value = &filename,
@@ -1389,8 +1637,8 @@ SUBCOMMAND(
                   .helpText =
                       "Resolution, 0-15 inclusive, that the polygon "
                       "should be converted to."};
-    Arg *args[] = {&polygonToCellsArg, &helpArg, &filenameArg, &polygonStrArg,
-                   &resArg};
+    Arg *args[] = {&polygonToCellsArg, &helpArg, &filenameArg,
+                   &polygonStrArg,     &resArg,  &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     if (filenameArg.found == polygonStrArg.found) {
         fprintf(stderr,
@@ -1441,13 +1689,36 @@ SUBCOMMAND(
         free(cells);
         return err;
     }
-    // We can print out the cells
-    for (int i = 0; i < cellsSize; i++) {
-        if (cells[i] == 0) {
-            continue;
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        // Since we don't know *actually* how many cells are in the output
+        // (usually the max, but sometimes not), we need to do a quick scan to
+        // figure out the true length in order to properly serialize to a JSON
+        // array
+        int64_t trueLen = 0;
+        for (int64_t i = 0; i < cellsSize; i++) {
+            if (cells[i] != 0) {
+                trueLen++;
+            }
         }
-        h3Println(cells[i]);
+        printf("[ ");
+        for (int64_t i = 0, j = 0; i < cellsSize; i++) {
+            if (cells[i] != 0) {
+                j++;
+                printf("\"%" PRIx64 "\"%s", cells[i], j == trueLen ? "" : ", ");
+            }
+        }
+        printf(" ]\n");
+    } else if (strcmp(format, "newline") == 0) {
+        for (int64_t i = 0; i < cellsSize; i++) {
+            if (cells[i] != 0) {
+                h3Println(cells[i]);
+            }
+        }
+    } else {
+        free(cells);
+        return E_FAILED;
     }
+
     free(cells);
     return E_SUCCESS;
 }
@@ -1458,7 +1729,7 @@ SUBCOMMAND(
     "the polygon. Will always be equal or more than actually necessary") {
     char filename[1024] = {0};  // More than Windows, lol
     Arg filenameArg = {
-        .names = {"-f", "--file"},
+        .names = {"-i", "--file"},
         .scanFormat = "%1023c",
         .valueName = "FILENAME",
         .value = &filename,
@@ -1534,9 +1805,11 @@ SUBCOMMAND(
 SUBCOMMAND(cellsToMultiPolygon,
            "Returns a polygon (array of arrays of "
            "lat, lng points) for a set of cells") {
+    DEFINE_FORMAT_ARG(
+        "'json' for [[[[lat, lng],...],...],...] 'wkt' for a WKT MULTIPOLYGON");
     char filename[1024] = {0};  // More than Windows, lol
     Arg filenameArg = {
-        .names = {"-f", "--file"},
+        .names = {"-i", "--file"},
         .scanFormat = "%1023c",
         .valueName = "FILENAME",
         .value = &filename,
@@ -1552,7 +1825,7 @@ SUBCOMMAND(cellsToMultiPolygon,
                            "The cells to convert. Up to 100 cells if provided "
                            "as hexadecimals with zero padding."};
     Arg *args[] = {&cellsToMultiPolygonArg, &helpArg, &filenameArg,
-                   &cellStrsArg};
+                   &cellStrsArg, &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     if (filenameArg.found == cellStrsArg.found) {
         fprintf(stderr,
@@ -1595,38 +1868,77 @@ SUBCOMMAND(cellsToMultiPolygon,
         H3_EXPORT(destroyLinkedMultiPolygon)(&out);
         return err;
     }
-    printf("[");
-    LinkedGeoPolygon *currPoly = &out;
-    while (currPoly) {
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
         printf("[");
-        LinkedGeoLoop *currLoop = currPoly->first;
-        while (currLoop) {
+        LinkedGeoPolygon *currPoly = &out;
+        while (currPoly) {
             printf("[");
-            LinkedLatLng *currLatLng = currLoop->first;
-            while (currLatLng) {
-                printf("[%f, %f]",
-                       H3_EXPORT(radsToDegs)(currLatLng->vertex.lat),
-                       H3_EXPORT(radsToDegs)(currLatLng->vertex.lng));
-                currLatLng = currLatLng->next;
-                if (currLatLng) {
-                    printf(", ");
+            LinkedGeoLoop *currLoop = currPoly->first;
+            while (currLoop) {
+                printf("[");
+                LinkedLatLng *currLatLng = currLoop->first;
+                while (currLatLng) {
+                    printf("[%f, %f]",
+                           H3_EXPORT(radsToDegs)(currLatLng->vertex.lat),
+                           H3_EXPORT(radsToDegs)(currLatLng->vertex.lng));
+                    currLatLng = currLatLng->next;
+                    if (currLatLng) {
+                        printf(", ");
+                    }
+                }
+                currLoop = currLoop->next;
+                if (currLoop) {
+                    printf("], ");
+                } else {
+                    printf("]");
                 }
             }
-            currLoop = currLoop->next;
-            if (currLoop) {
+            currPoly = currPoly->next;
+            if (currPoly) {
                 printf("], ");
             } else {
                 printf("]");
             }
         }
-        currPoly = currPoly->next;
-        if (currPoly) {
-            printf("], ");
-        } else {
-            printf("]");
+        printf("]\n");
+    } else if (strcmp(format, "wkt") == 0) {
+        printf("MULTIPOLYGON (");
+        LinkedGeoPolygon *currPoly = &out;
+        while (currPoly) {
+            printf("(");
+            LinkedGeoLoop *currLoop = currPoly->first;
+            while (currLoop) {
+                printf("(");
+                LinkedLatLng *currLatLng = currLoop->first;
+                while (currLatLng) {
+                    printf("%f %f",
+                           H3_EXPORT(radsToDegs)(currLatLng->vertex.lng),
+                           H3_EXPORT(radsToDegs)(currLatLng->vertex.lat));
+                    currLatLng = currLatLng->next;
+                    if (currLatLng) {
+                        printf(", ");
+                    }
+                }
+                currLoop = currLoop->next;
+                if (currLoop) {
+                    printf("), ");
+                } else {
+                    printf(")");
+                }
+            }
+            currPoly = currPoly->next;
+            if (currPoly) {
+                printf("), ");
+            } else {
+                printf(")");
+            }
         }
+        printf(")\n");
+    } else {
+        free(cells);
+        H3_EXPORT(destroyLinkedMultiPolygon)(&out);
+        return E_FAILED;
     }
-    printf("]\n");
     free(cells);
     H3_EXPORT(destroyLinkedMultiPolygon)(&out);
     return E_SUCCESS;
@@ -1637,6 +1949,8 @@ SUBCOMMAND(cellsToMultiPolygon,
 SUBCOMMAND(areNeighborCells,
            "Determines if the provided H3 cells are neighbors (have a shared "
            "border)") {
+    DEFINE_FORMAT_ARG(
+        "'json' for true or false, 'numeric' for 1 or 0 (Default: json)");
     H3Index origin, destination;
     Arg originCellArg = {.names = {"-o", "--origin"},
                          .required = true,
@@ -1651,7 +1965,7 @@ SUBCOMMAND(areNeighborCells,
                               .value = &destination,
                               .helpText = "Destination H3 Cell"};
     Arg *args[] = {&areNeighborCellsArg, &originCellArg, &destinationCellArg,
-                   &helpArg};
+                   &helpArg, &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     int areNeighbors = 0;
     H3Error err =
@@ -1659,13 +1973,22 @@ SUBCOMMAND(areNeighborCells,
     if (err != E_SUCCESS) {
         return err;
     }
-    printf(areNeighbors ? "true\n" : "false\n");
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        printf("%s\n", areNeighbors ? "true" : "false");
+    } else if (strcmp(format, "numeric") == 0) {
+        printf("%d\n", areNeighbors);
+    } else {
+        return E_FAILED;
+    }
     return E_SUCCESS;
 }
 
 SUBCOMMAND(cellsToDirectedEdge,
            "Converts neighboring cells into a directed edge index (or errors "
            "if they are not neighbors)") {
+    DEFINE_FORMAT_ARG(
+        "'json' for \"CELL\"\\n, 'newline' for CELL\\n "
+        "(Default: json)");
     H3Index origin, destination;
     Arg originCellArg = {.names = {"-o", "--origin"},
                          .required = true,
@@ -1680,74 +2003,117 @@ SUBCOMMAND(cellsToDirectedEdge,
                               .value = &destination,
                               .helpText = "Destination H3 Cell"};
     Arg *args[] = {&cellsToDirectedEdgeArg, &originCellArg, &destinationCellArg,
-                   &helpArg};
+                   &helpArg, &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     H3Index out = 0;
     H3Error err = H3_EXPORT(cellsToDirectedEdge)(origin, destination, &out);
     if (err != E_SUCCESS) {
         return err;
     }
-    printf("%" PRIx64 "\n", out);
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        printf("\"%" PRIx64 "\"\n", out);
+    } else if (strcmp(format, "newline") == 0) {
+        h3Println(out);
+    } else {
+        return E_FAILED;
+    }
     return E_SUCCESS;
 }
 
 SUBCOMMAND(isValidDirectedEdge,
            "Checks if the provided H3 directed edge is actually valid") {
+    DEFINE_FORMAT_ARG(
+        "'json' for true or false, 'numeric' for 1 or 0 (Default: json)");
     DEFINE_CELL_ARG(cell, cellArg);
-    Arg *args[] = {&isValidDirectedEdgeArg, &helpArg, &cellArg};
+    Arg *args[] = {&isValidDirectedEdgeArg, &helpArg, &cellArg, &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     bool isValid = H3_EXPORT(isValidDirectedEdge)(cell);
-    printf("%s", isValid ? "true\n" : "false\n");
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        printf("%s\n", isValid ? "true" : "false");
+    } else if (strcmp(format, "numeric") == 0) {
+        printf("%d\n", isValid);
+    } else {
+        return E_FAILED;
+    }
     return E_SUCCESS;
 }
 
 SUBCOMMAND(getDirectedEdgeOrigin,
            "Returns the origin cell from the directed edge") {
+    DEFINE_FORMAT_ARG(
+        "'json' for \"CELL\"\\n, 'newline' for CELL\\n "
+        "(Default: json)");
     DEFINE_CELL_ARG(cell, cellArg);
-    Arg *args[] = {&getDirectedEdgeOriginArg, &cellArg, &helpArg};
+    Arg *args[] = {&getDirectedEdgeOriginArg, &cellArg, &helpArg, &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     H3Index out = 0;
     H3Error err = H3_EXPORT(getDirectedEdgeOrigin)(cell, &out);
     if (err != E_SUCCESS) {
         return err;
     }
-    printf("%" PRIx64 "\n", out);
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        printf("\"%" PRIx64 "\"\n", out);
+    } else if (strcmp(format, "newline") == 0) {
+        h3Println(out);
+    } else {
+        return E_FAILED;
+    }
     return E_SUCCESS;
 }
 
 SUBCOMMAND(getDirectedEdgeDestination,
            "Returns the destination cell from the directed edge") {
+    DEFINE_FORMAT_ARG(
+        "'json' for \"CELL\"\\n, 'newline' for CELL\\n "
+        "(Default: json)");
     DEFINE_CELL_ARG(cell, cellArg);
-    Arg *args[] = {&getDirectedEdgeDestinationArg, &cellArg, &helpArg};
+    Arg *args[] = {&getDirectedEdgeDestinationArg, &cellArg, &helpArg,
+                   &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     H3Index out = 0;
     H3Error err = H3_EXPORT(getDirectedEdgeDestination)(cell, &out);
     if (err != E_SUCCESS) {
         return err;
     }
-    printf("%" PRIx64 "\n", out);
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        printf("\"%" PRIx64 "\"\n", out);
+    } else if (strcmp(format, "newline") == 0) {
+        h3Println(out);
+    } else {
+        return E_FAILED;
+    }
     return E_SUCCESS;
 }
 
 SUBCOMMAND(
     directedEdgeToCells,
     "Returns the origin, destination pair of cells from the directed edge") {
+    DEFINE_FORMAT_ARG(
+        "'json' for [\"CELL\", ...], 'newline' for CELL\\n... (Default: json)");
     DEFINE_CELL_ARG(cell, cellArg);
-    Arg *args[] = {&directedEdgeToCellsArg, &cellArg, &helpArg};
+    Arg *args[] = {&directedEdgeToCellsArg, &cellArg, &helpArg, &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     H3Index out[2] = {0};
     H3Error err = H3_EXPORT(directedEdgeToCells)(cell, &out[0]);
     if (err != E_SUCCESS) {
         return err;
     }
-    printf("[\"%" PRIx64 "\", \"%" PRIx64 "\"]\n", out[0], out[1]);
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        printf("[\"%" PRIx64 "\", \"%" PRIx64 "\"]\n", out[0], out[1]);
+    } else if (strcmp(format, "newline") == 0) {
+        printf("%" PRIx64 "\n%" PRIx64 "\n", out[0], out[1]);
+    } else {
+        return E_FAILED;
+    }
     return E_SUCCESS;
 }
 
 SUBCOMMAND(originToDirectedEdges,
            "Returns all of the directed edges from the specified origin cell") {
+    DEFINE_FORMAT_ARG(
+        "'json' for [\"CELL\", ...], 'newline' for CELL\\n... (Default: json)");
     DEFINE_CELL_ARG(cell, cellArg);
-    Arg *args[] = {&originToDirectedEdgesArg, &cellArg, &helpArg};
+    Arg *args[] = {&originToDirectedEdgesArg, &cellArg, &helpArg, &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     H3Index out[6] = {0};
     // This one is pretty loose about the inputs it accepts, so let's validate
@@ -1760,42 +2126,73 @@ SUBCOMMAND(originToDirectedEdges,
     if (err != E_SUCCESS) {
         return err;
     }
-    printf("[");
-    bool hasPrinted = false;
-    for (int i = 0; i < 6; i++) {
-        if (out[i] > 0) {
-            if (hasPrinted) {
-                printf(", ");
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        printf("[");
+        bool hasPrinted = false;
+        for (int i = 0; i < 6; i++) {
+            if (out[i] > 0) {
+                if (hasPrinted) {
+                    printf(", ");
+                }
+                printf("\"%" PRIx64 "\"", out[i]);
+                hasPrinted = true;
             }
-            printf("\"%" PRIx64 "\"", out[i]);
-            hasPrinted = true;
         }
+        printf("]\n");
+    } else if (strcmp(format, "newline") == 0) {
+        for (int i = 0; i < 6; i++) {
+            if (out[i] != 0) {
+                h3Println(out[i]);
+            }
+        }
+    } else {
+        return E_FAILED;
     }
-    printf("]\n");
     return E_SUCCESS;
 }
 
 SUBCOMMAND(directedEdgeToBoundary,
            "Provides the coordinates defining the directed edge") {
+    DEFINE_FORMAT_ARG(
+        "'json' for [[lat, lng], ...], 'wkt' for a WKT POLYGON, 'newline' for "
+        "lat\\nlng\\n... (Default: json)");
     DEFINE_CELL_ARG(cell, cellArg);
-    Arg *args[] = {&directedEdgeToBoundaryArg, &cellArg, &helpArg};
+    Arg *args[] = {&directedEdgeToBoundaryArg, &cellArg, &helpArg, &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     CellBoundary cb = {0};
     H3Error err = H3_EXPORT(directedEdgeToBoundary)(cell, &cb);
     if (err) {
         return err;
     }
-    // Using WKT formatting for the output. TODO: Add support for JSON
-    // formatting
-    printf("POLYGON((");
-    for (int i = 0; i < cb.numVerts; i++) {
-        LatLng *ll = &cb.verts[i];
-        printf("%.10lf %.10lf, ", H3_EXPORT(radsToDegs)(ll->lng),
-               H3_EXPORT(radsToDegs)(ll->lat));
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        printf("[");
+        for (int i = 0; i < cb.numVerts - 1; i++) {
+            LatLng *ll = &cb.verts[i];
+            printf("[%.10lf, %.10lf], ", H3_EXPORT(radsToDegs)(ll->lat),
+                   H3_EXPORT(radsToDegs)(ll->lng));
+        }
+        printf("[%.10lf, %.10lf]]\n",
+               H3_EXPORT(radsToDegs)(cb.verts[cb.numVerts - 1].lat),
+               H3_EXPORT(radsToDegs)(cb.verts[cb.numVerts - 1].lng));
+    } else if (strcmp(format, "wkt") == 0) {
+        printf("LINESTRING (");
+        for (int i = 0; i < cb.numVerts - 1; i++) {
+            LatLng *ll = &cb.verts[i];
+            printf("%.10lf %.10lf, ", H3_EXPORT(radsToDegs)(ll->lng),
+                   H3_EXPORT(radsToDegs)(ll->lat));
+        }
+        printf("%.10lf %.10lf)\n",
+               H3_EXPORT(radsToDegs)(cb.verts[cb.numVerts - 1].lng),
+               H3_EXPORT(radsToDegs)(cb.verts[cb.numVerts - 1].lat));
+    } else if (strcmp(format, "newline") == 0) {
+        for (int i = 0; i < cb.numVerts; i++) {
+            LatLng *ll = &cb.verts[i];
+            printf("%.10lf\n%.10lf\n", H3_EXPORT(radsToDegs)(ll->lat),
+                   H3_EXPORT(radsToDegs)(ll->lng));
+        }
+    } else {
+        return E_FAILED;
     }
-    // WKT has the first and last points match, so re-print the first one
-    printf("%.10lf %.10lf))\n", H3_EXPORT(radsToDegs)(cb.verts[0].lng),
-           H3_EXPORT(radsToDegs)(cb.verts[0].lat));
     return E_SUCCESS;
 }
 
@@ -1804,6 +2201,9 @@ SUBCOMMAND(directedEdgeToBoundary,
 SUBCOMMAND(cellToVertex,
            "Returns the vertex for the specified cell and vertex index. Must "
            "be 0-5 for hexagons, 0-4 for pentagons") {
+    DEFINE_FORMAT_ARG(
+        "'json' for \"CELL\"\\n, 'newline' for CELL\\n "
+        "(Default: json)");
     DEFINE_CELL_ARG(cell, cellArg);
     int vertIndex = 0;
     Arg vertIndexArg = {
@@ -1813,7 +2213,8 @@ SUBCOMMAND(cellToVertex,
         .valueName = "INDEX",
         .value = &vertIndex,
         .helpText = "Vertex index number. 0-5 for hexagons, 0-4 for pentagons"};
-    Arg *args[] = {&cellToVertexArg, &cellArg, &vertIndexArg, &helpArg};
+    Arg *args[] = {&cellToVertexArg, &cellArg, &vertIndexArg, &helpArg,
+                   &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     // This function also doesn't sanitize its inputs correctly
     bool isValid = H3_EXPORT(isValidCell)(cell);
@@ -1825,14 +2226,22 @@ SUBCOMMAND(cellToVertex,
     if (err) {
         return err;
     }
-    printf("%" PRIx64 "\n", out);
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        printf("\"%" PRIx64 "\"\n", out);
+    } else if (strcmp(format, "newline") == 0) {
+        h3Println(out);
+    } else {
+        return E_FAILED;
+    }
     return E_SUCCESS;
 }
 
 SUBCOMMAND(cellToVertexes,
            "Returns all of the vertexes from the specified cell") {
+    DEFINE_FORMAT_ARG(
+        "'json' for [\"CELL\", ...], 'newline' for CELL\\n... (Default: json)");
     DEFINE_CELL_ARG(cell, cellArg);
-    Arg *args[] = {&cellToVertexesArg, &cellArg, &helpArg};
+    Arg *args[] = {&cellToVertexesArg, &cellArg, &helpArg, &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     H3Index out[6] = {0};
     // This one is pretty loose about the inputs it accepts, so let's validate
@@ -1845,24 +2254,43 @@ SUBCOMMAND(cellToVertexes,
     if (err != E_SUCCESS) {
         return err;
     }
-    printf("[");
-    bool hasPrinted = false;
-    for (int i = 0; i < 6; i++) {
-        if (out[i] > 0) {
-            if (hasPrinted) {
-                printf(", ");
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        // Since we don't know *actually* how many cells are in the output
+        // (usually the max, but sometimes not), we need to do a quick scan to
+        // figure out the true length in order to properly serialize to a JSON
+        // array
+        int64_t trueLen = 0;
+        for (int64_t i = 0; i < 6; i++) {
+            if (out[i] != 0) {
+                trueLen++;
             }
-            printf("\"%" PRIx64 "\"", out[i]);
-            hasPrinted = true;
         }
+        printf("[ ");
+        for (int64_t i = 0, j = 0; i < 6; i++) {
+            if (out[i] != 0) {
+                j++;
+                printf("\"%" PRIx64 "\"%s", out[i], j == trueLen ? "" : ", ");
+            }
+        }
+        printf(" ]\n");
+    } else if (strcmp(format, "newline") == 0) {
+        for (int64_t i = 0; i < 6; i++) {
+            if (out[i] != 0) {
+                h3Println(out[i]);
+            }
+        }
+    } else {
+        return E_FAILED;
     }
-    printf("]\n");
     return E_SUCCESS;
 }
 
 SUBCOMMAND(vertexToLatLng, "Returns the lat, lng pair for the given vertex") {
+    DEFINE_FORMAT_ARG(
+        "'json' for [lat, lng], 'wkt' for a WKT POINT, 'newline' for "
+        "lat\\nlng\\n (Default: json)");
     DEFINE_CELL_ARG(cell, cellArg);
-    Arg *args[] = {&vertexToLatLngArg, &cellArg, &helpArg};
+    Arg *args[] = {&vertexToLatLngArg, &cellArg, &helpArg, &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     bool isValid = H3_EXPORT(isValidVertex)(cell);
     if (!isValid) {
@@ -1873,20 +2301,38 @@ SUBCOMMAND(vertexToLatLng, "Returns the lat, lng pair for the given vertex") {
     if (err) {
         return err;
     }
-    // Using WKT formatting for the output. TODO: Add support for JSON
-    // formatting
-    printf("POINT(%.10lf %.10lf)\n", H3_EXPORT(radsToDegs)(ll.lng),
-           H3_EXPORT(radsToDegs)(ll.lat));
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        printf("[%.10lf, %.10lf]\n", H3_EXPORT(radsToDegs)(ll.lat),
+               H3_EXPORT(radsToDegs)(ll.lng));
+    } else if (strcmp(format, "wkt") == 0) {
+        // Using WKT formatting for the output. TODO: Add support for JSON
+        // formatting
+        printf("POINT(%.10lf %.10lf)\n", H3_EXPORT(radsToDegs)(ll.lng),
+               H3_EXPORT(radsToDegs)(ll.lat));
+    } else if (strcmp(format, "newline") == 0) {
+        printf("%.10lf\n%.10lf\n", H3_EXPORT(radsToDegs)(ll.lat),
+               H3_EXPORT(radsToDegs)(ll.lng));
+    } else {
+        return E_FAILED;
+    }
     return E_SUCCESS;
 }
 
 SUBCOMMAND(isValidVertex,
            "Checks if the provided H3 vertex is actually valid") {
+    DEFINE_FORMAT_ARG(
+        "'json' for true or false, 'numeric' for 1 or 0 (Default: json)");
     DEFINE_CELL_ARG(cell, cellArg);
-    Arg *args[] = {&isValidVertexArg, &helpArg, &cellArg};
+    Arg *args[] = {&isValidVertexArg, &helpArg, &cellArg, &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     bool isValid = H3_EXPORT(isValidVertex)(cell);
-    printf("%s", isValid ? "true\n" : "false\n");
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        printf("%s\n", isValid ? "true" : "false");
+    } else if (strcmp(format, "numeric") == 0) {
+        printf("%d\n", isValid);
+    } else {
+        return E_FAILED;
+    }
     return E_SUCCESS;
 }
 
@@ -2144,7 +2590,9 @@ SUBCOMMAND(getNumCells,
 }
 
 SUBCOMMAND(getRes0Cells, "Returns all of the resolution 0 cells") {
-    Arg *args[] = {&getRes0CellsArg, &helpArg};
+    DEFINE_FORMAT_ARG(
+        "'json' for [\"CELL\", ...], 'newline' for CELL\\n... (Default: json)");
+    Arg *args[] = {&getRes0CellsArg, &helpArg, &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     H3Index *out = calloc(122, sizeof(H3Index));
     H3Error err = H3_EXPORT(getRes0Cells)(out);
@@ -2152,24 +2600,43 @@ SUBCOMMAND(getRes0Cells, "Returns all of the resolution 0 cells") {
         free(out);
         return err;
     }
-    printf("[");
-    bool hasPrinted = false;
-    for (int i = 0; i < 122; i++) {
-        if (out[i] > 0) {
-            if (hasPrinted) {
-                printf(", ");
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        // Since we don't know *actually* how many cells are in the output
+        // (usually the max, but sometimes not), we need to do a quick scan to
+        // figure out the true length in order to properly serialize to a JSON
+        // array
+        int64_t trueLen = 0;
+        for (int64_t i = 0; i < 122; i++) {
+            if (out[i] != 0) {
+                trueLen++;
             }
-            printf("\"%" PRIx64 "\"", out[i]);
-            hasPrinted = true;
         }
+        printf("[ ");
+        for (int64_t i = 0, j = 0; i < 122; i++) {
+            if (out[i] != 0) {
+                j++;
+                printf("\"%" PRIx64 "\"%s", out[i], j == trueLen ? "" : ", ");
+            }
+        }
+        printf(" ]\n");
+    } else if (strcmp(format, "newline") == 0) {
+        for (int64_t i = 0; i < 122; i++) {
+            if (out[i] != 0) {
+                h3Println(out[i]);
+            }
+        }
+    } else {
+        free(out);
+        return E_FAILED;
     }
-    printf("]\n");
     free(out);
     return E_SUCCESS;
 }
 
 SUBCOMMAND(getPentagons,
            "Returns all of the pentagons at the specified resolution") {
+    DEFINE_FORMAT_ARG(
+        "'json' for [\"CELL\", ...], 'newline' for CELL\\n... (Default: json)");
     int res = 0;
     Arg resArg = {.names = {"-r", "--resolution"},
                   .required = true,
@@ -2177,7 +2644,7 @@ SUBCOMMAND(getPentagons,
                   .valueName = "res",
                   .value = &res,
                   .helpText = "Resolution, 0-15 inclusive."};
-    Arg *args[] = {&getPentagonsArg, &resArg, &helpArg};
+    Arg *args[] = {&getPentagonsArg, &resArg, &helpArg, &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     H3Index *out = calloc(12, sizeof(H3Index));
     H3Error err = H3_EXPORT(getPentagons)(res, out);
@@ -2185,18 +2652,35 @@ SUBCOMMAND(getPentagons,
         free(out);
         return err;
     }
-    printf("[");
-    bool hasPrinted = false;
-    for (int i = 0; i < 12; i++) {
-        if (out[i] > 0) {
-            if (hasPrinted) {
-                printf(", ");
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        // Since we don't know *actually* how many cells are in the output
+        // (usually the max, but sometimes not), we need to do a quick scan to
+        // figure out the true length in order to properly serialize to a JSON
+        // array
+        int64_t trueLen = 0;
+        for (int64_t i = 0; i < 12; i++) {
+            if (out[i] != 0) {
+                trueLen++;
             }
-            printf("\"%" PRIx64 "\"", out[i]);
-            hasPrinted = true;
         }
+        printf("[ ");
+        for (int64_t i = 0, j = 0; i < 12; i++) {
+            if (out[i] != 0) {
+                j++;
+                printf("\"%" PRIx64 "\"%s", out[i], j == trueLen ? "" : ", ");
+            }
+        }
+        printf(" ]\n");
+    } else if (strcmp(format, "newline") == 0) {
+        for (int64_t i = 0; i < 12; i++) {
+            if (out[i] != 0) {
+                h3Println(out[i]);
+            }
+        }
+    } else {
+        free(out);
+        return E_FAILED;
     }
-    printf("]\n");
     free(out);
     return E_SUCCESS;
 }
@@ -2212,7 +2696,7 @@ SUBCOMMAND(greatCircleDistanceRads,
            "Calculates the 'great circle' or 'haversine' distance between two "
            "lat, lng points, in radians") {
     char filename[1024] = {0};  // More than Windows, lol
-    Arg filenameArg = {.names = {"-f", "--file"},
+    Arg filenameArg = {.names = {"-i", "--file"},
                        .scanFormat = "%1023c",
                        .valueName = "FILENAME",
                        .value = &filename,
@@ -2283,7 +2767,7 @@ SUBCOMMAND(greatCircleDistanceKm,
            "Calculates the 'great circle' or 'haversine' distance between two "
            "lat, lng points, in kilometers") {
     char filename[1024] = {0};  // More than Windows, lol
-    Arg filenameArg = {.names = {"-f", "--file"},
+    Arg filenameArg = {.names = {"-i", "--file"},
                        .scanFormat = "%1023c",
                        .valueName = "FILENAME",
                        .value = &filename,
@@ -2354,7 +2838,7 @@ SUBCOMMAND(greatCircleDistanceM,
            "Calculates the 'great circle' or 'haversine' distance between two "
            "lat, lng points, in meters") {
     char filename[1024] = {0};  // More than Windows, lol
-    Arg filenameArg = {.names = {"-f", "--file"},
+    Arg filenameArg = {.names = {"-i", "--file"},
                        .scanFormat = "%1023c",
                        .valueName = "FILENAME",
                        .value = &filename,

@@ -1,2 +1,2 @@
-add_h3_cli_test(testCliGetDirectedEdgeOrigin "getDirectedEdgeOrigin -c 115283473fffffff" "85283473fffffff")
+add_h3_cli_test(testCliGetDirectedEdgeOrigin "getDirectedEdgeOrigin -c 115283473fffffff -f newline" "85283473fffffff")
 add_h3_cli_test(testCliDoNotGetDirectedEdgeOrigin "getDirectedEdgeOrigin -c 85283473fffffff 2>&1" "Error 6: Directed edge argument was not valid")

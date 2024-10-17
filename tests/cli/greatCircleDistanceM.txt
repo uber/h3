@@ -1,4 +1,4 @@
 add_h3_cli_test(testCliGreatCircleDistanceMArg "greatCircleDistanceM -c '[[0, 1], [1, 2]]'" "157249.5585117787")
-add_h3_cli_test(testCliGreatCircleDistanceMFile "greatCircleDistanceM -f ${PROJECT_SOURCE_DIR}/tests/inputfiles/great_circle_distance.txt" "157249.5585117787")
-add_h3_cli_test(testCliGreatCircleDistanceMStdin "greatCircleDistanceM -f -- < ${PROJECT_SOURCE_DIR}/tests/inputfiles/great_circle_distance.txt" "157249.5585117787")
+add_h3_cli_test(testCliGreatCircleDistanceMFile "greatCircleDistanceM -i ${PROJECT_SOURCE_DIR}/tests/inputfiles/great_circle_distance.txt" "157249.5585117787")
+add_h3_cli_test(testCliGreatCircleDistanceMStdin "greatCircleDistanceM -i -- < ${PROJECT_SOURCE_DIR}/tests/inputfiles/great_circle_distance.txt" "157249.5585117787")
 add_h3_cli_test(testCliGreatCircleDistanceMBadArg "greatCircleDistanceM -c '[[0, 1]]' 2>&1" "Only two pairs of coordinates should be provided.")

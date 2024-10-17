@@ -73,20 +73,15 @@ H3 4.1.0
 
 	polygonToCells	Converts a polygon (array of lat, lng points, or array of arrays of lat, lng points) into a set of covering cells at the specified resolution
 	-h, --help	Show this help message.
-	-f, --file <FILENAME>	The file to load the polygon from. Use -- to read from stdin.
-	-p, --polygon <POLYGON>The polygon to convert. Up to 1500 characters.
+	-i, --file <FILENAME>	The file to load the polygon from. Use -- to read from stdin.
+	-p, --polygon <POLYGON>	The polygon to convert. Up to 1500 characters.
 	-r, --resolution <res>	Required. Resolution, 0-15 inclusive, that the polygon should be converted to.
+	-f, --format <FMT>	'json' for ["CELL", ...], 'newline' for CELL\n... (Default: json)
 ```
 
 ```bash
 $ h3 polygonToCells -r 7 -p "[[37.813318999983238, -122.4089866999972145], [37.7198061999978478, -122.3544736999993603], [37.8151571999998453, -122.4798767000009008]]"
-87283082bffffff
-872830870ffffff
-872830820ffffff
-87283082effffff
-872830828ffffff
-87283082affffff
-872830876ffffff
+[ "87283082bffffff", "872830870ffffff", "872830820ffffff", "87283082effffff", "872830828ffffff", "87283082affffff", "872830876ffffff" ]
 ```
 
 </TabItem>
@@ -159,8 +154,8 @@ H3 4.1.0
 
 	maxPolygonToCellsSize	Returns the maximum number of cells that could be needed to cover the polygon. Will always be equal or more than actually necessary
 	-h, --help	Show this help message.
-	-f, --file <FILENAME>	The file to load the polygon from. Use -- to read from stdin.
-	-p, --polygon <POLYGON>The polygon to convert. Up to 1500 characters.
+	-i, --file <FILENAME>	The file to load the polygon from. Use -- to read from stdin.
+	-p, --polygon <POLYGON>	The polygon to convert. Up to 1500 characters.
 	-r, --resolution <res>	Required. Resolution, 0-15 inclusive, that the polygon should be converted to.
 ```
 
@@ -235,8 +230,9 @@ H3 4.1.0
 
 	cellsToMultiPolygon	Returns a polygon (array of arrays of lat, lng points) for a set of cells
 	-h, --help	Show this help message.
-	-f, --file <FILENAME>	The file to load the cells from. Use -- to read from stdin.
+	-i, --file <FILENAME>	The file to load the cells from. Use -- to read from stdin.
 	-c, --cells <CELLS>	The cells to convert. Up to 100 cells if provided as hexadecimals with zero padding.
+	-f, --format <FMT>	'json' for [[[[lat, lng],...],...],...] 'wkt' for a WKT MULTIPOLYGON
 ```
 
 ```bash

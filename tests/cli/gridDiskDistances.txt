@@ -1,1 +1,1 @@
-add_h3_cli_test(testCliGridDiskDistances "gridDiskDistances -c 85283473fffffff -k 1" "[[\"85283473fffffff\"],[\"85283447fffffff\",\"8528347bfffffff\",\"85283463fffffff\",\"85283477fffffff\",\"8528340ffffffff\",\"8528340bfffffff\"]]")
+add_h3_cli_test(testCliGridDiskDistances "gridDiskDistances -c 85283473fffffff -k 1" "[[\"85283473fffffff\"], [\"85283447fffffff\", \"8528347bfffffff\", \"85283463fffffff\", \"85283477fffffff\", \"8528340ffffffff\", \"8528340bfffffff\"]]")

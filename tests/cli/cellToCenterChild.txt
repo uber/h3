@@ -1,1 +1,1 @@
-add_h3_cli_test(testCliCellToCenterChild "cellToCenterChild -c 85283473fffffff --resolution 7" "872834700ffffff")
+add_h3_cli_test(testCliCellToCenterChild "cellToCenterChild -c 85283473fffffff --resolution 7 -f newline" "872834700ffffff")

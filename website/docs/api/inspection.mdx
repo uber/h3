@@ -306,6 +306,7 @@ H3 4.1.0
 	isValidCell	Checks if the provided H3 index is actually valid
 	-h, --help	Show this help message.
 	-c, --cell <index>	Required. H3 Cell
+	-f, --format <FMT>	'json' for true or false, 'numeric' for 1 or 0 (Default: json)
 ```
 
 ```bash
@@ -377,6 +378,7 @@ H3 4.1.0
 	isResClassIII	Checks if the provided H3 index has a Class III orientation
 	-h, --help	Show this help message.
 	-c, --cell <index>	Required. H3 Cell
+	-f, --format <FMT>	'json' for true or false, 'numeric' for 1 or 0 (Default: json)
 ```
 
 ```bash
@@ -448,6 +450,7 @@ H3 4.1.0
 	isPentagon	Checks if the provided H3 index is a pentagon instead of a hexagon
 	-h, --help	Show this help message.
 	-c, --cell <index>	Required. H3 Cell
+	-f, --format <FMT>	'json' for true or false, 'numeric' for 1 or 0 (Default: json)
 ```
 
 ```bash
@@ -519,11 +522,12 @@ H3 4.1.0
 	getIcosahedronFaces	Returns the icosahedron face numbers (0 - 19) that the H3 index intersects
 	-h, --help	Show this help message.
 	-c, --cell <index>	Required. H3 Cell
+	-f, --format <FMT>	'json' for [faceNum, ...], 'newline' for faceNum\n... (Default: json)
 ```
 
 ```bash
 $ h3 getIcosahedronFaces -c 85283473fffffff
-7
+[7]
 ```
 </TabItem>
 </Tabs>

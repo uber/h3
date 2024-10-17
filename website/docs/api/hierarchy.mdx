@@ -70,11 +70,12 @@ H3 4.1.0
 	-h, --help	Show this help message.
 	-c, --cell <index>	Required. H3 Cell
 	-r, --resolution <res>	Required. Resolution, 0-14 inclusive, excluding 15 as it can never be a parent
+	-f, --format <FMT>	'json' for "CELL"\n, 'newline' for CELL\n (Default: json)
 ```
 
 ```bash
 $ h3 cellToParent -c 85283473fffffff -r 4
-8428347ffffffff
+"8428347ffffffff"
 ```
 
 </TabItem>
@@ -137,13 +138,14 @@ h3.cell_to_children(cell, child_res)
 
 ```sh
 $ h3 cellToChildren --help
-h3: Returns a JSON array of H3 indexes that are the children (or lower) of the provided cell
+h3: Returns an array of H3 indexes that are the children (or lower) of the provided cell
 H3 4.1.0
 
-	cellToChildren	Returns a JSON array of H3 indexes that are the children (or lower) of the provided cell
+	cellToChildren	Returns an array of H3 indexes that are the children (or lower) of the provided cell
 	-h, --help	Show this help message.
 	-c, --cell <index>	Required. H3 Cell
 	-r, --resolution <res>	Required. Resolution, 1-15 inclusive, excluding 0 as it can never be a child
+	-f, --format <FMT>	'json' for ["CELL", ...], 'newline' for CELL\n... (Default: json)
 ```
 
 ```bash
@@ -290,11 +292,12 @@ H3 4.1.0
 	-h, --help	Show this help message.
 	-c, --cell <index>	Required. H3 Cell
 	-r, --resolution <res>	Required. Resolution, 1-15 inclusive, excluding 0 as it can never be a child
+	-f, --format <FMT>	'json' for "CELL"\n, 'newline' for CELL\n (Default: json)
 ```
 
 ```bash
 $ h3 cellToCenterChild -c 85283473fffffff -r 7
-872834700ffffff
+"872834700ffffff"
 ```
 
 </TabItem>
@@ -440,11 +443,12 @@ H3 4.1.0
 	-c, --cell <index>	Required. H3 Cell
 	-r, --resolution <res>	Required. Resolution, 1-15 inclusive, excluding 0 as it can never be a child
 	-p, --position <pos>	Required. The child position within the set of children of the parent cell
+	-f, --format <FMT>	'json' for "CELL"\n, 'newline' for CELL\n (Default: json)
 ```
 
 ```bash
 $ h3 childPosToCell -p 42 -c 85283473fffffff -r 7
-872834730ffffff
+"872834730ffffff"
 ```
 
 </TabItem>
@@ -508,30 +512,19 @@ h3.compact_cells(cells)
 
 ```sh
 $ h3 compactCells --help
-h3: Compacts the provided set of cells as best as possible. The set of input cells must all share the same resolution. The compacted cells will be printed one per line to stdout.
+h3: Compacts the provided set of cells as best as possible. The set of input cells must all share the same resolution.
 H3 4.1.0
 
-	compactCells	Compacts the provided set of cells as best as possible. The set of input cells must all share the same resolution. The compacted cells will be printed one per line to stdout.
+	compactCells	Compacts the provided set of cells as best as possible. The set of input cells must all share the same resolution.
 	-h, --help	Show this help message.
-	-f, --file <FILENAME>	The file to load the cells from. Use -- to read from stdin.
+	-i, --file <FILENAME>	The file to load the cells from. Use -- to read from stdin.
 	-c, --cells <CELLS>	The cells to compact. Up to 100 cells if provided as hexadecimals with zero padding.
+	-f, --format <FMT>	'json' for ["CELL", ...], 'newline' for CELL\n... (Default: json)
 ```
 
 ```bash
 $ h3 compactCells -c 85283473fffffff,85283447fffffff,8528347bfffffff,85283463fffffff,85283477fffffff,8528340ffffffff,8528340bfffffff,85283457fffffff,85283443fffffff,8528344ffffffff,852836b7fffffff,8528346bfffffff,8528346ffffffff,85283467fffffff,8528342bfffffff,8528343bfffffff,85283407fffffff,85283403fffffff,8528341bfffffff
-85283447fffffff
-8528340ffffffff
-8528340bfffffff
-85283457fffffff
-85283443fffffff
-8528344ffffffff
-852836b7fffffff
-8528342bfffffff
-8528343bfffffff
-85283407fffffff
-85283403fffffff
-8528341bfffffff
-8428347ffffffff
+[ "85283447fffffff", "8528340ffffffff", "8528340bfffffff", "85283457fffffff", "85283443fffffff", "8528344ffffffff", "852836b7fffffff", "8528342bfffffff", "8528343bfffffff", "85283407fffffff", "85283403fffffff", "8528341bfffffff", "8428347ffffffff" ]
 ```
 
 </TabItem>
@@ -601,32 +594,15 @@ H3 4.1.0
 
 	uncompactCells	Unompacts the provided set of compacted cells.The uncompacted cells will be printed one per line to stdout.
 	-h, --help	Show this help message.
-	-f, --file <FILENAME>	The file to load the cells from. Use -- to read from stdin.
+	-i, --file <FILENAME>	The file to load the cells from. Use -- to read from stdin.
 	-c, --cells <CELLS>	The cells to uncompact. Up to 100 cells if provided as hexadecimals with zero padding.
 	-r, --resolution <res>	Required. Resolution, 0-15 inclusive, that the compacted set should be uncompacted to. Must be greater than or equal to the highest resolution within the compacted set.
+	-f, --format <FMT>	'json' for ["CELL", ...], 'newline' for CELL\n... (Default: json)
 ```
 
 ```bash
 $ h3 uncompactCells -r 5 -c 85283447fffffff,8528340ffffffff,8528340bfffffff,85283457fffffff,85283443fffffff,8528344ffffffff,852836b7fffffff,8528342bfffffff,8528343bfffffff,85283407fffffff,85283403fffffff,8528341bfffffff,8428347ffffffff
-85283447fffffff
-8528340ffffffff
-8528340bfffffff
-85283457fffffff
-85283443fffffff
-8528344ffffffff
-852836b7fffffff
-8528342bfffffff
-8528343bfffffff
-85283407fffffff
-85283403fffffff
-8528341bfffffff
-85283463fffffff
-85283467fffffff
-8528346bfffffff
-8528346ffffffff
-85283473fffffff
-85283477fffffff
-8528347bfffffff
+[ "85283447fffffff", "8528340ffffffff", "8528340bfffffff", "85283457fffffff", "85283443fffffff", "8528344ffffffff", "852836b7fffffff", "8528342bfffffff", "8528343bfffffff", "85283407fffffff", "85283403fffffff", "8528341bfffffff", "85283463fffffff", "85283467fffffff", "8528346bfffffff", "8528346ffffffff", "85283473fffffff", "85283477fffffff", "8528347bfffffff" ]
 ```
 
 </TabItem>
