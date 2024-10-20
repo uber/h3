@@ -1,2 +1,4 @@
-add_h3_cli_test(testCliIsValidDirectedEdge "isValidDirectedEdge -c 115283473fffffff" "true")
-add_h3_cli_test(testCliIsNotValidDirectedEdge "isValidDirectedEdge -c 85283473fffffff" "false")
+add_h3_cli_test(testCliIsValidDirectedEdge
+                "isValidDirectedEdge -c 115283473fffffff" "true")
+add_h3_cli_test(testCliIsNotValidDirectedEdge
+                "isValidDirectedEdge -c 85283473fffffff" "false")

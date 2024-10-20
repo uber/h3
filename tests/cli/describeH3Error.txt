@@ -1,4 +1,7 @@
 add_h3_cli_test(testCliDescribeH3Error0 "describeH3Error -e 0" "Success")
-add_h3_cli_test(testCliDescribeH3Error10 "describeH3Error -e 10" "Duplicate input")
-add_h3_cli_test(testCliDescribeH3Error13 "describeH3Error -e 13" "Memory allocation failed")
-add_h3_cli_test(testCliDescribeH3Error100 "describeH3Error -e 100" "Invalid error code")
+add_h3_cli_test(testCliDescribeH3Error10 "describeH3Error -e 10"
+                "Duplicate input")
+add_h3_cli_test(testCliDescribeH3Error13 "describeH3Error -e 13"
+                "Memory allocation failed")
+add_h3_cli_test(testCliDescribeH3Error100 "describeH3Error -e 100"
+                "Invalid error code")
