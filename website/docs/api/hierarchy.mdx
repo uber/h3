@@ -17,22 +17,16 @@ These functions permit moving between resolutions in the H3 grid system. The fun
   defaultValue="c"
   values={[
     {label: 'C', value: 'c'},
-    {label: 'Python', value: 'python'},
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
+    {label: 'Python', value: 'python'},
+    {label: 'Shell', value: 'shell'},
   ]
 }>
 <TabItem value="c">
 
 ```c
 H3Error cellToParent(H3Index cell, int parentRes, H3Index *parent);
-```
-
-</TabItem>
-<TabItem value="python">
-
-```py
-h3.cell_to_parent(cell, parent_res)
 ```
 
 </TabItem>
@@ -58,6 +52,33 @@ function example() {
 ```
 
 </TabItem>
+<TabItem value="python">
+
+```py
+h3.cell_to_parent(cell, parent_res)
+```
+
+</TabItem>
+<TabItem value="shell">
+
+```sh
+$ h3 cellToParent --help
+h3: Returns the H3 index that is the parent (or higher) of the provided cell
+H3 4.1.0
+
+	cellToParent	Returns the H3 index that is the parent (or higher) of the provided cell
+	-h, --help	Show this help message.
+	-c, --cell <index>	Required. H3 Cell
+	-r, --resolution <res>	Required. Resolution, 0-14 inclusive, excluding 15 as it can never be a parent
+	-f, --format <FMT>	'json' for "CELL"\n, 'newline' for CELL\n (Default: json)
+```
+
+```bash
+$ h3 cellToParent -c 85283473fffffff -r 4
+"8428347ffffffff"
+```
+
+</TabItem>
 </Tabs>
 
 Provides the parent (coarser) index containing `cell`.
@@ -71,22 +92,16 @@ Returns 0 (`E_SUCCESS`) on success.
   defaultValue="c"
   values={[
     {label: 'C', value: 'c'},
-    {label: 'Python', value: 'python'},
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
+    {label: 'Python', value: 'python'},
+    {label: 'Shell', value: 'shell'},
   ]
 }>
 <TabItem value="c">
 
 ```c
 H3Error cellToChildren(H3Index cell, int childRes, H3Index *children);
-```
-
-</TabItem>
-<TabItem value="python">
-
-```py
-h3.cell_to_children(cell, child_res)
 ```
 
 </TabItem>
@@ -112,6 +127,33 @@ function example() {
 ```
 
 </TabItem>
+<TabItem value="python">
+
+```py
+h3.cell_to_children(cell, child_res)
+```
+
+</TabItem>
+<TabItem value="shell">
+
+```sh
+$ h3 cellToChildren --help
+h3: Returns an array of H3 indexes that are the children (or lower) of the provided cell
+H3 4.1.0
+
+	cellToChildren	Returns an array of H3 indexes that are the children (or lower) of the provided cell
+	-h, --help	Show this help message.
+	-c, --cell <index>	Required. H3 Cell
+	-r, --resolution <res>	Required. Resolution, 1-15 inclusive, excluding 0 as it can never be a child
+	-f, --format <FMT>	'json' for ["CELL", ...], 'newline' for CELL\n... (Default: json)
+```
+
+```bash
+$ h3 cellToChildren -c 85283473fffffff -r 6
+[ "862834707ffffff", "86283470fffffff", "862834717ffffff", "86283471fffffff", "862834727ffffff", "86283472fffffff", "862834737ffffff" ]
+```
+
+</TabItem>
 </Tabs>
 
 Populates `children` with the indexes contained by `cell` at resolution `childRes`. `children` must be an array of at least size `cellToChildrenSize(cell, childRes)`.
@@ -125,9 +167,10 @@ Returns 0 (`E_SUCCESS`) on success.
   defaultValue="c"
   values={[
     {label: 'C', value: 'c'},
-    {label: 'Python', value: 'python'},
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
+    {label: 'Python', value: 'python'},
+    {label: 'Shell', value: 'shell'},
   ]
 }>
 <TabItem value="c">
@@ -135,15 +178,6 @@ Returns 0 (`E_SUCCESS`) on success.
 ```c
 H3Error cellToChildrenSize(H3Index cell, int childRes, int64_t *out);
 ```
-
-</TabItem>
-<TabItem value="python">
-
-:::note
-
-This function exists for memory management and is not exposed.
-
-:::
 
 </TabItem>
 <TabItem value="java">
@@ -164,6 +198,34 @@ This function exists for memory management and is not exposed.
 :::
 
 </TabItem>
+<TabItem value="python">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+<TabItem value="shell">
+
+```sh
+$ h3 cellToChildrenSize --help
+h3: Returns the maximum number of children for a given cell at the specified child resolution
+H3 4.1.0
+
+	cellToChildrenSize	Returns the maximum number of children for a given cell at the specified child resolution
+	-h, --help	Show this help message.
+	-c, --cell <index>	Required. H3 Cell
+	-r, --resolution <res>	Required. Resolution, 1-15 inclusive, excluding 0 as it can never be a child
+```
+
+```bash
+$ h3 cellToChildrenSize -c 85283473fffffff -r 6
+7
+```
+
+</TabItem>
 </Tabs>
 
 Provides the size of the `children` array needed for the given inputs to `cellToChildren`.
@@ -177,22 +239,16 @@ Returns 0 (`E_SUCCESS`) on success.
   defaultValue="c"
   values={[
     {label: 'C', value: 'c'},
-    {label: 'Python', value: 'python'},
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
+    {label: 'Python', value: 'python'},
+    {label: 'Shell', value: 'shell'},
   ]
 }>
 <TabItem value="c">
 
 ```c
 H3Error cellToCenterChild(H3Index cell, int childRes, H3Index *child);
-```
-
-</TabItem>
-<TabItem value="python">
-
-```py
-h3.cell_to_center_child(cell, child_res)
 ```
 
 </TabItem>
@@ -218,6 +274,33 @@ function example() {
 ```
 
 </TabItem>
+<TabItem value="python">
+
+```py
+h3.cell_to_center_child(cell, child_res)
+```
+
+</TabItem>
+<TabItem value="shell">
+
+```sh
+$ h3 cellToCenterChild --help
+h3: Returns the H3 index that is the centrally-placed child (or lower) of the provided cell
+H3 4.1.0
+
+	cellToCenterChild	Returns the H3 index that is the centrally-placed child (or lower) of the provided cell
+	-h, --help	Show this help message.
+	-c, --cell <index>	Required. H3 Cell
+	-r, --resolution <res>	Required. Resolution, 1-15 inclusive, excluding 0 as it can never be a child
+	-f, --format <FMT>	'json' for "CELL"\n, 'newline' for CELL\n (Default: json)
+```
+
+```bash
+$ h3 cellToCenterChild -c 85283473fffffff -r 7
+"872834700ffffff"
+```
+
+</TabItem>
 </Tabs>
 
 Provides the center child (finer) index contained by `cell` at resolution `childRes`.
@@ -231,22 +314,16 @@ Returns 0 (`E_SUCCESS`) on success.
   defaultValue="c"
   values={[
     {label: 'C', value: 'c'},
-    {label: 'Python', value: 'python'},
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
+    {label: 'Python', value: 'python'},
+    {label: 'Shell', value: 'shell'},
   ]
 }>
 <TabItem value="c">
 
 ```c
 H3Index cellToChildPos(H3Index child, int parentRes, int64_t *out);
-```
-
-</TabItem>
-<TabItem value="python">
-
-```py
-h3.cell_to_child_pos(child, parent_res)
 ```
 
 </TabItem>
@@ -272,6 +349,32 @@ function example() {
 ```
 
 </TabItem>
+<TabItem value="python">
+
+```py
+h3.cell_to_child_pos(child, parent_res)
+```
+
+</TabItem>
+<TabItem value="shell">
+
+```sh
+$ h3 cellToChildPos --help
+h3: Returns the position of the child cell within an ordered list of all children of the cell's parent at the specified child resolution
+H3 4.1.0
+
+	cellToChildPos	Returns the position of the child cell within an ordered list of all children of the cell's parent at the specified child resolution
+	-h, --help	Show this help message.
+	-c, --cell <index>	Required. H3 Cell
+	-r, --resolution <res>	Required. Resolution, 1-15 inclusive, excluding 0 as it can never be a child
+```
+
+```bash
+$ h3 cellToChildPos -c 85283473fffffff -r 3
+25
+```
+
+</TabItem>
 </Tabs>
 
 Returns the position of the child cell within an ordered list of all children of the cell's parent at the specified resolution `parentRes`. The order of the ordered list is the same as that returned by `cellToChildren`. This is the complement of `childPosToCell`.
@@ -285,22 +388,16 @@ Returns 0 (`E_SUCCESS`) on success.
   defaultValue="c"
   values={[
     {label: 'C', value: 'c'},
-    {label: 'Python', value: 'python'},
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
+    {label: 'Python', value: 'python'},
+    {label: 'Shell', value: 'shell'},
   ]
 }>
 <TabItem value="c">
 
 ```c
 H3Index childPosToCell(int64_t childPos, H3Index parent, int childRes, H3Index *child);
-```
-
-</TabItem>
-<TabItem value="python">
-
-```py
-h3.cell_to_child_pos(child_pos, parent, child_res)
 ```
 
 </TabItem>
@@ -327,6 +424,34 @@ function example() {
 ```
 
 </TabItem>
+<TabItem value="python">
+
+```py
+h3.child_pos_to_cell(child_pos, parent, child_res)
+```
+
+</TabItem>
+<TabItem value="shell">
+
+```sh
+$ h3 childPosToCell --help
+h3: Returns the child cell at a given position and resolution within an ordered list of all children of the parent cell
+H3 4.1.0
+
+	childPosToCell	Returns the child cell at a given position and resolution within an ordered list of all children of the parent cell
+	-h, --help	Show this help message.
+	-c, --cell <index>	Required. H3 Cell
+	-r, --resolution <res>	Required. Resolution, 1-15 inclusive, excluding 0 as it can never be a child
+	-p, --position <pos>	Required. The child position within the set of children of the parent cell
+	-f, --format <FMT>	'json' for "CELL"\n, 'newline' for CELL\n (Default: json)
+```
+
+```bash
+$ h3 childPosToCell -p 42 -c 85283473fffffff -r 7
+"872834730ffffff"
+```
+
+</TabItem>
 </Tabs>
 
 Returns the child cell at a given position within an ordered list of all children of `parent` at the specified resolution `childRes`. The order of the ordered list is the same as that returned by `cellToChildren`. This is the complement of `cellToChildPos`.
@@ -340,22 +465,16 @@ Returns 0 (`E_SUCCESS`) on success.
   defaultValue="c"
   values={[
     {label: 'C', value: 'c'},
-    {label: 'Python', value: 'python'},
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
+    {label: 'Python', value: 'python'},
+    {label: 'Shell', value: 'shell'},
   ]
 }>
 <TabItem value="c">
 
 ```c
 H3Error compactCells(const H3Index *cellSet, H3Index *compactedSet, const int64_t numCells);
-```
-
-</TabItem>
-<TabItem value="python">
-
-```py
-h3.compact_cells(cells)
 ```
 
 </TabItem>
@@ -382,6 +501,33 @@ function example() {
 ```
 
 </TabItem>
+<TabItem value="python">
+
+```py
+h3.compact_cells(cells)
+```
+
+</TabItem>
+<TabItem value="shell">
+
+```sh
+$ h3 compactCells --help
+h3: Compacts the provided set of cells as best as possible. The set of input cells must all share the same resolution.
+H3 4.1.0
+
+	compactCells	Compacts the provided set of cells as best as possible. The set of input cells must all share the same resolution.
+	-h, --help	Show this help message.
+	-i, --file <FILENAME>	The file to load the cells from. Use -- to read from stdin.
+	-c, --cells <CELLS>	The cells to compact. Up to 100 cells if provided as hexadecimals with zero padding.
+	-f, --format <FMT>	'json' for ["CELL", ...], 'newline' for CELL\n... (Default: json)
+```
+
+```bash
+$ h3 compactCells -c 85283473fffffff,85283447fffffff,8528347bfffffff,85283463fffffff,85283477fffffff,8528340ffffffff,8528340bfffffff,85283457fffffff,85283443fffffff,8528344ffffffff,852836b7fffffff,8528346bfffffff,8528346ffffffff,85283467fffffff,8528342bfffffff,8528343bfffffff,85283407fffffff,85283403fffffff,8528341bfffffff
+[ "85283447fffffff", "8528340ffffffff", "8528340bfffffff", "85283457fffffff", "85283443fffffff", "8528344ffffffff", "852836b7fffffff", "8528342bfffffff", "8528343bfffffff", "85283407fffffff", "85283403fffffff", "8528341bfffffff", "8428347ffffffff" ]
+```
+
+</TabItem>
 </Tabs>
 
 Compacts the set `cellSet` of indexes as best as possible, into the array `compactedSet`. `compactedSet` must be at least the size of `cellSet` in case the set cannot be compacted. Cells in `cellSet` must all share the same resolution.
@@ -395,22 +541,16 @@ Returns 0 (`E_SUCCESS`) on success.
   defaultValue="c"
   values={[
     {label: 'C', value: 'c'},
-    {label: 'Python', value: 'python'},
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
+    {label: 'Python', value: 'python'},
+    {label: 'Shell', value: 'shell'},
   ]
 }>
 <TabItem value="c">
 
 ```c
 H3Error uncompactCells(const H3Index *compactedSet, const int64_t numCells, H3Index *cellSet, const int64_t maxCells, const int res);
-```
-
-</TabItem>
-<TabItem value="python">
-
-```py
-h3.uncompact_cells(cells, res)
 ```
 
 </TabItem>
@@ -438,6 +578,34 @@ function example() {
 ```
 
 </TabItem>
+<TabItem value="python">
+
+```py
+h3.uncompact_cells(cells, res)
+```
+
+</TabItem>
+<TabItem value="shell">
+
+```sh
+$ h3 uncompactCells --help
+h3: Unompacts the provided set of compacted cells.The uncompacted cells will be printed one per line to stdout.
+H3 4.1.0
+
+	uncompactCells	Unompacts the provided set of compacted cells.The uncompacted cells will be printed one per line to stdout.
+	-h, --help	Show this help message.
+	-i, --file <FILENAME>	The file to load the cells from. Use -- to read from stdin.
+	-c, --cells <CELLS>	The cells to uncompact. Up to 100 cells if provided as hexadecimals with zero padding.
+	-r, --resolution <res>	Required. Resolution, 0-15 inclusive, that the compacted set should be uncompacted to. Must be greater than or equal to the highest resolution within the compacted set.
+	-f, --format <FMT>	'json' for ["CELL", ...], 'newline' for CELL\n... (Default: json)
+```
+
+```bash
+$ h3 uncompactCells -r 5 -c 85283447fffffff,8528340ffffffff,8528340bfffffff,85283457fffffff,85283443fffffff,8528344ffffffff,852836b7fffffff,8528342bfffffff,8528343bfffffff,85283407fffffff,85283403fffffff,8528341bfffffff,8428347ffffffff
+[ "85283447fffffff", "8528340ffffffff", "8528340bfffffff", "85283457fffffff", "85283443fffffff", "8528344ffffffff", "852836b7fffffff", "8528342bfffffff", "8528343bfffffff", "85283407fffffff", "85283403fffffff", "8528341bfffffff", "85283463fffffff", "85283467fffffff", "8528346bfffffff", "8528346ffffffff", "85283473fffffff", "85283477fffffff", "8528347bfffffff" ]
+```
+
+</TabItem>
 </Tabs>
 
 Uncompacts the set `compactedSet` of indexes to the resolution `res`. `h3Set` must be at least of size `uncompactCellsSize(compactedSet, numHexes, res)`.
@@ -451,9 +619,10 @@ Returns 0 (`E_SUCCESS`) on success.
   defaultValue="c"
   values={[
     {label: 'C', value: 'c'},
-    {label: 'Python', value: 'python'},
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
+    {label: 'Python', value: 'python'},
+    {label: 'Shell', value: 'shell'},
   ]
 }>
 <TabItem value="c">
@@ -461,15 +630,6 @@ Returns 0 (`E_SUCCESS`) on success.
 ```c
 H3Error uncompactCellsSize(const H3Index *compactedSet, const int64_t numCompacted, const int res, int64_t *out);
 ```
-
-</TabItem>
-<TabItem value="python">
-
-:::note
-
-This function exists for memory management and is not exposed.
-
-:::
 
 </TabItem>
 <TabItem value="java">
@@ -482,6 +642,24 @@ This function exists for memory management and is not exposed.
 
 </TabItem>
 <TabItem value="javascript">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+<TabItem value="python">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+<TabItem value="shell">
 
 :::note
 

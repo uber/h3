@@ -285,7 +285,9 @@ set(OTHER_SOURCE_FILES
     src/apps/fuzzers/fuzzerDirectedEdge.c
     src/apps/fuzzers/fuzzerLocalIj.c
     src/apps/fuzzers/fuzzerPolygonToCells.c
+    src/apps/fuzzers/fuzzerPolygonToCellsExperimental.c
     src/apps/fuzzers/fuzzerPolygonToCellsNoHoles.c
+    src/apps/fuzzers/fuzzerPolygonToCellsExperimentalNoHoles.c
     src/apps/fuzzers/fuzzerCellToChildPos.c
     src/apps/fuzzers/fuzzerInternalAlgos.c
     src/apps/fuzzers/fuzzerInternalCoordIjk.c
@@ -560,7 +562,9 @@ if(BUILD_FUZZERS)
     add_h3_fuzzer(fuzzerDirectedEdge src/apps/fuzzers/fuzzerDirectedEdge.c)
     add_h3_fuzzer(fuzzerLocalIj src/apps/fuzzers/fuzzerLocalIj.c)
     add_h3_fuzzer(fuzzerPolygonToCells src/apps/fuzzers/fuzzerPolygonToCells.c)
+    add_h3_fuzzer(fuzzerPolygonToCellsExperimental src/apps/fuzzers/fuzzerPolygonToCellsExperimental.c)
     add_h3_fuzzer(fuzzerPolygonToCellsNoHoles src/apps/fuzzers/fuzzerPolygonToCellsNoHoles.c)
+    add_h3_fuzzer(fuzzerPolygonToCellsExperimentalNoHoles src/apps/fuzzers/fuzzerPolygonToCellsExperimentalNoHoles.c)
     add_h3_fuzzer(fuzzerCellToChildPos src/apps/fuzzers/fuzzerCellToChildPos.c)
     if(ENABLE_REQUIRES_ALL_SYMBOLS)
         add_h3_fuzzer(fuzzerInternalAlgos src/apps/fuzzers/fuzzerInternalAlgos.c)

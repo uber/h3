@@ -1,0 +1,1 @@
+add_h3_cli_test(testCliRadsToDegs "radsToDegs -r 3.1415926536" "180.0000000006")

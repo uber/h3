@@ -19,6 +19,7 @@
 
 #include "aflHarness.h"
 #include "h3api.h"
+#include "polygon.h"
 #include "utility.h"
 
 const int MAX_RES = 15;
@@ -50,8 +51,9 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     // Offset by 1 since *data was used for `res`, above.
     geoPolygon.geoloop.verts = (LatLng *)(data + 1);
 
-    // TODO: Fuzz the `flags` input as well when it has meaningful input
-    run(&geoPolygon, 0, res);
+    for (uint32_t flags = 0; flags < CONTAINMENT_INVALID; flags++) {
+        run(&geoPolygon, flags, res);
+    }
 
     return 0;
 }

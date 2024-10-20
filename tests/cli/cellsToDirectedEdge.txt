@@ -1,0 +1,2 @@
+add_h3_cli_test(testCliCellsToDirectedEdge "cellsToDirectedEdge -o 85283473fffffff -d 85283477fffffff -f newline" "115283473fffffff")
+add_h3_cli_test(testCliCellsNotToDirectedEdge "cellsToDirectedEdge -o 85283473fffffff -d 85283472fffffff 2>&1" "Error 11: Cell arguments were not neighbors")

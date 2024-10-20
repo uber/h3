@@ -18,22 +18,16 @@ edge from one cell to a neighboring cell.
   defaultValue="c"
   values={[
     {label: 'C', value: 'c'},
-    {label: 'Python', value: 'python'},
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
+    {label: 'Python', value: 'python'},
+    {label: 'Shell', value: 'shell'},
   ]
 }>
 <TabItem value="c">
 
 ```c
 H3Error areNeighborCells(H3Index origin, H3Index destination, int *out);
-```
-
-</TabItem>
-<TabItem value="python">
-
-```py
-h3.are_neighbor_cells(origin, destination)
 ```
 
 </TabItem>
@@ -60,6 +54,33 @@ function example() {
 ```
 
 </TabItem>
+<TabItem value="python">
+
+```py
+h3.are_neighbor_cells(origin, destination)
+```
+
+</TabItem>
+<TabItem value="shell">
+
+```sh
+$ h3 areNeighborCells --help
+h3: Determines if the provided H3 cells are neighbors (have a shared border)
+H3 4.1.0
+
+	areNeighborCells	Determines if the provided H3 cells are neighbors (have a shared border)
+	-o, --origin <CELL>	Required. Origin H3 Cell
+	-d, --destination <CELL>	Required. Destination H3 Cell
+	-h, --help	Show this help message.
+	-f, --format <FMT>	'json' for true or false, 'numeric' for 1 or 0 (Default: json)
+```
+
+```bash
+$ h3 areNeighborCells -o 85283473fffffff -d 85283477fffffff
+true
+```
+
+</TabItem>
 </Tabs>
 
 Returns whether or not the provided H3 cell indexes are neighbors.
@@ -73,22 +94,16 @@ Returns whether or not the provided H3 cell indexes are neighbors.
   defaultValue="c"
   values={[
     {label: 'C', value: 'c'},
-    {label: 'Python', value: 'python'},
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
+    {label: 'Python', value: 'python'},
+    {label: 'Shell', value: 'shell'},
   ]
 }>
 <TabItem value="c">
 
 ```c
 H3Error cellsToDirectedEdge(H3Index origin, H3Index destination, H3Index *out);
-```
-
-</TabItem>
-<TabItem value="python">
-
-```py
-h3.cells_to_directed_edge(origin, destination)
 ```
 
 </TabItem>
@@ -115,6 +130,33 @@ function example() {
 ```
 
 </TabItem>
+<TabItem value="python">
+
+```py
+h3.cells_to_directed_edge(origin, destination)
+```
+
+</TabItem>
+<TabItem value="shell">
+
+```sh
+$ h3 cellsToDirectedEdge --help
+h3: Converts neighboring cells into a directed edge index (or errors if they are not neighbors)
+H3 4.1.0
+
+	cellsToDirectedEdge	Converts neighboring cells into a directed edge index (or errors if they are not neighbors)
+	-o, --origin <CELL>	Required. Origin H3 Cell
+	-d, --destination <CELL>	Required. Destination H3 Cell
+	-h, --help	Show this help message.
+	-f, --format <FMT>	'json' for "CELL"\n, 'newline' for CELL\n (Default: json)
+```
+
+```bash
+$ h3 cellsToDirectedEdge -o 85283473fffffff -d 85283477fffffff
+"115283473fffffff"
+```
+
+</TabItem>
 </Tabs>
 
 Returns a unidirectional edge H3 index based on the provided origin and
@@ -129,22 +171,16 @@ Returns 0 on success.
   defaultValue="c"
   values={[
     {label: 'C', value: 'c'},
-    {label: 'Python', value: 'python'},
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
+    {label: 'Python', value: 'python'},
+    {label: 'Shell', value: 'shell'},
   ]
 }>
 <TabItem value="c">
 
 ```c
 int isValidDirectedEdge(H3Index edge);
-```
-
-</TabItem>
-<TabItem value="python">
-
-```py
-h3.is_valid_directed_edge(edge)
 ```
 
 </TabItem>
@@ -170,6 +206,32 @@ function example() {
 ```
 
 </TabItem>
+<TabItem value="python">
+
+```py
+h3.is_valid_directed_edge(edge)
+```
+
+</TabItem>
+<TabItem value="shell">
+
+```sh
+$ h3 isValidDirectedEdge --help
+h3: Checks if the provided H3 directed edge is actually valid
+H3 4.1.0
+
+	isValidDirectedEdge	Checks if the provided H3 directed edge is actually valid
+	-h, --help	Show this help message.
+	-c, --cell <index>	Required. H3 Cell
+	-f, --format <FMT>	'json' for true or false, 'numeric' for 1 or 0 (Default: json)
+```
+
+```bash
+$ h3 isValidDirectedEdge -c 115283473fffffff
+true
+```
+
+</TabItem>
 </Tabs>
 
 Determines if the provided H3Index is a valid unidirectional edge index.
@@ -183,22 +245,16 @@ Returns 1 if it is a unidirectional edge H3Index, otherwise 0.
   defaultValue="c"
   values={[
     {label: 'C', value: 'c'},
-    {label: 'Python', value: 'python'},
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
+    {label: 'Python', value: 'python'},
+    {label: 'Shell', value: 'shell'},
   ]
 }>
 <TabItem value="c">
 
 ```c
 H3Error getDirectedEdgeOrigin(H3Index edge, H3Index *out);
-```
-
-</TabItem>
-<TabItem value="python">
-
-```py
-h3.get_directed_edge_origin(edge)
 ```
 
 </TabItem>
@@ -224,6 +280,32 @@ function example() {
 ```
 
 </TabItem>
+<TabItem value="python">
+
+```py
+h3.get_directed_edge_origin(edge)
+```
+
+</TabItem>
+<TabItem value="shell">
+
+```sh
+$ h3 getDirectedEdgeOrigin --help
+h3: Returns the origin cell from the directed edge
+H3 4.1.0
+
+	getDirectedEdgeOrigin	Returns the origin cell from the directed edge
+	-c, --cell <index>	Required. H3 Cell
+	-h, --help	Show this help message.
+	-f, --format <FMT>	'json' for "CELL"\n, 'newline' for CELL\n (Default: json)
+```
+
+```bash
+$ h3 getDirectedEdgeOrigin -c 115283473fffffff
+"85283473fffffff"
+```
+
+</TabItem>
 </Tabs>
 
 Returns the origin hexagon from the unidirectional edge H3Index.
@@ -235,22 +317,16 @@ Returns the origin hexagon from the unidirectional edge H3Index.
   defaultValue="c"
   values={[
     {label: 'C', value: 'c'},
-    {label: 'Python', value: 'python'},
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
+    {label: 'Python', value: 'python'},
+    {label: 'Shell', value: 'shell'},
   ]
 }>
 <TabItem value="c">
 
 ```c
 H3Error getDirectedEdgeDestination(H3Index edge, H3Index *out);
-```
-
-</TabItem>
-<TabItem value="python">
-
-```py
-h3.get_directed_edge_destination(edge)
 ```
 
 </TabItem>
@@ -276,6 +352,32 @@ function example() {
 ```
 
 </TabItem>
+<TabItem value="python">
+
+```py
+h3.get_directed_edge_destination(edge)
+```
+
+</TabItem>
+<TabItem value="shell">
+
+```sh
+$ h3 getDirectedEdgeDestination --help
+h3: Returns the destination cell from the directed edge
+H3 4.1.0
+
+	getDirectedEdgeDestination	Returns the destination cell from the directed edge
+	-c, --cell <index>	Required. H3 Cell
+	-h, --help	Show this help message.
+	-f, --format <FMT>	'json' for "CELL"\n, 'newline' for CELL\n (Default: json)
+```
+
+```bash
+$ h3 getDirectedEdgeDestination -c 115283473fffffff
+"85283477fffffff"
+```
+
+</TabItem>
 </Tabs>
 
 Returns the destination hexagon from the unidirectional edge H3Index.
@@ -287,22 +389,16 @@ Returns the destination hexagon from the unidirectional edge H3Index.
   defaultValue="c"
   values={[
     {label: 'C', value: 'c'},
-    {label: 'Python', value: 'python'},
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
+    {label: 'Python', value: 'python'},
+    {label: 'Shell', value: 'shell'},
   ]
 }>
 <TabItem value="c">
 
 ```c
 H3Error directedEdgeToCells(H3Index edge, H3Index* originDestination);
-```
-
-</TabItem>
-<TabItem value="python">
-
-```py
-h3.directed_edge_to_cells(edge)
 ```
 
 </TabItem>
@@ -328,6 +424,32 @@ function example() {
 ```
 
 </TabItem>
+<TabItem value="python">
+
+```py
+h3.directed_edge_to_cells(edge)
+```
+
+</TabItem>
+<TabItem value="shell">
+
+```sh
+$ h3 directedEdgeToCells --help
+h3: Returns the origin, destination pair of cells from the directed edge
+H3 4.1.0
+
+	directedEdgeToCells	Returns the origin, destination pair of cells from the directed edge
+	-c, --cell <index>	Required. H3 Cell
+	-h, --help	Show this help message.
+	-f, --format <FMT>	'json' for ["CELL", ...], 'newline' for CELL\n... (Default: json)
+```
+
+```bash
+$ h3 directedEdgeToCells -c 115283473fffffff
+["85283473fffffff", "85283477fffffff"]
+```
+
+</TabItem>
 </Tabs>
 
 Returns the origin, destination pair of hexagon IDs for the given edge ID, which are placed at `originDestination[0]` and
@@ -340,22 +462,16 @@ Returns the origin, destination pair of hexagon IDs for the given edge ID, which
   defaultValue="c"
   values={[
     {label: 'C', value: 'c'},
-    {label: 'Python', value: 'python'},
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
+    {label: 'Python', value: 'python'},
+    {label: 'Shell', value: 'shell'},
   ]
 }>
 <TabItem value="c">
 
 ```c
 H3Error originToDirectedEdges(H3Index origin, H3Index* edges);
-```
-
-</TabItem>
-<TabItem value="python">
-
-```py
-h3.origin_to_directed_edges(h)
 ```
 
 </TabItem>
@@ -381,6 +497,32 @@ function example() {
 ```
 
 </TabItem>
+<TabItem value="python">
+
+```py
+h3.origin_to_directed_edges(h)
+```
+
+</TabItem>
+<TabItem value="shell">
+
+```sh
+$ h3 originToDirectedEdges --help
+h3: Returns all of the directed edges from the specified origin cell
+H3 4.1.0
+
+	originToDirectedEdges	Returns all of the directed edges from the specified origin cell
+	-c, --cell <index>	Required. H3 Cell
+	-h, --help	Show this help message.
+	-f, --format <FMT>	'json' for ["CELL", ...], 'newline' for CELL\n... (Default: json)
+```
+
+```bash
+$ h3 originToDirectedEdges -c 85283473fffffff
+["115283473fffffff", "125283473fffffff", "135283473fffffff", "145283473fffffff", "155283473fffffff", "165283473fffffff"]
+```
+
+</TabItem>
 </Tabs>
 
 Provides all of the directed edges from the current H3Index. `edges` must be of length 6,
@@ -394,22 +536,16 @@ one of the members of the array will be `0`.
   defaultValue="c"
   values={[
     {label: 'C', value: 'c'},
-    {label: 'Python', value: 'python'},
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
+    {label: 'Python', value: 'python'},
+    {label: 'Shell', value: 'shell'},
   ]
 }>
 <TabItem value="c">
 
 ```c
 H3Error directedEdgeToBoundary(H3Index edge, CellBoundary* gb);
-```
-
-</TabItem>
-<TabItem value="python">
-
-```py
-h3.directed_edge_to_boundary(edge, geo_json=False)
 ```
 
 </TabItem>
@@ -432,6 +568,32 @@ function example() {
   const edge = '115283473fffffff';
   return h3.directedEdgeToBoundary(edge);
 }
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.directed_edge_to_boundary(edge, geo_json=False)
+```
+
+</TabItem>
+<TabItem value="shell">
+
+```sh
+$ h3 directedEdgeToBoundary --help
+h3: Provides the coordinates defining the directed edge
+H3 4.1.0
+
+	directedEdgeToBoundary	Provides the coordinates defining the directed edge
+	-c, --cell <index>	Required. H3 Cell
+	-h, --help	Show this help message.
+	-f, --format <FMT>	'json' for [[lat, lng], ...], 'wkt' for a WKT POLYGON, 'newline' for lat\nlng\n... (Default: json)
+```
+
+```bash
+$ h3 directedEdgeToBoundary -c 115283473fffffff
+[[37.4201286777, -122.0377349643], [37.3375560844, -122.0904289290]]
 ```
 
 </TabItem>

@@ -1,0 +1,1 @@
+add_h3_cli_test(testCliChildPosToCell "childPosToCell -c 85283473fffffff -r 7 -p 42 -f newline" "872834730ffffff")

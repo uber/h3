@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Uber Technologies, Inc.
+ * Copyright 2022-2024 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@
 
 #include "aflHarness.h"
 #include "h3api.h"
+#include "polygon.h"
 #include "utility.h"
 
 typedef struct {
@@ -71,7 +72,8 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     int res = args->res % (MAX_RES + 1);
 
     GeoPolygon geoPolygon;
-    geoPolygon.numHoles = args->numHoles % MAX_HOLES;
+    int originalNumHoles = args->numHoles % MAX_HOLES;
+    geoPolygon.numHoles = originalNumHoles;
     if (geoPolygon.numHoles < 0) {
         return 0;
     }
@@ -88,10 +90,12 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         }
     }
 
-    // TODO: Fuzz the `flags` input as well when it has meaningful input
-    run(&geoPolygon, 0, res);
-    geoPolygon.numHoles = 0;
-    run(&geoPolygon, 0, res);
+    for (uint32_t flags = 0; flags < CONTAINMENT_INVALID; flags++) {
+        geoPolygon.numHoles = originalNumHoles;
+        run(&geoPolygon, 0, res);
+        geoPolygon.numHoles = 0;
+        run(&geoPolygon, 0, res);
+    }
     free(geoPolygon.holes);
 
     return 0;

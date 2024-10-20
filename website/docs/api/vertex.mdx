@@ -17,22 +17,16 @@ Vertex mode allows encoding the topological vertexes of H3 cells.
   defaultValue="c"
   values={[
     {label: 'C', value: 'c'},
-    {label: 'Python', value: 'python'},
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
+    {label: 'Python', value: 'python'},
+    {label: 'Shell', value: 'shell'},
   ]
 }>
 <TabItem value="c">
 
 ```c
 H3Error cellToVertex(H3Index origin, int vertexNum, H3Index *out);
-```
-
-</TabItem>
-<TabItem value="python">
-
-```py
-h3.cell_to_vertex(origin, vertex_num)
 ```
 
 </TabItem>
@@ -59,6 +53,33 @@ function example() {
 ```
 
 </TabItem>
+<TabItem value="python">
+
+```py
+h3.cell_to_vertex(origin, vertex_num)
+```
+
+</TabItem>
+<TabItem value="shell">
+
+```sh
+$ h3 cellToVertex --help
+h3: Returns the vertex for the specified cell and vertex index. Must be 0-5 for hexagons, 0-4 for pentagons
+H3 4.1.0
+
+	cellToVertex	Returns the vertex for the specified cell and vertex index. Must be 0-5 for hexagons, 0-4 for pentagons
+	-c, --cell <index>	Required. H3 Cell
+	-v, --vertex <INDEX>	Required. Vertex index number. 0-5 for hexagons, 0-4 for pentagons
+	-h, --help	Show this help message.
+	-f, --format <FMT>	'json' for "CELL"\n, 'newline' for CELL\n (Default: json)
+```
+
+```bash
+$ h3 cellToVertex -v 2 -c 85283473fffffff
+"205283463fffffff"
+```
+
+</TabItem>
 </Tabs>
 
 Returns the index for the specified cell vertex. Valid vertex numbers are between 0 and 5 (inclusive)
@@ -71,22 +92,16 @@ for hexagonal cells, and 0 and 4 (inclusive) for pentagonal cells.
   defaultValue="c"
   values={[
     {label: 'C', value: 'c'},
-    {label: 'Python', value: 'python'},
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
+    {label: 'Python', value: 'python'},
+    {label: 'Shell', value: 'shell'},
   ]
 }>
 <TabItem value="c">
 
 ```c
 H3Error cellToVertexes(H3Index origin, H3Index *out);
-```
-
-</TabItem>
-<TabItem value="python">
-
-```py
-h3.cell_to_vertexes(origin)
 ```
 
 </TabItem>
@@ -112,6 +127,32 @@ function example() {
 ```
 
 </TabItem>
+<TabItem value="python">
+
+```py
+h3.cell_to_vertexes(origin)
+```
+
+</TabItem>
+<TabItem value="shell">
+
+```sh
+$ h3 cellToVertexes --help
+h3: Returns all of the vertexes from the specified cell
+H3 4.1.0
+
+	cellToVertexes	Returns all of the vertexes from the specified cell
+	-c, --cell <index>	Required. H3 Cell
+	-h, --help	Show this help message.
+	-f, --format <FMT>	'json' for ["CELL", ...], 'newline' for CELL\n... (Default: json)
+```
+
+```bash
+$ h3 cellToVertexes -c 85283473fffffff
+[ "22528340bfffffff", "235283447fffffff", "205283463fffffff", "255283463fffffff", "22528340ffffffff", "23528340bfffffff" ]
+```
+
+</TabItem>
 </Tabs>
 
 Returns the indexes for all vertexes of the given cell index.
@@ -126,22 +167,16 @@ array will be set to `0`.
   defaultValue="c"
   values={[
     {label: 'C', value: 'c'},
-    {label: 'Python', value: 'python'},
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
+    {label: 'Python', value: 'python'},
+    {label: 'Shell', value: 'shell'},
   ]
 }>
 <TabItem value="c">
 
 ```c
 H3Error vertexToLatLng(H3Index vertex, LatLng *point);
-```
-
-</TabItem>
-<TabItem value="python">
-
-```py
-h3.vertex_to_latlng(vertex)
 ```
 
 </TabItem>
@@ -167,6 +202,32 @@ function example() {
 ```
 
 </TabItem>
+<TabItem value="python">
+
+```py
+h3.vertex_to_latlng(vertex)
+```
+
+</TabItem>
+<TabItem value="shell">
+
+```sh
+$ h3 vertexToLatLng --help
+h3: Returns the lat, lng pair for the given vertex
+H3 4.1.0
+
+	vertexToLatLng	Returns the lat, lng pair for the given vertex
+	-c, --cell <index>	Required. H3 Cell
+	-h, --help	Show this help message.
+	-f, --format <FMT>	'json' for [lat, lng], 'wkt' for a WKT POINT, 'newline' for lat\nlng\n (Default: json)
+```
+
+```bash
+$ h3 vertexToLatLng -c 255283463fffffff
+[37.4201286777, -122.0377349643]
+```
+
+</TabItem>
 </Tabs>
 
 Returns the latitude and longitude coordinates of the given vertex.
@@ -178,22 +239,16 @@ Returns the latitude and longitude coordinates of the given vertex.
   defaultValue="c"
   values={[
     {label: 'C', value: 'c'},
-    {label: 'Python', value: 'python'},
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
+    {label: 'Python', value: 'python'},
+    {label: 'Shell', value: 'shell'},
   ]
 }>
 <TabItem value="c">
 
 ```c
 int isValidVertex(H3Index vertex);
-```
-
-</TabItem>
-<TabItem value="python">
-
-```py
-h3.is_valid_vertex(vertex)
 ```
 
 </TabItem>
@@ -216,6 +271,32 @@ function example() {
   const h = '255283463fffffff';
   return h3.isValidVertex(h);
 }
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.is_valid_vertex(vertex)
+```
+
+</TabItem>
+<TabItem value="shell">
+
+```sh
+$ h3 isValidVertex --help
+h3: Checks if the provided H3 vertex is actually valid
+H3 4.1.0
+
+	isValidVertex	Checks if the provided H3 vertex is actually valid
+	-h, --help	Show this help message.
+	-c, --cell <index>	Required. H3 Cell
+	-f, --format <FMT>	'json' for true or false, 'numeric' for 1 or 0 (Default: json)
+```
+
+```bash
+$ h3 isValidVertex -c 255283463fffffff
+true
 ```
 
 </TabItem>
