@@ -444,7 +444,8 @@ H3Error H3_EXPORT(cellAreaKm2)(H3Index cell, double *out) {
 
 /**
  * Area of H3 cell in meters^2.
- *  * @param   cell  H3 cell
+ *
+ * @param   cell  H3 cell
  * @param    out  cell area in meters^2
  * @return        E_SUCCESS on success, or an error code otherwise
  */
