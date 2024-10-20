@@ -508,7 +508,8 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
                 // For overlap, we've already checked for center point inclusion
                 // above; if that failed, we only need to check for line
                 // intersection
-                else if (mode == CONTAINMENT_OVERLAPPING &&
+                else if ((mode == CONTAINMENT_OVERLAPPING ||
+                          mode == CONTAINMENT_OVERLAPPING_BBOX) &&
                          cellBoundaryCrossesPolygon(
                              iter->_polygon, iter->_bboxes, &boundary, &bbox)) {
                     // Set to next output
