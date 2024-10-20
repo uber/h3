@@ -55,7 +55,7 @@ option(BUILD_GENERATORS "Build code generation applications." ON)
 # for afl++ is provided instead.
 option(ENABLE_LIBFUZZER "Build fuzzers with libFuzzer support." OFF)
 
-option(ENABLE_POLYGON_TO_CELLS_ASSERT "Build additional asserts into the polyfill algorithm for debuggin." OFF)
+option(ENABLE_POLYGON_TO_CELLS_ASSERT "Build additional asserts into the polyfill algorithm for debugging." OFF)
 mark_as_advanced(ENABLE_POLYGON_TO_CELLS_ASSERT)
 
 # These options exist for integration with OSS-Fuzz, so that the fuzzer options
