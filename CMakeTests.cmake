@@ -1,16 +1,16 @@
 # Copyright 2017-2022, 2024 Uber Technologies, Inc.
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not
+# use this file except in compliance with the License. You may obtain a copy of
+# the License at
 #
 # http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations under
+# the License.
 
 # Test code for H3
 
@@ -25,149 +25,177 @@ enable_testing()
 set(test_number 0)
 
 if(ENABLE_COVERAGE)
-    file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/scripts/coverage.sh"
-                    INPUT "${CMAKE_CURRENT_SOURCE_DIR}/scripts/coverage.sh.in")
-    set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "coverage.info")
-    set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "coverage.cleaned.info")
-    set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "coverage")
-    add_custom_target(coverage
-        COMMAND bash "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/scripts/coverage.sh" "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}")
-    add_custom_target(clean-coverage
-        # Before running coverage, clear all counters
-        COMMAND lcov --rc lcov_branch_coverage=1 --directory '${CMAKE_CURRENT_BINARY_DIR}' --zerocounters
-        COMMENT "Zeroing counters"
-        )
+  file(
+    GENERATE
+    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/scripts/coverage.sh"
+    INPUT "${CMAKE_CURRENT_SOURCE_DIR}/scripts/coverage.sh.in")
+  set_property(
+    DIRECTORY
+    APPEND
+    PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "coverage.info")
+  set_property(
+    DIRECTORY
+    APPEND
+    PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "coverage.cleaned.info")
+  set_property(
+    DIRECTORY
+    APPEND
+    PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "coverage")
+  add_custom_target(
+    coverage
+    COMMAND bash "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/scripts/coverage.sh"
+            "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}")
+  add_custom_target(
+    clean-coverage
+    # Before running coverage, clear all counters
+    COMMAND lcov --rc lcov_branch_coverage=1 --directory
+            '${CMAKE_CURRENT_BINARY_DIR}' --zerocounters
+    COMMENT "Zeroing counters")
 endif()
 
 macro(add_h3_memory_test name srcfile)
-    # Like other test code, but these need to be linked against
-    # a different copy of the H3 library which has known intercepted
-    # allocator functions.
-    add_executable(${ARGV} ${APP_SOURCE_FILES} ${TEST_APP_SOURCE_FILES})
+  # Like other test code, but these need to be linked against a different copy
+  # of the H3 library which has known intercepted allocator functions.
+  add_executable(${ARGV} ${APP_SOURCE_FILES} ${TEST_APP_SOURCE_FILES})
 
-    if(TARGET ${name})
-        target_link_libraries(${name} PUBLIC h3WithTestAllocators)
-        target_include_directories(${name} PUBLIC
+  if(TARGET ${name})
+    target_link_libraries(${name} PUBLIC h3WithTestAllocators)
+    target_include_directories(
+      ${name}
+      PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/apps/applib/include>)
-        target_compile_options(${name} PRIVATE ${H3_COMPILE_FLAGS})
-        target_link_libraries(${name} PRIVATE ${H3_LINK_FLAGS})
-    endif()
+    target_compile_options(${name} PRIVATE ${H3_COMPILE_FLAGS})
+    target_link_libraries(${name} PRIVATE ${H3_LINK_FLAGS})
+  endif()
 
-    math(EXPR test_number "${test_number}+1")
+  math(EXPR test_number "${test_number}+1")
 
-    add_test(NAME ${name}_test${test_number} COMMAND ${TEST_WRAPPER} "$<TARGET_FILE:${name}>")
+  add_test(NAME ${name}_test${test_number} COMMAND ${TEST_WRAPPER}
+                                                   "$<TARGET_FILE:${name}>")
 
-    if(ENABLE_COVERAGE)
-        add_custom_target(${name}_coverage${test_number}
-            COMMAND ${name} > /dev/null
-            COMMENT "Running ${name}_coverage${test_number}"
-            )
+  if(ENABLE_COVERAGE)
+    add_custom_target(
+      ${name}_coverage${test_number}
+      COMMAND ${name} > /dev/null
+      COMMENT "Running ${name}_coverage${test_number}")
 
-        add_dependencies(coverage ${name}_coverage${test_number})
-        add_dependencies(${name}_coverage${test_number} clean-coverage)
-    endif()
+    add_dependencies(coverage ${name}_coverage${test_number})
+    add_dependencies(${name}_coverage${test_number} clean-coverage)
+  endif()
 endmacro()
 
 macro(add_h3_test_common name srcfile)
-    # need to actually make the test target
-    if(NOT TARGET ${name})
-        add_h3_executable(${name} ${srcfile} ${APP_SOURCE_FILES} ${TEST_APP_SOURCE_FILES})
-    endif()
+  # need to actually make the test target
+  if(NOT TARGET ${name})
+    add_h3_executable(${name} ${srcfile} ${APP_SOURCE_FILES}
+                      ${TEST_APP_SOURCE_FILES})
+  endif()
 
-    math(EXPR test_number "${test_number}+1")
+  math(EXPR test_number "${test_number}+1")
 endmacro()
 
 macro(add_h3_test name srcfile)
-    add_h3_test_common(${name} ${srcfile})
-    add_test(NAME ${name}_test${test_number} COMMAND ${TEST_WRAPPER} "$<TARGET_FILE:${name}>")
+  add_h3_test_common(${name} ${srcfile})
+  add_test(NAME ${name}_test${test_number} COMMAND ${TEST_WRAPPER}
+                                                   "$<TARGET_FILE:${name}>")
 
-    if(ENABLE_COVERAGE)
-        add_custom_target(${name}_coverage${test_number}
-            COMMAND ${name} > /dev/null
-            COMMENT "Running ${name}_coverage${test_number}"
-            )
+  if(ENABLE_COVERAGE)
+    add_custom_target(
+      ${name}_coverage${test_number}
+      COMMAND ${name} > /dev/null
+      COMMENT "Running ${name}_coverage${test_number}")
 
-        add_dependencies(coverage ${name}_coverage${test_number})
-        add_dependencies(${name}_coverage${test_number} clean-coverage)
-    endif()
+    add_dependencies(coverage ${name}_coverage${test_number})
+    add_dependencies(${name}_coverage${test_number} clean-coverage)
+  endif()
 endmacro()
 
 macro(add_h3_test_with_file name srcfile argfile)
-    add_h3_test_common(${name} ${srcfile})
-    # add a special command (so we don't need to read the test file from the test program)
-    set(dump_command "cat")
+  add_h3_test_common(${name} ${srcfile})
+  # add a special command (so we don't need to read the test file from the test
+  # program)
+  set(dump_command "cat")
 
-    add_test(NAME ${name}_test${test_number}
-                COMMAND ${SHELL} "${dump_command} ${argfile} | ${TEST_WRAPPER_STR} $<TARGET_FILE:${name}>")
+  add_test(
+    NAME ${name}_test${test_number}
+    COMMAND
+      ${SHELL}
+      "${dump_command} ${argfile} | ${TEST_WRAPPER_STR} $<TARGET_FILE:${name}>")
 
-    if(PRINT_TEST_FILES)
-        message("${name}_test${test_number} - ${argfile}")
-    endif()
+  if(PRINT_TEST_FILES)
+    message("${name}_test${test_number} - ${argfile}")
+  endif()
 
-    if(ENABLE_COVERAGE)
-        add_custom_target(${name}_coverage${test_number}
-            COMMAND ${name} < ${argfile} > /dev/null
-            COMMENT "Running ${name}_coverage${test_number}"
-            )
+  if(ENABLE_COVERAGE)
+    add_custom_target(
+      ${name}_coverage${test_number}
+      COMMAND ${name} < ${argfile} > /dev/null
+      COMMENT "Running ${name}_coverage${test_number}")
 
-        add_dependencies(coverage ${name}_coverage${test_number})
-        add_dependencies(${name}_coverage${test_number} clean-coverage)
-    endif()
+    add_dependencies(coverage ${name}_coverage${test_number})
+    add_dependencies(${name}_coverage${test_number} clean-coverage)
+  endif()
 endmacro()
 
 macro(add_h3_cli_test name h3_args expect_string)
-    add_test(NAME ${name}_test${test_number}
-        COMMAND ${SHELL} "test \"`$<TARGET_FILE:h3_bin> ${h3_args}`\" = '${expect_string}'")
+  add_test(
+    NAME ${name}_test${test_number}
+    COMMAND ${SHELL}
+            "test \"`$<TARGET_FILE:h3_bin> ${h3_args}`\" = '${expect_string}'")
 
-    if(PRINT_TEST_FILES)
-        message("${name}_test${test_number} - ${h3_args} - ${expect_string}")
-    endif()
+  if(PRINT_TEST_FILES)
+    message("${name}_test${test_number} - ${h3_args} - ${expect_string}")
+  endif()
 
-    # TODO: Build a coverage-enabled variant of the h3 cli app to enable coverage
+  # TODO: Build a coverage-enabled variant of the h3 cli app to enable coverage
 endmacro()
 
 macro(add_h3_test_with_arg name srcfile arg)
-    add_h3_test_common(${name} ${srcfile})
-    add_test(NAME ${name}_test${test_number}
-        COMMAND ${TEST_WRAPPER} $<TARGET_FILE:${name}> ${arg}
-        )
-    if(PRINT_TEST_FILES)
-        message("${name}_test${test_number} - ${arg}")
-    endif()
+  add_h3_test_common(${name} ${srcfile})
+  add_test(NAME ${name}_test${test_number}
+           COMMAND ${TEST_WRAPPER} $<TARGET_FILE:${name}> ${arg})
+  if(PRINT_TEST_FILES)
+    message("${name}_test${test_number} - ${arg}")
+  endif()
 
-    if(ENABLE_COVERAGE)
-        add_custom_target(${name}_coverage${test_number}
-            COMMAND ${name} ${arg}
-            COMMENT "Running ${name}_coverage${test_number}"
-            )
+  if(ENABLE_COVERAGE)
+    add_custom_target(
+      ${name}_coverage${test_number}
+      COMMAND ${name} ${arg}
+      COMMENT "Running ${name}_coverage${test_number}")
 
-        add_dependencies(coverage ${name}_coverage${test_number})
-        add_dependencies(${name}_coverage${test_number} clean-coverage)
-    endif()
+    add_dependencies(coverage ${name}_coverage${test_number})
+    add_dependencies(${name}_coverage${test_number} clean-coverage)
+  endif()
 endmacro()
 
 # Add each individual test
 file(GLOB all_centers tests/inputfiles/bc*centers.txt)
 foreach(file ${all_centers})
-    add_h3_test_with_file(testLatLngToCell src/apps/testapps/testLatLngToCell.c ${file})
+  add_h3_test_with_file(testLatLngToCell src/apps/testapps/testLatLngToCell.c
+                        ${file})
 endforeach()
 
 file(GLOB all_ic_files tests/inputfiles/res*ic.txt)
 foreach(file ${all_ic_files})
-    add_h3_test_with_file(testCellToLatLng src/apps/testapps/testCellToLatLng.c ${file})
+  add_h3_test_with_file(testCellToLatLng src/apps/testapps/testCellToLatLng.c
+                        ${file})
 endforeach()
 
 file(GLOB all_centers tests/inputfiles/rand*centers.txt)
 foreach(file ${all_centers})
-    add_h3_test_with_file(testLatLngToCell src/apps/testapps/testLatLngToCell.c ${file})
+  add_h3_test_with_file(testLatLngToCell src/apps/testapps/testLatLngToCell.c
+                        ${file})
 endforeach()
 
 file(GLOB all_cells tests/inputfiles/*cells.txt)
 foreach(file ${all_cells})
-    add_h3_test_with_file(testCellToBoundary src/apps/testapps/testCellToBoundary.c ${file})
+  add_h3_test_with_file(testCellToBoundary
+                        src/apps/testapps/testCellToBoundary.c ${file})
 endforeach()
 
-add_h3_test(testCellToBoundaryEdgeCases src/apps/testapps/testCellToBoundaryEdgeCases.c)
+add_h3_test(testCellToBoundaryEdgeCases
+            src/apps/testapps/testCellToBoundaryEdgeCases.c)
 add_h3_test(testCompactCells src/apps/testapps/testCompactCells.c)
 add_h3_test(testGridDisk src/apps/testapps/testGridDisk.c)
 add_h3_test(testGridDiskInternal src/apps/testapps/testGridDiskInternal.c)
@@ -182,13 +210,18 @@ add_h3_test(testCellToChildrenSize src/apps/testapps/testCellToChildrenSize.c)
 add_h3_test(testH3Index src/apps/testapps/testH3Index.c)
 add_h3_test(testH3IndexInternal src/apps/testapps/testH3IndexInternal.c)
 add_h3_test(testH3Api src/apps/testapps/testH3Api.c)
-add_h3_test(testCellsToLinkedMultiPolygon src/apps/testapps/testCellsToLinkedMultiPolygon.c)
-add_h3_test(testH3SetToVertexGraphInternal src/apps/testapps/testH3SetToVertexGraphInternal.c)
+add_h3_test(testCellsToLinkedMultiPolygon
+            src/apps/testapps/testCellsToLinkedMultiPolygon.c)
+add_h3_test(testH3SetToVertexGraphInternal
+            src/apps/testapps/testH3SetToVertexGraphInternal.c)
 add_h3_test(testLinkedGeoInternal src/apps/testapps/testLinkedGeoInternal.c)
 add_h3_test(testPolygonToCells src/apps/testapps/testPolygonToCells.c)
-add_h3_test(testPolygonToCellsExperimental src/apps/testapps/testPolygonToCellsExperimental.c)
-add_h3_test(testPolygonToCellsReported src/apps/testapps/testPolygonToCellsReported.c)
-add_h3_test(testPolygonToCellsReportedExperimental src/apps/testapps/testPolygonToCellsReportedExperimental.c)
+add_h3_test(testPolygonToCellsExperimental
+            src/apps/testapps/testPolygonToCellsExperimental.c)
+add_h3_test(testPolygonToCellsReported
+            src/apps/testapps/testPolygonToCellsReported.c)
+add_h3_test(testPolygonToCellsReportedExperimental
+            src/apps/testapps/testPolygonToCellsReportedExperimental.c)
 add_h3_test(testVertexGraphInternal src/apps/testapps/testVertexGraphInternal.c)
 add_h3_test(testDirectedEdge src/apps/testapps/testDirectedEdge.c)
 add_h3_test(testLatLng src/apps/testapps/testLatLng.c)
@@ -201,9 +234,11 @@ add_h3_test(testPolyfillInternal src/apps/testapps/testPolyfillInternal.c)
 add_h3_test(testVec2dInternal src/apps/testapps/testVec2dInternal.c)
 add_h3_test(testVec3dInternal src/apps/testapps/testVec3dInternal.c)
 add_h3_test(testCellToLocalIj src/apps/testapps/testCellToLocalIj.c)
-add_h3_test(testCellToLocalIjInternal src/apps/testapps/testCellToLocalIjInternal.c)
+add_h3_test(testCellToLocalIjInternal
+            src/apps/testapps/testCellToLocalIjInternal.c)
 add_h3_test(testGridDistance src/apps/testapps/testGridDistance.c)
-add_h3_test(testGridDistanceInternal src/apps/testapps/testGridDistanceInternal.c)
+add_h3_test(testGridDistanceInternal
+            src/apps/testapps/testGridDistanceInternal.c)
 add_h3_test(testGridPathCells src/apps/testapps/testGridPathCells.c)
 add_h3_test(testH3CellArea src/apps/testapps/testH3CellArea.c)
 add_h3_test(testCoordIjInternal src/apps/testapps/testCoordIjInternal.c)
@@ -212,22 +247,33 @@ add_h3_test(testBaseCells src/apps/testapps/testBaseCells.c)
 add_h3_test(testBaseCellsInternal src/apps/testapps/testBaseCellsInternal.c)
 add_h3_test(testPentagonIndexes src/apps/testapps/testPentagonIndexes.c)
 add_h3_test(testH3IteratorsInternal src/apps/testapps/testH3IteratorsInternal.c)
-add_h3_test(testMathExtensionsInternal src/apps/testapps/testMathExtensionsInternal.c)
+add_h3_test(testMathExtensionsInternal
+            src/apps/testapps/testMathExtensionsInternal.c)
 add_h3_test(testDescribeH3Error src/apps/testapps/testDescribeH3Error.c)
 
-add_h3_test_with_arg(testH3NeighborRotations src/apps/testapps/testH3NeighborRotations.c 0)
-add_h3_test_with_arg(testH3NeighborRotations src/apps/testapps/testH3NeighborRotations.c 1)
-add_h3_test_with_arg(testH3NeighborRotations src/apps/testapps/testH3NeighborRotations.c 2)
+add_h3_test_with_arg(testH3NeighborRotations
+                     src/apps/testapps/testH3NeighborRotations.c 0)
+add_h3_test_with_arg(testH3NeighborRotations
+                     src/apps/testapps/testH3NeighborRotations.c 1)
+add_h3_test_with_arg(testH3NeighborRotations
+                     src/apps/testapps/testH3NeighborRotations.c 2)
 
-# The "Exhaustive" part of the test name is used by the test-fast to exclude these files.
-# test-fast exists so that Travis CI can run Valgrind on tests without taking a very long time.
-add_h3_test(testDirectedEdgeExhaustive src/apps/testapps/testDirectedEdgeExhaustive.c)
+# The "Exhaustive" part of the test name is used by the test-fast to exclude
+# these files. test-fast exists so that Travis CI can run Valgrind on tests
+# without taking a very long time.
+add_h3_test(testDirectedEdgeExhaustive
+            src/apps/testapps/testDirectedEdgeExhaustive.c)
 add_h3_test(testVertexExhaustive src/apps/testapps/testVertexExhaustive.c)
-add_h3_test(testCellToLocalIjExhaustive src/apps/testapps/testCellToLocalIjExhaustive.c)
-add_h3_test(testGridPathCellsExhaustive src/apps/testapps/testGridPathCellsExhaustive.c)
-add_h3_test(testGridDistanceExhaustive src/apps/testapps/testGridDistanceExhaustive.c)
-add_h3_test(testH3CellAreaExhaustive src/apps/testapps/testH3CellAreaExhaustive.c)
-add_h3_test(testCellToBBoxExhaustive src/apps/testapps/testCellToBBoxExhaustive.c)
+add_h3_test(testCellToLocalIjExhaustive
+            src/apps/testapps/testCellToLocalIjExhaustive.c)
+add_h3_test(testGridPathCellsExhaustive
+            src/apps/testapps/testGridPathCellsExhaustive.c)
+add_h3_test(testGridDistanceExhaustive
+            src/apps/testapps/testGridDistanceExhaustive.c)
+add_h3_test(testH3CellAreaExhaustive
+            src/apps/testapps/testH3CellAreaExhaustive.c)
+add_h3_test(testCellToBBoxExhaustive
+            src/apps/testapps/testCellToBBoxExhaustive.c)
 
 file(GLOB cli_tests tests/cli/*.txt)
 foreach(file ${cli_tests})
@@ -235,9 +281,9 @@ foreach(file ${cli_tests})
 endforeach()
 
 if(BUILD_ALLOC_TESTS)
-    add_h3_library(h3WithTestAllocators test_prefix_)
+  add_h3_library(h3WithTestAllocators test_prefix_)
 
-    add_h3_memory_test(testH3Memory src/apps/testapps/testH3Memory.c)
+  add_h3_memory_test(testH3Memory src/apps/testapps/testH3Memory.c)
 endif()
 
 add_custom_target(test-fast COMMAND ctest -E Exhaustive)
