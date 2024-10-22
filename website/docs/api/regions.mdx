@@ -60,7 +60,7 @@ function example() {
 <TabItem value="python">
 
 ```py
-h3.polygon_to_cells(polygons, res, geo_json_conformant=False)
+h3.h3shape_to_cells(h3shape, res)
 ```
 
 </TabItem>
@@ -217,7 +217,7 @@ function example() {
 <TabItem value="python">
 
 ```py
-h3.cells_to_multi_polygon(hexes, geo_json=False)
+h3.cells_to_h3shape(cells, *, tight=True)
 ```
 
 </TabItem>
