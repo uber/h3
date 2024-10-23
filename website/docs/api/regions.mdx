@@ -38,7 +38,7 @@ a partitioning of H3 cells.
 H3Error polygonToCells(const GeoPolygon *geoPolygon, int res, uint32_t flags, H3Index *out);
 ```
 
-`polygonToCells` takes a `GeoPolygon` struct and preallocated,
+In C, `polygonToCells` takes a `GeoPolygon` struct and preallocated,
 zeroed memory, and fills it with the covering cells.
 
 Returns 0 (`E_SUCCESS`) on success.
