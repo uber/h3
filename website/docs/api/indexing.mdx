@@ -32,6 +32,8 @@ the geographic point into the H3 grid. See the [algorithm description](../core-l
 H3Error latLngToCell(const LatLng *g, int res, H3Index *out);
 ```
 
+Returns 0 (`E_SUCCESS`) on success.
+
 </TabItem>
 <TabItem value="java">
 
@@ -87,12 +89,21 @@ $ h3 latLngToCell --lat 45 --lng 40 -r 2
 </TabItem>
 </Tabs>
 
-Indexes the location at the specified resolution, returning the index of the cell containing the location. This buckets
-the geographic point into the H3 grid. See the [algorithm description](../core-library/latLngToCellDesc) for more information.
-
-Returns 0 (`E_SUCCESS`) on success.
-
 ## cellToLatLng
+
+Finds the center of the cell in grid space. See the
+[algorithm description](../core-library/cellToLatLngDesc) for
+more information.
+
+
+Note that H3 makes a distinction between the **center**
+and **centroid** of a cell.
+The two will differ on the surface of
+the Earth based on:
+
+- the distortion from the gnomonic projection
+within the icosahedron face it resides on, and
+- its distance from the center of the icosahedron face.
 
 <Tabs
   groupId="language"
@@ -110,6 +121,8 @@ Returns 0 (`E_SUCCESS`) on success.
 ```c
 H3Error cellToLatLng(H3Index cell, LatLng *g);
 ```
+
+Returns 0 (`E_SUCCESS`) on success.
 
 </TabItem>
 <TabItem value="java">
@@ -162,16 +175,6 @@ $ h3 cellToLatLng -c 85283473fffffff
 </TabItem>
 </Tabs>
 
-Finds the center of the cell in grid space. See the
-[algorithm description](../core-library/cellToLatLngDesc) for
-more information.
-
-The center will drift versus the centroid
-of the cell on Earth due to distortion from the gnomonic
-projection within the icosahedron face it resides on and its
-distance from the center of the icosahedron face.
-
-Returns 0 (`E_SUCCESS`) on success.
 
 ## cellToBoundary
 
