@@ -34,6 +34,8 @@ H3Error areNeighborCells(H3Index origin, H3Index destination, int *out);
 
 `out` will be 1 if the indexes are neighbors, 0 otherwise.
 
+Returns 0 (`E_SUCCESS`) on success.
+
 </TabItem>
 <TabItem value="java">
 
@@ -90,7 +92,7 @@ true
 
 ## cellsToDirectedEdge
 
-Returns a directed edge H3 index based on the provided origin and
+Provides a directed edge H3 index based on the provided origin and
 destination.
 
 <Tabs
@@ -110,7 +112,7 @@ destination.
 H3Error cellsToDirectedEdge(H3Index origin, H3Index destination, H3Index *out);
 ```
 
-Returns 0 on success.
+Returns 0 (`E_SUCCESS`) on success.
 
 </TabItem>
 <TabItem value="java">
@@ -186,7 +188,7 @@ Determines if the provided H3Index is a valid unidirectional edge index.
 int isValidDirectedEdge(H3Index edge);
 ```
 
-Returns 1 if it is a unidirectional edge H3Index, otherwise 0.
+Returns `1` if it is a unidirectional edge H3Index, otherwise `0`.
 
 </TabItem>
 <TabItem value="java">
@@ -241,7 +243,7 @@ true
 
 ## getDirectedEdgeOrigin
 
-Returns the origin hexagon from the directed edge H3Index.
+Provides the origin hexagon from the directed edge H3Index.
 
 <Tabs
   groupId="language"
@@ -259,6 +261,8 @@ Returns the origin hexagon from the directed edge H3Index.
 ```c
 H3Error getDirectedEdgeOrigin(H3Index edge, H3Index *out);
 ```
+
+Returns 0 (`E_SUCCESS`) on success.
 
 </TabItem>
 <TabItem value="java">
@@ -313,7 +317,7 @@ $ h3 getDirectedEdgeOrigin -c 115283473fffffff
 
 ## getDirectedEdgeDestination
 
-Returns the destination hexagon from the directed edge H3Index.
+Provides the destination hexagon from the directed edge H3Index.
 
 <Tabs
   groupId="language"
@@ -331,6 +335,8 @@ Returns the destination hexagon from the directed edge H3Index.
 ```c
 H3Error getDirectedEdgeDestination(H3Index edge, H3Index *out);
 ```
+
+Returns 0 (`E_SUCCESS`) on success.
 
 </TabItem>
 <TabItem value="java">
@@ -384,10 +390,9 @@ $ h3 getDirectedEdgeDestination -c 115283473fffffff
 </Tabs>
 
 
-
 ## directedEdgeToCells
 
-Returns the origin-destination pair of cells for the given directed edge.
+Provides the origin-destination pair of cells for the given directed edge.
 
 <Tabs
   groupId="language"
@@ -408,6 +413,8 @@ H3Error directedEdgeToCells(H3Index edge, H3Index* originDestination);
 
 The origin and destination are placed at
 `originDestination[0]` and `originDestination[1]`, respectively.
+
+Returns 0 (`E_SUCCESS`) on success.
 
 
 </TabItem>
@@ -486,6 +493,8 @@ H3Error originToDirectedEdges(H3Index origin, H3Index* edges);
 and the number of directed edges placed in the array may be less than 6.
 If this is the case, one of the members of the array will be `0`.
 
+Returns 0 (`E_SUCCESS`) on success.
+
 </TabItem>
 <TabItem value="java">
 
@@ -559,6 +568,8 @@ Note that this may be more than two points for complex edges.
 ```c
 H3Error directedEdgeToBoundary(H3Index edge, CellBoundary* gb);
 ```
+
+Returns 0 (`E_SUCCESS`) on success.
 
 </TabItem>
 <TabItem value="java">
