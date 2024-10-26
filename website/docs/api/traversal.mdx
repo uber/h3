@@ -8,7 +8,8 @@ slug: /api/traversal
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-Grid traversal allows finding cells in the vicinity of an origin cell, and determining how to traverse the grid from one cell to another.
+Grid traversal allows finding cells in the vicinity of an origin cell,
+and determining how to traverse the grid from one cell to another.
 
 ## gridDistance
 
@@ -158,7 +159,10 @@ h3.grid_ring(h, k)
 
 :::note
 
-Python uses the C function `gridRingUnsafe` internally to generate the results, but on failure falls back to `gridDiskDistances` and returns the set of cells at the specified distance to produce an equivalent to the "safe" version, but this consumes a lot of memory to do so.
+Python uses the C function `gridRingUnsafe` internally to generate the results,
+but on failure falls back to `gridDiskDistances` and returns the set
+of cells at the specified distance to produce an equivalent to the "safe" version,
+but this consumes a lot of memory to do so.
 
 :::
 
@@ -184,7 +188,10 @@ $ h3 gridRing -k 1 -c 85283473fffffff
 
 :::note
 
-The shell uses `gridRingUnsafe` internally to generate the results, but on failure falls back to `gridDiskDistances` and returns the set of cells at the specified distance to produce an equivalent to the "safe" version, but this consumes a lot of memory to do so.
+The shell uses the C function `gridRingUnsafe` internally to generate the results,
+but on failure falls back to `gridDiskDistances` and returns the set
+of cells at the specified distance to produce an equivalent to the "safe" version,
+but this consumes a lot of memory to do so.
 
 :::
 

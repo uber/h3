@@ -8,12 +8,16 @@ slug: /api/indexing
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-These functions are used for finding the H3 cell index containing coordinates, and for finding the center and boundary of H3 indexes.
+These functions are used for finding the H3 cell index containing coordinates,
+and for finding the center and boundary of H3 cells.
 
 ## latLngToCell
 
-Indexes the location at the specified resolution, providing the index of the cell containing the location. This buckets
-the geographic point into the H3 grid. See the [algorithm description](../core-library/latLngToCellDesc) for more information.
+Indexes the location at the specified resolution,
+providing the index of the cell containing the location.
+This buckets the geographic point into the H3 grid.
+See the [algorithm description](../core-library/latLngToCellDesc)
+for more information.
 
 <Tabs
   groupId="language"
@@ -227,7 +231,8 @@ h3.cell_to_boundary(cell)
 ```
 
 Returns tuple of lat/lng tuples.
-For GeoJSON compatibility (lng/lat order), see the [`h3-py` docs](https://uber.github.io/h3-py/api_quick.html#polygon-interface).
+For GeoJSON compatibility (lng/lat order), see the
+[`h3-py` docs](https://uber.github.io/h3-py/api_quick.html#polygon-interface).
 
 </TabItem>
 <TabItem value="shell">

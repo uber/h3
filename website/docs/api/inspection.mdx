@@ -216,7 +216,8 @@ The H3 CLI supports only the string representation of an H3 index.
 
 ## h3ToString
 
-Converts the `H3Index` representation of the index to the string representation. `str` must be at least of length 17.
+Converts the `H3Index` representation of the index to the string representation.
+`str` must be at least of length 17.
 
 
 <Tabs
@@ -516,7 +517,8 @@ Faces are represented as integers from 0-19, inclusive.
 H3Error getIcosahedronFaces(H3Index h, int* out);
 ```
 
-Face values and places them in the array `out`. `out` must be at least length of `maxFaceCount(h)`.
+Face values and places them in the array `out`.
+`out` must be at least length of `maxFaceCount(h)`.
 The array is sparse, and empty (no intersection) array values are represented by -1.
 
 Returns 0 (`E_SUCCESS`) on success.
