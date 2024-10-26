@@ -364,6 +364,8 @@ H3Error gridDiskDistances(H3Index origin, int k, H3Index* out, int* distances);
 Elements of the output array may be left as zero,
 which can happen when crossing a pentagon.
 
+Returns 0 (`E_SUCCESS`) on success.
+
 </TabItem>
 <TabItem value="java">
 
@@ -870,6 +872,8 @@ versions of H3.
 H3Error cellToLocalIj(H3Index origin, H3Index h3, uint32_t mode, CoordIJ *out);
 ```
 
+Returns 0 (`E_SUCCESS`) on success.
+
 </TabItem>
 <TabItem value="java">
 
@@ -949,6 +953,8 @@ versions of H3.
 ```c
 H3Error localIjToCell(H3Index origin, const CoordIJ *ij, uint32_t mode, H3Index *out);
 ```
+
+Returns 0 (`E_SUCCESS`) on success.
 
 </TabItem>
 <TabItem value="java">
