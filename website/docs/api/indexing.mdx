@@ -173,6 +173,11 @@ $ h3 cellToLatLng -c 85283473fffffff
 
 ## cellToBoundary
 
+Finds the boundary of the cell. See the
+[algorithm description](../core-library/cellToBoundaryDesc)
+for more information.
+
+
 <Tabs
   groupId="language"
   defaultValue="c"
@@ -189,6 +194,8 @@ $ h3 cellToLatLng -c 85283473fffffff
 ```c
 H3Error cellToBoundary(H3Index cell, CellBoundary *bndry);
 ```
+
+Returns 0 (`E_SUCCESS`) on success.
 
 </TabItem>
 <TabItem value="java">
@@ -216,8 +223,10 @@ function example() {
 <TabItem value="python">
 
 ```py
-h3.cell_to_boundary(cell, geo_json=False)
+h3.cell_to_boundary(cell)
 ```
+
+Returns tuple of lat/lng tuples.
 
 </TabItem>
 <TabItem value="shell">
@@ -240,10 +249,3 @@ $ h3 cellToBoundary -c 85283473fffffff
 
 </TabItem>
 </Tabs>
-
-Finds the boundary of the cell. See the
-[algorithm description](../core-library/cellToBoundaryDesc)
-for more information.
-
-
-Returns 0 (`E_SUCCESS`) on success.
