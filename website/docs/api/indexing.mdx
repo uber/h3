@@ -95,15 +95,10 @@ Finds the center of the cell in grid space. See the
 [algorithm description](../core-library/cellToLatLngDesc) for
 more information.
 
-
-Note that H3 makes a distinction between the **center**
-and **centroid** of a cell.
-The two will differ on the surface of
-the Earth based on:
-
-- the distortion from the gnomonic projection
-within the icosahedron face it resides on, and
-- its distance from the center of the icosahedron face.
+The center will drift versus the centroid
+of the cell on Earth due to distortion from the gnomonic
+projection within the icosahedron face it resides on and its
+distance from the center of the icosahedron face.
 
 <Tabs
   groupId="language"
