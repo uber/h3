@@ -192,13 +192,12 @@ The shell uses `gridRingUnsafe` internally to generate the results, but on failu
 </Tabs>
 
 
-
 ## gridDisk
 
 Produces the "filled-in disk" of cells which are *at most* grid distance `k`
 from the origin cell.
 
-The order of the output cells is not guaranteed.
+Output order is not guaranteed.
 
 <Tabs
   groupId="language"
@@ -277,6 +276,8 @@ $ h3 gridDisk -k 5 -c 85283473fffffff
 
 ## maxGridDiskSize
 
+Maximum number of cells that can result from the `gridDisk` function for a given `k`.
+
 <Tabs
   groupId="language"
   defaultValue="c"
@@ -293,6 +294,8 @@ $ h3 gridDisk -k 5 -c 85283473fffffff
 ```c
 H3Error maxGridDiskSize(int k, int64_t *out);
 ```
+
+Returns 0 (`E_SUCCESS`) on success.
 
 </TabItem>
 <TabItem value="java">
@@ -333,9 +336,13 @@ This function exists for memory management and is not exposed.
 </TabItem>
 </Tabs>
 
-Maximum number of indices that result from the `gridDisk` algorithm with the given `k`.
 
 ## gridDiskDistances
+
+Produces the same set of cells as `gridDisk`, but along with each cell's
+grid distance from the origin cell.
+
+Output order is not guaranteed.
 
 <Tabs
   groupId="language"
@@ -353,6 +360,9 @@ Maximum number of indices that result from the `gridDisk` algorithm with the giv
 ```c
 H3Error gridDiskDistances(H3Index origin, int k, H3Index* out, int* distances);
 ```
+
+Elements of the output array may be left as zero,
+which can happen when crossing a pentagon.
 
 </TabItem>
 <TabItem value="java">
@@ -380,9 +390,11 @@ function example() {
 </TabItem>
 <TabItem value="python">
 
-```py
-h3.grid_disk_distances(origin, k)
-```
+:::note
+
+This function is not exposed in Python.
+
+:::
 
 </TabItem>
 <TabItem value="shell">
@@ -406,14 +418,6 @@ $ h3 gridDiskDistances -k 5 -c 85283473fffffff
 
 </TabItem>
 </Tabs>
-
-gridDiskDistances produces indices within k distance of the origin index.
-
-k-ring 0 is defined as the origin index, k-ring 1 is defined as k-ring 0 and
-all neighboring indices, and so on.
-
-Output is placed in the provided array in no particular order. Elements of
-the output array may be left as zero, which can happen when crossing a pentagon.
 
 ## gridDiskUnsafe
 
