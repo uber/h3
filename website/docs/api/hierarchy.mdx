@@ -97,7 +97,6 @@ $ h3 cellToParent -c 85283473fffffff -r 4
 Provides the children (descendant) cells of `cell` at
 resolution `childRes`.
 
-
 <Tabs
   groupId="language"
   defaultValue="c"
@@ -116,6 +115,7 @@ H3Error cellToChildren(H3Index cell, int childRes, H3Index *children);
 ```
 
 `children` must be an array of at least size `cellToChildrenSize(cell, childRes)`.
+
 Returns 0 (`E_SUCCESS`) on success.
 
 </TabItem>
@@ -196,6 +196,7 @@ H3Error cellToChildrenSize(H3Index cell, int childRes, int64_t *out);
 ```
 
 Provides the size of the `children` array needed for the given inputs to `cellToChildren`.
+
 Returns 0 (`E_SUCCESS`) on success.
 
 </TabItem>
