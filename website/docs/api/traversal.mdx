@@ -98,7 +98,7 @@ $ h3 gridDistance -o 85283473fffffff -d 8528342bfffffff
 
 ## gridRingUnsafe
 
-Produces the hollow ring of cells which are exactly grid distance `k`
+Produces the "hollow ring" of cells which are *exactly* grid distance `k`
 from the origin cell.
 
 This function may fail if pentagonal distortion is encountered.
@@ -195,17 +195,10 @@ The shell uses `gridRingUnsafe` internally to generate the results, but on failu
 
 ## gridDisk
 
-gridDisk produces all the cells within *grid distance* `k` of the origin cell.
-Grid distance is measured as the minimum number of "hops" between adjacent cells.
+Produces the "filled-in disk" of cells which are *at most* grid distance `k`
+from the origin cell.
 
-(There's a function for grid distance!)
-
-gridDisk was previously named *k-ring* after the concept of a ring with
-distance k. k-ring 0 is defined as the origin index, k-ring 1 is
-defined as k-ring 0 and all neighboring indices, and so on.
-
-Output is placed in the provided array in no particular order. Elements of
-the output array may be left as zero, which can happen when crossing a pentagon.
+The order of the output cells is not guaranteed.
 
 <Tabs
   groupId="language"
@@ -223,6 +216,11 @@ the output array may be left as zero, which can happen when crossing a pentagon.
 ```c
 H3Error gridDisk(H3Index origin, int k, H3Index* out);
 ```
+
+Elements of the output array may be left as zero,
+which can happen when crossing a pentagon.
+
+Returns 0 (`E_SUCCESS`) on success.
 
 </TabItem>
 <TabItem value="java">
