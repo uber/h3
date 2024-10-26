@@ -335,7 +335,7 @@ $ h3 cellToCenterChild -c 85283473fffffff -r 7
 
 ## cellToChildPos
 
-Returns the position of the child cell within an ordered list of all children of the cell's parent at the specified resolution `parentRes`.
+Provides the position of the child cell within an ordered list of all children of the cell's parent at the specified resolution `parentRes`.
 The order of the ordered list is the same as that returned by `cellToChildren`.
 This is the complement of `childPosToCell`.
 
@@ -353,7 +353,7 @@ This is the complement of `childPosToCell`.
 <TabItem value="c">
 
 ```c
-H3Index cellToChildPos(H3Index child, int parentRes, int64_t *out);
+H3Error cellToChildPos(H3Index child, int parentRes, int64_t *out);
 ```
 
 Returns 0 (`E_SUCCESS`) on success.
@@ -412,7 +412,7 @@ $ h3 cellToChildPos -c 85283473fffffff -r 3
 
 ## childPosToCell
 
-Returns the child cell at a given position within an ordered list of all children of `parent` at the specified resolution `childRes`.
+Provides the child cell at a given position within an ordered list of all children of `parent` at the specified resolution `childRes`.
 The order of the ordered list is the same as that returned by `cellToChildren`.
 This is the complement of `cellToChildPos`.
 
@@ -430,7 +430,7 @@ This is the complement of `cellToChildPos`.
 <TabItem value="c">
 
 ```c
-H3Index childPosToCell(int64_t childPos, H3Index parent, int childRes, H3Index *child);
+H3Error childPosToCell(int64_t childPos, H3Index parent, int childRes, H3Index *child);
 ```
 
 Returns 0 (`E_SUCCESS`) on success.
