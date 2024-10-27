@@ -493,9 +493,9 @@ $ h3 childPosToCell -p 42 -c 85283473fffffff -r 7
 
 ## compactCells
 
-Compacts the set `cellSet` of indexes as best as possible, into the array `compactedSet`.
-`compactedSet` must be at least the size of `cellSet` in case the set cannot be compacted.
-Cells in `cellSet` must all share the same resolution.
+Compacts a collection of H3 cells by recursively replacing children cells
+with their parents if all children are present.
+Input cells must all share the same resolution.
 
 <Tabs
   groupId="language"
@@ -513,6 +513,9 @@ Cells in `cellSet` must all share the same resolution.
 ```c
 H3Error compactCells(const H3Index *cellSet, H3Index *compactedSet, const int64_t numCells);
 ```
+
+Compacts `cellSet` into the array `compactedSet`.
+`compactedSet` must be at least the size of `cellSet` (in case the set cannot be compacted).
 
 Returns 0 (`E_SUCCESS`) on success.
 

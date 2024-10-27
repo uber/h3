@@ -217,8 +217,6 @@ The H3 CLI supports only the string representation of an H3 index.
 ## h3ToString
 
 Converts the `H3Index` representation of the index to the string representation.
-`str` must be at least of length 17.
-
 
 <Tabs
   groupId="language"
@@ -237,6 +235,7 @@ Converts the `H3Index` representation of the index to the string representation.
 H3Error h3ToString(H3Index h, char *str, size_t sz);
 ```
 
+`str` must be at least of length 17.
 Returns 0 (`E_SUCCESS`) on success.
 
 </TabItem>
