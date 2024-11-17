@@ -1,2 +1,4 @@
-add_h3_cli_test(testCliEdgeLengthKm "edgeLengthKm -c 115283473fffffff" "10.2947360862")
-add_h3_cli_test(testCliNotEdgeLengthKm "edgeLengthKm -c 85283473fffffff 2>&1" "Error 6: Directed edge argument was not valid")
+add_h3_cli_test(testCliEdgeLengthKm "edgeLengthKm -c 115283473fffffff"
+                "10.2947360862")
+add_h3_cli_test(testCliNotEdgeLengthKm "edgeLengthKm -c 85283473fffffff 2>&1"
+                "Error 6: Directed edge argument was not valid")

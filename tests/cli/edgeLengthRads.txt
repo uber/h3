@@ -1,2 +1,5 @@
-add_h3_cli_test(testCliEdgeLengthRads "edgeLengthRads -c 115283473fffffff" "0.0016158726")
-add_h3_cli_test(testCliNotEdgeLengthRads "edgeLengthRads -c 85283473fffffff 2>&1" "Error 6: Directed edge argument was not valid")
+add_h3_cli_test(testCliEdgeLengthRads "edgeLengthRads -c 115283473fffffff"
+                "0.0016158726")
+add_h3_cli_test(
+    testCliNotEdgeLengthRads "edgeLengthRads -c 85283473fffffff 2>&1"
+    "Error 6: Directed edge argument was not valid")

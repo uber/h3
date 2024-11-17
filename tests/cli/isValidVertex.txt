@@ -1,2 +1,3 @@
 add_h3_cli_test(testCliIsValidVertex "isValidVertex -c 22528340bfffffff" "true")
-add_h3_cli_test(testCliIsNotValidVertex "isValidVertex -c 85283473fffffff" "false")
+add_h3_cli_test(testCliIsNotValidVertex "isValidVertex -c 85283473fffffff"
+                "false")

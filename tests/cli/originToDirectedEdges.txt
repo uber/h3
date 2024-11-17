@@ -1,2 +1,9 @@
-add_h3_cli_test(testCliOriginToDirectedEdges "originToDirectedEdges -c 85283473fffffff" "[\"115283473fffffff\", \"125283473fffffff\", \"135283473fffffff\", \"145283473fffffff\", \"155283473fffffff\", \"165283473fffffff\"]")
-add_h3_cli_test(testCliNotOriginToDirectedEdges "originToDirectedEdges -c 115283473fffffff 2>&1" "Error 5: Cell argument was not valid")
+add_h3_cli_test(
+    testCliOriginToDirectedEdges
+    "originToDirectedEdges -c 85283473fffffff"
+    "[\"115283473fffffff\", \"125283473fffffff\", \"135283473fffffff\", \"145283473fffffff\", \"155283473fffffff\", \"165283473fffffff\"]"
+)
+add_h3_cli_test(
+    testCliNotOriginToDirectedEdges
+    "originToDirectedEdges -c 115283473fffffff 2>&1"
+    "Error 5: Cell argument was not valid")

@@ -1,4 +1,14 @@
-add_h3_cli_test(testCliGreatCircleDistanceKmArg "greatCircleDistanceKm -c '[[0, 1], [1, 2]]'" "157.2495585118")
-add_h3_cli_test(testCliGreatCircleDistanceKmFile "greatCircleDistanceKm -i ${PROJECT_SOURCE_DIR}/tests/inputfiles/great_circle_distance.txt" "157.2495585118")
-add_h3_cli_test(testCliGreatCircleDistanceKmStdin "greatCircleDistanceKm -i -- < ${PROJECT_SOURCE_DIR}/tests/inputfiles/great_circle_distance.txt" "157.2495585118")
-add_h3_cli_test(testCliGreatCircleDistanceKmBadArg "greatCircleDistanceKm -c '[[0, 1]]' 2>&1" "Only two pairs of coordinates should be provided.")
+add_h3_cli_test(testCliGreatCircleDistanceKmArg
+                "greatCircleDistanceKm -c '[[0, 1], [1, 2]]'" "157.2495585118")
+add_h3_cli_test(
+    testCliGreatCircleDistanceKmFile
+    "greatCircleDistanceKm -i ${PROJECT_SOURCE_DIR}/tests/inputfiles/great_circle_distance.txt"
+    "157.2495585118")
+add_h3_cli_test(
+    testCliGreatCircleDistanceKmStdin
+    "greatCircleDistanceKm -i -- < ${PROJECT_SOURCE_DIR}/tests/inputfiles/great_circle_distance.txt"
+    "157.2495585118")
+add_h3_cli_test(
+    testCliGreatCircleDistanceKmBadArg
+    "greatCircleDistanceKm -c '[[0, 1]]' 2>&1"
+    "Only two pairs of coordinates should be provided.")

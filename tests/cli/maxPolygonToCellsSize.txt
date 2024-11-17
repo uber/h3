@@ -1,8 +1,32 @@
-add_h3_cli_test(testCliMaxPolygonToCellsSizeFile1 "maxPolygonToCellsSize -r 7 -i ${PROJECT_SOURCE_DIR}/tests/inputfiles/polygon_test1.txt" "100")
-add_h3_cli_test(testCliMaxPolygonToCellsSizeFile2 "maxPolygonToCellsSize -r 7 -i ${PROJECT_SOURCE_DIR}/tests/inputfiles/polygon_test2.txt" "23")
-add_h3_cli_test(testCliMaxPolygonToCellsSizeFile3 "maxPolygonToCellsSize -r 4 -i ${PROJECT_SOURCE_DIR}/tests/inputfiles/polygon_test3.txt" "3484")
-add_h3_cli_test(testCliMaxPolygonToCellsSizeStdin1 "maxPolygonToCellsSize -r 7 -i -- < ${PROJECT_SOURCE_DIR}/tests/inputfiles/polygon_test1.txt" "100")
-add_h3_cli_test(testCliMaxPolygonToCellsSizeStdin2 "maxPolygonToCellsSize -r 7 -i -- < ${PROJECT_SOURCE_DIR}/tests/inputfiles/polygon_test2.txt" "23")
-add_h3_cli_test(testCliMaxPolygonToCellsSizeStdin3 "maxPolygonToCellsSize -r 4 -i -- < ${PROJECT_SOURCE_DIR}/tests/inputfiles/polygon_test3.txt" "3484")
-add_h3_cli_test(testCliMaxPolygonToCellsSizeArg1 "maxPolygonToCellsSize -r 7 -p \"\\\\`cat ${PROJECT_SOURCE_DIR}/tests/inputfiles/polygon_test1.txt\\\\`\"" "100")
-add_h3_cli_test(testCliMaxPolygonToCellsSizeArg2 "maxPolygonToCellsSize -r 7 -p \"\\\\`cat ${PROJECT_SOURCE_DIR}/tests/inputfiles/polygon_test2.txt\\\\`\"" "23")
+add_h3_cli_test(
+    testCliMaxPolygonToCellsSizeFile1
+    "maxPolygonToCellsSize -r 7 -i ${PROJECT_SOURCE_DIR}/tests/inputfiles/polygon_test1.txt"
+    "100")
+add_h3_cli_test(
+    testCliMaxPolygonToCellsSizeFile2
+    "maxPolygonToCellsSize -r 7 -i ${PROJECT_SOURCE_DIR}/tests/inputfiles/polygon_test2.txt"
+    "23")
+add_h3_cli_test(
+    testCliMaxPolygonToCellsSizeFile3
+    "maxPolygonToCellsSize -r 4 -i ${PROJECT_SOURCE_DIR}/tests/inputfiles/polygon_test3.txt"
+    "3484")
+add_h3_cli_test(
+    testCliMaxPolygonToCellsSizeStdin1
+    "maxPolygonToCellsSize -r 7 -i -- < ${PROJECT_SOURCE_DIR}/tests/inputfiles/polygon_test1.txt"
+    "100")
+add_h3_cli_test(
+    testCliMaxPolygonToCellsSizeStdin2
+    "maxPolygonToCellsSize -r 7 -i -- < ${PROJECT_SOURCE_DIR}/tests/inputfiles/polygon_test2.txt"
+    "23")
+add_h3_cli_test(
+    testCliMaxPolygonToCellsSizeStdin3
+    "maxPolygonToCellsSize -r 4 -i -- < ${PROJECT_SOURCE_DIR}/tests/inputfiles/polygon_test3.txt"
+    "3484")
+add_h3_cli_test(
+    testCliMaxPolygonToCellsSizeArg1
+    "maxPolygonToCellsSize -r 7 -p \"\\\\`cat ${PROJECT_SOURCE_DIR}/tests/inputfiles/polygon_test1.txt\\\\`\""
+    "100")
+add_h3_cli_test(
+    testCliMaxPolygonToCellsSizeArg2
+    "maxPolygonToCellsSize -r 7 -p \"\\\\`cat ${PROJECT_SOURCE_DIR}/tests/inputfiles/polygon_test2.txt\\\\`\""
+    "23")
