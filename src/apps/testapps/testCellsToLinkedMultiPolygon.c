@@ -72,6 +72,24 @@ SUITE(cellsToLinkedMultiPolygon) {
         H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
     }
 
+    TEST(pentagonChildren) {
+        // children of pentagon 0x80ebfffffffffff
+        H3Index kids[] = {0x81ea3ffffffffff, 0x81eabffffffffff,
+                          0x81eafffffffffff, 0x81eb3ffffffffff,
+                          0x81eb7ffffffffff, 0x81ebbffffffffff};
+        int numCells = ARRAY_SIZE(kids);
+
+        LinkedGeoPolygon polygon;
+        t_assertSuccess(
+            H3_EXPORT(cellsToLinkedMultiPolygon)(kids, numCells, &polygon));
+
+        // Since these are the children of a cell, we expect a single loop with
+        // no holes.
+        t_assert(countLinkedLoops(&polygon) == 1, "1 loop added to polygon");
+
+        H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
+    }
+
     // TODO: This test asserts incorrect behavior - we should be creating
     // multiple polygons, each with their own single loop. Update when the
     // algorithm is corrected.
