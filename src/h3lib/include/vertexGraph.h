@@ -30,8 +30,8 @@
  */
 typedef struct VertexNode VertexNode;
 struct VertexNode {
-    LatLng from;
-    LatLng to;
+    H3Index from;
+    H3Index to;
     VertexNode *next;
 };
 
@@ -49,21 +49,19 @@ void initVertexGraph(VertexGraph *graph, int numBuckets, int res);
 
 void destroyVertexGraph(VertexGraph *graph);
 
-VertexNode *addVertexNode(VertexGraph *graph, const LatLng *fromVtx,
-                          const LatLng *toVtx);
+VertexNode *addVertexNode(VertexGraph *graph, H3Index fromVtx, H3Index toVtx);
 
 int removeVertexNode(VertexGraph *graph, VertexNode *node);
 
-VertexNode *findNodeForEdge(const VertexGraph *graph, const LatLng *fromVtx,
-                            const LatLng *toVtx);
+VertexNode *findNodeForEdge(const VertexGraph *graph, H3Index fromVtx,
+                            H3Index toVtx);
 
-VertexNode *findNodeForVertex(const VertexGraph *graph, const LatLng *fromVtx);
+VertexNode *findNodeForVertex(const VertexGraph *graph, H3Index fromVtx);
 
 VertexNode *firstVertexNode(const VertexGraph *graph);
 
 // Internal functions
-uint32_t _hashVertex(const LatLng *vertex, int res, int numBuckets);
-void _initVertexNode(VertexNode *node, const LatLng *fromVtx,
-                     const LatLng *toVtx);
+uint32_t _hashVertex(H3Index vertex, int numBuckets);
+void _initVertexNode(VertexNode *node, H3Index fromVtx, H3Index toVtx);
 
 #endif
