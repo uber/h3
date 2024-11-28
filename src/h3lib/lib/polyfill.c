@@ -526,21 +526,17 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
                     iterErrorPolygonCompact(iter, bboxErr);
                     return;
                 }
-                if (bboxOverlapsBBox(&iter->_bboxes[0], &bbox)) {
-                    CellBoundary bboxBoundary = bboxToCellBoundary(&bbox);
-                    if (
-                        // cell bbox contains the polygon
-                        bboxContainsBBox(&bbox, &iter->_bboxes[0]) ||
-                        // polygon contains cell bbox
-                        pointInsidePolygon(iter->_polygon, iter->_bboxes,
-                                           &bboxBoundary.verts[0]) ||
-                        // polygon crosses cell bbox
-                        cellBoundaryCrossesPolygon(iter->_polygon,
-                                                   iter->_bboxes, &bboxBoundary,
-                                                   &bbox)) {
-                        iter->cell = cell;
-                        return;
-                    }
+                CellBoundary bboxBoundary = bboxToCellBoundary(&bbox);
+                if (  // cell bbox overlaps the polygon
+                    bboxOverlapsBBox(&bbox, &iter->_bboxes[0]) ||
+                    // polygon contains cell bbox
+                    pointInsidePolygon(iter->_polygon, iter->_bboxes,
+                                       &bboxBoundary.verts[0]) ||
+                    // polygon crosses cell bbox
+                    cellBoundaryCrossesPolygon(iter->_polygon, iter->_bboxes,
+                                               &bboxBoundary, &bbox)) {
+                    iter->cell = cell;
+                    return;
                 }
             }
         }
