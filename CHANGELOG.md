@@ -7,7 +7,7 @@ The public API of this library consists of the functions declared in file
 
 ## [Unreleased]
 ### Added
-- Added experimental new algorithm for `polygonToCells`, called `polygonToCellsExperimental`, that supports more containment flags and is more memory-efficient (#785, #800)
+- Added experimental new algorithm for `polygonToCells`, called `polygonToCellsExperimental`, that supports more containment flags and is more memory-efficient (#785, #800, #947)
 - `h3` binary for shell scripts ready for use (#818, #826, #846, #923, #924, #931, #933)
 
 ### Fixed
