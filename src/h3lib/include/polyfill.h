@@ -79,10 +79,8 @@ DECLSPEC void iterStepPolygon(IterCellsPolygon *iter);
 DECLSPEC void iterDestroyPolygon(IterCellsPolygon *iter);
 
 DECLSPEC H3Error H3_EXPORT(polygonToCellsExperimental)(
-    const GeoPolygon *polygon, int res, uint32_t flags, H3Index *out);
-
-DECLSPEC H3Error H3_EXPORT(polygonToCellsExperimental)(
-    const GeoPolygon *polygon, int res, uint32_t flags, H3Index *out);
+    const GeoPolygon *polygon, int res, uint32_t flags, int64_t size,
+    H3Index *out);
 DECLSPEC H3Error H3_EXPORT(maxPolygonToCellsSizeExperimental)(
     const GeoPolygon *polygon, int res, uint32_t flags, int64_t *out);
 

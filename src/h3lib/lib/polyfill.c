@@ -690,34 +690,23 @@ void iterDestroyPolygon(IterCellsPolygon *iter) {
  * zeroed memory, and fills it with the hexagons that are contained by
  * the GeoJSON-like data structure. Polygons are considered in Cartesian space.
  *
- * @param geoPolygon The geoloop and holes defining the relevant area
+ * @param polygon The geoloop and holes defining the relevant area
  * @param res The Hexagon resolution (0-15)
- * @param out The slab of zeroed memory to write to. Assumed to be big enough.
+ * @param flags Algorithm flags such as containment mode
+ * @param size Maximum number of indexes to write to `out`.
+ * @param out The slab of zeroed memory to write to. Must be at least of size
+ * `size`.
  */
 H3Error H3_EXPORT(polygonToCellsExperimental)(const GeoPolygon *polygon,
                                               int res, uint32_t flags,
-                                              H3Index *out) {
-#ifdef H3_POLYGON_TO_CELLS_ASSERT
-    // TODO: This is incompatible with testH3Memory, since it will make more
-    // allocations. This is just for debugging that the algorithm is not
-    // exceeding its buffer size.
-    int64_t maxSize;
-    H3Error sizeError = H3_EXPORT(maxPolygonToCellsSizeExperimental)(
-        polygon, res, flags, &maxSize);
-    if (sizeError) {
-        return sizeError;
-    }
-#endif
-
+                                              int64_t size, H3Index *out) {
     IterCellsPolygon iter = iterInitPolygon(polygon, res, flags);
     int64_t i = 0;
     for (; iter.cell; iterStepPolygon(&iter)) {
-#ifdef H3_POLYGON_TO_CELLS_ASSERT
-        if (NEVER(i >= maxSize)) {
+        if (i >= size) {
             iterDestroyPolygon(&iter);
-            return E_FAILED;
+            return E_MEMORY_BOUNDS;
         }
-#endif
         out[i++] = iter.cell;
     }
     return iter.error;
