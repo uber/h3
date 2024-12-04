@@ -294,7 +294,8 @@ DECLSPEC H3Error H3_EXPORT(polygonToCells)(const GeoPolygon *geoPolygon,
 /** @} */
 
 /** @defgroup polygonToCellsExperimental polygonToCellsExperimental
- * Functions for polygonToCellsExperimental
+ * Functions for polygonToCellsExperimental.
+ * This is an experimental-only API and is subject to change in minor versions.
  * @{
  */
 /** @brief maximum number of cells that could be in the polygon */
