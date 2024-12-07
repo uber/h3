@@ -104,6 +104,7 @@ As a C library, bindings can be made to call H3 functions from different program
 
 - [uber/h3-py](https://github.com/uber/h3-py)
 - [DahnJ/H3-Pandas](https://github.com/DahnJ/H3-Pandas)
+- [filimoa/h3-polars](https://github.com/Filimoa/polars-h3)
 
 ## R
 
