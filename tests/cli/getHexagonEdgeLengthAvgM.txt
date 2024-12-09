@@ -1,2 +1,5 @@
-add_h3_cli_test(testCliGetHexagonEdgeLengthAvgM "getHexagonEdgeLengthAvgM -r 0" "1281256.0109999999")
-add_h3_cli_test(testCliDontGetHexagonEdgeLengthAvgM "getHexagonEdgeLengthAvgM -r 20 2>&1" "Error 4: Resolution argument was outside of acceptable range")
+add_h3_cli_test(testCliGetHexagonEdgeLengthAvgM "getHexagonEdgeLengthAvgM -r 0"
+                "1281256.0109999999")
+add_h3_cli_test(
+    testCliDontGetHexagonEdgeLengthAvgM "getHexagonEdgeLengthAvgM -r 20 2>&1"
+    "Error 4: Resolution argument was outside of acceptable range")

@@ -1,3 +1,9 @@
-add_h3_cli_test(testCliAreNeighborCells "areNeighborCells -o 85283473fffffff -d 85283477fffffff" "true")
-add_h3_cli_test(testCliAreNotNeighborCells "areNeighborCells -o 85283473fffffff -d 85283472fffffff" "false")
-add_h3_cli_test(testCliAreNeighborNotCells "areNeighborCells -o 85283473fffffff -d 852834727fffffff 2>&1" "Error 5: Cell argument was not valid")
+add_h3_cli_test(testCliAreNeighborCells
+                "areNeighborCells -o 85283473fffffff -d 85283477fffffff" "true")
+add_h3_cli_test(
+    testCliAreNotNeighborCells
+    "areNeighborCells -o 85283473fffffff -d 85283472fffffff" "false")
+add_h3_cli_test(
+    testCliAreNeighborNotCells
+    "areNeighborCells -o 85283473fffffff -d 852834727fffffff 2>&1"
+    "Error 5: Cell argument was not valid")

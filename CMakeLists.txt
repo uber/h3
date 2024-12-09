@@ -1,16 +1,16 @@
 # Copyright 2017-2022 Uber Technologies, Inc.
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not
+# use this file except in compliance with the License. You may obtain a copy of
+# the License at
 #
 # http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations under
+# the License.
 
 cmake_minimum_required(VERSION 3.20) # Due to dependency on CMP0115
 
@@ -23,10 +23,17 @@ string(REPLACE "\n" "" H3_VERSION "${H3_VERSION}")
 # Remove any trailing qualifier
 string(REGEX REPLACE "-.*$" "" H3_VERSION "${H3_VERSION}")
 
-project(h3 LANGUAGES C VERSION ${H3_VERSION})
+project(
+    h3
+    LANGUAGES C
+    VERSION ${H3_VERSION})
 
-set(H3_PREFIX "" CACHE STRING "Prefix for exported symbols")
-set(H3_ALLOC_PREFIX "" CACHE STRING "Prefix for allocation functions")
+set(H3_PREFIX
+    ""
+    CACHE STRING "Prefix for exported symbols")
+set(H3_ALLOC_PREFIX
+    ""
+    CACHE STRING "Prefix for allocation functions")
 
 # Needed due to CMP0042
 set(CMAKE_MACOSX_RPATH 1)
@@ -35,10 +42,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-# Some misc apps do not work with shared libraries on Windows
-# because they require access to internal H3 functions. Build these
-# using either static libraries or an option to expose all
-# function symbols.
+# Some misc apps do not work with shared libraries on Windows because they
+# require access to internal H3 functions. Build these using either static
+# libraries or an option to expose all function symbols.
 if(NOT (WIN32 AND BUILD_SHARED_LIBS))
     set(ENABLE_REQUIRES_ALL_SYMBOLS ON)
 else()
@@ -47,12 +53,13 @@ endif()
 
 option(ENABLE_COVERAGE "Enable compiling tests with coverage." OFF)
 option(BUILD_BENCHMARKS "Build benchmarking applications." ON)
-option(ENABLE_COUNTRY_BENCHMARKS "Build benchmarking applications with Natural Earth geometries." OFF)
+option(ENABLE_COUNTRY_BENCHMARKS
+       "Build benchmarking applications with Natural Earth geometries." OFF)
 option(BUILD_FUZZERS "Build fuzzer applications (for use with afl)." ON)
 option(BUILD_FILTERS "Build filter applications." ON)
 option(BUILD_GENERATORS "Build code generation applications." ON)
-# If ON, libfuzzer settings are used to build the fuzzer harnesses. If OFF, a frontend
-# for afl++ is provided instead.
+# If ON, libfuzzer settings are used to build the fuzzer harnesses. If OFF, a
+# frontend for afl++ is provided instead.
 option(ENABLE_LIBFUZZER "Build fuzzers with libFuzzer support." OFF)
 
 option(ENABLE_POLYGON_TO_CELLS_ASSERT "Build additional asserts into the polyfill algorithm for debugging." OFF)
@@ -60,11 +67,13 @@ mark_as_advanced(ENABLE_POLYGON_TO_CELLS_ASSERT)
 
 # These options exist for integration with OSS-Fuzz, so that the fuzzer options
 # can be passed through only to the fuzzer executables but not the H3 library,
-# since passing those options to the library too may result in too many implementations
-# of main in the fuzzer executables.
+# since passing those options to the library too may result in too many
+# implementations of main in the fuzzer executables.
 option(H3_FUZZER_NO_MAIN "Build fuzzers with no main." OFF)
 mark_as_advanced(H3_FUZZER_NO_MAIN)
-set(H3_FUZZER_EXTRA_OPTIONS "" CACHE STRING "Extra compilation options for fuzzers particularly.")
+set(H3_FUZZER_EXTRA_OPTIONS
+    ""
+    CACHE STRING "Extra compilation options for fuzzers particularly.")
 mark_as_advanced(H3_FUZZER_EXTRA_OPTIONS)
 
 if(WIN32)
@@ -103,14 +112,21 @@ if(ENABLE_WARNINGS)
 endif()
 
 if(NOT WIN32)
-    # Compiler options are set only on non-Windows, since these options
-    # are not correct for MSVC.
-    list(APPEND H3_COMPILE_FLAGS $<$<CONFIG:Debug>:-gdwarf-2 -g3 -O0 -fno-inline -fno-eliminate-unused-debug-types>)
+    # Compiler options are set only on non-Windows, since these options are not
+    # correct for MSVC.
+    list(
+        APPEND
+        H3_COMPILE_FLAGS
+        $<$<CONFIG:Debug>:-gdwarf-2
+        -g3
+        -O0
+        -fno-inline
+        -fno-eliminate-unused-debug-types>)
 
     if(ENABLE_COVERAGE)
         list(APPEND H3_COMPILE_FLAGS $<$<CONFIG:Debug>:--coverage>)
-        # --coverage is not passed to the linker, so this option is needed
-        # to fully enable coverage.
+        # --coverage is not passed to the linker, so this option is needed to
+        # fully enable coverage.
         list(APPEND H3_LINK_FLAGS $<$<CONFIG:Debug>:--coverage>)
     endif()
     if(ENABLE_LIBFUZZER)
@@ -185,17 +201,12 @@ set(APP_SOURCE_FILES
     src/apps/applib/lib/kml.c
     src/apps/applib/lib/utility.c
     src/apps/applib/lib/args.c)
-set(TEST_APP_SOURCE_FILES
-    src/apps/applib/include/test.h
-    src/apps/applib/lib/test.c)
+set(TEST_APP_SOURCE_FILES src/apps/applib/include/test.h
+                          src/apps/applib/lib/test.c)
 set(EXAMPLE_SOURCE_FILES
-    examples/index.c
-    examples/distance.c
-    examples/neighbors.c
-    examples/compactCells.c
-    examples/edge.c)
-set(H3_BIN_SOURCE_FILES
-    src/apps/filters/h3.c)
+    examples/index.c examples/distance.c examples/neighbors.c
+    examples/compactCells.c examples/edge.c)
+set(H3_BIN_SOURCE_FILES src/apps/filters/h3.c)
 set(OTHER_SOURCE_FILES
     src/apps/filters/cellToLatLng.c
     src/apps/filters/cellToLocalIj.c
@@ -307,15 +318,24 @@ set(OTHER_SOURCE_FILES
     src/apps/benchmarks/benchmarkH3Api.c)
 
 set(ALL_SOURCE_FILES
-    ${LIB_SOURCE_FILES} ${APP_SOURCE_FILES} ${TEST_APP_SOURCE_FILES} ${H3_BIN_SOURCE_FILES} ${OTHER_SOURCE_FILES})
+    ${LIB_SOURCE_FILES} ${APP_SOURCE_FILES} ${TEST_APP_SOURCE_FILES}
+    ${H3_BIN_SOURCE_FILES} ${OTHER_SOURCE_FILES})
 
-# This is done for quality control purposes (to detect if any source files are missing from
-# our list), but is not done as the authoritative list as per CMake developer recommendations.
-# See https://cmake.org/cmake/help/latest/command/file.html#glob-recurse
-option(AUDIT_SOURCE_FILE_LIST "Compare source file list against glob expression" OFF)
+# This is done for quality control purposes (to detect if any source files are
+# missing from our list), but is not done as the authoritative list as per CMake
+# developer recommendations. See
+# https://cmake.org/cmake/help/latest/command/file.html#glob-recurse
+option(AUDIT_SOURCE_FILE_LIST
+       "Compare source file list against glob expression" OFF)
 if(AUDIT_SOURCE_FILE_LIST)
-    file(GLOB_RECURSE QA_SRC_SOURCE_FILES RELATIVE "${CMAKE_SOURCE_DIR}" "src/*.c" "src/*.h")
-    file(GLOB_RECURSE QA_EXAMPLE_SOURCE_FILES RELATIVE "${CMAKE_SOURCE_DIR}" "examples/*.c" "examples/*.h")
+    file(
+        GLOB_RECURSE QA_SRC_SOURCE_FILES
+        RELATIVE "${CMAKE_SOURCE_DIR}"
+        "src/*.c" "src/*.h")
+    file(
+        GLOB_RECURSE QA_EXAMPLE_SOURCE_FILES
+        RELATIVE "${CMAKE_SOURCE_DIR}"
+        "examples/*.c" "examples/*.h")
     foreach(QA_FILE IN LISTS QA_SRC_SOURCE_FILES)
         if(NOT QA_FILE IN_LIST ALL_SOURCE_FILES)
             message(FATAL_ERROR "${QA_FILE} not in ALL_SOURCE_FILES")
@@ -362,13 +382,15 @@ function(add_h3_library name h3_alloc_prefix_override)
     set(has_alloc_prefix NO)
     if(h3_alloc_prefix_override)
         set(has_alloc_prefix YES)
-        target_compile_definitions(${name} PUBLIC H3_ALLOC_PREFIX=${h3_alloc_prefix_override})
+        target_compile_definitions(
+            ${name} PUBLIC H3_ALLOC_PREFIX=${h3_alloc_prefix_override})
     elseif(H3_ALLOC_PREFIX)
         set(has_alloc_prefix YES)
-        target_compile_definitions(${name} PUBLIC H3_ALLOC_PREFIX=${H3_ALLOC_PREFIX})
+        target_compile_definitions(${name}
+                                   PUBLIC H3_ALLOC_PREFIX=${H3_ALLOC_PREFIX})
     endif()
-    # Mac OSX defaults to not looking up undefined symbols dynamically,
-    # so enable that explicitly. Windows needs something similar.
+    # Mac OSX defaults to not looking up undefined symbols dynamically, so
+    # enable that explicitly. Windows needs something similar.
     if(has_alloc_prefix AND APPLE)
         target_link_libraries(${name} PRIVATE "-undefined dynamic_lookup")
     elseif(has_alloc_prefix AND MSVC)
@@ -381,32 +403,28 @@ function(add_h3_library name h3_alloc_prefix_override)
     if(have_vla)
         target_compile_definitions(${name} PUBLIC H3_HAVE_VLA)
     endif()
-    target_include_directories(${name} PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/h3lib/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/src/h3lib/include>)
+    target_include_directories(
+        ${name}
+        PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/h3lib/include>
+               $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/src/h3lib/include>)
 endfunction()
 
 # Build the H3 library
 add_h3_library(h3 "")
 
-# Automatic code formatting
-# Give preference to clang-format-14
+# Automatic code formatting Give preference to clang-format-14
 find_program(CLANG_FORMAT_PATH NAMES clang-format-14 clang-format)
 cmake_dependent_option(
     ENABLE_FORMAT "Enable running clang-format before compiling" ON
     "CLANG_FORMAT_PATH" OFF)
 if(ENABLE_FORMAT)
     # Format
-    add_custom_target(format
-        COMMAND ${CLANG_FORMAT_PATH}
-        -style=file
-        -i
-        ${ALL_SOURCE_FILES}
-        ${EXAMPLE_SOURCE_FILES}
-        ${UNCONFIGURED_API_HEADER}
+    add_custom_target(
+        format
+        COMMAND ${CLANG_FORMAT_PATH} -style=file -i ${ALL_SOURCE_FILES}
+                ${EXAMPLE_SOURCE_FILES} ${UNCONFIGURED_API_HEADER}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        COMMENT "Formatting sources"
-        )
+        COMMENT "Formatting sources")
     # Always do formatting
     add_dependencies(h3 format)
 elseif(NOT CLANG_FORMAT_PATH)
@@ -423,48 +441,52 @@ if(ENABLE_LINTING)
     set_target_properties(h3 PROPERTIES C_CLANG_TIDY "${CLANG_TIDY_PATH}")
 elseif(NOT CLANG_TIDY_PATH)
     message(WARNING "clang-tidy was not detected, "
-                  "so source code linting is disabled")
+                    "so source code linting is disabled")
 endif()
 
 # Docs
 find_package(Doxygen)
 option(ENABLE_DOCS "Enable building documentation." ON)
 if(DOXYGEN_FOUND AND ENABLE_DOCS)
-    set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${CMAKE_CURRENT_BINARY_DIR}/dev-docs/_build")
-    configure_file(dev-docs/Doxyfile.in
-        dev-docs/Doxyfile
-        ESCAPE_QUOTES
-        )
-    add_custom_target(docs
-        ALL
+    set_property(
+        DIRECTORY
+        APPEND
+        PROPERTY ADDITIONAL_MAKE_CLEAN_FILES
+                 "${CMAKE_CURRENT_BINARY_DIR}/dev-docs/_build")
+    configure_file(dev-docs/Doxyfile.in dev-docs/Doxyfile ESCAPE_QUOTES)
+    add_custom_target(
+        docs ALL
         ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/dev-docs/Doxyfile
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/dev-docs
-        COMMENT "Generating API documentation with Doxygen" VERBATIM
-        )
+        COMMENT "Generating API documentation with Doxygen"
+        VERBATIM)
 else()
-    add_custom_target(docs
-        echo "Doxygen was not installed when CMake was run or ENABLE_DOCS was OFF. Check that Doxygen is installed and rerun `cmake .`" VERBATIM
-        )
+    add_custom_target(
+        docs
+        echo
+        "Doxygen was not installed when CMake was run or ENABLE_DOCS was OFF. Check that Doxygen is installed and rerun `cmake .`"
+        VERBATIM)
 endif()
 
 # Metadata for bindings
-if (WIN32)
-    add_custom_target(binding-functions
-        COMMAND PowerShell -ExecutionPolicy Bypass -File ${CMAKE_CURRENT_SOURCE_DIR}/scripts/binding_functions.ps1
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        )
+if(WIN32)
+    add_custom_target(
+        binding-functions
+        COMMAND PowerShell -ExecutionPolicy Bypass -File
+                ${CMAKE_CURRENT_SOURCE_DIR}/scripts/binding_functions.ps1
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 else()
-    add_custom_target(binding-functions
+    add_custom_target(
+        binding-functions
         COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/binding_functions.sh
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        )
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 endif()
 
 # Release publishing
-add_custom_target(update-version
+add_custom_target(
+    update-version
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/update_version.sh
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    )
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Link all executables against H3
 macro(add_h3_executable name)
@@ -472,8 +494,11 @@ macro(add_h3_executable name)
     add_executable(${ARGV})
     if(TARGET ${name})
         target_link_libraries(${name} PUBLIC h3)
-        target_include_directories(${name} PUBLIC
-          $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/apps/applib/include>)
+        target_include_directories(
+            ${name}
+            PUBLIC
+                $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/apps/applib/include>
+        )
         target_compile_options(${name} PRIVATE ${H3_COMPILE_FLAGS})
         target_link_libraries(${name} PRIVATE ${H3_LINK_FLAGS})
     endif()
@@ -486,52 +511,83 @@ if(BUILD_FILTERS)
     endmacro()
 
     add_h3_filter(h3_bin src/apps/filters/h3.c ${APP_SOURCE_FILES})
-    set_target_properties(h3_bin PROPERTIES OUTPUT_NAME h3) # Special logic for the `h3` executable
-    add_h3_filter(latLngToCell src/apps/filters/latLngToCell.c ${APP_SOURCE_FILES})
-    add_h3_filter(h3ToComponents src/apps/filters/h3ToComponents.c ${APP_SOURCE_FILES})
-    add_h3_filter(cellToLatLng src/apps/filters/cellToLatLng.c ${APP_SOURCE_FILES})
-    add_h3_filter(cellToLocalIj src/apps/filters/cellToLocalIj.c ${APP_SOURCE_FILES})
-    add_h3_filter(localIjToCell src/apps/filters/localIjToCell.c ${APP_SOURCE_FILES})
-    add_h3_filter(cellToBoundary src/apps/filters/cellToBoundary.c ${APP_SOURCE_FILES})
-    add_h3_filter(gridDiskUnsafe src/apps/filters/gridDiskUnsafe.c ${APP_SOURCE_FILES})
+    set_target_properties(
+        h3_bin PROPERTIES OUTPUT_NAME h3) # Special logic for the `h3`
+                                          # executable
+    add_h3_filter(latLngToCell src/apps/filters/latLngToCell.c
+                  ${APP_SOURCE_FILES})
+    add_h3_filter(h3ToComponents src/apps/filters/h3ToComponents.c
+                  ${APP_SOURCE_FILES})
+    add_h3_filter(cellToLatLng src/apps/filters/cellToLatLng.c
+                  ${APP_SOURCE_FILES})
+    add_h3_filter(cellToLocalIj src/apps/filters/cellToLocalIj.c
+                  ${APP_SOURCE_FILES})
+    add_h3_filter(localIjToCell src/apps/filters/localIjToCell.c
+                  ${APP_SOURCE_FILES})
+    add_h3_filter(cellToBoundary src/apps/filters/cellToBoundary.c
+                  ${APP_SOURCE_FILES})
+    add_h3_filter(gridDiskUnsafe src/apps/filters/gridDiskUnsafe.c
+                  ${APP_SOURCE_FILES})
     add_h3_filter(gridDisk src/apps/filters/gridDisk.c ${APP_SOURCE_FILES})
-    add_h3_filter(cellToBoundaryHier src/apps/miscapps/cellToBoundaryHier.c ${APP_SOURCE_FILES})
-    add_h3_filter(cellToLatLngHier src/apps/miscapps/cellToLatLngHier.c ${APP_SOURCE_FILES})
+    add_h3_filter(cellToBoundaryHier src/apps/miscapps/cellToBoundaryHier.c
+                  ${APP_SOURCE_FILES})
+    add_h3_filter(cellToLatLngHier src/apps/miscapps/cellToLatLngHier.c
+                  ${APP_SOURCE_FILES})
     add_h3_filter(h3ToHier src/apps/miscapps/h3ToHier.c ${APP_SOURCE_FILES})
 
     # Generate KML files for visualizing the H3 grid
-    add_custom_target(create-kml-dir
-        COMMAND ${CMAKE_COMMAND} -E make_directory KML)
+    add_custom_target(create-kml-dir COMMAND ${CMAKE_COMMAND} -E make_directory
+                                             KML)
     add_custom_target(kml)
 
-    # Only the first 3 resolution grids are generated. The others can be generated,
-    # but the file sizes would be very, very large.
+    # Only the first 3 resolution grids are generated. The others can be
+    # generated, but the file sizes would be very, very large.
     foreach(resolution RANGE 3)
-        set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "KML/res${resolution}cells.kml")
-        set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "KML/res${resolution}centers.kml")
-        add_custom_target(kml_cells_${resolution}
-            COMMAND ${SHELL} "$<TARGET_FILE:h3ToHier> -r ${resolution} | $<TARGET_FILE:cellToBoundary> --kml --kml-name res${resolution}cells.kml --kml-description \"Res ${resolution} Cells\" > KML/res${resolution}cells.kml"
-            VERBATIM
-            DEPENDS create-kml-dir)
-        add_custom_target(kml_centers_${resolution}
-            COMMAND ${SHELL} "$<TARGET_FILE:h3ToHier> -r ${resolution} | $<TARGET_FILE:cellToLatLng> --kml --kml-name res${resolution}centers.kml --kml-description \"Res ${resolution} Centers\" > KML/res${resolution}centers.kml"
-            VERBATIM
-            DEPENDS create-kml-dir)
-        add_dependencies(kml
+        set_property(
+            DIRECTORY
+            APPEND
+            PROPERTY ADDITIONAL_MAKE_CLEAN_FILES
+                     "KML/res${resolution}cells.kml")
+        set_property(
+            DIRECTORY
+            APPEND
+            PROPERTY ADDITIONAL_MAKE_CLEAN_FILES
+                     "KML/res${resolution}centers.kml")
+        add_custom_target(
             kml_cells_${resolution}
-            kml_centers_${resolution})
+            COMMAND
+                ${SHELL}
+                "$<TARGET_FILE:h3ToHier> -r ${resolution} | $<TARGET_FILE:cellToBoundary> --kml --kml-name res${resolution}cells.kml --kml-description \"Res ${resolution} Cells\" > KML/res${resolution}cells.kml"
+            VERBATIM
+            DEPENDS create-kml-dir)
+        add_custom_target(
+            kml_centers_${resolution}
+            COMMAND
+                ${SHELL}
+                "$<TARGET_FILE:h3ToHier> -r ${resolution} | $<TARGET_FILE:cellToLatLng> --kml --kml-name res${resolution}centers.kml --kml-description \"Res ${resolution} Centers\" > KML/res${resolution}centers.kml"
+            VERBATIM
+            DEPENDS create-kml-dir)
+        add_dependencies(kml kml_cells_${resolution} kml_centers_${resolution})
     endforeach()
 endif()
 
 if(BUILD_GENERATORS AND ENABLE_REQUIRES_ALL_SYMBOLS)
     # Code generation
-    add_h3_executable(generateBaseCellNeighbors src/apps/miscapps/generateBaseCellNeighbors.c ${APP_SOURCE_FILES})
-    add_h3_executable(generateFaceCenterPoint src/apps/miscapps/generateFaceCenterPoint.c ${APP_SOURCE_FILES})
-    add_h3_executable(generatePentagonDirectionFaces src/apps/miscapps/generatePentagonDirectionFaces.c ${APP_SOURCE_FILES})
+    add_h3_executable(
+        generateBaseCellNeighbors src/apps/miscapps/generateBaseCellNeighbors.c
+        ${APP_SOURCE_FILES})
+    add_h3_executable(
+        generateFaceCenterPoint src/apps/miscapps/generateFaceCenterPoint.c
+        ${APP_SOURCE_FILES})
+    add_h3_executable(
+        generatePentagonDirectionFaces
+        src/apps/miscapps/generatePentagonDirectionFaces.c ${APP_SOURCE_FILES})
 
     # Miscellaneous testing applications - generating random data
-    add_h3_executable(mkRandGeo src/apps/testapps/mkRandGeo.c ${APP_SOURCE_FILES})
-    add_h3_executable(mkRandGeoBoundary src/apps/testapps/mkRandGeoBoundary.c ${APP_SOURCE_FILES})
+    add_h3_executable(mkRandGeo src/apps/testapps/mkRandGeo.c
+                      ${APP_SOURCE_FILES})
+    add_h3_executable(mkRandGeoBoundary src/apps/testapps/mkRandGeoBoundary.c
+                      ${APP_SOURCE_FILES})
 endif()
 
 if(H3_IS_ROOT_PROJECT AND BUILD_TESTING)
@@ -555,7 +611,8 @@ if(BUILD_FUZZERS)
     add_h3_fuzzer(fuzzerLatLngToCell src/apps/fuzzers/fuzzerLatLngToCell.c)
     add_h3_fuzzer(fuzzerCellToLatLng src/apps/fuzzers/fuzzerCellToLatLng.c)
     add_h3_fuzzer(fuzzerGridDisk src/apps/fuzzers/fuzzerGridDisk.c)
-    add_h3_fuzzer(fuzzerCellsToLinkedMultiPolygon src/apps/fuzzers/fuzzerCellsToLinkedMultiPolygon.c)
+    add_h3_fuzzer(fuzzerCellsToLinkedMultiPolygon
+                  src/apps/fuzzers/fuzzerCellsToLinkedMultiPolygon.c)
     add_h3_fuzzer(fuzzerDistances src/apps/fuzzers/fuzzerDistances.c)
     add_h3_fuzzer(fuzzerCellArea src/apps/fuzzers/fuzzerCellArea.c)
     add_h3_fuzzer(fuzzerEdgeLength src/apps/fuzzers/fuzzerEdgeLength.c)
@@ -568,13 +625,18 @@ if(BUILD_FUZZERS)
     add_h3_fuzzer(fuzzerDirectedEdge src/apps/fuzzers/fuzzerDirectedEdge.c)
     add_h3_fuzzer(fuzzerLocalIj src/apps/fuzzers/fuzzerLocalIj.c)
     add_h3_fuzzer(fuzzerPolygonToCells src/apps/fuzzers/fuzzerPolygonToCells.c)
-    add_h3_fuzzer(fuzzerPolygonToCellsExperimental src/apps/fuzzers/fuzzerPolygonToCellsExperimental.c)
-    add_h3_fuzzer(fuzzerPolygonToCellsNoHoles src/apps/fuzzers/fuzzerPolygonToCellsNoHoles.c)
-    add_h3_fuzzer(fuzzerPolygonToCellsExperimentalNoHoles src/apps/fuzzers/fuzzerPolygonToCellsExperimentalNoHoles.c)
+    add_h3_fuzzer(fuzzerPolygonToCellsExperimental
+                  src/apps/fuzzers/fuzzerPolygonToCellsExperimental.c)
+    add_h3_fuzzer(fuzzerPolygonToCellsNoHoles
+                  src/apps/fuzzers/fuzzerPolygonToCellsNoHoles.c)
+    add_h3_fuzzer(fuzzerPolygonToCellsExperimentalNoHoles
+                  src/apps/fuzzers/fuzzerPolygonToCellsExperimentalNoHoles.c)
     add_h3_fuzzer(fuzzerCellToChildPos src/apps/fuzzers/fuzzerCellToChildPos.c)
     if(ENABLE_REQUIRES_ALL_SYMBOLS)
-        add_h3_fuzzer(fuzzerInternalAlgos src/apps/fuzzers/fuzzerInternalAlgos.c)
-        add_h3_fuzzer(fuzzerInternalCoordIjk src/apps/fuzzers/fuzzerInternalCoordIjk.c)
+        add_h3_fuzzer(fuzzerInternalAlgos
+                      src/apps/fuzzers/fuzzerInternalAlgos.c)
+        add_h3_fuzzer(fuzzerInternalCoordIjk
+                      src/apps/fuzzers/fuzzerInternalCoordIjk.c)
     endif()
 endif()
 
@@ -584,41 +646,57 @@ if(BUILD_BENCHMARKS)
 
     macro(add_h3_benchmark name srcfile)
         add_h3_executable(${name} ${srcfile} ${APP_SOURCE_FILES})
-        add_custom_target(bench_${name} COMMAND ${TEST_WRAPPER} $<TARGET_FILE:${name}>)
+        add_custom_target(bench_${name} COMMAND ${TEST_WRAPPER}
+                                                $<TARGET_FILE:${name}>)
         add_dependencies(benchmarks bench_${name})
     endmacro()
 
     add_h3_benchmark(benchmarkH3Api src/apps/benchmarks/benchmarkH3Api.c)
-    add_h3_benchmark(benchmarkGridDiskCells src/apps/benchmarks/benchmarkGridDiskCells.c)
-    add_h3_benchmark(benchmarkGridPathCells src/apps/benchmarks/benchmarkGridPathCells.c)
-    add_h3_benchmark(benchmarkDirectedEdge src/apps/benchmarks/benchmarkDirectedEdge.c)
+    add_h3_benchmark(benchmarkGridDiskCells
+                     src/apps/benchmarks/benchmarkGridDiskCells.c)
+    add_h3_benchmark(benchmarkGridPathCells
+                     src/apps/benchmarks/benchmarkGridPathCells.c)
+    add_h3_benchmark(benchmarkDirectedEdge
+                     src/apps/benchmarks/benchmarkDirectedEdge.c)
     add_h3_benchmark(benchmarkVertex src/apps/benchmarks/benchmarkVertex.c)
-    add_h3_benchmark(benchmarkIsValidCell src/apps/benchmarks/benchmarkIsValidCell.c)
-    add_h3_benchmark(benchmarkCellsToLinkedMultiPolygon src/apps/benchmarks/benchmarkCellsToLinkedMultiPolygon.c)
-    add_h3_benchmark(benchmarkCellToChildren src/apps/benchmarks/benchmarkCellToChildren.c)
-    add_h3_benchmark(benchmarkPolygonToCells src/apps/benchmarks/benchmarkPolygonToCells.c)
-    add_h3_benchmark(benchmarkPolygonToCellsExperimental src/apps/benchmarks/benchmarkPolygonToCellsExperimental.c)
+    add_h3_benchmark(benchmarkIsValidCell
+                     src/apps/benchmarks/benchmarkIsValidCell.c)
+    add_h3_benchmark(benchmarkCellsToLinkedMultiPolygon
+                     src/apps/benchmarks/benchmarkCellsToLinkedMultiPolygon.c)
+    add_h3_benchmark(benchmarkCellToChildren
+                     src/apps/benchmarks/benchmarkCellToChildren.c)
+    add_h3_benchmark(benchmarkPolygonToCells
+                     src/apps/benchmarks/benchmarkPolygonToCells.c)
+    add_h3_benchmark(benchmarkPolygonToCellsExperimental
+                     src/apps/benchmarks/benchmarkPolygonToCellsExperimental.c)
     if(ENABLE_REQUIRES_ALL_SYMBOLS)
-        add_h3_benchmark(benchmarkPolygon src/apps/benchmarks/benchmarkPolygon.c)
+        add_h3_benchmark(benchmarkPolygon
+                         src/apps/benchmarks/benchmarkPolygon.c)
     endif()
 
     if(ENABLE_COUNTRY_BENCHMARKS)
-        # Country benchmark: Downloads country geometry and generates the benchmark file
-        add_custom_command(OUTPUT src/apps/benchmarks/benchmarkCountries.c
-            COMMAND node ${CMAKE_CURRENT_SOURCE_DIR}/scripts/make_countries.js ${CMAKE_CURRENT_BINARY_DIR}/src/apps/benchmarks/benchmarkCountries.c
-            )
+        # Country benchmark: Downloads country geometry and generates the
+        # benchmark file
+        add_custom_command(
+            OUTPUT src/apps/benchmarks/benchmarkCountries.c
+            COMMAND
+                node ${CMAKE_CURRENT_SOURCE_DIR}/scripts/make_countries.js
+                ${CMAKE_CURRENT_BINARY_DIR}/src/apps/benchmarks/benchmarkCountries.c
+        )
 
-        add_h3_benchmark(benchmarkCountries ${CMAKE_CURRENT_BINARY_DIR}/src/apps/benchmarks/benchmarkCountries.c)
+        add_h3_benchmark(
+            benchmarkCountries
+            ${CMAKE_CURRENT_BINARY_DIR}/src/apps/benchmarks/benchmarkCountries.c
+        )
         # add_dependencies(bench_benchmarkCountries )
     endif()
 endif()
 
 # Installation (https://github.com/forexample/package-example)
 
-# Layout. This works for all platforms:
-#   * <prefix>/<CMAKE_INSTALL_LIBDIR>/cmake/<PROJECT-NAME>
-#   * <prefix>/<CMAKE_INSTALL_LIBDIR>/
-#   * <prefix>/include/
+# Layout. This works for all platforms: *
+# <prefix>/<CMAKE_INSTALL_LIBDIR>/cmake/<PROJECT-NAME> *
+# <prefix>/<CMAKE_INSTALL_LIBDIR>/ * <prefix>/include/
 include(GNUInstallDirs)
 set(config_install_dir "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
 set(include_install_dir "include")
@@ -631,41 +709,30 @@ set(project_config "${generated_dir}/${PROJECT_NAME}Config.cmake")
 set(TARGETS_EXPORT_NAME "${PROJECT_NAME}Targets")
 set(namespace "${PROJECT_NAME}::")
 
-# TODO: Unclear why this is needed to get the libh3 Debian package to build correctly
-# with shared libraries.
+# TODO: Unclear why this is needed to get the libh3 Debian package to build
+# correctly with shared libraries.
 set(CMAKE_INSTALL_DEFAULT_COMPONENT_NAME "libh3")
 
 # Include module with fuction 'write_basic_package_version_file'
 include(CMakePackageConfigHelpers)
 
-# Configure '<PROJECT-NAME>ConfigVersion.cmake'
-# Use:
-#   * PROJECT_VERSION
-write_basic_package_version_file(
-    "${version_config}" COMPATIBILITY SameMajorVersion
-)
+# Configure '<PROJECT-NAME>ConfigVersion.cmake' Use: * PROJECT_VERSION
+write_basic_package_version_file("${version_config}"
+                                 COMPATIBILITY SameMajorVersion)
 
-# Configure '<PROJECT-NAME>Config.cmake'
-# Use variables:
-#   * TARGETS_EXPORT_NAME
-#   * PROJECT_NAME
-configure_package_config_file(
-    "cmake/Config.cmake.in"
-    "${project_config}"
-    INSTALL_DESTINATION "${config_install_dir}"
-)
+# Configure '<PROJECT-NAME>Config.cmake' Use variables: * TARGETS_EXPORT_NAME *
+# PROJECT_NAME
+configure_package_config_file("cmake/Config.cmake.in" "${project_config}"
+                              INSTALL_DESTINATION "${config_install_dir}")
 
-# Targets:
-#   * <prefix>/<CMAKE_INSTALL_LIBDIR>/libh3.so
-#   * header location after install: <prefix>/include/h3/h3api.h
-#   * headers can be included by C++ code `#include <h3/h3api.h>`
-# Installing the library and filters system-wide.
+# Targets: * <prefix>/<CMAKE_INSTALL_LIBDIR>/libh3.so * header location after
+# install: <prefix>/include/h3/h3api.h * headers can be included by C++ code
+# `#include <h3/h3api.h>` Installing the library and filters system-wide.
 install(
     TARGETS ${INSTALL_TARGETS}
     EXPORT "${TARGETS_EXPORT_NAME}"
     DESTINATION "bin"
-    COMPONENT h3
-)
+    COMPONENT h3)
 
 install(
     TARGETS h3
@@ -674,35 +741,29 @@ install(
     LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
     ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
     RUNTIME DESTINATION "bin"
-    INCLUDES DESTINATION "${include_install_dir}"
-)
+    INCLUDES
+    DESTINATION "${include_install_dir}")
 
-# Headers:
-#   * src/h3lib/include/h3api.h -> <prefix>/include/h3/h3api.h
-# Only the h3api.h header is needed by applications using H3.
+# Headers: * src/h3lib/include/h3api.h -> <prefix>/include/h3/h3api.h Only the
+# h3api.h header is needed by applications using H3.
 install(
     FILES "${CMAKE_CURRENT_BINARY_DIR}/src/h3lib/include/h3api.h"
     DESTINATION "${include_install_dir}/h3"
-    COMPONENT libh3-dev
-)
+    COMPONENT libh3-dev)
 
-# Config
-#   * <prefix>/<CMAKE_INSTALL_LIBDIR>/cmake/h3/h3Config.cmake
-#   * <prefix>/<CMAKE_INSTALL_LIBDIR>/cmake/h3/h3ConfigVersion.cmake
+# Config * <prefix>/<CMAKE_INSTALL_LIBDIR>/cmake/h3/h3Config.cmake *
+# <prefix>/<CMAKE_INSTALL_LIBDIR>/cmake/h3/h3ConfigVersion.cmake
 install(
     FILES "${project_config}" "${version_config}"
     DESTINATION "${config_install_dir}"
-    COMPONENT libh3-dev
-)
+    COMPONENT libh3-dev)
 
-# Config
-#   * <prefix>/<CMAKE_INSTALL_LIBDIR>/cmake/h3/h3Targets.cmake
+# Config * <prefix>/<CMAKE_INSTALL_LIBDIR>/cmake/h3/h3Targets.cmake
 install(
     EXPORT "${TARGETS_EXPORT_NAME}"
     NAMESPACE "${namespace}"
     DESTINATION "${config_install_dir}"
-    COMPONENT libh3-dev
-)
+    COMPONENT libh3-dev)
 
 # Debian package build
 set(CPACK_DEB_COMPONENT_INSTALL 1)
@@ -714,9 +775,14 @@ set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/LICENSE")
 set(CPACK_DEBIAN_LIBH3_PACKAGE_DEPENDS "libc6 (>= 2.27)")
 set(CPACK_DEBIAN_LIBH3-DEV_PACKAGE_DEPENDS "libh3 (= ${H3_VERSION})")
 set(CPACK_DEBIAN_H3_PACKAGE_DEPENDS "libc6 (>= 2.27), libh3 (= ${H3_VERSION})")
-set(CPACK_DEBIAN_LIBH3_DESCRIPTION "Library files for the H3 hexagonal discrete global grid system.")
-set(CPACK_DEBIAN_LIBH3-DEV_DESCRIPTION "Development files and headers for the H3 hexagonal discrete global grid system.")
-set(CPACK_DEBIAN_H3_DESCRIPTION "UNIX style filter (command line) tools for the H3 hexagonal discrete global grid system.")
+set(CPACK_DEBIAN_LIBH3_DESCRIPTION
+    "Library files for the H3 hexagonal discrete global grid system.")
+set(CPACK_DEBIAN_LIBH3-DEV_DESCRIPTION
+    "Development files and headers for the H3 hexagonal discrete global grid system."
+)
+set(CPACK_DEBIAN_H3_DESCRIPTION
+    "UNIX style filter (command line) tools for the H3 hexagonal discrete global grid system."
+)
 set(CPACK_DEBIAN_LIBH3_PACKAGE_NAME "libh3")
 set(CPACK_DEBIAN_LIBH3-DEV_PACKAGE_NAME "libh3-dev")
 set(CPACK_DEBIAN_H3_PACKAGE_NAME "h3")

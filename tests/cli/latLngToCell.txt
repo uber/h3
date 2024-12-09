@@ -1,1 +1,3 @@
-add_h3_cli_test(testCliLatLngToCell "latLngToCell --lat 20 --lng 123 -r 2 -f newline" "824b9ffffffffff")
+add_h3_cli_test(
+    testCliLatLngToCell "latLngToCell --lat 20 --lng 123 -r 2 -f newline"
+    "824b9ffffffffff")

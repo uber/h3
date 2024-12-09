@@ -1,2 +1,4 @@
-add_h3_cli_test(testCliCellAreaKm2 "cellAreaKm2 -c 85283473fffffff" "265.0925581283")
-add_h3_cli_test(testCliNotCellAreaKm2 "cellAreaKm2 -c 115283473fffffff 2>&1" "Error 5: Cell argument was not valid")
+add_h3_cli_test(testCliCellAreaKm2 "cellAreaKm2 -c 85283473fffffff"
+                "265.0925581283")
+add_h3_cli_test(testCliNotCellAreaKm2 "cellAreaKm2 -c 115283473fffffff 2>&1"
+                "Error 5: Cell argument was not valid")
