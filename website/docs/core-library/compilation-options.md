@@ -89,12 +89,6 @@ Whether to enable using clang-tidy to lint source files when building. Only invo
 [Makefile or Ninja CMake generators](https://cmake.org/cmake/help/latest/prop_tgt/LANG_CLANG_TIDY.html)
 are used.
 
-## ENABLE_POLYGON_TO_CELLS_ASSERT
-
-Whether to enable additional debugging assertions in the `polygonToCells` functions. These are not compatible
-with all tests and are intended for debugging only. It is not recommended to build release versions with
-this flag because that configuration is not well tested.
-
 ## H3_ALLOC_PREFIX
 
 Used for directing the library to use a [different set of functions for memory management](./custom-alloc).
