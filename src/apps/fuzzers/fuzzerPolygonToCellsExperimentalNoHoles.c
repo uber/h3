@@ -25,7 +25,7 @@
 #include "utility.h"
 
 const int MAX_RES = 15;
-const int MAX_SZ = 2000000;
+const int MAX_SZ = 4000000;
 
 void run(GeoPolygon *geoPolygon, uint32_t flags, int res) {
     int64_t sz;
