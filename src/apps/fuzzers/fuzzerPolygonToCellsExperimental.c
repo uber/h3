@@ -33,7 +33,7 @@ typedef struct {
 } inputArgs;
 
 const int MAX_RES = 15;
-const int MAX_SZ = 4000000;
+const int MAX_SZ = 2000000;
 const int MAX_HOLES = 100;
 
 int populateGeoLoop(GeoLoop *g, const uint8_t *data, size_t *offset,
