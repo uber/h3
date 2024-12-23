@@ -62,9 +62,6 @@ option(BUILD_GENERATORS "Build code generation applications." ON)
 # frontend for afl++ is provided instead.
 option(ENABLE_LIBFUZZER "Build fuzzers with libFuzzer support." OFF)
 
-option(ENABLE_POLYGON_TO_CELLS_ASSERT "Build additional asserts into the polyfill algorithm for debugging." OFF)
-mark_as_advanced(ENABLE_POLYGON_TO_CELLS_ASSERT)
-
 # These options exist for integration with OSS-Fuzz, so that the fuzzer options
 # can be passed through only to the fuzzer executables but not the H3 library,
 # since passing those options to the library too may result in too many
@@ -372,9 +369,6 @@ function(add_h3_library name h3_alloc_prefix_override)
     endif()
     if(ENABLE_COVERAGE)
         target_compile_definitions(${name} PRIVATE H3_COVERAGE_TEST=1)
-    endif()
-    if(ENABLE_POLYGON_TO_CELLS_ASSERT)
-        target_compile_definitions(${name} PRIVATE H3_POLYGON_TO_CELLS_ASSERT=1)
     endif()
 
     target_compile_definitions(${name} PUBLIC H3_PREFIX=${H3_PREFIX})
