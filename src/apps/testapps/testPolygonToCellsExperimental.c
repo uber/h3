@@ -113,7 +113,8 @@ static void fillIndex_assertions(H3Index h) {
         H3Index *polygonToCellsOut =
             calloc(polygonToCellsSize, sizeof(H3Index));
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &polygon, nextRes, CONTAINMENT_CENTER, polygonToCellsOut));
+            &polygon, nextRes, CONTAINMENT_CENTER, polygonToCellsSize,
+            polygonToCellsOut));
 
         int64_t polygonToCellsCount =
             countNonNullIndexes(polygonToCellsOut, polygonToCellsSize);
@@ -190,6 +191,13 @@ SUITE(polygonToCells) {
     lineGeoPolygon.geoloop = lineGeoLoop;
     lineGeoPolygon.numHoles = 0;
 
+    TEST(polygonToCells_ZeroSize) {
+        t_assert(H3_EXPORT(polygonToCellsExperimental)(&sfGeoPolygon, 9,
+                                                       CONTAINMENT_CENTER, 0,
+                                                       NULL) == E_MEMORY_BOUNDS,
+                 "Doesn't write to empty array");
+    }
+
     TEST(polygonToCells_CenterContainment) {
         int64_t numHexagons;
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
@@ -197,7 +205,7 @@ SUITE(polygonToCells) {
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &sfGeoPolygon, 9, CONTAINMENT_CENTER, hexagons));
+            &sfGeoPolygon, 9, CONTAINMENT_CENTER, numHexagons, hexagons));
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         t_assert(actualNumIndexes == 1253, "got expected polygonToCells size");
@@ -211,7 +219,7 @@ SUITE(polygonToCells) {
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &sfGeoPolygon, 9, CONTAINMENT_FULL, hexagons));
+            &sfGeoPolygon, 9, CONTAINMENT_FULL, numHexagons, hexagons));
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         t_assert(actualNumIndexes == 1175,
@@ -226,7 +234,7 @@ SUITE(polygonToCells) {
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &sfGeoPolygon, 9, CONTAINMENT_OVERLAPPING, hexagons));
+            &sfGeoPolygon, 9, CONTAINMENT_OVERLAPPING, numHexagons, hexagons));
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         t_assert(actualNumIndexes == 1334,
@@ -241,7 +249,8 @@ SUITE(polygonToCells) {
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &sfGeoPolygon, 9, CONTAINMENT_OVERLAPPING_BBOX, hexagons));
+            &sfGeoPolygon, 9, CONTAINMENT_OVERLAPPING_BBOX, numHexagons,
+            hexagons));
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         t_assert(actualNumIndexes == 1416,
@@ -256,7 +265,7 @@ SUITE(polygonToCells) {
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &holeGeoPolygon, 9, CONTAINMENT_CENTER, hexagons));
+            &holeGeoPolygon, 9, CONTAINMENT_CENTER, numHexagons, hexagons));
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         t_assert(actualNumIndexes == 1214,
@@ -271,7 +280,7 @@ SUITE(polygonToCells) {
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &holeGeoPolygon, 9, CONTAINMENT_FULL, hexagons));
+            &holeGeoPolygon, 9, CONTAINMENT_FULL, numHexagons, hexagons));
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         t_assert(
@@ -287,7 +296,8 @@ SUITE(polygonToCells) {
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &holeGeoPolygon, 9, CONTAINMENT_OVERLAPPING, hexagons));
+            &holeGeoPolygon, 9, CONTAINMENT_OVERLAPPING, numHexagons,
+            hexagons));
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         t_assert(actualNumIndexes == 1311,
@@ -302,7 +312,8 @@ SUITE(polygonToCells) {
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &holeGeoPolygon, 9, CONTAINMENT_OVERLAPPING_BBOX, hexagons));
+            &holeGeoPolygon, 9, CONTAINMENT_OVERLAPPING_BBOX, numHexagons,
+            hexagons));
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         t_assert(
@@ -337,7 +348,7 @@ SUITE(polygonToCells) {
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &polygon, 6, CONTAINMENT_CENTER, hexagons));
+            &polygon, 6, CONTAINMENT_CENTER, numHexagons, hexagons));
 
         // This is the cell inside San Marino (i.e. inside the hole)
         H3Index holeCell = 0x861ea3cefffffff;
@@ -358,7 +369,7 @@ SUITE(polygonToCells) {
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &emptyGeoPolygon, 9, CONTAINMENT_CENTER, hexagons));
+            &emptyGeoPolygon, 9, CONTAINMENT_CENTER, numHexagons, hexagons));
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         t_assert(actualNumIndexes == 0,
@@ -373,7 +384,7 @@ SUITE(polygonToCells) {
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &sfGeoPolygon, 4, CONTAINMENT_CENTER, hexagons));
+            &sfGeoPolygon, 4, CONTAINMENT_CENTER, numHexagons, hexagons));
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         t_assert(actualNumIndexes == 0, "got expected polygonToCells size");
@@ -397,7 +408,7 @@ SUITE(polygonToCells) {
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &centerGeoPolygon, 4, CONTAINMENT_CENTER, hexagons));
+            &centerGeoPolygon, 4, CONTAINMENT_CENTER, numHexagons, hexagons));
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         t_assert(actualNumIndexes == 1, "got expected polygonToCells size");
@@ -413,7 +424,7 @@ SUITE(polygonToCells) {
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &sfGeoPolygon, 4, CONTAINMENT_FULL, hexagons));
+            &sfGeoPolygon, 4, CONTAINMENT_FULL, numHexagons, hexagons));
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         t_assert(actualNumIndexes == 0,
@@ -428,7 +439,7 @@ SUITE(polygonToCells) {
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &sfGeoPolygon, 4, CONTAINMENT_OVERLAPPING, hexagons));
+            &sfGeoPolygon, 4, CONTAINMENT_OVERLAPPING, numHexagons, hexagons));
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         t_assert(actualNumIndexes == 1,
@@ -444,7 +455,8 @@ SUITE(polygonToCells) {
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &sfGeoPolygon, 4, CONTAINMENT_OVERLAPPING_BBOX, hexagons));
+            &sfGeoPolygon, 4, CONTAINMENT_OVERLAPPING_BBOX, numHexagons,
+            hexagons));
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         t_assert(actualNumIndexes == 5,
@@ -481,13 +493,13 @@ SUITE(polygonToCells) {
         int64_t actualNumIndexes;
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &someHexagon, 9, CONTAINMENT_CENTER, hexagons));
+            &someHexagon, 9, CONTAINMENT_CENTER, numHexagons, hexagons));
         actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
         t_assert(actualNumIndexes == 1,
                  "got expected polygonToCells size for center containment (1)");
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &someHexagon, 9, CONTAINMENT_FULL, hexagons));
+            &someHexagon, 9, CONTAINMENT_FULL, numHexagons, hexagons));
         actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
         t_assert(actualNumIndexes == 1,
                  "got expected polygonToCells size for full containment (1)");
@@ -496,7 +508,8 @@ SUITE(polygonToCells) {
         // in the various cell boundaries
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &someHexagon, 9, CONTAINMENT_OVERLAPPING_BBOX, hexagons));
+            &someHexagon, 9, CONTAINMENT_OVERLAPPING_BBOX, numHexagons,
+            hexagons));
         actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
         // Overlapping BBox is very rough, so we get a couple of overlaps from
         // non-neighboring cells
@@ -548,7 +561,8 @@ SUITE(polygonToCells) {
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &primeMeridianGeoPolygon, 7, CONTAINMENT_CENTER, hexagons));
+            &primeMeridianGeoPolygon, 7, CONTAINMENT_CENTER, numHexagons,
+            hexagons));
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         t_assert(actualNumIndexes == expectedSize,
@@ -563,7 +577,8 @@ SUITE(polygonToCells) {
         H3Index *hexagonsTM = calloc(numHexagons, sizeof(H3Index));
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &transMeridianGeoPolygon, 7, CONTAINMENT_CENTER, hexagonsTM));
+            &transMeridianGeoPolygon, 7, CONTAINMENT_CENTER, numHexagons,
+            hexagonsTM));
         actualNumIndexes = countNonNullIndexes(hexagonsTM, numHexagons);
 
         t_assert(actualNumIndexes == expectedSize,
@@ -578,7 +593,7 @@ SUITE(polygonToCells) {
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
             &transMeridianFilledHoleGeoPolygon, 7, CONTAINMENT_CENTER,
-            hexagonsTMFH));
+            numHexagons, hexagonsTMFH));
         int64_t actualNumHoleIndexes =
             countNonNullIndexes(hexagonsTMFH, numHexagons);
 
@@ -588,7 +603,8 @@ SUITE(polygonToCells) {
         H3Index *hexagonsTMH = calloc(numHexagons, sizeof(H3Index));
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &transMeridianHoleGeoPolygon, 7, CONTAINMENT_CENTER, hexagonsTMH));
+            &transMeridianHoleGeoPolygon, 7, CONTAINMENT_CENTER, numHexagons,
+            hexagonsTMH));
         actualNumIndexes = countNonNullIndexes(hexagonsTMH, numHexagons);
 
         t_assert(actualNumIndexes == expectedSize - actualNumHoleIndexes,
@@ -616,7 +632,7 @@ SUITE(polygonToCells) {
 
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &polygon, 4, CONTAINMENT_CENTER, hexagons));
+            &polygon, 4, CONTAINMENT_CENTER, numHexagons, hexagons));
 
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
@@ -668,7 +684,7 @@ SUITE(polygonToCells) {
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &polygon, 9, CONTAINMENT_CENTER, hexagons));
+            &polygon, 9, CONTAINMENT_CENTER, numHexagons, hexagons));
 
         int found = 0;
         int numPentagons = 0;
@@ -695,7 +711,7 @@ SUITE(polygonToCells) {
                 H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
                 t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-                    &nullGeoPolygon, res, flags, hexagons));
+                    &nullGeoPolygon, res, flags, numHexagons, hexagons));
                 int64_t actualNumIndexes =
                     countNonNullIndexes(hexagons, numHexagons);
 
@@ -716,7 +732,8 @@ SUITE(polygonToCells) {
             H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
             t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-                &pointGeoPolygon, res, CONTAINMENT_CENTER, hexagons));
+                &pointGeoPolygon, res, CONTAINMENT_CENTER, numHexagons,
+                hexagons));
             int64_t actualNumIndexes =
                 countNonNullIndexes(hexagons, numHexagons);
 
@@ -735,7 +752,8 @@ SUITE(polygonToCells) {
             H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
             t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-                &pointGeoPolygon, res, CONTAINMENT_FULL, hexagons));
+                &pointGeoPolygon, res, CONTAINMENT_FULL, numHexagons,
+                hexagons));
             int64_t actualNumIndexes =
                 countNonNullIndexes(hexagons, numHexagons);
 
@@ -754,7 +772,8 @@ SUITE(polygonToCells) {
             H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
             t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-                &pointGeoPolygon, res, CONTAINMENT_OVERLAPPING, hexagons));
+                &pointGeoPolygon, res, CONTAINMENT_OVERLAPPING, numHexagons,
+                hexagons));
             int64_t actualNumIndexes =
                 countNonNullIndexes(hexagons, numHexagons);
 
@@ -774,7 +793,8 @@ SUITE(polygonToCells) {
             H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
             t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-                &pointGeoPolygon, res, CONTAINMENT_OVERLAPPING_BBOX, hexagons));
+                &pointGeoPolygon, res, CONTAINMENT_OVERLAPPING_BBOX,
+                numHexagons, hexagons));
             int64_t actualNumIndexes =
                 countNonNullIndexes(hexagons, numHexagons);
 
@@ -796,7 +816,8 @@ SUITE(polygonToCells) {
                 H3Index *hexagons = calloc(10, sizeof(H3Index));
 
                 t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-                    &outOfBoundsVertGeoPolygon, res, flags, hexagons));
+                    &outOfBoundsVertGeoPolygon, res, flags, numHexagons,
+                    hexagons));
                 int64_t actualNumIndexes =
                     countNonNullIndexes(hexagons, numHexagons);
 
@@ -814,7 +835,7 @@ SUITE(polygonToCells) {
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &lineGeoPolygon, 9, CONTAINMENT_CENTER, hexagons));
+            &lineGeoPolygon, 9, CONTAINMENT_CENTER, numHexagons, hexagons));
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         t_assert(actualNumIndexes == 0, "got expected polygonToCells size");
@@ -828,7 +849,7 @@ SUITE(polygonToCells) {
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &lineGeoPolygon, 9, CONTAINMENT_FULL, hexagons));
+            &lineGeoPolygon, 9, CONTAINMENT_FULL, numHexagons, hexagons));
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         t_assert(actualNumIndexes == 0, "got expected polygonToCells size");
@@ -842,7 +863,8 @@ SUITE(polygonToCells) {
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &lineGeoPolygon, 9, CONTAINMENT_OVERLAPPING, hexagons));
+            &lineGeoPolygon, 9, CONTAINMENT_OVERLAPPING, numHexagons,
+            hexagons));
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         t_assert(actualNumIndexes == 9, "got expected polygonToCells size");
@@ -856,7 +878,8 @@ SUITE(polygonToCells) {
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &lineGeoPolygon, 9, CONTAINMENT_OVERLAPPING_BBOX, hexagons));
+            &lineGeoPolygon, 9, CONTAINMENT_OVERLAPPING_BBOX, numHexagons,
+            hexagons));
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         t_assert(actualNumIndexes == 21, "got expected polygonToCells size");
@@ -870,7 +893,7 @@ SUITE(polygonToCells) {
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &nullHoleGeoPolygon, 9, CONTAINMENT_CENTER, hexagons));
+            &nullHoleGeoPolygon, 9, CONTAINMENT_CENTER, numHexagons, hexagons));
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         // Same as without the hole
@@ -886,7 +909,7 @@ SUITE(polygonToCells) {
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &nullHoleGeoPolygon, 9, CONTAINMENT_FULL, hexagons));
+            &nullHoleGeoPolygon, 9, CONTAINMENT_FULL, numHexagons, hexagons));
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         // Same as without the hole
@@ -902,7 +925,8 @@ SUITE(polygonToCells) {
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &nullHoleGeoPolygon, 9, CONTAINMENT_OVERLAPPING, hexagons));
+            &nullHoleGeoPolygon, 9, CONTAINMENT_OVERLAPPING, numHexagons,
+            hexagons));
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         // Same as without the hole
@@ -919,7 +943,8 @@ SUITE(polygonToCells) {
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &nullHoleGeoPolygon, 9, CONTAINMENT_OVERLAPPING_BBOX, hexagons));
+            &nullHoleGeoPolygon, 9, CONTAINMENT_OVERLAPPING_BBOX, numHexagons,
+            hexagons));
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         // Same as without the hole
@@ -935,7 +960,8 @@ SUITE(polygonToCells) {
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &pointHoleGeoPolygon, 9, CONTAINMENT_CENTER, hexagons));
+            &pointHoleGeoPolygon, 9, CONTAINMENT_CENTER, numHexagons,
+            hexagons));
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         // Same as without the hole
@@ -951,7 +977,7 @@ SUITE(polygonToCells) {
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &pointHoleGeoPolygon, 9, CONTAINMENT_FULL, hexagons));
+            &pointHoleGeoPolygon, 9, CONTAINMENT_FULL, numHexagons, hexagons));
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         // We expect that the cell containing the hole is not included
@@ -967,7 +993,8 @@ SUITE(polygonToCells) {
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &pointHoleGeoPolygon, 9, CONTAINMENT_OVERLAPPING, hexagons));
+            &pointHoleGeoPolygon, 9, CONTAINMENT_OVERLAPPING, numHexagons,
+            hexagons));
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         // Same as without the hole
@@ -984,7 +1011,8 @@ SUITE(polygonToCells) {
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &pointHoleGeoPolygon, 9, CONTAINMENT_OVERLAPPING_BBOX, hexagons));
+            &pointHoleGeoPolygon, 9, CONTAINMENT_OVERLAPPING_BBOX, numHexagons,
+            hexagons));
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         // Same as without the hole
@@ -1000,7 +1028,7 @@ SUITE(polygonToCells) {
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &lineHoleGeoPolygon, 9, CONTAINMENT_CENTER, hexagons));
+            &lineHoleGeoPolygon, 9, CONTAINMENT_CENTER, numHexagons, hexagons));
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         // Same as without the hole
@@ -1016,7 +1044,7 @@ SUITE(polygonToCells) {
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &lineHoleGeoPolygon, 9, CONTAINMENT_FULL, hexagons));
+            &lineHoleGeoPolygon, 9, CONTAINMENT_FULL, numHexagons, hexagons));
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         // We expect that the cells intersecting the line are not included
@@ -1032,7 +1060,8 @@ SUITE(polygonToCells) {
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &lineHoleGeoPolygon, 9, CONTAINMENT_OVERLAPPING, hexagons));
+            &lineHoleGeoPolygon, 9, CONTAINMENT_OVERLAPPING, numHexagons,
+            hexagons));
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         // Same as without the hole
@@ -1049,7 +1078,8 @@ SUITE(polygonToCells) {
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &lineHoleGeoPolygon, 9, CONTAINMENT_OVERLAPPING_BBOX, hexagons));
+            &lineHoleGeoPolygon, 9, CONTAINMENT_OVERLAPPING_BBOX, numHexagons,
+            hexagons));
         int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
 
         // Same as without the hole
@@ -1072,7 +1102,8 @@ SUITE(polygonToCells) {
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
         for (uint32_t flags = CONTAINMENT_INVALID; flags <= 32; flags++) {
             t_assert(H3_EXPORT(polygonToCellsExperimental)(
-                         &sfGeoPolygon, 9, flags, hexagons) == E_OPTION_INVALID,
+                         &sfGeoPolygon, 9, flags, numHexagons, hexagons) ==
+                         E_OPTION_INVALID,
                      "Flags other than polyfill modes are invalid for "
                      "polygonToCellsExperimental");
         }

@@ -12,6 +12,10 @@ Vertex mode allows encoding the topological vertexes of H3 cells.
 
 ## cellToVertex
 
+Returns the index for the specified cell vertex.
+Valid vertex numbers are between 0 and 5 (inclusive)
+for hexagonal cells, and 0 and 4 (inclusive) for pentagonal cells.
+
 <Tabs
   groupId="language"
   defaultValue="c"
@@ -28,6 +32,8 @@ Vertex mode allows encoding the topological vertexes of H3 cells.
 ```c
 H3Error cellToVertex(H3Index origin, int vertexNum, H3Index *out);
 ```
+
+Returns 0 (`E_SUCCESS`) on success.
 
 </TabItem>
 <TabItem value="java">
@@ -82,10 +88,9 @@ $ h3 cellToVertex -v 2 -c 85283473fffffff
 </TabItem>
 </Tabs>
 
-Returns the index for the specified cell vertex. Valid vertex numbers are between 0 and 5 (inclusive)
-for hexagonal cells, and 0 and 4 (inclusive) for pentagonal cells.
-
 ## cellToVertexes
+
+Returns the indexes for all vertexes of the given cell.
 
 <Tabs
   groupId="language"
@@ -103,6 +108,12 @@ for hexagonal cells, and 0 and 4 (inclusive) for pentagonal cells.
 ```c
 H3Error cellToVertexes(H3Index origin, H3Index *out);
 ```
+
+The length of the `out` array must be 6.
+If the given cell is a pentagon, one member of the
+array will be set to `0`.
+
+Returns 0 (`E_SUCCESS`) on success.
 
 </TabItem>
 <TabItem value="java">
@@ -155,12 +166,9 @@ $ h3 cellToVertexes -c 85283473fffffff
 </TabItem>
 </Tabs>
 
-Returns the indexes for all vertexes of the given cell index.
-
-The length of the `out` array must be 6. If the given cell index represents a pentagon, one member of the
-array will be set to `0`.
-
 ## vertexToLatLng
+
+Returns the latitude and longitude coordinates of the given vertex.
 
 <Tabs
   groupId="language"
@@ -178,6 +186,8 @@ array will be set to `0`.
 ```c
 H3Error vertexToLatLng(H3Index vertex, LatLng *point);
 ```
+
+Returns 0 (`E_SUCCESS`) on success.
 
 </TabItem>
 <TabItem value="java">
@@ -230,9 +240,9 @@ $ h3 vertexToLatLng -c 255283463fffffff
 </TabItem>
 </Tabs>
 
-Returns the latitude and longitude coordinates of the given vertex.
-
 ## isValidVertex
+
+Determines if the given H3 index represents a valid H3 vertex.
 
 <Tabs
   groupId="language"
@@ -250,6 +260,8 @@ Returns the latitude and longitude coordinates of the given vertex.
 ```c
 int isValidVertex(H3Index vertex);
 ```
+
+Returns 1 if the given index represents a valid H3 vertex.
 
 </TabItem>
 <TabItem value="java">
@@ -301,5 +313,3 @@ true
 
 </TabItem>
 </Tabs>
-
-Returns 1 if the given index represents a valid H3 vertex.

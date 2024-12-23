@@ -128,7 +128,7 @@ BENCHMARK(polygonToCellsSF_Center, 500, {
     (&sfGeoPolygon, 9, CONTAINMENT_CENTER, &numHexagons);
     hexagons = calloc(numHexagons, sizeof(H3Index));
     H3_EXPORT(polygonToCellsExperimental)
-    (&sfGeoPolygon, 9, CONTAINMENT_CENTER, hexagons);
+    (&sfGeoPolygon, 9, CONTAINMENT_CENTER, numHexagons, hexagons);
     free(hexagons);
 });
 
@@ -137,7 +137,7 @@ BENCHMARK(polygonToCellsSF_Full, 500, {
     (&sfGeoPolygon, 9, CONTAINMENT_FULL, &numHexagons);
     hexagons = calloc(numHexagons, sizeof(H3Index));
     H3_EXPORT(polygonToCellsExperimental)
-    (&sfGeoPolygon, 9, CONTAINMENT_FULL, hexagons);
+    (&sfGeoPolygon, 9, CONTAINMENT_FULL, numHexagons, hexagons);
     free(hexagons);
 });
 
@@ -146,7 +146,7 @@ BENCHMARK(polygonToCellsSF_Overlapping, 500, {
     (&sfGeoPolygon, 9, CONTAINMENT_OVERLAPPING, &numHexagons);
     hexagons = calloc(numHexagons, sizeof(H3Index));
     H3_EXPORT(polygonToCellsExperimental)
-    (&sfGeoPolygon, 9, CONTAINMENT_OVERLAPPING, hexagons);
+    (&sfGeoPolygon, 9, CONTAINMENT_OVERLAPPING, numHexagons, hexagons);
     free(hexagons);
 });
 
@@ -155,7 +155,7 @@ BENCHMARK(polygonToCellsAlameda_Center, 500, {
     (&alamedaGeoPolygon, 9, CONTAINMENT_CENTER, &numHexagons);
     hexagons = calloc(numHexagons, sizeof(H3Index));
     H3_EXPORT(polygonToCellsExperimental)
-    (&alamedaGeoPolygon, 9, CONTAINMENT_CENTER, hexagons);
+    (&alamedaGeoPolygon, 9, CONTAINMENT_CENTER, numHexagons, hexagons);
     free(hexagons);
 });
 
@@ -164,7 +164,7 @@ BENCHMARK(polygonToCellsAlameda_Full, 500, {
     (&alamedaGeoPolygon, 9, CONTAINMENT_FULL, &numHexagons);
     hexagons = calloc(numHexagons, sizeof(H3Index));
     H3_EXPORT(polygonToCellsExperimental)
-    (&alamedaGeoPolygon, 9, CONTAINMENT_FULL, hexagons);
+    (&alamedaGeoPolygon, 9, CONTAINMENT_FULL, numHexagons, hexagons);
     free(hexagons);
 });
 
@@ -173,7 +173,7 @@ BENCHMARK(polygonToCellsAlameda_Overlapping, 500, {
     (&alamedaGeoPolygon, 9, CONTAINMENT_OVERLAPPING, &numHexagons);
     hexagons = calloc(numHexagons, sizeof(H3Index));
     H3_EXPORT(polygonToCellsExperimental)
-    (&alamedaGeoPolygon, 9, CONTAINMENT_OVERLAPPING, hexagons);
+    (&alamedaGeoPolygon, 9, CONTAINMENT_OVERLAPPING, numHexagons, hexagons);
     free(hexagons);
 });
 
@@ -182,7 +182,7 @@ BENCHMARK(polygonToCellsSouthernExpansion_Center, 10, {
     (&southernGeoPolygon, 9, CONTAINMENT_CENTER, &numHexagons);
     hexagons = calloc(numHexagons, sizeof(H3Index));
     H3_EXPORT(polygonToCellsExperimental)
-    (&southernGeoPolygon, 9, CONTAINMENT_CENTER, hexagons);
+    (&southernGeoPolygon, 9, CONTAINMENT_CENTER, numHexagons, hexagons);
     free(hexagons);
 });
 
@@ -191,7 +191,7 @@ BENCHMARK(polygonToCellsSouthernExpansion_Full, 10, {
     (&southernGeoPolygon, 9, CONTAINMENT_FULL, &numHexagons);
     hexagons = calloc(numHexagons, sizeof(H3Index));
     H3_EXPORT(polygonToCellsExperimental)
-    (&southernGeoPolygon, 9, CONTAINMENT_FULL, hexagons);
+    (&southernGeoPolygon, 9, CONTAINMENT_FULL, numHexagons, hexagons);
     free(hexagons);
 });
 
@@ -200,7 +200,7 @@ BENCHMARK(polygonToCellsSouthernExpansion_Overlapping, 10, {
     (&southernGeoPolygon, 9, CONTAINMENT_OVERLAPPING, &numHexagons);
     hexagons = calloc(numHexagons, sizeof(H3Index));
     H3_EXPORT(polygonToCellsExperimental)
-    (&southernGeoPolygon, 9, CONTAINMENT_OVERLAPPING, hexagons);
+    (&southernGeoPolygon, 9, CONTAINMENT_OVERLAPPING, numHexagons, hexagons);
     free(hexagons);
 });
 

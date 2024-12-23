@@ -160,7 +160,7 @@ for (int res = 0; res < MAX_RES + 1; res++) {
     for (int index = 0; index < ${polygons.length}; index++) {
       H3_EXPORT(maxPolygonToCellsSizeExperimental)(&COUNTRIES[index], res, CONTAINMENT_CENTER, &numHexagons);
       hexagons = calloc(numHexagons, sizeof(H3Index));
-      H3_EXPORT(polygonToCellsExperimental)(&COUNTRIES[index], res, CONTAINMENT_CENTER, hexagons);
+      H3_EXPORT(polygonToCellsExperimental)(&COUNTRIES[index], res, CONTAINMENT_CENTER, numHexagons, hexagons);
       free(hexagons);
     }
   });
@@ -169,7 +169,7 @@ for (int res = 0; res < MAX_RES + 1; res++) {
     for (int index = 0; index < ${polygons.length}; index++) {
       H3_EXPORT(maxPolygonToCellsSizeExperimental)(&COUNTRIES[index], res, CONTAINMENT_CENTER, &numHexagons);
       hexagons = calloc(numHexagons, sizeof(H3Index));
-      H3_EXPORT(polygonToCellsExperimental)(&COUNTRIES[index], res, CONTAINMENT_FULL, hexagons);
+      H3_EXPORT(polygonToCellsExperimental)(&COUNTRIES[index], res, CONTAINMENT_FULL, numHexagons, hexagons);
       free(hexagons);
     }
   });
@@ -178,7 +178,7 @@ for (int res = 0; res < MAX_RES + 1; res++) {
     for (int index = 0; index < ${polygons.length}; index++) {
       H3_EXPORT(maxPolygonToCellsSizeExperimental)(&COUNTRIES[index], res, CONTAINMENT_CENTER, &numHexagons);
       hexagons = calloc(numHexagons, sizeof(H3Index));
-      H3_EXPORT(polygonToCellsExperimental)(&COUNTRIES[index], res, CONTAINMENT_OVERLAPPING, hexagons);
+      H3_EXPORT(polygonToCellsExperimental)(&COUNTRIES[index], res, CONTAINMENT_OVERLAPPING, numHexagons, hexagons);
       free(hexagons);
     }
   });

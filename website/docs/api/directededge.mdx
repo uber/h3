@@ -13,6 +13,8 @@ edge from one cell to a neighboring cell.
 
 ## areNeighborCells
 
+Determines whether or not the provided H3 cells are neighbors.
+
 <Tabs
   groupId="language"
   defaultValue="c"
@@ -29,6 +31,10 @@ edge from one cell to a neighboring cell.
 ```c
 H3Error areNeighborCells(H3Index origin, H3Index destination, int *out);
 ```
+
+`out` will be 1 if the indexes are neighbors, 0 otherwise.
+
+Returns 0 (`E_SUCCESS`) on success.
 
 </TabItem>
 <TabItem value="java">
@@ -83,11 +89,11 @@ true
 </TabItem>
 </Tabs>
 
-Returns whether or not the provided H3 cell indexes are neighbors.
-
-`out` will be 1 if the indexes are neighbors, 0 otherwise.
 
 ## cellsToDirectedEdge
+
+Provides a directed edge H3 index based on the provided origin and
+destination.
 
 <Tabs
   groupId="language"
@@ -105,6 +111,8 @@ Returns whether or not the provided H3 cell indexes are neighbors.
 ```c
 H3Error cellsToDirectedEdge(H3Index origin, H3Index destination, H3Index *out);
 ```
+
+Returns 0 (`E_SUCCESS`) on success.
 
 </TabItem>
 <TabItem value="java">
@@ -159,12 +167,9 @@ $ h3 cellsToDirectedEdge -o 85283473fffffff -d 85283477fffffff
 </TabItem>
 </Tabs>
 
-Returns a unidirectional edge H3 index based on the provided origin and
-destination.
-
-Returns 0 on success.
-
 ## isValidDirectedEdge
+
+Determines if the provided H3Index is a valid unidirectional edge index.
 
 <Tabs
   groupId="language"
@@ -182,6 +187,8 @@ Returns 0 on success.
 ```c
 int isValidDirectedEdge(H3Index edge);
 ```
+
+Returns `1` if it is a unidirectional edge H3Index, otherwise `0`.
 
 </TabItem>
 <TabItem value="java">
@@ -234,11 +241,9 @@ true
 </TabItem>
 </Tabs>
 
-Determines if the provided H3Index is a valid unidirectional edge index.
-
-Returns 1 if it is a unidirectional edge H3Index, otherwise 0.
-
 ## getDirectedEdgeOrigin
+
+Provides the origin hexagon from the directed edge H3Index.
 
 <Tabs
   groupId="language"
@@ -256,6 +261,8 @@ Returns 1 if it is a unidirectional edge H3Index, otherwise 0.
 ```c
 H3Error getDirectedEdgeOrigin(H3Index edge, H3Index *out);
 ```
+
+Returns 0 (`E_SUCCESS`) on success.
 
 </TabItem>
 <TabItem value="java">
@@ -308,9 +315,9 @@ $ h3 getDirectedEdgeOrigin -c 115283473fffffff
 </TabItem>
 </Tabs>
 
-Returns the origin hexagon from the unidirectional edge H3Index.
-
 ## getDirectedEdgeDestination
+
+Provides the destination hexagon from the directed edge H3Index.
 
 <Tabs
   groupId="language"
@@ -328,6 +335,8 @@ Returns the origin hexagon from the unidirectional edge H3Index.
 ```c
 H3Error getDirectedEdgeDestination(H3Index edge, H3Index *out);
 ```
+
+Returns 0 (`E_SUCCESS`) on success.
 
 </TabItem>
 <TabItem value="java">
@@ -380,9 +389,10 @@ $ h3 getDirectedEdgeDestination -c 115283473fffffff
 </TabItem>
 </Tabs>
 
-Returns the destination hexagon from the unidirectional edge H3Index.
 
 ## directedEdgeToCells
+
+Provides the origin-destination pair of cells for the given directed edge.
 
 <Tabs
   groupId="language"
@@ -400,6 +410,11 @@ Returns the destination hexagon from the unidirectional edge H3Index.
 ```c
 H3Error directedEdgeToCells(H3Index edge, H3Index* originDestination);
 ```
+
+The origin and destination are placed at
+`originDestination[0]` and `originDestination[1]`, respectively.
+
+Returns 0 (`E_SUCCESS`) on success.
 
 </TabItem>
 <TabItem value="java">
@@ -452,10 +467,9 @@ $ h3 directedEdgeToCells -c 115283473fffffff
 </TabItem>
 </Tabs>
 
-Returns the origin, destination pair of hexagon IDs for the given edge ID, which are placed at `originDestination[0]` and
-`originDestination[1]` respectively.
-
 ## originToDirectedEdges
+
+Provides all of the directed edges from the current cell.
 
 <Tabs
   groupId="language"
@@ -473,6 +487,12 @@ Returns the origin, destination pair of hexagon IDs for the given edge ID, which
 ```c
 H3Error originToDirectedEdges(H3Index origin, H3Index* edges);
 ```
+
+`edges` must be of length 6,
+and the number of directed edges placed in the array may be less than 6.
+If this is the case, one of the members of the array will be `0`.
+
+Returns 0 (`E_SUCCESS`) on success.
 
 </TabItem>
 <TabItem value="java">
@@ -525,11 +545,11 @@ $ h3 originToDirectedEdges -c 85283473fffffff
 </TabItem>
 </Tabs>
 
-Provides all of the directed edges from the current H3Index. `edges` must be of length 6,
-and the number of directed edges placed in the array may be less than 6. If this is the case,
-one of the members of the array will be `0`.
 
 ## directedEdgeToBoundary
+
+Provides the geographic lat/lng coordinates defining the directed edge.
+Note that this may be more than two points for complex edges.
 
 <Tabs
   groupId="language"
@@ -547,6 +567,8 @@ one of the members of the array will be `0`.
 ```c
 H3Error directedEdgeToBoundary(H3Index edge, CellBoundary* gb);
 ```
+
+Returns 0 (`E_SUCCESS`) on success.
 
 </TabItem>
 <TabItem value="java">
@@ -574,7 +596,7 @@ function example() {
 <TabItem value="python">
 
 ```py
-h3.directed_edge_to_boundary(edge, geo_json=False)
+h3.directed_edge_to_boundary(edge)
 ```
 
 </TabItem>
@@ -598,5 +620,3 @@ $ h3 directedEdgeToBoundary -c 115283473fffffff
 
 </TabItem>
 </Tabs>
-
-Provides the coordinates defining the unidirectional edge.

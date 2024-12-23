@@ -8,9 +8,203 @@ slug: /api/traversal
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-Grid traversal allows finding cells in the vicinity of an origin cell, and determining how to traverse the grid from one cell to another.
+Grid traversal allows finding cells in the vicinity of an origin cell,
+and determining how to traverse the grid from one cell to another.
+
+## gridDistance
+
+Provides the *grid distance* between two cells, which is
+defined as the minimum number of "hops" needed across adjacent cells to get
+from one cell to the other.
+
+Note that finding the grid distance may fail for a few reasons:
+
+- the cells are not comparable (different resolutions),
+- the cells are too far apart, or
+- the cells are separated by pentagonal distortion.
+
+This is the same set of limitations as the local IJ coordinate space functions.
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+    {label: 'Python', value: 'python'},
+    {label: 'Shell', value: 'shell'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+H3Error gridDistance(H3Index origin, H3Index h3, int64_t *distance);
+```
+
+Returns 0 (`E_SUCCESS`) on success, or an error if finding the distance failed.
+
+</TabItem>
+<TabItem value="java">
+
+```java
+long gridDistance(long a, long b) throws DistanceUndefinedException;
+long gridDistance(String a, String b) throws DistanceUndefinedException;
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.gridDistance(a, b)
+```
+
+```js live
+function example() {
+  const start = '85283473fffffff';
+  const end = '8528342bfffffff';
+  return h3.gridDistance(start, end);
+}
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.grid_distance(h1, h2)
+```
+
+</TabItem>
+<TabItem value="shell">
+
+```sh
+$ h3 gridDistance --help
+h3: Returns the number of steps along the grid to move from the origin cell to the destination cell
+H3 4.1.0
+
+  gridDistance  Returns the number of steps along the grid to move from the origin cell to the destination cell
+  -h, --help  Show this help message.
+  -o, --origin <cell> Required. The origin H3 cell
+  -d, --destination <cell>  Required. The destination H3 cell
+```
+
+```bash
+$ h3 gridDistance -o 85283473fffffff -d 8528342bfffffff
+2
+```
+
+</TabItem>
+</Tabs>
+
+
+## gridRingUnsafe
+
+Produces the "hollow ring" of cells which are *exactly* grid distance `k`
+from the origin cell.
+
+This function may fail if pentagonal distortion is encountered.
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+    {label: 'Python', value: 'python'},
+    {label: 'Shell', value: 'shell'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+H3Error gridRingUnsafe(H3Index origin, int k, H3Index* out);
+```
+
+The caller should allocate memory for the maximum size of the ring, which is
+`6*k` if `k > 0` and `1` if `k == 0`.
+
+
+Returns 0 (`E_SUCCESS`) if no pentagonal distortion was encountered.
+
+</TabItem>
+<TabItem value="java">
+
+```java
+List<Long> gridRingUnsafe(long h3, int k) throws PentagonEncounteredException;
+List<String> gridRingUnsafe(String h3Address, int k) throws PentagonEncounteredException;
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.gridRingUnsafe(h3Index, k)
+```
+
+```js live
+function example() {
+  const h = '85283473fffffff';
+  const k = 1;
+  return h3.gridRingUnsafe(h, k);
+}
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.grid_ring(h, k)
+```
+
+:::note
+
+Python uses the C function `gridRingUnsafe` internally to generate the results,
+but on failure falls back to `gridDiskDistances` and returns the set
+of cells at the specified distance to produce an equivalent to the "safe" version,
+but this consumes a lot of memory to do so.
+
+:::
+
+</TabItem>
+<TabItem value="shell">
+
+```sh
+$ h3 gridRing --help
+h3: Returns an array of H3 cells, each cell 'k' steps away from the origin cell
+H3 4.1.0
+
+  gridRing  Returns an array of H3 cells, each cell 'k' steps away from the origin cell
+  -h, --help  Show this help message.
+  -c, --cell <index>  Required. H3 Cell
+  -k <distance> Required. Maximum grid distance for the output set
+  -f, --format <FMT>  'json' for ["CELL", ...], 'newline' for CELL\n... (Default: json)
+```
+
+```bash
+$ h3 gridRing -k 1 -c 85283473fffffff
+[ "8528340bfffffff", "85283447fffffff", "8528347bfffffff", "85283463fffffff", "85283477fffffff", "8528340ffffffff" ]
+```
+
+:::note
+
+The shell uses the C function `gridRingUnsafe` internally to generate the results,
+but on failure falls back to `gridDiskDistances` and returns the set
+of cells at the specified distance to produce an equivalent to the "safe" version,
+but this consumes a lot of memory to do so.
+
+:::
+
+</TabItem>
+</Tabs>
+
 
 ## gridDisk
+
+Produces the "filled-in disk" of cells which are *at most* grid distance `k`
+from the origin cell.
+
+Output order is not guaranteed.
 
 <Tabs
   groupId="language"
@@ -28,6 +222,11 @@ Grid traversal allows finding cells in the vicinity of an origin cell, and deter
 ```c
 H3Error gridDisk(H3Index origin, int k, H3Index* out);
 ```
+
+Elements of the output array may be left as zero,
+which can happen when crossing a pentagon.
+
+Returns 0 (`E_SUCCESS`) on success.
 
 </TabItem>
 <TabItem value="java">
@@ -82,16 +281,9 @@ $ h3 gridDisk -k 5 -c 85283473fffffff
 </TabItem>
 </Tabs>
 
-gridDisk produces indices within k distance of the origin index.
-
-gridDisk was previously named *k-ring* after the concept of a ring with
-distance k. k-ring 0 is defined as the origin index, k-ring 1 is
-defined as k-ring 0 and all neighboring indices, and so on.
-
-Output is placed in the provided array in no particular order. Elements of
-the output array may be left as zero, which can happen when crossing a pentagon.
-
 ## maxGridDiskSize
+
+Maximum number of cells that can result from the `gridDisk` function for a given `k`.
 
 <Tabs
   groupId="language"
@@ -109,6 +301,8 @@ the output array may be left as zero, which can happen when crossing a pentagon.
 ```c
 H3Error maxGridDiskSize(int k, int64_t *out);
 ```
+
+Returns 0 (`E_SUCCESS`) on success.
 
 </TabItem>
 <TabItem value="java">
@@ -149,9 +343,13 @@ This function exists for memory management and is not exposed.
 </TabItem>
 </Tabs>
 
-Maximum number of indices that result from the `gridDisk` algorithm with the given `k`.
 
 ## gridDiskDistances
+
+Produces the same set of cells as `gridDisk`, but along with each cell's
+grid distance from the origin cell.
+
+Output order is not guaranteed.
 
 <Tabs
   groupId="language"
@@ -169,6 +367,11 @@ Maximum number of indices that result from the `gridDisk` algorithm with the giv
 ```c
 H3Error gridDiskDistances(H3Index origin, int k, H3Index* out, int* distances);
 ```
+
+Elements of the output array may be left as zero,
+which can happen when crossing a pentagon.
+
+Returns 0 (`E_SUCCESS`) on success.
 
 </TabItem>
 <TabItem value="java">
@@ -196,9 +399,11 @@ function example() {
 </TabItem>
 <TabItem value="python">
 
-```py
-h3.grid_disk_distances(origin, k)
-```
+:::note
+
+This function is not exposed in Python.
+
+:::
 
 </TabItem>
 <TabItem value="shell">
@@ -223,15 +428,13 @@ $ h3 gridDiskDistances -k 5 -c 85283473fffffff
 </TabItem>
 </Tabs>
 
-gridDiskDistances produces indices within k distance of the origin index.
-
-k-ring 0 is defined as the origin index, k-ring 1 is defined as k-ring 0 and
-all neighboring indices, and so on.
-
-Output is placed in the provided array in no particular order. Elements of
-the output array may be left as zero, which can happen when crossing a pentagon.
-
 ## gridDiskUnsafe
+
+Produces cells within grid distance `k` of the origin cell, just like `gridDisk`.
+However, the function may return an error code if pentagonal distorition is
+encountered. In this case, the output in the `out` array is undefined.
+
+Users can fall back to calling the slower but more robust `gridDiskDistances`.
 
 <Tabs
   groupId="language"
@@ -249,6 +452,12 @@ the output array may be left as zero, which can happen when crossing a pentagon.
 ```c
 H3Error gridDiskUnsafe(H3Index origin, int k, H3Index* out);
 ```
+
+Output is placed in the provided array in order of increasing distance from
+the origin. 
+The provided array must be of size `maxGridDiskSize(k)`.
+
+Returns 0 (`E_SUCCESS`) if no pentagonal distortion is encountered.
 
 </TabItem>
 <TabItem value="java">
@@ -270,9 +479,11 @@ This function is not exposed.
 </TabItem>
 <TabItem value="python">
 
-```py
-h3.grid_disk_unsafe(h, k)
-```
+:::note
+
+This function is not exposed.
+
+:::
 
 </TabItem>
 <TabItem value="shell">
@@ -286,20 +497,16 @@ This function is not exposed.
 </TabItem>
 </Tabs>
 
-`gridDiskUnsafe` produces indexes within `k` distance of the origin index.
-The function returns an error code when one of the returned by this
-function is a pentagon or is in the pentagon distortion area. In this case,
-the output behavior of the `out` array is undefined.
-
-k-ring 0 is defined as the origin index, k-ring 1 is defined as k-ring 0 and
-all neighboring indexes, and so on.
-
-Output is placed in the provided array in order of increasing distance from
-the origin. The provided array must be of size `maxGridDiskSize(k)`.
-
-Returns 0 (`E_SUCCESS`) if no pentagonal distortion is encountered.
 
 ## gridDiskDistancesUnsafe
+
+`gridDiskDistancesUnsafe` produces indexes within `k` distance of the origin index.
+Output behavior is undefined when one of the indexes returned by this
+function is a pentagon or is in the pentagon distortion area.
+
+Output is placed in the provided array in order of increasing distance from
+the origin. The distances in hexagons is placed in the distances array at
+the same offset. The provided array must be of size `maxGridDiskSize(k)`.
 
 <Tabs
   groupId="language"
@@ -317,6 +524,8 @@ Returns 0 (`E_SUCCESS`) if no pentagonal distortion is encountered.
 ```c
 H3Error gridDiskDistancesUnsafe(H3Index origin, int k, H3Index* out, int* distances);
 ```
+
+Returns 0 (`E_SUCCESS`) if no pentagonal distortion is encountered.
 
 </TabItem>
 <TabItem value="java">
@@ -339,9 +548,11 @@ This function is not exposed.
 </TabItem>
 <TabItem value="python">
 
-```py
-h3.grid_disk_distances_unsafe(h, k)
-```
+:::note
+
+This function is not exposed.
+
+:::
 
 </TabItem>
 <TabItem value="shell">
@@ -355,20 +566,14 @@ This function is not exposed.
 </TabItem>
 </Tabs>
 
-`gridDiskDistancesUnsafe` produces indexes within `k` distance of the origin index.
-Output behavior is undefined when one of the indexes returned by this
-function is a pentagon or is in the pentagon distortion area.
 
-k-ring 0 is defined as the origin index, k-ring 1 is defined as k-ring 0 and
-all neighboring indexes, and so on.
+## gridDiskDistancesSafe
+
+`gridDiskDistancesSafe` produces indexes within `k` distance of the origin index.
 
 Output is placed in the provided array in order of increasing distance from
 the origin. The distances in hexagons is placed in the distances array at
 the same offset. The provided array must be of size `maxGridDiskSize(k)`.
-
-Returns 0 (`E_SUCCESS`) if no pentagonal distortion is encountered.
-
-## gridDiskDistancesSafe
 
 <Tabs
   groupId="language"
@@ -386,6 +591,8 @@ Returns 0 (`E_SUCCESS`) if no pentagonal distortion is encountered.
 ```c
 H3Error gridDiskDistancesSafe(H3Index origin, int k, H3Index* out, int* distances);
 ```
+
+Returns 0 (`E_SUCCESS`) on success.
 
 </TabItem>
 <TabItem value="java">
@@ -408,9 +615,11 @@ This function is not exposed.
 </TabItem>
 <TabItem value="python">
 
-```py
-h3.grid_disk_distances_safe(h, k)
-```
+:::note
+
+This function is not exposed.
+
+:::
 
 </TabItem>
 <TabItem value="shell">
@@ -424,18 +633,12 @@ This function is not exposed.
 </TabItem>
 </Tabs>
 
-`gridDiskDistancesSafe` produces indexes within `k` distance of the origin index.
-
-k-ring 0 is defined as the origin index, k-ring 1 is defined as k-ring 0 and
-all neighboring indexes, and so on.
-
-Output is placed in the provided array in order of increasing distance from
-the origin. The distances in hexagons is placed in the distances array at
-the same offset. The provided array must be of size `maxGridDiskSize(k)`.
-
-Returns 0 (`E_SUCCESS`) on success.
 
 ## gridDisksUnsafe
+
+`gridDisksUnsafe` takes an array of input cells and a max `k` and returns an
+array of cells sorted first by the original cell indices and then by the
+grid ring (0 to max), with no guaranteed sorting within each grid ring group.
 
 <Tabs
   groupId="language"
@@ -453,6 +656,8 @@ Returns 0 (`E_SUCCESS`) on success.
 ```c
 H3Error gridDisksUnsafe(H3Index* h3Set, int length, int k, H3Index* out);
 ```
+
+Returns 0 (`E_SUCCESS`) if no pentagonal distortion was encountered.
 
 </TabItem>
 <TabItem value="java">
@@ -475,9 +680,11 @@ This function is not exposed.
 </TabItem>
 <TabItem value="python">
 
-```py
-h3.grid_disks_unsafe(h, k)
-```
+:::note
+
+This function is not exposed.
+
+:::
 
 </TabItem>
 <TabItem value="shell">
@@ -491,96 +698,24 @@ This function is not exposed.
 </TabItem>
 </Tabs>
 
-`gridDisksUnsafe` takes an array of input hex IDs and a max k and returns an
-array of hexagon IDs sorted first by the original hex IDs and then by the
-grid k-ring (0 to max), with no guaranteed sorting within each grid k-ring group.
-
-Returns 0 (`E_SUCCESS`) if no pentagonal distortion was encountered. Otherwise, output
-is undefined
-
-## gridRingUnsafe
-
-<Tabs
-  groupId="language"
-  defaultValue="c"
-  values={[
-    {label: 'C', value: 'c'},
-    {label: 'Java', value: 'java'},
-    {label: 'JavaScript (Live)', value: 'javascript'},
-    {label: 'Python', value: 'python'},
-    {label: 'Shell', value: 'shell'},
-  ]
-}>
-<TabItem value="c">
-
-```c
-H3Error gridRingUnsafe(H3Index origin, int k, H3Index* out);
-```
-
-</TabItem>
-<TabItem value="java">
-
-```java
-List<Long> gridRingUnsafe(long h3, int k) throws PentagonEncounteredException;
-List<String> gridRingUnsafe(String h3Address, int k) throws PentagonEncounteredException;
-```
-
-</TabItem>
-<TabItem value="javascript">
-
-```js
-h3.gridRingUnsafe(h3Index, k)
-```
-
-```js live
-function example() {
-  const h = '85283473fffffff';
-  const k = 1;
-  return h3.gridRingUnsafe(h, k);
-}
-```
-
-</TabItem>
-<TabItem value="python">
-
-```py
-h3.grid_ring_unsafe(h, k)
-```
-
-</TabItem>
-<TabItem value="shell">
-
-:::note
-
-The shell uses `gridRingUnsafe` internally to generate the results, but on failure falls back to `gridDiskDistances` and returns the set of cells at the specified distance to produce an equivalent to the "safe" version, but this consumes a lot of memory to do so.
-
-:::
-
-```sh
-$ h3 gridRing --help
-h3: Returns an array of H3 cells, each cell 'k' steps away from the origin cell
-H3 4.1.0
-
-	gridRing	Returns an array of H3 cells, each cell 'k' steps away from the origin cell
-	-h, --help	Show this help message.
-	-c, --cell <index>	Required. H3 Cell
-	-k <distance>	Required. Maximum grid distance for the output set
-	-f, --format <FMT>	'json' for ["CELL", ...], 'newline' for CELL\n... (Default: json)
-```
-
-```bash
-$ h3 gridRing -k 1 -c 85283473fffffff
-[ "8528340bfffffff", "85283447fffffff", "8528347bfffffff", "85283463fffffff", "85283477fffffff", "8528340ffffffff" ]
-```
-
-</TabItem>
-</Tabs>
-
-Produces the hollow hexagonal ring centered at origin with sides of length k.
-
-Returns 0 (`E_SUCCESS`) if no pentagonal distortion was encountered.
 
 ## gridPathCells
+
+Given two H3 cells, return a minimal-length contiguous path of cells
+between them (inclusive of the endpoint cells).
+
+This function may fail if the cells are very far apart, or if
+the cells are on opposite sides of a pentagon.
+
+Notes:
+
+ * The output of this function should not be considered stable
+   across library versions. The only guarantees are
+   that the path length will be `gridDistance(start, end) + 1` and that
+   every cell in the path will be a neighbor of the preceding cell.
+
+ * Paths exist in the H3 grid of cells, and may not align closely with either
+   Cartesian lines or great arcs.
 
 <Tabs
   groupId="language"
@@ -598,6 +733,8 @@ Returns 0 (`E_SUCCESS`) if no pentagonal distortion was encountered.
 ```c
 H3Error gridPathCells(H3Index start, H3Index end, H3Index* out);
 ```
+
+Returns 0 (`E_SUCCESS`) if no pentagonal distortion was encountered.
 
 </TabItem>
 <TabItem value="java">
@@ -652,23 +789,10 @@ $ h3 gridPathCells -o 85283473fffffff -d 8528342bfffffff
 </TabItem>
 </Tabs>
 
-Given two H3 indexes, return the line of indexes between them (inclusive).
-
-This function may fail to find the line between two indexes, for
-example if they are very far apart. It may also fail when finding
-distances for indexes on opposite sides of a pentagon.
-
-*Notes:*
-
- * The specific output of this function should not be considered stable
-   across library versions. The only guarantees the library provides are
-   that the line length will be `h3Distance(start, end) + 1` and that
-   every index in the line will be a neighbor of the preceding index.
-
- * Lines are drawn in grid space, and may not correspond exactly to either
-   Cartesian lines or great arcs.
-
 ## gridPathCellsSize
+
+Number of cells in a grid path from the start cell to the end cell,
+to be used for allocating memory.
 
 <Tabs
   groupId="language"
@@ -687,6 +811,8 @@ distances for indexes on opposite sides of a pentagon.
 H3Error gridPathCellsSize(H3Index start, H3Index end, int64_t* size);
 ```
 
+Returns 0 (`E_SUCCESS`) on success, or an error if the path cannot be computed.
+
 </TabItem>
 <TabItem value="java">
 
@@ -726,90 +852,15 @@ This function exists for memory management and is not exposed.
 </TabItem>
 </Tabs>
 
-Number of indexes in a line from the start index to the end index,
-to be used for allocating memory.
-
-Returns 0 (`E_SUCCESS`) on success, or an error if the line cannot be computed.
-
-## gridDistance
-
-<Tabs
-  groupId="language"
-  defaultValue="c"
-  values={[
-    {label: 'C', value: 'c'},
-    {label: 'Java', value: 'java'},
-    {label: 'JavaScript (Live)', value: 'javascript'},
-    {label: 'Python', value: 'python'},
-    {label: 'Shell', value: 'shell'},
-  ]
-}>
-<TabItem value="c">
-
-```c
-H3Error gridDistance(H3Index origin, H3Index h3, int64_t *distance);
-```
-
-</TabItem>
-<TabItem value="java">
-
-```java
-long gridDistance(long a, long b) throws DistanceUndefinedException;
-long gridDistance(String a, String b) throws DistanceUndefinedException;
-```
-
-</TabItem>
-<TabItem value="javascript">
-
-```js
-h3.gridDistance(a, b)
-```
-
-```js live
-function example() {
-  const start = '85283473fffffff';
-  const end = '8528342bfffffff';
-  return h3.gridDistance(start, end);
-}
-```
-
-</TabItem>
-<TabItem value="python">
-
-```py
-h3.grid_distance(h1, h2)
-```
-
-</TabItem>
-<TabItem value="shell">
-
-```sh
-$ h3 gridDistance --help
-h3: Returns the number of steps along the grid to move from the origin cell to the destination cell
-H3 4.1.0
-
-	gridDistance	Returns the number of steps along the grid to move from the origin cell to the destination cell
-	-h, --help	Show this help message.
-	-o, --origin <cell>	Required. The origin H3 cell
-	-d, --destination <cell>	Required. The destination H3 cell
-```
-
-```bash
-$ h3 gridDistance -o 85283473fffffff -d 8528342bfffffff
-2
-```
-
-</TabItem>
-</Tabs>
-
-Provides the distance in grid cells between the two indexes.
-
-Returns 0 (`E_SUCCESS`) on success, or an error if finding the distance failed. Finding the distance
-can fail because the two indexes are not comparable (different resolutions), too far apart, or are
-separated by pentagonal distortion. This is the same set of limitations as the local IJ coordinate
-space functions.
 
 ## cellToLocalIj
+
+Produces local IJ coordinates for an H3 cell anchored by an origin.
+
+`mode` is reserved for future expansion and must be set to `0`.
+
+This function's output is not guaranteed to be compatible across different
+versions of H3.
 
 <Tabs
   groupId="language"
@@ -827,6 +878,8 @@ space functions.
 ```c
 H3Error cellToLocalIj(H3Index origin, H3Index h3, uint32_t mode, CoordIJ *out);
 ```
+
+Returns 0 (`E_SUCCESS`) on success.
 
 </TabItem>
 <TabItem value="java">
@@ -882,14 +935,14 @@ $ h3 cellToLocalIj -o 85283473fffffff -c 8528342bfffffff
 </TabItem>
 </Tabs>
 
-Produces local IJ coordinates for an H3 index anchored by an origin.
+## localIjToCell
+
+Produces an H3 cell from local IJ coordinates anchored by an origin.
 
 `mode` is reserved for future expansion and must be set to `0`.
 
 This function's output is not guaranteed to be compatible across different
 versions of H3.
-
-## localIjToCell
 
 <Tabs
   groupId="language"
@@ -907,6 +960,8 @@ versions of H3.
 ```c
 H3Error localIjToCell(H3Index origin, const CoordIJ *ij, uint32_t mode, H3Index *out);
 ```
+
+Returns 0 (`E_SUCCESS`) on success.
 
 </TabItem>
 <TabItem value="java">
@@ -961,12 +1016,5 @@ $ h3 localIjToCell -o 85283473fffffff -i 0 -j 0
 
 </TabItem>
 </Tabs>
-
-Produces an H3 index from local IJ coordinates anchored by an origin.
-
-`mode` is reserved for future expansion and must be set to `0`.
-
-This function's output is not guaranteed to be compatible across different
-versions of H3.
 
 

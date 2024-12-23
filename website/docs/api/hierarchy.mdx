@@ -8,9 +8,15 @@ slug: /api/hierarchy
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-These functions permit moving between resolutions in the H3 grid system. The functions produce parent cells (coarser), or child cells (finer).
+These functions permit moving between resolutions in the H3 grid system.
+The functions produce parent cells (coarser), or child cells (finer).
 
 ## cellToParent
+
+Provides the unique ancestor (coarser) cell of the given `cell` for
+the provided resolution. If the input cell has resolution `r`, then
+`parentRes = r - 1` would give the immediate parent,
+`parentRes = r - 2` would give the grandparent, and so on.
 
 <Tabs
   groupId="language"
@@ -28,6 +34,8 @@ These functions permit moving between resolutions in the H3 grid system. The fun
 ```c
 H3Error cellToParent(H3Index cell, int parentRes, H3Index *parent);
 ```
+
+Returns 0 (`E_SUCCESS`) on success.
 
 </TabItem>
 <TabItem value="java">
@@ -55,8 +63,11 @@ function example() {
 <TabItem value="python">
 
 ```py
-h3.cell_to_parent(cell, parent_res)
+h3.cell_to_parent(h, res=None)
 ```
+
+If `res = None`, we set `res = resolution(h) - 1`.
+See the [h3-py docs](https://uber.github.io/h3-py/api_verbose.html#h3.cell_to_parent).
 
 </TabItem>
 <TabItem value="shell">
@@ -81,11 +92,11 @@ $ h3 cellToParent -c 85283473fffffff -r 4
 </TabItem>
 </Tabs>
 
-Provides the parent (coarser) index containing `cell`.
-
-Returns 0 (`E_SUCCESS`) on success.
 
 ## cellToChildren
+
+Provides the children (descendant) cells of `cell` at
+resolution `childRes`.
 
 <Tabs
   groupId="language"
@@ -103,6 +114,10 @@ Returns 0 (`E_SUCCESS`) on success.
 ```c
 H3Error cellToChildren(H3Index cell, int childRes, H3Index *children);
 ```
+
+`children` must be an array of at least size `cellToChildrenSize(cell, childRes)`.
+
+Returns 0 (`E_SUCCESS`) on success.
 
 </TabItem>
 <TabItem value="java">
@@ -130,8 +145,11 @@ function example() {
 <TabItem value="python">
 
 ```py
-h3.cell_to_children(cell, child_res)
+h3.cell_to_children(h, res=None)
 ```
+
+If `res = None`, we set `res = resolution(h) + 1`.
+See the [h3-py docs](https://uber.github.io/h3-py/api_verbose.html#h3.cell_to_children).
 
 </TabItem>
 <TabItem value="shell">
@@ -156,11 +174,10 @@ $ h3 cellToChildren -c 85283473fffffff -r 6
 </TabItem>
 </Tabs>
 
-Populates `children` with the indexes contained by `cell` at resolution `childRes`. `children` must be an array of at least size `cellToChildrenSize(cell, childRes)`.
-
-Returns 0 (`E_SUCCESS`) on success.
 
 ## cellToChildrenSize
+
+Provides the number of children at a given resolution of the given cell.
 
 <Tabs
   groupId="language"
@@ -178,6 +195,10 @@ Returns 0 (`E_SUCCESS`) on success.
 ```c
 H3Error cellToChildrenSize(H3Index cell, int childRes, int64_t *out);
 ```
+
+Provides the size of the `children` array needed for the given inputs to `cellToChildren`.
+
+Returns 0 (`E_SUCCESS`) on success.
 
 </TabItem>
 <TabItem value="java">
@@ -200,11 +221,14 @@ This function exists for memory management and is not exposed.
 </TabItem>
 <TabItem value="python">
 
-:::note
 
-This function exists for memory management and is not exposed.
+```py
+h3.cell_to_children_size(h, res=None)
+```
 
-:::
+If `res = None`, we set `res = resolution(h) + 1`.
+See the [h3-py docs](https://uber.github.io/h3-py/api_verbose.html#h3.cell_to_children_size).
+
 
 </TabItem>
 <TabItem value="shell">
@@ -228,11 +252,10 @@ $ h3 cellToChildrenSize -c 85283473fffffff -r 6
 </TabItem>
 </Tabs>
 
-Provides the size of the `children` array needed for the given inputs to `cellToChildren`.
-
-Returns 0 (`E_SUCCESS`) on success.
 
 ## cellToCenterChild
+
+Provides the center child (finer) cell contained by `cell` at resolution `childRes`.
 
 <Tabs
   groupId="language"
@@ -250,6 +273,9 @@ Returns 0 (`E_SUCCESS`) on success.
 ```c
 H3Error cellToCenterChild(H3Index cell, int childRes, H3Index *child);
 ```
+
+Returns 0 (`E_SUCCESS`) on success.
+
 
 </TabItem>
 <TabItem value="java">
@@ -277,8 +303,11 @@ function example() {
 <TabItem value="python">
 
 ```py
-h3.cell_to_center_child(cell, child_res)
+h3.cell_to_center_child(h, res=None)
 ```
+
+If `res = None`, we set `res = resolution(h) + 1`.
+See the [h3-py docs](https://uber.github.io/h3-py/api_verbose.html#h3.cell_to_center_child).
 
 </TabItem>
 <TabItem value="shell">
@@ -303,11 +332,12 @@ $ h3 cellToCenterChild -c 85283473fffffff -r 7
 </TabItem>
 </Tabs>
 
-Provides the center child (finer) index contained by `cell` at resolution `childRes`.
-
-Returns 0 (`E_SUCCESS`) on success.
 
 ## cellToChildPos
+
+Provides the position of the child cell within an ordered list of all children of the cell's parent at the specified resolution `parentRes`.
+The order of the ordered list is the same as that returned by `cellToChildren`.
+This is the complement of `childPosToCell`.
 
 <Tabs
   groupId="language"
@@ -323,8 +353,10 @@ Returns 0 (`E_SUCCESS`) on success.
 <TabItem value="c">
 
 ```c
-H3Index cellToChildPos(H3Index child, int parentRes, int64_t *out);
+H3Error cellToChildPos(H3Index child, int parentRes, int64_t *out);
 ```
+
+Returns 0 (`E_SUCCESS`) on success.
 
 </TabItem>
 <TabItem value="java">
@@ -352,7 +384,7 @@ function example() {
 <TabItem value="python">
 
 ```py
-h3.cell_to_child_pos(child, parent_res)
+h3.cell_to_child_pos(child, res_parent)
 ```
 
 </TabItem>
@@ -377,11 +409,12 @@ $ h3 cellToChildPos -c 85283473fffffff -r 3
 </TabItem>
 </Tabs>
 
-Returns the position of the child cell within an ordered list of all children of the cell's parent at the specified resolution `parentRes`. The order of the ordered list is the same as that returned by `cellToChildren`. This is the complement of `childPosToCell`.
-
-Returns 0 (`E_SUCCESS`) on success.
 
 ## childPosToCell
+
+Provides the child cell at a given position within an ordered list of all children of `parent` at the specified resolution `childRes`.
+The order of the ordered list is the same as that returned by `cellToChildren`.
+This is the complement of `cellToChildPos`.
 
 <Tabs
   groupId="language"
@@ -397,8 +430,11 @@ Returns 0 (`E_SUCCESS`) on success.
 <TabItem value="c">
 
 ```c
-H3Index childPosToCell(int64_t childPos, H3Index parent, int childRes, H3Index *child);
+H3Error childPosToCell(int64_t childPos, H3Index parent, int childRes, H3Index *child);
 ```
+
+Returns 0 (`E_SUCCESS`) on success.
+
 
 </TabItem>
 <TabItem value="java">
@@ -427,7 +463,7 @@ function example() {
 <TabItem value="python">
 
 ```py
-h3.child_pos_to_cell(child_pos, parent, child_res)
+h3.child_pos_to_cell(parent, res_child, child_pos)
 ```
 
 </TabItem>
@@ -454,11 +490,12 @@ $ h3 childPosToCell -p 42 -c 85283473fffffff -r 7
 </TabItem>
 </Tabs>
 
-Returns the child cell at a given position within an ordered list of all children of `parent` at the specified resolution `childRes`. The order of the ordered list is the same as that returned by `cellToChildren`. This is the complement of `cellToChildPos`.
-
-Returns 0 (`E_SUCCESS`) on success.
 
 ## compactCells
+
+Compacts a collection of H3 cells by recursively replacing children cells
+with their parents if all children are present.
+Input cells must all share the same resolution.
 
 <Tabs
   groupId="language"
@@ -476,6 +513,11 @@ Returns 0 (`E_SUCCESS`) on success.
 ```c
 H3Error compactCells(const H3Index *cellSet, H3Index *compactedSet, const int64_t numCells);
 ```
+
+Compacts `cellSet` into the array `compactedSet`.
+`compactedSet` must be at least the size of `cellSet` (in case the set cannot be compacted).
+
+Returns 0 (`E_SUCCESS`) on success.
 
 </TabItem>
 <TabItem value="java">
@@ -530,11 +572,10 @@ $ h3 compactCells -c 85283473fffffff,85283447fffffff,8528347bfffffff,85283463fff
 </TabItem>
 </Tabs>
 
-Compacts the set `cellSet` of indexes as best as possible, into the array `compactedSet`. `compactedSet` must be at least the size of `cellSet` in case the set cannot be compacted. Cells in `cellSet` must all share the same resolution.
-
-Returns 0 (`E_SUCCESS`) on success.
-
 ## uncompactCells
+
+Uncompacts the set `compactedSet` of indexes to the resolution `res`.
+`h3Set` must be at least of size `uncompactCellsSize(compactedSet, numHexes, res)`.
 
 <Tabs
   groupId="language"
@@ -552,6 +593,8 @@ Returns 0 (`E_SUCCESS`) on success.
 ```c
 H3Error uncompactCells(const H3Index *compactedSet, const int64_t numCells, H3Index *cellSet, const int64_t maxCells, const int res);
 ```
+
+Returns 0 (`E_SUCCESS`) on success.
 
 </TabItem>
 <TabItem value="java">
@@ -608,11 +651,11 @@ $ h3 uncompactCells -r 5 -c 85283447fffffff,8528340ffffffff,8528340bfffffff,8528
 </TabItem>
 </Tabs>
 
-Uncompacts the set `compactedSet` of indexes to the resolution `res`. `h3Set` must be at least of size `uncompactCellsSize(compactedSet, numHexes, res)`.
-
-Returns 0 (`E_SUCCESS`) on success.
 
 ## uncompactCellsSize
+
+Provides the total resulting number of cells if uncompacting a cell set to
+a given resolution.
 
 <Tabs
   groupId="language"
@@ -630,6 +673,10 @@ Returns 0 (`E_SUCCESS`) on success.
 ```c
 H3Error uncompactCellsSize(const H3Index *compactedSet, const int64_t numCompacted, const int res, int64_t *out);
 ```
+
+Provides the size of the array needed by `uncompactCells` into `out`.
+
+Returns 0 (`E_SUCCESS`) on success.
 
 </TabItem>
 <TabItem value="java">
@@ -669,7 +716,3 @@ This function exists for memory management and is not exposed.
 
 </TabItem>
 </Tabs>
-
-Places the size of the array needed by `uncompactCells` into `out`.
-
-Returns 0 (`E_SUCCESS`) on success.

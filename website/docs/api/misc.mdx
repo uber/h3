@@ -12,6 +12,8 @@ These functions include descriptions of the H3 grid system.
 
 ## degsToRads
 
+Converts degrees to radians.
+
 <Tabs
   groupId="language"
   defaultValue="c"
@@ -82,9 +84,9 @@ $ h3 degsToRads -d 180
 </TabItem>
 </Tabs>
 
-Converts degrees to radians.
-
 ## radsToDegs
+
+Converts radians to degrees.
 
 <Tabs
   groupId="language"
@@ -156,9 +158,10 @@ $ h3 radsToDegs -r 1
 </TabItem>
 </Tabs>
 
-Converts radians to degrees.
-
 ## getHexagonAreaAvgKm2
+
+Average hexagon area in square kilometers at the given resolution.
+Excludes pentagons.
 
 <Tabs
   groupId="language"
@@ -202,7 +205,7 @@ function example() {
 <TabItem value="python">
 
 ```py
-h3.get_hexagon_area_avg(res, unit='km^2')
+h3.average_hexagon_area(res, unit='km^2')
 ```
 
 </TabItem>
@@ -226,9 +229,10 @@ $ h3 getHexagonAreaAvgKm2 -r 1
 </TabItem>
 </Tabs>
 
-Average hexagon area in square kilometers at the given resolution. Excludes pentagons.
-
 ## getHexagonAreaAvgM2
+
+Average hexagon area in square meters at the given resolution.
+Excludes pentagons.
 
 <Tabs
   groupId="language"
@@ -272,7 +276,7 @@ function example() {
 <TabItem value="python">
 
 ```py
-h3.get_hexagon_area_avg(res, unit='m^2')
+h3.average_hexagon_area(res, unit='m^2')
 ```
 
 </TabItem>
@@ -296,11 +300,10 @@ $ h3 getHexagonAreaAvgM2 -r 5
 </TabItem>
 </Tabs>
 
-Average hexagon area in square meters at the given resolution. Excludes pentagons.
-
-
 
 ## cellAreaRads2
+
+Exact area of specific cell in square radians.
 
 <Tabs
   groupId="language"
@@ -369,9 +372,9 @@ $ h3 cellAreaRads2 -c 85283473fffffff
 </TabItem>
 </Tabs>
 
-Exact area of specific cell in square radians.
-
 ## cellAreaKm2
+
+Exact area of specific cell in square kilometers.
 
 <Tabs
   groupId="language"
@@ -440,9 +443,9 @@ $ h3 cellAreaKm2 -c 85283473fffffff
 </TabItem>
 </Tabs>
 
-Exact area of specific cell in square kilometers.
-
 ## cellAreaM2
+
+Exact area of specific cell in square meters.
 
 <Tabs
   groupId="language"
@@ -511,9 +514,10 @@ $ h3 cellAreaM2 -c 85283473fffffff
 </TabItem>
 </Tabs>
 
-Exact area of specific cell in square meters.
-
 ## getHexagonEdgeLengthAvgKm
+
+Average hexagon edge length in kilometers at the given resolution.
+Excludes pentagons.
 
 <Tabs
   groupId="language"
@@ -557,7 +561,7 @@ function example() {
 <TabItem value="python">
 
 ```py
-h3.get_hexagon_edge_length_avg(res, unit='km')
+h3.average_hexagon_edge_length(res, unit='km')
 ```
 
 </TabItem>
@@ -581,9 +585,11 @@ $ h3 getHexagonEdgeLengthAvgKm -r 5
 </TabItem>
 </Tabs>
 
-Average hexagon edge length in kilometers at the given resolution. Excludes pentagons.
 
 ## getHexagonEdgeLengthAvgM
+
+Average hexagon edge length in meters at the given resolution.
+Excludes pentagons.
 
 <Tabs
   groupId="language"
@@ -627,7 +633,7 @@ function example() {
 <TabItem value="python">
 
 ```py
-h3.get_hexagon_edge_length_avg(res, unit='m')
+h3.average_hexagon_edge_length(res, unit='m')
 ```
 
 </TabItem>
@@ -651,10 +657,10 @@ $ h3 getHexagonEdgeLengthAvgM -r 5
 </TabItem>
 </Tabs>
 
-Average hexagon edge length in meters at the given resolution. Excludes pentagons.
-
 
 ## edgeLengthKm
+
+Exact edge length of specific unidirectional edge in kilometers.
 
 <Tabs
   groupId="language"
@@ -699,7 +705,7 @@ function example() {
 <TabItem value="python">
 
 ```py
-h3.exact_edge_length(h, unit='km')
+h3.edge_length(h, unit='km')
 ```
 
 </TabItem>
@@ -723,9 +729,10 @@ $ h3 edgeLengthKm -c 115283473fffffff
 </TabItem>
 </Tabs>
 
-Exact edge length of specific unidirectional edge in kilometers.
 
 ## edgeLengthM
+
+Exact edge length of specific unidirectional edge in meters.
 
 <Tabs
   groupId="language"
@@ -770,7 +777,7 @@ function example() {
 <TabItem value="python">
 
 ```py
-h3.exact_edge_length(h, unit='m')
+h3.edge_length(h, unit='m')
 ```
 
 </TabItem>
@@ -794,9 +801,10 @@ $ h3 edgeLengthM -c 115283473fffffff
 </TabItem>
 </Tabs>
 
-Exact edge length of specific unidirectional edge in meters.
 
 ## edgeLengthRads
+
+Exact edge length of specific unidirectional edge in radians.
 
 <Tabs
   groupId="language"
@@ -841,7 +849,7 @@ function example() {
 <TabItem value="python">
 
 ```py
-h3.exact_edge_length(h, unit='rads')
+h3.edge_length(h, unit='rads')
 ```
 
 </TabItem>
@@ -865,9 +873,10 @@ $ h3 edgeLengthRads -c 115283473fffffff
 </TabItem>
 </Tabs>
 
-Exact edge length of specific unidirectional edge in radians.
 
 ## getNumCells
+
+Number of unique H3 indexes at the given resolution.
 
 <Tabs
   groupId="language"
@@ -935,9 +944,13 @@ $ h3 getNumCells -r 5
 </TabItem>
 </Tabs>
 
-Number of unique H3 indexes at the given resolution.
 
 ## getRes0Cells
+
+Provide all the resolution `0` H3 cells.
+These are the coarsest cells that can be represented in the H3 system and are
+the parents/ancestors of all other cells in the H3 grid system.
+The returned cells correspond to the 122 base cells.
 
 <Tabs
   groupId="language"
@@ -955,6 +968,8 @@ Number of unique H3 indexes at the given resolution.
 ```c
 H3Error getRes0Cells(H3Index *out);
 ```
+
+`out` must be an array of at least size `res0CellCount()`.
 
 </TabItem>
 <TabItem value="java">
@@ -1004,12 +1019,10 @@ $ h3 getRes0Cells
 </TabItem>
 </Tabs>
 
-All the resolution `0` H3 cell indexes. These are the coarsest cells that can be represented in the H3 system and are the 
-parents of all other cell indexes in the H3 grid system. The returned indexes correspond with the 122 base cells.
-
-`out` must be an array of at least size `res0CellCount()`.
 
 ## res0CellCount
+
+Number of resolution `0` H3 indexes, which is defined as 122.
 
 <Tabs
   groupId="language"
@@ -1067,9 +1080,11 @@ This function exists for memory management and is not exposed.
 </TabItem>
 </Tabs>
 
-Number of resolution `0` H3 indexes, which is defined as 122.
 
 ## getPentagons
+
+All the pentagon H3 cells at the specified resolution.
+There are 12 pentagons at each resolution.
 
 <Tabs
   groupId="language"
@@ -1087,6 +1102,10 @@ Number of resolution `0` H3 indexes, which is defined as 122.
 ```c
 H3Error getPentagons(int res, H3Index *out);
 ```
+
+`out` must be an array of at least size `pentagonIndexCount()`.
+
+Returns 0 (`E_SUCCESS`) on success.
 
 </TabItem>
 <TabItem value="java">
@@ -1139,12 +1158,10 @@ $ h3 getPentagons -r 5
 </TabItem>
 </Tabs>
 
-All the pentagon H3 indexes at the specified resolution.
-`out` must be an array of at least size `pentagonIndexCount()`.
-
-Returns 0 (`E_SUCCESS`) on success.
-
 ## pentagonCount
+
+Number of pentagon H3 cells per resolution.
+This is always 12, but provided as a convenience.
 
 <Tabs
   groupId="language"
@@ -1210,9 +1227,11 @@ $ h3 pentagonCount
 </TabItem>
 </Tabs>
 
-Number of pentagon H3 indexes per resolution. This is always 12, but provided as a convenience.
 
 ## greatCircleDistanceKm
+
+Gives the "great circle" or "haversine" distance between pairs of
+LatLng points (lat/lng pairs) in kilometers.
 
 <Tabs
   groupId="language"
@@ -1282,10 +1301,10 @@ $ h3 greatCircleDistanceKm -c "[[-10, 0], [10, 0]]"
 </TabItem>
 </Tabs>
 
-Gives the "great circle" or "haversine" distance between pairs of
-LatLng points (lat/lng pairs) in kilometers.
-
 ## greatCircleDistanceM
+
+Gives the "great circle" or "haversine" distance between pairs of
+LatLng points (lat/lng pairs) in meters.
 
 <Tabs
   groupId="language"
@@ -1330,7 +1349,7 @@ function example() {
 <TabItem value="python">
 
 ```py
-h3.latlng_distance(point1, point2, unit='m')
+h3.great_circle_distance(point1, point2, unit='m')
 ```
 
 </TabItem>
@@ -1355,10 +1374,11 @@ $ h3 greatCircleDistanceM -c "[[-10, 0], [10, 0]]"
 </TabItem>
 </Tabs>
 
-Gives the "great circle" or "haversine" distance between pairs of
-LatLng points (lat/lng pairs) in meters.
 
 ## greatCircleDistanceRads
+
+Gives the "great circle" or "haversine" distance between pairs of
+LatLng points (lat/lng pairs) in radians.
 
 <Tabs
   groupId="language"
@@ -1403,7 +1423,7 @@ function example() {
 <TabItem value="python">
 
 ```py
-h3.latlng_distance(point1, point2, unit='rads')
+h3.great_circle_distance(point1, point2, unit='rads')
 ```
 
 </TabItem>
@@ -1428,10 +1448,10 @@ $ h3 greatCircleDistanceRads -c "[[-10, 0], [10, 0]]"
 </TabItem>
 </Tabs>
 
-Gives the "great circle" or "haversine" distance between pairs of
-LatLng points (lat/lng pairs) in radians.
 
-## describeH3Error 
+## describeH3Error
+
+Provides a human-readable description of an H3Error error code.
 
 <Tabs
   groupId="language"
@@ -1447,6 +1467,10 @@ LatLng points (lat/lng pairs) in radians.
 ```c
 char *describeH3Error(H3Error err);
 ```
+
+This function cannot fail, as it just returns a string stating that the
+H3Error value is itself invalid and does not allocate memory to do so.
+Do not call `free` on the result of this function.
 
 </TabItem>
 <TabItem value="javascript">
@@ -1489,5 +1513,3 @@ Cell argument was not valid
 
 </TabItem>
 </Tabs>
-
-Provides a human-readable description of an H3Error error code. This function cannot fail, as it just returns a string stating that the H3Error value is itself invalid and does not allocate memory to do so. Do not call `free` on the result of this function.

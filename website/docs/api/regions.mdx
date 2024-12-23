@@ -12,6 +12,15 @@ These functions convert H3 indexes to and from polygonal areas.
 
 ## polygonToCells
 
+Each binding's version of `polygonToCells` takes as input a GeoJSON-like data
+structure describing a polygon (i.e., an outer ring and optional holes) and
+a target cell resolution.
+It produces a collection of cells that are contained within the polygon.
+
+Containment is determined by centroids of the cells, so that a partitioning
+of polygons (covering an area without overlaps) will result in
+a partitioning of H3 cells.
+
 <Tabs
   groupId="language"
   defaultValue="c"
@@ -28,6 +37,11 @@ These functions convert H3 indexes to and from polygonal areas.
 ```c
 H3Error polygonToCells(const GeoPolygon *geoPolygon, int res, uint32_t flags, H3Index *out);
 ```
+
+In C, `polygonToCells` takes a `GeoPolygon` struct and preallocated,
+zeroed memory, and fills it with the covering cells.
+
+Returns 0 (`E_SUCCESS`) on success.
 
 </TabItem>
 <TabItem value="java">
@@ -60,8 +74,14 @@ function example() {
 <TabItem value="python">
 
 ```py
-h3.polygon_to_cells(polygons, res, geo_json_conformant=False)
+h3.polygon_to_cells(h3shape, res)
+h3.h3shape_to_cells(h3shape, res)
 ```
+
+In Python, `h3shape_to_cells` takes an `H3Shape` object
+(`LatLngPoly` or `LatLngMultiPoly`).
+Note that `polygon_to_cells` is an alias for `h3shape_to_cells`.
+For more info, see the [`h3-py` docs](https://uber.github.io/h3-py/api_quick.html#polygon-interface).
 
 </TabItem>
 <TabItem value="shell">
@@ -87,18 +107,11 @@ $ h3 polygonToCells -r 7 -p "[[37.813318999983238, -122.4089866999972145], [37.7
 </TabItem>
 </Tabs>
 
-polygonToCells takes a given GeoJSON-like data structure and preallocated,
-zeroed memory, and fills it with the hexagons that are contained by
-the GeoJSON-like data structure.
 
-Containment is determined by the cells' centroids. A partitioning
-using the GeoJSON-like data structure, where polygons cover an area
-without overlap, will result in a partitioning in the H3 grid, where
-cells cover the same area without overlap.
+## maxPolygonToCellsSize
 
-Returns 0 (`E_SUCCESS`) on success.
-
-### maxPolygonToCellsSize
+Provides an upper bound on the number of cells needed for memory allocation
+purposes when computing `polygonToCells` on the given GeoJSON-like data structure.
 
 <Tabs
   groupId="language"
@@ -116,6 +129,8 @@ Returns 0 (`E_SUCCESS`) on success.
 ```c
 H3Error maxPolygonToCellsSize(const GeoPolygon *geoPolygon, int res, uint32_t flags, int64_t *out);
 ```
+
+Returns 0 (`E_SUCCESS`) on success.
 
 </TabItem>
 <TabItem value="java">
@@ -167,12 +182,17 @@ $ h3 maxPolygonToCellsSize -r 7 -p "[[37.813318999983238, -122.4089866999972145]
 </TabItem>
 </Tabs>
 
-maxPolygonToCellsSize returns the number of hexagons to allocate space for when
-computing `polygonToCells` on the given GeoJSON-like data structure.
-
-Returns 0 (`E_SUCCESS`) on success.
 
 ## cellsToLinkedMultiPolygon / cellsToMultiPolygon
+
+Create a GeoJSON-like multi-polygon describing the outline(s) of a set of cells.
+Polygon outlines will follow GeoJSON MultiPolygon order: Each polygon will
+have one outer loop, which is first in the list, followed by any holes.
+
+It is expected that all cells in the set have the same resolution and
+that the set contains no duplicates. Behavior is undefined if duplicates
+or multiple resolutions are present, and the algorithm may produce
+unexpected or invalid output.
 
 <Tabs
   groupId="language"
@@ -191,6 +211,12 @@ Returns 0 (`E_SUCCESS`) on success.
 H3Error cellsToLinkedMultiPolygon(const H3Index *h3Set, const int numHexes, LinkedGeoPolygon *out);
 ```
 
+It is the responsibility of the caller to call `destroyLinkedPolygon` on the
+populated linked geo structure, or the memory for that structure will
+not be freed.
+
+Returns 0 (`E_SUCCESS`) on success.
+
 </TabItem>
 <TabItem value="java">
 
@@ -208,8 +234,8 @@ h3.cellsToMultiPolygon(cells, geoJson)
 
 ```js live
 function example() {
-    const hexagons = ['872830828ffffff', '87283082effffff'];
-    return h3.cellsToMultiPolygon(hexagons, true);
+    const cells = ['872830828ffffff', '87283082effffff'];
+    return h3.cellsToMultiPolygon(cells, true);
 }
 ```
 
@@ -217,8 +243,14 @@ function example() {
 <TabItem value="python">
 
 ```py
-h3.cells_to_multi_polygon(hexes, geo_json=False)
+h3.cells_to_h3shape(cells, *, tight=True)
 ```
+
+Returns an `H3Shape` object:
+- If `tight=True`, returns `LatLngPoly` if possible, otherwise `LatLngMultiPoly`.
+- If `tight=False`, always returns a `LatLngMultiPoly`.
+
+For more info, see the [`h3-py` docs](https://uber.github.io/h3-py/api_quick.html#polygon-interface).
 
 </TabItem>
 <TabItem value="shell">
@@ -243,22 +275,12 @@ $ h3 cellsToMultiPolygon -c 872830828ffffff,87283082effffff
 </TabItem>
 </Tabs>
 
-Create a LinkedGeoPolygon describing the outline(s) of a set of  hexagons.
-Polygon outlines will follow GeoJSON MultiPolygon order: Each polygon will
-have one outer loop, which is first in the list, followed by any holes.
 
-It is the responsibility of the caller to call destroyLinkedPolygon on the
-populated linked geo structure, or the memory for that structure will
-not be freed.
-
-It is expected that all hexagons in the set have the same resolution and
-that the set contains no duplicates. Behavior is undefined if duplicates
-or multiple resolutions are present, and the algorithm may produce
-unexpected or invalid output.
-
-Returns 0 (`E_SUCCESS`) on success.
 
 ## destroyLinkedMultiPolygon
+
+Free all allocated memory for a linked geo structure. The caller is
+responsible for freeing memory allocated to the input polygon struct.
 
 <Tabs
   groupId="language"
@@ -316,5 +338,4 @@ This function exists for memory management and is not exposed.
 </TabItem>
 </Tabs>
 
-Free all allocated memory for a linked geo structure. The caller is
-responsible for freeing memory allocated to the input polygon struct.
+
