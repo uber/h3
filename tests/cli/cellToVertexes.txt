@@ -1,2 +1,8 @@
-add_h3_cli_test(testCliCellToVertexes "cellToVertexes -c 85283473fffffff" "[ \"22528340bfffffff\", \"235283447fffffff\", \"205283463fffffff\", \"255283463fffffff\", \"22528340ffffffff\", \"23528340bfffffff\" ]")
-add_h3_cli_test(testCliNotCellToVertexes "cellToVertexes -c 115283473fffffff 2>&1" "Error 5: Cell argument was not valid")
+add_h3_cli_test(
+    testCliCellToVertexes
+    "cellToVertexes -c 85283473fffffff"
+    "[ \"22528340bfffffff\", \"235283447fffffff\", \"205283463fffffff\", \"255283463fffffff\", \"22528340ffffffff\", \"23528340bfffffff\" ]"
+)
+add_h3_cli_test(
+    testCliNotCellToVertexes "cellToVertexes -c 115283473fffffff 2>&1"
+    "Error 5: Cell argument was not valid")
