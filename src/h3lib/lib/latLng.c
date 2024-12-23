@@ -179,6 +179,11 @@ double H3_EXPORT(greatCircleDistanceRads)(const LatLng *a, const LatLng *b) {
 
 /**
  * The great circle distance in kilometers between two spherical coordinates.
+ *
+ * @param  a  the first lat/lng pair (in radians)
+ * @param  b  the second lat/lng pair (in radians)
+ *
+ * @return    the great circle distance in kilometers between a and b
  */
 double H3_EXPORT(greatCircleDistanceKm)(const LatLng *a, const LatLng *b) {
     return H3_EXPORT(greatCircleDistanceRads)(a, b) * EARTH_RADIUS_KM;
@@ -186,6 +191,11 @@ double H3_EXPORT(greatCircleDistanceKm)(const LatLng *a, const LatLng *b) {
 
 /**
  * The great circle distance in meters between two spherical coordinates.
+ *
+ * @param  a  the first lat/lng pair (in radians)
+ * @param  b  the second lat/lng pair (in radians)
+ *
+ * @return    the great circle distance in meters between a and b
  */
 double H3_EXPORT(greatCircleDistanceM)(const LatLng *a, const LatLng *b) {
     return H3_EXPORT(greatCircleDistanceKm)(a, b) * 1000;
@@ -419,6 +429,10 @@ H3Error H3_EXPORT(cellAreaRads2)(H3Index cell, double *out) {
 
 /**
  * Area of H3 cell in kilometers^2.
+ *
+ * @param   cell  H3 cell
+ * @param    out  cell area in kilometers^2
+ * @return        E_SUCCESS on success, or an error code otherwise
  */
 H3Error H3_EXPORT(cellAreaKm2)(H3Index cell, double *out) {
     H3Error err = H3_EXPORT(cellAreaRads2)(cell, out);
@@ -430,6 +444,10 @@ H3Error H3_EXPORT(cellAreaKm2)(H3Index cell, double *out) {
 
 /**
  * Area of H3 cell in meters^2.
+ *
+ * @param   cell  H3 cell
+ * @param    out  cell area in meters^2
+ * @return        E_SUCCESS on success, or an error code otherwise
  */
 H3Error H3_EXPORT(cellAreaM2)(H3Index cell, double *out) {
     H3Error err = H3_EXPORT(cellAreaKm2)(cell, out);
@@ -443,8 +461,8 @@ H3Error H3_EXPORT(cellAreaM2)(H3Index cell, double *out) {
  * Length of a directed edge in radians.
  *
  * @param   edge  H3 directed edge
- *
- * @return        length in radians
+ * @param    length  length in radians
+ * @return        E_SUCCESS on success, or an error code otherwise
  */
 H3Error H3_EXPORT(edgeLengthRads)(H3Index edge, double *length) {
     CellBoundary cb;
@@ -465,6 +483,10 @@ H3Error H3_EXPORT(edgeLengthRads)(H3Index edge, double *length) {
 
 /**
  * Length of a directed edge in kilometers.
+ *
+ * @param   edge  H3 directed edge
+ * @param    length  length in kilometers
+ * @return        E_SUCCESS on success, or an error code otherwise
  */
 H3Error H3_EXPORT(edgeLengthKm)(H3Index edge, double *length) {
     H3Error err = H3_EXPORT(edgeLengthRads)(edge, length);
@@ -474,6 +496,10 @@ H3Error H3_EXPORT(edgeLengthKm)(H3Index edge, double *length) {
 
 /**
  * Length of a directed edge in meters.
+ *
+ * @param   edge  H3 directed edge
+ * @param    length  length in meters
+ * @return        E_SUCCESS on success, or an error code otherwise
  */
 H3Error H3_EXPORT(edgeLengthM)(H3Index edge, double *length) {
     H3Error err = H3_EXPORT(edgeLengthKm)(edge, length);

@@ -205,6 +205,7 @@ static const int revNeighborDirectionsHex[NUM_DIGITS] = {
  * H3_NULL if the vertex is invalid
  * @param cell    Cell to get the vertex for
  * @param vertexNum Number (index) of the vertex to calculate
+ * @param out Output: The vertex index
  */
 H3Error H3_EXPORT(cellToVertex)(H3Index cell, int vertexNum, H3Index *out) {
     int cellIsPentagon = H3_EXPORT(isPentagon)(cell);
