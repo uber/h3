@@ -40,18 +40,6 @@
 /** Macro: Whether a GeoLoop is empty */
 #define IS_EMPTY_GEOFENCE(geoloop) geoloop->numVerts == 0
 
-/**
- * Values representing polyfill containment modes, to be used in
- * the `flags` bit field.
- */
-typedef enum {
-    CONTAINMENT_CENTER = 0,       ///< Cell center is contained in the shape
-    CONTAINMENT_FULL = 1,         ///< Cell is fully contained in the shape
-    CONTAINMENT_OVERLAPPING = 2,  ///< Cell overlaps the shape at any point
-    CONTAINMENT_OVERLAPPING_BBOX = 3,  ///< Cell bounding box overlaps shape
-    CONTAINMENT_INVALID = 4  ///< This mode is invalid and should not be used
-} ContainmentMode;
-
 // 1s in the 4 bits defining the polyfill containment mode, 0s elsewhere
 #define FLAG_CONTAINMENT_MODE_MASK ((uint32_t)(15))
 #define FLAG_GET_CONTAINMENT_MODE(flags) (flags & FLAG_CONTAINMENT_MODE_MASK)
