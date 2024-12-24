@@ -182,6 +182,189 @@ $ h3 maxPolygonToCellsSize -r 7 -p "[[37.813318999983238, -122.4089866999972145]
 </TabItem>
 </Tabs>
 
+## polygonToCellsExperimental
+
+Each binding's version of `polygonToCellsExperimental` takes as input a
+GeoJSON-like data structure describing a polygon (i.e., an outer ring and
+optional holes) and a target cell resolution.
+It produces a collection of cells that are contained within the polygon.
+
+Containment is determined by centroids of the cells, so that a partitioning
+of polygons (covering an area without overlaps) will result in
+a partitioning of H3 cells.
+
+This function differs from `polygonToCells` in that it uses an experimental
+new algorithm which supports center-based, fully-contained, and
+overlapping containment modes.
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+    {label: 'Python', value: 'python'},
+    {label: 'Shell', value: 'shell'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+H3Error polygonToCellsExperimental(const GeoPolygon *geoPolygon, int res, uint32_t flags, int64_t size, H3Index *out);
+```
+
+In C, `polygonToCellsExperimental` takes a `GeoPolygon` struct and preallocated,
+zeroed memory, and fills it with the covering cells.
+
+`size` should be the size in number of `H3Index`s of `out`.
+
+The valid values for `flags` are:
+
+| Enum name | Integer value | Description
+| --------- | ------------- | -----------
+| `CONTAINMENT_CENTER` | 0 | Cell center is contained in the shape
+| `CONTAINMENT_FULL` | 1 | Cell is fully contained in the shape
+| `CONTAINMENT_OVERLAPPING` | 2 | Cell overlaps the shape at any point
+| `CONTAINMENT_OVERLAPPING_BBOX` | 3 | Cell bounding box overlaps shape
+
+Returns 0 (`E_SUCCESS`) on success.
+
+</TabItem>
+<TabItem value="java">
+
+```java
+List<Long> polygonToCellsExperimental(List<LatLng> points, List<List<LatLng>> holes, PolygonToCellsFlags flags, int res);
+List<String> polygonToCellExperimentalAddresses(List<LatLng> points, List<List<LatLng>> holes, PolygonToCellsFlags flags, int res);
+```
+
+The valid values for `flags` are:
+
+| Enum name | Description
+| --------- | -----------
+| `PolygonToCellsFlags.containment_center` | Cell center is contained in the shape
+| `PolygonToCellsFlags.containment_full` | Cell is fully contained in the shape
+| `PolygonToCellsFlags.containment_overlapping` | Cell overlaps the shape at any point
+| `PolygonToCellsFlags.containment_overlapping_bbox` | Cell bounding box overlaps shape
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.polygonToCellsExperimental(polygon, res, flags, isGeoJson)
+```
+
+```js live
+function example() {
+    const polygon = [
+        [37.813318999983238, -122.4089866999972145],
+        [37.7198061999978478, -122.3544736999993603],
+        [37.8151571999998453, -122.4798767000009008]
+    ];
+    const res = 7;
+    return h3.polygonToCellsExperimental(polygon, h3.POLYGON_TO_CELLS_FLAGS.containmentOverlapping, res);
+}
+```
+
+The valid values for `flags` are:
+
+| Enum name | Description
+| --------- | -----------
+| `POLYGON_TO_CELLS_FLAGS.containment_center` | Cell center is contained in the shape
+| `POLYGON_TO_CELLS_FLAGS.containment_full` | Cell is fully contained in the shape
+| `POLYGON_TO_CELLS_FLAGS.containment_overlapping` | Cell overlaps the shape at any point
+| `POLYGON_TO_CELLS_FLAGS.containment_overlapping_bbox` | Cell bounding box overlaps shape
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.polygon_to_cells_experimental(h3shape, res, flags='containment_overlapping')
+h3.h3shape_to_cells_experimental(h3shape, res, flags='containment_overlapping')
+```
+
+In Python, `h3shape_to_cells` takes an `H3Shape` object
+(`LatLngPoly` or `LatLngMultiPoly`).
+Note that `polygon_to_cells` is an alias for `h3shape_to_cells`.
+For more info, see the [`h3-py` docs](https://uber.github.io/h3-py/api_quick.html#polygon-interface).
+
+The valid values for `flags` are:
+
+| String value | Description
+| ------------ | -----------
+| `"containment_center"` | Cell center is contained in the shape
+| `"containment_full"` | Cell is fully contained in the shape
+| `"containment_overlapping"` | Cell overlaps the shape at any point
+| `"containment_overlapping_bbox"` | Cell bounding box overlaps shape
+
+</TabItem>
+<TabItem value="shell">
+
+This function is not exposed in the CLI bindings.
+
+</TabItem>
+</Tabs>
+
+
+## maxPolygonToCellsExperimentalSize
+
+Provides an upper bound on the number of cells needed for memory allocation
+purposes when computing `polygonToCellsExperimental` on the given GeoJSON-like data structure.
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+    {label: 'Python', value: 'python'},
+    {label: 'Shell', value: 'shell'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+H3Error maxPolygonToCellsExperimentalSize(const GeoPolygon *geoPolygon, int res, uint32_t flags, int64_t *out);
+```
+
+Returns 0 (`E_SUCCESS`) on success.
+
+</TabItem>
+<TabItem value="java">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+<TabItem value="javascript">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+<TabItem value="python">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+<TabItem value="shell">
+
+This function is not exposed in the CLI bindings.
+
+</TabItem>
+</Tabs>
+
 
 ## cellsToLinkedMultiPolygon / cellsToMultiPolygon
 
