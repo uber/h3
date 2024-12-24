@@ -7,6 +7,9 @@ The public API of this library consists of the functions declared in file
 
 ## [Unreleased]
 
+### Changed
+- Moved `ContainmentMode` enum for `polygonToCellsExperimental` to `h3api.h`. (#958)
+
 ## [4.2.0] - 2024-12-04
 ### Added
 - Added experimental new algorithm for `polygonToCells`, called `polygonToCellsExperimental`, that supports more containment flags and is more memory-efficient (#785, #800, #947)
