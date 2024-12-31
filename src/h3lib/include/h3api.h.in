@@ -165,6 +165,18 @@ typedef struct {
     GeoPolygon *polygons;
 } GeoMultiPolygon;
 
+/**
+ * Values representing polyfill containment modes, to be used in
+ * the `flags` bit field for `polygonToCellsExperimental`.
+ */
+typedef enum {
+    CONTAINMENT_CENTER = 0,       ///< Cell center is contained in the shape
+    CONTAINMENT_FULL = 1,         ///< Cell is fully contained in the shape
+    CONTAINMENT_OVERLAPPING = 2,  ///< Cell overlaps the shape at any point
+    CONTAINMENT_OVERLAPPING_BBOX = 3,  ///< Cell bounding box overlaps shape
+    CONTAINMENT_INVALID = 4  ///< This mode is invalid and should not be used
+} ContainmentMode;
+
 /** @struct LinkedLatLng
  *  @brief A coordinate node in a linked geo structure, part of a linked list
  */
