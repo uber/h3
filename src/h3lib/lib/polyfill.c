@@ -723,8 +723,9 @@ static double getAverageCellArea(int res) {
 /**
  * maxPolygonToCellsSize returns the number of cells to allocate space for
  * when performing a polygonToCells on the given GeoJSON-like data structure.
- * @param geoPolygon A GeoJSON-like data structure indicating the poly to fill
+ * @param polygon A GeoJSON-like data structure indicating the poly to fill
  * @param res Hexagon resolution (0-15)
+ * @param flags Bit mask of option flags
  * @param out number of cells to allocate for
  * @return 0 (E_SUCCESS) on success.
  */
