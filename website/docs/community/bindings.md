@@ -137,4 +137,5 @@ As a C library, bindings can be made to call H3 functions from different program
 
 ## Spark
 
-- [kevinschaich/h3-pyspark](https://github.com/kevinschaich/h3-pyspark)
+- [kevinschaich/h3-pyspark](https://github.com/kevinschaich/h3-pyspark) (3.x)
+- [jchotard/h3spark](https://github.com/JosephChotard/h3spark) (4.x)
