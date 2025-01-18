@@ -50,17 +50,18 @@ double haversineDistance(double th1, double ph1, double th2, double ph2) {
 
 int main(int argc, char *argv[]) {
     // 1455 Market St @ resolution 15
-    H3Index h3HQ1;
+    H3Index h3HQ1 = 0;
     stringToH3("8f2830828052d25", &h3HQ1);
     // 555 Market St @ resolution 15
-    H3Index h3HQ2;
+    H3Index h3HQ2 = 0;
     stringToH3("8f283082a30e623", &h3HQ2);
 
-    LatLng geoHQ1, geoHQ2;
+    LatLng geoHQ1 = {0};
+    LatLng geoHQ2 = {0};
     cellToLatLng(h3HQ1, &geoHQ1);
     cellToLatLng(h3HQ2, &geoHQ2);
 
-    int64_t distance;
+    int64_t distance = 0;
     assert(gridDistance(h3HQ1, h3HQ2, &distance) == E_SUCCESS);
 
     printf(
