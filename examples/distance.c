@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
         "grid distance: %ld\n"
         "distance in km: %lfkm\n",
         radsToDegs(geoHQ1.lat), radsToDegs(geoHQ1.lng), radsToDegs(geoHQ2.lat),
-        radsToDegs(geoHQ2.lng), distance,
+        radsToDegs(geoHQ2.lng), (long)distance,
         haversineDistance(geoHQ1.lat, geoHQ1.lng, geoHQ2.lat, geoHQ2.lng));
     // Output:
     // origin: (37.775236, -122.419755)
