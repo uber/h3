@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
     printf(
         "origin: (%lf, %lf)\n"
         "destination: (%lf, %lf)\n"
-        "grid distance: %d\n"
+        "grid distance: %ld\n"
         "distance in km: %lfkm\n",
         radsToDegs(geoHQ1.lat), radsToDegs(geoHQ1.lng), radsToDegs(geoHQ2.lat),
         radsToDegs(geoHQ2.lng), distance,
