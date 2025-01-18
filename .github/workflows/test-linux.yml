@@ -72,11 +72,7 @@ jobs:
           cd build/examples
           cmake -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} ../../examples
           make
-          make test
-      
-      - name: Display LastTest.log for debugging
-        if: failure()
-        run: cat /home/runner/work/h3/h3/build/examples/Testing/Temporary/LastTest.log
+          env CTEST_OUTPUT_ON_FAILURE=1 make test 
 
   clang-tests:
     name: Test Compile clang ${{ matrix.build_type }} ${{ matrix.compile_opt }}
