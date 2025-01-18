@@ -23,9 +23,9 @@
 
 #include <assert.h>
 #include <h3/h3api.h>
+#include <inttypes.h>
 #include <math.h>
 #include <stdio.h>
-#include <inttypes.h>
 
 /**
  * @brief haversineDistance finds the
