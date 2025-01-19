@@ -49,7 +49,7 @@ if(ENABLE_COVERAGE)
     add_custom_target(
         clean-coverage
         # Before running coverage, clear all counters
-        COMMAND lcov --rc lcov_branch_coverage=1 --directory
+        COMMAND lcov --rc branch_coverage=1 --directory
                 '${CMAKE_CURRENT_BINARY_DIR}' --zerocounters
         COMMENT "Zeroing counters")
 endif()
