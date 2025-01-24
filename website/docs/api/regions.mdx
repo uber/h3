@@ -275,23 +275,21 @@ The valid values for `flags` are:
 <TabItem value="python">
 
 ```py
-h3.polygon_to_cells_experimental(h3shape, res, flags=h3.ContainmentMode.containment_overlapping)
-h3.h3shape_to_cells_experimental(h3shape, res, flags=h3.ContainmentMode.containment_overlapping)
+h3.h3shape_to_cells_experimental(h3shape, res, contain='overlap')
 ```
 
-In Python, `h3shape_to_cells` takes an `H3Shape` object
+In Python, `h3shape_to_cells_experimental` takes an `H3Shape` object
 (`LatLngPoly` or `LatLngMultiPoly`).
-Note that `polygon_to_cells` is an alias for `h3shape_to_cells`.
 For more info, see the [`h3-py` docs](https://uber.github.io/h3-py/api_quick.html#polygon-interface).
 
-The valid values for `flags` are:
+The valid values for `contain` are:
 
-| Enum name | Integer value | Description
-| --------- | ------------- | -----------
-| `ContainmentMode.containment_center` | 0 | Cell center is contained in the shape
-| `ContainmentMode.containment_full` | 1 | Cell is fully contained in the shape
-| `ContainmentMode.containment_overlapping` | 2 | Cell overlaps the shape at any point
-| `ContainmentMode.containment_overlapping_bbox` | 3 | Cell bounding box overlaps shape
+| String value | Description
+| ------------ | -----------
+| `center` | Cell center is contained in the shape (default)
+| `full` | Cell is fully contained in the shape
+| `overlap` | Cell overlaps the shape at any point
+| `bbox_overlap` | Cell bounding box overlaps shape
 
 </TabItem>
 <TabItem value="shell">
