@@ -72,7 +72,7 @@ jobs:
           cd build/examples
           cmake -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} ../../examples
           make
-          make test
+          env CTEST_OUTPUT_ON_FAILURE=1 make test 
 
   clang-tests:
     name: Test Compile clang ${{ matrix.build_type }} ${{ matrix.compile_opt }}
@@ -132,7 +132,7 @@ jobs:
           cd build/examples
           cmake -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_C_FLAGS="${{ matrix.compile_opt }}" ../../examples
           make
-          make test
+          env CTEST_OUTPUT_ON_FAILURE=1 make test 
 
   valgrind-tests:
     name: Test Valgrind
