@@ -142,6 +142,27 @@ SUITE(h3Index) {
                  "isValidCell failed on deleted subsequence");
     }
 
+    TEST(moreDeletedSubsequenceInvalid) {
+        H3Index p = 0x80c3fffffffffff;  // res 0 pentagon
+        H3Index h;
+
+        for (int res = 1; res <= 15; res++) {
+            t_assertSuccess(H3_EXPORT(cellToCenterChild)(p, res, &h));
+            t_assert(H3_EXPORT(isValidCell)(h), "should be a valid pentagon");
+
+            for (int d = 0; d <= 6; d++) {
+                H3_SET_INDEX_DIGIT(h, res, d);
+                if (d == 1) {
+                    t_assert(!H3_EXPORT(isValidCell)(h),
+                             "isValidCell failed on deleted subsequence");
+                } else {
+                    t_assert(H3_EXPORT(isValidCell)(h),
+                             "should be a valid cell");
+                }
+            }
+        }
+    }
+
     TEST(h3ToString) {
         const size_t bufSz = 17;
         char buf[17] = {0};
