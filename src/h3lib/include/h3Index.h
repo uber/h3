@@ -92,50 +92,47 @@
 /**
  * Gets the highest bit of the H3 index.
  */
-#define H3_GET_HIGH_BIT(h3) \
-    ((int)((((h3) & H3_HIGH_BIT_MASK) >> H3_MAX_OFFSET)))
+#define H3_GET_HIGH_BIT(h3) ((int)((((h3)&H3_HIGH_BIT_MASK) >> H3_MAX_OFFSET)))
 
 /**
  * Sets the highest bit of the h3 to v.
  */
-#define H3_SET_HIGH_BIT(h3, v)                   \
-    (h3) = (((h3) & H3_HIGH_BIT_MASK_NEGATIVE) | \
+#define H3_SET_HIGH_BIT(h3, v)                 \
+    (h3) = (((h3)&H3_HIGH_BIT_MASK_NEGATIVE) | \
             (((uint64_t)(v)) << H3_MAX_OFFSET))
 
 /**
  * Gets the integer mode of h3.
  */
-#define H3_GET_MODE(h3) ((int)((((h3) & H3_MODE_MASK) >> H3_MODE_OFFSET)))
+#define H3_GET_MODE(h3) ((int)((((h3)&H3_MODE_MASK) >> H3_MODE_OFFSET)))
 
 /**
  * Sets the integer mode of h3 to v.
  */
 #define H3_SET_MODE(h3, v) \
-    (h3) =                 \
-        (((h3) & H3_MODE_MASK_NEGATIVE) | (((uint64_t)(v)) << H3_MODE_OFFSET))
+    (h3) = (((h3)&H3_MODE_MASK_NEGATIVE) | (((uint64_t)(v)) << H3_MODE_OFFSET))
 
 /**
  * Gets the integer base cell of h3.
  */
-#define H3_GET_BASE_CELL(h3) ((int)((((h3) & H3_BC_MASK) >> H3_BC_OFFSET)))
+#define H3_GET_BASE_CELL(h3) ((int)((((h3)&H3_BC_MASK) >> H3_BC_OFFSET)))
 
 /**
  * Sets the integer base cell of h3 to bc.
  */
 #define H3_SET_BASE_CELL(h3, bc) \
-    (h3) = (((h3) & H3_BC_MASK_NEGATIVE) | (((uint64_t)(bc)) << H3_BC_OFFSET))
+    (h3) = (((h3)&H3_BC_MASK_NEGATIVE) | (((uint64_t)(bc)) << H3_BC_OFFSET))
 
 /**
  * Gets the integer resolution of h3.
  */
-#define H3_GET_RESOLUTION(h3) ((int)((((h3) & H3_RES_MASK) >> H3_RES_OFFSET)))
+#define H3_GET_RESOLUTION(h3) ((int)((((h3)&H3_RES_MASK) >> H3_RES_OFFSET)))
 
 /**
  * Sets the integer resolution of h3.
  */
 #define H3_SET_RESOLUTION(h3, res) \
-    (h3) =                         \
-        (((h3) & H3_RES_MASK_NEGATIVE) | (((uint64_t)(res)) << H3_RES_OFFSET))
+    (h3) = (((h3)&H3_RES_MASK_NEGATIVE) | (((uint64_t)(res)) << H3_RES_OFFSET))
 
 /**
  * Gets the resolution res integer digit (0-7) of h3.
@@ -148,15 +145,15 @@
  * Sets a value in the reserved space. Setting to non-zero may produce invalid
  * indexes.
  */
-#define H3_SET_RESERVED_BITS(h3, v)              \
-    (h3) = (((h3) & H3_RESERVED_MASK_NEGATIVE) | \
+#define H3_SET_RESERVED_BITS(h3, v)            \
+    (h3) = (((h3)&H3_RESERVED_MASK_NEGATIVE) | \
             (((uint64_t)(v)) << H3_RESERVED_OFFSET))
 
 /**
  * Gets a value in the reserved space. Should always be zero for valid indexes.
  */
 #define H3_GET_RESERVED_BITS(h3) \
-    ((int)((((h3) & H3_RESERVED_MASK) >> H3_RESERVED_OFFSET)))
+    ((int)((((h3)&H3_RESERVED_MASK) >> H3_RESERVED_OFFSET)))
 
 /**
  * Sets the resolution res digit of h3 to the integer digit (0-7)
