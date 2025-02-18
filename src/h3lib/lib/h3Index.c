@@ -280,6 +280,10 @@ int _isValidCell_const(const H3Index h) {
     // Pentagon cells start with a sequence of 0's (CENTER_DIGIT's).
     // The first nonzero digit can't be a 1 (i.e., "deleted subsequence",
     // PENTAGON_SKIPPED_DIGIT, or K_AXES_DIGIT).
+
+    // TODO: the fast fallback is to do 0b001, we don't need to skip 19 bits.
+    // can we just shift 3 each time, 15 times
+    // intrinsics are probably (?) faster.
     if (isBaseCellPentagonArr[bc]) {
         H3Index g = h;
         g <<= 19;
@@ -287,12 +291,13 @@ int _isValidCell_const(const H3Index h) {
 
         if (g == 0) return true;  // all zeros (res 15 pentagon)
 
-        // TODO
+        int pos = 63;
+        while ((g & (1ULL << pos)) == 0) pos--;
 
         // g now holds the index of (its previous) first nonzero bit.
         // The first nonzero digit is a 1 (and thus invalid) if the
         // first nonzero bit's position is divisible by 3.
-        if (g % 3 == 0) return false;
+        if (pos % 3 == 0) return false;
     }
 
     // If no flaws were identified above, then the index is a valid H3 cell.
@@ -305,8 +310,8 @@ int _isValidCell_const(const H3Index h) {
  * @return 1 if the H3 index if valid, and 0 if it is not.
  */
 int H3_EXPORT(isValidCell)(H3Index h) {
-    return _isValidCell_old(h);
-    // return _isValidCell_const(h);
+    // return _isValidCell_old(h);
+    return _isValidCell_const(h);
 }
 
 /**
