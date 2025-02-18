@@ -7,7 +7,7 @@ all:
 	just fast
 
 build:
-	cd build; cmake ..; make
+	cd build; cmake -DCMAKE_BUILD_TYPE=Release ..; make
 
 purge:
 	rm -rf build

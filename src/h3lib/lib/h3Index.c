@@ -126,7 +126,7 @@ static const bool isBaseCellPentagonArr[128] = {
     [4] = 1,  [14] = 1, [24] = 1, [38] = 1, [49] = 1,  [58] = 1,
     [63] = 1, [72] = 1, [83] = 1, [97] = 1, [107] = 1, [117] = 1};
 
-int _isValidCell_old(const H3Index h) {
+static inline int _isValidCell_old(const H3Index h) {
     if (H3_GET_HIGH_BIT(h) != 0) return 0;
 
     if (H3_GET_MODE(h) != H3_CELL_MODE) return 0;
@@ -167,7 +167,7 @@ int _isValidCell_old(const H3Index h) {
     return 1;
 }
 
-int _isValidCell_const(const H3Index h) {
+static inline int _isValidCell_const(const H3Index h) {
     /* Implementation strategy:
 
     Walk from high to low bits, checking validity of
@@ -251,7 +251,8 @@ int _isValidCell_const(const H3Index h) {
 
     */
     {
-        // does setting static make this faster?
+        // ITHINK: get the high and low bits of each of the 15 lower 3 bit
+        // bunches
         const uint64_t MHI = 0b100100100100100100100100100100100100100100100;
         const uint64_t MLO = MHI >> 2;
 
@@ -308,8 +309,8 @@ int _isValidCell_const(const H3Index h) {
             //     _BitScanReverse64(&index, x);
             //     return static_cast<int>(index);
             // #else
-            int pos = 63;
-            H3Index m = 1ULL;
+            int pos = 63 - 19;
+            H3Index m = 1;
             while ((g & (m << pos)) == 0) pos--;
             // #endif
 
@@ -320,6 +321,14 @@ int _isValidCell_const(const H3Index h) {
 
     // If no disqualifications were identified, the index is a valid H3 cell.
     return true;
+}
+
+static inline int _first_nonzero_index(H3Index h) {
+    int pos = 63 - 19;
+    H3Index m = 1;
+    while ((h & (m << pos)) == 0) pos--;
+
+    return pos;
 }
 
 /**
