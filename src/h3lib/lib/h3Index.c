@@ -119,12 +119,14 @@ H3Error H3_EXPORT(h3ToString)(H3Index h, char *str, size_t sz) {
     return E_SUCCESS;
 }
 
-/**
- * Returns whether or not an H3 index is a valid cell (hexagon or pentagon).
- * @param h The H3 index to validate.
- * @return 1 if the H3 index if valid, and 0 if it is not.
- */
-int H3_EXPORT(isValidCell)(H3Index h) {
+// Get Top t bits from h
+#define TOP_BITS(h, t) ((h) >> (64 - (t)))
+
+static const bool isBaseCellPentagonArr[128] = {
+    [4] = 1,  [14] = 1, [24] = 1, [38] = 1, [49] = 1,  [58] = 1,
+    [63] = 1, [72] = 1, [83] = 1, [97] = 1, [107] = 1, [117] = 1};
+
+int _isValidCell_old(const H3Index h) {
     if (H3_GET_HIGH_BIT(h) != 0) return 0;
 
     if (H3_GET_MODE(h) != H3_CELL_MODE) return 0;
@@ -163,6 +165,162 @@ int H3_EXPORT(isValidCell)(H3Index h) {
     }
 
     return 1;
+}
+
+int _isValidCell_const(const H3Index h) {
+    // Implementation strategy:
+    //
+    // Walk from high to low bits, checking validity of
+    // groups of bits as we go. After each check, shift bits off
+    // to the left, so that the next relevant group is at the
+    // highest bit location in the H3 Index, which we can
+    // easily read off with the `TOP_BITS` macro. This strategy helps
+    // us avoid re-computing shifts and masks for each group.
+    //
+    // |   Region   | # bits |
+    // |------------|--------|
+    // | High       |      1 |
+    // | Mode       |      4 |
+    // | Reserved   |      3 |
+    // | Resolution |      4 |
+    // | Base Cell  |      7 |
+    // | Digit 1    |      3 |
+    // | Digit 2    |      3 |
+    // | ...        |    ... |
+    // | Digit 15   |      3 |
+    //
+    // Additionally, we try to group operations and avoid loops when possible.
+
+    // The 1 high bit should be 0b0
+    // The 4 mode bits should be 0b0001 (H3_CELL_MODE)
+    // The 3 reserved bits should be 0b000
+    // In total, the top 8 bits should be 0b00001000
+    if (TOP_BITS(h, 8) != 0b00001000) return false;
+
+    // No need to check resolution; any 4 bits give a valid resolution.
+    const int res = H3_GET_RESOLUTION(h);
+
+    // Check that base cell number is valid.
+    const int bc = H3_GET_BASE_CELL(h);
+    if (bc >= NUM_BASE_CELLS) return false;
+
+    // Check that no digit from 1 to `res` is 7 (INVALID_DIGIT).
+    /*
+
+    MHI = 0b100100100100100100100100100100100100100100100;
+    MLO = MHI >> 2;
+
+
+    |  d  | d & MHI |  ~d | ~d - MLO | d & MHI & (~d - MLO) |  result |
+    |-----|---------|-----|----------|----------------------|---------|
+    | 000 |     000 |     |          |                  000 | OK      |
+    | 001 |     000 |     |          |                  000 | OK      |
+    | 010 |     000 |     |          |                  000 | OK      |
+    | 011 |     000 |     |          |                  000 | OK      |
+    | 100 |     100 | 011 | 010      |                  000 | OK      |
+    | 101 |     100 | 010 | 001      |                  000 | OK      |
+    | 110 |     100 | 001 | 000      |                  000 | OK      |
+    | 111 |     100 | 000 | 111*     |                  100 | invalid |
+
+      *: carry happened
+
+
+    Note: only care about identifying the *lowest* 7.
+
+    Examples with multiple digits:
+
+    |    d    | d & MHI |    ~d   | ~d - MLO | d & MHI & (~d - MLO) |  result |
+    |---------|---------|---------|----------|----------------------|---------|
+    | 111.111 | 100.100 | 000.000 | 110.111* |              100.100 | invalid |
+    | 110.111 | 100.100 | 001.000 | 111.111* |              100.100 | invalid |
+    | 110.110 | 100.100 | 001.001 | 000.000  |              000.000 | OK      |
+
+      *: carry happened
+
+    In the second example with 110.111, we "misidentify" the 110 as a 7, due
+    to a carry from the lower bits. But this is OK because we correctly
+    identify the lowest (only, in this example) 7 just before it.
+
+    We only have to worry about carries affecting higher bits in the case of
+    a 7; all other digits (0--6) don't cause a carry when computing ~d - MLO.
+    So even though a 7 can affect the results of higher bits, this is OK
+    because we will always correctly identify the lowest 7.
+
+    For further notes, see the discussion here:
+    https://github.com/uber/h3/pull/496#discussion_r795851046
+
+    */
+    {
+        // does setting static make this faster?
+        const uint64_t MHI = 0b100100100100100100100100100100100100100100100;
+        const uint64_t MLO = MHI >> 2;
+
+        H3Index g = h;
+
+        int shift = 3 * (15 - res);
+        g >>= shift;
+        g <<= shift;
+
+        if (g & MHI & (~g - MLO)) return false;
+    }
+
+    // Check that all unused digits after `res` are set to 7 (INVALID_DIGIT).
+    // Bit shift to avoid looping through digits.
+    if (res < 15) {
+        H3Index g = ~h;
+
+        int shift = 19 + 3 * res;
+        g <<= shift;
+        g >>= shift;
+
+        if (g) return false;
+    }
+
+    // One final validation just for pentagons:
+    // Pentagon cells start with a sequence of 0's (CENTER_DIGIT's).
+    // The first nonzero digit can't be a 1 (i.e., "deleted subsequence",
+    // PENTAGON_SKIPPED_DIGIT, or K_AXES_DIGIT).
+    if (isBaseCellPentagonArr[bc]) {
+        H3Index g = h;
+        g <<= 19;
+        g >>= 19;  // at this point, g < 2^45 - 1
+
+        if (g == 0) return true;  // all zeros (res 15 pentagon)
+
+        // Converting g to a double essentially puts log2(g) into the
+        // exponent bits of f (with an offset).
+        // This works up to about 2^53, which is good enough for our purposes.
+        // (It's 2^53 because doubles have 52 bits in the mantissa.)
+        double f = g;
+
+        // reinterpret the double bits as uint64_t
+        g = *(uint64_t *)&f;
+
+        // Take the sign bit and the 11 exponent bits.
+        // The sign bit is guaranteed to be 0 in our case.
+        g = TOP_BITS(g, 12);
+
+        // Subtract the exponent bias.
+        g -= 1023;
+
+        // g now holds the index of (its previous) first nonzero bit.
+        // The first nonzero digit is a 1 (and thus invalid) if the
+        // first nonzero bit's position is divisible by 3.
+        if (g % 3 == 0) return false;
+    }
+
+    // If no flaws were identified above, then the index is a valid H3 cell.
+    return true;
+}
+
+/**
+ * Returns whether or not an H3 index is a valid cell (hexagon or pentagon).
+ * @param h The H3 index to validate.
+ * @return 1 if the H3 index if valid, and 0 if it is not.
+ */
+int H3_EXPORT(isValidCell)(H3Index h) {
+    // return _isValidCell_old(h);
+    return _isValidCell_const(h);
 }
 
 /**
