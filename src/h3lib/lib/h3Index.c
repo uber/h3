@@ -300,12 +300,20 @@ int _isValidCell_const(const H3Index h) {
 
             if (g == 0) return true;  // all zeros (res 15 pentagon)
 
+            // #if defined(__GNUC__) || defined(__clang__)
+            //     pos = __builtin_clzll(g);
+            // #elif defined(_MSC_VER)
+            //     if (x == 0) return -1;
+            //     unsigned long index;
+            //     _BitScanReverse64(&index, x);
+            //     return static_cast<int>(index);
+            // #else
             int pos = 63;
-            while ((g & (1ULL << pos)) == 0) pos--;
+            H3Index m = 1ULL;
+            while ((g & (m << pos)) == 0) pos--;
+            // #endif
 
-            // g now holds the index of (its previous) first nonzero bit.
-            // The first nonzero digit is a 1 (and thus invalid) if the
-            // first nonzero bit's position is divisible by 3.
+            // pos now holds the index of the first 1 in g
             if (pos % 3 == 0) return false;
         }
     }
