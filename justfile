@@ -1,5 +1,8 @@
 default: purge
 	mkdir build
+	just build
+
+build:
 	cd build; cmake ..; make
 
 purge:
@@ -10,3 +13,7 @@ test:
 
 fast:
 	cd build; make test-fast
+
+setup:
+	brew install llvm@14
+	# echo 'export PATH="/usr/local/opt/llvm@14/bin:$PATH"' >> ~/.zshrc  # didn't work

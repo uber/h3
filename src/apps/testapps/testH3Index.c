@@ -154,10 +154,9 @@ SUITE(h3Index) {
                 H3_SET_INDEX_DIGIT(h, res, d);
                 if (d == 1) {
                     t_assert(!H3_EXPORT(isValidCell)(h),
-                             "isValidCell failed on deleted subsequence");
+                             "fail on deleted subsequence");
                 } else {
-                    t_assert(H3_EXPORT(isValidCell)(h),
-                             "should be a valid cell");
+                    t_assert(H3_EXPORT(isValidCell)(h), "should be valid");
                 }
             }
         }
