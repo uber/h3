@@ -2,6 +2,10 @@ default: purge
 	mkdir build
 	just build
 
+all:
+	just default
+	just fast
+
 build:
 	cd build; cmake ..; make
 
