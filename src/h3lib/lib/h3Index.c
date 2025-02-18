@@ -319,8 +319,8 @@ int _isValidCell_const(const H3Index h) {
  * @return 1 if the H3 index if valid, and 0 if it is not.
  */
 int H3_EXPORT(isValidCell)(H3Index h) {
-    return _isValidCell_old(h);
-    // return _isValidCell_const(h);
+    // return _isValidCell_old(h);
+    return _isValidCell_const(h);
 }
 
 /**
