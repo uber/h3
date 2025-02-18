@@ -318,7 +318,7 @@ int _isValidCell_const(const H3Index h) {
         }
     }
 
-    // If no flaws were identified above, then the index is a valid H3 cell.
+    // If no disqualifications were identified, the index is a valid H3 cell.
     return true;
 }
 
