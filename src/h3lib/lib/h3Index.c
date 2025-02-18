@@ -168,33 +168,34 @@ int _isValidCell_old(const H3Index h) {
 }
 
 int _isValidCell_const(const H3Index h) {
-    // Implementation strategy:
-    //
-    // Walk from high to low bits, checking validity of
-    // groups of bits as we go. After each check, shift bits off
-    // to the left, so that the next relevant group is at the
-    // highest bit location in the H3 Index, which we can
-    // easily read off with the `TOP_BITS` macro. This strategy helps
-    // us avoid re-computing shifts and masks for each group.
-    //
-    // |   Region   | # bits |
-    // |------------|--------|
-    // | High       |      1 |
-    // | Mode       |      4 |
-    // | Reserved   |      3 |
-    // | Resolution |      4 |
-    // | Base Cell  |      7 |
-    // | Digit 1    |      3 |
-    // | Digit 2    |      3 |
-    // | ...        |    ... |
-    // | Digit 15   |      3 |
-    //
-    // Additionally, we try to group operations and avoid loops when possible.
+    /* Implementation strategy:
 
-    // The 1 high bit should be 0b0
-    // The 4 mode bits should be 0b0001 (H3_CELL_MODE)
-    // The 3 reserved bits should be 0b000
-    // In total, the top 8 bits should be 0b00001000
+    Walk from high to low bits, checking validity of
+    groups of bits as we go. After each check, shift bits off
+    to the left, so that the next relevant group is at the
+    highest bit location in the H3 Index, which we can
+    easily read off with the `TOP_BITS` macro. This strategy helps
+    us avoid re-computing shifts and masks for each group.
+
+    |   Region   | # bits |
+    |------------|--------|
+    | High       |      1 |
+    | Mode       |      4 |
+    | Reserved   |      3 |
+    | Resolution |      4 |
+    | Base Cell  |      7 |
+    | Digit 1    |      3 |
+    | Digit 2    |      3 |
+    | ...        |    ... |
+    | Digit 15   |      3 |
+
+    Additionally, we try to group operations and avoid loops when possible.
+
+    The 1 high bit should be `0`
+    The 4 mode bits should be `0001` (H3_CELL_MODE)
+    The 3 reserved bits should be `000`
+    In total, the top 8 bits should be `0_0001_000`
+    */
     if (TOP_BITS(h, 8) != 0b00001000) return false;
 
     // No need to check resolution; any 4 bits give a valid resolution.
@@ -204,8 +205,7 @@ int _isValidCell_const(const H3Index h) {
     const int bc = H3_GET_BASE_CELL(h);
     if (bc >= NUM_BASE_CELLS) return false;
 
-    // Check that no digit from 1 to `res` is 7 (INVALID_DIGIT).
-    /*
+    /* Check that no digit from 1 to `res` is 7 (INVALID_DIGIT).
 
     MHI = 0b100100100100100100100100100100100100100100100;
     MLO = MHI >> 2;
@@ -264,40 +264,50 @@ int _isValidCell_const(const H3Index h) {
         if (g & MHI & (~g - MLO)) return false;
     }
 
-    // Check that all unused digits after `res` are set to 7 (INVALID_DIGIT).
-    // Bit shift to avoid looping through digits.
-    if (res < 15) {
-        H3Index g = ~h;
+    /* Check that all unused digits after `res` are set to 7 (INVALID_DIGIT).
 
-        int shift = 19 + 3 * res;
-        g <<= shift;
-        g >>= shift;
+    Bit shift to avoid looping through digits.
+    TODO: for consitency use slash-star comments, and wrap this in a block?
+    TOOD: this helps annotate that this block might be an inlined function...
+    */
+    {
+        if (res < 15) {
+            H3Index g = ~h;
 
-        if (g) return false;
+            int shift = 19 + 3 * res;
+            g <<= shift;
+            g >>= shift;
+
+            if (g) return false;
+        }
     }
 
-    // One final validation just for pentagons:
-    // Pentagon cells start with a sequence of 0's (CENTER_DIGIT's).
-    // The first nonzero digit can't be a 1 (i.e., "deleted subsequence",
-    // PENTAGON_SKIPPED_DIGIT, or K_AXES_DIGIT).
+    /* One final validation just for pentagons:
 
-    // TODO: the fast fallback is to do 0b001, we don't need to skip 19 bits.
-    // can we just shift 3 each time, 15 times
-    // intrinsics are probably (?) faster.
-    if (isBaseCellPentagonArr[bc]) {
-        H3Index g = h;
-        g <<= 19;
-        g >>= 19;  // at this point, g < 2^45 - 1
+    Pentagon cells start with a sequence of 0's (CENTER_DIGIT's).
+    The first nonzero digit can't be a 1 (i.e., "deleted subsequence",
+    PENTAGON_SKIPPED_DIGIT, or K_AXES_DIGIT).
 
-        if (g == 0) return true;  // all zeros (res 15 pentagon)
+    TODO: the fast fallback is to do 0b001, we don't need to skip 19 bits.
+    can we just shift 3 each time, 15 times
+    intrinsics are probably (?) faster.
+    */
+    {
+        if (isBaseCellPentagonArr[bc]) {
+            H3Index g = h;
+            g <<= 19;
+            g >>= 19;  // at this point, g < 2^45 - 1
 
-        int pos = 63;
-        while ((g & (1ULL << pos)) == 0) pos--;
+            if (g == 0) return true;  // all zeros (res 15 pentagon)
 
-        // g now holds the index of (its previous) first nonzero bit.
-        // The first nonzero digit is a 1 (and thus invalid) if the
-        // first nonzero bit's position is divisible by 3.
-        if (pos % 3 == 0) return false;
+            int pos = 63;
+            while ((g & (1ULL << pos)) == 0) pos--;
+
+            // g now holds the index of (its previous) first nonzero bit.
+            // The first nonzero digit is a 1 (and thus invalid) if the
+            // first nonzero bit's position is divisible by 3.
+            if (pos % 3 == 0) return false;
+        }
     }
 
     // If no flaws were identified above, then the index is a valid H3 cell.
