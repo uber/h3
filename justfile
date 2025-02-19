@@ -5,6 +5,7 @@ default: purge
 all:
 	just default
 	just fast
+	just bench
 
 build:
 	cd build; cmake -DCMAKE_BUILD_TYPE=Release ..; make
@@ -17,6 +18,9 @@ test:
 
 fast:
 	cd build; make test-fast
+
+bench:
+	./build/bin/benchmarkIsValidCell
 
 setup:
 	brew install llvm@14

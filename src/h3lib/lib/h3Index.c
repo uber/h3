@@ -167,6 +167,14 @@ static inline int _isValidCell_old(const H3Index h) {
     return 1;
 }
 
+static inline int _first_nonzero_index(H3Index h) {
+    int pos = 63 - 19;
+    H3Index m = 1;
+    while ((h & (m << pos)) == 0) pos--;
+
+    return pos;
+}
+
 static inline int _isValidCell_const(const H3Index h) {
     /* Implementation strategy:
 
@@ -309,9 +317,7 @@ static inline int _isValidCell_const(const H3Index h) {
             //     _BitScanReverse64(&index, x);
             //     return static_cast<int>(index);
             // #else
-            int pos = 63 - 19;
-            H3Index m = 1;
-            while ((g & (m << pos)) == 0) pos--;
+            int pos = _first_nonzero_index(g);
             // #endif
 
             // pos now holds the index of the first 1 in g
@@ -321,14 +327,6 @@ static inline int _isValidCell_const(const H3Index h) {
 
     // If no disqualifications were identified, the index is a valid H3 cell.
     return true;
-}
-
-static inline int _first_nonzero_index(H3Index h) {
-    int pos = 63 - 19;
-    H3Index m = 1;
-    while ((h & (m << pos)) == 0) pos--;
-
-    return pos;
 }
 
 /**
