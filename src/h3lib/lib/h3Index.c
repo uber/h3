@@ -167,12 +167,16 @@ static inline int _isValidCell_old(const H3Index h) {
     return 1;
 }
 
-static inline int _first_nonzero_index(H3Index h) {
+static inline int _first_nonzero_index_all(H3Index h) {
     int pos = 63 - 19;
     H3Index m = 1;
     while ((h & (m << pos)) == 0) pos--;
 
     return pos;
+}
+
+static inline int _first_nonzero_index_mac(H3Index h) {
+    return 63 - __builtin_clzll(h);
 }
 
 static inline int _isValidCell_const(const H3Index h) {
@@ -307,18 +311,10 @@ static inline int _isValidCell_const(const H3Index h) {
             g <<= 19;
             g >>= 19;  // at this point, g < 2^45 - 1
 
-            if (g == 0) return true;  // all zeros (res 15 pentagon)
+            if (g == 0) return true;  // all zeros: res 15 pentagon
 
-            // #if defined(__GNUC__) || defined(__clang__)
-            //     pos = __builtin_clzll(g);
-            // #elif defined(_MSC_VER)
-            //     if (x == 0) return -1;
-            //     unsigned long index;
-            //     _BitScanReverse64(&index, x);
-            //     return static_cast<int>(index);
-            // #else
-            int pos = _first_nonzero_index(g);
-            // #endif
+            // int pos = _first_nonzero_index_all(g);
+            int pos = _first_nonzero_index_mac(g);
 
             // pos now holds the index of the first 1 in g
             if (pos % 3 == 0) return false;
