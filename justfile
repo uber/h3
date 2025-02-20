@@ -23,5 +23,11 @@ bench:
 	./build/bin/benchmarkIsValidCell
 
 setup:
-	brew install llvm@14
 	# echo 'export PATH="/usr/local/opt/llvm@14/bin:$PATH"' >> ~/.zshrc  # didn't work
+	brew install llvm@14
+
+convert name="old":
+	python tocsv.py {{name}}
+
+loop name N:
+	for i in $(seq 1 {{N}}); do echo "Iteration $i"; ./build/bin/benchmarkIsValidCell >> {{name}}.log; done

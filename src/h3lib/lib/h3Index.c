@@ -171,12 +171,27 @@ static inline int _first_nonzero_index_all(H3Index h) {
     int pos = 63 - 19;
     H3Index m = 1;
     while ((h & (m << pos)) == 0) pos--;
-
     return pos;
 }
 
 static inline int _first_nonzero_index_mac(H3Index h) {
     return 63 - __builtin_clzll(h);
+}
+
+static inline int _first_nonzero_index_final(H3Index h) {
+#if defined(__GNUC__) || defined(__clang__)
+    return 63 - __builtin_clzll(h);
+#elif defined(_MSC_VER)
+    unsigned long index;
+    _BitScanReverse64(&index, h);
+    return (int)index;
+#else
+    // Portable fallback
+    int pos = 63 - 19;
+    H3Index m = 1;
+    while ((h & (m << pos)) == 0) pos--;
+    return pos;
+#endif
 }
 
 static inline int _isValidCell_const(const H3Index h) {
@@ -309,12 +324,13 @@ static inline int _isValidCell_const(const H3Index h) {
         if (isBaseCellPentagonArr[bc]) {
             H3Index g = h;
             g <<= 19;
-            g >>= 19;  // at this point, g < 2^45 - 1
+            g >>= 19;
 
             if (g == 0) return true;  // all zeros: res 15 pentagon
 
             // int pos = _first_nonzero_index_all(g);
-            int pos = _first_nonzero_index_mac(g);
+            // int pos = _first_nonzero_index_mac(g);
+            int pos = _first_nonzero_index_final(g);
 
             // pos now holds the index of the first 1 in g
             if (pos % 3 == 0) return false;
@@ -331,8 +347,8 @@ static inline int _isValidCell_const(const H3Index h) {
  * @return 1 if the H3 index if valid, and 0 if it is not.
  */
 int H3_EXPORT(isValidCell)(H3Index h) {
-    // return _isValidCell_old(h);
-    return _isValidCell_const(h);
+    return _isValidCell_old(h);
+    // return _isValidCell_const(h);
 }
 
 /**
