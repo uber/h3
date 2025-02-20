@@ -18,7 +18,7 @@ pattern = re.compile(r"-- pentagonChildren_(\S+): (\d+\.\d+) microseconds")
 try:
     with open(input_file, "r") as infile, open(output_file, "w", newline="") as outfile:
         csv_writer = csv.writer(outfile)
-        csv_writer.writerow(["Function Name", "Time (microseconds)"])  # CSV Header
+        csv_writer.writerow(['name', 'microseconds'])  # CSV Header
 
         for line in infile:
             match = pattern.search(line)
