@@ -126,46 +126,46 @@ static const bool isBaseCellPentagonArr[128] = {
     [4] = 1,  [14] = 1, [24] = 1, [38] = 1, [49] = 1,  [58] = 1,
     [63] = 1, [72] = 1, [83] = 1, [97] = 1, [107] = 1, [117] = 1};
 
-static inline int _isValidCell_old(const H3Index h) {
-    if (H3_GET_HIGH_BIT(h) != 0) return 0;
+// static inline int _isValidCell_old(const H3Index h) {
+//     if (H3_GET_HIGH_BIT(h) != 0) return 0;
 
-    if (H3_GET_MODE(h) != H3_CELL_MODE) return 0;
+//     if (H3_GET_MODE(h) != H3_CELL_MODE) return 0;
 
-    if (H3_GET_RESERVED_BITS(h) != 0) return 0;
+//     if (H3_GET_RESERVED_BITS(h) != 0) return 0;
 
-    int baseCell = H3_GET_BASE_CELL(h);
-    if (NEVER(baseCell < 0) || baseCell >= NUM_BASE_CELLS) {
-        // Base cells less than zero can not be represented in an index
-        return 0;
-    }
+//     int baseCell = H3_GET_BASE_CELL(h);
+//     if (NEVER(baseCell < 0) || baseCell >= NUM_BASE_CELLS) {
+//         // Base cells less than zero can not be represented in an index
+//         return 0;
+//     }
 
-    int res = H3_GET_RESOLUTION(h);
-    if (NEVER(res < 0 || res > MAX_H3_RES)) {
-        // Resolutions less than zero can not be represented in an index
-        return 0;
-    }
+//     int res = H3_GET_RESOLUTION(h);
+//     if (NEVER(res < 0 || res > MAX_H3_RES)) {
+//         // Resolutions less than zero can not be represented in an index
+//         return 0;
+//     }
 
-    bool foundFirstNonZeroDigit = false;
-    for (int r = 1; r <= res; r++) {
-        Direction digit = H3_GET_INDEX_DIGIT(h, r);
+//     bool foundFirstNonZeroDigit = false;
+//     for (int r = 1; r <= res; r++) {
+//         Direction digit = H3_GET_INDEX_DIGIT(h, r);
 
-        if (!foundFirstNonZeroDigit && digit != CENTER_DIGIT) {
-            foundFirstNonZeroDigit = true;
-            if (_isBaseCellPentagon(baseCell) && digit == K_AXES_DIGIT) {
-                return 0;
-            }
-        }
+//         if (!foundFirstNonZeroDigit && digit != CENTER_DIGIT) {
+//             foundFirstNonZeroDigit = true;
+//             if (_isBaseCellPentagon(baseCell) && digit == K_AXES_DIGIT) {
+//                 return 0;
+//             }
+//         }
 
-        if (NEVER(digit < CENTER_DIGIT) || digit >= NUM_DIGITS) return 0;
-    }
+//         if (NEVER(digit < CENTER_DIGIT) || digit >= NUM_DIGITS) return 0;
+//     }
 
-    for (int r = res + 1; r <= MAX_H3_RES; r++) {
-        Direction digit = H3_GET_INDEX_DIGIT(h, r);
-        if (digit != INVALID_DIGIT) return 0;
-    }
+//     for (int r = res + 1; r <= MAX_H3_RES; r++) {
+//         Direction digit = H3_GET_INDEX_DIGIT(h, r);
+//         if (digit != INVALID_DIGIT) return 0;
+//     }
 
-    return 1;
-}
+//     return 1;
+// }
 
 // static inline int _first_nonzero_index_all(H3Index h) {
 //     int pos = 63 - 19;
