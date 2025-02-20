@@ -181,7 +181,7 @@ static const bool isBaseCellPentagonArr[128] = {
 static inline int _first_nonzero_index_final(H3Index h) {
 #if defined(__GNUC__) || defined(__clang__)
     return 63 - __builtin_clzll(h);
-#elif defined(_MSC_VER)
+#elif defined(_MSC_VER) && defined(_M_X64)  // doesn't work on win32
     unsigned long index;
     _BitScanReverse64(&index, h);
     return (int)index;
