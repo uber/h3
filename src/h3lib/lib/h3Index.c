@@ -328,9 +328,9 @@ static inline int _isValidCell_const(const H3Index h) {
 
             if (g == 0) return true;  // all zeros: res 15 pentagon
 
-            // int pos = _first_nonzero_index_all(g);
+            int pos = _first_nonzero_index_all(g);
             // int pos = _first_nonzero_index_mac(g);
-            int pos = _first_nonzero_index_final(g);
+            // int pos = _first_nonzero_index_final(g);
 
             // pos now holds the index of the first 1 in g
             if (pos % 3 == 0) return false;
@@ -347,8 +347,8 @@ static inline int _isValidCell_const(const H3Index h) {
  * @return 1 if the H3 index if valid, and 0 if it is not.
  */
 int H3_EXPORT(isValidCell)(H3Index h) {
-    return _isValidCell_old(h);
-    // return _isValidCell_const(h);
+    // return _isValidCell_old(h);
+    return _isValidCell_const(h);
 }
 
 /**
