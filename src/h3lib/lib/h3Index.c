@@ -167,16 +167,16 @@ static inline int _isValidCell_old(const H3Index h) {
     return 1;
 }
 
-static inline int _first_nonzero_index_all(H3Index h) {
-    int pos = 63 - 19;
-    H3Index m = 1;
-    while ((h & (m << pos)) == 0) pos--;
-    return pos;
-}
+// static inline int _first_nonzero_index_all(H3Index h) {
+//     int pos = 63 - 19;
+//     H3Index m = 1;
+//     while ((h & (m << pos)) == 0) pos--;
+//     return pos;
+// }
 
-static inline int _first_nonzero_index_mac(H3Index h) {
-    return 63 - __builtin_clzll(h);
-}
+// static inline int _first_nonzero_index_mac(H3Index h) {
+//     return 63 - __builtin_clzll(h);
+// }
 
 static inline int _first_nonzero_index_final(H3Index h) {
 #if defined(__GNUC__) || defined(__clang__)
@@ -328,9 +328,9 @@ static inline int _isValidCell_const(const H3Index h) {
 
             if (g == 0) return true;  // all zeros: res 15 pentagon
 
-            int pos = _first_nonzero_index_all(g);
+            // int pos = _first_nonzero_index_all(g);
             // int pos = _first_nonzero_index_mac(g);
-            // int pos = _first_nonzero_index_final(g);
+            int pos = _first_nonzero_index_final(g);
 
             // pos now holds the index of the first 1 in g
             if (pos % 3 == 0) return false;
