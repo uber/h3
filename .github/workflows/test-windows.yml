@@ -15,6 +15,7 @@ jobs:
       CXX: cl.exe
 
     strategy:
+      fail-fast: false
       matrix:
         config: [Release, Debug]
         arch: [Win32, x64]
