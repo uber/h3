@@ -194,9 +194,9 @@ Bit shift to avoid looping through digits.
 static inline bool _hasAll7AfterRes(H3Index h, int res) {
     // NOTE: res check is needed because we can't shift by 64
     if (res < 15) {
-        h = ~h;
-
         int shift = 19 + 3 * res;
+
+        h = ~h;
         h <<= shift;
         h >>= shift;
 
