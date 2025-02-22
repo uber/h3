@@ -119,124 +119,19 @@ H3Error H3_EXPORT(h3ToString)(H3Index h, char *str, size_t sz) {
     return E_SUCCESS;
 }
 
-// Get Top t bits from h
-#define TOP_BITS(h, t) ((h) >> (64 - (t)))
 
-// static inline int _isValidCell_old(const H3Index h) {
-//     if (H3_GET_HIGH_BIT(h) != 0) return 0;
+/*
+The top 8 bits of any cell should be a specific constant:
 
-//     if (H3_GET_MODE(h) != H3_CELL_MODE) return 0;
+- The 1 high bit should be `0`
+- The 4 mode bits should be `0001` (H3_CELL_MODE)
+- The 3 reserved bits should be `000`
 
-//     if (H3_GET_RESERVED_BITS(h) != 0) return 0;
-
-//     int baseCell = H3_GET_BASE_CELL(h);
-//     if (NEVER(baseCell < 0) || baseCell >= NUM_BASE_CELLS) {
-//         // Base cells less than zero can not be represented in an index
-//         return 0;
-//     }
-
-//     int res = H3_GET_RESOLUTION(h);
-//     if (NEVER(res < 0 || res > MAX_H3_RES)) {
-//         // Resolutions less than zero can not be represented in an index
-//         return 0;
-//     }
-
-//     bool foundFirstNonZeroDigit = false;
-//     for (int r = 1; r <= res; r++) {
-//         Direction digit = H3_GET_INDEX_DIGIT(h, r);
-
-//         if (!foundFirstNonZeroDigit && digit != CENTER_DIGIT) {
-//             foundFirstNonZeroDigit = true;
-//             if (_isBaseCellPentagon(baseCell) && digit == K_AXES_DIGIT) {
-//                 return 0;
-//             }
-//         }
-
-//         if (NEVER(digit < CENTER_DIGIT) || digit >= NUM_DIGITS) return 0;
-//     }
-
-//     for (int r = res + 1; r <= MAX_H3_RES; r++) {
-//         Direction digit = H3_GET_INDEX_DIGIT(h, r);
-//         if (digit != INVALID_DIGIT) return 0;
-//     }
-
-//     return 1;
-// }
-
-// static inline int _first_nonzero_index_all(H3Index h) {
-//     int pos = 63 - 19;
-//     H3Index m = 1;
-//     while ((h & (m << pos)) == 0) pos--;
-//     return pos;
-// }
-
-// static inline int _first_nonzero_index_mac(H3Index h) {
-//     return 63 - __builtin_clzll(h);
-// }
-
-static inline int _first_nonzero_index_final(H3Index h) {
-#if defined(__GNUC__) || defined(__clang__)
-    return 63 - __builtin_clzll(h);
-#elif defined(_MSC_VER) && defined(_M_X64)  // doesn't work on win32
-    unsigned long index;
-    _BitScanReverse64(&index, h);
-    return (int)index;
-#else
-    // Portable fallback
-    int pos = 63 - 19;
-    H3Index m = 1;
-    while ((h & (m << pos)) == 0) pos--;
-    return pos;
-#endif
-}
-
-/* One final validation just for pentagons:
-
-Pentagon cells start with a sequence of 0's (CENTER_DIGIT's).
-The first nonzero digit can't be a 1 (i.e., "deleted subsequence",
-PENTAGON_SKIPPED_DIGIT, or K_AXES_DIGIT).
-
-TODO: the fast fallback is to do 0b001, we don't need to skip 19 bits.
-can we just shift 3 each time, 15 times
-intrinsics are probably (?) faster.
+In total, the top 8 bits should be `0_0001_000`
 */
-static inline bool _has_deleted_subsequence(H3Index h, int base_cell) {
-    static const bool isBaseCellPentagonArr[128] = {
-        [4] = 1,  [14] = 1, [24] = 1, [38] = 1, [49] = 1,  [58] = 1,
-        [63] = 1, [72] = 1, [83] = 1, [97] = 1, [107] = 1, [117] = 1};
-
-    if (isBaseCellPentagonArr[base_cell]) {
-        h <<= 19;
-        h >>= 19;
-
-        if (h == 0) return false;  // all zeros: res 15 pentagon
-
-        // int pos = _first_nonzero_index_all(g);
-        // int pos = _first_nonzero_index_mac(g);
-        int pos = _first_nonzero_index_final(h);
-
-        // pos now holds the index of the first 1 in g
-        if (pos % 3 == 0) return true;
-    }
-    return false;
-}
-
-/* Check that all unused digits after `res` are set to 7 (INVALID_DIGIT).
-
-Bit shift to avoid looping through digits.
-*/
-static inline bool _has_all_7_after_res(H3Index h, int res) {
-    // NOTE: res check is needed because we can't shift by 64
-    if (res < 15) {
-        h = ~h;
-
-        int shift = 19 + 3 * res;
-        h <<= shift;
-        h >>= shift;
-
-        if (h) return false;
-    }
-    return true;
+static inline bool _has_right_top_bits(H3Index h) {
+    h >>= (64 - 8);
+    return h == 0b00001000;
 }
 
 /* Check that no digit from 1 to `res` is 7 (INVALID_DIGIT).
@@ -282,7 +177,7 @@ because we will always correctly identify the lowest 7.
 For further notes, see the discussion here:
 https://github.com/uber/h3/pull/496#discussion_r795851046
 */
-static inline bool _has_any_7_before_res(H3Index h, int res) {
+static inline bool _has_any_7_upto_res(H3Index h, int res) {
     const uint64_t MHI = 0b100100100100100100100100100100100100100100100;
     const uint64_t MLO = MHI >> 2;
 
@@ -293,15 +188,87 @@ static inline bool _has_any_7_before_res(H3Index h, int res) {
     return (h & MHI & (~h - MLO));
 }
 
-static inline bool _isValidCell_const(const H3Index h) {
-    /* Implementation strategy:
+/* Check that all unused digits after `res` are set to 7 (INVALID_DIGIT).
 
-    Walk from high to low bits, checking validity of
-    groups of bits as we go. After each check, shift bits off
-    to the left, so that the next relevant group is at the
-    highest bit location in the H3 Index, which we can
-    easily read off with the `TOP_BITS` macro. This strategy helps
-    us avoid re-computing shifts and masks for each group.
+Bit shift to avoid looping through digits.
+*/
+static inline bool _has_all_7_after_res(H3Index h, int res) {
+    // NOTE: res check is needed because we can't shift by 64
+    if (res < 15) {
+        h = ~h;
+
+        int shift = 19 + 3 * res;
+        h <<= shift;
+        h >>= shift;
+
+        if (h) return false;
+    }
+    return true;
+}
+
+/*
+Get index of first nonzero bit of an H3Index.
+
+When available, use compiler intrinsics, which should be fast.
+If not available, fall back to a loop.
+*/
+static inline int _first_nonzero_index_final(H3Index h) {
+#if defined(__GNUC__) || defined(__clang__)
+    return 63 - __builtin_clzll(h);
+#elif defined(_MSC_VER) && defined(_M_X64)  // doesn't work on win32
+    unsigned long index;
+    _BitScanReverse64(&index, h);
+    return (int)index;
+#else
+    // Portable fallback
+    int pos = 63 - 19;
+    H3Index m = 1;
+    while ((h & (m << pos)) == 0) pos--;
+    return pos;
+#endif
+}
+
+/*
+One final validation just for cells whose base cell (res 0)
+is a pentagon.
+
+Pentagon cells start with a sequence of 0's (CENTER_DIGIT's).
+The first nonzero digit can't be a 1 (i.e., "deleted subsequence",
+PENTAGON_SKIPPED_DIGIT, or K_AXES_DIGIT).
+
+We can check that (in the lower 45 = 15*3 bits) the position of the
+first 1 bit isn't divisible by 3.
+*/
+static inline bool _has_deleted_subsequence(H3Index h, int base_cell) {
+    static const bool isBaseCellPentagonArr[128] = {
+        [4] = 1,  [14] = 1, [24] = 1, [38] = 1, [49] = 1,  [58] = 1,
+        [63] = 1, [72] = 1, [83] = 1, [97] = 1, [107] = 1, [117] = 1};
+
+    if (isBaseCellPentagonArr[base_cell]) {
+        h <<= 19;
+        h >>= 19;
+
+        if (h == 0) return false;  // all zeros: res 15 pentagon
+
+        int pos = _first_nonzero_index_final(h);
+
+        // pos now holds the index of the first 1 in g
+        if (pos % 3 == 0) return true;
+    }
+    return false;
+}
+
+/**
+ * Returns whether or not an H3 index is a valid cell (hexagon or pentagon).
+ * @param h The H3 index to validate.
+ * @return 1 if the H3 index if valid, and 0 if it is not.
+ */
+int H3_EXPORT(isValidCell)(H3Index h) {
+    /*
+    Look for bit patterns that would disqualify an H3Index from
+    being valid. If identified, exit early.
+
+    For reference the H3 index bit layout:
 
     |   Region   | # bits |
     |------------|--------|
@@ -315,38 +282,23 @@ static inline bool _isValidCell_const(const H3Index h) {
     | ...        |    ... |
     | Digit 15   |      3 |
 
-    Additionally, we try to group operations and avoid loops when possible.
-
-    The 1 high bit should be `0`
-    The 4 mode bits should be `0001` (H3_CELL_MODE)
-    The 3 reserved bits should be `000`
-    In total, the top 8 bits should be `0_0001_000`
+    Speed benefits come from avoiding loops whenever possible.
     */
-    if (TOP_BITS(h, 8) != 0b00001000) return false;
+    if (!_has_right_top_bits(h)) return false;
 
     // No need to check resolution; any 4 bits give a valid resolution.
     const int res = H3_GET_RESOLUTION(h);
 
-    // Get base cell number and check valid.
+    // Get base cell number and check that it is valid.
     const int bc = H3_GET_BASE_CELL(h);
     if (bc >= NUM_BASE_CELLS) return false;
 
-    if (_has_any_7_before_res(h, res)) return false;
+    if (_has_any_7_upto_res(h, res)) return false;
     if (!_has_all_7_after_res(h, res)) return false;
     if (_has_deleted_subsequence(h, bc)) return false;
 
     // If no disqualifications were identified, the index is a valid H3 cell.
     return true;
-}
-
-/**
- * Returns whether or not an H3 index is a valid cell (hexagon or pentagon).
- * @param h The H3 index to validate.
- * @return 1 if the H3 index if valid, and 0 if it is not.
- */
-int H3_EXPORT(isValidCell)(H3Index h) {
-    // return _isValidCell_old(h);
-    return _isValidCell_const(h);
 }
 
 /**
