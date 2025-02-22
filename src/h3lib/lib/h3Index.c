@@ -278,7 +278,8 @@ int H3_EXPORT(isValidCell)(H3Index h) {
     | ...        |    ... |
     | Digit 15   |      3 |
 
-    Speed benefits come from avoiding loops whenever possible.
+    Speed benefits come from using bit manipulation instead of loops,
+    whenever possible.
     */
     if (!_hasGoodTopBits(h)) return false;
 
