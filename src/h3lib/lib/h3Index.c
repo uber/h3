@@ -248,11 +248,7 @@ static inline bool _hasDeletedSubsequence(H3Index h, int base_cell) {
         h >>= 19;
 
         if (h == 0) return false;  // all zeros: res 15 pentagon
-
-        int pos = _firstOneIndex(h);
-
-        // pos now holds the index of the first 1 in h
-        if (pos % 3 == 0) return true;
+        if (_firstOneIndex(h) % 3 == 0) return true;
     }
     return false;
 }
