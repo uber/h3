@@ -282,8 +282,6 @@ For further notes, see the discussion here:
 https://github.com/uber/h3/pull/496#discussion_r795851046
 */
 static inline bool _has_invalid_digits(H3Index h, int res) {
-    // ITHINK: get the high and low bits of each of the 15 lower 3 bit
-    // bunches
     const uint64_t MHI = 0b100100100100100100100100100100100100100100100;
     const uint64_t MLO = MHI >> 2;
 
