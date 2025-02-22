@@ -238,7 +238,63 @@ static inline bool _all_7s_after_res(H3Index h, int res) {
     return true;
 }
 
-static inline int _isValidCell_const(const H3Index h) {
+/* Check that no digit from 1 to `res` is 7 (INVALID_DIGIT).
+
+MHI = 0b100100100100100100100100100100100100100100100;
+MLO = MHI >> 2;
+
+|  d  | d & MHI |  ~d | ~d - MLO | d & MHI & (~d - MLO) |  result |
+|-----|---------|-----|----------|----------------------|---------|
+| 000 |     000 |     |          |                  000 | OK      |
+| 001 |     000 |     |          |                  000 | OK      |
+| 010 |     000 |     |          |                  000 | OK      |
+| 011 |     000 |     |          |                  000 | OK      |
+| 100 |     100 | 011 | 010      |                  000 | OK      |
+| 101 |     100 | 010 | 001      |                  000 | OK      |
+| 110 |     100 | 001 | 000      |                  000 | OK      |
+| 111 |     100 | 000 | 111*     |                  100 | invalid |
+
+  *: carry happened
+
+
+Note: only care about identifying the *lowest* 7.
+
+Examples with multiple digits:
+
+|    d    | d & MHI |    ~d   | ~d - MLO | d & MHI & (~d - MLO) |  result |
+|---------|---------|---------|----------|----------------------|---------|
+| 111.111 | 100.100 | 000.000 | 110.111* |              100.100 | invalid |
+| 110.111 | 100.100 | 001.000 | 111.111* |              100.100 | invalid |
+| 110.110 | 100.100 | 001.001 | 000.000  |              000.000 | OK      |
+
+  *: carry happened
+
+In the second example with 110.111, we "misidentify" the 110 as a 7, due
+to a carry from the lower bits. But this is OK because we correctly
+identify the lowest (only, in this example) 7 just before it.
+
+We only have to worry about carries affecting higher bits in the case of
+a 7; all other digits (0--6) don't cause a carry when computing ~d - MLO.
+So even though a 7 can affect the results of higher bits, this is OK
+because we will always correctly identify the lowest 7.
+
+For further notes, see the discussion here:
+https://github.com/uber/h3/pull/496#discussion_r795851046
+*/
+static inline bool _has_invalid_digits(H3Index h, int res) {
+    // ITHINK: get the high and low bits of each of the 15 lower 3 bit
+    // bunches
+    const uint64_t MHI = 0b100100100100100100100100100100100100100100100;
+    const uint64_t MLO = MHI >> 2;
+
+    int shift = 3 * (15 - res);
+    h >>= shift;
+    h <<= shift;
+
+    return (h & MHI & (~h - MLO));
+}
+
+static inline bool _isValidCell_const(const H3Index h) {
     /* Implementation strategy:
 
     Walk from high to low bits, checking validity of
@@ -276,66 +332,7 @@ static inline int _isValidCell_const(const H3Index h) {
     const int bc = H3_GET_BASE_CELL(h);
     if (bc >= NUM_BASE_CELLS) return false;
 
-    /* Check that no digit from 1 to `res` is 7 (INVALID_DIGIT).
-
-    MHI = 0b100100100100100100100100100100100100100100100;
-    MLO = MHI >> 2;
-
-
-    |  d  | d & MHI |  ~d | ~d - MLO | d & MHI & (~d - MLO) |  result |
-    |-----|---------|-----|----------|----------------------|---------|
-    | 000 |     000 |     |          |                  000 | OK      |
-    | 001 |     000 |     |          |                  000 | OK      |
-    | 010 |     000 |     |          |                  000 | OK      |
-    | 011 |     000 |     |          |                  000 | OK      |
-    | 100 |     100 | 011 | 010      |                  000 | OK      |
-    | 101 |     100 | 010 | 001      |                  000 | OK      |
-    | 110 |     100 | 001 | 000      |                  000 | OK      |
-    | 111 |     100 | 000 | 111*     |                  100 | invalid |
-
-      *: carry happened
-
-
-    Note: only care about identifying the *lowest* 7.
-
-    Examples with multiple digits:
-
-    |    d    | d & MHI |    ~d   | ~d - MLO | d & MHI & (~d - MLO) |  result |
-    |---------|---------|---------|----------|----------------------|---------|
-    | 111.111 | 100.100 | 000.000 | 110.111* |              100.100 | invalid |
-    | 110.111 | 100.100 | 001.000 | 111.111* |              100.100 | invalid |
-    | 110.110 | 100.100 | 001.001 | 000.000  |              000.000 | OK      |
-
-      *: carry happened
-
-    In the second example with 110.111, we "misidentify" the 110 as a 7, due
-    to a carry from the lower bits. But this is OK because we correctly
-    identify the lowest (only, in this example) 7 just before it.
-
-    We only have to worry about carries affecting higher bits in the case of
-    a 7; all other digits (0--6) don't cause a carry when computing ~d - MLO.
-    So even though a 7 can affect the results of higher bits, this is OK
-    because we will always correctly identify the lowest 7.
-
-    For further notes, see the discussion here:
-    https://github.com/uber/h3/pull/496#discussion_r795851046
-
-    */
-    {
-        // ITHINK: get the high and low bits of each of the 15 lower 3 bit
-        // bunches
-        const uint64_t MHI = 0b100100100100100100100100100100100100100100100;
-        const uint64_t MLO = MHI >> 2;
-
-        H3Index g = h;
-
-        int shift = 3 * (15 - res);
-        g >>= shift;
-        g <<= shift;
-
-        if (g & MHI & (~g - MLO)) return false;
-    }
-
+    if (_has_invalid_digits(h, res)) return false;
     if (!_all_7s_after_res(h, res)) return false;
     if (_has_deleted_subsequence(h, bc)) return false;
 
