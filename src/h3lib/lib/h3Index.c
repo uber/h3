@@ -128,7 +128,7 @@ The top 8 bits of any cell should be a specific constant:
 
 In total, the top 8 bits should be `0_0001_000`
 */
-static inline bool _has_right_top_bits(H3Index h) {
+static inline bool _hasGoodTopBits(H3Index h) {
     h >>= (64 - 8);
     return h == 0b00001000;
 }
@@ -176,7 +176,7 @@ because we will always correctly identify the lowest 7.
 For further notes, see the discussion here:
 https://github.com/uber/h3/pull/496#discussion_r795851046
 */
-static inline bool _has_any_7_upto_res(H3Index h, int res) {
+static inline bool _hasAny7UptoRes(H3Index h, int res) {
     const uint64_t MHI = 0b100100100100100100100100100100100100100100100;
     const uint64_t MLO = MHI >> 2;
 
@@ -191,7 +191,7 @@ static inline bool _has_any_7_upto_res(H3Index h, int res) {
 
 Bit shift to avoid looping through digits.
 */
-static inline bool _has_all_7_after_res(H3Index h, int res) {
+static inline bool _hasAll7AfterRes(H3Index h, int res) {
     // NOTE: res check is needed because we can't shift by 64
     if (res < 15) {
         h = ~h;
@@ -211,7 +211,7 @@ Get index of first nonzero bit of an H3Index.
 When available, use compiler intrinsics, which should be fast.
 If not available, fall back to a loop.
 */
-static inline int _first_nonzero_index_final(H3Index h) {
+static inline int _firstOneIndex(H3Index h) {
 #if defined(__GNUC__) || defined(__clang__)
     return 63 - __builtin_clzll(h);
 #elif defined(_MSC_VER) && defined(_M_X64)  // doesn't work on win32
@@ -238,7 +238,7 @@ PENTAGON_SKIPPED_DIGIT, or K_AXES_DIGIT).
 We can check that (in the lower 45 = 15*3 bits) the position of the
 first 1 bit isn't divisible by 3.
 */
-static inline bool _has_deleted_subsequence(H3Index h, int base_cell) {
+static inline bool _hasDeletedSubsequence(H3Index h, int base_cell) {
     static const bool isBaseCellPentagonArr[128] = {
         [4] = 1,  [14] = 1, [24] = 1, [38] = 1, [49] = 1,  [58] = 1,
         [63] = 1, [72] = 1, [83] = 1, [97] = 1, [107] = 1, [117] = 1};
@@ -249,7 +249,7 @@ static inline bool _has_deleted_subsequence(H3Index h, int base_cell) {
 
         if (h == 0) return false;  // all zeros: res 15 pentagon
 
-        int pos = _first_nonzero_index_final(h);
+        int pos = _firstOneIndex(h);
 
         // pos now holds the index of the first 1 in h
         if (pos % 3 == 0) return true;
@@ -283,7 +283,7 @@ int H3_EXPORT(isValidCell)(H3Index h) {
 
     Speed benefits come from avoiding loops whenever possible.
     */
-    if (!_has_right_top_bits(h)) return false;
+    if (!_hasGoodTopBits(h)) return false;
 
     // No need to check resolution; any 4 bits give a valid resolution.
     const int res = H3_GET_RESOLUTION(h);
@@ -292,9 +292,9 @@ int H3_EXPORT(isValidCell)(H3Index h) {
     const int bc = H3_GET_BASE_CELL(h);
     if (bc >= NUM_BASE_CELLS) return false;
 
-    if (_has_any_7_upto_res(h, res)) return false;
-    if (!_has_all_7_after_res(h, res)) return false;
-    if (_has_deleted_subsequence(h, bc)) return false;
+    if (_hasAny7UptoRes(h, res)) return false;
+    if (!_hasAll7AfterRes(h, res)) return false;
+    if (_hasDeletedSubsequence(h, bc)) return false;
 
     // If no disqualifications were identified, the index is a valid H3 cell.
     return true;
