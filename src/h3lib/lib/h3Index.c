@@ -225,7 +225,7 @@ static inline bool _has_deleted_subsequence(H3Index h, int base_cell) {
 
 Bit shift to avoid looping through digits.
 */
-static inline bool _all_7s_after_res(H3Index h, int res) {
+static inline bool _has_all_7_after_res(H3Index h, int res) {
     // NOTE: res check is needed because we can't shift by 64
     if (res < 15) {
         h = ~h;
@@ -282,7 +282,7 @@ because we will always correctly identify the lowest 7.
 For further notes, see the discussion here:
 https://github.com/uber/h3/pull/496#discussion_r795851046
 */
-static inline bool _has_invalid_digits(H3Index h, int res) {
+static inline bool _has_any_7_before_res(H3Index h, int res) {
     const uint64_t MHI = 0b100100100100100100100100100100100100100100100;
     const uint64_t MLO = MHI >> 2;
 
@@ -331,8 +331,8 @@ static inline bool _isValidCell_const(const H3Index h) {
     const int bc = H3_GET_BASE_CELL(h);
     if (bc >= NUM_BASE_CELLS) return false;
 
-    if (_has_invalid_digits(h, res)) return false;
-    if (!_all_7s_after_res(h, res)) return false;
+    if (_has_any_7_before_res(h, res)) return false;
+    if (!_has_all_7_after_res(h, res)) return false;
     if (_has_deleted_subsequence(h, bc)) return false;
 
     // If no disqualifications were identified, the index is a valid H3 cell.
