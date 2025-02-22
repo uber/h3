@@ -200,7 +200,7 @@ static inline bool _hasAll7AfterRes(H3Index h, int res) {
         h <<= shift;
         h >>= shift;
 
-        return !h;
+        return h == 0;
     }
     return true;
 }
