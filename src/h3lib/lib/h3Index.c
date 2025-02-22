@@ -251,7 +251,7 @@ static inline bool _has_deleted_subsequence(H3Index h, int base_cell) {
 
         int pos = _first_nonzero_index_final(h);
 
-        // pos now holds the index of the first 1 in g
+        // pos now holds the index of the first 1 in h
         if (pos % 3 == 0) return true;
     }
     return false;
