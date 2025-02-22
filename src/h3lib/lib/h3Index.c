@@ -122,10 +122,6 @@ H3Error H3_EXPORT(h3ToString)(H3Index h, char *str, size_t sz) {
 // Get Top t bits from h
 #define TOP_BITS(h, t) ((h) >> (64 - (t)))
 
-static const bool isBaseCellPentagonArr[128] = {
-    [4] = 1,  [14] = 1, [24] = 1, [38] = 1, [49] = 1,  [58] = 1,
-    [63] = 1, [72] = 1, [83] = 1, [97] = 1, [107] = 1, [117] = 1};
-
 // static inline int _isValidCell_old(const H3Index h) {
 //     if (H3_GET_HIGH_BIT(h) != 0) return 0;
 
@@ -192,6 +188,54 @@ static inline int _first_nonzero_index_final(H3Index h) {
     while ((h & (m << pos)) == 0) pos--;
     return pos;
 #endif
+}
+
+/* One final validation just for pentagons:
+
+Pentagon cells start with a sequence of 0's (CENTER_DIGIT's).
+The first nonzero digit can't be a 1 (i.e., "deleted subsequence",
+PENTAGON_SKIPPED_DIGIT, or K_AXES_DIGIT).
+
+TODO: the fast fallback is to do 0b001, we don't need to skip 19 bits.
+can we just shift 3 each time, 15 times
+intrinsics are probably (?) faster.
+*/
+static inline bool _has_deleted_subsequence(H3Index h, int base_cell) {
+    static const bool isBaseCellPentagonArr[128] = {
+        [4] = 1,  [14] = 1, [24] = 1, [38] = 1, [49] = 1,  [58] = 1,
+        [63] = 1, [72] = 1, [83] = 1, [97] = 1, [107] = 1, [117] = 1};
+
+    if (isBaseCellPentagonArr[base_cell]) {
+        h <<= 19;
+        h >>= 19;
+
+        if (h == 0) return false;  // all zeros: res 15 pentagon
+
+        // int pos = _first_nonzero_index_all(g);
+        // int pos = _first_nonzero_index_mac(g);
+        int pos = _first_nonzero_index_final(h);
+
+        // pos now holds the index of the first 1 in g
+        if (pos % 3 == 0) return true;
+    }
+    return false;
+}
+
+/* Check that all unused digits after `res` are set to 7 (INVALID_DIGIT).
+
+Bit shift to avoid looping through digits.
+*/
+static inline bool _all_7s_after_res(H3Index h, int res) {
+    if (res < 15) {  // can i do it without the check?
+        h = ~h;
+
+        int shift = 19 + 3 * res;
+        h <<= shift;
+        h >>= shift;
+
+        if (h) return false;
+    }
+    return true;
 }
 
 static inline int _isValidCell_const(const H3Index h) {
@@ -292,50 +336,8 @@ static inline int _isValidCell_const(const H3Index h) {
         if (g & MHI & (~g - MLO)) return false;
     }
 
-    /* Check that all unused digits after `res` are set to 7 (INVALID_DIGIT).
-
-    Bit shift to avoid looping through digits.
-    TODO: for consitency use slash-star comments, and wrap this in a block?
-    TOOD: this helps annotate that this block might be an inlined function...
-    */
-    {
-        if (res < 15) {
-            H3Index g = ~h;
-
-            int shift = 19 + 3 * res;
-            g <<= shift;
-            g >>= shift;
-
-            if (g) return false;
-        }
-    }
-
-    /* One final validation just for pentagons:
-
-    Pentagon cells start with a sequence of 0's (CENTER_DIGIT's).
-    The first nonzero digit can't be a 1 (i.e., "deleted subsequence",
-    PENTAGON_SKIPPED_DIGIT, or K_AXES_DIGIT).
-
-    TODO: the fast fallback is to do 0b001, we don't need to skip 19 bits.
-    can we just shift 3 each time, 15 times
-    intrinsics are probably (?) faster.
-    */
-    {
-        if (isBaseCellPentagonArr[bc]) {
-            H3Index g = h;
-            g <<= 19;
-            g >>= 19;
-
-            if (g == 0) return true;  // all zeros: res 15 pentagon
-
-            // int pos = _first_nonzero_index_all(g);
-            // int pos = _first_nonzero_index_mac(g);
-            int pos = _first_nonzero_index_final(g);
-
-            // pos now holds the index of the first 1 in g
-            if (pos % 3 == 0) return false;
-        }
-    }
+    if (!_all_7s_after_res(h, res)) return false;
+    if (_has_deleted_subsequence(h, bc)) return false;
 
     // If no disqualifications were identified, the index is a valid H3 cell.
     return true;
