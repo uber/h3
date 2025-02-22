@@ -200,7 +200,7 @@ static inline bool _hasAll7AfterRes(H3Index h, int res) {
         h <<= shift;
         h >>= shift;
 
-        if (h) return false;
+        return !h;
     }
     return true;
 }
@@ -248,7 +248,7 @@ static inline bool _hasDeletedSubsequence(H3Index h, int base_cell) {
         h >>= 19;
 
         if (h == 0) return false;  // all zeros: res 15 pentagon
-        if (_firstOneIndex(h) % 3 == 0) return true;
+        return _firstOneIndex(h) % 3 == 0;
     }
     return false;
 }
