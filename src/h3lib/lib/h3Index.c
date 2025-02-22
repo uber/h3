@@ -183,8 +183,9 @@ static inline bool _hasAny7UptoRes(H3Index h, int res) {
     int shift = 3 * (15 - res);
     h >>= shift;
     h <<= shift;
+    h = (h & MHI & (~h - MLO));
 
-    return (h & MHI & (~h - MLO));
+    return h != 0;
 }
 
 /* Check that all unused digits after `res` are set to 7 (INVALID_DIGIT).
