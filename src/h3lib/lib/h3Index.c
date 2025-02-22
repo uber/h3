@@ -119,7 +119,6 @@ H3Error H3_EXPORT(h3ToString)(H3Index h, char *str, size_t sz) {
     return E_SUCCESS;
 }
 
-
 /*
 The top 8 bits of any cell should be a specific constant:
 
