@@ -226,7 +226,8 @@ static inline bool _has_deleted_subsequence(H3Index h, int base_cell) {
 Bit shift to avoid looping through digits.
 */
 static inline bool _all_7s_after_res(H3Index h, int res) {
-    if (res < 15) {  // can i do it without the check?
+    // NOTE: res check is needed because we can't shift by 64
+    if (res < 15) {
         h = ~h;
 
         int shift = 19 + 3 * res;
@@ -326,7 +327,7 @@ static inline bool _isValidCell_const(const H3Index h) {
     // No need to check resolution; any 4 bits give a valid resolution.
     const int res = H3_GET_RESOLUTION(h);
 
-    // Check that base cell number is valid.
+    // Get base cell number and check valid.
     const int bc = H3_GET_BASE_CELL(h);
     if (bc >= NUM_BASE_CELLS) return false;
 
