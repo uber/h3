@@ -8,7 +8,7 @@ on:
 
 jobs:
   afl-tests:
-    name: Fuzzer Compilation ${{ matrix.compiler }}
+    name: AFL Fuzzer ${{ matrix.compiler }}
     runs-on: ubuntu-latest
     env:
       CC: ${{ matrix.compiler }}
@@ -41,7 +41,7 @@ jobs:
           done
 
   libfuzzer-test:
-    name: LibFuzzer Compilation ${{ matrix.compiler }}
+    name: LibFuzzer ${{ matrix.compiler }}
     runs-on: ubuntu-latest
     env:
       CC: ${{ matrix.compiler }}

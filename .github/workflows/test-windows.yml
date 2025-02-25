@@ -8,7 +8,7 @@ on:
 
 jobs:
   tests:
-    name: Test Compile ${{ matrix.config }} ${{ matrix.arch }}
+    name: ${{ matrix.config }} ${{ matrix.arch }}
     runs-on: windows-latest
     env:
       CC: cl.exe
@@ -46,7 +46,7 @@ jobs:
         run: ctest -C ${{ matrix.config }}
 
   dllcompile:
-    name: Test DLL Compile ${{ matrix.config }} ${{ matrix.arch }}
+    name: DLL ${{ matrix.config }} ${{ matrix.arch }}
     runs-on: windows-latest
     env:
       CC: cl.exe
