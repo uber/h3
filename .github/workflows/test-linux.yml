@@ -12,23 +12,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v4
 
       - name: Configure build
         run: cmake -DAUDIT_SOURCE_FILE_LIST=ON .
 
   gcc-tests:
-    name: Test Compile gcc ${{ matrix.build_type }}
-    runs-on: ubuntu-latest
+    name: gcc ${{ matrix.build_type }} ${{ matrix.runs_on }}
+    runs-on: ${{ matrix.runs_on }}
     env:
       CC: gcc
 
     strategy:
       matrix:
         build_type: ["Debug", "Release"]
+        runs_on: ["ubuntu-latest", "ubuntu-22.04-arm"]
 
     steps:
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v4
 
       - name: Install Doxygen
         run: |
@@ -75,7 +76,7 @@ jobs:
           env CTEST_OUTPUT_ON_FAILURE=1 make test 
 
   clang-tests:
-    name: Test Compile clang ${{ matrix.build_type }} ${{ matrix.compile_opt }}
+    name: clang ${{ matrix.build_type }} ${{ matrix.compile_opt }}
     runs-on: ubuntu-latest
     env:
       CC: clang
@@ -88,7 +89,7 @@ jobs:
         build_type: ["Debug", "Release"]
 
     steps:
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v4
 
       - name: Install Doxygen
         run: |
@@ -135,11 +136,11 @@ jobs:
           env CTEST_OUTPUT_ON_FAILURE=1 make test 
 
   valgrind-tests:
-    name: Test Valgrind
+    name: Valgrind
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v4
 
       - name: Install Valgrind
         run: |
@@ -166,7 +167,7 @@ jobs:
       CC: gcc
 
     steps:
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v4
 
       - name: Install lcov
         run: |

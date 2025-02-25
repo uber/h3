@@ -8,7 +8,7 @@ on:
 
 jobs:
   afl-tests:
-    name: Fuzzer Compilation ${{ matrix.compiler }}
+    name: AFL Fuzzer ${{ matrix.compiler }}
     runs-on: ubuntu-latest
     env:
       CC: ${{ matrix.compiler }}
@@ -18,7 +18,7 @@ jobs:
         compiler: [clang, gcc]
 
     steps:
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v4
 
       - name: Configure build
         run: |
@@ -41,7 +41,7 @@ jobs:
           done
 
   libfuzzer-test:
-    name: LibFuzzer Compilation ${{ matrix.compiler }}
+    name: LibFuzzer ${{ matrix.compiler }}
     runs-on: ubuntu-latest
     env:
       CC: ${{ matrix.compiler }}
@@ -51,7 +51,7 @@ jobs:
         compiler: [clang]
 
     steps:
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v4
 
       - name: Configure build
         run: |
