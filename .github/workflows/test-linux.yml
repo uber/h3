@@ -120,7 +120,7 @@ jobs:
       - name: Tests
         working-directory: build
         run: |
-          make test
+          make CTEST_OUTPUT_ON_FAILURE=1 test
           sudo make install
 
         # Note the packages aren't used to test the examples below
