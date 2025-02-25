@@ -20,7 +20,7 @@ jobs:
         arch: [Win32, x64]
 
     steps:
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v4
 
       - uses: tlylt/install-graphviz@v1.0.0
 
@@ -58,7 +58,7 @@ jobs:
         arch: [Win32, x64]
 
     steps:
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v4
 
       - uses: tlylt/install-graphviz@v1.0.0
 

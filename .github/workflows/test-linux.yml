@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v4
 
       - name: Configure build
         run: cmake -DAUDIT_SOURCE_FILE_LIST=ON .
@@ -29,7 +29,7 @@ jobs:
         runs_on: ["ubuntu-latest", "ubuntu-22.04-arm"]
 
     steps:
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v4
 
       - name: Install Doxygen
         run: |
@@ -89,7 +89,7 @@ jobs:
         build_type: ["Debug", "Release"]
 
     steps:
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v4
 
       - name: Install Doxygen
         run: |
@@ -140,7 +140,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v4
 
       - name: Install Valgrind
         run: |
@@ -167,7 +167,7 @@ jobs:
       CC: gcc
 
     steps:
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v4
 
       - name: Install lcov
         run: |
