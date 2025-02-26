@@ -245,6 +245,7 @@ static inline bool _hasDeletedSubsequence(H3Index h, int base_cell) {
         [63] = 1, [72] = 1, [83] = 1, [97] = 1, [107] = 1, [117] = 1};
 
     if (isBaseCellPentagonArr[base_cell]) {
+        // if (_isBaseCellPentagon(base_cell)) {
         h <<= 19;
         h >>= 19;
 
