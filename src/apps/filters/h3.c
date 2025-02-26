@@ -1478,6 +1478,7 @@ H3Error polygonStringToGeoPolygon(FILE *fp, char *polygonString,
             }
             if (curDepth > 4) {
                 // This is beyond the depth for a valid input, so we abort early
+                free(verts);
                 return E_FAILED;
             }
             strPos++;
