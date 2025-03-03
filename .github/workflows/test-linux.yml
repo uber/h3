@@ -78,11 +78,11 @@ jobs:
   clang-tests:
     name: clang ${{ matrix.build_type }} ${{ matrix.runs_on }} ${{ matrix.compile_opt }}
     runs-on: ${{ matrix.runs_on }}
-    fail-fast: false # todo
     env:
       CC: clang
 
     strategy:
+      fail-fast: false # todo
       matrix:
         # See Clang docs for more information on the sanitizers:
         # https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html
