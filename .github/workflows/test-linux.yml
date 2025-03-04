@@ -76,8 +76,8 @@ jobs:
           env CTEST_OUTPUT_ON_FAILURE=1 make test 
 
   clang-tests:
-    name: clang ${{ matrix.build_type }} ${{ matrix.compile_opt }}
-    runs-on: ubuntu-latest
+    name: clang ${{ matrix.build_type }} ${{ matrix.runs_on }} ${{ matrix.compile_opt }}
+    runs-on: ${{ matrix.runs_on }}
     env:
       CC: clang
 
@@ -87,6 +87,11 @@ jobs:
         # https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html
         compile_opt: ["", "-fsanitize=undefined,float-divide-by-zero -fno-sanitize-recover=undefined,float-divide-by-zero", "-fsanitize=memory -fno-sanitize-recover=memory", "-fsanitize=address -fno-sanitize-recover=address"]
         build_type: ["Debug", "Release"]
+        runs_on: ["ubuntu-latest", "ubuntu-22.04-arm"]
+        exclude:
+          # TODO: Include msan on arm
+          - runs_on: ubuntu-22.04-arm
+            compile_opt: "-fsanitize=memory -fno-sanitize-recover=memory"
 
     steps:
       - uses: actions/checkout@v4
@@ -119,7 +124,7 @@ jobs:
       - name: Tests
         working-directory: build
         run: |
-          make test
+          make CTEST_OUTPUT_ON_FAILURE=1 test
           sudo make install
 
         # Note the packages aren't used to test the examples below
