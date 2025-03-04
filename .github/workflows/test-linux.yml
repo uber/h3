@@ -82,13 +82,20 @@ jobs:
       CC: clang
 
     strategy:
-      fail-fast: false # todo
       matrix:
         # See Clang docs for more information on the sanitizers:
         # https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html
         compile_opt: ["", "-fsanitize=undefined,float-divide-by-zero -fno-sanitize-recover=undefined,float-divide-by-zero", "-fsanitize=memory -fno-sanitize-recover=memory", "-fsanitize=address -fno-sanitize-recover=address"]
         build_type: ["Debug", "Release"]
         runs_on: ["ubuntu-latest", "ubuntu-22.04-arm"]
+        exclude:
+          # TODO: Include msan on arm
+          - runs_on: ubuntu-22.04-arm
+            build_type: Debug
+            compile_opt: "-fsanitize=memory -fno-sanitize-recover=memory"
+          - runs_on: ubuntu-22.04-arm
+            build_type: Release
+            compile_opt: "-fsanitize=memory -fno-sanitize-recover=memory"
 
     steps:
       - uses: actions/checkout@v4
