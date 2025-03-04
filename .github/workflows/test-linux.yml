@@ -91,10 +91,6 @@ jobs:
         exclude:
           # TODO: Include msan on arm
           - runs_on: ubuntu-22.04-arm
-            build_type: Debug
-            compile_opt: "-fsanitize=memory -fno-sanitize-recover=memory"
-          - runs_on: ubuntu-22.04-arm
-            build_type: Release
             compile_opt: "-fsanitize=memory -fno-sanitize-recover=memory"
 
     steps:
