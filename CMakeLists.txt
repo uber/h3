@@ -101,14 +101,14 @@ set(H3_COMPILE_FLAGS "")
 set(H3_LINK_FLAGS "")
 option(ENABLE_WARNINGS "Enables compiler warnings" ON)
 if(ENABLE_WARNINGS)
-    if(WIN32)
+    if(MSVC)
         list(APPEND H3_COMPILE_FLAGS /W2)
     else()
         list(APPEND H3_COMPILE_FLAGS -Wall)
     endif()
 endif()
 
-if(NOT WIN32)
+if(NOT MSVC)
     # Compiler options are set only on non-Windows, since these options are not
     # correct for MSVC.
     list(
@@ -134,7 +134,7 @@ endif()
 
 option(WARNINGS_AS_ERRORS "Warnings are treated as errors" OFF)
 if(WARNINGS_AS_ERRORS)
-    if(WIN32)
+    if(MSVC)
         list(APPEND H3_COMPILE_FLAGS /WX)
     else()
         list(APPEND H3_COMPILE_FLAGS -Werror)
