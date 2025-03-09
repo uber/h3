@@ -29,33 +29,23 @@ type Bounds = {
 };
 
 const getVisibleBounds = (viewState: OurViewState) => {
-  try {
-    const viewport = new WebMercatorViewport(viewState);
-    const { width, height } = viewState;
+  const viewport = new WebMercatorViewport(viewState);
+  const { width, height } = viewState;
 
-    const topLeft = viewport.unproject([0, 0]);
-    const bottomRight = viewport.unproject([width, height]);
+  const topLeft = viewport.unproject([0, 0]);
+  const bottomRight = viewport.unproject([width, height]);
 
-    const minLat = bottomRight[1];
-    const minLon = topLeft[0];
-    const maxLat = topLeft[1];
-    const maxLon = bottomRight[0];
+  const minLat = bottomRight[1];
+  const minLon = topLeft[0];
+  const maxLat = topLeft[1];
+  const maxLon = bottomRight[0];
 
-    return {
-      minLat,
-      minLon,
-      maxLat,
-      maxLon,
-    } as Bounds;
-  } catch (e) {
-    console.error("Problem", e);
-    return {
-      minLat: -1,
-      minLon: -1,
-      maxLat: 1,
-      maxLon: 1,
-    } as Bounds;
-  }
+  return {
+    minLat,
+    minLon,
+    maxLat,
+    maxLon,
+  } as Bounds;
 };
 
 const splitPolygon = ({ minLat, minLon, maxLat, maxLon }: Bounds) =>
