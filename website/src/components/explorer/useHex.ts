@@ -5,6 +5,7 @@ import { MapViewState, PickingInfo, WebMercatorViewport } from "deck.gl";
 import { polygonToCells } from "h3-js";
 import { useCallback, useEffect, useState } from "react";
 import { throttle } from "./utils";
+import { PathStyleExtension } from "@deck.gl/extensions";
 
 export type OurViewState = {
     width: number;
@@ -125,6 +126,9 @@ export const ZOOM_TO_RESOLUTION: Record<number, number> = {
 export const RESOLUTION_TO_ZOOM: Record<number, number> = Object.entries(ZOOM_TO_RESOLUTION).reduce((acc, [k, v]) => ({ ...acc, [v]: +k }), {});
 
 const getHexagons = (bounds: Bounds, resolution: number) => {
+    if (resolution > 15){
+        return [];}
+
     const all_bounds = splitPolygon(bounds);
 
     const polygons = all_bounds.map(boundsToPolygon);
@@ -146,23 +150,29 @@ export interface UseHexProps {
 
 export const useHex = ({ resolutionFrozen, addSelectedHexes }: UseHexProps) => {
     const [hexagons, setHexagons] = useState<string[]>([]);
+    const [hexagons1, setHexagons1] = useState<string[]>([]);
+    const [hexagons2, setHexagons2] = useState<string[]>([]);
     const [resolution, setResolution] = useState<number>(0);
-    const [hexLayer, setHexLayer] = useState<H3HexagonLayer<string> | null>(
+    const [hexLayers, setHexLayers] = useState<H3HexagonLayer<string>[] | null>(
         null
     );
 
     useEffect(() => {
-        setHexLayer(
+        setHexLayers([
             new H3HexagonLayer<string>({
                 id: "H3HexagonLayer",
                 extruded: false,
                 getHexagon: (d: string) => d,
                 getFillColor: [0, 0, 0, 1],
-                getLineColor: [150, 150, 150, 100],
-                getLineWidth: 2,
+                getLineColor: [0, 0, 0],
+                  getLineWidth: 3,
+                  lineWidthMinPixels: 3,
+                  highPrecision: true,
                 lineWidthUnits: "pixels",
                 elevationScale: 20,
                 pickable: true,
+                stroked: true,
+                filled: true,
                 data: hexagons,
                 wrapLongitude: true,
                 onClick: (info: PickingInfo<string>) => {
@@ -170,9 +180,58 @@ export const useHex = ({ resolutionFrozen, addSelectedHexes }: UseHexProps) => {
                         addSelectedHexes([info.object]);
                     }
                 }
-            })
+            }),
+            ...(hexagons1.length ? [
+                new H3HexagonLayer<string>({
+                    id: "H3HexagonLayer1",
+                    extruded: false,
+                    getHexagon: (d: string) => d,
+                    getFillColor: [0, 0, 0, 1],
+                    getLineColor: [50, 50, 50, 100],
+                      getLineWidth: 2,
+                      lineWidthMinPixels: 2,
+                      highPrecision: true,
+                    lineWidthUnits: "pixels",
+                    elevationScale: 20,
+                    pickable: false,
+                    stroked: true,
+                    filled: true,
+                    data: hexagons1,
+                    wrapLongitude: true,
+                    // @ts-expect-error
+                    getDashArray: [5, 1],
+                    dashJustified: true,
+                    dashGapPickable: true,
+                    extensions: [new PathStyleExtension({ dash: true })],
+                })
+            ] : []),
+            ...(hexagons2.length ? [
+                new H3HexagonLayer<string>({
+                    id: "H3HexagonLayer2",
+                    extruded: false,
+                    getHexagon: (d: string) => d,
+                    getFillColor: [0, 0, 0, 1],
+                    getLineColor: [100, 100, 100, 100],
+                      getLineWidth: 1,
+                      lineWidthMinPixels: 1,
+                      highPrecision: true,
+                    lineWidthUnits: "pixels",
+                    elevationScale: 20,
+                    pickable: false,
+                    stroked: true,
+                    filled: true,
+                    data: hexagons2,
+                    wrapLongitude: true,
+                    // @ts-expect-error
+                    getDashArray: [5, 5],
+                    dashJustified: true,
+                    dashGapPickable: true,
+                    extensions: [new PathStyleExtension({ dash: true })],
+                })
+            ] : []),
+        ]
         );
-    }, [addSelectedHexes, hexagons])
+    }, [addSelectedHexes, hexagons, hexagons1, hexagons2])
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const handleResize = useCallback(
@@ -181,17 +240,18 @@ export const useHex = ({ resolutionFrozen, addSelectedHexes }: UseHexProps) => {
                 return
             }
             const zoom = viewState.zoom;
-            const resolution = ZOOM_TO_RESOLUTION[Math.round(zoom)];
+            const resolution = Math.max(0, ZOOM_TO_RESOLUTION[Math.round(zoom)] - 1);
             setResolution(resolution)
-            console.log("viewState", viewState, resolution)
             const bounds = getVisibleBounds(viewState);
-            console.log(bounds);
             const hexagons = getHexagons(bounds, resolution);
-            console.log(hexagons);
             setHexagons(hexagons);
+            const hexagons1 = getHexagons(bounds, resolution + 1);
+            setHexagons1(hexagons1);
+            const hexagons2 = getHexagons(bounds, resolution + 2);
+            setHexagons2(hexagons2);
         }, 200),
-        [setHexagons, setResolution, resolutionFrozen]
+        [setHexagons, setHexagons1, setHexagons2, setResolution, resolutionFrozen]
     );
 
-    return { handleResize, hexLayer, resolution };
+    return { handleResize, hexLayers, resolution };
 }
