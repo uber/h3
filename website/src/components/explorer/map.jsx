@@ -15,6 +15,7 @@ import { WebMercatorViewport, FlyToInterpolator } from "@deck.gl/core";
 import { getRes0Cells, uncompactCells, cellToBoundary } from "h3-js";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import { MOBILE_CUTOFF_WINDOW_WIDTH } from "../common";
+import { useHex } from "./useHex";
 
 const INITIAL_VIEW_STATE = {
   longitude: -74.012,
@@ -114,6 +115,19 @@ export function ExplorerMap({
     }
   }, [userInput, userValidHex, deckLoaded]);
 
+const addSelectedHexes = useCallback((hex) => {
+  objectOnClick({ hex });
+}, [objectOnClick]);
+
+  const {
+    handleResize: hexHandleResize,
+    hexLayer: backgroundHexLayer,
+    resolution,
+} = useHex({
+    resolutionFrozen: false,
+    addSelectedHexes,
+});
+
   const layers = userValidHex
     ? [
         new H3HexagonLayer({
@@ -134,52 +148,53 @@ export function ExplorerMap({
         }),
       ]
     : [
-        new H3HexagonLayer({
-          id: "res0",
-          data: res0Cells,
-          getHexagon: (d) => d.hex,
-          extruded: false,
-          filled: false,
-          stroked: true,
-          getLineColor: [0, 0, 0],
-          getLineWidth: 3,
-          lineWidthMinPixels: 3,
-          highPrecision: true,
-        }),
-        new H3HexagonLayer({
-          id: "res1",
-          data: res1Cells,
-          getHexagon: (d) => d.hex,
-          extruded: false,
-          filled: false,
-          stroked: true,
-          getLineColor: [0, 0, 0],
-          getLineWidth: 2,
-          lineWidthMinPixels: 2,
-          highPrecision: true,
-          lineWidthUnits: "pixels",
-          getDashArray: [5, 1],
-          dashJustified: true,
-          dashGapPickable: true,
-          extensions: [new PathStyleExtension({ dash: true })],
-        }),
-        new H3HexagonLayer({
-          id: "res2",
-          data: res2Cells,
-          getHexagon: (d) => d.hex,
-          extruded: false,
-          filled: false,
-          stroked: true,
-          getLineColor: [0, 0, 0],
-          getLineWidth: 1,
-          lineWidthMinPixels: 1,
-          highPrecision: true,
-          lineWidthUnits: "pixels",
-          getDashArray: [5, 5],
-          dashJustified: true,
-          dashGapPickable: true,
-          extensions: [new PathStyleExtension({ dash: true })],
-        }),
+      backgroundHexLayer
+        // new H3HexagonLayer({
+        //   id: "res0",
+        //   data: res0Cells,
+        //   getHexagon: (d) => d.hex,
+        //   extruded: false,
+        //   filled: false,
+        //   stroked: true,
+        //   getLineColor: [0, 0, 0],
+        //   getLineWidth: 3,
+        //   lineWidthMinPixels: 3,
+        //   highPrecision: true,
+        // }),
+        // new H3HexagonLayer({
+        //   id: "res1",
+        //   data: res1Cells,
+        //   getHexagon: (d) => d.hex,
+        //   extruded: false,
+        //   filled: false,
+        //   stroked: true,
+        //   getLineColor: [0, 0, 0],
+        //   getLineWidth: 2,
+        //   lineWidthMinPixels: 2,
+        //   highPrecision: true,
+        //   lineWidthUnits: "pixels",
+        //   getDashArray: [5, 1],
+        //   dashJustified: true,
+        //   dashGapPickable: true,
+        //   extensions: [new PathStyleExtension({ dash: true })],
+        // }),
+        // new H3HexagonLayer({
+        //   id: "res2",
+        //   data: res2Cells,
+        //   getHexagon: (d) => d.hex,
+        //   extruded: false,
+        //   filled: false,
+        //   stroked: true,
+        //   getLineColor: [0, 0, 0],
+        //   getLineWidth: 1,
+        //   lineWidthMinPixels: 1,
+        //   highPrecision: true,
+        //   lineWidthUnits: "pixels",
+        //   getDashArray: [5, 5],
+        //   dashJustified: true,
+        //   dashGapPickable: true,
+        //   extensions: [new PathStyleExtension({ dash: true })],
+        // }),
       ];
 
   const getTooltip = useCallback(({ object }) => {
@@ -219,6 +234,9 @@ export function ExplorerMap({
       ref={deckRef}
       layers={layers}
       initialViewState={currentInitialViewState}
+      onViewStateChange={({viewState}) => {
+        hexHandleResize(viewState);
+      }}
       getTooltip={getTooltip}
       getCursor={getCursor}
       onClick={onClick}
