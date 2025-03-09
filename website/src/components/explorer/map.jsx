@@ -116,18 +116,21 @@ export function ExplorerMap({
     }
   }, [userInput, userValidHex, deckLoaded]);
 
-const addSelectedHexes = useCallback((hex) => {
-  objectOnClick({ hex });
-}, [objectOnClick]);
+  const addSelectedHexes = useCallback(
+    (hex) => {
+      objectOnClick({ hex });
+    },
+    [objectOnClick],
+  );
 
   const {
     handleResize: hexHandleResize,
     hexLayers: backgroundHexLayers,
     resolution,
-} = useHex({
+  } = useHex({
     resolutionFrozen: false,
     addSelectedHexes,
-});
+  });
 
   const layers = userValidHex
     ? [
@@ -190,7 +193,7 @@ const addSelectedHexes = useCallback((hex) => {
       ref={deckRef}
       layers={layers}
       initialViewState={currentInitialViewState}
-      onViewStateChange={({viewState}) => {
+      onViewStateChange={({ viewState }) => {
         hexHandleResize(viewState);
       }}
       getTooltip={getTooltip}
