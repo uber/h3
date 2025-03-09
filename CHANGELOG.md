@@ -9,6 +9,7 @@ The public API of this library consists of the functions declared in file
 
 ### Changed
 - Moved `ContainmentMode` enum for `polygonToCellsExperimental` to `h3api.h`. (#958)
+- Faster `isValidCell` (#968)
 
 ## [4.2.0] - 2024-12-04
 ### Added
