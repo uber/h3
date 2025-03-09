@@ -240,12 +240,11 @@ We can check that (in the lower 45 = 15*3 bits) the position of the
 first 1 bit isn't divisible by 3.
 */
 static inline bool _hasDeletedSubsequence(H3Index h, int base_cell) {
-    // static const bool isBaseCellPentagonArr[128] = {
-    //     [4] = 1,  [14] = 1, [24] = 1, [38] = 1, [49] = 1,  [58] = 1,
-    //     [63] = 1, [72] = 1, [83] = 1, [97] = 1, [107] = 1, [117] = 1};
+    static const bool isBaseCellPentagonArr[128] = {
+        [4] = 1,  [14] = 1, [24] = 1, [38] = 1, [49] = 1,  [58] = 1,
+        [63] = 1, [72] = 1, [83] = 1, [97] = 1, [107] = 1, [117] = 1};
 
-    // if (isBaseCellPentagonArr[base_cell]) {
-    if (_isBaseCellPentagon(base_cell)) {
+    if (isBaseCellPentagonArr[base_cell]) {
         h <<= 19;
         h >>= 19;
 
