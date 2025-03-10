@@ -10,11 +10,11 @@ import React, {
 import { Map } from "react-map-gl";
 import DeckGL from "@deck.gl/react";
 import { H3HexagonLayer } from "@deck.gl/geo-layers";
-import { PathStyleExtension } from "@deck.gl/extensions";
 import { WebMercatorViewport, FlyToInterpolator } from "@deck.gl/core";
 import { getRes0Cells, uncompactCells, cellToBoundary } from "h3-js";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import { MOBILE_CUTOFF_WINDOW_WIDTH } from "../common";
+import { useHex } from "./useHex";
 
 const INITIAL_VIEW_STATE = {
   longitude: -74.012,
@@ -22,6 +22,8 @@ const INITIAL_VIEW_STATE = {
   zoom: 2.5,
   pitch: 0,
   bearing: 0,
+  maxZoom: 22,
+  minZoom: 0,
 };
 
 const MAP_STYLE = "mapbox://styles/mapbox/light-v11";
@@ -114,6 +116,22 @@ export function ExplorerMap({
     }
   }, [userInput, userValidHex, deckLoaded]);
 
+  const addSelectedHexes = useCallback(
+    (hex) => {
+      objectOnClick({ hex });
+    },
+    [objectOnClick],
+  );
+
+  const {
+    handleResize: hexHandleResize,
+    hexLayers: backgroundHexLayers,
+    resolution,
+  } = useHex({
+    resolutionFrozen: false,
+    addSelectedHexes,
+  });
+
   const layers = userValidHex
     ? [
         new H3HexagonLayer({
@@ -133,54 +151,7 @@ export function ExplorerMap({
           getFillColor: [0, 0, 0, 30],
         }),
       ]
-    : [
-        new H3HexagonLayer({
-          id: "res0",
-          data: res0Cells,
-          getHexagon: (d) => d.hex,
-          extruded: false,
-          filled: false,
-          stroked: true,
-          getLineColor: [0, 0, 0],
-          getLineWidth: 3,
-          lineWidthMinPixels: 3,
-          highPrecision: true,
-        }),
-        new H3HexagonLayer({
-          id: "res1",
-          data: res1Cells,
-          getHexagon: (d) => d.hex,
-          extruded: false,
-          filled: false,
-          stroked: true,
-          getLineColor: [0, 0, 0],
-          getLineWidth: 2,
-          lineWidthMinPixels: 2,
-          highPrecision: true,
-          lineWidthUnits: "pixels",
-          getDashArray: [5, 1],
-          dashJustified: true,
-          dashGapPickable: true,
-          extensions: [new PathStyleExtension({ dash: true })],
-        }),
-        new H3HexagonLayer({
-          id: "res2",
-          data: res2Cells,
-          getHexagon: (d) => d.hex,
-          extruded: false,
-          filled: false,
-          stroked: true,
-          getLineColor: [0, 0, 0],
-          getLineWidth: 1,
-          lineWidthMinPixels: 1,
-          highPrecision: true,
-          lineWidthUnits: "pixels",
-          getDashArray: [5, 5],
-          dashJustified: true,
-          dashGapPickable: true,
-          extensions: [new PathStyleExtension({ dash: true })],
-        }),
-      ];
+    : backgroundHexLayers;
 
   const getTooltip = useCallback(({ object }) => {
     if (object && object.hex) {
@@ -201,14 +172,17 @@ export function ExplorerMap({
   const onClick = useCallback(
     ({ object, coordinate, viewport }) => {
       if (object && object.hex) {
-        // TODO: click to copy?
         if (objectOnClick) {
           objectOnClick({ hex: object.hex });
         }
-      } else {
-        if (coordinateOnClick) {
-          coordinateOnClick({ coordinate, zoom: viewport.zoom });
+      } else if (object && object instanceof string) {
+        if (objectOnClick) {
+          objectOnClick({ hex: object });
         }
+      } else {
+        // if (coordinateOnClick) {
+        //   coordinateOnClick({ coordinate, zoom: viewport.zoom });
+        // }
       }
     },
     [objectOnClick, coordinateOnClick],
@@ -219,6 +193,9 @@ export function ExplorerMap({
       ref={deckRef}
       layers={layers}
       initialViewState={currentInitialViewState}
+      onViewStateChange={({ viewState }) => {
+        hexHandleResize(viewState);
+      }}
       getTooltip={getTooltip}
       getCursor={getCursor}
       onClick={onClick}
