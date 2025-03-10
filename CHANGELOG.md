@@ -6,6 +6,8 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+
+## [4.2.1] - 2025-03-10
 ### Fixed
 - Fixed MSVC/WIN32 checks in CMake. (#981)
 - Fixed potential memory leak in `polygonStringToGeoPolygon` (#976)
