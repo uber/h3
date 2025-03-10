@@ -7,9 +7,15 @@ The public API of this library consists of the functions declared in file
 
 ## [Unreleased]
 
+## [4.2.1] - 2025-03-10
+### Fixed
+- Fixed MSVC/WIN32 checks in CMake. (#981)
+- Fixed potential memory leak in `polygonStringToGeoPolygon` (#976)
+
 ### Changed
-- Moved `ContainmentMode` enum for `polygonToCellsExperimental` to `h3api.h`. (#958)
+- Added arm64 tests in CI. (#975, #974)
 - Faster `isValidCell` (#968)
+- Moved `ContainmentMode` enum for `polygonToCellsExperimental` to `h3api.h`. (#958)
 
 ## [4.2.0] - 2024-12-04
 ### Added
