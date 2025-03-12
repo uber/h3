@@ -179,10 +179,11 @@ export function ExplorerMap({
         if (objectOnClick) {
           objectOnClick({ hex: object });
         }
-      } else {
-        // if (coordinateOnClick) {
-        //   coordinateOnClick({ coordinate, zoom: viewport.zoom });
-        // }
+      } else if (userValidHex) {
+        // Only allow coordinate-based onClick action if some cell is already selected
+        if (coordinateOnClick) {
+          coordinateOnClick({ coordinate, zoom: viewport.zoom });
+        }
       }
     },
     [objectOnClick, coordinateOnClick],
