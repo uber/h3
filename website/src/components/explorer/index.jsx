@@ -122,7 +122,6 @@ export default function HomeExporer({ children }) {
       } else if (splitUserInput.length === 0) {
         const detectedRes =
           resolution !== undefined ? resolution : zoomToResolution(zoom);
-        console.log(detectedRes);
         setUserInput(
           `${latLngToCell(coordinate[1], coordinate[0], detectedRes)}`,
         );
