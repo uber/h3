@@ -10,7 +10,7 @@ import React, {
 import { Map } from "react-map-gl";
 import DeckGL from "@deck.gl/react";
 import { H3HexagonLayer } from "@deck.gl/geo-layers";
-import { WebMercatorViewport, FlyToInterpolator } from "@deck.gl/core";
+import { WebMercatorViewport, FlyToInterpolator, MapView } from "@deck.gl/core";
 import { getRes0Cells, uncompactCells, cellToBoundary } from "h3-js";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import { MOBILE_CUTOFF_WINDOW_WIDTH } from "../common";
@@ -170,7 +170,7 @@ export function ExplorerMap({
   }, []);
 
   const onClick = useCallback(
-    ({ object, coordinate, viewport }) => {
+    ({ object, coordinate }) => {
       if (object && object.hex) {
         if (objectOnClick) {
           objectOnClick({ hex: object.hex });
@@ -179,14 +179,13 @@ export function ExplorerMap({
         if (objectOnClick) {
           objectOnClick({ hex: object });
         }
-      } else if (userValidHex) {
-        // Only allow coordinate-based onClick action if some cell is already selected
+      } else {
         if (coordinateOnClick) {
-          coordinateOnClick({ coordinate, zoom: viewport.zoom });
+          coordinateOnClick({ coordinate, resolution });
         }
       }
     },
-    [objectOnClick, coordinateOnClick],
+    [objectOnClick, coordinateOnClick, resolution],
   );
 
   return (
@@ -197,12 +196,14 @@ export function ExplorerMap({
       onViewStateChange={({ viewState }) => {
         hexHandleResize(viewState);
       }}
+      views={new MapView({ repeat: true })}
       getTooltip={getTooltip}
       getCursor={getCursor}
       onClick={onClick}
       onLoad={() => setDeckLoaded(true)}
       controller={{
         dragPan: windowWidth && windowWidth >= MOBILE_CUTOFF_WINDOW_WIDTH,
+        dragRotate: false,
       }}
       touchAction="pan-y"
     >
