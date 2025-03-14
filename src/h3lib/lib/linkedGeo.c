@@ -23,6 +23,7 @@
 #include <stdlib.h>
 
 #include "alloc.h"
+#include "h3Assert.h"
 #include "h3api.h"
 #include "latLng.h"
 
@@ -73,10 +74,16 @@ LinkedGeoLoop *addLinkedLoop(LinkedGeoPolygon *polygon, LinkedGeoLoop *loop) {
  * @param  vertex Coordinate to add
  * @return        Pointer to the coordinate
  */
-LinkedLatLng *addLinkedCoord(LinkedGeoLoop *loop, const LatLng *vertex) {
+LinkedLatLng *addLinkedCoord(LinkedGeoLoop *loop, H3Index vertex) {
     LinkedLatLng *coord = H3_MEMORY(malloc)(sizeof(*coord));
     assert(coord != NULL);
-    *coord = (LinkedLatLng){.vertex = *vertex, .next = NULL};
+    LatLng vertexLatLng;
+    // TODO: Also add the distrortion vertex here
+    H3Error err = H3_EXPORT(vertexToLatLng)(vertex, &vertexLatLng);
+    if (NEVER(err)) {
+        return NULL;
+    }
+    *coord = (LinkedLatLng){.vertex = vertexLatLng, .next = NULL};
     LinkedLatLng *last = loop->last;
     if (last == NULL) {
         assert(loop->first == NULL);
