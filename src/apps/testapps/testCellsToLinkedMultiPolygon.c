@@ -16,7 +16,8 @@
 
 #include <stdio.h>
 
-#include "algos.h"
+#include "algos.h"  // not needed? prolly just need linkedGeo.h
+#include "h3api.h"  // todo: don't be lazy, this file has some lax imports
 #include "test.h"
 #include "utility.h"
 
@@ -45,6 +46,61 @@ SUITE(cellsToLinkedMultiPolygon) {
                  "6 coords added to loop");
 
         H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
+    }
+
+    TEST(singleHex_GMP) {
+        GeoMultiPolygon mpoly;
+        H3Index cells[] = {0x890dab6220bffff};
+        int numCells = ARRAY_SIZE(cells);
+
+        t_assertSuccess(
+            H3_EXPORT(cellsToGeoMultiPolygon)(cells, numCells, &mpoly));
+
+        t_assert(mpoly.numPolygons == 1, "only one polygon");
+        t_assert(mpoly.polygons[0].numHoles == 0, "1 outer loop and no holes");
+        t_assert(mpoly.polygons[0].geoloop.numVerts == 6, "6 vertices in hex");
+
+        H3_EXPORT(freeGeoMultiPolygon)(mpoly);
+    }
+
+    TEST(nestedDonut_GMP) {
+        GeoMultiPolygon mpoly;
+        GeoPolygon poly;
+        // hollow 1-ring + hollow 3-ring around the same hex
+        H3Index cells[] = {
+            0x89283082813ffff, 0x8928308281bffff, 0x8928308280bffff,
+            0x8928308280fffff, 0x89283082807ffff, 0x89283082817ffff,
+            0x8928308289bffff, 0x892830828d7ffff, 0x892830828c3ffff,
+            0x892830828cbffff, 0x89283082853ffff, 0x89283082843ffff,
+            0x8928308284fffff, 0x8928308287bffff, 0x89283082863ffff,
+            0x89283082867ffff, 0x8928308282bffff, 0x89283082823ffff,
+            0x89283082837ffff, 0x892830828afffff, 0x892830828a3ffff,
+            0x892830828b3ffff, 0x89283082887ffff, 0x89283082883ffff};
+        int numCells = ARRAY_SIZE(cells);
+
+        t_assertSuccess(
+            H3_EXPORT(cellsToGeoMultiPolygon)(cells, numCells, &mpoly));
+
+        t_assert(mpoly.numPolygons == 2, "Polygon count correct");
+        t_assert(mpoly.polygons[0].numHoles == 1, "1 outer loop and 1 hole");
+        t_assert(mpoly.polygons[1].numHoles == 1, "1 outer loop and 1 hole");
+
+        if (mpoly.polygons[0].geoloop.numVerts != 42) {
+            // Polygon order is arbitrary; Swap so that the larger ring is first
+            poly = mpoly.polygons[0];
+            mpoly.polygons[0] = mpoly.polygons[1];
+            mpoly.polygons[1] = poly;
+        }
+
+        poly = mpoly.polygons[0];
+        t_assert(poly.geoloop.numVerts == 42, "Got expected outer loop");
+        t_assert(poly.holes[0].numVerts == 30, "Got expected inner loop");
+
+        poly = mpoly.polygons[1];
+        t_assert(poly.geoloop.numVerts == 18, "Got expected outer loop");
+        t_assert(poly.holes[0].numVerts == 6, "Got expected inner loop");
+
+        H3_EXPORT(freeGeoMultiPolygon)(mpoly);
     }
 
     TEST(invalid) {
