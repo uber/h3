@@ -24,6 +24,7 @@ for hexagonal cells, and 0 and 4 (inclusive) for pentagonal cells.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'SQL', value: 'sql'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -66,6 +67,13 @@ h3.cell_to_vertex(origin, vertex_num)
 ```
 
 </TabItem>
+<TabItem value="sql">
+
+```sql
+h3_cell_to_vertex(origin, vertex_num)
+```
+
+</TabItem>
 <TabItem value="shell">
 
 ```sh
@@ -100,6 +108,7 @@ Returns the indexes for all vertexes of the given cell.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'SQL', value: 'sql'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -145,6 +154,13 @@ h3.cell_to_vertexes(origin)
 ```
 
 </TabItem>
+<TabItem value="sql">
+
+```sql
+h3_cell_to_vertexes(origin)
+```
+
+</TabItem>
 <TabItem value="shell">
 
 ```sh
@@ -178,6 +194,7 @@ Returns the latitude and longitude coordinates of the given vertex.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'SQL', value: 'sql'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -219,6 +236,13 @@ h3.vertex_to_latlng(vertex)
 ```
 
 </TabItem>
+<TabItem value="sql">
+
+```sql
+h3_vertex_to_latlng(vertex)
+```
+
+</TabItem>
 <TabItem value="shell">
 
 ```sh
@@ -252,6 +276,7 @@ Determines if the given H3 index represents a valid H3 vertex.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'SQL', value: 'sql'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -290,6 +315,13 @@ function example() {
 
 ```py
 h3.is_valid_vertex(vertex)
+```
+
+</TabItem>
+<TabItem value="sql">
+
+```sql
+h3_is_valid_vertex(vertex)
 ```
 
 </TabItem>
