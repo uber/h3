@@ -23,6 +23,7 @@ We recommend using prebuilt [bindings](/docs/community/bindings) if they are ava
     {label: 'Java', value: 'java'},
     {label: 'JavaScript', value: 'javascript'},
     {label: 'Homebrew', value: 'brew'},
+    {label: 'DuckDB', value: 'duckdb'},
   ]
 }>
 <TabItem value="python">
@@ -84,6 +85,21 @@ brew install h3
 ```
 
 This installs the C library and filter applications.
+
+</TabItem>
+<TabItem value="duckdb">
+
+Using DuckDB, run:
+
+```sql
+INSTALL h3 FROM community;
+```
+
+Then, to use the [H3 extension](https://duckdb.org/community_extensions/extensions/h3.html):
+
+```sql
+LOAD h3;
+```
 
 </TabItem>
 </Tabs>
