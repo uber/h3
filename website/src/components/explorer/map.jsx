@@ -15,7 +15,6 @@ import { getRes0Cells, uncompactCells, cellToBoundary } from "h3-js";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import { MOBILE_CUTOFF_WINDOW_WIDTH } from "../common";
 import { useHex } from "./useHex";
-import {FullscreenWidget} from "@deck.gl/widgets";
 
 const INITIAL_VIEW_STATE = {
   longitude: -74.012,
@@ -206,12 +205,6 @@ export function ExplorerMap({
         dragPan: windowWidth && windowWidth >= MOBILE_CUTOFF_WINDOW_WIDTH,
         dragRotate: false,
       }}
-      widgets={[
-        new FullscreenWidget({
-          id: "fullscreen",
-          
-        })
-      ]}
       touchAction="pan-y"
     >
       <Map
