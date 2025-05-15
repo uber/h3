@@ -160,4 +160,5 @@ module.exports = {
   customFields: {
     mapboxAccessToken: process.env.MapboxAccessToken
   },
+  plugins: [require.resolve('docusaurus-lunr-search')],
 };
