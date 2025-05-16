@@ -33,7 +33,7 @@ This is the same set of limitations as the local IJ coordinate space functions.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
-    {label: 'SQL', value: 'sql'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -76,7 +76,7 @@ h3.grid_distance(h1, h2)
 ```
 
 </TabItem>
-<TabItem value="sql">
+<TabItem value="duckdb">
 
 ```sql
 h3_grid_distance(h1, h2)
@@ -120,7 +120,7 @@ This function may fail if pentagonal distortion is encountered.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
-    {label: 'SQL', value: 'sql'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -176,7 +176,7 @@ but this consumes a lot of memory to do so.
 :::
 
 </TabItem>
-<TabItem value="sql">
+<TabItem value="duckdb">
 
 ```sql
 h3_grid_ring_unsafe(h, k)
@@ -230,7 +230,7 @@ Output order is not guaranteed.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
-    {label: 'SQL', value: 'sql'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -276,7 +276,7 @@ h3.grid_disk(origin, k)
 ```
 
 </TabItem>
-<TabItem value="sql">
+<TabItem value="duckdb">
 
 ```sql
 h3_grid_disk(origin, k)
@@ -317,7 +317,7 @@ Maximum number of cells that can result from the `gridDisk` function for a given
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
-    {label: 'SQL', value: 'sql'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -357,7 +357,7 @@ This function exists for memory management and is not exposed.
 :::
 
 </TabItem>
-<TabItem value="sql">
+<TabItem value="duckdb">
 
 :::note
 
@@ -393,7 +393,7 @@ Output order is not guaranteed.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
-    {label: 'SQL', value: 'sql'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -441,7 +441,7 @@ This function is not exposed in Python.
 :::
 
 </TabItem>
-<TabItem value="sql">
+<TabItem value="duckdb">
 
 ```sql
 h3_grid_disk_distances(origin, k)
@@ -486,7 +486,7 @@ Users can fall back to calling the slower but more robust `gridDiskDistances`.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
-    {label: 'SQL', value: 'sql'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -529,7 +529,7 @@ This function is not exposed.
 :::
 
 </TabItem>
-<TabItem value="sql">
+<TabItem value="duckdb">
 
 ```sql
 h3_grid_disk_unsafe(origin, k)
@@ -566,7 +566,7 @@ the same offset. The provided array must be of size `maxGridDiskSize(k)`.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
-    {label: 'SQL', value: 'sql'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -606,7 +606,7 @@ This function is not exposed.
 :::
 
 </TabItem>
-<TabItem value="sql">
+<TabItem value="duckdb">
 
 ```sql
 h3_grid_disk_distances_unsafe(origin, k)
@@ -641,7 +641,7 @@ the same offset. The provided array must be of size `maxGridDiskSize(k)`.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
-    {label: 'SQL', value: 'sql'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -681,7 +681,7 @@ This function is not exposed.
 :::
 
 </TabItem>
-<TabItem value="sql">
+<TabItem value="duckdb">
 
 ```sql
 h3_grid_disk_distances_safe(origin, k)
@@ -714,7 +714,7 @@ grid ring (0 to max), with no guaranteed sorting within each grid ring group.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
-    {label: 'SQL', value: 'sql'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -754,7 +754,7 @@ This function is not exposed.
 :::
 
 </TabItem>
-<TabItem value="sql">
+<TabItem value="duckdb">
 
 :::note
 
@@ -801,7 +801,7 @@ Notes:
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
-    {label: 'SQL', value: 'sql'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -844,7 +844,7 @@ h3.grid_path_cells(start, end)
 ```
 
 </TabItem>
-<TabItem value="sql">
+<TabItem value="duckdb">
 
 ```sql
 h3_grid_path_cells(start, end)
@@ -886,7 +886,7 @@ to be used for allocating memory.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
-    {label: 'SQL', value: 'sql'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -926,7 +926,7 @@ This function exists for memory management and is not exposed.
 :::
 
 </TabItem>
-<TabItem value="sql">
+<TabItem value="duckdb">
 
 :::note
 
@@ -964,7 +964,7 @@ versions of H3.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
-    {label: 'SQL', value: 'sql'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -1008,7 +1008,7 @@ h3.cell_to_local_ij(origin, h)
 ```
 
 </TabItem>
-<TabItem value="sql">
+<TabItem value="duckdb">
 
 ```sql
 h3_cell_to_local_ij(origin, h)
@@ -1054,7 +1054,7 @@ versions of H3.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
-    {label: 'SQL', value: 'sql'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -1097,7 +1097,7 @@ h3.local_ij_to_cell(origin, i, j)
 ```
 
 </TabItem>
-<TabItem value="sql">
+<TabItem value="duckdb">
 
 ```sql
 h3_local_ij_to_cell(origin, i, j)

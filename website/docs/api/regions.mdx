@@ -29,7 +29,7 @@ a partitioning of H3 cells.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
-    {label: 'SQL', value: 'sql'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -85,7 +85,7 @@ Note that `polygon_to_cells` is an alias for `h3shape_to_cells`.
 For more info, see the [`h3-py` docs](https://uber.github.io/h3-py/api_quick.html#polygon-interface).
 
 </TabItem>
-<TabItem value="sql">
+<TabItem value="duckdb">
 
 ```sql
 h3_polygon_wkt_to_cells(wkt, res)
@@ -132,7 +132,7 @@ purposes when computing `polygonToCells` on the given GeoJSON-like data structur
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
-    {label: 'SQL', value: 'sql'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -172,7 +172,7 @@ This function exists for memory management and is not exposed.
 :::
 
 </TabItem>
-<TabItem value="sql">
+<TabItem value="duckdb">
 
 :::note
 
@@ -222,7 +222,7 @@ overlapping containment modes.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
-    {label: 'SQL', value: 'sql'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -314,7 +314,7 @@ The valid values for `contain` are:
 | `bbox_overlap` | Cell bounding box overlaps shape
 
 </TabItem>
-<TabItem value="sql">
+<TabItem value="duckdb">
 
 ```sql
 h3_polygon_wkt_to_cells_experimental(h3shape, res, 'overlap')
@@ -354,7 +354,7 @@ purposes when computing `polygonToCellsExperimental` on the given GeoJSON-like d
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
-    {label: 'SQL', value: 'sql'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -394,7 +394,7 @@ This function exists for memory management and is not exposed.
 :::
 
 </TabItem>
-<TabItem value="sql">
+<TabItem value="duckdb">
 
 :::note
 
@@ -430,7 +430,7 @@ unexpected or invalid output.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
-    {label: 'SQL', value: 'sql'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -482,7 +482,7 @@ Returns an `H3Shape` object:
 For more info, see the [`h3-py` docs](https://uber.github.io/h3-py/api_quick.html#polygon-interface).
 
 </TabItem>
-<TabItem value="sql">
+<TabItem value="duckdb">
 
 ```sql
 h3_cells_to_multi_polygon_wkt(cells)
@@ -526,7 +526,7 @@ responsible for freeing memory allocated to the input polygon struct.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
-    {label: 'SQL', value: 'sql'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -564,7 +564,7 @@ This function exists for memory management and is not exposed.
 :::
 
 </TabItem>
-<TabItem value="sql">
+<TabItem value="duckdb">
 
 :::note
 

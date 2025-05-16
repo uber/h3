@@ -26,7 +26,7 @@ the provided resolution. If the input cell has resolution `r`, then
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
-    {label: 'SQL', value: 'sql'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -71,7 +71,7 @@ If `res = None`, we set `res = resolution(h) - 1`.
 See the [h3-py docs](https://uber.github.io/h3-py/api_verbose.html#h3.cell_to_parent).
 
 </TabItem>
-<TabItem value="sql">
+<TabItem value="duckdb">
 
 ```sql
 h3_cell_to_parent(h, res)
@@ -114,7 +114,7 @@ resolution `childRes`.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
-    {label: 'SQL', value: 'sql'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -161,7 +161,7 @@ If `res = None`, we set `res = resolution(h) + 1`.
 See the [h3-py docs](https://uber.github.io/h3-py/api_verbose.html#h3.cell_to_children).
 
 </TabItem>
-<TabItem value="sql">
+<TabItem value="duckdb">
 
 ```sql
 h3_cell_to_children(h, res)
@@ -203,7 +203,7 @@ Provides the number of children at a given resolution of the given cell.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
-    {label: 'SQL', value: 'sql'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -246,7 +246,7 @@ If `res = None`, we set `res = resolution(h) + 1`.
 See the [h3-py docs](https://uber.github.io/h3-py/api_verbose.html#h3.cell_to_children_size).
 
 </TabItem>
-<TabItem value="sql">
+<TabItem value="duckdb">
 
 ```sql
 h3_cell_to_children_size(h, res)
@@ -287,7 +287,7 @@ Provides the center child (finer) cell contained by `cell` at resolution `childR
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
-    {label: 'SQL', value: 'sql'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -333,7 +333,7 @@ If `res = None`, we set `res = resolution(h) + 1`.
 See the [h3-py docs](https://uber.github.io/h3-py/api_verbose.html#h3.cell_to_center_child).
 
 </TabItem>
-<TabItem value="sql">
+<TabItem value="duckdb">
 
 ```sql
 h3_cell_to_center_child(h, res)
@@ -377,7 +377,7 @@ This is the complement of `childPosToCell`.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
-    {label: 'SQL', value: 'sql'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -419,7 +419,7 @@ h3.cell_to_child_pos(child, res_parent)
 ```
 
 </TabItem>
-<TabItem value="sql">
+<TabItem value="duckdb">
 
 ```sql
 h3_cell_to_child_pos(child, res_parent)
@@ -462,7 +462,7 @@ This is the complement of `cellToChildPos`.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
-    {label: 'SQL', value: 'sql'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -506,7 +506,7 @@ h3.child_pos_to_cell(parent, res_child, child_pos)
 ```
 
 </TabItem>
-<TabItem value="sql">
+<TabItem value="duckdb">
 
 ```sql
 h3_child_pos_to_cell(parent, res_child, child_pos)
@@ -551,7 +551,7 @@ Input cells must all share the same resolution.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
-    {label: 'SQL', value: 'sql'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -597,7 +597,7 @@ h3.compact_cells(cells)
 ```
 
 </TabItem>
-<TabItem value="sql">
+<TabItem value="duckdb">
 
 ```sql
 h3_compact_cells(cells)
@@ -639,7 +639,7 @@ Uncompacts the set `compactedSet` of indexes to the resolution `res`.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
-    {label: 'SQL', value: 'sql'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -683,7 +683,7 @@ h3.uncompact_cells(cells, res)
 ```
 
 </TabItem>
-<TabItem value="sql">
+<TabItem value="duckdb">
 
 ```sql
 h3_uncompact_cells(cells, res)
@@ -727,7 +727,7 @@ a given resolution.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
-    {label: 'SQL', value: 'sql'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -769,7 +769,7 @@ This function exists for memory management and is not exposed.
 :::
 
 </TabItem>
-<TabItem value="sql">
+<TabItem value="duckdb">
 
 :::note
 
