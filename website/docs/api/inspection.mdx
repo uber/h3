@@ -23,6 +23,7 @@ Returns the resolution of the index.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -62,6 +63,13 @@ h3.get_resolution(h)
 ```
 
 </TabItem>
+<TabItem value="duckdb">
+
+```sql
+h3_get_resolution(h)
+```
+
+</TabItem>
 <TabItem value="shell">
 
 ```sh
@@ -96,6 +104,7 @@ Returns the base cell number of the index.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -135,6 +144,13 @@ h3.get_base_cell_number(h)
 ```
 
 </TabItem>
+<TabItem value="duckdb">
+
+```sql
+h3_get_base_cell_number(h)
+```
+
+</TabItem>
 <TabItem value="shell">
 
 ```sh
@@ -167,6 +183,7 @@ Converts the string representation to `H3Index` (`uint64_t`) representation.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -202,6 +219,13 @@ h3.str_to_int(h)
 ```
 
 </TabItem>
+<TabItem value="duckdb">
+
+```sql
+h3_string_to_h3(h)
+```
+
+</TabItem>
 <TabItem value="shell">
 
 :::note
@@ -226,6 +250,7 @@ Converts the `H3Index` representation of the index to the string representation.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -262,6 +287,13 @@ h3.int_to_str(h)
 ```
 
 </TabItem>
+<TabItem value="duckdb">
+
+```sql
+h3_h3_to_string(h)
+```
+
+</TabItem>
 <TabItem value="shell">
 
 :::note
@@ -287,6 +319,7 @@ Returns non-zero if this is a valid H3 cell index.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -326,6 +359,13 @@ h3.is_valid_cell(h)
 ```
 
 </TabItem>
+<TabItem value="duckdb">
+
+```sql
+h3_is_valid_cell(h)
+```
+
+</TabItem>
 <TabItem value="shell">
 
 ```sh
@@ -360,6 +400,7 @@ Returns non-zero if this index has a resolution with Class III orientation.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -399,6 +440,13 @@ h3.is_res_class_III(h)
 ```
 
 </TabItem>
+<TabItem value="duckdb">
+
+```sql
+h3_is_res_class_iii(h)
+```
+
+</TabItem>
 <TabItem value="shell">
 
 ```sh
@@ -433,6 +481,7 @@ Returns non-zero if this index represents a pentagonal cell.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -472,6 +521,13 @@ h3.is_pentagon(h)
 ```
 
 </TabItem>
+<TabItem value="duckdb">
+
+```sql
+h3_is_pentagon(h)
+```
+
+</TabItem>
 <TabItem value="shell">
 
 ```sh
@@ -507,6 +563,7 @@ Faces are represented as integers from 0-19, inclusive.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -552,6 +609,13 @@ h3.get_icosahedron_faces(h)
 ```
 
 </TabItem>
+<TabItem value="duckdb">
+
+```sql
+h3_get_icosahedron_faces(h)
+```
+
+</TabItem>
 <TabItem value="shell">
 
 ```sh
@@ -584,6 +648,7 @@ Returns the maximum number of icosahedron faces the given H3 index may intersect
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -615,6 +680,15 @@ This function exists for memory management and is not exposed.
 
 </TabItem>
 <TabItem value="python">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+<TabItem value="duckdb">
 
 :::note
 

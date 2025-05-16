@@ -23,6 +23,7 @@ Determines whether or not the provided H3 cells are neighbors.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -67,6 +68,13 @@ h3.are_neighbor_cells(origin, destination)
 ```
 
 </TabItem>
+<TabItem value="duckdb">
+
+```sql
+h3_are_neighbor_cells(origin, destination)
+```
+
+</TabItem>
 <TabItem value="shell">
 
 ```sh
@@ -103,6 +111,7 @@ destination.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -145,6 +154,13 @@ h3.cells_to_directed_edge(origin, destination)
 ```
 
 </TabItem>
+<TabItem value="duckdb">
+
+```sql
+h3_cells_to_directed_edge(origin, destination)
+```
+
+</TabItem>
 <TabItem value="shell">
 
 ```sh
@@ -179,6 +195,7 @@ Determines if the provided H3Index is a valid unidirectional edge index.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -220,6 +237,13 @@ h3.is_valid_directed_edge(edge)
 ```
 
 </TabItem>
+<TabItem value="duckdb">
+
+```sql
+h3_is_valid_directed_edge(edge)
+```
+
+</TabItem>
 <TabItem value="shell">
 
 ```sh
@@ -253,6 +277,7 @@ Provides the origin hexagon from the directed edge H3Index.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -294,6 +319,13 @@ h3.get_directed_edge_origin(edge)
 ```
 
 </TabItem>
+<TabItem value="duckdb">
+
+```sql
+h3_get_directed_edge_origin(edge)
+```
+
+</TabItem>
 <TabItem value="shell">
 
 ```sh
@@ -327,6 +359,7 @@ Provides the destination hexagon from the directed edge H3Index.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -368,6 +401,13 @@ h3.get_directed_edge_destination(edge)
 ```
 
 </TabItem>
+<TabItem value="duckdb">
+
+```sql
+h3.get_directed_edge_destination(edge)
+```
+
+</TabItem>
 <TabItem value="shell">
 
 ```sh
@@ -402,6 +442,7 @@ Provides the origin-destination pair of cells for the given directed edge.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -446,6 +487,13 @@ h3.directed_edge_to_cells(edge)
 ```
 
 </TabItem>
+<TabItem value="duckdb">
+
+```sql
+h3_directed_edge_to_cells(edge)
+```
+
+</TabItem>
 <TabItem value="shell">
 
 ```sh
@@ -479,6 +527,7 @@ Provides all of the directed edges from the current cell.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -524,6 +573,13 @@ h3.origin_to_directed_edges(h)
 ```
 
 </TabItem>
+<TabItem value="duckdb">
+
+```sql
+h3_origin_to_directed_edges(h)
+```
+
+</TabItem>
 <TabItem value="shell">
 
 ```sh
@@ -559,6 +615,7 @@ Note that this may be more than two points for complex edges.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -597,6 +654,13 @@ function example() {
 
 ```py
 h3.directed_edge_to_boundary(edge)
+```
+
+</TabItem>
+<TabItem value="duckdb">
+
+```sql
+h3_directed_edge_to_boundary(edge)
 ```
 
 </TabItem>

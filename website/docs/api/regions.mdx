@@ -29,6 +29,7 @@ a partitioning of H3 cells.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -84,6 +85,16 @@ Note that `polygon_to_cells` is an alias for `h3shape_to_cells`.
 For more info, see the [`h3-py` docs](https://uber.github.io/h3-py/api_quick.html#polygon-interface).
 
 </TabItem>
+<TabItem value="duckdb">
+
+```sql
+h3_polygon_wkt_to_cells(wkt, res)
+```
+```sql
+h3_polygon_wkt_to_cells_string(wkt, res)
+```
+
+</TabItem>
 <TabItem value="shell">
 
 ```sh
@@ -121,6 +132,7 @@ purposes when computing `polygonToCells` on the given GeoJSON-like data structur
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -152,6 +164,15 @@ This function exists for memory management and is not exposed.
 
 </TabItem>
 <TabItem value="python">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+<TabItem value="duckdb">
 
 :::note
 
@@ -201,6 +222,7 @@ overlapping containment modes.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -292,6 +314,25 @@ The valid values for `contain` are:
 | `bbox_overlap` | Cell bounding box overlaps shape
 
 </TabItem>
+<TabItem value="duckdb">
+
+```sql
+h3_polygon_wkt_to_cells_experimental(h3shape, res, 'overlap')
+```
+```sql
+h3_polygon_wkt_to_cells_experimental_string(h3shape, res, 'overlap')
+```
+
+The valid values for the third `contain` argument are:
+
+| String value | Description
+| ------------ | -----------
+| `center` | Cell center is contained in the shape (default)
+| `full` | Cell is fully contained in the shape
+| `overlap` | Cell overlaps the shape at any point
+| `bbox_overlap` | Cell bounding box overlaps shape
+
+</TabItem>
 <TabItem value="shell">
 
 This function is not exposed in the CLI bindings.
@@ -313,6 +354,7 @@ purposes when computing `polygonToCellsExperimental` on the given GeoJSON-like d
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -352,6 +394,15 @@ This function exists for memory management and is not exposed.
 :::
 
 </TabItem>
+<TabItem value="duckdb">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
 <TabItem value="shell">
 
 This function is not exposed in the CLI bindings.
@@ -379,6 +430,7 @@ unexpected or invalid output.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -430,6 +482,13 @@ Returns an `H3Shape` object:
 For more info, see the [`h3-py` docs](https://uber.github.io/h3-py/api_quick.html#polygon-interface).
 
 </TabItem>
+<TabItem value="duckdb">
+
+```sql
+h3_cells_to_multi_polygon_wkt(cells)
+```
+
+</TabItem>
 <TabItem value="shell">
 
 ```sh
@@ -467,6 +526,7 @@ responsible for freeing memory allocated to the input polygon struct.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -496,6 +556,15 @@ This function exists for memory management and is not exposed.
 
 </TabItem>
 <TabItem value="python">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+<TabItem value="duckdb">
 
 :::note
 
