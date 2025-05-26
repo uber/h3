@@ -36,6 +36,7 @@ As a C library, bindings can be made to call H3 functions from different program
 ## Dart 
 
 - [festelo/h3_flutter](https://github.com/festelo/h3_flutter)
+- [codewithsam110g/h3_flutter_plus](https://github.com/codewithsam110g/h3_flutter_bindings)
 
 ## Databricks
 
