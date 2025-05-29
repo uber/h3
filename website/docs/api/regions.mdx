@@ -341,7 +341,7 @@ This function is not exposed in the CLI bindings.
 </Tabs>
 
 
-## maxPolygonToCellsExperimentalSize
+## maxPolygonToCellsSizeExperimental
 
 Provides an upper bound on the number of cells needed for memory allocation
 purposes when computing `polygonToCellsExperimental` on the given GeoJSON-like data structure.
@@ -361,7 +361,7 @@ purposes when computing `polygonToCellsExperimental` on the given GeoJSON-like d
 <TabItem value="c">
 
 ```c
-H3Error maxPolygonToCellsExperimentalSize(const GeoPolygon *geoPolygon, int res, uint32_t flags, int64_t *out);
+H3Error maxPolygonToCellsSizeExperimental(const GeoPolygon *geoPolygon, int res, uint32_t flags, int64_t *out);
 ```
 
 Returns 0 (`E_SUCCESS`) on success.
