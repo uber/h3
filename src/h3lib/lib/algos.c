@@ -335,6 +335,103 @@ H3Error H3_EXPORT(gridDiskDistancesSafe)(H3Index origin, int k, H3Index *out,
 }
 
 /**
+ * Maximum number of cells that result from the gridRing algorithm with the
+ * given k.
+ *
+ * @param   k   k value, k >= 0.
+ * @param out   size in indexes
+ */
+H3Error H3_EXPORT(maxGridRingSize)(int k, int64_t *out) {
+    if (k < 0) {
+        return E_DOMAIN;
+    }
+    if (k == 0) {
+        *out = 1;
+        return E_SUCCESS;
+    }
+    *out = 6 * (int64_t)k;
+    return E_SUCCESS;
+}
+
+/**
+ * Returns the "hollow" ring of hexagons at exactly grid distance k from
+ * the origin hexagon. In particular, k=0 returns just the origin hexagon.
+ *
+ * Elements of the output array may be left zero, as can happen when crossing a
+ * pentagon.
+ *
+ * @param origin Origin location.
+ * @param k k >= 0
+ * @param out Array which must be of size 6 * k (or 1 if k == 0)
+ * @return 0 if successful; nonzero otherwise.
+ */
+H3Error H3_EXPORT(gridRing)(H3Index origin, int k, H3Index *out) {
+    // Optimistically try the faster gridDiskUnsafe algorithm first
+    const H3Error failed = H3_EXPORT(gridRingUnsafe)(origin, k, out);
+    if (!failed) {
+        return E_SUCCESS;
+    }
+    // Fast algo failed, fall back to slower, correct algo
+    // and also wipe out array because contents untrustworthy
+    memset(out, 0, 6 * k * sizeof(H3Index));
+    return _gridRingInternal(origin, k, out);
+}
+
+/**
+ * Internal algorithm for the safe but slow version of gridRing
+ *
+ * This function uses _gridDiskDistancesInternal to get all cells up to distance
+ * k, then filters those results to include only cells exactly at distance k.
+ *
+ * @param origin Origin cell.
+ * @param k Exact distance to filter for.
+ * @param out Array which must be of size 6 * k (or 1 if k == 0). This is where
+ * the final filtered results will be placed.
+ * @return H3Error indicating success or failure.
+ */
+H3Error _gridRingInternal(H3Index origin, int k, H3Index *out) {
+    // Short-circuit on 'identity' ring
+    if (k == 0) {
+        out[0] = origin;
+        return E_SUCCESS;
+    }
+
+    int64_t maxIdx;
+    H3Error err = H3_EXPORT(maxGridDiskSize)(k, &maxIdx);
+    if (err) {
+        return err;
+    }
+
+    H3Index *disk_out = H3_MEMORY(calloc)(maxIdx, sizeof(H3Index));
+    if (!disk_out) {
+        return E_MEMORY_ALLOC;
+    }
+    int *disk_distances = H3_MEMORY(calloc)(maxIdx, sizeof(int));
+    if (!disk_distances) {
+        H3_MEMORY(free)(disk_out);
+        return E_MEMORY_ALLOC;
+    }
+
+    err = _gridDiskDistancesInternal(origin, k, disk_out, disk_distances,
+                                     maxIdx, 0);
+    if (err) {
+        H3_MEMORY(free)(disk_out);
+        H3_MEMORY(free)(disk_distances);
+        return err;
+    }
+
+    int current_idx = 0;
+    for (int64_t i = 0; i < maxIdx; ++i) {
+        if (disk_out[i] != 0 && disk_distances[i] == k) {
+            out[current_idx++] = disk_out[i];
+        }
+    }
+    H3_MEMORY(free)(disk_out);
+    H3_MEMORY(free)(disk_distances);
+    return E_SUCCESS;
+}
+
+/**
  * Returns the hexagon index neighboring the origin, in the direction dir.
  *
  * Implementation note: The only reachable case where this returns 0 is if the
@@ -690,6 +787,9 @@ H3Error H3_EXPORT(gridDisksUnsafe)(H3Index *h3Set, int length, int k,
  * @return 0 if successful; nonzero otherwise.
  */
 H3Error H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index *out) {
+    if (k < 0) {
+        return E_DOMAIN;
+    }
     // Short-circuit on 'identity' ring
     if (k == 0) {
         out[0] = origin;
@@ -755,9 +855,8 @@ H3Error H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index *out) {
     // failure.
     if (lastIndex != origin) {
         return E_PENTAGON;
-    } else {
-        return E_SUCCESS;
     }
+    return E_SUCCESS;
 }
 
 /**

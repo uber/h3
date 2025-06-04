@@ -282,12 +282,18 @@ DECLSPEC H3Error H3_EXPORT(gridDiskDistances)(H3Index origin, int k,
                                               H3Index *out, int *distances);
 /** @} */
 
-/** @defgroup gridRingUnsafe gridRingUnsafe
- * Functions for gridRingUnsafe
+/** @defgroup gridRing gridRing
+ * Functions for gridRing
  * @{
  */
-/** @brief hollow hexagon ring at some origin */
+/** @brief maximum number of hexagons in hollow k-ring */
+DECLSPEC H3Error H3_EXPORT(maxGridRingSize)(int k, int64_t *out);
+
+/** @brief hollow hexagon ring k distance from origin */
 DECLSPEC H3Error H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index *out);
+
+/** @brief hollow hexagon ring k distance from origin */
+DECLSPEC H3Error H3_EXPORT(gridRing)(H3Index origin, int k, H3Index *out);
 /** @} */
 
 /** @defgroup polygonToCells polygonToCells

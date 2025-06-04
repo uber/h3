@@ -642,14 +642,18 @@ SUBCOMMAND(gridRing,
                 .helpText = "Maximum grid distance for the output set"};
     Arg *args[] = {&gridRingArg, &helpArg, &cellArg, &kArg, &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
-    int64_t len = k == 0 ? 1 : 6 * k;  // The length is fixed for gridRingUnsafe
-                                       // since it doesn't support pentagons
+    int64_t len;
+    H3Error err = H3_EXPORT(maxGridRingSize)(k, &len);
+    if (err) {
+        fprintf(stderr, "Invalid k");
+        exit(1);
+    }
     H3Index *out = calloc(len, sizeof(H3Index));
     if (out == NULL) {
         fprintf(stderr, "Failed to allocate memory for the output H3 indexes");
         exit(1);
     }
-    H3Error err = H3_EXPORT(gridRingUnsafe)(cell, k, out);
+    err = H3_EXPORT(gridRingUnsafe)(cell, k, out);
     if (err) {
         // For the CLI, we'll just do things less efficiently if there's an
         // error here. If you use `gridDiskDistances` and only pay attention to

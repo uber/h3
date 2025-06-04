@@ -128,6 +128,40 @@ SUITE(h3Memory) {
         free(gridDiskOutput);
     }
 
+    TEST(gridRing) {
+        const int k = 2;
+        int64_t ringSize;
+        t_assertSuccess(H3_EXPORT(maxGridRingSize)(k, &ringSize));
+        H3Index *gridRingOutput = calloc(ringSize, sizeof(H3Index));
+
+        resetMemoryCounters(0);
+        t_assertSuccess(H3_EXPORT(gridRing)(sunnyvale, k, gridRingOutput));
+        t_assert(actualAllocCalls == 0, "gridRing did not call alloc");
+        t_assert(actualFreeCalls == 0, "gridRing did not call free");
+
+        resetMemoryCounters(2);
+        t_assertSuccess(H3_EXPORT(gridRing)(pentagon, k, gridRingOutput));
+        t_assert(actualAllocCalls == 2, "gridRing called alloc 2 times");
+        t_assert(actualFreeCalls == 2, "gridRing called free 2 times");
+
+        resetMemoryCounters(0);
+        failAlloc = true;
+        t_assert(
+            H3_EXPORT(gridRing)(pentagon, k, gridRingOutput) == E_MEMORY_ALLOC,
+            "gridRing returns E_MEMORY_ALLOC");
+        t_assert(actualAllocCalls == 1, "gridRing called alloc 1 time");
+        t_assert(actualFreeCalls == 0, "gridRing did not call free");
+
+        resetMemoryCounters(1);
+        t_assert(
+            H3_EXPORT(gridRing)(pentagon, k, gridRingOutput) == E_MEMORY_ALLOC,
+            "gridRing returns E_MEMORY_ALLOC");
+        t_assert(actualAllocCalls == 2, "gridRing called alloc 2 times");
+        t_assert(actualFreeCalls == 1, "gridRing called free 1 time");
+
+        free(gridRingOutput);
+    }
+
     TEST(compactCells) {
         int k = 9;
         int64_t hexCount;
