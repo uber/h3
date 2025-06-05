@@ -242,6 +242,8 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testGetIcosahedronFaces.c
     src/apps/testapps/testLatLng.c
     src/apps/testapps/testLatLngInternal.c
+    src/apps/testapps/testGridRing.c
+    src/apps/testapps/testGridRingInternal.c
     src/apps/testapps/testGridRingUnsafe.c
     src/apps/testapps/testH3SetToVertexGraphInternal.c
     src/apps/testapps/testBBoxInternal.c

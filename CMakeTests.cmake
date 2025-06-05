@@ -204,6 +204,8 @@ add_h3_test(testCellToBoundaryEdgeCases
 add_h3_test(testCompactCells src/apps/testapps/testCompactCells.c)
 add_h3_test(testGridDisk src/apps/testapps/testGridDisk.c)
 add_h3_test(testGridDiskInternal src/apps/testapps/testGridDiskInternal.c)
+add_h3_test(testGridRing src/apps/testapps/testGridRing.c)
+add_h3_test(testGridRingInternal src/apps/testapps/testGridRingInternal.c)
 add_h3_test(testGridRingUnsafe src/apps/testapps/testGridRingUnsafe.c)
 add_h3_test(testGridDisksUnsafe src/apps/testapps/testGridDisksUnsafe.c)
 add_h3_test(testCellToParent src/apps/testapps/testCellToParent.c)

@@ -53,4 +53,7 @@ H3Error _getEdgeHexagons(const GeoLoop *geoloop, int64_t numHexagons, int res,
 // The safe gridDiskDistances algorithm.
 H3Error _gridDiskDistancesInternal(H3Index origin, int k, H3Index *out,
                                    int *distances, int64_t maxIdx, int curK);
+
+// The safe gridRing algorithm.
+H3Error _gridRingInternal(H3Index origin, int k, H3Index *out);
 #endif
