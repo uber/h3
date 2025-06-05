@@ -7,7 +7,7 @@ The public API of this library consists of the functions declared in file
 
 ## [Unreleased]
 ### Added
-- Added gridRing. (#1011)
+- Added `gridRing` function, that works even if encountering pentagon distortion. (#1011)
 
 ## [4.2.1] - 2025-03-10
 ### Fixed
