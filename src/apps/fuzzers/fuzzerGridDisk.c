@@ -89,7 +89,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         H3_EXPORT(gridRingUnsafe)(args->index, args->k, results);
     }
     free(results);
-    
+
     results = calloc(sizeof(H3Index), sz);
     if (results != NULL) {
         H3_EXPORT(gridRing)
