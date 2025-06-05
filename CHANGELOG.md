@@ -6,6 +6,8 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+### Added
+- Added gridRing. (#1011)
 
 ## [4.2.1] - 2025-03-10
 ### Fixed
