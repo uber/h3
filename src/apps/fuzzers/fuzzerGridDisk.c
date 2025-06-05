@@ -57,10 +57,6 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     }
     free(results);
     results = calloc(sizeof(H3Index), sz);
-    if (results != NULL) {
-    H3_EXPORT(gridRing)(args->index, args->k, results);  // Test the safe version
-    }
-    free(results);
 
     // TODO: use int64_t
     int *distances = calloc(sizeof(int), sz);
@@ -92,6 +88,11 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     results = calloc(sizeof(H3Index), sz);
     if (results != NULL) {
         H3_EXPORT(gridRingUnsafe)(args->index, args->k, results);
+    }
+    free(results);
+    
+    if (results != NULL) {
+        H3_EXPORT(gridRing)(args->index, args->k, results);  // Test the safe version
     }
     free(results);
 
