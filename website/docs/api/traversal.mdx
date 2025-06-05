@@ -255,16 +255,9 @@ function example() {
 </TabItem>
 <TabItem value="python">
 
-```py
-h3.grid_ring(h, k)
-```
-
 :::note
 
-Python uses the C function `gridRingUnsafe` internally to generate the results,
-but on failure falls back to `gridDiskDistances` and returns the set
-of cells at the specified distance to produce an equivalent to the "safe" version,
-but this consumes a lot of memory to do so.
+This function is not exposed.
 
 :::
 
@@ -278,29 +271,9 @@ h3_grid_ring_unsafe(h, k)
 </TabItem>
 <TabItem value="shell">
 
-```sh
-$ h3 gridRing --help
-h3: Returns an array of H3 cells, each cell 'k' steps away from the origin cell
-H3 4.1.0
-
-  gridRing  Returns an array of H3 cells, each cell 'k' steps away from the origin cell
-  -h, --help  Show this help message.
-  -c, --cell <index>  Required. H3 Cell
-  -k <distance> Required. Maximum grid distance for the output set
-  -f, --format <FMT>  'json' for ["CELL", ...], 'newline' for CELL\n... (Default: json)
-```
-
-```bash
-$ h3 gridRing -k 1 -c 85283473fffffff
-[ "8528340bfffffff", "85283447fffffff", "8528347bfffffff", "85283463fffffff", "85283477fffffff", "8528340ffffffff" ]
-```
-
 :::note
 
-The shell uses the C function `gridRingUnsafe` internally to generate the results,
-but on failure falls back to `gridDiskDistances` and returns the set
-of cells at the specified distance to produce an equivalent to the "safe" version,
-but this consumes a lot of memory to do so.
+This function is not exposed.
 
 :::
 
