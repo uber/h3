@@ -24,6 +24,7 @@ for hexagonal cells, and 0 and 4 (inclusive) for pentagonal cells.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'Go', value: 'go'},
     {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
@@ -64,6 +65,13 @@ function example() {
 
 ```py
 h3.cell_to_vertex(origin, vertex_num)
+```
+
+</TabItem>
+<TabItem value="go">
+
+```go
+h3.CellToVertex(origin, vertexNum)
 ```
 
 </TabItem>
@@ -109,6 +117,7 @@ Returns the indexes for all vertexes of the given cell.
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
     {label: 'DuckDB', value: 'duckdb'},
+    {label: 'Go', value: 'go'},
     {label: 'Shell', value: 'shell'},
   ]
 }>
@@ -154,6 +163,13 @@ h3.cell_to_vertexes(origin)
 ```
 
 </TabItem>
+<TabItem value="go">
+
+```go
+h3.CellToVertexes(origin)
+```
+
+</TabItem>
 <TabItem value="duckdb">
 
 ```sql
@@ -194,6 +210,7 @@ Returns the latitude and longitude coordinates of the given vertex.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'Go', value: 'go'},
     {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
@@ -233,6 +250,13 @@ function example() {
 
 ```py
 h3.vertex_to_latlng(vertex)
+```
+
+</TabItem>
+<TabItem value="go">
+
+```go
+h3.VertexToLatLng(vertex)
 ```
 
 </TabItem>
@@ -276,6 +300,7 @@ Determines if the given H3 index represents a valid H3 vertex.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'Go', value: 'go'},
     {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
@@ -315,6 +340,13 @@ function example() {
 
 ```py
 h3.is_valid_vertex(vertex)
+```
+
+</TabItem>
+<TabItem value="go">
+
+```go
+h3.IsValidVertex(vertex)
 ```
 
 </TabItem>

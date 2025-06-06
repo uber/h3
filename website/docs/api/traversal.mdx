@@ -33,6 +33,7 @@ This is the same set of limitations as the local IJ coordinate space functions.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'Go', value: 'go'},
     {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
@@ -73,6 +74,13 @@ function example() {
 
 ```py
 h3.grid_distance(h1, h2)
+```
+
+</TabItem>
+<TabItem value="go">
+
+```go
+cell.GridDistance(other)
 ```
 
 </TabItem>
@@ -213,6 +221,7 @@ This function may fail if pentagonal distortion is encountered.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'Go', value: 'go'},
     {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
@@ -260,6 +269,13 @@ function example() {
 This function is not exposed.
 
 :::
+
+</TabItem>
+<TabItem value="go">
+
+```go
+cell.GridRingUnsafe(k)
+```
 
 </TabItem>
 <TabItem value="duckdb">
@@ -371,6 +387,7 @@ Output order is not guaranteed.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'Go', value: 'go'},
     {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
@@ -417,6 +434,13 @@ h3.grid_disk(origin, k)
 ```
 
 </TabItem>
+<TabItem value="go">
+
+```go
+cell.GridDisk(k)
+```
+
+</TabItem>
 <TabItem value="duckdb">
 
 ```sql
@@ -458,6 +482,7 @@ Maximum number of cells that can result from the `gridDisk` function for a given
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'Go', value: 'go'},
     {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
@@ -490,6 +515,15 @@ This function exists for memory management and is not exposed.
 
 </TabItem>
 <TabItem value="python">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+<TabItem value="go">
 
 :::note
 
@@ -534,6 +568,7 @@ Output order is not guaranteed.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'Go', value: 'go'},
     {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
@@ -582,6 +617,13 @@ This function is not exposed in Python.
 :::
 
 </TabItem>
+<TabItem value="go">
+
+```go
+cell.GridDiskDistances(k)
+```
+
+</TabItem>
 <TabItem value="duckdb">
 
 ```sql
@@ -627,6 +669,7 @@ Users can fall back to calling the slower but more robust `gridDiskDistances`.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'Go', value: 'go'},
     {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
@@ -662,6 +705,15 @@ This function is not exposed.
 
 </TabItem>
 <TabItem value="python">
+
+:::note
+
+This function is not exposed.
+
+:::
+
+</TabItem>
+<TabItem value="go">
 
 :::note
 
@@ -707,6 +759,7 @@ the same offset. The provided array must be of size `maxGridDiskSize(k)`.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'Go', value: 'go'},
     {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
@@ -739,6 +792,15 @@ This function is not exposed.
 
 </TabItem>
 <TabItem value="python">
+
+:::note
+
+This function is not exposed.
+
+:::
+
+</TabItem>
+<TabItem value="go">
 
 :::note
 
@@ -782,6 +844,7 @@ the same offset. The provided array must be of size `maxGridDiskSize(k)`.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'Go', value: 'go'},
     {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
@@ -814,6 +877,15 @@ This function is not exposed.
 
 </TabItem>
 <TabItem value="python">
+
+:::note
+
+This function is not exposed.
+
+:::
+
+</TabItem>
+<TabItem value="go">
 
 :::note
 
@@ -855,6 +927,7 @@ grid ring (0 to max), with no guaranteed sorting within each grid ring group.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'Go', value: 'go'},
     {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
@@ -887,6 +960,15 @@ This function is not exposed.
 
 </TabItem>
 <TabItem value="python">
+
+:::note
+
+This function is not exposed.
+
+:::
+
+</TabItem>
+<TabItem value="go">
 
 :::note
 
@@ -942,6 +1024,7 @@ Notes:
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'Go', value: 'go'},
     {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
@@ -982,6 +1065,13 @@ function example() {
 
 ```py
 h3.grid_path_cells(start, end)
+```
+
+</TabItem>
+<TabItem value="go">
+
+```go
+cell.GridPath(other)
 ```
 
 </TabItem>
@@ -1027,6 +1117,7 @@ to be used for allocating memory.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'Go', value: 'go'},
     {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
@@ -1059,6 +1150,15 @@ This function exists for memory management and is not exposed.
 
 </TabItem>
 <TabItem value="python">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+<TabItem value="go">
 
 :::note
 
@@ -1105,6 +1205,7 @@ versions of H3.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'Go', value: 'go'},
     {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
@@ -1146,6 +1247,13 @@ function example() {
 
 ```py
 h3.cell_to_local_ij(origin, h)
+```
+
+</TabItem>
+<TabItem value="go">
+
+```go
+h3.CellToLocalIJ(origin, h)
 ```
 
 </TabItem>
@@ -1195,6 +1303,7 @@ versions of H3.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'Go', value: 'go'},
     {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
@@ -1235,6 +1344,13 @@ function example() {
 
 ```py
 h3.local_ij_to_cell(origin, i, j)
+```
+
+</TabItem>
+<TabItem value="go">
+
+```go
+h3.LocalIJToCell(origin, CoordIJ{i, j})
 ```
 
 </TabItem>

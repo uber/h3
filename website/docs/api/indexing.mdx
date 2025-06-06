@@ -27,6 +27,7 @@ For more information, see the
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'Go', value: 'go'},
     {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
@@ -68,6 +69,13 @@ function example() {
 
 ```py
 h3.latlng_to_cell(lat, lng, resolution)
+```
+
+</TabItem>
+<TabItem value="go">
+
+```go
+h3.LatLngToCell(h3.NewLatLng(lat, lng), resolution)
 ```
 
 </TabItem>
@@ -124,6 +132,7 @@ distance from the center of the icosahedron face.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'Go', value: 'go'},
     {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
@@ -163,6 +172,13 @@ function example() {
 
 ```py
 h3.cell_to_latlng(cell)
+```
+
+</TabItem>
+<TabItem value="go">
+
+```go
+h3.CellToLatLng(cell)
 ```
 
 </TabItem>
@@ -215,6 +231,7 @@ For more information, see the
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'Go', value: 'go'},
     {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
@@ -259,6 +276,13 @@ h3.cell_to_boundary(cell)
 Returns tuple of lat/lng tuples.
 For GeoJSON compatibility (lng/lat order), see the
 [`h3-py` docs](https://uber.github.io/h3-py/api_quick.html#polygon-interface).
+
+</TabItem>
+<TabItem value="go">
+
+```go
+cell.Boundary()
+```
 
 </TabItem>
 <TabItem value="duckdb">
