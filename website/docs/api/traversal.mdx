@@ -129,6 +129,7 @@ approach than `gridRingUnsafe` in order to compute the ring.
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'Go', value: 'go'},
     {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
@@ -173,6 +174,13 @@ function example() {
 
 ```py
 h3.grid_ring(h, k)
+```
+
+</TabItem>
+<TabItem value="go">
+
+```go
+cell.GridRing(k)
 ```
 
 </TabItem>
@@ -310,6 +318,7 @@ grid distance `k` away from an origin, which is `6*k` if `k > 0` and `1` if `k =
     {label: 'Java', value: 'java'},
     {label: 'JavaScript (Live)', value: 'javascript'},
     {label: 'Python', value: 'python'},
+    {label: 'Go', value: 'go'},
     {label: 'DuckDB', value: 'duckdb'},
     {label: 'Shell', value: 'shell'},
   ]
@@ -343,6 +352,15 @@ This function exists for memory management and is not exposed.
 
 </TabItem>
 <TabItem value="python">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+<TabItem value="go">
 
 :::note
 
