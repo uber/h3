@@ -113,6 +113,107 @@ $ h3 gridDistance -o 85283473fffffff -d 8528342bfffffff
 </Tabs>
 
 
+## gridRing
+
+Produces the "hollow ring" of cells which are *exactly* grid distance `k`
+from the origin cell.
+
+If pentagon distortion is encountered, this function will use a more memory-intensive
+approach than `gridRingUnsafe` in order to compute the ring.
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+    {label: 'Python', value: 'python'},
+    {label: 'Go', value: 'go'},
+    {label: 'DuckDB', value: 'duckdb'},
+    {label: 'Shell', value: 'shell'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+H3Error gridRing(H3Index origin, int k, H3Index* out);
+```
+
+The caller should allocate memory for the maximum size of the ring, which is
+given by `maxGridRingSize`. If fewer than the maximum number of cells are
+generated, elements in `out` may be left zero.
+
+Returns 0 (`E_SUCCESS`) on success.
+
+</TabItem>
+<TabItem value="java">
+
+```java
+List<Long> gridRing(long h3, int k);
+List<String> gridRing(String h3Address, int k);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.gridRing(h3Index, k)
+```
+
+```js live
+function example() {
+  const h = '85283473fffffff';
+  const k = 1;
+  return h3.gridRing(h, k);
+}
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.grid_ring(h, k)
+```
+
+</TabItem>
+<TabItem value="go">
+
+```go
+cell.GridRing(k)
+```
+
+</TabItem>
+<TabItem value="duckdb">
+
+```sql
+h3_grid_ring(h, k)
+```
+
+</TabItem>
+<TabItem value="shell">
+
+```sh
+$ h3 gridRing --help
+h3: Returns an array of H3 cells, each cell 'k' steps away from the origin cell
+H3 4.1.0
+
+  gridRing  Returns an array of H3 cells, each cell 'k' steps away from the origin cell
+  -h, --help  Show this help message.
+  -c, --cell <index>  Required. H3 Cell
+  -k <distance> Required. Maximum grid distance for the output set
+  -f, --format <FMT>  'json' for ["CELL", ...], 'newline' for CELL\n... (Default: json)
+```
+
+```bash
+$ h3 gridRing -k 1 -c 85283473fffffff
+[ "8528340bfffffff", "85283447fffffff", "8528347bfffffff", "85283463fffffff", "85283477fffffff", "8528340ffffffff" ]
+```
+
+</TabItem>
+</Tabs>
+
+
 ## gridRingUnsafe
 
 Produces the "hollow ring" of cells which are *exactly* grid distance `k`
@@ -140,7 +241,7 @@ H3Error gridRingUnsafe(H3Index origin, int k, H3Index* out);
 ```
 
 The caller should allocate memory for the maximum size of the ring, which is
-`6*k` if `k > 0` and `1` if `k == 0`.
+given by `maxGridRingSize`.
 
 
 Returns 0 (`E_SUCCESS`) if no pentagonal distortion was encountered.
@@ -171,16 +272,9 @@ function example() {
 </TabItem>
 <TabItem value="python">
 
-```py
-h3.grid_ring(h, k)
-```
-
 :::note
 
-Python uses the C function `gridRingUnsafe` internally to generate the results,
-but on failure falls back to `gridDiskDistances` and returns the set
-of cells at the specified distance to produce an equivalent to the "safe" version,
-but this consumes a lot of memory to do so.
+This function is not exposed.
 
 :::
 
@@ -201,29 +295,94 @@ h3_grid_ring_unsafe(h, k)
 </TabItem>
 <TabItem value="shell">
 
-```sh
-$ h3 gridRing --help
-h3: Returns an array of H3 cells, each cell 'k' steps away from the origin cell
-H3 4.1.0
+:::note
 
-  gridRing  Returns an array of H3 cells, each cell 'k' steps away from the origin cell
-  -h, --help  Show this help message.
-  -c, --cell <index>  Required. H3 Cell
-  -k <distance> Required. Maximum grid distance for the output set
-  -f, --format <FMT>  'json' for ["CELL", ...], 'newline' for CELL\n... (Default: json)
+This function is not exposed.
+
+:::
+
+</TabItem>
+</Tabs>
+
+
+## maxGridRingSize
+
+This function provides the maximum number of cells in the grid that are *exactly*
+grid distance `k` away from an origin, which is `6*k` if `k > 0` and `1` if `k == 0`.
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+    {label: 'Python', value: 'python'},
+    {label: 'Go', value: 'go'},
+    {label: 'DuckDB', value: 'duckdb'},
+    {label: 'Shell', value: 'shell'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+H3Error maxGridRingSize(int k, H3Index* out);
 ```
 
-```bash
-$ h3 gridRing -k 1 -c 85283473fffffff
-[ "8528340bfffffff", "85283447fffffff", "8528347bfffffff", "85283463fffffff", "85283477fffffff", "8528340ffffffff" ]
-```
+
+Returns 0 (`E_SUCCESS`) if no pentagonal distortion was encountered.
+
+</TabItem>
+<TabItem value="java">
 
 :::note
 
-The shell uses the C function `gridRingUnsafe` internally to generate the results,
-but on failure falls back to `gridDiskDistances` and returns the set
-of cells at the specified distance to produce an equivalent to the "safe" version,
-but this consumes a lot of memory to do so.
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+<TabItem value="javascript">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+<TabItem value="python">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+<TabItem value="go">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+<TabItem value="duckdb">
+
+:::note
+
+This function exists for memory management and is not exposed.
+
+:::
+
+</TabItem>
+<TabItem value="shell">
+
+:::note
+
+This function exists for memory management and is not exposed.
 
 :::
 

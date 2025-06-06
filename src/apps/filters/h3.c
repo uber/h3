@@ -653,59 +653,10 @@ SUBCOMMAND(gridRing,
         fprintf(stderr, "Failed to allocate memory for the output H3 indexes");
         exit(1);
     }
-    err = H3_EXPORT(gridRingUnsafe)(cell, k, out);
+    err = H3_EXPORT(gridRing)(cell, k, out);
     if (err) {
-        // For the CLI, we'll just do things less efficiently if there's an
-        // error here. If you use `gridDiskDistances` and only pay attention to
-        // the last array, it's equivalent to a "safe" gridRing call, but
-        // consumes a lot more temporary memory to do it
-        int64_t templen = 0;
-        err = H3_EXPORT(maxGridDiskSize)(k, &templen);
-        if (err) {
-            // But we abort if anything fails in here
-            free(out);
-            return err;
-        }
-        H3Index *temp = calloc(templen, sizeof(H3Index));
-        if (temp == NULL) {
-            fprintf(stderr,
-                    "Failed to allocate memory for a temporary hashset of H3 "
-                    "indexes");
-            exit(1);
-        }
-        int *distances = calloc(templen, sizeof(int));
-        if (distances == NULL) {
-            fprintf(stderr,
-                    "Failed to allocate memory for the distances of the H3 "
-                    "indexes");
-            exit(1);
-        }
-        err = H3_EXPORT(gridDiskDistances)(cell, k, temp, distances);
-        if (err) {
-            free(out);
-            free(temp);
-            free(distances);
-            return err;
-        }
-        // Now, we first re-zero the `out` array in case there's garbage
-        // anywhere in it from the failed computation. Then we scan through the
-        // gridDisk output and copy the indexes that are the correct distance
-        // in. We *should* only be in this path when there's a pentagon
-        // involved, so we expect the true length of the array to be less than
-        // what was allocated for `out` in this scenario.
-        for (int i = 0; i < len; i++) {
-            out[i] = 0;
-        }
-        int64_t count = 0;
-        for (int64_t i = 0; i < templen; i++) {
-            if (distances[i] == k && temp[i] != 0) {
-                out[count] = temp[i];
-                count++;
-            }
-        }
-        len = count;
-        free(temp);
-        free(distances);
+        free(out);
+        return err;
     }
     // Now that we have the correct data, however we got it, we can print it out
     if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
