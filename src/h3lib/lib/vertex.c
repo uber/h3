@@ -71,13 +71,13 @@ static H3Error vertexRotations(H3Index cell, int *out) {
         PentagonDirectionFaces dirFaces;
         // We never hit the end condition
         int p = 0;
-        for (; p < NUM_PENTAGONS; p++) {
+        for (; NEVER(p < NUM_PENTAGONS); p++) {
             if (pentagonDirectionFaces[p].baseCell == baseCell) {
                 dirFaces = pentagonDirectionFaces[p];
                 break;
             }
         }
-        if (p == NUM_PENTAGONS) {
+        if (NEVER(p == NUM_PENTAGONS)) {
             return E_FAILED;
         }
 
