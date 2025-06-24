@@ -1280,3 +1280,182 @@ H3Error H3_EXPORT(cellsToLinkedMultiPolygon)(const H3Index *h3Set,
     }
     return normalizeResult;
 }
+
+int num_polys(LinkedGeoPolygon *L) {
+    int n = 0;
+    while (L) {
+        n++;
+        L = L->next;
+    }
+    return n;
+}
+
+int num_loops(LinkedGeoLoop *L) {
+    int n = 0;
+    while (L) {
+        n++;
+        L = L->next;
+    }
+    return n;
+}
+
+int num_latlngs(LinkedLatLng *L) {
+    int n = 0;
+    while (L) {
+        n++;
+        L = L->next;
+    }
+    return n;
+}
+
+/*
+LinkedGeoLoop:
+    LinkedLatLng *first
+    LinkedLatLng *last
+    LinkedGeoLoop *next
+
+LinkedLatLng:
+    LatLng vertex
+    LinkedLatLng *next
+
+GeoLoop:
+    int numVerts
+    LatLng *verts
+ */
+GeoLoop _LinkedGeoLoop_to_GeoLoop(LinkedGeoLoop link_loop) {
+    int n = num_latlngs(link_loop.first);  // double?
+
+    GeoLoop geo_loop = {
+        .numVerts = n,
+        .verts = H3_MEMORY(calloc)(n, sizeof(LatLng))  // hello there
+    };
+
+    LinkedLatLng *L = link_loop.first;  // double?
+    int i = 0;
+    while (L) {
+        geo_loop.verts[i] = L->vertex;
+        L = L->next;
+        i++;
+    }
+
+    return geo_loop;
+}
+
+/*
+LinkedGeoPolygon:
+    LinkedGeoLoop *first
+    LinkedGeoLoop *last
+    LinkedGeoPolygon *next
+
+LinkedGeoLoop:
+    LinkedLatLng *first
+    LinkedLatLng *last
+    LinkedGeoLoop *next
+
+GeoPolygon:
+    GeoLoop geoloop
+    int numHoles
+    GeoLoop *holes
+ */
+GeoPolygon _LinkedGeoPolygon_to_Polygon(LinkedGeoPolygon link_poly) {
+    LinkedGeoLoop *L = link_poly.first;
+
+    int n = num_loops(L) - 1;
+    GeoPolygon geo_poly = {
+        .geoloop = _LinkedGeoLoop_to_GeoLoop(*L),
+        .numHoles = n,
+        .holes = H3_MEMORY(calloc)(n, sizeof(GeoLoop)),
+    };
+
+    L = L->next;
+    int i = 0;
+    while (L) {
+        geo_poly.holes[i] = _LinkedGeoLoop_to_GeoLoop(*L);
+        L = L->next;
+        i++;
+    }
+
+    return geo_poly;
+}
+
+/*
+LinkedGeoPolygon:
+    LinkedGeoLoop *first
+    LinkedGeoLoop *last
+    LinkedGeoPolygon *next
+
+GeoMultiPolygon:
+    int numPolygons
+    GeoPolygon *polygons
+
+ */
+GeoMultiPolygon _LinkedGeoPoly_to_GeoMultiPolygon(LinkedGeoPolygon *link_poly) {
+    int n = num_polys(link_poly);
+
+    GeoMultiPolygon geo_mpoly = {
+        .numPolygons = n,
+        .polygons = H3_MEMORY(calloc)(n, sizeof(GeoPolygon))  // combine this
+    };
+
+    LinkedGeoPolygon *L = link_poly;
+    int i = 0;
+    while (L) {
+        geo_mpoly.polygons[i] = _LinkedGeoPolygon_to_Polygon(*L);
+        L = L->next;
+        i++;
+    }
+
+    return geo_mpoly;
+}
+
+H3Error H3_EXPORT(cellsToGeoMultiPolygon)(const H3Index *cells,
+                                          const int numCells,
+                                          GeoMultiPolygon *out) {
+    H3Error err;
+    LinkedGeoPolygon lgp;
+
+    err = H3_EXPORT(cellsToLinkedMultiPolygon)(cells, numCells, &lgp);
+    if (err) {
+        return err;
+    }
+
+    *out = _LinkedGeoPoly_to_GeoMultiPolygon(&lgp);
+    // todo: capture errors from conversion function
+
+    H3_EXPORT(destroyLinkedMultiPolygon)(&lgp);
+
+    return E_SUCCESS;
+}
+
+/*
+GeoLoop:
+    int numVerts
+    LatLng *verts
+
+GeoPolygon:
+    GeoLoop geoloop
+    int numHoles
+    GeoLoop *holes
+
+GeoMultiPolygon:
+    int numPolygons
+    GeoPolygon *polygons
+ */
+
+void freeGeoLoop(GeoLoop loop) { H3_MEMORY(free)(loop.verts); }
+
+void freeGeoPolygon(GeoPolygon poly) {
+    freeGeoLoop(poly.geoloop);
+
+    for (int i = 0; i < poly.numHoles; i++) {
+        freeGeoLoop(poly.holes[i]);
+    }
+    H3_MEMORY(free)(poly.holes);
+}
+
+void H3_EXPORT(freeGeoMultiPolygon)(GeoMultiPolygon mpoly) {
+    for (int i = 0; i < mpoly.numPolygons; i++) {
+        freeGeoPolygon(mpoly.polygons[i]);
+    }
+    H3_MEMORY(free)(mpoly.polygons);
+}
