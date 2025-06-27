@@ -17,6 +17,7 @@
  * @brief tests H3 vertex functions.
  */
 
+#include "algos.h"
 #include "test.h"
 #include "utility.h"
 #include "vertex.h"
@@ -84,5 +85,14 @@ SUITE(VertexInternal) {
         H3Index pentagon = 0x823007fffffffff;
         t_assert(directionForVertexNum(pentagon, 5) == INVALID_DIGIT,
                  "invalid pent vertex should return invalid direction");
+    }
+
+    TEST(directionForNeighbor_invalid) {
+        t_assert(directionForNeighbor(0, 0) == INVALID_DIGIT, "not neighbors");
+
+        H3Index origin = ~0;
+
+        t_assert(directionForNeighbor(origin, origin) == INVALID_DIGIT,
+                 "not neighbors (all ones)");
     }
 }
