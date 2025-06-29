@@ -63,7 +63,7 @@ static char *H3ErrorDescriptions[] = {
 const char *H3_EXPORT(describeH3Error)(H3Error err) {
     // err is always non-negative because it is an unsigned integer
     // TODO: Better way to bounds check here?
-    if (ALWAYS(err >= 0) && err <= 15) {
+    if (err <= 15) {
         return H3ErrorDescriptions[err];
     } else {
         return "Invalid error code";
