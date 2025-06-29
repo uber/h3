@@ -61,7 +61,9 @@ static char *H3ErrorDescriptions[] = {
  * @return The string describing the H3Error
  */
 const char *H3_EXPORT(describeH3Error)(H3Error err) {
-    if (err >= 0 && err <= 15) {  // TODO: Better way to bounds check here?
+    // err must always be non-negative because it is an unsigned type
+    // TODO: Better way to bounds check here?
+    if (ALWAYS(err >= 0) && err <= 15) {
         return H3ErrorDescriptions[err];
     } else {
         return "Invalid error code";
@@ -85,6 +87,55 @@ int H3_EXPORT(getResolution)(H3Index h) { return H3_GET_RESOLUTION(h); }
  * @return The base cell "number" of the H3 cell argument.
  */
 int H3_EXPORT(getBaseCellNumber)(H3Index h) { return H3_GET_BASE_CELL(h); }
+
+H3Error H3_EXPORT(getIndexDigit)(H3Index h, int digit, int *out) {
+    if (digit < 1 || digit > MAX_H3_RES) {
+        // Not strictly a resolution domain but close enough
+        return E_RES_DOMAIN;
+    }
+    *out = H3_GET_INDEX_DIGIT(h, digit);
+    return E_SUCCESS;
+}
+
+H3Error H3_EXPORT(getMaxUnusedDigits)(int res, H3Index *out) {
+    if (res < 0 || res > MAX_H3_RES) {
+        return E_RES_DOMAIN;
+    }
+    int numDigits = MAX_H3_RES - res;
+    H3Index mask = 0;
+    // TODO: closed form
+    for (int digit = 0; digit < numDigits; digit++) {
+        mask <<= H3_PER_DIGIT_OFFSET;
+        mask |= H3_DIGIT_MASK;
+    }
+    *out = mask;
+    return E_SUCCESS;
+}
+
+H3Error H3_EXPORT(getUnusedDigits)(H3Index h, H3Index *out) {
+    int res = H3_GET_RESOLUTION(h);
+    H3Index mask;
+    H3Error maxErr = H3_EXPORT(getMaxUnusedDigits)(res, &mask);
+    if (NEVER(maxErr)) {
+        return maxErr;
+    }
+    *out = h & mask;
+    return E_SUCCESS;
+}
+
+H3Error H3_EXPORT(setUnusedDigits)(H3Index h, H3Index data, H3Index *out) {
+    int res = H3_GET_RESOLUTION(h);
+    H3Index mask;
+    H3Error maxErr = H3_EXPORT(getMaxUnusedDigits)(res, &mask);
+    if (NEVER(maxErr)) {
+        return maxErr;
+    }
+    if (data > mask) {
+        return E_DOMAIN;
+    }
+    *out = (h & ~mask) | data;
+    return E_SUCCESS;
+}
 
 /**
  * Converts a string representation of an H3 index into an H3 index.

@@ -515,6 +515,15 @@ DECLSPEC int H3_EXPORT(getResolution)(H3Index h);
 DECLSPEC int H3_EXPORT(getBaseCellNumber)(H3Index h);
 /** @} */
 
+DECLSPEC H3Error H3_EXPORT(getIndexDigit)(H3Index h, int digit, int *out);
+
+DECLSPEC H3Error H3_EXPORT(getMaxUnusedDigits)(int res, H3Index *out);
+
+DECLSPEC H3Error H3_EXPORT(getUnusedDigits)(H3Index h, H3Index *out);
+
+DECLSPEC H3Error H3_EXPORT(setUnusedDigits)(H3Index h, H3Index data,
+                                            H3Index *out);
+
 /** @defgroup stringToH3 stringToH3
  * Functions for stringToH3
  * @{
