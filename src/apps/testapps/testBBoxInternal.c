@@ -350,6 +350,13 @@ SUITE(BBox) {
                  "bboxHexEstimate of invalid resolution fails");
     }
 
+    TEST(bboxHexEstimate_invalidRes) {
+        int64_t numHexagons;
+        BBox bbox = {1.0, 1.0, 0.0, 1.0};
+        t_assert(bboxHexEstimate(&bbox, 1, &numHexagons) == E_FAILED,
+                 "bboxHexEstimate of invalid latitude difference (0) fails");
+    }
+
     TEST(bboxHexEstimate_ratio) {
         BBox bbox1 = {0.82294, 0.82273, 0.131671, 0.131668};
         BBox bbox2 = {0.131671, 0.131668, 0.82294, 0.82273};
