@@ -59,6 +59,7 @@ module.exports = {
       "api/regions",
       "api/uniedge",
       "api/vertex",
+      "api/unuseddigits",
       "api/misc",
     ],
     Community: [
