@@ -61,9 +61,7 @@ static char *H3ErrorDescriptions[] = {
  * @return The string describing the H3Error
  */
 const char *H3_EXPORT(describeH3Error)(H3Error err) {
-    // err must always be non-negative because it is an unsigned type
-    // TODO: Better way to bounds check here?
-    if (ALWAYS(err >= 0) && err <= 15) {
+    if (err >= 0 && err <= 15) {  // TODO: Better way to bounds check here?
         return H3ErrorDescriptions[err];
     } else {
         return "Invalid error code";
@@ -153,7 +151,7 @@ H3Error H3_EXPORT(getMaxUnusedDigits)(int res, H3Index *out) {
 H3Index H3_EXPORT(getUnusedDigits)(H3Index h) {
     int res = H3_GET_RESOLUTION(h);
     H3Index mask;
-    H3Error maxErr = H3_EXPORT(getMaxUnusedDigits)(res, &mask);
+    DEFENSEONLY(H3Error maxErr =) H3_EXPORT(getMaxUnusedDigits)(res, &mask);
     if (NEVER(maxErr)) {
         // The API doesn't really have a way to indicate this as it should be
         // impossible. `res` is gauranteed to be in the valid range for
