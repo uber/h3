@@ -138,14 +138,7 @@ H3Error H3_EXPORT(getMaxUnusedDigits)(int res, H3Index *out) {
     if (res < 0 || res > MAX_H3_RES) {
         return E_RES_DOMAIN;
     }
-    int numDigits = MAX_H3_RES - res;
-    H3Index mask = 0;
-    // TODO: closed form
-    for (int digit = 0; digit < numDigits; digit++) {
-        mask <<= H3_PER_DIGIT_OFFSET;
-        mask |= H3_DIGIT_MASK;
-    }
-    *out = mask;
+    *out = H3_INIT >> (res * 3);
     return E_SUCCESS;
 }
 
