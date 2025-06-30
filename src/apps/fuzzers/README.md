@@ -34,6 +34,7 @@ The public API of H3 is covered in the following fuzzers:
 | distance | [fuzzerDistances](./fuzzerDistances.c)
 | edgeLength | [fuzzerEdgeLength](./fuzzerEdgeLength.c)
 | getBaseCellNumber | [fuzzerCellProperties](./fuzzerCellProperties.c)
+| getReservedBits | [fuzzerCellProperties](./fuzzerCellProperties.c)
 | getMaxUnusedDigits | [fuzzerResolutions](./fuzzerResolutions.c)
 | getIndexDigit | [fuzzerCellProperties](./fuzzerCellProperties.c)
 | getUnusedDigits | [fuzzerCellProperties](./fuzzerCellProperties.c)

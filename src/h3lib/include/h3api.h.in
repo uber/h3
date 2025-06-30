@@ -515,14 +515,65 @@ DECLSPEC int H3_EXPORT(getResolution)(H3Index h);
 DECLSPEC int H3_EXPORT(getBaseCellNumber)(H3Index h);
 /** @} */
 
+/** @defgroup getReservedBits getReservedBits
+ * Functions for getReservedBits
+ * @{
+ */
+/** @brief returns the reserved bits the provided H3 index
+ *
+ * This is 0 for valid H3 cell indexes, and is the direction from the origin
+ * for directed edges. */
+DECLSPEC int H3_EXPORT(getReservedBits)(H3Index h);
+/** @} */
+
+/** @defgroup getIndexDigit getIndexDigit
+ * Functions for getIndexDigit
+ * @{
+ */
+/** @brief returns the indexing digit of the provided H3 cell
+ *
+ * Indexing digits are 1-indexed beginning with the digit for resolution 1. */
 DECLSPEC H3Error H3_EXPORT(getIndexDigit)(H3Index h, int digit, int *out);
+/** @} */
 
+/** @defgroup getMaxUnusedDigits getMaxUnusedDigits
+ * Functions for getMaxUnusedDigits
+ * @{
+ */
+/** @brief returns the maximum value that can be provided to setUnusedDigits
+ * for a resolution.
+ *
+ * This value is the same as the value that should be set for the index to be
+ * a valid cell.
+ */
 DECLSPEC H3Error H3_EXPORT(getMaxUnusedDigits)(int res, H3Index *out);
+/** @} */
 
-DECLSPEC H3Error H3_EXPORT(getUnusedDigits)(H3Index h, H3Index *out);
+/** @defgroup getUnusedDigits getUnusedDigits
+ * Functions for getUnusedDigits
+ * @{
+ */
+/** @brief Retrieve the value stored in the unused digits of the H3 index.
+ *
+ * For valid cells this will always be the value of getMaxUnusedDigits for
+ * the cell's resolution.
+ */
+DECLSPEC H3Index H3_EXPORT(getUnusedDigits)(H3Index h);
+/** @} */
 
+/** @defgroup setUnusedDigits setUnusedDigits
+ * Functions for setUnusedDigits
+ * @{
+ */
+/** @brief Creates an index with the unused digits set to another value.
+ *
+ * Unless data is the value provided by getMaxUnusedDigits, this will create
+ * an invalid cell. To create a valid cell again, pass the created index in
+ * to this function with `data` set to the value given by getMaxUnusedDigits.
+ */
 DECLSPEC H3Error H3_EXPORT(setUnusedDigits)(H3Index h, H3Index data,
                                             H3Index *out);
+/** @} */
 
 /** @defgroup stringToH3 stringToH3
  * Functions for stringToH3

@@ -126,7 +126,7 @@ SUITE(indexDigits) {
 
                 H3Index mask;
                 H3Index expectedMask;
-                t_assertSuccess(H3_EXPORT(getUnusedDigits)(h, &mask));
+                mask = H3_EXPORT(getUnusedDigits)(h);
                 t_assertSuccess(
                     H3_EXPORT(getMaxUnusedDigits)(resCell, &expectedMask));
 
@@ -138,8 +138,7 @@ SUITE(indexDigits) {
                     H3Index mask2 = mask - 1;
                     t_assertSuccess(H3_EXPORT(setUnusedDigits)(h, mask2, &h2));
 
-                    H3Index mask3;
-                    t_assertSuccess(H3_EXPORT(getUnusedDigits)(h2, &mask3));
+                    H3Index mask3 = H3_EXPORT(getUnusedDigits)(h2);
 
                     t_assert(mask3 == mask2,
                              "retrieved mask is same as expected");
