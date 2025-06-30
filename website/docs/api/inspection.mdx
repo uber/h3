@@ -187,6 +187,189 @@ $ h3 getBaseCellNumber -c 85283473fffffff
 </TabItem>
 </Tabs>
 
+## getReservedBits
+
+Returns the reserved bits of the index.
+Relevant for edges and vertexes.
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+    {label: 'Python', value: 'python'},
+    {label: 'Go', value: 'go'},
+    {label: 'DuckDB', value: 'duckdb'},
+    {label: 'Shell', value: 'shell'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+int getReservedBits(H3Index h);
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+int getReservedBits(long h3);
+int getReservedBits(String h3Address);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.getReservedBits(h)
+```
+
+```js live
+function example() {
+  const h = '85283473fffffff';
+  return h3.getReservedBits(h);
+}
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.get_reserved_bits(h)
+```
+
+</TabItem>
+<TabItem value="go">
+
+```go
+cell.ReservedBits()
+```
+
+</TabItem>
+<TabItem value="duckdb">
+
+```sql
+h3_get_reserved_bits(h)
+```
+
+</TabItem>
+<TabItem value="shell">
+
+```sh
+$ h3 getReservedBits --help
+h3: Extracts the reserved bits (0 - 7) from the H3 cell
+H3 4.3.0
+
+	getReservedBits	Extracts the reserved bits (0 - 7) from the H3 cell
+	-h, --help	Show this help message.
+	-c, --cell <index>	Required. H3 Cell
+```
+
+```bash
+$ h3 getReservedBits -c 85283473fffffff
+0
+```
+
+</TabItem>
+</Tabs>
+
+## getIndexDigit
+
+Returns an indexing digit of the index.
+Works for cells, edges and vertexes.
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+    {label: 'Python', value: 'python'},
+    {label: 'Go', value: 'go'},
+    {label: 'DuckDB', value: 'duckdb'},
+    {label: 'Shell', value: 'shell'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+H3Error getIndexDigit(H3Index h, int digit, H3Index *out);
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+int getIndexDigit(long h3, int digit);
+int getIndexDigit(String h3Address, int digit);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.getIndexDigit(h, digit)
+```
+
+```js live
+function example() {
+  const h = '85283473fffffff';
+  const digit = 2;
+  return h3.getIndexDigit(h, digit);
+}
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.get_index_digit(h, digit)
+```
+
+</TabItem>
+<TabItem value="go">
+
+```go
+cell.IndexDigit(digit)
+```
+
+</TabItem>
+<TabItem value="duckdb">
+
+```sql
+h3_get_index_digit(h, digit)
+```
+
+</TabItem>
+<TabItem value="shell">
+
+```sh
+$ h3 getIndexDigit --help
+h3: Extracts the indexing digit (0 - 7) from the H3 cell
+H3 4.3.0
+
+	getIndexDigit	Extracts the indexing digit (0 - 7) from the H3 cell
+	-h, --help	Show this help message.
+	-c, --cell <index>	Required. H3 Cell
+	-d, --digit <digit>	Required. Indexing digit (1 - 15)
+```
+
+```bash
+$ h3 getIndexDigit -c 85283473fffffff -d 2
+7
+```
+
+</TabItem>
+</Tabs>
+
+Digits are 1-indexed starting with the resolution 1 digit.
+
+This function will return unused index digits as well as used ones,
+in that case they will be 7 for valid cells.
+
 ## stringToH3
 
 Converts the string representation to `H3Index` (`uint64_t`) representation.

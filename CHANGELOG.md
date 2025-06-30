@@ -6,6 +6,10 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+### Added
+- Added `getIndexDigit` function for inspecting specific index digits of an H3 index.
+- Added `getReservedBits` function for inspecting the "reserved bits" field of an H3 index (such
+as a directed edge.)
 
 ## [4.3.0] - 2025-06-17
 ### Added
