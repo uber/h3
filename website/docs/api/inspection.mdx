@@ -187,6 +187,462 @@ $ h3 getBaseCellNumber -c 85283473fffffff
 </TabItem>
 </Tabs>
 
+## getReservedBits
+
+Returns the reserved bits of the index.
+Relevant for edges and vertexes.
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+    {label: 'Python', value: 'python'},
+    {label: 'Go', value: 'go'},
+    {label: 'DuckDB', value: 'duckdb'},
+    {label: 'Shell', value: 'shell'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+int getReservedBits(H3Index h);
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+int getReservedBits(long h3);
+int getReservedBits(String h3Address);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.getReservedBits(h)
+```
+
+```js live
+function example() {
+  const h = '85283473fffffff';
+  return h3.getReservedBits(h);
+}
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.get_reserved_bits(h)
+```
+
+</TabItem>
+<TabItem value="go">
+
+```go
+cell.ReservedBits()
+```
+
+</TabItem>
+<TabItem value="duckdb">
+
+```sql
+h3_get_reserved_bits(h)
+```
+
+</TabItem>
+<TabItem value="shell">
+
+```sh
+$ h3 getReservedBits --help
+h3: Extracts the reserved bits (0 - 7) from the H3 cell
+H3 4.3.0
+
+	getReservedBits	Extracts the reserved bits (0 - 7) from the H3 cell
+	-h, --help	Show this help message.
+	-c, --cell <index>	Required. H3 Cell
+```
+
+```bash
+$ h3 getReservedBits -c 85283473fffffff
+0
+```
+
+</TabItem>
+</Tabs>
+
+## getIndexDigit
+
+Returns an indexing digit of the index.
+Works for cells, edges and vertexes.
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+    {label: 'Python', value: 'python'},
+    {label: 'Go', value: 'go'},
+    {label: 'DuckDB', value: 'duckdb'},
+    {label: 'Shell', value: 'shell'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+H3Error getIndexDigit(H3Index h, int digit, H3Index *out);
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+int getIndexDigit(long h3, int digit);
+int getIndexDigit(String h3Address, int digit);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.getIndexDigit(h, digit)
+```
+
+```js live
+function example() {
+  const h = '85283473fffffff';
+  const digit = 2;
+  return h3.getIndexDigit(h, digit);
+}
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.get_index_digit(h, digit)
+```
+
+</TabItem>
+<TabItem value="go">
+
+```go
+cell.IndexDigit(digit)
+```
+
+</TabItem>
+<TabItem value="duckdb">
+
+```sql
+h3_get_index_digit(h, digit)
+```
+
+</TabItem>
+<TabItem value="shell">
+
+```sh
+$ h3 getIndexDigit --help
+h3: Extracts the indexing digit (0 - 7) from the H3 cell
+H3 4.3.0
+
+	getIndexDigit	Extracts the indexing digit (0 - 7) from the H3 cell
+	-h, --help	Show this help message.
+	-c, --cell <index>	Required. H3 Cell
+	-d, --digit <digit>	Required. Indexing digit (1 - 15)
+```
+
+```bash
+$ h3 getIndexDigit -c 85283473fffffff -d 2
+7
+```
+
+</TabItem>
+</Tabs>
+
+Digits are 1-indexed starting with the resolution 1 digit.
+
+This function will return unused index digits as well as used ones,
+in that case they will be 7 for valid cells. However, they may be
+changed with setUnusedDigits below.
+
+## getMaxUnusedDigits
+
+Returns the maximum value that can be provided to setUnusedDigits
+for a resolution.
+
+This value is the same as the value that should be set for the index to be
+a valid cell.
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+    {label: 'Python', value: 'python'},
+    {label: 'Go', value: 'go'},
+    {label: 'DuckDB', value: 'duckdb'},
+    {label: 'Shell', value: 'shell'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+H3Error getMaxUnusedDigits(int res, H3Index *out);
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+long getMaxUnusedDigits(int res);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.getMaxUnusedDigits(res)
+```
+
+```js live
+function example() {
+  return h3.getMaxUnusedDigits(2);
+}
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.get_max_unused_digits(res)
+```
+
+</TabItem>
+<TabItem value="go">
+
+```go
+h3.MaxUnusedDigits(res)
+```
+
+</TabItem>
+<TabItem value="duckdb">
+
+```sql
+h3_get_max_unused_digits(res)
+```
+
+</TabItem>
+<TabItem value="shell">
+
+```sh
+$ h3 getMaxUnusedDigits --help
+h3: Returns the maximum value that can be provided to setUnusedDigits for a resolution
+H3 4.3.0
+
+	getMaxUnusedDigits	Returns the maximum value that can be provided to setUnusedDigits for a resolution
+	-h, --help	Show this help message.
+	-r, --resolution <res>	Required. Resolution, 0-15 inclusive.
+	-f, --format <FMT>	Output format: decimal (default), or hex.
+```
+
+```bash
+$ h3 getMaxUnusedDigits -r 2
+549755813887
+```
+
+</TabItem>
+</Tabs>
+
+## getUnusedDigits
+
+Retrieve the value stored in the unused digits of the H3 index.
+
+For valid cells this will always be the value of getMaxUnusedDigits for
+the cell's resolution.
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+    {label: 'Python', value: 'python'},
+    {label: 'Go', value: 'go'},
+    {label: 'DuckDB', value: 'duckdb'},
+    {label: 'Shell', value: 'shell'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+H3Index getUnusedDigits(H3Index h);
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+long getUnusedDigits(long h3);
+long getUnusedDigits(String h3Address);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.getUnusedDigits(h)
+```
+
+```js live
+function example() {
+  const h = '8b585c4abcb200c';
+  return h3.getUnusedDigits(h);
+}
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.get_unused_digits(h)
+```
+
+</TabItem>
+<TabItem value="go">
+
+```go
+cell.UnusedDigits()
+```
+
+</TabItem>
+<TabItem value="duckdb">
+
+```sql
+h3_get_unused_digits(h)
+```
+
+</TabItem>
+<TabItem value="shell">
+
+```sh
+$ h3 Returns value of the unused digits for an index
+H3 4.3.0
+
+	getUnusedDigits	Returns value of the unused digits for an index
+	-h, --help	Show this help message.
+	-f, --format <FMT>	Output format: decimal (default), or hex.
+	-c, --cell <index>	Required. H3 Cell
+```
+
+```bash
+$ h3 getUnusedDigits -c 8b585c4abcb200c
+12
+```
+
+</TabItem>
+</Tabs>
+
+## setUnusedDigits
+
+Creates an index with the unused digits set to another value.
+
+Unless data is the value provided by getMaxUnusedDigits, this will create
+an invalid cell. To create a valid cell again, pass the created index in
+to this function with `data` set to the value given by getMaxUnusedDigits.
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+    {label: 'Python', value: 'python'},
+    {label: 'Go', value: 'go'},
+    {label: 'DuckDB', value: 'duckdb'},
+    {label: 'Shell', value: 'shell'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+H3Error setUnusedDigits(H3Index h, H3Index data, H3Index *out);
+```
+
+</TabItem>
+<TabItem value="java">
+
+```java
+long setUnusedDigits(long h3, long data);
+String setUnusedDigits(String h3Address, long data);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.setUnusedDigits(data)
+```
+
+```js live
+function example() {
+  return h3.setUnusedDigits("85283473fffffff", 2);
+}
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.set_unused_digits(h, data)
+```
+
+</TabItem>
+<TabItem value="go">
+
+```go
+cell.SetUnusedDigits(data)
+```
+
+</TabItem>
+<TabItem value="duckdb">
+
+```sql
+h3_set_unused_data(h, data)
+```
+
+</TabItem>
+<TabItem value="shell">
+
+```sh
+$ h3 setUnusedDigits --help
+h3: Creates an index with modified unused digits for an index
+H3 4.3.0
+
+	setUnusedDigits	Creates an index with modified unused digits for an index
+	-h, --help	Show this help message.
+	-f, --format <FMT>	'json' for "CELL", 'newline' for CELL (Default: json)
+	-c, --cell <index>	Required. H3 Cell
+	-d, --data <data>	Required. Value to encode
+```
+
+```bash
+$ h3 setUnusedDigits -c 8b585c4abcb2fff -d 2
+"8b585c4abcb2002"
+```
+
+</TabItem>
+</Tabs>
+
 ## stringToH3
 
 Converts the string representation to `H3Index` (`uint64_t`) representation.
