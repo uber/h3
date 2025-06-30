@@ -296,6 +296,131 @@ SUBCOMMAND(getBaseCellNumber,
     return E_SUCCESS;
 }
 
+SUBCOMMAND(getReservedBits,
+           "Extracts the reserved bits (0 - 7) from the H3 cell") {
+    DEFINE_CELL_ARG(cell, cellArg);
+    Arg *args[] = {&getReservedBitsArg, &helpArg, &cellArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    // TODO: Should there be a general `isValidIndex`?
+    H3Error cellErr = H3_EXPORT(isValidCell)(cell);
+    H3Error edgeErr = H3_EXPORT(isValidDirectedEdge)(cell);
+    H3Error vertErr = H3_EXPORT(isValidVertex)(cell);
+    if (cellErr && edgeErr && vertErr) {
+        return cellErr;
+    }
+    // If we got here, we can use `getResolution` safely, as this is one of the
+    // few functions that doesn't do any error handling (for some reason? I
+    // don't see how this would ever be in a hot loop anywhere.
+    int reservedBits = H3_EXPORT(getReservedBits)(cell);
+    printf("%i\n", reservedBits);
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(getIndexDigit,
+           "Extracts the indexing digit (0 - 7) from the H3 cell") {
+    DEFINE_CELL_ARG(cell, cellArg);
+    int digit = 0;
+    Arg digitArg = {.names = {"-d", "--digit"},
+                    .required = true,
+                    .scanFormat = "%d",
+                    .valueName = "digit",
+                    .value = &digit,
+                    .helpText = "Indexing digit (1 - 15)"};
+    Arg *args[] = {&getIndexDigitArg, &helpArg, &cellArg, &digitArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    // TODO: Should there be a general `isValidIndex`?
+    H3Error cellErr = H3_EXPORT(isValidCell)(cell);
+    H3Error edgeErr = H3_EXPORT(isValidDirectedEdge)(cell);
+    H3Error vertErr = H3_EXPORT(isValidVertex)(cell);
+    if (cellErr && edgeErr && vertErr) {
+        return cellErr;
+    }
+    int value;
+    H3Error err = H3_EXPORT(getIndexDigit)(cell, digit, &value);
+    if (err) {
+        return err;
+    }
+    printf("%i\n", value);
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(getMaxUnusedDigits,
+           "Returns the maximum value that can be provided to setUnusedDigits "
+           "for a resolution") {
+    DEFINE_FORMAT_ARG("Output format: decimal (default), or hex.");
+    int res = 0;
+    Arg resArg = {.names = {"-r", "--resolution"},
+                  .required = true,
+                  .scanFormat = "%d",
+                  .valueName = "res",
+                  .value = &res,
+                  .helpText = "Resolution, 0-15 inclusive."};
+    Arg *args[] = {&getMaxUnusedDigitsArg, &helpArg, &resArg, &formatArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+
+    H3Index value;
+    H3Error err = H3_EXPORT(getMaxUnusedDigits)(res, &value);
+    if (err) {
+        return err;
+    }
+    if (strcmp(format, "decimal") == 0 || strcmp(format, "") == 0) {
+        printf("%lld\n", value);
+    } else if (strcmp(format, "hex") == 0) {
+        printf("%llx\n", value);
+    } else {
+        return E_FAILED;
+    }
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(getUnusedDigits, "Returns value of the unused digits for an index") {
+    DEFINE_FORMAT_ARG("Output format: decimal (default), or hex.");
+    DEFINE_CELL_ARG(cell, cellArg);
+    Arg *args[] = {&getUnusedDigitsArg, &helpArg, &formatArg, &cellArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+
+    H3Index value = H3_EXPORT(getUnusedDigits)(cell);
+    if (strcmp(format, "decimal") == 0 || strcmp(format, "") == 0) {
+        printf("%lld\n", value);
+    } else if (strcmp(format, "hex") == 0) {
+        printf("%llx\n", value);
+    } else {
+        return E_FAILED;
+    }
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(setUnusedDigits,
+           "Creates an index with modified unused digits for an index") {
+    DEFINE_FORMAT_ARG(
+        "'json' for \"CELL\", 'newline' for CELL (Default: json)");
+    DEFINE_CELL_ARG(cell, cellArg);
+    H3Index data = 0;
+    Arg dataArg = {.names = {"-d", "--data"},
+                   .required = true,
+                   .scanFormat = "%" PRId64,
+                   .valueName = "data",
+                   .value = &data,
+                   .helpText = "Value to encode"};
+    Arg *args[] = {&setUnusedDigitsArg, &helpArg, &formatArg, &cellArg,
+                   &dataArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+
+    H3Index value;
+    H3Error err = H3_EXPORT(setUnusedDigits)(cell, data, &value);
+    if (err) {
+        return err;
+    }
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        printf("\"%llx\"\n", value);
+    } else if (strcmp(format, "newline") == 0) {
+        h3Println(value);
+    } else {
+        return E_FAILED;
+    }
+    return E_SUCCESS;
+}
+
 SUBCOMMAND(stringToInt, "Converts an H3 index in string form to integer form") {
     char *rawCell = calloc(16, sizeof(char));
     if (rawCell == NULL) {
@@ -304,7 +429,7 @@ SUBCOMMAND(stringToInt, "Converts an H3 index in string form to integer form") {
     }
     Arg rawCellArg = {.names = {"-c", "--cell"},
                       .required = true,
-                      .scanFormat = "%s",
+                      .scanFormat = "%15s",
                       .valueName = "cell",
                       .value = rawCell,
                       .helpText = "H3 Cell Index"};
@@ -2888,6 +3013,11 @@ SUBCOMMAND_INDEX(cellToBoundary)
 /// Inspection subcommands
 SUBCOMMAND_INDEX(getResolution)
 SUBCOMMAND_INDEX(getBaseCellNumber)
+SUBCOMMAND_INDEX(getReservedBits)
+SUBCOMMAND_INDEX(getIndexDigit)
+SUBCOMMAND_INDEX(getMaxUnusedDigits)
+SUBCOMMAND_INDEX(getUnusedDigits)
+SUBCOMMAND_INDEX(setUnusedDigits)
 SUBCOMMAND_INDEX(stringToInt)
 SUBCOMMAND_INDEX(intToString)
 SUBCOMMAND_INDEX(isValidCell)
