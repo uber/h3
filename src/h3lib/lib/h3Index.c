@@ -629,7 +629,7 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
                     }
                     // Modulus hash the parent into the temp array
                     int64_t loc = (int64_t)(parent % numRemainingHexes);
-                    int64_t loopCount = 0;
+                    DEFENSEONLY(int64_t loopCount = 0);
                     while (hashSetArray[loc] != 0) {
                         if (NEVER(loopCount > numRemainingHexes)) {
                             // This case should not be possible because at
@@ -664,7 +664,7 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
                         } else {
                             loc = (loc + 1) % numRemainingHexes;
                         }
-                        loopCount++;
+                        DEFENSEONLY(loopCount++);
                     }
                     hashSetArray[loc] = parent;
                 }
@@ -732,7 +732,7 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
                     // to determine if this index was included in
                     // the compactableHexes array
                     int64_t loc = (int64_t)(parent % numRemainingHexes);
-                    int64_t loopCount = 0;
+                    DEFENSEONLY(int64_t loopCount = 0);
                     do {
                         if (NEVER(loopCount > numRemainingHexes)) {
                             // This case should not be possible because at most
@@ -755,7 +755,7 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
                         } else {
                             loc = (loc + 1) % numRemainingHexes;
                         }
-                        loopCount++;
+                        DEFENSEONLY(loopCount++;)
                     } while (hashSetArray[loc] != parent);
                 }
                 if (isUncompactable) {
