@@ -88,6 +88,75 @@ int H3_EXPORT(getResolution)(H3Index h) { return H3_GET_RESOLUTION(h); }
  */
 int H3_EXPORT(getBaseCellNumber)(H3Index h) { return H3_GET_BASE_CELL(h); }
 
+/** @brief returns the maximum value that can be provided to setUnusedDigits
+ * for a resolution.
+ *
+ * This value is the same as the value that should be set for the index to be
+ * a valid cell.
+ *
+ * @param res The resolution of the H3 index (e.g. cell).
+ * @param out Receives the maximum value that can be passed to setUnusedDigits.
+ * @return 0 (E_SUCCESS) on success, or another value otherwise.
+ */
+H3Error H3_EXPORT(getMaxUnusedDigits)(int res, H3Index *out) {
+    if (res < 0 || res > MAX_H3_RES) {
+        return E_RES_DOMAIN;
+    }
+    *out = H3_INIT >> (res * 3);
+    return E_SUCCESS;
+}
+
+/** @brief Retrieve the value stored in the unused digits of the H3 index.
+ *
+ * For valid cells this will always be the value of getMaxUnusedDigits for
+ * the cell's resolution.
+ *
+ * @param h The H3 index (e.g. cell).
+ * @return The value in the unused digits.
+ */
+H3Index H3_EXPORT(getUnusedDigits)(H3Index h) {
+    int res = H3_GET_RESOLUTION(h);
+    H3Index mask;
+    DEFENSEONLY(H3Error maxErr =) H3_EXPORT(getMaxUnusedDigits)(res, &mask);
+    if (NEVER(maxErr)) {
+        // The API doesn't really have a way to indicate this as it should be
+        // impossible. `res` is gauranteed to be in the valid range for
+        // getMaxUnusedDigits.
+        return 0;
+    }
+    return h & mask;
+}
+
+/** @brief Creates an index with the unused digits set to another value.
+ *
+ * Unless data is the value provided by getMaxUnusedDigits, this will create
+ * an invalid cell. To create a valid cell again, pass the created index in
+ * to this function with `data` set to the value given by getMaxUnusedDigits.
+ *
+ * If the value for `data` exceeds the value given by getMaxUnusedDigits,
+ * an error will be returned.
+ *
+ * The value of `out` is not modified in case of error.
+ *
+ * @param h The H3 index (e.g. cell).
+ * @param data Data to place into the unused indexing digits.
+ * @param out Receives the modified index.
+ * @return 0 (E_SUCCESS) on success, or another value otherwise.
+ */
+H3Error H3_EXPORT(setUnusedDigits)(H3Index h, H3Index data, H3Index *out) {
+    int res = H3_GET_RESOLUTION(h);
+    H3Index mask;
+    H3Error maxErr = H3_EXPORT(getMaxUnusedDigits)(res, &mask);
+    if (NEVER(maxErr)) {
+        return maxErr;
+    }
+    if (data > mask) {
+        return E_DOMAIN;
+    }
+    *out = (h & ~mask) | data;
+    return E_SUCCESS;
+}
+
 /**
  * Converts a string representation of an H3 index into an H3 index.
  * @param str The string representation of an H3 index.
@@ -526,7 +595,7 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
                     }
                     // Modulus hash the parent into the temp array
                     int64_t loc = (int64_t)(parent % numRemainingHexes);
-                    int64_t loopCount = 0;
+                    DEFENSEONLY(int64_t loopCount = 0);
                     while (hashSetArray[loc] != 0) {
                         if (NEVER(loopCount > numRemainingHexes)) {
                             // This case should not be possible because at
@@ -561,7 +630,7 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
                         } else {
                             loc = (loc + 1) % numRemainingHexes;
                         }
-                        loopCount++;
+                        DEFENSEONLY(loopCount++);
                     }
                     hashSetArray[loc] = parent;
                 }
@@ -629,7 +698,7 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
                     // to determine if this index was included in
                     // the compactableHexes array
                     int64_t loc = (int64_t)(parent % numRemainingHexes);
-                    int64_t loopCount = 0;
+                    DEFENSEONLY(int64_t loopCount = 0);
                     do {
                         if (NEVER(loopCount > numRemainingHexes)) {
                             // This case should not be possible because at most
@@ -652,7 +721,7 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
                         } else {
                             loc = (loc + 1) % numRemainingHexes;
                         }
-                        loopCount++;
+                        DEFENSEONLY(loopCount++;)
                     } while (hashSetArray[loc] != parent);
                 }
                 if (isUncompactable) {
