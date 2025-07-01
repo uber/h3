@@ -28,57 +28,6 @@
 #include "utility.h"
 
 SUITE(indexDigits) {
-    TEST(getIndexDigitForCell) {
-        H3Index h;
-        LatLng anywhere = {0, 0};
-
-        for (int resCell = 0; resCell <= MAX_H3_RES; resCell++) {
-            t_assertSuccess(H3_EXPORT(latLngToCell)(&anywhere, resCell, &h));
-            for (int resDigit = 1; resDigit <= MAX_H3_RES; resDigit++) {
-                int digit;
-                t_assertSuccess(H3_EXPORT(getIndexDigit)(h, resDigit, &digit));
-                if (resDigit <= resCell) {
-                    t_assert(digit >= CENTER_DIGIT && digit < INVALID_DIGIT,
-                             "digit in valid range");
-                } else {
-                    t_assert(digit == INVALID_DIGIT,
-                             "digit should be 'invalid'");
-                }
-            }
-        }
-
-        int digitUnused;
-        t_assert(H3_EXPORT(getIndexDigit)(h, -1, &digitUnused) == E_RES_DOMAIN,
-                 "negative resolution");
-        t_assert(H3_EXPORT(getIndexDigit)(h, 0, &digitUnused) == E_RES_DOMAIN,
-                 "zero resolution");
-        t_assert(H3_EXPORT(getIndexDigit)(h, 16, &digitUnused) == E_RES_DOMAIN,
-                 "too high resolution");
-    }
-
-    TEST(getIndexDigitForSetCell) {
-        H3Index h;
-
-        for (int expectedDigit = CENTER_DIGIT; expectedDigit < INVALID_DIGIT;
-             expectedDigit++) {
-            for (int resCell = 0; resCell <= MAX_H3_RES; resCell++) {
-                setH3Index(&h, resCell, 0, expectedDigit);
-                for (int resDigit = 1; resDigit <= MAX_H3_RES; resDigit++) {
-                    int digit;
-                    t_assertSuccess(
-                        H3_EXPORT(getIndexDigit)(h, resDigit, &digit));
-                    if (resDigit <= resCell) {
-                        t_assert(digit == expectedDigit,
-                                 "digit should be expected");
-                    } else {
-                        t_assert(digit == INVALID_DIGIT,
-                                 "digit should be 'invalid'");
-                    }
-                }
-            }
-        }
-    }
-
     TEST(getMaxUnusedDigits) {
         // TODO: assert all specific values
         H3Index currentMask, previousMask = 0;

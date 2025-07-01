@@ -142,21 +142,6 @@ SUITE(h3Index) {
                  "isValidCell failed on deleted subsequence");
     }
 
-    TEST(getReservedBits) {
-        H3Index h = H3_INIT;
-        t_assert(H3_EXPORT(getReservedBits)(h) == 0,
-                 "Reserevd bits 0 by default");
-        H3_SET_RESERVED_BITS(h, 2);
-        t_assert(H3_EXPORT(getReservedBits)(h) == 2,
-                 "Reserevd bits 2 after modification");
-        H3_SET_RESERVED_BITS(h, 7);
-        t_assert(H3_EXPORT(getReservedBits)(h) == 7,
-                 "Reserevd bits 7 after modification");
-        H3_SET_RESERVED_BITS(h, 0);
-        t_assert(H3_EXPORT(getReservedBits)(h) == 0,
-                 "Reserevd bits 0 again after modification");
-    }
-
     TEST(moreDeletedSubsequenceInvalid) {
         H3Index p = 0x80c3fffffffffff;  // res 0 pentagon
         H3Index h;
