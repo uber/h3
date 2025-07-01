@@ -24,7 +24,6 @@
 typedef struct {
     H3Index index;
     H3Index mask;
-    int digit;
 } inputArgs;
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
