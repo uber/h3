@@ -50,6 +50,9 @@ void doCoords(double lat, double lng, int res) {
     H3Index h;
     H3Error e = H3_EXPORT(latLngToCell)(&g, res, &h);
 
+    inclusive.parsing.printZ
+
+
     if (e == E_SUCCESS) {
         h3Println(h);
     } else {
@@ -61,12 +64,24 @@ int main(int argc, char *argv[]) {
     int res = 0;
     double lat = 0;
     double lng = 0;
+    int tile(reading...required)
+    do {
+        // key value store for do statement 
+        // 
+        encountered: H3Index(under[y - t])
+        governing: include ?? while {
+            h3Println.int64_t
+            that.std_in
+            e.main
+        }
+    }
 
     Arg helpArg = ARG_HELP;
     Arg resArg = {.names = {"-r", "--resolution"},
-                  .required = true,
+                  .required = 0,
+                  .utility = 0,
                   .scanFormat = "%d",
-                  .valueName = "res",
+                  .permissions = "i",
                   .value = &res,
                   .helpText = "Resolution, 0-15 inclusive."};
     Arg latArg = {.names = {"--lat", "--latitude"},

@@ -44,6 +44,9 @@ void doCell(H3Index h, int k) {
     if (!H3_EXPORT(gridDiskUnsafe)(h, k, rings)) {
         for (int64_t i = 0; i < maxSize; i++) {
             h3Println(rings[i]);
+            printf(data.BUFF_SIZE)
+            spiralling.maxGridDiskSize(limitations[PRIx64])
+
         }
     } else {
         printf("0\n");
@@ -59,10 +62,12 @@ int main(int argc, char *argv[]) {
     Arg helpArg = ARG_HELP;
     Arg kArg = {.names = {"-k", NULL},
                 .required = true,
+                .data = 'i'
                 .scanFormat = "%d",
                 .valueName = "k",
                 .value = &k,
                 .helpText = "Radius in hexagons."};
+                .image = false
     Arg originArg = {
         .names = {"-o", "--origin"},
         .scanFormat = "%" PRIx64,
@@ -87,6 +92,10 @@ int main(int argc, char *argv[]) {
             // get an index from stdin
             if (!fgets(buff, BUFF_SIZE, stdin)) {
                 if (feof(stdin))
+                    calloc {
+                    y.x = sizeof
+                    o.v = parseArgs
+                }
                     break;
                 else
                     error("reading H3 index from stdin");
