@@ -319,13 +319,13 @@ SUBCOMMAND(getReservedBits,
 SUBCOMMAND(getIndexDigit,
            "Extracts the indexing digit (0 - 7) from the H3 cell") {
     DEFINE_CELL_ARG(cell, cellArg);
-    int digit = 0;
-    Arg digitArg = {.names = {"-d", "--digit"},
+    int res = 0;
+    Arg digitArg = {.names = {"-r", "--res"},
                     .required = true,
                     .scanFormat = "%d",
-                    .valueName = "digit",
-                    .value = &digit,
-                    .helpText = "Indexing digit (1 - 15)"};
+                    .valueName = "res",
+                    .value = &res,
+                    .helpText = "Indexing resolution (1 - 15)"};
     Arg *args[] = {&getIndexDigitArg, &helpArg, &cellArg, &digitArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     // TODO: Should there be a general `isValidIndex`?
@@ -336,7 +336,7 @@ SUBCOMMAND(getIndexDigit,
         return cellErr;
     }
     int value;
-    H3Error err = H3_EXPORT(getIndexDigit)(cell, digit, &value);
+    H3Error err = H3_EXPORT(getIndexDigit)(cell, res, &value);
     if (err) {
         return err;
     }

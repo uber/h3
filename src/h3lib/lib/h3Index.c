@@ -98,27 +98,26 @@ int H3_EXPORT(getBaseCellNumber)(H3Index h) { return H3_GET_BASE_CELL(h); }
 int H3_EXPORT(getReservedBits)(H3Index h) { return H3_GET_RESERVED_BITS(h); }
 
 /**
- * Returns the index digits at `digit`, which starts with 1 for resolution
+ * Returns the index digit at `res`, which starts with 1 for resolution
  * 1.
  *
- * 0 is not a valid value for `digit` because resolution 0 is specified by
+ * 0 is not a valid value for `res` because resolution 0 is specified by
  * the base cell number, not an indexing digit.
  *
- * `digit` may exceed the actual resolution of the index, in which case
+ * `res` may exceed the actual resolution of the index, in which case
  * the actual digit stored in the index is returned. For valid cell indexes
  * this will be 7.
  *
  * @param h The H3 index (e.g. cell).
- * @param digit Which indexing digit to retrieve, starting with 1.
+ * @param res Which indexing digit to retrieve, starting with 1.
  * @param out Receives the value of the indexing digit.
  * @return 0 (E_SUCCESS) on success, or another value otherwise.
  */
-H3Error H3_EXPORT(getIndexDigit)(H3Index h, int digit, int *out) {
-    if (digit < 1 || digit > MAX_H3_RES) {
-        // Not strictly a resolution domain but close enough
+H3Error H3_EXPORT(getIndexDigit)(H3Index h, int res, int *out) {
+    if (res < 1 || res > MAX_H3_RES) {
         return E_RES_DOMAIN;
     }
-    *out = H3_GET_INDEX_DIGIT(h, digit);
+    *out = H3_GET_INDEX_DIGIT(h, res);
     return E_SUCCESS;
 }
 

@@ -296,29 +296,29 @@ Works for cells, edges and vertexes.
 <TabItem value="c">
 
 ```c
-H3Error getIndexDigit(H3Index h, int digit, H3Index *out);
+H3Error getIndexDigit(H3Index h, int res, H3Index *out);
 ```
 
 </TabItem>
 <TabItem value="java">
 
 ```java
-int getIndexDigit(long h3, int digit);
-int getIndexDigit(String h3Address, int digit);
+int getIndexDigit(long h3, int res);
+int getIndexDigit(String h3Address, int res);
 ```
 
 </TabItem>
 <TabItem value="javascript">
 
 ```js
-h3.getIndexDigit(h, digit)
+h3.getIndexDigit(h, res)
 ```
 
 ```js live
 function example() {
   const h = '85283473fffffff';
-  const digit = 2;
-  return h3.getIndexDigit(h, digit);
+  const res = 2;
+  return h3.getIndexDigit(h, res);
 }
 ```
 
@@ -326,21 +326,21 @@ function example() {
 <TabItem value="python">
 
 ```py
-h3.get_index_digit(h, digit)
+h3.get_index_digit(h, res)
 ```
 
 </TabItem>
 <TabItem value="go">
 
 ```go
-cell.IndexDigit(digit)
+cell.IndexDigit(res)
 ```
 
 </TabItem>
 <TabItem value="duckdb">
 
 ```sql
-h3_get_index_digit(h, digit)
+h3_get_index_digit(h, res)
 ```
 
 </TabItem>
@@ -354,11 +354,11 @@ H3 4.3.0
 	getIndexDigit	Extracts the indexing digit (0 - 7) from the H3 cell
 	-h, --help	Show this help message.
 	-c, --cell <index>	Required. H3 Cell
-	-d, --digit <digit>	Required. Indexing digit (1 - 15)
+	-r, --res <res>	Required. Indexing resolution (1 - 15)
 ```
 
 ```bash
-$ h3 getIndexDigit -c 85283473fffffff -d 2
+$ h3 getIndexDigit -c 85283473fffffff -r 2
 7
 ```
 
