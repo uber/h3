@@ -6,6 +6,9 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+### Added
+- Added `getUnusedDigits`, `setUnusedDigits`, and `getMaxUnusedDigits` functions for encoding
+and decoding data from the unused indexing digits of an H3 cell or other index.
 
 ## [4.3.0] - 2025-06-17
 ### Added
