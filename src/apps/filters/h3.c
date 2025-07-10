@@ -316,9 +316,9 @@ SUBCOMMAND(getMaxUnusedDigits,
         return err;
     }
     if (strcmp(format, "decimal") == 0 || strcmp(format, "") == 0) {
-        printf("%lld\n", value);
+        printf("%" PRId64 "\n", value);
     } else if (strcmp(format, "hex") == 0) {
-        printf("%llx\n", value);
+        printf("%" PRIx64 "\n", value);
     } else {
         return E_FAILED;
     }
@@ -333,9 +333,9 @@ SUBCOMMAND(getUnusedDigits, "Returns value of the unused digits for an index") {
 
     H3Index value = H3_EXPORT(getUnusedDigits)(cell);
     if (strcmp(format, "decimal") == 0 || strcmp(format, "") == 0) {
-        printf("%lld\n", value);
+        printf("%" PRId64 "\n", value);
     } else if (strcmp(format, "hex") == 0) {
-        printf("%llx\n", value);
+        printf("%" PRIx64 "\n", value);
     } else {
         return E_FAILED;
     }
@@ -364,7 +364,7 @@ SUBCOMMAND(setUnusedDigits,
         return err;
     }
     if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
-        printf("\"%llx\"\n", value);
+        printf("\"%" PRIx64 "\"\n", value);
     } else if (strcmp(format, "newline") == 0) {
         h3Println(value);
     } else {
