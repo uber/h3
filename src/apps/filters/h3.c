@@ -296,26 +296,6 @@ SUBCOMMAND(getBaseCellNumber,
     return E_SUCCESS;
 }
 
-SUBCOMMAND(getReservedBits,
-           "Extracts the reserved bits (0 - 7) from the H3 cell") {
-    DEFINE_CELL_ARG(cell, cellArg);
-    Arg *args[] = {&getReservedBitsArg, &helpArg, &cellArg};
-    PARSE_SUBCOMMAND(argc, argv, args);
-    // TODO: Should there be a general `isValidIndex`?
-    H3Error cellErr = H3_EXPORT(isValidCell)(cell);
-    H3Error edgeErr = H3_EXPORT(isValidDirectedEdge)(cell);
-    H3Error vertErr = H3_EXPORT(isValidVertex)(cell);
-    if (cellErr && edgeErr && vertErr) {
-        return cellErr;
-    }
-    // If we got here, we can use `getResolution` safely, as this is one of the
-    // few functions that doesn't do any error handling (for some reason? I
-    // don't see how this would ever be in a hot loop anywhere.
-    int reservedBits = H3_EXPORT(getReservedBits)(cell);
-    printf("%i\n", reservedBits);
-    return E_SUCCESS;
-}
-
 SUBCOMMAND(getIndexDigit,
            "Extracts the indexing digit (0 - 7) from the H3 cell") {
     DEFINE_CELL_ARG(cell, cellArg);
@@ -2936,7 +2916,6 @@ SUBCOMMAND_INDEX(cellToBoundary)
 /// Inspection subcommands
 SUBCOMMAND_INDEX(getResolution)
 SUBCOMMAND_INDEX(getBaseCellNumber)
-SUBCOMMAND_INDEX(getReservedBits)
 SUBCOMMAND_INDEX(getIndexDigit)
 SUBCOMMAND_INDEX(stringToInt)
 SUBCOMMAND_INDEX(intToString)

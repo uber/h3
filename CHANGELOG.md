@@ -8,8 +8,6 @@ The public API of this library consists of the functions declared in file
 ## [Unreleased]
 ### Added
 - Added `getIndexDigit` function for inspecting specific index digits of an H3 index. (#1024)
-- Added `getReservedBits` function for inspecting the "reserved bits" field of an H3 index (such
-as a directed edge.) (#1024)
 
 ## [4.3.0] - 2025-06-17
 ### Added

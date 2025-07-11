@@ -515,17 +515,6 @@ DECLSPEC int H3_EXPORT(getResolution)(H3Index h);
 DECLSPEC int H3_EXPORT(getBaseCellNumber)(H3Index h);
 /** @} */
 
-/** @defgroup getReservedBits getReservedBits
- * Functions for getReservedBits
- * @{
- */
-/** @brief returns the reserved bits the provided H3 index
- *
- * This is 0 for valid H3 cell indexes, and is the direction from the origin
- * for directed edges. */
-DECLSPEC int H3_EXPORT(getReservedBits)(H3Index h);
-/** @} */
-
 /** @defgroup getIndexDigit getIndexDigit
  * Functions for getIndexDigit
  * @{

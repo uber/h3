@@ -87,17 +87,6 @@ int H3_EXPORT(getResolution)(H3Index h) { return H3_GET_RESOLUTION(h); }
 int H3_EXPORT(getBaseCellNumber)(H3Index h) { return H3_GET_BASE_CELL(h); }
 
 /**
- * Returns the value of the reserved bits of an H3 index, which is
- * 0 for cell indexes and may be another value for other modes.
- * In directed edges for example this is the direction represented
- * by the index.
- *
- * @param h The H3 index.
- * @return The reserved bits of the H3 index argument.
- */
-int H3_EXPORT(getReservedBits)(H3Index h) { return H3_GET_RESERVED_BITS(h); }
-
-/**
  * Returns the index digit at `res`, which starts with 1 for resolution
  * 1.
  *
