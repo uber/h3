@@ -88,7 +88,7 @@ int H3_EXPORT(getBaseCellNumber)(H3Index h) { return H3_GET_BASE_CELL(h); }
 
 /**
  * Returns the index digit at `res`, which starts with 1 for resolution
- * 1.
+ * 1, up to and including resolution 15.
  *
  * 0 is not a valid value for `res` because resolution 0 is specified by
  * the base cell number, not an indexing digit.

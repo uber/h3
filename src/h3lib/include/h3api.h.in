@@ -519,7 +519,8 @@ DECLSPEC int H3_EXPORT(getBaseCellNumber)(H3Index h);
  * Functions for getIndexDigit
  * @{
  */
-/** @brief returns the indexing digit of the provided H3 cell
+/** @brief returns the indexing digit of the provided H3 cell at a given
+ * resolution
  *
  * Indexing digits are 1-indexed beginning with the digit for resolution 1. */
 DECLSPEC H3Error H3_EXPORT(getIndexDigit)(H3Index h, int res, int *out);
