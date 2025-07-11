@@ -23,6 +23,8 @@
 
 typedef struct {
     H3Index index;
+    H3Index mask;
+    int res;
 } inputArgs;
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
@@ -44,6 +46,9 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         H3_EXPORT(getIcosahedronFaces)(args->index, out);
         free(out);
     }
+
+    int digitOut;
+    H3_EXPORT(getIndexDigit)(args->index, args->res, &digitOut);
 
     return 0;
 }

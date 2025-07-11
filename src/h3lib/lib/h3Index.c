@@ -89,6 +89,30 @@ int H3_EXPORT(getResolution)(H3Index h) { return H3_GET_RESOLUTION(h); }
 int H3_EXPORT(getBaseCellNumber)(H3Index h) { return H3_GET_BASE_CELL(h); }
 
 /**
+ * Returns the index digit at `res`, which starts with 1 for resolution
+ * 1, up to and including resolution 15.
+ *
+ * 0 is not a valid value for `res` because resolution 0 is specified by
+ * the base cell number, not an indexing digit.
+ *
+ * `res` may exceed the actual resolution of the index, in which case
+ * the actual digit stored in the index is returned. For valid cell indexes
+ * this will be 7.
+ *
+ * @param h The H3 index (e.g. cell).
+ * @param res Which indexing digit to retrieve, starting with 1.
+ * @param out Receives the value of the indexing digit.
+ * @return 0 (E_SUCCESS) on success, or another value otherwise.
+ */
+H3Error H3_EXPORT(getIndexDigit)(H3Index h, int res, int *out) {
+    if (res < 1 || res > MAX_H3_RES) {
+        return E_RES_DOMAIN;
+    }
+    *out = H3_GET_INDEX_DIGIT(h, res);
+    return E_SUCCESS;
+}
+
+/**
  * Converts a string representation of an H3 index into an H3 index.
  * @param str The string representation of an H3 index.
  * @param out Output: The H3 index corresponding to the string argument
@@ -526,7 +550,7 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
                     }
                     // Modulus hash the parent into the temp array
                     int64_t loc = (int64_t)(parent % numRemainingHexes);
-                    int64_t loopCount = 0;
+                    DEFENSEONLY(int64_t loopCount = 0);
                     while (hashSetArray[loc] != 0) {
                         if (NEVER(loopCount > numRemainingHexes)) {
                             // This case should not be possible because at
@@ -561,7 +585,7 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
                         } else {
                             loc = (loc + 1) % numRemainingHexes;
                         }
-                        loopCount++;
+                        DEFENSEONLY(loopCount++);
                     }
                     hashSetArray[loc] = parent;
                 }
@@ -629,7 +653,7 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
                     // to determine if this index was included in
                     // the compactableHexes array
                     int64_t loc = (int64_t)(parent % numRemainingHexes);
-                    int64_t loopCount = 0;
+                    DEFENSEONLY(int64_t loopCount = 0);
                     do {
                         if (NEVER(loopCount > numRemainingHexes)) {
                             // This case should not be possible because at most
@@ -652,7 +676,7 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
                         } else {
                             loc = (loc + 1) % numRemainingHexes;
                         }
-                        loopCount++;
+                        DEFENSEONLY(loopCount++;)
                     } while (hashSetArray[loc] != parent);
                 }
                 if (isUncompactable) {
