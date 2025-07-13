@@ -34,6 +34,7 @@ The public API of H3 is covered in the following fuzzers:
 | distance | [fuzzerDistances](./fuzzerDistances.c)
 | edgeLength | [fuzzerEdgeLength](./fuzzerEdgeLength.c)
 | getBaseCellNumber | [fuzzerCellProperties](./fuzzerCellProperties.c)
+| getIndexDigit | [fuzzerCellProperties](./fuzzerCellProperties.c)
 | getDirectedEdgeDestination | [fuzzerDirectedEdge](./fuzzerDirectedEdge.c)
 | getDirectedEdgeOrigin | [fuzzerDirectedEdge](./fuzzerDirectedEdge.c)
 | getHexagonAreaAvg | [fuzzerResolutions](./fuzzerResolutions.c)

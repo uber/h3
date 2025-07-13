@@ -296,6 +296,34 @@ SUBCOMMAND(getBaseCellNumber,
     return E_SUCCESS;
 }
 
+SUBCOMMAND(getIndexDigit,
+           "Extracts the indexing digit (0 - 7) from the H3 cell") {
+    DEFINE_CELL_ARG(cell, cellArg);
+    int res = 0;
+    Arg digitArg = {.names = {"-r", "--res"},
+                    .required = true,
+                    .scanFormat = "%d",
+                    .valueName = "res",
+                    .value = &res,
+                    .helpText = "Indexing resolution (1 - 15)"};
+    Arg *args[] = {&getIndexDigitArg, &helpArg, &cellArg, &digitArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    // TODO: Should there be a general `isValidIndex`?
+    H3Error cellErr = H3_EXPORT(isValidCell)(cell);
+    H3Error edgeErr = H3_EXPORT(isValidDirectedEdge)(cell);
+    H3Error vertErr = H3_EXPORT(isValidVertex)(cell);
+    if (cellErr && edgeErr && vertErr) {
+        return cellErr;
+    }
+    int value;
+    H3Error err = H3_EXPORT(getIndexDigit)(cell, res, &value);
+    if (err) {
+        return err;
+    }
+    printf("%i\n", value);
+    return E_SUCCESS;
+}
+
 SUBCOMMAND(stringToInt, "Converts an H3 index in string form to integer form") {
     char *rawCell = calloc(16, sizeof(char));
     if (rawCell == NULL) {
@@ -304,7 +332,7 @@ SUBCOMMAND(stringToInt, "Converts an H3 index in string form to integer form") {
     }
     Arg rawCellArg = {.names = {"-c", "--cell"},
                       .required = true,
-                      .scanFormat = "%s",
+                      .scanFormat = "%15s",
                       .valueName = "cell",
                       .value = rawCell,
                       .helpText = "H3 Cell Index"};
@@ -2888,6 +2916,7 @@ SUBCOMMAND_INDEX(cellToBoundary)
 /// Inspection subcommands
 SUBCOMMAND_INDEX(getResolution)
 SUBCOMMAND_INDEX(getBaseCellNumber)
+SUBCOMMAND_INDEX(getIndexDigit)
 SUBCOMMAND_INDEX(stringToInt)
 SUBCOMMAND_INDEX(intToString)
 SUBCOMMAND_INDEX(isValidCell)
