@@ -143,4 +143,5 @@ As a C library, bindings can be made to call H3 functions from different program
 
 ## Swift
 - [JeremyEspresso/swift-h3](https://github.com/JeremyEspresso/swift-h3) (4.x)
+- [pawelmajcher/SwiftyH3](https://github.com/pawelmajcher/SwiftyH3) (4.x)
 
