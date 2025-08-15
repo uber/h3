@@ -112,6 +112,11 @@ H3Error H3_EXPORT(getIndexDigit)(H3Index h, int res, int *out) {
     return E_SUCCESS;
 }
 
+H3Error H3_EXPORT(createCell)(int res, int baseCellNumber, int *digits,
+                              H3Index *out) {
+    return E_SUCCESS;
+}
+
 /**
  * Converts a string representation of an H3 index into an H3 index.
  * @param str The string representation of an H3 index.
