@@ -260,6 +260,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/mkRandGeo.c
     src/apps/testapps/testH3Api.c
     src/apps/testapps/testIndexDigits.c
+    src/apps/testapps/testCreateCell.c
     src/apps/testapps/testCellsToLinkedMultiPolygon.c
     src/apps/testapps/testCellToLocalIj.c
     src/apps/testapps/testCellToLocalIjInternal.c
