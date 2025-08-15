@@ -7,6 +7,11 @@ build:
 purge:
     rm -rf build
 
-test:
-    # cd build; make test
+test: build
+    ./build/bin/testCreateCell
+
+test-fast: build
     cd build; make test-fast
+
+test-slow: build
+    cd build; make test

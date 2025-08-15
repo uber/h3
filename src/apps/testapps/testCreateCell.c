@@ -57,12 +57,12 @@ CellComponents cell_to_components(H3Index h) {
     return cc;
 }
 
+// TODO: error on bad res
+// TODO: error on bad base cell
+
 SUITE(createCell) {
     TEST(createCell) {
         H3Index h;
-
-        // H3Error H3_EXPORT(createCell)(int res, int baseCellNumber, int
-        // *digits, H3Index *out)
 
         t_assertSuccess(H3_EXPORT(createCell)(0, 0, NULL, &h));
         t_assert(h == 0x8001fffffffffff, "match");
@@ -84,5 +84,20 @@ SUITE(createCell) {
         int res = 3;
         int bc = 170;
         t_assertSuccess(H3_EXPORT(createCell)(res, bc, digits, &h));
+    }
+
+    TEST(createCell2) {
+        H3Index h;
+
+        int res = 3;
+        int bc = 170;
+        int digits[] = {1, 2, 3};
+        t_assertSuccess(H3_EXPORT(createCell)(res, bc, digits, &h));
+    }
+
+    TEST(createCellFancy) {
+        H3Index h;
+
+        // TODO
     }
 }
