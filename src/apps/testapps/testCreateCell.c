@@ -79,20 +79,18 @@ SUITE(createCell) {
         t_assertSuccess(H3_EXPORT(createCell)(0, 122, NULL, &h));
         t_assert(h == 0x80f5fffffffffff, "match");
         t_assert(!H3_EXPORT(isValidCell)(h), "should not be valid cell");
-
-        int digits[] = {1, 2, 3};  // classic array literal at definition time
-        int res = 3;
-        int bc = 170;
-        t_assertSuccess(H3_EXPORT(createCell)(res, bc, digits, &h));
     }
 
     TEST(createCell2) {
         H3Index h;
 
         int res = 3;
-        int bc = 170;
+        int bc = 73;
         int digits[] = {1, 2, 3};
         t_assertSuccess(H3_EXPORT(createCell)(res, bc, digits, &h));
+
+        t_assert(h == 0x839253fffffffff, "match");
+        t_assert(H3_EXPORT(isValidCell)(h), "should be valid cell");
     }
 
     TEST(createCellFancy) {

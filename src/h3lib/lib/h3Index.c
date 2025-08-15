@@ -121,8 +121,7 @@ H3Error H3_EXPORT(createCell)(int res, int baseCellNumber, int *digits,
     H3_SET_RESOLUTION(h, res);
     H3_SET_BASE_CELL(h, baseCellNumber);
     for (int r = 1; r <= res; r++) {
-        H3_SET_INDEX_DIGIT(h, r, digits[r]);
-        // off by one bug here!
+        H3_SET_INDEX_DIGIT(h, r, digits[r - 1]);
     }
     *out = h;
 
