@@ -20,6 +20,7 @@
  */
 
 #include <math.h>
+#include <string.h>
 
 #include "h3Index.h"
 #include "h3api.h"
@@ -32,6 +33,13 @@ typedef struct {
     int bc;
     int digits[15];
 } CellComponents;
+
+typedef struct {
+    int res;
+    int bc;
+    int digits[15];
+    H3Index h;  // expected output
+} ComponentTest;
 
 H3Index components_to_cell(CellComponents cc) {
     H3Index h;
@@ -52,6 +60,15 @@ CellComponents cell_to_components(H3Index h) {
     }
 
     return cc;
+}
+
+void do_component_test(ComponentTest ct) {
+    CellComponents cc = {.res = ct.res, .bc = ct.bc};
+    memcpy(cc.digits, ct.digits, sizeof cc.digits);
+
+    H3Index out = components_to_cell(cc);
+    t_assert(out == ct.h, "match");
+    t_assert(H3_EXPORT(isValidCell)(out), "should be valid cell");
 }
 
 // TODO: error on bad res
@@ -96,5 +113,16 @@ SUITE(createCell) {
         H3Index h = components_to_cell(cc);
         t_assert(h == 0x839253fffffffff, "match");
         t_assert(H3_EXPORT(isValidCell)(h), "should be valid cell");
+    }
+
+    TEST(createCellFancy2) {
+        ComponentTest tests[] = {
+            {.h = 0x839253fffffffff, .res = 3, .bc = 73, .digits = {1, 2, 3}},
+            {.h = 0x821f67fffffffff, .res = 2, .bc = 15, .digits = {5, 4}},
+            {.h = 0x8155bffffffffff, .res = 1, .bc = 42, .digits = {6}}};
+
+        for (size_t i = 0; i < sizeof tests / sizeof tests[0]; i++) {
+            do_component_test(tests[i]);
+        }
     }
 }
