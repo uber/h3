@@ -27,6 +27,36 @@
 #include "test.h"
 #include "utility.h"
 
+typedef struct {
+    int res;
+    int digits[16];
+} CellComponents;
+
+H3Index components_to_cell(CellComponents cc) {
+    H3Index h;
+
+    H3_EXPORT(createCell)(cc.res, cc.digits[0], &cc.digits[1], &h);
+
+    return h;
+}
+
+CellComponents cell_to_components(H3Index h) {
+    CellComponents cc;
+
+    cc.res = H3_EXPORT(getResolution)(h);
+    cc.digits[0] = H3_EXPORT(getBaseCellNumber)(h);
+
+    for (int r = 1; r <= MAX_H3_RES; r++) {
+        if (r <= cc.res) {
+            H3_EXPORT(getIndexDigit)(h, r, &cc.digits[r]);
+        } else {
+            cc.digits[r] = 7;
+        }
+    }
+
+    return cc;
+}
+
 SUITE(indexDigits) {
     TEST(getIndexDigitForCell) {
         H3Index h;
@@ -86,5 +116,20 @@ SUITE(indexDigits) {
         // *digits, H3Index *out)
 
         t_assertSuccess(H3_EXPORT(createCell)(0, 0, NULL, &h));
+        t_assert(h == 0x8001fffffffffff, "match");
+        t_assert(H3_EXPORT(isValidCell)(h), "should be valid cell");
+
+        t_assertSuccess(H3_EXPORT(createCell)(0, 121, NULL, &h));
+        t_assert(h == 0x80f3fffffffffff, "match");
+        t_assert(H3_EXPORT(isValidCell)(h), "should be valid cell");
+
+        t_assertSuccess(H3_EXPORT(createCell)(0, 122, NULL, &h));
+        t_assert(h == 0x80f5fffffffffff, "match");
+        t_assert(!H3_EXPORT(isValidCell)(h), "should not be valid cell");
+
+        int digits[] = {1, 2, 3};  // classic array literal at definition time
+        int res = 3;
+        int bc = 170;
+        t_assertSuccess(H3_EXPORT(createCell)(res, bc, digits, &h));
     }
 }
