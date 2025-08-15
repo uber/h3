@@ -29,13 +29,14 @@
 
 typedef struct {
     int res;
-    int digits[16];
+    int bc;
+    int digits[15];
 } CellComponents;
 
 H3Index components_to_cell(CellComponents cc) {
     H3Index h;
 
-    H3_EXPORT(createCell)(cc.res, cc.digits[0], &cc.digits[1], &h);
+    H3_EXPORT(createCell)(cc.res, cc.bc, cc.digits, &h);
 
     return h;
 }
@@ -44,14 +45,10 @@ CellComponents cell_to_components(H3Index h) {
     CellComponents cc;
 
     cc.res = H3_EXPORT(getResolution)(h);
-    cc.digits[0] = H3_EXPORT(getBaseCellNumber)(h);
+    cc.bc = H3_EXPORT(getBaseCellNumber)(h);
 
-    for (int r = 1; r <= MAX_H3_RES; r++) {
-        if (r <= cc.res) {
-            H3_EXPORT(getIndexDigit)(h, r, &cc.digits[r]);
-        } else {
-            cc.digits[r] = 7;
-        }
+    for (int r = 1; r <= cc.res; r++) {
+        H3_EXPORT(getIndexDigit)(h, r, &cc.digits[r - 1]);
     }
 
     return cc;
@@ -94,8 +91,10 @@ SUITE(createCell) {
     }
 
     TEST(createCellFancy) {
-        H3Index h;
+        CellComponents cc = {.res = 3, .bc = 73, .digits = {1, 2, 3}};
 
-        // TODO
+        H3Index h = components_to_cell(cc);
+        t_assert(h == 0x839253fffffffff, "match");
+        t_assert(H3_EXPORT(isValidCell)(h), "should be valid cell");
     }
 }
