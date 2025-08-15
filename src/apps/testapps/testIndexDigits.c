@@ -78,4 +78,13 @@ SUITE(indexDigits) {
             }
         }
     }
+
+    TEST(getCreateCell) {
+        H3Index h;
+
+        // H3Error H3_EXPORT(createCell)(int res, int baseCellNumber, int
+        // *digits, H3Index *out)
+
+        t_assertSuccess(H3_EXPORT(createCell)(0, 0, NULL, &h));
+    }
 }

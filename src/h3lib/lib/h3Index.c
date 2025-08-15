@@ -116,6 +116,15 @@ H3Error H3_EXPORT(getIndexDigit)(H3Index h, int res, int *out) {
 
 H3Error H3_EXPORT(createCell)(int res, int baseCellNumber, int *digits,
                               H3Index *out) {
+    H3Index h = H3_INIT;
+    H3_SET_MODE(h, H3_CELL_MODE);
+    H3_SET_RESOLUTION(h, res);
+    H3_SET_BASE_CELL(h, baseCellNumber);
+    for (int r = 1; r <= res; r++) {
+        H3_SET_INDEX_DIGIT(h, r, digits[r]);
+    }
+    *out = h;
+
     return E_SUCCESS;
 }
 
