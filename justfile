@@ -1,5 +1,7 @@
-build: purge
+init: purge
     mkdir build
+
+build:
     cd build; cmake -DCMAKE_BUILD_TYPE=Release ..; make
 
 purge:
