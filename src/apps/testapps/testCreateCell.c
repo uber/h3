@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /** @file
- * @brief tests index digits get/set functions
+ * @brief tests function to create cell from components
  *
  *  usage: `testCreateCell`
  */
