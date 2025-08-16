@@ -56,7 +56,7 @@ CellAndComponents cell_to_components(H3Index h) {
     return cnc;
 }
 
-// Validate components_to_cell and components_to_cell work based on given test
+// Validate components_to_cell and cell_to_components work based on given test
 // data
 void validate_cnc(CellAndComponents a) {
     H3Index h = components_to_cell(a);
@@ -136,7 +136,8 @@ SUITE(createCell) {
         ErrorAndComponents tests[] = {
             {.err = E_RES_DOMAIN, .res = 16, .bc = 0, .digits = {}},
             {.err = E_DOMAIN, .res = 0, .bc = 122, .digits = {}},
-        };
+            {.err = E_DOMAIN, .res = 1, .bc = 40, .digits = {-1}},
+            {.err = E_DOMAIN, .res = 1, .bc = 40, .digits = {7}}};
 
         for (int i = 0; i < ARRAY_SIZE(tests); i++) {
             expect_error(tests[i]);

@@ -128,8 +128,19 @@ H3Error H3_EXPORT(createCell)(int res, int baseCellNumber, int *digits,
     H3_SET_RESOLUTION(h, res);
     H3_SET_BASE_CELL(h, baseCellNumber);
     for (int r = 1; r <= res; r++) {
-        H3_SET_INDEX_DIGIT(h, r, digits[r - 1]);
+        int d = digits[r - 1];
+        if (d < 0 || d > 6) {
+            return E_DOMAIN;
+        }
+        H3_SET_INDEX_DIGIT(h, r, d);
     }
+
+    // Optional: isValidCells is a more expensive test. do we want to run it
+    // every time?
+    // if (!isValidCell(h)) {
+    //     return E_CELL_INVALID;
+    // }
+
     *out = h;
 
     return E_SUCCESS;
