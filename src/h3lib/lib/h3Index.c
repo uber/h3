@@ -114,6 +114,13 @@ H3Error H3_EXPORT(getIndexDigit)(H3Index h, int res, int *out) {
 
 H3Error H3_EXPORT(createCell)(int res, int baseCellNumber, int *digits,
                               H3Index *out) {
+    if (res < 0 || res > MAX_H3_RES) {
+        return E_RES_DOMAIN;
+    }
+    if (baseCellNumber < 0 || baseCellNumber >= NUM_BASE_CELLS) {
+        return E_DOMAIN;
+    }
+
     H3Index h = H3_INIT;
     H3_SET_MODE(h, H3_CELL_MODE);
     H3_SET_RESOLUTION(h, res);

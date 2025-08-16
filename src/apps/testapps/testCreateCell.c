@@ -31,9 +31,16 @@ typedef struct {
     int digits[15];
 } CellAndComponents;
 
+typedef struct {
+    H3ErrorCodes err;
+    int res;
+    int bc;
+    int digits[15];
+} ErrorAndComponents;
+
 H3Index components_to_cell(CellAndComponents cnc) {
     H3Index h;
-    H3_EXPORT(createCell)(cnc.res, cnc.bc, cnc.digits, &h);
+    t_assertSuccess(H3_EXPORT(createCell)(cnc.res, cnc.bc, cnc.digits, &h));
     return h;
 }
 
@@ -67,8 +74,12 @@ void validate_cnc(CellAndComponents a) {
     }
 }
 
-// TODO: error on bad res
-// TODO: error on bad base cell
+void expect_error(ErrorAndComponents a) {
+    H3Index h;
+    H3Error err = H3_EXPORT(createCell)(a.res, a.bc, a.digits, &h);
+
+    t_assert(err == a.err, "Expecting an error");
+}
 
 SUITE(createCell) {
     TEST(createCell) {
@@ -86,9 +97,9 @@ SUITE(createCell) {
         t_assert(h == 0x80f3fffffffffff, "match");
         t_assert(H3_EXPORT(isValidCell)(h), "should be valid cell");
 
-        t_assertSuccess(H3_EXPORT(createCell)(0, 122, NULL, &h));
-        t_assert(h == 0x80f5fffffffffff, "match");
-        t_assert(!H3_EXPORT(isValidCell)(h), "should NOT be valid cell");
+        // t_assertSuccess(H3_EXPORT(createCell)(0, 122, NULL, &h));
+        // t_assert(h == 0x80f5fffffffffff, "match");
+        // t_assert(!H3_EXPORT(isValidCell)(h), "should NOT be valid cell");
     }
 
     TEST(createCell2) {
@@ -108,7 +119,6 @@ SUITE(createCell) {
             {.h = 0x8001fffffffffff, .res = 0, .bc = 0, .digits = {}},
             {.h = 0x8003fffffffffff, .res = 0, .bc = 1, .digits = {}},
             {.h = 0x80f3fffffffffff, .res = 0, .bc = 121, .digits = {}},
-            // {.h = , .res = 0, .bc = 122, .digits = {}},
             {.h = 0x839253fffffffff, .res = 3, .bc = 73, .digits = {1, 2, 3}},
             {.h = 0x821f67fffffffff, .res = 2, .bc = 15, .digits = {5, 4}},
             {.h = 0x8155bffffffffff, .res = 1, .bc = 42, .digits = {6}}};
@@ -116,14 +126,16 @@ SUITE(createCell) {
         for (int i = 0; i < ARRAY_SIZE(tests); i++) {
             validate_cnc(tests[i]);
         }
-        // TODO: can have some examples expect a certain error. then check for
-        // those!
+    }
 
-        //     ComponentTest tests[] = {
-        //         {.h = 0, .res = 3, .bc = 73, .digits = {1, 2, 3}},
-        //         {.h = 0x821f67fffffffff, .res = 2, .bc = 15, .digits = {5,
-        //         4}},
-        //         {.h = 0x8155bffffffffff, .res = 1, .bc = 42, .digits = {6}}};
-        // }
+    TEST(createCellErrors) {
+        ErrorAndComponents tests[] = {
+            {.err = E_RES_DOMAIN, .res = 16, .bc = 0, .digits = {}},
+            {.err = E_DOMAIN, .res = 0, .bc = 122, .digits = {}},
+        };
+
+        for (int i = 0; i < ARRAY_SIZE(tests); i++) {
+            expect_error(tests[i]);
+        }
     }
 }
