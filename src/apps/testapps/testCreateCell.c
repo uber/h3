@@ -69,6 +69,14 @@ void do_component_test(ComponentTest ct) {
     H3Index out = components_to_cell(cc);
     t_assert(out == ct.h, "match");
     t_assert(H3_EXPORT(isValidCell)(out), "should be valid cell");
+
+    CellComponents cc2 = cell_to_components(ct.h);
+
+    t_assert(cc.res == cc2.res, "bah");
+    t_assert(cc.bc == cc2.bc, "bah");
+    for (int r = 1; r <= cc.res; r++) {
+        t_assert(cc.digits[r - 1] == cc.digits[r - 1], "bah");
+    }
 }
 
 // TODO: error on bad res
@@ -117,12 +125,25 @@ SUITE(createCell) {
 
     TEST(createCellFancy2) {
         ComponentTest tests[] = {
+            {.h = 0x8001fffffffffff, .res = 0, .bc = 0, .digits = {}},
+            {.h = 0x8003fffffffffff, .res = 0, .bc = 1, .digits = {}},
+            {.h = 0x80f3fffffffffff, .res = 0, .bc = 121, .digits = {}},
+            // {.h = , .res = 0, .bc = 122, .digits = {}},
             {.h = 0x839253fffffffff, .res = 3, .bc = 73, .digits = {1, 2, 3}},
             {.h = 0x821f67fffffffff, .res = 2, .bc = 15, .digits = {5, 4}},
             {.h = 0x8155bffffffffff, .res = 1, .bc = 42, .digits = {6}}};
 
-        for (size_t i = 0; i < sizeof tests / sizeof tests[0]; i++) {
+        for (int i = 0; i < sizeof tests / sizeof tests[0]; i++) {
             do_component_test(tests[i]);
         }
+        // TODO: can have some examples expect a certain error. then check for
+        // those!
+
+        //     ComponentTest tests[] = {
+        //         {.h = 0, .res = 3, .bc = 73, .digits = {1, 2, 3}},
+        //         {.h = 0x821f67fffffffff, .res = 2, .bc = 15, .digits = {5,
+        //         4}},
+        //         {.h = 0x8155bffffffffff, .res = 1, .bc = 42, .digits = {6}}};
+        // }
     }
 }
