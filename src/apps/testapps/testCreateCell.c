@@ -121,7 +121,11 @@ SUITE(createCell) {
             {.h = 0x80f3fffffffffff, .res = 0, .bc = 121, .digits = {}},
             {.h = 0x839253fffffffff, .res = 3, .bc = 73, .digits = {1, 2, 3}},
             {.h = 0x821f67fffffffff, .res = 2, .bc = 15, .digits = {5, 4}},
-            {.h = 0x8155bffffffffff, .res = 1, .bc = 42, .digits = {6}}};
+            {.h = 0x8155bffffffffff, .res = 1, .bc = 42, .digits = {6}},
+            {.h = 0x8f754e64992d6d8,
+             .res = 15,
+             .bc = 58,
+             .digits = {5, 1, 6, 3, 1, 1, 1, 4, 4, 5, 5, 3, 3, 3, 0}}};
 
         for (int i = 0; i < ARRAY_SIZE(tests); i++) {
             validate_cnc(tests[i]);
