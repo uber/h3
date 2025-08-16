@@ -19,14 +19,11 @@
  *  usage: `testCreateCell`
  */
 
-#include <math.h>
-
-#include "h3Index.h"  // can i get rid of this and just pull in the API
 #include "h3api.h"
-#include "latLng.h"
 #include "test.h"
 #include "utility.h"
 
+// Helper struct to represent validation tests
 typedef struct {
     H3Index h;
     int res;
@@ -52,19 +49,21 @@ CellAndComponents cell_to_components(H3Index h) {
     return cnc;
 }
 
+// Validate components_to_cell and components_to_cell work based on given test
+// data
 void validate_cnc(CellAndComponents a) {
     H3Index h = components_to_cell(a);
-    t_assert(h == a.h, "match");
-    t_assert(H3_EXPORT(isValidCell)(h), "should be valid cell");
+    t_assert(h == a.h, "Index matches");
+    t_assert(H3_EXPORT(isValidCell)(h), "Should be valid cell");
 
     CellAndComponents b = cell_to_components(a.h);
 
-    t_assert(a.h == b.h, "bah");
-    t_assert(a.res == b.res, "bah");
-    t_assert(a.bc == b.bc, "bah");
+    t_assert(a.h == b.h, "Index matches");
+    t_assert(a.res == b.res, "Resolution matches");
+    t_assert(a.bc == b.bc, "Base cell number matches");
 
     for (int r = 1; r <= a.res; r++) {
-        t_assert(a.digits[r - 1] == b.digits[r - 1], "bah");
+        t_assert(a.digits[r - 1] == b.digits[r - 1], "Digit matches");
     }
 }
 
@@ -89,7 +88,7 @@ SUITE(createCell) {
 
         t_assertSuccess(H3_EXPORT(createCell)(0, 122, NULL, &h));
         t_assert(h == 0x80f5fffffffffff, "match");
-        t_assert(!H3_EXPORT(isValidCell)(h), "should not be valid cell");
+        t_assert(!H3_EXPORT(isValidCell)(h), "should NOT be valid cell");
     }
 
     TEST(createCell2) {
@@ -114,7 +113,7 @@ SUITE(createCell) {
             {.h = 0x821f67fffffffff, .res = 2, .bc = 15, .digits = {5, 4}},
             {.h = 0x8155bffffffffff, .res = 1, .bc = 42, .digits = {6}}};
 
-        for (int i = 0; i < sizeof(tests) / sizeof(tests[0]); i++) {
+        for (int i = 0; i < ARRAY_SIZE(tests); i++) {
             validate_cnc(tests[i]);
         }
         // TODO: can have some examples expect a certain error. then check for
