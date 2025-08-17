@@ -137,7 +137,8 @@ SUITE(createCell) {
             {.err = E_RES_DOMAIN, .res = 16, .bc = 0, .digits = {}},
             {.err = E_DOMAIN, .res = 0, .bc = 122, .digits = {}},
             {.err = E_DOMAIN, .res = 1, .bc = 40, .digits = {-1}},
-            {.err = E_DOMAIN, .res = 1, .bc = 40, .digits = {7}}};
+            {.err = E_DOMAIN, .res = 1, .bc = 40, .digits = {7}},
+            {.err = E_DOMAIN, .res = 1, .bc = 40, .digits = {8}}};
 
         for (int i = 0; i < ARRAY_SIZE(tests); i++) {
             expect_error(tests[i]);
