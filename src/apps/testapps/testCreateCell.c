@@ -143,4 +143,18 @@ SUITE(createCell) {
             expect_error(tests[i]);
         }
     }
+
+    TEST(sneakyInvalidCell) {
+        // Create cell with a "deleted subsequence".
+        // This is the trickiest case to detect of an invalid cell.
+
+        H3Index h;
+        int res = 3;
+        int bc = 4;
+        int digits[] = {0, 0, 1};
+        t_assertSuccess(H3_EXPORT(createCell)(res, bc, digits, &h));
+
+        t_assert(h == 0x830801fffffffff, "match");
+        t_assert(!H3_EXPORT(isValidCell)(h), "should NOT be a valid cell");
+    }
 }
