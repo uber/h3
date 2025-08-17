@@ -31,6 +31,7 @@ typedef struct {
     int digits[15];
 } CellAndComponents;
 
+// Helper struct to represent expected errors from constructing cells
 typedef struct {
     H3ErrorCodes err;
     int res;
