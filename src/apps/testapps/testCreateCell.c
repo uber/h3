@@ -21,65 +21,51 @@
 
 #include "h3api.h"
 #include "test.h"
-#include "utility.h"
 
-// Helper struct to represent validation tests
 typedef struct {
-    H3Index h;
     int res;
     int bc;
     int digits[15];
-} CellAndComponents;
+} Comp;
 
-// Helper struct to represent expected errors from constructing cells
-typedef struct {
-    H3ErrorCodes err;
-    int res;
-    int bc;
-    int digits[15];
-} ErrorAndComponents;
-
-H3Index components_to_cell(CellAndComponents cnc) {
+// might not need this
+H3Index comp_to_cell(Comp c) {
     H3Index h;
-    t_assertSuccess(H3_EXPORT(createCell)(cnc.res, cnc.bc, cnc.digits, &h));
+    t_assertSuccess(H3_EXPORT(createCell)(c.res, c.bc, c.digits, &h));
     return h;
 }
 
-CellAndComponents cell_to_components(H3Index h) {
-    CellAndComponents cnc = {.h = h,
-                             .res = H3_EXPORT(getResolution)(h),
-                             .bc = H3_EXPORT(getBaseCellNumber)(h)};
+// TODO: might not need this
+Comp cell_to_comp(H3Index h) {
+    Comp c = {.res = H3_EXPORT(getResolution)(h),
+              .bc = H3_EXPORT(getBaseCellNumber)(h)};
 
-    for (int r = 1; r <= cnc.res; r++) {
-        H3_EXPORT(getIndexDigit)(h, r, &cnc.digits[r - 1]);
+    for (int r = 1; r <= c.res; r++) {
+        H3_EXPORT(getIndexDigit)(h, r, &c.digits[r - 1]);
     }
 
-    return cnc;
+    return c;
 }
 
-// Validate components_to_cell and cell_to_components work based on given test
-// data
-void validate_cnc(CellAndComponents a) {
-    H3Index h = components_to_cell(a);
-    t_assert(h == a.h, "Index matches");
-    t_assert(H3_EXPORT(isValidCell)(h), "Should be valid cell");
+void valid(Comp c, H3Index h_target) {
+    H3Index h = comp_to_cell(c);  // maybe i don't need these helpers...
+    t_assert(h == h_target, "Index matches");
+    t_assert(H3_EXPORT(isValidCell)(h), "Should be a valid cell");
 
-    CellAndComponents b = cell_to_components(a.h);
-
-    t_assert(a.h == b.h, "Index matches");
-    t_assert(a.res == b.res, "Resolution matches");
-    t_assert(a.bc == b.bc, "Base cell number matches");
-
-    for (int r = 1; r <= a.res; r++) {
-        t_assert(a.digits[r - 1] == b.digits[r - 1], "Digit matches");
-    }
+    // TODO: check the reverse
 }
 
-void expect_error(ErrorAndComponents a) {
+void isbad(Comp c, H3Index h_target) {
     H3Index h;
-    H3Error err = H3_EXPORT(createCell)(a.res, a.bc, a.digits, &h);
+    H3Error err = H3_EXPORT(createCell)(c.res, c.bc, c.digits, &h);
+    t_assert(h == h_target, "Index matches");
+    t_assert(!H3_EXPORT(isValidCell)(h), "Should NOT be a valid cell");
+}
 
-    t_assert(err == a.err, "Expecting an error");
+void iserr(Comp c, H3Error err_target) {
+    H3Index h;
+    H3Error err = H3_EXPORT(createCell)(c.res, c.bc, c.digits, &h);
+    t_assert(err == err_target, "Expecting an error");
 }
 
 SUITE(createCell) {
@@ -115,48 +101,42 @@ SUITE(createCell) {
         t_assert(H3_EXPORT(isValidCell)(h), "should be valid cell");
     }
 
-    TEST(createCellFancy) {
-        CellAndComponents tests[] = {
-            {.h = 0x8001fffffffffff, .res = 0, .bc = 0, .digits = {}},
-            {.h = 0x8003fffffffffff, .res = 0, .bc = 1, .digits = {}},
-            {.h = 0x80f3fffffffffff, .res = 0, .bc = 121, .digits = {}},
-            {.h = 0x839253fffffffff, .res = 3, .bc = 73, .digits = {1, 2, 3}},
-            {.h = 0x821f67fffffffff, .res = 2, .bc = 15, .digits = {5, 4}},
-            {.h = 0x8155bffffffffff, .res = 1, .bc = 42, .digits = {6}},
-            {.h = 0x8f754e64992d6d8,
-             .res = 15,
-             .bc = 58,
-             .digits = {5, 1, 6, 3, 1, 1, 1, 4, 4, 5, 5, 3, 3, 3, 0}}};
+    // TODO: i think maybe adding the expectation first gives cleaner sytnax,
+    // especially after formatting
 
-        for (int i = 0; i < ARRAY_SIZE(tests); i++) {
-            validate_cnc(tests[i]);
-        }
-    }
+    TEST(createCellSuperFancy) {
+        valid((Comp){.res = 0, .bc = 1, .digits = {}}, 0x8003fffffffffff);
 
-    TEST(createCellErrors) {
-        ErrorAndComponents tests[] = {
-            {.err = E_RES_DOMAIN, .res = 16, .bc = 0, .digits = {}},
-            {.err = E_DOMAIN, .res = 0, .bc = 122, .digits = {}},
-            {.err = E_DOMAIN, .res = 1, .bc = 40, .digits = {-1}},
-            {.err = E_DOMAIN, .res = 1, .bc = 40, .digits = {7}},
-            {.err = E_DOMAIN, .res = 1, .bc = 40, .digits = {8}}};
+        // deleted subsequence is invalid when you hit 1 from a parent pentagon
+        valid((Comp){.bc = 4, .digits = {0, 0, 0}, .res = 3},
+              0x830800fffffffff);
+        isbad((Comp){.bc = 4, .digits = {0, 0, 1}, .res = 3},
+              0x830801fffffffff);
+        valid((Comp){.bc = 4, .digits = {0, 0, 2}, .res = 3},
+              0x830802fffffffff);
 
-        for (int i = 0; i < ARRAY_SIZE(tests); i++) {
-            expect_error(tests[i]);
-        }
-    }
+        // resolutions must be correct
+        iserr((Comp){.res = 16, .bc = 0, .digits = {}}, E_RES_DOMAIN);
+        iserr((Comp){.res = 18, .bc = 0, .digits = {}}, E_RES_DOMAIN);
 
-    TEST(sneakyInvalidCell) {
-        // Create cell with a "deleted subsequence".
-        // This is the trickiest case to detect of an invalid cell.
+        // TODO: more comments about what each test group is doing
+        iserr((Comp){.res = 0, .bc = 122, .digits = {}}, E_DOMAIN);
+        iserr((Comp){.res = 1, .bc = 40, .digits = {-1}}, E_DOMAIN);
+        iserr((Comp){.res = 1, .bc = 40, .digits = {7}}, E_DOMAIN);
+        iserr((Comp){.res = 1, .bc = 40, .digits = {8}}, E_DOMAIN);
 
-        H3Index h;
-        int res = 3;
-        int bc = 4;
-        int digits[] = {0, 0, 1};
-        t_assertSuccess(H3_EXPORT(createCell)(res, bc, digits, &h));
+        valid((Comp){.bc = 0, .digits = {}, .res = 0}, 0x8001fffffffffff);
+        valid((Comp){.bc = 1, .digits = {}, .res = 0}, 0x8003fffffffffff);
+        valid((Comp){.bc = 121, .digits = {}, .res = 0}, 0x80f3fffffffffff);
 
-        t_assert(h == 0x830801fffffffff, "match");
-        t_assert(!H3_EXPORT(isValidCell)(h), "should NOT be a valid cell");
+        valid((Comp){.bc = 73, .digits = {1, 2, 3}, .res = 3},
+              0x839253fffffffff);
+        valid((Comp){.bc = 15, .digits = {5, 4}, .res = 2}, 0x821f67fffffffff);
+        valid((Comp){.bc = 42, .digits = {6}, .res = 1}, 0x8155bffffffffff);
+
+        valid((Comp){.bc = 58,
+                     .digits = {5, 1, 6, 3, 1, 1, 1, 4, 4, 5, 5, 3, 3, 3, 0},
+                     .res = 15},
+              0x8f754e64992d6d8);
     }
 }
