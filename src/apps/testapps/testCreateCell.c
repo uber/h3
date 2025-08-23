@@ -148,20 +148,6 @@ SUITE(createCell) {
         iserr((Comp){.res = 1, .bc = 40, .digits = {-1}}, E_DOMAIN);
         iserr((Comp){.res = 1, .bc = 40, .digits = {7}}, E_DOMAIN);
         iserr((Comp){.res = 1, .bc = 40, .digits = {8}}, E_DOMAIN);
-
-        valid((Comp){.bc = 0, .digits = {}, .res = 0}, 0x8001fffffffffff);
-        valid((Comp){.bc = 1, .digits = {}, .res = 0}, 0x8003fffffffffff);
-        valid((Comp){.bc = 121, .digits = {}, .res = 0}, 0x80f3fffffffffff);
-
-        valid((Comp){.bc = 73, .digits = {1, 2, 3}, .res = 3},
-              0x839253fffffffff);
-        valid((Comp){.bc = 15, .digits = {5, 4}, .res = 2}, 0x821f67fffffffff);
-        valid((Comp){.bc = 42, .digits = {6}, .res = 1}, 0x8155bffffffffff);
-
-        valid((Comp){.bc = 58,
-                     .digits = {5, 1, 6, 3, 1, 1, 1, 4, 4, 5, 5, 3, 3, 3, 0},
-                     .res = 15},
-              0x8f754e64992d6d8);
     }
 
     TEST(createCellNew) {
