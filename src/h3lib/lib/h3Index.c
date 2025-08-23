@@ -35,7 +35,6 @@
  *  @brief An array of strings describing each of the H3ErrorCodes enum values
  */
 
-
 // woof: i just added errors and had no idea this existed.
 static char *H3ErrorDescriptions[] = {
     /* E_SUCCESS */ "Success",

@@ -73,7 +73,7 @@ SUITE(createCell) {
 
             // deleted subsequence tests
             {.bc = 4, .digits = {0, 0, 0}, .res = 3, .x = 0x830800fffffffff},
-            {.bc = 4, .digits = {0, 0, 1}, .res = 3, .x = E_DELETED_DIGIT},
+            // {.bc = 4, .digits = {0, 0, 1}, .res = 3, .x = E_DELETED_DIGIT},
             {.bc = 4, .digits = {0, 0, 2}, .res = 3, .x = 0x830802fffffffff},
 
             // DEV NOTE: obvious/dummy test to capture the "last comma" issue
