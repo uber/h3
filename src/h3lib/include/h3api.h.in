@@ -99,9 +99,11 @@ typedef enum {
     E_NOT_NEIGHBORS = 11,    // `H3Index` cell arguments were not neighbors
     E_RES_MISMATCH =
         12,  // `H3Index` cell arguments had incompatible resolutions
-    E_MEMORY_ALLOC = 13,   // Necessary memory allocation failed
-    E_MEMORY_BOUNDS = 14,  // Bounds of provided memory were not large enough
-    E_OPTION_INVALID = 15  // Mode or flags argument was not valid.
+    E_MEMORY_ALLOC = 13,    // Necessary memory allocation failed
+    E_MEMORY_BOUNDS = 14,   // Bounds of provided memory were not large enough
+    E_OPTION_INVALID = 15,  // Mode or flags argument was not valid.
+    E_BASE_CELL_DOMAIN = 16,
+    E_DIGIT_DOMAIN = 17
 } H3ErrorCodes;
 
 /** @defgroup describeH3Error describeH3Error
