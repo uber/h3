@@ -120,7 +120,7 @@ H3Error H3_EXPORT(createCell)(int res, int baseCellNumber, int *digits,
         return E_RES_DOMAIN;
     }
     if (baseCellNumber < 0 || baseCellNumber >= NUM_BASE_CELLS) {
-        return E_DOMAIN;
+        return E_BASE_CELL_DOMAIN;
     }
 
     H3Index h = H3_INIT;
@@ -130,7 +130,7 @@ H3Error H3_EXPORT(createCell)(int res, int baseCellNumber, int *digits,
     for (int r = 1; r <= res; r++) {
         int d = digits[r - 1];
         if (d < 0 || d > 6) {
-            return E_DOMAIN;
+            return E_DIGIT_DOMAIN;
         }
         H3_SET_INDEX_DIGIT(h, r, d);
     }
