@@ -42,18 +42,12 @@ void run_mytest(MyTest mt) {
     }
 }
 
-// ADD test to ensure error codes are never a valid cell. (some other test file?)
+// ADD test to ensure error codes are never a valid cell. (some other test
+// file?)
+
 // ADD new error codes!
 
 SUITE(createCell) {
-    TEST(createCell) {
-        H3Index h;
-
-        // t_assertSuccess(H3_EXPORT(createCell)(0, 122, NULL, &h));
-        // t_assert(h == 0x80f5fffffffffff, "match");
-        // t_assert(!H3_EXPORT(isValidCell)(h), "should NOT be valid cell");
-    }
-
     TEST(createCellNew) {
         MyTest tests[] = {
             {.x = 0x8001fffffffffff, .res = 0, .bc = 0, .digits = {}},
