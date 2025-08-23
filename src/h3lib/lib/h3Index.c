@@ -33,11 +33,14 @@
 #include "mathExtensions.h"
 #include "vertex.h"
 
+// TODO: https://github.com/uber/h3/issues/984
+static const bool isBaseCellPentagonArr[128] = {
+    [4] = 1,  [14] = 1, [24] = 1, [38] = 1, [49] = 1,  [58] = 1,
+    [63] = 1, [72] = 1, [83] = 1, [97] = 1, [107] = 1, [117] = 1};
+
 /** @var H3ErrorDescriptions
  *  @brief An array of strings describing each of the H3ErrorCodes enum values
  */
-
-// woof: i just added errors and had no idea this existed.
 static char *H3ErrorDescriptions[] = {
     /* E_SUCCESS */ "Success",
     /* E_FAILED */
@@ -56,7 +59,10 @@ static char *H3ErrorDescriptions[] = {
     /* E_RES_MISMATCH */ "Cell arguments had incompatible resolutions",
     /* E_MEMORY_ALLOC */ "Memory allocation failed",
     /* E_MEMORY_BOUNDS */ "Bounds of provided memory were insufficient",
-    /* E_OPTION_INVALID */ "Mode or flags argument was not valid"};
+    /* E_OPTION_INVALID */ "Mode or flags argument was not valid",
+    /* E_BASE_CELL_DOMAIN */ "Base cell number was outside of acceptable range",
+    /* E_DIGIT_DOMAIN */ "Child digits invalid",
+    /* E_DELETED_DIGIT */ "Deleted subsequence indicates invalid index"};
 
 /**
  * Returns the string describing the H3Error. This string is internally
@@ -130,11 +136,6 @@ H3Error H3_EXPORT(createCell)(int res, int baseCellNumber, int *digits,
     H3_SET_RESOLUTION(h, res);
     H3_SET_BASE_CELL(h, baseCellNumber);
 
-    // TODO: obviously, we should consolidate this to a single inline function
-    static const bool isBaseCellPentagonArr[128] = {
-        [4] = 1,  [14] = 1, [24] = 1, [38] = 1, [49] = 1,  [58] = 1,
-        [63] = 1, [72] = 1, [83] = 1, [97] = 1, [107] = 1, [117] = 1};
-
     bool still_pentagon = isBaseCellPentagonArr[baseCellNumber];
 
     for (int r = 1; r <= res; r++) {
@@ -142,16 +143,17 @@ H3Error H3_EXPORT(createCell)(int res, int baseCellNumber, int *digits,
         if (d < 0 || d > 6) {
             return E_DIGIT_DOMAIN;
         }
+        if (still_pentagon) {
+            // check for deleted subsequences of pentagons
+            if (d == 0) {
+                // do nothing; still a pentagon
+            } else if (d == 1) {
+                return E_DELETED_DIGIT;
+            } else {
+                still_pentagon = false;
+            }
+        }
         H3_SET_INDEX_DIGIT(h, r, d);
-    }
-
-    // TODO: we want to get to the point where this test is redundant and can be
-    // removed.
-
-    // Optional: isValidCells is a more expensive test. do we want to run it
-    // every time?
-    if (!isValidCell(h)) {
-        return E_CELL_INVALID;
     }
 
     *out = h;
@@ -313,11 +315,6 @@ We can check that (in the lower 45 = 15*3 bits) the position of the
 first 1 bit isn't divisible by 3.
 */
 static inline bool _hasDeletedSubsequence(H3Index h, int base_cell) {
-    // TODO: https://github.com/uber/h3/issues/984
-    static const bool isBaseCellPentagonArr[128] = {
-        [4] = 1,  [14] = 1, [24] = 1, [38] = 1, [49] = 1,  [58] = 1,
-        [63] = 1, [72] = 1, [83] = 1, [97] = 1, [107] = 1, [117] = 1};
-
     if (isBaseCellPentagonArr[base_cell]) {
         h <<= 19;
         h >>= 19;

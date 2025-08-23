@@ -61,20 +61,31 @@ SUITE(createCell) {
              .bc = 58,
              .digits = {5, 1, 6, 3, 1, 1, 1, 4, 4, 5, 5, 3, 3, 3, 0}},
 
-            // res domain errors
-            {.x = E_RES_DOMAIN, .res = 16, .bc = 0, .digits = {}},
-            {.x = E_RES_DOMAIN, .res = 18, .bc = 0, .digits = {}},
+            {.res = 16, .bc = 0, .digits = {}, .x = E_RES_DOMAIN},
+            {.res = 18, .bc = 0, .digits = {}, .x = E_RES_DOMAIN},
+            {.res = -1, .bc = 0, .digits = {}, .x = E_RES_DOMAIN},
+            {.res = 0, .bc = 0, .digits = {}, .x = 0x8001fffffffffff},
 
-            // this is a mixture of base cell domain and child domain errors
             {.res = 0, .bc = 122, .digits = {}, .x = E_BASE_CELL_DOMAIN},
+            {.res = 0, .bc = -1, .digits = {}, .x = E_BASE_CELL_DOMAIN},
+            {.res = 0, .bc = 259, .digits = {}, .x = E_BASE_CELL_DOMAIN},
+            {.res = 2, .bc = 122, .digits = {1, 0}, .x = E_BASE_CELL_DOMAIN},
+
             {.res = 1, .bc = 40, .digits = {-1}, .x = E_DIGIT_DOMAIN},
             {.res = 1, .bc = 40, .digits = {7}, .x = E_DIGIT_DOMAIN},
             {.res = 1, .bc = 40, .digits = {8}, .x = E_DIGIT_DOMAIN},
+            {.res = 1, .bc = 40, .digits = {17}, .x = E_DIGIT_DOMAIN},
 
             // deleted subsequence tests
+            // bc = 4 is a pentagon base cell
             {.bc = 4, .digits = {0, 0, 0}, .res = 3, .x = 0x830800fffffffff},
-            // {.bc = 4, .digits = {0, 0, 1}, .res = 3, .x = E_DELETED_DIGIT},
+            {.bc = 4, .digits = {0, 0, 1}, .res = 3, .x = E_DELETED_DIGIT},
             {.bc = 4, .digits = {0, 0, 2}, .res = 3, .x = 0x830802fffffffff},
+
+            // bc = 5 is *not* a pentagon base cell
+            {.bc = 5, .digits = {0, 0, 0}, .res = 3, .x = 0x830a00fffffffff},
+            {.bc = 5, .digits = {0, 0, 1}, .res = 3, .x = 0x830a01fffffffff},
+            {.bc = 5, .digits = {0, 0, 2}, .res = 3, .x = 0x830a02fffffffff},
 
             // DEV NOTE: obvious/dummy test to capture the "last comma" issue
             {.x = E_RES_DOMAIN, .res = -1, .bc = 0, .digits = {}}
