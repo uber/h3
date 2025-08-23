@@ -66,10 +66,12 @@ SUITE(createCell) {
             {.x = E_RES_DOMAIN, .res = 18, .bc = 0, .digits = {}},
 
             // this is a mixture of base cell domain and child domain errors
-            {.x = E_DOMAIN, .res = 0, .bc = 122, .digits = {}},
-            {.x = E_DOMAIN, .res = 1, .bc = 40, .digits = {-1}},
-            {.x = E_DOMAIN, .res = 1, .bc = 40, .digits = {7}},
-            {.x = E_DOMAIN, .res = 1, .bc = 40, .digits = {8}},
+
+            // TODO: maybe move these errors to the end
+            {.x = E_BASE_CELL_DOMAIN, .res = 0, .bc = 122, .digits = {}},
+            {.x = E_DIGIT_DOMAIN, .res = 1, .bc = 40, .digits = {-1}},
+            {.x = E_DIGIT_DOMAIN, .res = 1, .bc = 40, .digits = {7}},
+            {.x = E_DIGIT_DOMAIN, .res = 1, .bc = 40, .digits = {8}},
 
             // deleted subsequence tests
             {.bc = 4, .digits = {0, 0, 0}, .res = 3, .x = 0x830800fffffffff},
