@@ -137,9 +137,9 @@ H3Error H3_EXPORT(createCell)(int res, int baseCellNumber, int *digits,
 
     // Optional: isValidCells is a more expensive test. do we want to run it
     // every time?
-    // if (!isValidCell(h)) {
-    //     return E_CELL_INVALID;
-    // }
+    if (!isValidCell(h)) {
+        return E_CELL_INVALID;
+    }
 
     *out = h;
 
