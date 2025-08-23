@@ -45,8 +45,6 @@ void run_mytest(MyTest mt) {
 // ADD test to ensure error codes are never a valid cell. (some other test
 // file?)
 
-// ADD new error codes!
-
 SUITE(createCell) {
     TEST(createCellNew) {
         MyTest tests[] = {
@@ -87,9 +85,7 @@ SUITE(createCell) {
             {.bc = 5, .digits = {0, 0, 1}, .res = 3, .x = 0x830a01fffffffff},
             {.bc = 5, .digits = {0, 0, 2}, .res = 3, .x = 0x830a02fffffffff},
 
-            // DEV NOTE: obvious/dummy test to capture the "last comma" issue
-            {.x = E_RES_DOMAIN, .res = -1, .bc = 0, .digits = {}}
-            // END DEV NOTE
+            {.x = E_RES_DOMAIN, .res = -1, .bc = 0, .digits = {}}  // last
         };
 
         for (int i = 0; i < ARRAY_SIZE(tests); i++) {
