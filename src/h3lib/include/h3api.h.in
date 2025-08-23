@@ -103,7 +103,8 @@ typedef enum {
     E_MEMORY_BOUNDS = 14,   // Bounds of provided memory were not large enough
     E_OPTION_INVALID = 15,  // Mode or flags argument was not valid.
     E_BASE_CELL_DOMAIN = 16,
-    E_DIGIT_DOMAIN = 17
+    E_DIGIT_DOMAIN = 17,
+    E_DELETED_DIGIT = 18
 } H3ErrorCodes;
 
 /** @defgroup describeH3Error describeH3Error
