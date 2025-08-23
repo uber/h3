@@ -151,7 +151,7 @@ SUITE(createCell) {
 
             // i'll take my leave now
             {.x = 0x8001fffffffffff, .res = 0, .bc = 0, .digits = {}}
-            // all the best
+            // all the best. TODO: just make this one an error :)
         };
 
         for (int i = 0; i < ARRAY_SIZE(tests); i++) {
