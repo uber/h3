@@ -21,6 +21,7 @@
 
 #include "h3api.h"
 #include "test.h"
+#include "utility.h"
 
 typedef struct {
     int res;
@@ -28,12 +29,35 @@ typedef struct {
     int digits[15];
 } Comp;
 
+typedef struct {
+    uint64_t x;  // expected output, either valid H3 cell or error code
+    int res;
+    int bc;
+    int digits[15];
+} MyTest;
+
 // might not need this
 H3Index comp_to_cell(Comp c) {
     H3Index h;
     t_assertSuccess(H3_EXPORT(createCell)(c.res, c.bc, c.digits, &h));
     return h;
 }
+
+void run_mytest(MyTest mt) {
+    H3Index h;
+    H3Error err = H3_EXPORT(createCell)(mt.res, mt.bc, mt.digits, &h);
+
+    if (H3_EXPORT(isValidCell)(mt.x)) {
+        t_assertSuccess(err);
+        t_assert(mt.x == h, "Got the expected cell.");
+    } else {
+        t_assert(mt.x == err, "Got the expected error code.");
+    }
+}
+
+// TODO: a test runner that runs multiple tests
+// ADD test to ensure error codes are never a valid cell.
+// ADD new error codes!
 
 // TODO: might not need this
 Comp cell_to_comp(H3Index h) {
@@ -138,5 +162,23 @@ SUITE(createCell) {
                      .digits = {5, 1, 6, 3, 1, 1, 1, 4, 4, 5, 5, 3, 3, 3, 0},
                      .res = 15},
               0x8f754e64992d6d8);
+    }
+
+    TEST(createCellNew) {
+        MyTest tests[] = {
+            {.x = 0x8001fffffffffff, .res = 0, .bc = 0, .digits = {}},
+            {.x = 0x8003fffffffffff, .res = 0, .bc = 1, .digits = {}},
+            {.x = 0x80f3fffffffffff, .res = 0, .bc = 121, .digits = {}},
+            {.x = 0x839253fffffffff, .res = 3, .bc = 73, .digits = {1, 2, 3}},
+            {.x = 0x821f67fffffffff, .res = 2, .bc = 15, .digits = {5, 4}},
+            {.x = 0x8155bffffffffff, .res = 1, .bc = 42, .digits = {6}},
+            {.x = 0x8f754e64992d6d8,
+             .res = 15,
+             .bc = 58,
+             .digits = {5, 1, 6, 3, 1, 1, 1, 4, 4, 5, 5, 3, 3, 3, 0}}};
+
+        for (int i = 0; i < ARRAY_SIZE(tests); i++) {
+            run_mytest(tests[i]);
+        }
     }
 }
