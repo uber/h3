@@ -113,19 +113,6 @@ SUITE(createCell) {
         // t_assert(!H3_EXPORT(isValidCell)(h), "should NOT be valid cell");
     }
 
-    // TODO: i think maybe adding the expectation first gives cleaner sytnax,
-    // especially after formatting
-
-    TEST(createCellSuperFancy) {
-        // deleted subsequence is invalid when you hit 1 from a parent pentagon
-        valid((Comp){.bc = 4, .digits = {0, 0, 0}, .res = 3},
-              0x830800fffffffff);
-        isbad((Comp){.bc = 4, .digits = {0, 0, 1}, .res = 3},
-              0x830801fffffffff);
-        valid((Comp){.bc = 4, .digits = {0, 0, 2}, .res = 3},
-              0x830802fffffffff);
-    }
-
     TEST(createCellNew) {
         MyTest tests[] = {
             {.x = 0x8001fffffffffff, .res = 0, .bc = 0, .digits = {}},
@@ -148,6 +135,11 @@ SUITE(createCell) {
             {.x = E_DOMAIN, .res = 1, .bc = 40, .digits = {-1}},
             {.x = E_DOMAIN, .res = 1, .bc = 40, .digits = {7}},
             {.x = E_DOMAIN, .res = 1, .bc = 40, .digits = {8}},
+
+            // deleted subsequence tests
+            {.x = 0x830800fffffffff, .bc = 4, .digits = {0, 0, 0}, .res = 3},
+            {.x = E_CELL_INVALID, .bc = 4, .digits = {0, 0, 1}, .res = 3},
+            {.x = 0x830802fffffffff, .bc = 4, .digits = {0, 0, 2}, .res = 3},
 
             // i'll take my leave now
             {.x = 0x8001fffffffffff, .res = 0, .bc = 0, .digits = {}}
