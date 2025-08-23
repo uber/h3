@@ -113,24 +113,10 @@ SUITE(createCell) {
         // t_assert(!H3_EXPORT(isValidCell)(h), "should NOT be valid cell");
     }
 
-    TEST(createCell2) {
-        H3Index h;
-
-        int res = 3;
-        int bc = 73;
-        int digits[] = {1, 2, 3};
-        t_assertSuccess(H3_EXPORT(createCell)(res, bc, digits, &h));
-
-        t_assert(h == 0x839253fffffffff, "match");
-        t_assert(H3_EXPORT(isValidCell)(h), "should be valid cell");
-    }
-
     // TODO: i think maybe adding the expectation first gives cleaner sytnax,
     // especially after formatting
 
     TEST(createCellSuperFancy) {
-        valid((Comp){.res = 0, .bc = 1, .digits = {}}, 0x8003fffffffffff);
-
         // deleted subsequence is invalid when you hit 1 from a parent pentagon
         valid((Comp){.bc = 4, .digits = {0, 0, 0}, .res = 3},
               0x830800fffffffff);
@@ -138,10 +124,6 @@ SUITE(createCell) {
               0x830801fffffffff);
         valid((Comp){.bc = 4, .digits = {0, 0, 2}, .res = 3},
               0x830802fffffffff);
-
-        // resolutions must be correct
-        iserr((Comp){.res = 16, .bc = 0, .digits = {}}, E_RES_DOMAIN);
-        iserr((Comp){.res = 18, .bc = 0, .digits = {}}, E_RES_DOMAIN);
 
         // TODO: more comments about what each test group is doing
         iserr((Comp){.res = 0, .bc = 122, .digits = {}}, E_DOMAIN);
@@ -161,7 +143,16 @@ SUITE(createCell) {
             {.x = 0x8f754e64992d6d8,
              .res = 15,
              .bc = 58,
-             .digits = {5, 1, 6, 3, 1, 1, 1, 4, 4, 5, 5, 3, 3, 3, 0}}};
+             .digits = {5, 1, 6, 3, 1, 1, 1, 4, 4, 5, 5, 3, 3, 3, 0}},
+
+            // try some res domain errors
+            {.x = E_RES_DOMAIN, .res = 16, .bc = 0, .digits = {}},
+            {.x = E_RES_DOMAIN, .res = 18, .bc = 0, .digits = {}},
+
+            // i'll take my leave now
+            {.x = 0x8001fffffffffff, .res = 0, .bc = 0, .digits = {}}
+            // all the best
+        };
 
         for (int i = 0; i < ARRAY_SIZE(tests); i++) {
             run_mytest(tests[i]);
