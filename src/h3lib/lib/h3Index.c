@@ -125,6 +125,13 @@ H3Error H3_EXPORT(createCell)(int res, int baseCellNumber, int *digits,
     H3_SET_MODE(h, H3_CELL_MODE);
     H3_SET_RESOLUTION(h, res);
     H3_SET_BASE_CELL(h, baseCellNumber);
+
+    static const bool isBaseCellPentagonArr[128] = {
+        [4] = 1,  [14] = 1, [24] = 1, [38] = 1, [49] = 1,  [58] = 1,
+        [63] = 1, [72] = 1, [83] = 1, [97] = 1, [107] = 1, [117] = 1};
+
+    bool still_pentagon = isBaseCellPentagonArr[baseCellNumber];
+
     for (int r = 1; r <= res; r++) {
         int d = digits[r - 1];
         if (d < 0 || d > 6) {

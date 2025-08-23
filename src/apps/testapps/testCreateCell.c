@@ -24,7 +24,7 @@
 #include "utility.h"
 
 typedef struct {
-    uint64_t x;  // expected output, either valid H3 cell or error code
+    uint64_t x;  // expected output: either valid H3 cell or error code
     int res;
     int bc;
     int digits[15];
@@ -61,26 +61,24 @@ SUITE(createCell) {
              .bc = 58,
              .digits = {5, 1, 6, 3, 1, 1, 1, 4, 4, 5, 5, 3, 3, 3, 0}},
 
-            // try some res domain errors
+            // res domain errors
             {.x = E_RES_DOMAIN, .res = 16, .bc = 0, .digits = {}},
             {.x = E_RES_DOMAIN, .res = 18, .bc = 0, .digits = {}},
 
             // this is a mixture of base cell domain and child domain errors
-
-            // TODO: maybe move these errors to the end
-            {.x = E_BASE_CELL_DOMAIN, .res = 0, .bc = 122, .digits = {}},
-            {.x = E_DIGIT_DOMAIN, .res = 1, .bc = 40, .digits = {-1}},
-            {.x = E_DIGIT_DOMAIN, .res = 1, .bc = 40, .digits = {7}},
-            {.x = E_DIGIT_DOMAIN, .res = 1, .bc = 40, .digits = {8}},
+            {.res = 0, .bc = 122, .digits = {}, .x = E_BASE_CELL_DOMAIN},
+            {.res = 1, .bc = 40, .digits = {-1}, .x = E_DIGIT_DOMAIN},
+            {.res = 1, .bc = 40, .digits = {7}, .x = E_DIGIT_DOMAIN},
+            {.res = 1, .bc = 40, .digits = {8}, .x = E_DIGIT_DOMAIN},
 
             // deleted subsequence tests
             {.bc = 4, .digits = {0, 0, 0}, .res = 3, .x = 0x830800fffffffff},
-            {.bc = 4, .digits = {0, 0, 1}, .res = 3, .x = E_CELL_INVALID},
+            // {.bc = 4, .digits = {0, 0, 1}, .res = 3, .x = E_DELETED_DIGIT},
             {.bc = 4, .digits = {0, 0, 2}, .res = 3, .x = 0x830802fffffffff},
 
-            // obvious test to capture the "last comma" issue
+            // DEV NOTE: obvious/dummy test to capture the "last comma" issue
             {.x = E_RES_DOMAIN, .res = -1, .bc = 0, .digits = {}}
-            // ...
+            // END DEV NOTE
         };
 
         for (int i = 0; i < ARRAY_SIZE(tests); i++) {
