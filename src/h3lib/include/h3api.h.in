@@ -105,10 +105,6 @@ typedef enum {
     E_BASE_CELL_DOMAIN = 16,
     E_DIGIT_DOMAIN = 17,
     E_DELETED_DIGIT = 18
-
-    // woof: i need to update H3ErrorDescriptions
-
-    // TODO: better way to organize closer to error defs?
 } H3ErrorCodes;
 
 /** @defgroup describeH3Error describeH3Error
