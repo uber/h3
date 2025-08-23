@@ -24,24 +24,11 @@
 #include "utility.h"
 
 typedef struct {
-    int res;
-    int bc;
-    int digits[15];
-} Comp;
-
-typedef struct {
     uint64_t x;  // expected output, either valid H3 cell or error code
     int res;
     int bc;
     int digits[15];
 } MyTest;
-
-// might not need this
-H3Index comp_to_cell(Comp c) {
-    H3Index h;
-    t_assertSuccess(H3_EXPORT(createCell)(c.res, c.bc, c.digits, &h));
-    return h;
-}
 
 void run_mytest(MyTest mt) {
     H3Index h;
@@ -55,58 +42,12 @@ void run_mytest(MyTest mt) {
     }
 }
 
-// TODO: a test runner that runs multiple tests
-// ADD test to ensure error codes are never a valid cell.
+// ADD test to ensure error codes are never a valid cell. (some other test file?)
 // ADD new error codes!
-
-// TODO: might not need this
-Comp cell_to_comp(H3Index h) {
-    Comp c = {.res = H3_EXPORT(getResolution)(h),
-              .bc = H3_EXPORT(getBaseCellNumber)(h)};
-
-    for (int r = 1; r <= c.res; r++) {
-        H3_EXPORT(getIndexDigit)(h, r, &c.digits[r - 1]);
-    }
-
-    return c;
-}
-
-void valid(Comp c, H3Index h_target) {
-    H3Index h = comp_to_cell(c);  // maybe i don't need these helpers...
-    t_assert(h == h_target, "Index matches");
-    t_assert(H3_EXPORT(isValidCell)(h), "Should be a valid cell");
-
-    // TODO: check the reverse
-}
-
-void isbad(Comp c, H3Index h_target) {
-    H3Index h;
-    H3Error err = H3_EXPORT(createCell)(c.res, c.bc, c.digits, &h);
-    t_assert(h == h_target, "Index matches");
-    t_assert(!H3_EXPORT(isValidCell)(h), "Should NOT be a valid cell");
-}
-
-void iserr(Comp c, H3Error err_target) {
-    H3Index h;
-    H3Error err = H3_EXPORT(createCell)(c.res, c.bc, c.digits, &h);
-    t_assert(err == err_target, "Expecting an error");
-}
 
 SUITE(createCell) {
     TEST(createCell) {
         H3Index h;
-
-        t_assertSuccess(H3_EXPORT(createCell)(0, 0, NULL, &h));
-        t_assert(h == 0x8001fffffffffff, "match");
-        t_assert(H3_EXPORT(isValidCell)(h), "should be valid cell");
-
-        t_assertSuccess(H3_EXPORT(createCell)(0, 1, NULL, &h));
-        t_assert(h == 0x8003fffffffffff, "match");
-        t_assert(H3_EXPORT(isValidCell)(h), "should be valid cell");
-
-        t_assertSuccess(H3_EXPORT(createCell)(0, 121, NULL, &h));
-        t_assert(h == 0x80f3fffffffffff, "match");
-        t_assert(H3_EXPORT(isValidCell)(h), "should be valid cell");
 
         // t_assertSuccess(H3_EXPORT(createCell)(0, 122, NULL, &h));
         // t_assert(h == 0x80f5fffffffffff, "match");
@@ -141,9 +82,9 @@ SUITE(createCell) {
             {.bc = 4, .digits = {0, 0, 1}, .res = 3, .x = E_CELL_INVALID},
             {.bc = 4, .digits = {0, 0, 2}, .res = 3, .x = 0x830802fffffffff},
 
-            // i'll take my leave now
-            {.x = 0x8001fffffffffff, .res = 0, .bc = 0, .digits = {}}
-            // all the best. TODO: just make this one an error :)
+            // obvious test to capture the "last comma" issue
+            {.x = E_RES_DOMAIN, .res = -1, .bc = 0, .digits = {}}
+            // ...
         };
 
         for (int i = 0; i < ARRAY_SIZE(tests); i++) {
