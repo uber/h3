@@ -124,12 +124,6 @@ SUITE(createCell) {
               0x830801fffffffff);
         valid((Comp){.bc = 4, .digits = {0, 0, 2}, .res = 3},
               0x830802fffffffff);
-
-        // TODO: more comments about what each test group is doing
-        iserr((Comp){.res = 0, .bc = 122, .digits = {}}, E_DOMAIN);
-        iserr((Comp){.res = 1, .bc = 40, .digits = {-1}}, E_DOMAIN);
-        iserr((Comp){.res = 1, .bc = 40, .digits = {7}}, E_DOMAIN);
-        iserr((Comp){.res = 1, .bc = 40, .digits = {8}}, E_DOMAIN);
     }
 
     TEST(createCellNew) {
@@ -148,6 +142,12 @@ SUITE(createCell) {
             // try some res domain errors
             {.x = E_RES_DOMAIN, .res = 16, .bc = 0, .digits = {}},
             {.x = E_RES_DOMAIN, .res = 18, .bc = 0, .digits = {}},
+
+            // this is a mixture of base cell domain and child domain errors
+            {.x = E_DOMAIN, .res = 0, .bc = 122, .digits = {}},
+            {.x = E_DOMAIN, .res = 1, .bc = 40, .digits = {-1}},
+            {.x = E_DOMAIN, .res = 1, .bc = 40, .digits = {7}},
+            {.x = E_DOMAIN, .res = 1, .bc = 40, .digits = {8}},
 
             // i'll take my leave now
             {.x = 0x8001fffffffffff, .res = 0, .bc = 0, .digits = {}}
