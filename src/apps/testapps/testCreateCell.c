@@ -85,11 +85,13 @@ SUITE(createCell) {
             {.bc = 5, .digits = {0, 0, 1}, .res = 3, .x = 0x830a01fffffffff},
             {.bc = 5, .digits = {0, 0, 2}, .res = 3, .x = 0x830a02fffffffff},
 
-            {.x = E_RES_DOMAIN, .res = -1}  // last; trailing comma "fix"
+            {.x = E_RES_DOMAIN, .res = -1}  // avoid trailing comma
         };
 
         for (size_t i = 0; i < ARRAY_SIZE(tests); i++) {
             run_mytest(tests[i]);
         }
     }
+
+    // TODO: round trip tests
 }
