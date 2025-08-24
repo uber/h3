@@ -47,7 +47,7 @@ void run_mytest(MyTest mt) {
 
 SUITE(createCell) {
     TEST(createCellNew) {
-        MyTest tests[] = {
+        static const MyTest tests[] = {
             {.x = 0x8001fffffffffff, .res = 0, .bc = 0, .digits = {}},
             {.x = 0x8003fffffffffff, .res = 0, .bc = 1, .digits = {}},
             {.x = 0x80f3fffffffffff, .res = 0, .bc = 121, .digits = {}},
@@ -85,10 +85,10 @@ SUITE(createCell) {
             {.bc = 5, .digits = {0, 0, 1}, .res = 3, .x = 0x830a01fffffffff},
             {.bc = 5, .digits = {0, 0, 2}, .res = 3, .x = 0x830a02fffffffff},
 
-            {.x = E_RES_DOMAIN, .res = -1, .bc = 0, .digits = {}}  // last
+            {.x = E_RES_DOMAIN, .res = -1}  // last; trailing comma "fix"
         };
 
-        for (int i = 0; i < ARRAY_SIZE(tests); i++) {
+        for (size_t i = 0; i < ARRAY_SIZE(tests); i++) {
             run_mytest(tests[i]);
         }
     }
