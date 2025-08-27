@@ -20,6 +20,7 @@
  */
 
 #include "h3api.h"
+#include "iterators.h"
 #include "test.h"
 #include "utility.h"
 
@@ -42,11 +43,36 @@ void run_mytest(MyTest mt) {
     }
 }
 
+void run_roundtrip(const H3Index h) {
+    // test roundtrip: h3index -> components -> h3index
+    int res = H3_EXPORT(getResolution)(h);
+    int bc = H3_EXPORT(getBaseCellNumber)(h);
+    int digits[15];
+
+    for (int r = 1; r <= res; r++) {
+        t_assertSuccess(H3_EXPORT(getIndexDigit)(h, r, &digits[r - 1]));
+    }
+
+    H3Index out;
+    t_assertSuccess(H3_EXPORT(createCell)(res, bc, digits, &out));
+
+    t_assert(out == h, "Got the expected cell.");
+}
+
+static void res_roundtrip(int res) {
+    IterCellsResolution iter = iterInitRes(res);
+
+    while (iter.h) {
+        run_roundtrip(iter.h);
+        iterStepRes(&iter);
+    }
+}
+
 // ADD test to ensure error codes are never a valid cell. (some other test
 // file?)
 
 SUITE(createCell) {
-    TEST(createCellNew) {
+    TEST(tableOfTests) {
         static const MyTest tests[] = {
             {.x = 0x8001fffffffffff, .res = 0, .bc = 0, .digits = {}},
             {.x = 0x8003fffffffffff, .res = 0, .bc = 1, .digits = {}},
@@ -93,5 +119,9 @@ SUITE(createCell) {
         }
     }
 
-    // TODO: round trip tests
+    TEST(roundtrip) {
+        res_roundtrip(0);
+        res_roundtrip(1);
+        res_roundtrip(2);
+    }
 }
