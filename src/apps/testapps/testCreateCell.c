@@ -43,29 +43,44 @@ void run_mytest(MyTest mt) {
     }
 }
 
-void run_roundtrip(const H3Index h) {
+bool run_roundtrip(const H3Index h) {
     // test roundtrip: h3index -> components -> h3index
     int res = H3_EXPORT(getResolution)(h);
     int bc = H3_EXPORT(getBaseCellNumber)(h);
     int digits[15];
 
+    bool all_passed = true;
+
     for (int r = 1; r <= res; r++) {
-        t_assertSuccess(H3_EXPORT(getIndexDigit)(h, r, &digits[r - 1]));
+        if (H3_EXPORT(getIndexDigit)(h, r, &digits[r - 1]) != E_SUCCESS) {
+            all_passed = false;
+        }
     }
 
     H3Index out;
-    t_assertSuccess(H3_EXPORT(createCell)(res, bc, digits, &out));
+    if (H3_EXPORT(createCell)(res, bc, digits, &out) != E_SUCCESS) {
+        all_passed = false;
+    }
 
-    t_assert(out == h, "Got the expected cell.");
+    if (out != h) {
+        all_passed = false;
+    }
+
+    return all_passed;
 }
 
 static void res_roundtrip(int res) {
+    bool all_passed = true;
     IterCellsResolution iter = iterInitRes(res);
 
     while (iter.h) {
-        run_roundtrip(iter.h);
+        if (!run_roundtrip(iter.h)) {
+            all_passed = false;
+        }
         iterStepRes(&iter);
     }
+
+    t_assert(all_passed, "All cells at this res passed the roundtrip");
 }
 
 // ADD test to ensure error codes are never a valid cell. (some other test
