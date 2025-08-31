@@ -52,6 +52,7 @@ SUITE(describeH3Error) {
 
     TEST(errorCodesNotValidIndexes) {
         // TODO: should this test live in a different file?
+        // Alternatively, rename this file `testH3ErrorCodes.c`?
         static const H3ErrorCodes all_errors[] = {
             E_SUCCESS,          E_FAILED,
             E_DOMAIN,           E_LATLNG_DOMAIN,
