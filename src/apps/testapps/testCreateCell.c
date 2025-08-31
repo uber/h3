@@ -32,15 +32,15 @@ typedef struct {
 } MyTest;
 
 void run_mytest(MyTest mt) {
+    // Log one assertion for each MyTest struct
     H3Index h;
+    bool valid_mtx = H3_EXPORT(isValidCell)(mt.x);
     H3Error err = H3_EXPORT(createCell)(mt.res, mt.bc, mt.digits, &h);
 
-    if (H3_EXPORT(isValidCell)(mt.x)) {
-        t_assertSuccess(err);
-        t_assert(mt.x == h, "Got the expected cell.");
-    } else {
-        t_assert(mt.x == err, "Got the expected error code.");
-    }
+    bool valid_cell = valid_mtx && (err == E_SUCCESS) && (mt.x == h);
+    bool got_error = !valid_mtx && (mt.x == err);
+
+    t_assert(valid_cell || got_error, "Got valid cell or expected error.");
 }
 
 bool passes_roundtrip(const H3Index h) {
@@ -64,6 +64,8 @@ bool passes_roundtrip(const H3Index h) {
 }
 
 static void res_roundtrip(int res) {
+    // Only count one assertion per resolution.
+    // Otherwise, can easily overflow `globalTestCount` in test.h
     bool all_passed = true;
     IterCellsResolution iter = iterInitRes(res);
 
@@ -76,9 +78,6 @@ static void res_roundtrip(int res) {
 
     t_assert(all_passed, "All cells at this res passed the roundtrip");
 }
-
-// ADD test to ensure error codes are never a valid cell. (some other test
-// file?)
 
 SUITE(createCell) {
     TEST(tableOfTests) {
@@ -123,7 +122,7 @@ SUITE(createCell) {
             {.x = E_RES_DOMAIN, .res = -1}  // avoid trailing comma
         };
 
-        for (size_t i = 0; i < ARRAY_SIZE(tests); i++) {
+        for (int i = 0; i < ARRAY_SIZE(tests); i++) {
             run_mytest(tests[i]);
         }
     }
@@ -132,5 +131,7 @@ SUITE(createCell) {
         res_roundtrip(0);
         res_roundtrip(1);
         res_roundtrip(2);
+        res_roundtrip(3);
+        res_roundtrip(4);
     }
 }

@@ -25,8 +25,9 @@
 
 #include <string.h>
 
-#include "h3Index.h"
+#include "h3api.h"
 #include "test.h"
+#include "utility.h"
 
 SUITE(describeH3Error) {
     TEST(noError) {
@@ -47,5 +48,29 @@ SUITE(describeH3Error) {
         t_assert(
             strcmp(H3_EXPORT(describeH3Error)(err), "Invalid error code") == 0,
             "got expected failure message");
+    }
+
+    TEST(errorCodesNotValidIndexes) {
+        // TODO: should this test live in a different file?
+        static const H3ErrorCodes all_errors[] = {
+            E_SUCCESS,          E_FAILED,
+            E_DOMAIN,           E_LATLNG_DOMAIN,
+            E_RES_DOMAIN,       E_CELL_INVALID,
+            E_DIR_EDGE_INVALID, E_UNDIR_EDGE_INVALID,
+            E_VERTEX_INVALID,   E_PENTAGON,
+            E_DUPLICATE_INPUT,  E_NOT_NEIGHBORS,
+            E_RES_MISMATCH,     E_MEMORY_ALLOC,
+            E_MEMORY_BOUNDS,    E_OPTION_INVALID,
+            E_BASE_CELL_DOMAIN, E_DIGIT_DOMAIN,
+            E_DELETED_DIGIT};
+
+        for (int i = 0; i < ARRAY_SIZE(all_errors); i++) {
+            t_assert(!H3_EXPORT(isValidCell)(all_errors[i]),
+                     "Error code is not a valid cell.");
+            t_assert(!H3_EXPORT(isValidDirectedEdge)(all_errors[i]),
+                     "Error code is not a valid directed edge.");
+            t_assert(!H3_EXPORT(isValidVertex)(all_errors[i]),
+                     "Error code is not a valid vertex.");
+        }
     }
 }
