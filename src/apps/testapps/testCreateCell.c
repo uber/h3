@@ -43,30 +43,24 @@ void run_mytest(MyTest mt) {
     }
 }
 
-bool run_roundtrip(const H3Index h) {
+bool passes_roundtrip(const H3Index h) {
     // test roundtrip: h3index -> components -> h3index
     int res = H3_EXPORT(getResolution)(h);
     int bc = H3_EXPORT(getBaseCellNumber)(h);
     int digits[15];
 
-    bool all_passed = true;
-
     for (int r = 1; r <= res; r++) {
         if (H3_EXPORT(getIndexDigit)(h, r, &digits[r - 1]) != E_SUCCESS) {
-            all_passed = false;
+            return false;
         }
     }
 
     H3Index out;
     if (H3_EXPORT(createCell)(res, bc, digits, &out) != E_SUCCESS) {
-        all_passed = false;
+        return false;
     }
 
-    if (out != h) {
-        all_passed = false;
-    }
-
-    return all_passed;
+    return out == h;
 }
 
 static void res_roundtrip(int res) {
@@ -74,7 +68,7 @@ static void res_roundtrip(int res) {
     IterCellsResolution iter = iterInitRes(res);
 
     while (iter.h) {
-        if (!run_roundtrip(iter.h)) {
+        if (!passes_roundtrip(iter.h)) {
             all_passed = false;
         }
         iterStepRes(&iter);
