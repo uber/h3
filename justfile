@@ -8,7 +8,8 @@ build:
     -mkdir build
     cd build; cmake -DCMAKE_BUILD_TYPE=Release ..; make
 
-test: # whatever test is currently in the hot loop; often changes
+# whatever test is currently in the hot loop; often changes
+test:
     # ./build/bin/testCreateCell
     # just test-fast
     # just fail-example
