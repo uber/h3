@@ -10,7 +10,8 @@ purge:
 test: build
     # ./build/bin/testCreateCell
     # just test-fast
-    ./build/bin/h3 getIndexDigit -c 5 -r 15
+    ./build/bin/h3 getIndexDigit -r 15 -c 8f754e64992d6d6  # should work
+    ./build/bin/h3 getIndexDigit -r 15 -c 5  # should fail
 
 test-fast: build
     cd build; make test-fast
