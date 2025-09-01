@@ -309,10 +309,10 @@ SUBCOMMAND(getIndexDigit,
     Arg *args[] = {&getIndexDigitArg, &helpArg, &cellArg, &digitArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     // TODO: Should there be a general `isValidIndex`?
-    bool is_valid = H3_EXPORT(isValidCell)(cell) ||
-                    H3_EXPORT(isValidDirectedEdge)(cell) ||
-                    H3_EXPORT(isValidVertex)(cell);
-    if (!is_valid) {
+    bool isValid = H3_EXPORT(isValidCell)(cell) ||
+                   H3_EXPORT(isValidDirectedEdge)(cell) ||
+                   H3_EXPORT(isValidVertex)(cell);
+    if (!isValid) {
         return E_DOMAIN;  // TODO: maybe create a new E_INDEX_INVALID error?
     }
     int value;
