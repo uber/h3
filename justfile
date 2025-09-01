@@ -1,4 +1,6 @@
-default:
+# NOTE: remove before landing PR
+
+_default:
     @just --list
 
 purge:
