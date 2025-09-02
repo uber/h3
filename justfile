@@ -15,7 +15,11 @@ test:
     # ./build/bin/testCreateCell
     # just test-fast
     # just fail-example
-    just ctest
+    # test_bad_getIndexDigit
+    # just ctest
+    cd build; ctest -R test_getIndexDigit
+    cd build; ctest -R test_bad_getIndexDigit
+
 
 # Pass/fail example of getIndexDigit
 fail-example: build
@@ -34,3 +38,6 @@ test-fast: build
 # Runs all C tests (slow)
 test-slow: build
     cd build; make test
+
+list-tests:
+    cd build; ctest -N
