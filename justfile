@@ -17,8 +17,9 @@ test:
     # just fail-example
     # test_bad_getIndexDigit
     # just ctest
-    cd build; ctest -R test_getIndexDigit
-    cd build; ctest -R test_bad_getIndexDigit
+    # just ctest-demo1
+    just regex-demo2
+
 
 
 # Pass/fail example of getIndexDigit
@@ -41,3 +42,20 @@ test-slow: build
 
 list-tests:
     cd build; ctest -N
+
+regex-demo1:
+    # ctest takes a -R option, which is a regex. can use to run a single test
+    cd build; ctest -R test_getIndexDigit
+    cd build; ctest -R test_bad_getIndexDigit
+
+regex-demo2:
+    # can also use to run multiple tests that match the regex
+    cd build; ctest -R getIndexDigit
+
+ctest-demo1:
+    # ctest takes a -V option for verbose output
+    cd build; ctest -R getIndexDigit -V
+
+
+# TODO: can i use ctest to run individual C tests (instead of CLI tests)? (show multiple ways to run the same test)
+# TODO: can i use ctest to run benchmarks?
