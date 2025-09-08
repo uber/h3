@@ -7,7 +7,7 @@ The public API of this library consists of the functions declared in file
 
 ## [Unreleased]
 ### Added
-- Added `getIndexDigit` function for inspecting specific index digits of an H3 index. (#1024)
+- Added `getIndexDigit` function for inspecting specific index digits of an H3 index. (#1024, #1042)
 
 ## [4.3.0] - 2025-06-17
 ### Added
