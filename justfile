@@ -56,6 +56,14 @@ ctest-demo1:
     # ctest takes a -V option for verbose output
     cd build; ctest -R getIndexDigit -V
 
+ctest-demo2:
+    # get the list of just the cli tests, due to the naming convention prefix
+    cd build; ctest -N -R '^testCli'
+
+ctest-demo3:
+    # run tests in parallel. faster!
+    cd bulid; ctest -j4
+
 
 # TODO: can i use ctest to run individual C tests (instead of CLI tests)? (show multiple ways to run the same test)
 # TODO: can i use ctest to run benchmarks?
