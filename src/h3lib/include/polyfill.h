@@ -22,49 +22,7 @@
 
 #include <stdbool.h>
 
-#include "bbox.h"
-#include "h3api.h"
-#include "iterators.h"
-
-/**
- * IterCellsPolygonCompact: struct for iterating through all the cells
- * within a given polygon, outputting a compact set.
- *
- * Constructors:
- *
- * Initialize with `iterInitPolygon`. This will save a reference to the
- * input polygon and allocate memory for data structures used in the
- * iteration. Iterators initialized in this way must be destroyed by
- * `iterDestroyPolygon` to free allocated memory.
- *
- * Iteration:
- *
- * Step iterator with `iterStepPolygonCompact`.
- * During the lifetime of the `iterCellsPolygonCompact`, the current iterate
- * is accessed via the `iterCellsPolygonCompact.cell` member. When the iterator
- * is exhausted  or if there was an error in initialization or iteration,
- * `iterCellsPolygonCompact.cell` will be `H3_NULL` after calling
- * `iterStepChild`. It is the responsibiliy of the caller to check
- * `iterCellsPolygonCompact.error` when `H3_NULL` is received.
- *
- * Cleanup:
- *
- * Destroy the iterator and free allocated memory with `iterDestroyPolygon`.
- */
-typedef struct {
-    H3Index cell;                // current value
-    H3Error error;               // error, if any
-    int _res;                    // target resolution
-    uint32_t _flags;             // Mode flags for the polygonToCells operation
-    const GeoPolygon *_polygon;  // the polygon we're filling
-    BBox *_bboxes;  // Bounding box(es) for the polygon and its holes
-    bool _started;  // Whether iteration has started
-} IterCellsPolygonCompact;
-
-DECLSPEC IterCellsPolygonCompact
-iterInitPolygonCompact(const GeoPolygon *polygon, int res, uint32_t flags);
-DECLSPEC void iterStepPolygonCompact(IterCellsPolygonCompact *iter);
-DECLSPEC void iterDestroyPolygonCompact(IterCellsPolygonCompact *iter);
+#include "polyfill_iterator.h"
 
 typedef struct {
     H3Index cell;                       // current value

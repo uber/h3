@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** @file
- * @brief Fuzzer program for polygonToCellsExperimental and related functions,
- * without holes
+/** @file fuzzerPolygonToCellsExperimentalNoHoles.c
+ * @brief Fuzzes the experimental polygon-to-cells path without holes.
  */
 
 #include "aflHarness.h"
@@ -56,6 +55,11 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 
     for (uint32_t flags = 0; flags < CONTAINMENT_INVALID; flags++) {
         run(&geoPolygon, flags, res);
+        if (flags == CONTAINMENT_FULL || flags == CONTAINMENT_OVERLAPPING) {
+            uint32_t geodesicFlags = flags;
+            FLAG_SET_GEODESIC(geodesicFlags);
+            run(&geoPolygon, geodesicFlags, res);
+        }
     }
 
     return 0;

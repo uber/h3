@@ -1055,6 +1055,35 @@ H3Error H3_EXPORT(latLngToCell)(const LatLng *g, int res, H3Index *out) {
 }
 
 /**
+ * Encodes a coordinate on the sphere to the H3 index of the containing cell at
+ * the specified resolution.
+ *
+ * The cartesian 3D coordinate is expected to be on the unit sphere.
+ *
+ * @param v The 3D cartesian coordinates to encode.
+ * @param res The desired H3 resolution for the encoding.
+ * @param out The encoded H3Index.
+ * @returns E_SUCCESS on success, another value otherwise
+ */
+H3Error vec3dToCell(const Vec3d *v, int res, H3Index *out) {
+    if (res < 0 || res > MAX_H3_RES) {
+        return E_RES_DOMAIN;
+    }
+    if (!isfinite(v->x) || !isfinite(v->y) || !isfinite(v->z)) {
+        return E_DOMAIN;
+    }
+
+    FaceIJK fijk;
+    _vec3dToFaceIjk(v, res, &fijk);
+    *out = _faceIjkToH3(&fijk, res);
+    if (ALWAYS(*out)) {
+        return E_SUCCESS;
+    } else {
+        return E_FAILED;
+    }
+}
+
+/**
  * Convert an H3Index to the FaceIJK address on a specified icosahedral face.
  * @param h The H3Index.
  * @param fijk The FaceIJK address, initialized with the desired face
@@ -1160,6 +1189,23 @@ H3Error H3_EXPORT(cellToLatLng)(H3Index h3, LatLng *g) {
 }
 
 /**
+ * Determines the 3D cartesian coordinates of the center of an H3 cell.
+ *
+ * @param h3 The H3 index.
+ * @param v The 3D cartesian coordinates of the H3 cell center.
+ * @return E_SUCCESS on success, or another H3Error code on failure.
+ */
+H3Error cellToVec3(H3Index h3, Vec3d *v) {
+    FaceIJK fijk;
+    H3Error e = _h3ToFaceIjk(h3, &fijk);
+    if (e) {
+        return e;
+    }
+    _faceIjkToVec3(&fijk, H3_GET_RESOLUTION(h3), v);
+    return E_SUCCESS;
+}
+
+/**
  * Determines the cell boundary in spherical coordinates for an H3 index.
  *
  * @param h3 The H3 index.
@@ -1177,6 +1223,29 @@ H3Error H3_EXPORT(cellToBoundary)(H3Index h3, CellBoundary *cb) {
     } else {
         _faceIjkToCellBoundary(&fijk, H3_GET_RESOLUTION(h3), 0, NUM_HEX_VERTS,
                                cb);
+    }
+    return E_SUCCESS;
+}
+
+/**
+ * Determines the cell boundary in spherical coordinates for an H3 index.
+ *
+ * @param h3 The H3 index.
+ * @param cb The boundary of the H3 cell in spherical coordinates.
+ */
+H3Error H3_EXPORT(cellToGeodesicBoundary)(H3Index h3,
+                                          GeodesicCellBoundary *cb) {
+    FaceIJK fijk;
+    H3Error e = _h3ToFaceIjk(h3, &fijk);
+    if (e) {
+        return e;
+    }
+    if (H3_EXPORT(isPentagon)(h3)) {
+        _faceIjkPentToCellBoundaryGeodesic(&fijk, H3_GET_RESOLUTION(h3), 0,
+                                           NUM_PENT_VERTS, cb);
+    } else {
+        _faceIjkToCellBoundaryGeodesic(&fijk, H3_GET_RESOLUTION(h3), 0,
+                                       NUM_HEX_VERTS, cb);
     }
     return E_SUCCESS;
 }

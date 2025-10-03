@@ -235,7 +235,11 @@ It produces a collection of cells that are contained within the polygon.
 
 This function differs from `polygonToCells` in that it uses an experimental
 new algorithm which supports center-based, fully-contained, and
-overlapping containment modes.
+overlapping containment modes. You can additionally request a geodesic
+traversal (great-circle edges) for very large polygons by enabling the
+geodesic flag; this mode is significantly slower than the planar
+algorithm, so prefer lower resolutions when using it for global-scale
+objects.
 
 <Tabs
   groupId="language"
@@ -269,6 +273,11 @@ The valid values for `flags` are:
 | `CONTAINMENT_FULL` | 1 | Cell is fully contained in the shape
 | `CONTAINMENT_OVERLAPPING` | 2 | Cell overlaps the shape at any point
 | `CONTAINMENT_OVERLAPPING_BBOX` | 3 | Cell bounding box overlaps shape
+
+To cover polygons along geodesic edges, set the geodesic bit with
+`FLAG_SET_GEODESIC(flags)` (equivalent to OR-ing with `FLAG_GEODESIC_MASK`).
+Geodesic coverage is intended for huge polygons and is substantially
+slower; reduce the target resolution when using it.
 
 Returns 0 (`E_SUCCESS`) on success.
 
@@ -661,5 +670,4 @@ This function exists for memory management and is not exposed.
 
 </TabItem>
 </Tabs>
-
 

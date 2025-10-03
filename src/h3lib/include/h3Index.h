@@ -179,4 +179,8 @@ H3Index _h3Rotate60ccw(H3Index h);
 H3Index _h3Rotate60cw(H3Index h);
 DECLSPEC H3Index _zeroIndexDigits(H3Index h, int start, int end);
 
+H3Error vec3dToCell(const Vec3d *v, int res, H3Index *out);
+H3Error cellToVec3(H3Index h3, Vec3d *v);
+H3Error H3_EXPORT(cellToGeodesicBoundary)(H3Index h3, GeodesicCellBoundary *cb);
+
 #endif

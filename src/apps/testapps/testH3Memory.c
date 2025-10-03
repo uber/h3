@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** @file
- * @brief tests main H3 core library memory management.
+/** @file testH3Memory.c
+ * @brief Exercises memory allocation hooks in the H3 core library.
  *
  *  usage: `testH3Memory`
  */
@@ -430,5 +430,41 @@ SUITE(h3Memory) {
             t_assert(err == E_MEMORY_ALLOC,
                      "Should fail with memory error before success");
         }
+    }
+    
+    TEST(polygonToCellsExperimentalGeodesic) {
+        sfGeoPolygon.geoloop = sfGeoLoop;
+        sfGeoPolygon.numHoles = 0;
+
+        uint32_t flags = CONTAINMENT_OVERLAPPING;
+        FLAG_SET_GEODESIC(flags);
+
+        resetMemoryCounters(1);
+        int64_t numHexagons;
+        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+            &sfGeoPolygon, 5, flags, &numHexagons));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+
+        resetMemoryCounters(0);
+        failAlloc = true;
+        H3Error err = H3_EXPORT(polygonToCellsExperimental)(
+            &sfGeoPolygon, 5, flags, numHexagons, hexagons);
+        t_assert(err == E_MEMORY_ALLOC,
+                 "geodesic polygonToCellsExperimental failed (1)");
+        t_assert(actualAllocCalls == 1, "alloc called once");
+        t_assert(actualFreeCalls == 0, "free not called");
+
+        resetMemoryCounters(3);
+        err = H3_EXPORT(polygonToCellsExperimental)(&sfGeoPolygon, 5, flags,
+                                                    numHexagons, hexagons);
+        t_assert(err == E_SUCCESS,
+                 "geodesic polygonToCellsExperimental succeeded (1)");
+        t_assert(actualAllocCalls == 3, "alloc called one time");
+        t_assert(actualFreeCalls == 3, "free called one time");
+
+        int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
+        t_assert(actualNumIndexes == 3,
+                 "got expected geodesic polygonToCellsExperimental size");
+        free(hexagons);
     }
 }

@@ -25,9 +25,11 @@
 #include "alloc.h"
 #include "baseCells.h"
 #include "coordijk.h"
+#include "geodesic_iterator.h"
 #include "h3Assert.h"
 #include "h3Index.h"
 #include "polygon.h"
+#include "sphereCapTables.h"
 
 // Factor by which to scale the cell bounding box to include all cells.
 // This was determined empirically by finding the smallest factor that
@@ -44,12 +46,6 @@
  * by taking the max exact edge length for cells at the center of each base
  * cell at that resolution.
  */
-static double MAX_EDGE_LENGTH_RADS[MAX_H3_RES + 1] = {
-    0.21577206265130, 0.08308767068495, 0.03148970436439, 0.01190662871439,
-    0.00450053330908, 0.00170105523619, 0.00064293917678, 0.00024300820659,
-    0.00009184847087, 0.00003471545901, 0.00001312121017, 0.00000495935129,
-    0.00000187445860, 0.00000070847876, 0.00000026777980, 0.00000010121125};
-
 /** All cells that contain the north pole, by res */
 static H3Index NORTH_POLE_CELLS[MAX_H3_RES + 1] = {
     0x8001fffffffffff, 0x81033ffffffffff, 0x820327fffffffff, 0x830326fffffffff,
@@ -277,8 +273,7 @@ H3Index baseCellNumToCell(int baseCellNum) {
     return baseCell;
 }
 
-static void iterErrorPolygonCompact(IterCellsPolygonCompact *iter,
-                                    H3Error error) {
+void iterErrorPolygonCompact(IterCellsPolygonCompact *iter, H3Error error) {
     iterDestroyPolygonCompact(iter);
     iter->error = error;
 }
@@ -287,7 +282,7 @@ static void iterErrorPolygonCompact(IterCellsPolygonCompact *iter,
  * Given a cell, find the next cell in the sequence of all cells
  * to check in the iteration.
  */
-static H3Index nextCell(H3Index cell) {
+H3Index nextCell(H3Index cell) {
     int res = H3_GET_RESOLUTION(cell);
     while (true) {
         // If this is a base cell, set to next base cell (or H3_NULL if done)
@@ -332,7 +327,8 @@ static IterCellsPolygonCompact _iterInitPolygonCompact(
                                     ._res = res,
                                     ._flags = flags,
                                     ._bboxes = NULL,
-                                    ._started = false};
+                                    ._started = false,
+                                    ._extra = NULL};
 
     if (res < 0 || res > MAX_H3_RES) {
         iterErrorPolygonCompact(&iter, E_RES_DOMAIN);
@@ -342,6 +338,11 @@ static IterCellsPolygonCompact _iterInitPolygonCompact(
     H3Error flagErr = validatePolygonFlags(flags);
     if (flagErr) {
         iterErrorPolygonCompact(&iter, flagErr);
+        return iter;
+    }
+
+    if (polygon->numHoles > 0 && polygon->holes == NULL) {
+        iterErrorPolygonCompact(&iter, E_DOMAIN);
         return iter;
     }
 
@@ -423,6 +424,11 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
     // Short-circuit iteration for 0-vert polygon
     if (iter->_polygon->geoloop.numVerts == 0) {
         iterDestroyPolygonCompact(iter);
+        return;
+    }
+
+    if (FLAG_GET_GEODESIC(iter->_flags)) {
+        geodesicIteratorStep(iter, cell);
         return;
     }
 
@@ -597,13 +603,14 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
 void iterDestroyPolygonCompact(IterCellsPolygonCompact *iter) {
     if (iter->_bboxes) {
         H3_MEMORY(free)(iter->_bboxes);
+        iter->_bboxes = NULL;
     }
+    geodesicIteratorDestroyState(iter);
     iter->cell = H3_NULL;
     iter->error = E_SUCCESS;
     iter->_polygon = NULL;
     iter->_res = -1;
     iter->_flags = 0;
-    iter->_bboxes = NULL;
 }
 
 /**
