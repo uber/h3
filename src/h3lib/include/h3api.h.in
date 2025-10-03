@@ -141,6 +141,18 @@ typedef struct {
     double lng;  ///< longitude in radians
 } LatLng;
 
+/** @struct Vec3d
+ *  @brief 3D floating point structure
+ *
+ *  For geodesic calulations represents a point on the surface of the Earth
+ *  as a unit vector in 3D Cartesian space (ECEF-like coordinates).
+ */
+typedef struct {
+    double x;  ///< x component (towards 0° lat, 0° lon)
+    double y;  ///< y component (towards 0° lat, 90° lon)
+    double z;  ///< z component (towards north pole)
+} Vec3d;
+
 /** @struct CellBoundary
     @brief cell boundary in latitude/longitude
 */
@@ -148,6 +160,14 @@ typedef struct {
     int numVerts;                        ///< number of vertices
     LatLng verts[MAX_CELL_BNDRY_VERTS];  ///< vertices in ccw order
 } CellBoundary;
+
+/** @struct GeodesicCellBoundary
+    @brief Geodesic cell boundary expressed in Cartesian space
+*/
+typedef struct {
+    int numVerts;                       ///< number of vertices
+    Vec3d verts[MAX_CELL_BNDRY_VERTS];  ///< vertices in ccw order
+} GeodesicCellBoundary;
 
 /** @struct GeoLoop
  *  @brief similar to CellBoundary, but requires more alloc work
@@ -185,6 +205,31 @@ typedef enum {
     CONTAINMENT_OVERLAPPING_BBOX = 3,  ///< Cell bounding box overlaps shape
     CONTAINMENT_INVALID = 4  ///< This mode is invalid and should not be used
 } ContainmentMode;
+
+/**
+ * Bit mask for extracting or setting the containment mode portion of the
+ * `polygonToCells` and `polygonToCellsExperimental` flags. The four lowest bits
+ * are reserved for a `ContainmentMode` value.
+ */
+#define FLAG_CONTAINMENT_MODE_MASK ((uint32_t)(15))
+
+#define FLAG_GET_CONTAINMENT_MODE(flags) (flags & FLAG_CONTAINMENT_MODE_MASK)
+
+/**
+ * Bit mask that enables geodesic polygon filling. Set this bit on the flags to
+ * have polygon edges follow great-circle arcs instead of planar interpolation.
+ *
+ * Geodesic coverage is intended for very large polygons (hundreds of
+ * kilometers). It is substantially slower than the default planar mode, so
+ * consider lowering the target resolution when enabling it. Only
+ * `CONTAINMENT_FULL` and `CONTAINMENT_OVERLAPPING` containment modes are valid
+ * while the geodesic bit is set.
+ */
+#define FLAG_GEODESIC_MASK ((uint32_t)(16))
+
+#define FLAG_GET_GEODESIC(flags) (flags & FLAG_GEODESIC_MASK)
+#define FLAG_SET_GEODESIC(flags) ((flags) |= FLAG_GEODESIC_MASK)
+#define FLAG_RESET_GEODESIC(flags) ((flags) &= ~FLAG_GEODESIC_MASK)
 
 /** @struct LinkedLatLng
  *  @brief A coordinate node in a linked geo structure, part of a linked list
