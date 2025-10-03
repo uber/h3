@@ -877,6 +877,10 @@ H3Error H3_EXPORT(maxPolygonToCellsSize)(const GeoPolygon *geoPolygon, int res,
     if (flagErr) {
         return flagErr;
     }
+    if (FLAG_GET_GEODESIC(flags)) {
+        // Legacy planar algorithm does not support geodesic traversal.
+        return E_OPTION_INVALID;
+    }
     // Get the bounding box for the GeoJSON-like struct
     BBox bbox;
     const GeoLoop geoloop = geoPolygon->geoloop;
@@ -994,6 +998,10 @@ H3Error H3_EXPORT(polygonToCells)(const GeoPolygon *geoPolygon, int res,
     H3Error flagErr = validatePolygonFlags(flags);
     if (flagErr) {
         return flagErr;
+    }
+    if (FLAG_GET_GEODESIC(flags)) {
+        // Legacy planar algorithm does not support geodesic traversal.
+        return E_OPTION_INVALID;
     }
     // One of the goals of the polygonToCells algorithm is that two adjacent
     // polygons with zero overlap have zero overlapping hexagons. That the
