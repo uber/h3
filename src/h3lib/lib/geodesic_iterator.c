@@ -115,8 +115,7 @@ void geodesicIteratorStep(IterCellsPolygonCompact *iter, H3Index cell) {
         if (!intersects) {
             H3Index polygonCell;
             Vec3d *firstVert = &poly->geoloop.edges[0].vert;
-            H3_CHECK(H3_EXPORT(vec3dToCell)(firstVert, cellRes, &polygonCell),
-                     iter);
+            H3_CHECK(vec3dToCell(firstVert, cellRes, &polygonCell), iter);
             if (polygonCell == cell) {
                 intersects = true;
             }

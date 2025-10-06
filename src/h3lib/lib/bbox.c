@@ -396,5 +396,5 @@ void aabbUpdateWithArcExtrema(AABB *aabb, const Vec3d *v1, const Vec3d *v2,
 /** Create a bounding sphere cap for a cell. */
 H3Error cellToSphereCap(H3Index cell, SphereCap *out) {
     out->cosRadius = PRECOMPUTED_COS_RADIUS[H3_GET_RESOLUTION(cell)];
-    return H3_EXPORT(cellToVec3)(cell, &out->center);
+    return cellToVec3(cell, &out->center);
 }

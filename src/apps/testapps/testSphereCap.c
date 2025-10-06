@@ -111,7 +111,7 @@ static bool _cellWithinCap(const H3Index cell, const SphereCap *cap) {
 static bool _testCellRecursive(const H3Index cell, const int minTestRes,
                                const int maxTestRes) {
     SphereCap cap;
-    if (H3_EXPORT(cellToSphereCap)(cell, &cap) != E_SUCCESS) {
+    if (cellToSphereCap(cell, &cap) != E_SUCCESS) {
         return false;
     }
 
