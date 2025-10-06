@@ -171,6 +171,7 @@ set(LIB_SOURCE_FILES
     src/h3lib/include/coordijk.h
     src/h3lib/include/algos.h
     src/h3lib/include/geodesic_iterator.h
+    src/h3lib/include/polyfill_iterator.h
     src/h3lib/lib/h3Assert.c
     src/h3lib/lib/algos.c
     src/h3lib/lib/coordijk.c
@@ -191,7 +192,9 @@ set(LIB_SOURCE_FILES
     src/h3lib/lib/faceijk.c
     src/h3lib/lib/baseCells.c
     src/h3lib/lib/geodesic_iterator.c
-    src/h3lib/lib/geodesic_polygon.c)
+    src/h3lib/lib/geodesic_polygon.c
+    src/h3lib/lib/geodesic_polygon_internal.h
+    src/h3lib/lib/sphereCapTables.h)
 set(APP_SOURCE_FILES
     src/apps/applib/include/kml.h
     src/apps/applib/include/benchmark.h
@@ -283,7 +286,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testH3IteratorsInternal.c
     src/apps/testapps/testMathExtensionsInternal.c
     src/apps/testapps/testDescribeH3Error.c
-    srs/apps/testapps/testSphereCap.c
+    src/apps/testapps/testSphereCap.c
     src/apps/miscapps/cellToBoundaryHier.c
     src/apps/miscapps/cellToLatLngHier.c
     src/apps/miscapps/generateBaseCellNeighbors.c
