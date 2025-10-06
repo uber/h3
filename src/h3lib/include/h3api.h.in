@@ -99,9 +99,12 @@ typedef enum {
     E_NOT_NEIGHBORS = 11,    // `H3Index` cell arguments were not neighbors
     E_RES_MISMATCH =
         12,  // `H3Index` cell arguments had incompatible resolutions
-    E_MEMORY_ALLOC = 13,   // Necessary memory allocation failed
-    E_MEMORY_BOUNDS = 14,  // Bounds of provided memory were not large enough
-    E_OPTION_INVALID = 15  // Mode or flags argument was not valid.
+    E_MEMORY_ALLOC = 13,    // Necessary memory allocation failed
+    E_MEMORY_BOUNDS = 14,   // Bounds of provided memory were not large enough
+    E_OPTION_INVALID = 15,  // Mode or flags argument was not valid.
+    E_BASE_CELL_DOMAIN = 16,
+    E_DIGIT_DOMAIN = 17,
+    E_DELETED_DIGIT = 18
 } H3ErrorCodes;
 
 /** @defgroup describeH3Error describeH3Error
@@ -524,6 +527,17 @@ DECLSPEC int H3_EXPORT(getBaseCellNumber)(H3Index h);
  *
  * Indexing digits are 1-indexed beginning with the digit for resolution 1. */
 DECLSPEC H3Error H3_EXPORT(getIndexDigit)(H3Index h, int res, int *out);
+/** @} */
+
+/** @defgroup createCell createCell
+ * Functions for createCell
+ * @{
+ */
+/** @brief create a cell from its components
+ *
+ **/
+DECLSPEC H3Error H3_EXPORT(createCell)(int res, int baseCellNumber, int *digits,
+                                       H3Index *out);
 /** @} */
 
 /** @defgroup stringToH3 stringToH3
