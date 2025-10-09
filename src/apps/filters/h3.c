@@ -262,11 +262,11 @@ SUBCOMMAND(getResolution, "Extracts the resolution (0 - 15) from the H3 cell") {
     Arg *args[] = {&getResolutionArg, &helpArg, &cellArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     // TODO: Should there be a general `isValidIndex`?
-    H3Error cellErr = H3_EXPORT(isValidCell)(cell);
-    H3Error edgeErr = H3_EXPORT(isValidDirectedEdge)(cell);
-    H3Error vertErr = H3_EXPORT(isValidVertex)(cell);
-    if (cellErr && edgeErr && vertErr) {
-        return cellErr;
+    bool isValid = H3_EXPORT(isValidCell)(cell) ||
+                   H3_EXPORT(isValidDirectedEdge)(cell) ||
+                   H3_EXPORT(isValidVertex)(cell);
+    if (!isValid) {
+        return E_DOMAIN;  // TODO: maybe create a new E_INDEX_INVALID error?
     }
     // If we got here, we can use `getResolution` safely, as this is one of the
     // few functions that doesn't do any error handling (for some reason? I
@@ -282,11 +282,11 @@ SUBCOMMAND(getBaseCellNumber,
     Arg *args[] = {&getBaseCellNumberArg, &helpArg, &cellArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     // TODO: Should there be a general `isValidIndex`?
-    H3Error cellErr = H3_EXPORT(isValidCell)(cell);
-    H3Error edgeErr = H3_EXPORT(isValidDirectedEdge)(cell);
-    H3Error vertErr = H3_EXPORT(isValidVertex)(cell);
-    if (cellErr && edgeErr && vertErr) {
-        return cellErr;
+    bool isValid = H3_EXPORT(isValidCell)(cell) ||
+                   H3_EXPORT(isValidDirectedEdge)(cell) ||
+                   H3_EXPORT(isValidVertex)(cell);
+    if (!isValid) {
+        return E_DOMAIN;  // TODO: maybe create a new E_INDEX_INVALID error?
     }
     // If we got here, we can use `getResolution` safely, as this is one of the
     // few functions that doesn't do any error handling (for some reason? I
@@ -388,11 +388,11 @@ SUBCOMMAND(isResClassIII,
     Arg *args[] = {&isResClassIIIArg, &helpArg, &cellArg, &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     // TODO: Should there be a general `isValidIndex`?
-    H3Error cellErr = H3_EXPORT(isValidCell)(cell);
-    H3Error edgeErr = H3_EXPORT(isValidDirectedEdge)(cell);
-    H3Error vertErr = H3_EXPORT(isValidVertex)(cell);
-    if (cellErr && edgeErr && vertErr) {
-        return cellErr;
+    bool isValid = H3_EXPORT(isValidCell)(cell) ||
+                   H3_EXPORT(isValidDirectedEdge)(cell) ||
+                   H3_EXPORT(isValidVertex)(cell);
+    if (!isValid) {
+        return E_DOMAIN;  // TODO: maybe create a new E_INDEX_INVALID error?
     }
     // If we got here, we can use `getResolution` safely, as this is one of the
     // few functions that doesn't do any error handling (for some reason? I
@@ -417,11 +417,11 @@ SUBCOMMAND(
     Arg *args[] = {&isPentagonArg, &helpArg, &cellArg, &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     // TODO: Should there be a general `isValidIndex`?
-    H3Error cellErr = H3_EXPORT(isValidCell)(cell);
-    H3Error edgeErr = H3_EXPORT(isValidDirectedEdge)(cell);
-    H3Error vertErr = H3_EXPORT(isValidVertex)(cell);
-    if (cellErr && edgeErr && vertErr) {
-        return cellErr;
+    bool isValid = H3_EXPORT(isValidCell)(cell) ||
+                   H3_EXPORT(isValidDirectedEdge)(cell) ||
+                   H3_EXPORT(isValidVertex)(cell);
+    if (!isValid) {
+        return E_DOMAIN;  // TODO: maybe create a new E_INDEX_INVALID error?
     }
     // If we got here, we can use `getResolution` safely, as this is one of the
     // few functions that doesn't do any error handling (for some reason? I
