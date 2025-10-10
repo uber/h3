@@ -20,18 +20,17 @@
 #ifndef VEC3D_H
 #define VEC3D_H
 
+#include "h3api.h"
 #include "latLng.h"
-
-/** @struct Vec3D
- *  @brief 3D floating point structure
- */
-typedef struct {
-    double x;  ///< x component
-    double y;  ///< y component
-    double z;  ///< z component
-} Vec3d;
 
 void _geoToVec3d(const LatLng *geo, Vec3d *point);
 double _pointSquareDist(const Vec3d *p1, const Vec3d *p2);
+double vec3Dot(const Vec3d *v1, const Vec3d *v2);
+Vec3d vec3Cross(const Vec3d *v1, const Vec3d *v2);
+void vec3Normalize(Vec3d *v);
+double vec3MagSq(const Vec3d *v);
+double vec3Mag(const Vec3d *v);
+double vec3DistSq(const Vec3d *v1, const Vec3d *v2);
+Vec3d latLngToVec3(const LatLng *geo);
 
 #endif
