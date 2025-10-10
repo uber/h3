@@ -1,2 +1,6 @@
 add_h3_cli_test(testCliGetBaseCellNumber "getBaseCellNumber -c 85283473fffffff"
                 "20")
+add_h3_cli_test(
+    testCliGetBaseCellNumber_Bad
+    "getBaseCellNumber -c 5 2>&1"
+    "Error 2: Argument was outside of acceptable range")
