@@ -552,6 +552,16 @@ DECLSPEC H3Error H3_EXPORT(h3ToString)(H3Index h, char *str, size_t sz);
 DECLSPEC int H3_EXPORT(isValidCell)(H3Index h);
 /** @} */
 
+/** @defgroup isValidIndex isValidIndex
+ * Functions for isValidIndex
+ * @{
+ */
+/** @brief confirms if an H3Index is valid for any mode (cell, directed edge, or vertex)
+ * Returns 1 if the H3 index is valid for any supported type, 0 otherwise
+ */
+DECLSPEC int H3_EXPORT(isValidIndex)(H3Index h);
+/** @} */
+
 /** @defgroup cellToParent cellToParent
  * Functions for cellToParent
  * @{

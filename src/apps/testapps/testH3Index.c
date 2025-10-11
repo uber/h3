@@ -212,4 +212,39 @@ SUITE(h3Index) {
                      "matches existing definition");
         }
     }
+
+    TEST(isValidIndex) {
+        // Test with valid cell
+        LatLng coord = {0, 0};
+        H3Index cell;
+        t_assertSuccess(H3_EXPORT(latLngToCell)(&coord, 5, &cell));
+        t_assert(H3_EXPORT(isValidIndex)(cell),
+                 "isValidIndex returns true for valid cell");
+
+        // Test with valid directed edge
+        H3Index ring[7] = {0};
+        t_assertSuccess(H3_EXPORT(gridRingUnsafe)(cell, 1, ring));
+        H3Index neighbor = ring[0];
+        H3Index edge;
+        t_assertSuccess(H3_EXPORT(cellsToDirectedEdge)(cell, neighbor, &edge));
+        t_assert(H3_EXPORT(isValidIndex)(edge),
+                 "isValidIndex returns true for valid directed edge");
+
+        // Test with valid vertex
+        H3Index vertex;
+        t_assertSuccess(H3_EXPORT(cellToVertex)(cell, 0, &vertex));
+        t_assert(H3_EXPORT(isValidIndex)(vertex),
+                 "isValidIndex returns true for valid vertex");
+
+        // Test with invalid index
+        H3Index invalid = 0;
+        t_assert(!H3_EXPORT(isValidIndex)(invalid),
+                 "isValidIndex returns false for invalid index");
+
+        // Test with corrupted index
+        H3Index corrupted = cell;
+        H3_SET_HIGH_BIT(corrupted, 1);
+        t_assert(!H3_EXPORT(isValidIndex)(corrupted),
+                 "isValidIndex returns false for corrupted index");
+    }
 }
