@@ -222,9 +222,9 @@ SUITE(h3Index) {
                  "isValidIndex returns true for valid cell");
 
         // Test with valid directed edge
-        H3Index neighbor;
-        t_assertSuccess(H3_EXPORT(latLngToCell)(&coord, 5, &neighbor));
-        neighbor++;  // Get a neighboring cell
+        H3Index ring[7] = {0};
+        t_assertSuccess(H3_EXPORT(gridRingUnsafe)(cell, 1, ring));
+        H3Index neighbor = ring[0];
         H3Index edge;
         t_assertSuccess(H3_EXPORT(cellsToDirectedEdge)(cell, neighbor, &edge));
         t_assert(H3_EXPORT(isValidIndex)(edge),
