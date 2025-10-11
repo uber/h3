@@ -556,8 +556,9 @@ DECLSPEC int H3_EXPORT(isValidCell)(H3Index h);
  * Functions for isValidIndex
  * @{
  */
-/** @brief confirms if an H3Index is valid for any mode (cell, directed edge, or vertex)
- * Returns 1 if the H3 index is valid for any supported type, 0 otherwise
+/** @brief confirms if an H3Index is valid for any mode (cell, directed edge, or
+ * vertex) Returns 1 if the H3 index is valid for any supported type, 0
+ * otherwise
  */
 DECLSPEC int H3_EXPORT(isValidIndex)(H3Index h);
 /** @} */
