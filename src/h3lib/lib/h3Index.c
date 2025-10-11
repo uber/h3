@@ -328,13 +328,13 @@ int H3_EXPORT(isValidCell)(H3Index h) {
 }
 
 /**
- * Returns whether or not an H3 index is valid for any mode (cell, directed edge, or vertex).
+ * Returns whether or not an H3 index is valid for any mode (cell, directed
+ * edge, or vertex).
  * @param h The H3 index to validate.
  * @return 1 if the H3 index is valid for any supported type, 0 otherwise.
  */
 int H3_EXPORT(isValidIndex)(H3Index h) {
-    return H3_EXPORT(isValidCell)(h) ||
-           H3_EXPORT(isValidDirectedEdge)(h) ||
+    return H3_EXPORT(isValidCell)(h) || H3_EXPORT(isValidDirectedEdge)(h) ||
            H3_EXPORT(isValidVertex)(h);
 }
 
