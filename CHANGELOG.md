@@ -8,6 +8,7 @@ The public API of this library consists of the functions declared in file
 ## [Unreleased]
 ### Added
 - Added `getIndexDigit` function for inspecting specific index digits of an H3 index. (#1024, #1042)
+- Added a geodesic coverage flag for `polygonToCellsExperimental` that follows great-circle edges when covering very large polygons. This mode is significantly slower than the planar algorithm, so prefer lower resolutions when using it.
 
 ## [4.3.0] - 2025-06-17
 ### Added

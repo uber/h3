@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/** @file benchmarkPolygonToCellsExperimental.c
+ * @brief Benchmarks the experimental polygon-to-cells traversal.
+ */
 #include "algos.h"
 #include "benchmark.h"
 #include "h3api.h"
@@ -141,12 +144,34 @@ BENCHMARK(polygonToCellsSF_Full, 500, {
     free(hexagons);
 });
 
+BENCHMARK(polygonToCellsSF_GeodesicFull, 1, {
+    uint32_t flags = CONTAINMENT_FULL;
+    FLAG_SET_GEODESIC(flags);
+    H3_EXPORT(maxPolygonToCellsSizeExperimental)
+    (&sfGeoPolygon, 9, flags, &numHexagons);
+    hexagons = calloc(numHexagons, sizeof(H3Index));
+    H3_EXPORT(polygonToCellsExperimental)
+    (&sfGeoPolygon, 9, flags, numHexagons, hexagons);
+    free(hexagons);
+});
+
 BENCHMARK(polygonToCellsSF_Overlapping, 500, {
     H3_EXPORT(maxPolygonToCellsSize)
     (&sfGeoPolygon, 9, CONTAINMENT_OVERLAPPING, &numHexagons);
     hexagons = calloc(numHexagons, sizeof(H3Index));
     H3_EXPORT(polygonToCellsExperimental)
     (&sfGeoPolygon, 9, CONTAINMENT_OVERLAPPING, numHexagons, hexagons);
+    free(hexagons);
+});
+
+BENCHMARK(polygonToCellsSF_GeodesicOverlapping, 1, {
+    uint32_t flags = CONTAINMENT_OVERLAPPING;
+    FLAG_SET_GEODESIC(flags);
+    H3_EXPORT(maxPolygonToCellsSizeExperimental)
+    (&sfGeoPolygon, 9, flags, &numHexagons);
+    hexagons = calloc(numHexagons, sizeof(H3Index));
+    H3_EXPORT(polygonToCellsExperimental)
+    (&sfGeoPolygon, 9, flags, numHexagons, hexagons);
     free(hexagons);
 });
 
@@ -168,12 +193,34 @@ BENCHMARK(polygonToCellsAlameda_Full, 500, {
     free(hexagons);
 });
 
+BENCHMARK(polygonToCellsAlameda_GeodesicFull, 1, {
+    uint32_t flags = CONTAINMENT_FULL;
+    FLAG_SET_GEODESIC(flags);
+    H3_EXPORT(maxPolygonToCellsSizeExperimental)
+    (&alamedaGeoPolygon, 9, flags, &numHexagons);
+    hexagons = calloc(numHexagons, sizeof(H3Index));
+    H3_EXPORT(polygonToCellsExperimental)
+    (&alamedaGeoPolygon, 9, flags, numHexagons, hexagons);
+    free(hexagons);
+});
+
 BENCHMARK(polygonToCellsAlameda_Overlapping, 500, {
     H3_EXPORT(maxPolygonToCellsSize)
     (&alamedaGeoPolygon, 9, CONTAINMENT_OVERLAPPING, &numHexagons);
     hexagons = calloc(numHexagons, sizeof(H3Index));
     H3_EXPORT(polygonToCellsExperimental)
     (&alamedaGeoPolygon, 9, CONTAINMENT_OVERLAPPING, numHexagons, hexagons);
+    free(hexagons);
+});
+
+BENCHMARK(polygonToCellsAlameda_GeodesicOverlapping, 1, {
+    uint32_t flags = CONTAINMENT_OVERLAPPING;
+    FLAG_SET_GEODESIC(flags);
+    H3_EXPORT(maxPolygonToCellsSizeExperimental)
+    (&alamedaGeoPolygon, 9, flags, &numHexagons);
+    hexagons = calloc(numHexagons, sizeof(H3Index));
+    H3_EXPORT(polygonToCellsExperimental)
+    (&alamedaGeoPolygon, 9, flags, numHexagons, hexagons);
     free(hexagons);
 });
 
@@ -195,12 +242,34 @@ BENCHMARK(polygonToCellsSouthernExpansion_Full, 10, {
     free(hexagons);
 });
 
+BENCHMARK(polygonToCellsSouthernExpansion_GeodesicFull, 1, {
+    uint32_t flags = CONTAINMENT_FULL;
+    FLAG_SET_GEODESIC(flags);
+    H3_EXPORT(maxPolygonToCellsSizeExperimental)
+    (&southernGeoPolygon, 9, flags, &numHexagons);
+    hexagons = calloc(numHexagons, sizeof(H3Index));
+    H3_EXPORT(polygonToCellsExperimental)
+    (&southernGeoPolygon, 9, flags, numHexagons, hexagons);
+    free(hexagons);
+});
+
 BENCHMARK(polygonToCellsSouthernExpansion_Overlapping, 10, {
     H3_EXPORT(maxPolygonToCellsSize)
     (&southernGeoPolygon, 9, CONTAINMENT_OVERLAPPING, &numHexagons);
     hexagons = calloc(numHexagons, sizeof(H3Index));
     H3_EXPORT(polygonToCellsExperimental)
     (&southernGeoPolygon, 9, CONTAINMENT_OVERLAPPING, numHexagons, hexagons);
+    free(hexagons);
+});
+
+BENCHMARK(polygonToCellsSouthernExpansion_GeodesicOverlapping, 1, {
+    uint32_t flags = CONTAINMENT_OVERLAPPING;
+    FLAG_SET_GEODESIC(flags);
+    H3_EXPORT(maxPolygonToCellsSizeExperimental)
+    (&southernGeoPolygon, 9, flags, &numHexagons);
+    hexagons = calloc(numHexagons, sizeof(H3Index));
+    H3_EXPORT(polygonToCellsExperimental)
+    (&southernGeoPolygon, 9, flags, numHexagons, hexagons);
     free(hexagons);
 });
 

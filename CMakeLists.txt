@@ -170,6 +170,8 @@ set(LIB_SOURCE_FILES
     src/h3lib/include/constants.h
     src/h3lib/include/coordijk.h
     src/h3lib/include/algos.h
+    src/h3lib/include/geodesic_iterator.h
+    src/h3lib/include/polyfill_iterator.h
     src/h3lib/lib/h3Assert.c
     src/h3lib/lib/algos.c
     src/h3lib/lib/coordijk.c
@@ -188,7 +190,11 @@ set(LIB_SOURCE_FILES
     src/h3lib/lib/iterators.c
     src/h3lib/lib/vertexGraph.c
     src/h3lib/lib/faceijk.c
-    src/h3lib/lib/baseCells.c)
+    src/h3lib/lib/baseCells.c
+    src/h3lib/lib/geodesic_iterator.c
+    src/h3lib/lib/geodesic_polygon.c
+    src/h3lib/lib/geodesic_polygon_internal.h
+    src/h3lib/lib/sphereCapTables.h)
 set(APP_SOURCE_FILES
     src/apps/applib/include/kml.h
     src/apps/applib/include/benchmark.h
@@ -221,6 +227,8 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testPolygonToCellsExperimental.c
     src/apps/testapps/testPolygonToCellsReported.c
     src/apps/testapps/testPolygonToCellsReportedExperimental.c
+    src/apps/testapps/testGeodesicPolygonInternal.c
+    src/apps/testapps/testGeodesicPolygonToCellsExperimental.c
     src/apps/testapps/testPentagonIndexes.c
     src/apps/testapps/testGridDisk.c
     src/apps/testapps/testGridDiskInternal.c
@@ -242,6 +250,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testGetIcosahedronFaces.c
     src/apps/testapps/testLatLng.c
     src/apps/testapps/testLatLngInternal.c
+    src/apps/testapps/testVec3d.c
     src/apps/testapps/testGridRing.c
     src/apps/testapps/testGridRingInternal.c
     src/apps/testapps/testGridRingUnsafe.c
@@ -277,6 +286,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testH3IteratorsInternal.c
     src/apps/testapps/testMathExtensionsInternal.c
     src/apps/testapps/testDescribeH3Error.c
+    src/apps/testapps/testSphereCap.c
     src/apps/miscapps/cellToBoundaryHier.c
     src/apps/miscapps/cellToLatLngHier.c
     src/apps/miscapps/generateBaseCellNeighbors.c
