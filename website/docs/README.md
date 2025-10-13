@@ -10,11 +10,10 @@ H3 is a geospatial indexing system that partitions the world into hexagonal cell
 The H3 Core Library implements the H3 grid system. It includes functions for converting from latitude and longitude coordinates to the containing H3 cell, finding the center of H3 cells, finding the boundary geometry of H3 cells, finding neighbors of H3 cells, and more.
 
 * The H3 Core Library is written in *C*. [Bindings for many other languages](/docs/community/bindings) are available.
-* **Note that parent cells are not guaranteed to geographically contain their children,** because hexagons do not support perfect nesting. For more information and visual clarification, see [this blog post](https://observablehq.com/@nrabinowitz/h3-hierarchical-non-containment).
 
 ## Highlights
 
-* H3 is a hierarchical [geospatial index](/docs/highlights/indexing).
+* H3 is a [hierarchical geospatial index](https://github.com/docs/highlights/indexing), which provides [exact logical containment but only approximate geometric containment](https://observablehq.com/@nrabinowitz/h3-hierarchical-non-containment) across the cell hierarchy. That is, **child cells are not always geometrically contained by their parent cells,** so points within children may belong to adjacent parent cells.
 * H3 was developed to address the [challenges of Uber's data science needs](/docs/highlights/aggregation).
 * H3 can be used to [join disparate data sets](/docs/highlights/joining).
 * In addition to the benefits of the hexagonal grid shape, H3 includes features for [modeling flow](/docs/highlights/flowmodel).
