@@ -26,10 +26,12 @@
 
 #include "alloc.h"
 #include "baseCells.h"
+#include "directedEdge.h"
 #include "faceijk.h"
 #include "h3Assert.h"
 #include "iterators.h"
 #include "mathExtensions.h"
+#include "vertex.h"
 
 /** @var H3ErrorDescriptions
  *  @brief An array of strings describing each of the H3ErrorCodes enum values
@@ -323,6 +325,17 @@ int H3_EXPORT(isValidCell)(H3Index h) {
 
     // If no disqualifications were identified, the index is a valid H3 cell.
     return true;
+}
+
+/**
+ * Returns whether or not an H3 index is valid for any mode (cell, directed
+ * edge, or vertex).
+ * @param h The H3 index to validate.
+ * @return 1 if the H3 index is valid for any supported type, 0 otherwise.
+ */
+int H3_EXPORT(isValidIndex)(H3Index h) {
+    return H3_EXPORT(isValidCell)(h) || H3_EXPORT(isValidDirectedEdge)(h) ||
+           H3_EXPORT(isValidVertex)(h);
 }
 
 /**
