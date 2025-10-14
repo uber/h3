@@ -80,13 +80,13 @@ typedef uint32_t H3Error;
 
 typedef enum {
     E_SUCCESS = 0,  // Success (no error)
-    E_FAILED =
-        1,  // The operation failed but a more specific error is not available
-    E_DOMAIN = 2,  // Argument was outside of acceptable range (when a more
-                   // specific error code is not available)
-    E_LATLNG_DOMAIN =
-        3,  // Latitude or longitude arguments were outside of acceptable range
-    E_RES_DOMAIN = 4,    // Resolution argument was outside of acceptable range
+    E_FAILED = 1,   // The operation failed but a more specific error is not
+                    // available
+    E_DOMAIN = 2,   // Argument was outside the acceptable range (when a more
+                    // specific error code is not available)
+    E_LATLNG_DOMAIN = 3,  // Latitude or longitude arguments were outside the
+                          // acceptable range
+    E_RES_DOMAIN = 4,    // Resolution argument was outside the acceptable range
     E_CELL_INVALID = 5,  // `H3Index` cell argument was not valid
     E_DIR_EDGE_INVALID = 6,  // `H3Index` directed edge argument was not valid
     E_UNDIR_EDGE_INVALID =
@@ -99,9 +99,10 @@ typedef enum {
     E_NOT_NEIGHBORS = 11,    // `H3Index` cell arguments were not neighbors
     E_RES_MISMATCH =
         12,  // `H3Index` cell arguments had incompatible resolutions
-    E_MEMORY_ALLOC = 13,   // Necessary memory allocation failed
-    E_MEMORY_BOUNDS = 14,  // Bounds of provided memory were not large enough
-    E_OPTION_INVALID = 15  // Mode or flags argument was not valid.
+    E_MEMORY_ALLOC = 13,    // Necessary memory allocation failed
+    E_MEMORY_BOUNDS = 14,   // Bounds of provided memory were not large enough
+    E_OPTION_INVALID = 15,  // Mode or flags argument was not valid
+    E_INDEX_INVALID = 16    // `H3Index` argument was not valid
 } H3ErrorCodes;
 
 /** @defgroup describeH3Error describeH3Error

@@ -5,4 +5,4 @@ add_h3_cli_test(
 add_h3_cli_test(
     test_bad_getIndexDigit
     "getIndexDigit -r 15 -c 5 2>&1"
-    "Error 2: Argument was outside of acceptable range")
+    "Error 16: Index argument was not valid")
