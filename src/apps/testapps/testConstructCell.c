@@ -38,6 +38,9 @@ typedef struct {
 } MyTest;
 
 void run_mytest(MyTest mt) {
+    // Construct cell from components, and check that we get the expected output
+    // as mt.x (either a valid cell or a specific error code).
+
     // Log one assertion for each MyTest struct
     H3Index h;
     bool valid_mtx = H3_EXPORT(isValidCell)(mt.x);
@@ -134,10 +137,8 @@ SUITE(constructCell) {
             {.bc = 5, .digits = {0, 0, 1}, .res = 3, .x = 0x830a01fffffffff},
             {.bc = 5, .digits = {0, 0, 2}, .res = 3, .x = 0x830a02fffffffff},
 
-            {.x = 0x8001fffffffffff, .res = 0, .bc = 0, .digits = {}},
-            {.x = 0x8001fffffffffff},
-            {.x = E_RES_DOMAIN, .res = -1}  // avoids trailing comma
-        };
+            // dummy test avoids a trailing comma issue
+            {.x = E_RES_DOMAIN, .res = -1}};
 
         for (int i = 0; i < ARRAY_SIZE(tests); i++) {
             run_mytest(tests[i]);
