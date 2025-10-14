@@ -35,7 +35,7 @@ void run_mytest(MyTest mt) {
     // Log one assertion for each MyTest struct
     H3Index h;
     bool valid_mtx = H3_EXPORT(isValidCell)(mt.x);
-    H3Error err = H3_EXPORT(createCell)(mt.res, mt.bc, mt.digits, &h);
+    H3Error err = H3_EXPORT(constructCell)(mt.res, mt.bc, mt.digits, &h);
 
     bool valid_cell = valid_mtx && (err == E_SUCCESS) && (mt.x == h);
     bool got_error = !valid_mtx && (mt.x == err);
@@ -56,7 +56,7 @@ bool passes_roundtrip(const H3Index h) {
     }
 
     H3Index out;
-    if (H3_EXPORT(createCell)(res, bc, digits, &out) != E_SUCCESS) {
+    if (H3_EXPORT(constructCell)(res, bc, digits, &out) != E_SUCCESS) {
         return false;
     }
 
@@ -79,7 +79,7 @@ static void res_roundtrip(int res) {
     t_assert(all_passed, "All cells at this res passed the roundtrip");
 }
 
-SUITE(createCell) {
+SUITE(constructCell) {
     TEST(tableOfTests) {
         static const MyTest tests[] = {
             {.x = 0x8001fffffffffff, .res = 0, .bc = 0, .digits = {}},

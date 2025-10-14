@@ -530,14 +530,14 @@ DECLSPEC int H3_EXPORT(getBaseCellNumber)(H3Index h);
 DECLSPEC H3Error H3_EXPORT(getIndexDigit)(H3Index h, int res, int *out);
 /** @} */
 
-/** @defgroup createCell createCell
- * Functions for createCell
+/** @defgroup constructCell constructCell
+ * Functions for constructCell
  * @{
  */
 /** @brief create a cell from its components
  *
  **/
-DECLSPEC H3Error H3_EXPORT(createCell)(int res, int baseCellNumber, int *digits,
+DECLSPEC H3Error H3_EXPORT(constructCell)(int res, int baseCellNumber, int *digits,
                                        H3Index *out);
 /** @} */
 
