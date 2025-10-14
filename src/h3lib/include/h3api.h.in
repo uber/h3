@@ -535,6 +535,7 @@ DECLSPEC H3Error H3_EXPORT(getIndexDigit)(H3Index h, int res, int *out);
  * @{
  */
 /** @brief create a cell from its components
+ * Only allows for constructing valid H3 cells.
  *
  **/
 DECLSPEC H3Error H3_EXPORT(constructCell)(int res, int baseCellNumber,
