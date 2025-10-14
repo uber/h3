@@ -13,10 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 /** @file
- * @brief tests function to create cell from components
+ * @brief tests for `constructCell` function
  *
  *  usage: `testConstructCell`
+ *
+ *  This file sets up a small framework to enable a concise table of tests,
+ *  which cover a wide variety of scenarios. The table lists an expected output:
+ *  either a valid cell, or an specific error code.
  */
 
 #include "h3api.h"
@@ -82,6 +87,8 @@ static void res_roundtrip(int res) {
 SUITE(constructCell) {
     TEST(tableOfTests) {
         static const MyTest tests[] = {
+
+            // a few valid cell constructions
             {.x = 0x8001fffffffffff, .res = 0, .bc = 0, .digits = {}},
             {.x = 0x8003fffffffffff, .res = 0, .bc = 1, .digits = {}},
             {.x = 0x80f3fffffffffff, .res = 0, .bc = 121, .digits = {}},
@@ -93,16 +100,19 @@ SUITE(constructCell) {
              .bc = 58,
              .digits = {5, 1, 6, 3, 1, 1, 1, 4, 4, 5, 5, 3, 3, 3, 0}},
 
+            // tests around resolution
             {.res = 16, .bc = 0, .digits = {}, .x = E_RES_DOMAIN},
             {.res = 18, .bc = 0, .digits = {}, .x = E_RES_DOMAIN},
             {.res = -1, .bc = 0, .digits = {}, .x = E_RES_DOMAIN},
             {.res = 0, .bc = 0, .digits = {}, .x = 0x8001fffffffffff},
 
+            // tests around base cell
             {.res = 0, .bc = 122, .digits = {}, .x = E_BASE_CELL_DOMAIN},
             {.res = 0, .bc = -1, .digits = {}, .x = E_BASE_CELL_DOMAIN},
             {.res = 0, .bc = 259, .digits = {}, .x = E_BASE_CELL_DOMAIN},
             {.res = 2, .bc = 122, .digits = {1, 0}, .x = E_BASE_CELL_DOMAIN},
 
+            // tests around digits
             {.res = 1, .bc = 40, .digits = {-1}, .x = E_DIGIT_DOMAIN},
             {.res = 1, .bc = 40, .digits = {7}, .x = E_DIGIT_DOMAIN},
             {.res = 1, .bc = 40, .digits = {8}, .x = E_DIGIT_DOMAIN},
@@ -119,7 +129,9 @@ SUITE(constructCell) {
             {.bc = 5, .digits = {0, 0, 1}, .res = 3, .x = 0x830a01fffffffff},
             {.bc = 5, .digits = {0, 0, 2}, .res = 3, .x = 0x830a02fffffffff},
 
-            {.x = E_RES_DOMAIN, .res = -1}  // avoid trailing comma
+            {.x = 0x8001fffffffffff, .res = 0, .bc = 0, .digits = {}},
+            {.x = 0x8001fffffffffff},
+            {.x = E_RES_DOMAIN, .res = -1}  // avoids trailing comma
         };
 
         for (int i = 0; i < ARRAY_SIZE(tests); i++) {
