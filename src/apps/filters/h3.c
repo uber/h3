@@ -261,11 +261,7 @@ SUBCOMMAND(getResolution, "Extracts the resolution (0 - 15) from the H3 cell") {
     DEFINE_CELL_ARG(cell, cellArg);
     Arg *args[] = {&getResolutionArg, &helpArg, &cellArg};
     PARSE_SUBCOMMAND(argc, argv, args);
-    // TODO: Should there be a general `isValidIndex`?
-    bool isValid = H3_EXPORT(isValidCell)(cell) ||
-                   H3_EXPORT(isValidDirectedEdge)(cell) ||
-                   H3_EXPORT(isValidVertex)(cell);
-    if (!isValid) {
+    if (!H3_EXPORT(isValidIndex)(cell)) {
         return E_DOMAIN;  // TODO: maybe create a new E_INDEX_INVALID error?
     }
     // If we got here, we can use `getResolution` safely, as this is one of the
@@ -281,11 +277,7 @@ SUBCOMMAND(getBaseCellNumber,
     DEFINE_CELL_ARG(cell, cellArg);
     Arg *args[] = {&getBaseCellNumberArg, &helpArg, &cellArg};
     PARSE_SUBCOMMAND(argc, argv, args);
-    // TODO: Should there be a general `isValidIndex`?
-    bool isValid = H3_EXPORT(isValidCell)(cell) ||
-                   H3_EXPORT(isValidDirectedEdge)(cell) ||
-                   H3_EXPORT(isValidVertex)(cell);
-    if (!isValid) {
+    if (!H3_EXPORT(isValidIndex)(cell)) {
         return E_DOMAIN;  // TODO: maybe create a new E_INDEX_INVALID error?
     }
     // If we got here, we can use `getResolution` safely, as this is one of the
@@ -308,11 +300,7 @@ SUBCOMMAND(getIndexDigit,
                     .helpText = "Indexing resolution (1 - 15)"};
     Arg *args[] = {&getIndexDigitArg, &helpArg, &cellArg, &digitArg};
     PARSE_SUBCOMMAND(argc, argv, args);
-    // TODO: Should there be a general `isValidIndex`?
-    bool isValid = H3_EXPORT(isValidCell)(cell) ||
-                   H3_EXPORT(isValidDirectedEdge)(cell) ||
-                   H3_EXPORT(isValidVertex)(cell);
-    if (!isValid) {
+    if (!H3_EXPORT(isValidIndex)(cell)) {
         return E_DOMAIN;  // TODO: maybe create a new E_INDEX_INVALID error?
     }
     int value;
@@ -387,11 +375,7 @@ SUBCOMMAND(isResClassIII,
     DEFINE_CELL_ARG(cell, cellArg);
     Arg *args[] = {&isResClassIIIArg, &helpArg, &cellArg, &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
-    // TODO: Should there be a general `isValidIndex`?
-    bool isValid = H3_EXPORT(isValidCell)(cell) ||
-                   H3_EXPORT(isValidDirectedEdge)(cell) ||
-                   H3_EXPORT(isValidVertex)(cell);
-    if (!isValid) {
+    if (!H3_EXPORT(isValidIndex)(cell)) {
         return E_DOMAIN;  // TODO: maybe create a new E_INDEX_INVALID error?
     }
     // If we got here, we can use `getResolution` safely, as this is one of the
@@ -416,11 +400,7 @@ SUBCOMMAND(
     DEFINE_CELL_ARG(cell, cellArg);
     Arg *args[] = {&isPentagonArg, &helpArg, &cellArg, &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
-    // TODO: Should there be a general `isValidIndex`?
-    bool isValid = H3_EXPORT(isValidCell)(cell) ||
-                   H3_EXPORT(isValidDirectedEdge)(cell) ||
-                   H3_EXPORT(isValidVertex)(cell);
-    if (!isValid) {
+    if (!H3_EXPORT(isValidIndex)(cell)) {
         return E_DOMAIN;  // TODO: maybe create a new E_INDEX_INVALID error?
     }
     // If we got here, we can use `getResolution` safely, as this is one of the
