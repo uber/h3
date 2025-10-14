@@ -102,9 +102,10 @@ typedef enum {
     E_MEMORY_ALLOC = 13,    // Necessary memory allocation failed
     E_MEMORY_BOUNDS = 14,   // Bounds of provided memory were not large enough
     E_OPTION_INVALID = 15,  // Mode or flags argument was not valid.
-    E_BASE_CELL_DOMAIN = 16,
-    E_DIGIT_DOMAIN = 17,
-    E_DELETED_DIGIT = 18
+    E_BASE_CELL_DOMAIN =
+        16,               // Base cell number was outside of acceptable range
+    E_DIGIT_DOMAIN = 17,  // Child digits invalid
+    E_DELETED_DIGIT = 18  // Deleted subsequence indicates invalid index
 } H3ErrorCodes;
 
 /** @defgroup describeH3Error describeH3Error
