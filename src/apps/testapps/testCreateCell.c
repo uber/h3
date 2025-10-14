@@ -16,7 +16,7 @@
 /** @file
  * @brief tests function to create cell from components
  *
- *  usage: `testCreateCell`
+ *  usage: `testConstructCell`
  */
 
 #include "h3api.h"

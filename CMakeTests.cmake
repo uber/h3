@@ -218,7 +218,7 @@ add_h3_test(testH3Index src/apps/testapps/testH3Index.c)
 add_h3_test(testH3IndexInternal src/apps/testapps/testH3IndexInternal.c)
 add_h3_test(testH3Api src/apps/testapps/testH3Api.c)
 add_h3_test(testIndexDigits src/apps/testapps/testIndexDigits.c)
-add_h3_test(testCreateCell src/apps/testapps/testCreateCell.c)
+add_h3_test(testConstructCell src/apps/testapps/testConstructCell.c)
 add_h3_test(testCellsToLinkedMultiPolygon
             src/apps/testapps/testCellsToLinkedMultiPolygon.c)
 add_h3_test(testH3SetToVertexGraphInternal

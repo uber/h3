@@ -8,7 +8,7 @@ purge:
     rm -rf build
 
 test: build
-    ./build/bin/testCreateCell
+    ./build/bin/testConstructCell
 
 test-fast: build
     cd build; make test-fast
