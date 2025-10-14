@@ -38,6 +38,11 @@ static const bool isBaseCellPentagonArr[128] = {
     [4] = 1,  [14] = 1, [24] = 1, [38] = 1, [49] = 1,  [58] = 1,
     [63] = 1, [72] = 1, [83] = 1, [97] = 1, [107] = 1, [117] = 1};
 
+// TODO: https://github.com/uber/h3/issues/984
+static const bool isBaseCellPentagonArr[128] = {
+    [4] = 1,  [14] = 1, [24] = 1, [38] = 1, [49] = 1,  [58] = 1,
+    [63] = 1, [72] = 1, [83] = 1, [97] = 1, [107] = 1, [117] = 1};
+
 /** @var H3ErrorDescriptions
  *  @brief An array of strings describing each of the H3ErrorCodes enum values
  */
