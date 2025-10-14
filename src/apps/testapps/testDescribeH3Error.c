@@ -51,9 +51,7 @@ SUITE(describeH3Error) {
     }
 
     TEST(errorCodesNotValidIndexes) {
-        // TODO: should this test live in a different file?
-        // Alternatively, rename this file `testH3ErrorCodes.c`?
-        static const H3ErrorCodes all_errors[] = {
+        static const H3ErrorCodes err[] = {
             E_SUCCESS,          E_FAILED,
             E_DOMAIN,           E_LATLNG_DOMAIN,
             E_RES_DOMAIN,       E_CELL_INVALID,
@@ -65,13 +63,9 @@ SUITE(describeH3Error) {
             E_BASE_CELL_DOMAIN, E_DIGIT_DOMAIN,
             E_DELETED_DIGIT};
 
-        for (int i = 0; i < ARRAY_SIZE(all_errors); i++) {
-            t_assert(!H3_EXPORT(isValidCell)(all_errors[i]),
-                     "Error code is not a valid cell.");
-            t_assert(!H3_EXPORT(isValidDirectedEdge)(all_errors[i]),
-                     "Error code is not a valid directed edge.");
-            t_assert(!H3_EXPORT(isValidVertex)(all_errors[i]),
-                     "Error code is not a valid vertex.");
+        for (int i = 0; i < ARRAY_SIZE(err); i++) {
+            t_assert(!H3_EXPORT(isValidIndex)(err[i]),
+                     "Error code is not a valid index.");
         }
     }
 }
