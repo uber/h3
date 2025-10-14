@@ -9,6 +9,7 @@ The public API of this library consists of the functions declared in file
 ### Added
 - Added `getIndexDigit` function for inspecting specific index digits of an H3 index. (#1024, #1042)
 - Added `isValidIndex` function (#1056)
+- Added `constructCell` function (#1063)
 
 ## [4.3.0] - 2025-06-17
 ### Added
