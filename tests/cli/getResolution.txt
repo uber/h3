@@ -2,4 +2,4 @@ add_h3_cli_test(testCliGetResolution "getResolution -c 85283473fffffff" "5")
 add_h3_cli_test(
     testCliGetResolution_Bad
     "getResolution -c 5 2>&1"
-    "Error 2: Argument was outside of acceptable range")
+    "Error 16: Index argument was not valid")

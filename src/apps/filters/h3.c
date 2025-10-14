@@ -262,7 +262,7 @@ SUBCOMMAND(getResolution, "Extracts the resolution (0 - 15) from the H3 cell") {
     Arg *args[] = {&getResolutionArg, &helpArg, &cellArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     if (!H3_EXPORT(isValidIndex)(cell)) {
-        return E_DOMAIN;  // TODO: maybe create a new E_INDEX_INVALID error?
+        return E_INDEX_INVALID;
     }
     // If we got here, we can use `getResolution` safely, as this is one of the
     // few functions that doesn't do any error handling (for some reason? I
@@ -278,7 +278,7 @@ SUBCOMMAND(getBaseCellNumber,
     Arg *args[] = {&getBaseCellNumberArg, &helpArg, &cellArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     if (!H3_EXPORT(isValidIndex)(cell)) {
-        return E_DOMAIN;  // TODO: maybe create a new E_INDEX_INVALID error?
+        return E_INDEX_INVALID;
     }
     // If we got here, we can use `getResolution` safely, as this is one of the
     // few functions that doesn't do any error handling (for some reason? I
@@ -301,7 +301,7 @@ SUBCOMMAND(getIndexDigit,
     Arg *args[] = {&getIndexDigitArg, &helpArg, &cellArg, &digitArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     if (!H3_EXPORT(isValidIndex)(cell)) {
-        return E_DOMAIN;  // TODO: maybe create a new E_INDEX_INVALID error?
+        return E_INDEX_INVALID;
     }
     int value;
     H3Error err = H3_EXPORT(getIndexDigit)(cell, res, &value);
@@ -376,7 +376,7 @@ SUBCOMMAND(isResClassIII,
     Arg *args[] = {&isResClassIIIArg, &helpArg, &cellArg, &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     if (!H3_EXPORT(isValidIndex)(cell)) {
-        return E_DOMAIN;  // TODO: maybe create a new E_INDEX_INVALID error?
+        return E_INDEX_INVALID;
     }
     // If we got here, we can use `getResolution` safely, as this is one of the
     // few functions that doesn't do any error handling (for some reason? I
@@ -401,7 +401,7 @@ SUBCOMMAND(
     Arg *args[] = {&isPentagonArg, &helpArg, &cellArg, &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     if (!H3_EXPORT(isValidIndex)(cell)) {
-        return E_DOMAIN;  // TODO: maybe create a new E_INDEX_INVALID error?
+        return E_INDEX_INVALID;
     }
     // If we got here, we can use `getResolution` safely, as this is one of the
     // few functions that doesn't do any error handling (for some reason? I
