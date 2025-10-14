@@ -20,8 +20,9 @@
  *  usage: `testConstructCell`
  *
  *  This file sets up a small framework to enable a concise table of tests,
- *  which cover a wide variety of scenarios. The table lists an expected output:
- *  either a valid cell, or an specific error code.
+ *  which hopefully make its easy to see when and why expected errors are
+ *  happening. The table lists an expected output: either a valid cell, or an
+ *  specific error code.
  */
 
 #include "h3api.h"
@@ -30,7 +31,7 @@
 #include "utility.h"
 
 typedef struct {
-    uint64_t x;  // expected output: either valid H3 cell or error code
+    uint64_t x;  // Expected result: either valid H3 cell or error code
     int res;
     int bc;
     int digits[15];
@@ -42,14 +43,16 @@ void run_mytest(MyTest mt) {
     bool valid_mtx = H3_EXPORT(isValidCell)(mt.x);
     H3Error err = H3_EXPORT(constructCell)(mt.res, mt.bc, mt.digits, &h);
 
-    bool valid_cell = valid_mtx && (err == E_SUCCESS) && (mt.x == h);
-    bool got_error = !valid_mtx && (mt.x == err);
+    bool got_expected_valid_cell =
+        valid_mtx && (err == E_SUCCESS) && (mt.x == h);
+    bool got_expected_error = !valid_mtx && (mt.x == err);
 
-    t_assert(valid_cell || got_error, "Got valid cell or expected error.");
+    t_assert(got_expected_valid_cell || got_expected_error,
+             "Got valid cell or expected error.");
 }
 
 bool passes_roundtrip(const H3Index h) {
-    // test roundtrip: h3index -> components -> h3index
+    // Test roundtrip: h3index -> components -> h3index
     int res = H3_EXPORT(getResolution)(h);
     int bc = H3_EXPORT(getBaseCellNumber)(h);
     int digits[15];
@@ -69,6 +72,8 @@ bool passes_roundtrip(const H3Index h) {
 }
 
 static void res_roundtrip(int res) {
+    // Test roundtrip for all cells at given resolution.
+
     // Only count one assertion per resolution.
     // Otherwise, can easily overflow `globalTestCount` in test.h
     bool all_passed = true;
@@ -140,6 +145,7 @@ SUITE(constructCell) {
     }
 
     TEST(roundtrip) {
+        // Test roundtrip for all cells at a few resolutions
         res_roundtrip(0);
         res_roundtrip(1);
         res_roundtrip(2);
