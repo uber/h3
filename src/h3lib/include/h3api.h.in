@@ -102,11 +102,11 @@ typedef enum {
     E_MEMORY_ALLOC = 13,    // Necessary memory allocation failed
     E_MEMORY_BOUNDS = 14,   // Bounds of provided memory were not large enough
     E_OPTION_INVALID = 15,  // Mode or flags argument was not valid
-    E_INDEX_INVALID = 16    // `H3Index` argument was not valid
-} H3ErrorCodes;
+    E_INDEX_INVALID = 16,   // `H3Index` argument was not valid
 
-// keep this up-to-date with H3ErrorCodes enum
-#define H3_ERROR_CODE_MAX E_INDEX_INVALID
+    // Sentinel value; not a real error. One past the last valid code.
+    H3_ERROR_END
+} H3ErrorCodes;
 
 /** @defgroup describeH3Error describeH3Error
  * Functions for describeH3Error

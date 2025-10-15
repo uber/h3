@@ -66,7 +66,7 @@ static char *H3ErrorDescriptions[] = {
 const char *H3_EXPORT(describeH3Error)(H3Error err) {
     // err is always non-negative because it is an unsigned integer
     // TODO: Better way to bounds check here?
-    if (err <= H3_ERROR_CODE_MAX) {
+    if (err < H3_ERROR_END) {
         return H3ErrorDescriptions[err];
     }
     return "Invalid error code";
