@@ -105,6 +105,9 @@ typedef enum {
     E_INDEX_INVALID = 16    // `H3Index` argument was not valid
 } H3ErrorCodes;
 
+// keep this up-to-date with H3ErrorCodes enum
+#define H3_ERROR_CODE_MAX E_INDEX_INVALID
+
 /** @defgroup describeH3Error describeH3Error
  * Functions for describeH3Error
  * @{
