@@ -135,21 +135,21 @@ H3Error H3_EXPORT(constructCell)(int res, int baseCellNumber, int *digits,
     H3_SET_RESOLUTION(h, res);
     H3_SET_BASE_CELL(h, baseCellNumber);
 
-    bool still_pentagon = isBaseCellPentagonArr[baseCellNumber];
+    bool isPentagon = isBaseCellPentagonArr[baseCellNumber];
 
     for (int r = 1; r <= res; r++) {
         int d = digits[r - 1];
         if (d < 0 || d > 6) {
             return E_DIGIT_DOMAIN;
         }
-        if (still_pentagon) {
+        if (isPentagon) {
             // check for deleted subsequences of pentagons
             if (d == 0) {
                 // do nothing; still a pentagon
             } else if (d == 1) {
                 return E_DELETED_DIGIT;
             } else {
-                still_pentagon = false;
+                isPentagon = false;
             }
         }
         H3_SET_INDEX_DIGIT(h, r, d);

@@ -132,6 +132,7 @@ SUITE(constructCell) {
             {.bc = 4, .digits = {0, 0, 1}, .res = 3, .x = E_DELETED_DIGIT},
             {.bc = 4, .digits = {0, 0, 2}, .res = 3, .x = 0x830802fffffffff},
 
+            // more deleted subsequence tests
             // bc = 5 is *not* a pentagon base cell
             {.bc = 5, .digits = {0, 0, 0}, .res = 3, .x = 0x830a00fffffffff},
             {.bc = 5, .digits = {0, 0, 1}, .res = 3, .x = 0x830a01fffffffff},
