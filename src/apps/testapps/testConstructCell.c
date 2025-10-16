@@ -37,7 +37,7 @@ typedef struct {
     int digits[15];
 } TestCase;
 
-void run_mytest(TestCase tc) {
+void runTestCase(TestCase tc) {
     // Construct cell from components, and check that we get the expected output
     // as tc.x (either a valid cell or a specific error code).
 
@@ -54,7 +54,7 @@ void run_mytest(TestCase tc) {
              "Got valid cell or expected error.");
 }
 
-bool passes_roundtrip(const H3Index h) {
+bool passesRoundtrip(const H3Index h) {
     // Test roundtrip: h3index -> components -> h3index
     int res = H3_EXPORT(getResolution)(h);
     int bc = H3_EXPORT(getBaseCellNumber)(h);
@@ -74,7 +74,7 @@ bool passes_roundtrip(const H3Index h) {
     return out == h;
 }
 
-static void res_roundtrip(int res) {
+static void testRountripForRes(int res) {
     // Test roundtrip for all cells at given resolution.
 
     // Only count one assertion per resolution.
@@ -83,7 +83,7 @@ static void res_roundtrip(int res) {
     IterCellsResolution iter = iterInitRes(res);
 
     while (iter.h) {
-        if (!passes_roundtrip(iter.h)) {
+        if (!passesRoundtrip(iter.h)) {
             all_passed = false;
         }
         iterStepRes(&iter);
@@ -141,16 +141,16 @@ SUITE(constructCell) {
             {.x = E_RES_DOMAIN, .res = -1}};
 
         for (int i = 0; i < ARRAY_SIZE(tests); i++) {
-            run_mytest(tests[i]);
+            runTestCase(tests[i]);
         }
     }
 
     TEST(roundtrip) {
         // Test roundtrip for all cells at a few resolutions
-        res_roundtrip(0);
-        res_roundtrip(1);
-        res_roundtrip(2);
-        res_roundtrip(3);
-        res_roundtrip(4);
+        testRountripForRes(0);
+        testRountripForRes(1);
+        testRountripForRes(2);
+        testRountripForRes(3);
+        testRountripForRes(4);
     }
 }
