@@ -65,7 +65,6 @@ static char *H3ErrorDescriptions[] = {
     /* E_DIGIT_DOMAIN */ "Child digits invalid",
     /* E_DELETED_DIGIT */ "Deleted subsequence indicates invalid index"};
 
-
 /**
  * Returns the string describing the H3Error. This string is internally
  * allocated and should not be `free`d.
