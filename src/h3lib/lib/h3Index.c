@@ -60,9 +60,11 @@ static char *H3ErrorDescriptions[] = {
     /* E_MEMORY_ALLOC */ "Memory allocation failed",
     /* E_MEMORY_BOUNDS */ "Bounds of provided memory were insufficient",
     /* E_OPTION_INVALID */ "Mode or flags argument was not valid",
+    /* E_INDEX_INVALID */ "Index argument was not valid",
     /* E_BASE_CELL_DOMAIN */ "Base cell number was outside of acceptable range",
     /* E_DIGIT_DOMAIN */ "Child digits invalid",
     /* E_DELETED_DIGIT */ "Deleted subsequence indicates invalid index"};
+
 
 /**
  * Returns the string describing the H3Error. This string is internally
@@ -72,12 +74,10 @@ static char *H3ErrorDescriptions[] = {
  */
 const char *H3_EXPORT(describeH3Error)(H3Error err) {
     // err is always non-negative because it is an unsigned integer
-    // TODO: Better way to bounds check here?
-    if (err <= 15) {
+    if (err < H3_ERROR_END) {
         return H3ErrorDescriptions[err];
-    } else {
-        return "Invalid error code";
     }
+    return "Invalid error code";
 }
 
 /**
