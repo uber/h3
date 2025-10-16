@@ -7,11 +7,10 @@ The public API of this library consists of the functions declared in file
 
 ## [Unreleased]
 ### Added
-- Added `getIndexDigit` function for inspecting specific index digits of an H3 index. (#1024, #1042)
-- Added `isValidIndex` function (#1056)
-- Added `H3_ERROR_END` sentinal value for iterating through errors (#1065)
-- Added `constructCell` function (#1063)
-
+- `getIndexDigit` function for inspecting specific index digits of an H3 index. (#1024, #1042)
+- `isValidIndex` function (#1056)
+- `constructCell` function (#1063)
+- New error codes and `H3_ERROR_END` (#1063, #1064, #1065)
 
 ## [4.3.0] - 2025-06-17
 ### Added
