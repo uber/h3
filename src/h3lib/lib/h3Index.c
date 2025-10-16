@@ -139,7 +139,7 @@ H3Error H3_EXPORT(constructCell)(int res, int baseCellNumber, int *digits,
 
     for (int r = 1; r <= res; r++) {
         int d = digits[r - 1];
-        if (d < 0 || d > 6) {
+        if (d < CENTER_DIGIT || d >= INVALID_DIGIT) {
             return E_DIGIT_DOMAIN;
         }
         if (isPentagon) {
