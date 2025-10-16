@@ -51,20 +51,8 @@ SUITE(describeH3Error) {
     }
 
     TEST(errorCodesNotValidIndexes) {
-        static const H3ErrorCodes err[] = {
-            E_SUCCESS,          E_FAILED,
-            E_DOMAIN,           E_LATLNG_DOMAIN,
-            E_RES_DOMAIN,       E_CELL_INVALID,
-            E_DIR_EDGE_INVALID, E_UNDIR_EDGE_INVALID,
-            E_VERTEX_INVALID,   E_PENTAGON,
-            E_DUPLICATE_INPUT,  E_NOT_NEIGHBORS,
-            E_RES_MISMATCH,     E_MEMORY_ALLOC,
-            E_MEMORY_BOUNDS,    E_OPTION_INVALID,
-            E_BASE_CELL_DOMAIN, E_DIGIT_DOMAIN,
-            E_DELETED_DIGIT};
-
-        for (int i = 0; i < ARRAY_SIZE(err); i++) {
-            t_assert(!H3_EXPORT(isValidIndex)(err[i]),
+        for (H3Error e = E_SUCCESS; e < H3_ERROR_END; e++) {
+            t_assert(!H3_EXPORT(isValidIndex)(e),
                      "Error code is not a valid index.");
         }
     }
