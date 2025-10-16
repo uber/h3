@@ -35,20 +35,20 @@ typedef struct {
     int res;
     int bc;
     int digits[15];
-} MyTest;
+} TestCase;
 
-void run_mytest(MyTest mt) {
+void run_mytest(TestCase tc) {
     // Construct cell from components, and check that we get the expected output
-    // as mt.x (either a valid cell or a specific error code).
+    // as tc.x (either a valid cell or a specific error code).
 
-    // Log one assertion for each MyTest struct
+    // Log one assertion for each TestCase struct
     H3Index h;
-    bool valid_mtx = H3_EXPORT(isValidCell)(mt.x);
-    H3Error err = H3_EXPORT(constructCell)(mt.res, mt.bc, mt.digits, &h);
+    bool valid_tcx = H3_EXPORT(isValidCell)(tc.x);
+    H3Error err = H3_EXPORT(constructCell)(tc.res, tc.bc, tc.digits, &h);
 
     bool got_expected_valid_cell =
-        valid_mtx && (err == E_SUCCESS) && (mt.x == h);
-    bool got_expected_error = !valid_mtx && (mt.x == err);
+        valid_tcx && (err == E_SUCCESS) && (tc.x == h);
+    bool got_expected_error = !valid_tcx && (tc.x == err);
 
     t_assert(got_expected_valid_cell || got_expected_error,
              "Got valid cell or expected error.");
@@ -94,7 +94,7 @@ static void res_roundtrip(int res) {
 
 SUITE(constructCell) {
     TEST(tableOfTests) {
-        static const MyTest tests[] = {
+        static const TestCase tests[] = {
 
             // a few valid cell constructions
             {.x = 0x8001fffffffffff, .res = 0, .bc = 0, .digits = {}},
