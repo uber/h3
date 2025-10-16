@@ -146,7 +146,7 @@ H3Error H3_EXPORT(constructCell)(int res, int baseCellNumber, int *digits,
             // check for deleted subsequences of pentagons
             if (d == 0) {
                 // do nothing; still a pentagon
-            } else if (d == 1) {
+            } else if (d == K_AXES_DIGIT) {
                 return E_DELETED_DIGIT;
             } else {
                 isPentagon = false;
