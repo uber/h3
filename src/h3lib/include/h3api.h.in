@@ -93,7 +93,7 @@ typedef enum {
         7,                 // `H3Index` undirected edge argument was not valid
     E_VERTEX_INVALID = 8,  // `H3Index` vertex argument was not valid
     E_PENTAGON = 9,  // Pentagon distortion was encountered which the algorithm
-                     // could not handle it
+                     // could not handle
     E_DUPLICATE_INPUT = 10,  // Duplicate input was encountered in the arguments
                              // and the algorithm could not handle it
     E_NOT_NEIGHBORS = 11,    // `H3Index` cell arguments were not neighbors

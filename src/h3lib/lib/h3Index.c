@@ -121,6 +121,17 @@ H3Error H3_EXPORT(getIndexDigit)(H3Index h, int res, int *out) {
     return E_SUCCESS;
 }
 
+/**
+ * Create a cell from its components (resolution, base cell, children digits).
+ * Only allows for constructing valid H3 cells.
+ *
+ * @param res  0--15
+ * @param baseCellNumber  0--121
+ * @param digits  Array of child digits (0--6) of length `res`.
+ *                NULL allowed for `res=0`.
+ * @param out  Created cell
+ * @return 0 (E_SUCCESS) on success, otherwise some H3Error
+ **/
 H3Error H3_EXPORT(constructCell)(int res, int baseCellNumber, int *digits,
                                  H3Index *out) {
     if (res < 0 || res > MAX_H3_RES) {
@@ -146,7 +157,7 @@ H3Error H3_EXPORT(constructCell)(int res, int baseCellNumber, int *digits,
             // check for deleted subsequences of pentagons
             if (d == CENTER_DIGIT) {  // d == 0
                 // do nothing; still a pentagon
-            } else if (d == K_AXES_DIGIT) { // d == 1
+            } else if (d == K_AXES_DIGIT) {  // d == 1
                 return E_DELETED_DIGIT;
             } else {
                 isPentagon = false;
