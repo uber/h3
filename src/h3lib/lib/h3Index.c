@@ -139,14 +139,14 @@ H3Error H3_EXPORT(constructCell)(int res, int baseCellNumber, int *digits,
 
     for (int r = 1; r <= res; r++) {
         int d = digits[r - 1];
-        if (d < CENTER_DIGIT || d >= INVALID_DIGIT) {
+        if (d < CENTER_DIGIT || d >= INVALID_DIGIT) {  // (d < 0 || d >= 7)
             return E_DIGIT_DOMAIN;
         }
         if (isPentagon) {
             // check for deleted subsequences of pentagons
-            if (d == CENTER_DIGIT) {
+            if (d == CENTER_DIGIT) {  // d == 0
                 // do nothing; still a pentagon
-            } else if (d == K_AXES_DIGIT) {
+            } else if (d == K_AXES_DIGIT) { // d == 1
                 return E_DELETED_DIGIT;
             } else {
                 isPentagon = false;
