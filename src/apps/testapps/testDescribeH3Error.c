@@ -25,8 +25,9 @@
 
 #include <string.h>
 
-#include "h3Index.h"
+#include "h3api.h"
 #include "test.h"
+#include "utility.h"
 
 SUITE(describeH3Error) {
     TEST(noError) {
@@ -47,5 +48,27 @@ SUITE(describeH3Error) {
         t_assert(
             strcmp(H3_EXPORT(describeH3Error)(err), "Invalid error code") == 0,
             "got expected failure message");
+    }
+
+    TEST(invalidH3ErrorEnd) {
+        H3Error err = H3_ERROR_END;  // Should not register as valid error code
+        t_assert(
+            strcmp(H3_EXPORT(describeH3Error)(err), "Invalid error code") == 0,
+            "got expected failure message");
+    }
+
+    TEST(invalidH3ErrorEndPlus) {
+        // Try to catch if someone adds an error code after H3_ERROR_END
+        H3Error err = H3_ERROR_END + 1;
+        t_assert(
+            strcmp(H3_EXPORT(describeH3Error)(err), "Invalid error code") == 0,
+            "got expected failure message");
+    }
+
+    TEST(errorCodesNotValidIndexes) {
+        for (H3Error e = E_SUCCESS; e < H3_ERROR_END; e++) {
+            t_assert(!H3_EXPORT(isValidIndex)(e),
+                     "Error code is not a valid index.");
+        }
     }
 }
