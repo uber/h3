@@ -36,7 +36,7 @@
 
 static GeodesicPolygon *_getOrCreateGeodesicPolygon(
     IterCellsPolygonCompact *iter) {
-    if (iter->_extra == NULL) {
+    if (iter->geodesicPoly == NULL) {
         if (iter->_polygon->geoloop.numVerts <= 0) {
             iterErrorPolygonCompact(iter, E_DOMAIN);
             return NULL;
@@ -56,17 +56,17 @@ static GeodesicPolygon *_getOrCreateGeodesicPolygon(
             iterErrorPolygonCompact(iter, E_MEMORY_ALLOC);
             return NULL;
         }
-        iter->_extra = (void *)poly;
+        iter->geodesicPoly = poly;
     }
-    return (GeodesicPolygon *)iter->_extra;
+    return iter->geodesicPoly;
 }
 
 void geodesicIteratorDestroyState(IterCellsPolygonCompact *iter) {
-    if (!iter || !iter->_extra) {
+    if (!iter || !iter->geodesicPoly) {
         return;
     }
-    geodesicPolygonDestroy((GeodesicPolygon *)iter->_extra);
-    iter->_extra = NULL;
+    geodesicPolygonDestroy(iter->geodesicPoly);
+    iter->geodesicPoly = NULL;
 }
 
 void geodesicIteratorStep(IterCellsPolygonCompact *iter, H3Index cell) {
