@@ -23,6 +23,7 @@
 #include <stdbool.h>
 
 #include "bbox.h"
+#include "geodesic_polygon_internal.h"
 #include "h3api.h"
 #include "iterators.h"
 
@@ -59,8 +60,7 @@ typedef struct {
     const GeoPolygon *_polygon;  // the polygon we're filling
     BBox *_bboxes;  // Bounding box(es) for the polygon and its holes
     bool _started;  // Whether iteration has started
-    void *_extra;   // Extra context specific things. Used for geodesic
-                    // acceleration structures
+    GeodesicPolygon *geodesicPoly;  // Optional geodesic acceleration structure
 } IterCellsPolygonCompact;
 
 DECLSPEC IterCellsPolygonCompact
