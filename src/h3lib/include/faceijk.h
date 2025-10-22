@@ -25,8 +25,10 @@
 #define FACEIJK_H
 
 #include "coordijk.h"
+#include "geodesic_cell_boundary.h"
 #include "latLng.h"
 #include "vec2d.h"
+#include "vec3d.h"
 
 /** @struct FaceIJK
  * @brief Face number and ijk coordinates on that face-centered coordinate

@@ -25,6 +25,7 @@
 
 #include <math.h>
 
+#include "geodesic_cell_boundary.h"
 #include "geodesic_polygon_internal.h"
 #include "h3Index.h"
 #include "test.h"

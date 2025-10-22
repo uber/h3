@@ -92,4 +92,9 @@
 #define H3_EDGE_MODE 3
 #define H3_VERTEX_MODE 4
 
+/** Maximum number of cell boundary vertices; worst case is pentagon:
+ *  5 original verts + 5 edge crossings
+ */
+#define MAX_CELL_BNDRY_VERTS 10
+
 #endif

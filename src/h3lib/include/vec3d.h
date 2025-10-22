@@ -23,6 +23,18 @@
 #include "h3api.h"
 #include "latLng.h"
 
+/** @struct Vec3d
+ *  @brief 3D floating point structure
+ *
+ *  For geodesic calulations represents a point on the surface of the Earth
+ *  as a unit vector in 3D Cartesian space (ECEF-like coordinates).
+ */
+typedef struct {
+    double x;  ///< x component (towards 0° lat, 0° lon)
+    double y;  ///< y component (towards 0° lat, 90° lon)
+    double z;  ///< z component (towards north pole)
+} Vec3d;
+
 void _geoToVec3d(const LatLng *geo, Vec3d *point);
 double _pointSquareDist(const Vec3d *p1, const Vec3d *p2);
 double vec3Dot(const Vec3d *v1, const Vec3d *v2);
