@@ -172,6 +172,7 @@ set(LIB_SOURCE_FILES
     src/h3lib/include/algos.h
     src/h3lib/include/geodesic_iterator.h
     src/h3lib/include/polyfill_iterator.h
+    src/h3lib/include/geodesic_polygon_internal.h
     src/h3lib/lib/h3Assert.c
     src/h3lib/lib/algos.c
     src/h3lib/lib/coordijk.c
@@ -193,7 +194,6 @@ set(LIB_SOURCE_FILES
     src/h3lib/lib/baseCells.c
     src/h3lib/lib/geodesic_iterator.c
     src/h3lib/lib/geodesic_polygon.c
-    src/h3lib/lib/geodesic_polygon_internal.h
     src/h3lib/lib/sphereCapTables.h)
 set(APP_SOURCE_FILES
     src/apps/applib/include/kml.h

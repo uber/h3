@@ -25,7 +25,7 @@
 
 #include <math.h>
 
-#include "../../h3lib/lib/geodesic_polygon_internal.h"
+#include "geodesic_polygon_internal.h"
 #include "h3Index.h"
 #include "test.h"
 #include "vec3d.h"
