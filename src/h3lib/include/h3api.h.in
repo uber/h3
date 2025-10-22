@@ -53,6 +53,8 @@
 #include <stdint.h>
 /* For size_t */
 #include <stdlib.h>
+/* For MAX_CELL_BNDRY_VERTS */
+#include "constants.h"
 
 /*
  * H3 is compiled as C, not C++ code. `extern "C"` is needed for C++ code
@@ -128,11 +130,6 @@ DECLSPEC const char *H3_EXPORT(describeH3Error)(H3Error err);
 #define H3_VERSION_PATCH @H3_VERSION_PATCH@
 // clang-format on
 
-/** Maximum number of cell boundary vertices; worst case is pentagon:
- *  5 original verts + 5 edge crossings
- */
-#define MAX_CELL_BNDRY_VERTS 10
-
 /** @struct LatLng
     @brief latitude/longitude in radians
 */
@@ -141,18 +138,6 @@ typedef struct {
     double lng;  ///< longitude in radians
 } LatLng;
 
-/** @struct Vec3d
- *  @brief 3D floating point structure
- *
- *  For geodesic calulations represents a point on the surface of the Earth
- *  as a unit vector in 3D Cartesian space (ECEF-like coordinates).
- */
-typedef struct {
-    double x;  ///< x component (towards 0° lat, 0° lon)
-    double y;  ///< y component (towards 0° lat, 90° lon)
-    double z;  ///< z component (towards north pole)
-} Vec3d;
-
 /** @struct CellBoundary
     @brief cell boundary in latitude/longitude
 */
@@ -160,14 +145,6 @@ typedef struct {
     int numVerts;                        ///< number of vertices
     LatLng verts[MAX_CELL_BNDRY_VERTS];  ///< vertices in ccw order
 } CellBoundary;
-
-/** @struct GeodesicCellBoundary
-    @brief Geodesic cell boundary expressed in Cartesian space
-*/
-typedef struct {
-    int numVerts;                       ///< number of vertices
-    Vec3d verts[MAX_CELL_BNDRY_VERTS];  ///< vertices in ccw order
-} GeodesicCellBoundary;
 
 /** @struct GeoLoop
  *  @brief similar to CellBoundary, but requires more alloc work

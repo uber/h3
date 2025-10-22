@@ -21,6 +21,7 @@
 #define H3INDEX_H
 
 #include "faceijk.h"
+#include "geodesic_cell_boundary.h"
 #include "h3api.h"
 
 // define's of constants and macros for bitwise manipulation of H3Index's.
