@@ -31,7 +31,7 @@
 #include "test.h"
 #include "vec3d.h"
 
-static const double DEG_TO_RAD = M_PI / 180.0;
+#define DEG_TO_RAD (M_PI / 180.0)
 
 static LatLng triangleVerts[] = {{.lat = 0.0, .lng = 0.0},
                                  {.lat = 0.0, .lng = 2.0 * DEG_TO_RAD},
