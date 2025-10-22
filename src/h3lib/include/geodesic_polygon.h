@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-/** @file geodesic_polygon_internal.h
+/** @file geodesic_polygon.h
  * @brief Internal data structures for geodesic polygon acceleration.
  */
 
