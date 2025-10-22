@@ -201,6 +201,18 @@ SUITE(geodesicPolygonToCellsExperimental) {
     transGeoPolygon.geoloop = transGeoLoop;
     transGeoPolygon.numHoles = 0;
 
+    TEST(edgePoint) {
+        static LatLng point[] = {{-0.0002458237579169511, 0.12401960784313724}};
+        static GeoLoop pointLoop = {.numVerts = 1, .verts = point};
+        static GeoPolygon pointPolygon;
+        pointPolygon.geoloop = pointLoop;
+        pointPolygon.numHoles = 0;
+
+        int64_t count =
+            geodesicFillCount(&pointPolygon, 1, CONTAINMENT_OVERLAPPING);
+        t_assert(count == 1, "point should produce exactly one cell");
+    }
+
     TEST(geodesicZeroSize) {
         uint32_t flags = CONTAINMENT_OVERLAPPING;
         FLAG_SET_GEODESIC(flags);

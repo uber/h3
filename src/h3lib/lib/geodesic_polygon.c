@@ -121,22 +121,34 @@ static bool _geodesicLoopContainsPoint(const GeodesicLoop *loop,
 
 /**
  * Quickly reject a sphere cap and AABB that cannot intersect.
+ * Returns false ONLY when intersection is definitively impossible.
  */
 static bool _geodesicSphereCapOverlapsAABB(const SphereCap *cap,
                                            const AABB *aabb) {
+    // Cos comparisons require more accuracy - use bigger epsilon
+    const double epsilon = 1e-8;
+
+    // 1. Far point test - checks if the farthest AABB corner
+    // falls outside the cap
     Vec3d farPoint;
-    farPoint.x = cap->center.x > 0 ? aabb->max.x : aabb->min.x;
-    farPoint.y = cap->center.y > 0 ? aabb->max.y : aabb->min.y;
-    farPoint.z = cap->center.z > 0 ? aabb->max.z : aabb->min.z;
-    if (vec3Dot(&farPoint, &cap->center) < cap->cosRadius) {
+    farPoint.x = cap->center.x >= 0 ? aabb->max.x : aabb->min.x;
+    farPoint.y = cap->center.y >= 0 ? aabb->max.y : aabb->min.y;
+    farPoint.z = cap->center.z >= 0 ? aabb->max.z : aabb->min.z;
+
+    double farDot = vec3Dot(&farPoint, &cap->center);
+    if (farDot < cap->cosRadius - epsilon) {
         return false;
     }
 
+    // 2. Near origin test - checks if the closest AABB point
+    // is outside the unit sphere
     Vec3d nearOrigin;
     nearOrigin.x = fmax(aabb->min.x, fmin(aabb->max.x, 0.0));
     nearOrigin.y = fmax(aabb->min.y, fmin(aabb->max.y, 0.0));
     nearOrigin.z = fmax(aabb->min.z, fmin(aabb->max.z, 0.0));
-    if (vec3Dot(&nearOrigin, &nearOrigin) > 1.0) {
+
+    double distSq = vec3Dot(&nearOrigin, &nearOrigin);
+    if (distSq > 1.0 + epsilon) {
         return false;
     }
 
