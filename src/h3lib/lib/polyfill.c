@@ -328,7 +328,7 @@ static IterCellsPolygonCompact _iterInitPolygonCompact(
                                     ._flags = flags,
                                     ._bboxes = NULL,
                                     ._started = false,
-                                    ._extra = NULL};
+                                    .geodesicPoly = NULL};
 
     if (res < 0 || res > MAX_H3_RES) {
         iterErrorPolygonCompact(&iter, E_RES_DOMAIN);
