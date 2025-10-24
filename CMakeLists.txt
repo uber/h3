@@ -178,6 +178,7 @@ set(LIB_SOURCE_FILES
     src/h3lib/include/geodesic_polygon.h
     src/h3lib/include/geodesic_polygon_internal.h
     src/h3lib/include/geodesic_cell_boundary.h
+    src/h3lib/include/sphereCapTables.h
     src/h3lib/lib/h3Assert.c
     src/h3lib/lib/algos.c
     src/h3lib/lib/coordijk.c
@@ -200,8 +201,7 @@ set(LIB_SOURCE_FILES
     src/h3lib/lib/area.c
     src/h3lib/lib/cellsToMultiPoly.c
     src/h3lib/lib/geodesic_iterator.c
-    src/h3lib/lib/geodesic_polygon.c
-    src/h3lib/lib/sphereCapTables.h)
+    src/h3lib/lib/geodesic_polygon.c)
 set(APP_SOURCE_FILES
     src/apps/applib/include/kml.h
     src/apps/applib/include/benchmark.h

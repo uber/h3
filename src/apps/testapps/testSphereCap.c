@@ -21,12 +21,12 @@
 #include <math.h>
 #include <stdlib.h>
 
-#include "../../h3lib/lib/sphereCapTables.h"
 #include "bbox.h"
 #include "constants.h"
 #include "h3Index.h"
 #include "latLng.h"
 #include "polyfill.h"
+#include "sphereCapTables.h"
 #include "test.h"
 #include "vec3d.h"
 
