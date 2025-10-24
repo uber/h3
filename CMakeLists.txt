@@ -682,6 +682,8 @@ if(BUILD_BENCHMARKS)
                      src/apps/benchmarks/benchmarkPolygonToCells.c)
     add_h3_benchmark(benchmarkPolygonToCellsExperimental
                      src/apps/benchmarks/benchmarkPolygonToCellsExperimental.c)
+    add_h3_benchmark(benchmarkPolygonToCellsExperimentalGeodesic
+                     src/apps/benchmarks/benchmarkPolygonToCellsExperimentalGeodesic.c)
     if(ENABLE_REQUIRES_ALL_SYMBOLS)
         add_h3_benchmark(benchmarkPolygon
                          src/apps/benchmarks/benchmarkPolygon.c)
