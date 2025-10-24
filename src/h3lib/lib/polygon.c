@@ -49,10 +49,30 @@
  * @return       Whether the flags are valid
  */
 H3Error validatePolygonFlags(uint32_t flags) {
-    if (flags & (~FLAG_CONTAINMENT_MODE_MASK) ||
-        FLAG_GET_CONTAINMENT_MODE(flags) >= CONTAINMENT_INVALID) {
+    ContainmentMode containmentMode = FLAG_GET_CONTAINMENT_MODE(flags);
+    bool isGeodesic = FLAG_GET_GEODESIC(flags);
+
+    // Check containment mode validity based on geodesic flag
+    if (isGeodesic) {
+        // For geodesic: only FULL, and OVERLAPPING are valid
+        if (containmentMode != CONTAINMENT_FULL &&
+            containmentMode != CONTAINMENT_OVERLAPPING) {
+            return E_OPTION_INVALID;
+        }
+    } else {
+        // For non-geodesic: everything < CONTAINMENT_INVALID is valid
+        if (containmentMode >= CONTAINMENT_INVALID) {
+            return E_OPTION_INVALID;
+        }
+    }
+
+    // Check if any invalid flags are set (only containment mode and geodesic
+    // are valid)
+    uint32_t validFlags = FLAG_CONTAINMENT_MODE_MASK | FLAG_GEODESIC_MASK;
+    if (flags & (~validFlags)) {
         return E_OPTION_INVALID;
     }
+
     return E_SUCCESS;
 }
 

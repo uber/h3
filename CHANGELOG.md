@@ -11,6 +11,7 @@ The public API of this library consists of the functions declared in file
 - `isValidIndex` function (#1056)
 - `constructCell` function (#1063)
 - New error codes and `H3_ERROR_END` (#1063, #1064, #1065)
+- Geodesic coverage flag for `polygonToCellsExperimental` that follows great-circle edges when covering very large polygons. This mode is significantly slower than the planar algorithm, so prefer lower resolutions when using it.
 
 ## [4.3.0] - 2025-06-17
 ### Added

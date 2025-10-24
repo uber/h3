@@ -53,6 +53,8 @@
 #include <stdint.h>
 /* For size_t */
 #include <stdlib.h>
+/* For MAX_CELL_BNDRY_VERTS */
+#include "constants.h"
 
 /*
  * H3 is compiled as C, not C++ code. `extern "C"` is needed for C++ code
@@ -128,11 +130,6 @@ DECLSPEC const char *H3_EXPORT(describeH3Error)(H3Error err);
 #define H3_VERSION_PATCH @H3_VERSION_PATCH@
 // clang-format on
 
-/** Maximum number of cell boundary vertices; worst case is pentagon:
- *  5 original verts + 5 edge crossings
- */
-#define MAX_CELL_BNDRY_VERTS 10
-
 /** @struct LatLng
     @brief latitude/longitude in radians
 */
@@ -185,6 +182,31 @@ typedef enum {
     CONTAINMENT_OVERLAPPING_BBOX = 3,  ///< Cell bounding box overlaps shape
     CONTAINMENT_INVALID = 4  ///< This mode is invalid and should not be used
 } ContainmentMode;
+
+/**
+ * Bit mask for extracting or setting the containment mode portion of the
+ * `polygonToCells` and `polygonToCellsExperimental` flags. The four lowest bits
+ * are reserved for a `ContainmentMode` value.
+ */
+#define FLAG_CONTAINMENT_MODE_MASK ((uint32_t)(15))
+
+#define FLAG_GET_CONTAINMENT_MODE(flags) (flags & FLAG_CONTAINMENT_MODE_MASK)
+
+/**
+ * Bit mask that enables geodesic polygon filling. Set this bit on the flags to
+ * have polygon edges follow great-circle arcs instead of planar interpolation.
+ *
+ * Geodesic coverage is intended for very large polygons (hundreds of
+ * kilometers). It is substantially slower than the default planar mode, so
+ * consider lowering the target resolution when enabling it. Only
+ * `CONTAINMENT_FULL` and `CONTAINMENT_OVERLAPPING` containment modes are valid
+ * while the geodesic bit is set.
+ */
+#define FLAG_GEODESIC_MASK ((uint32_t)(16))
+
+#define FLAG_GET_GEODESIC(flags) (flags & FLAG_GEODESIC_MASK)
+#define FLAG_SET_GEODESIC(flags) ((flags) |= FLAG_GEODESIC_MASK)
+#define FLAG_RESET_GEODESIC(flags) ((flags) &= ~FLAG_GEODESIC_MASK)
 
 /** @struct LinkedLatLng
  *  @brief A coordinate node in a linked geo structure, part of a linked list
