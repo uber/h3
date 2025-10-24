@@ -329,6 +329,7 @@ set(OTHER_SOURCE_FILES
     src/apps/fuzzers/fuzzerInternalCoordIjk.c
     src/apps/benchmarks/benchmarkPolygonToCells.c
     src/apps/benchmarks/benchmarkPolygonToCellsExperimental.c
+    src/apps/benchmarks/benchmarkPolygonToCellsExperimentalGeodesic.c
     src/apps/benchmarks/benchmarkPolygon.c
     src/apps/benchmarks/benchmarkCellsToPolyAlgos.c
     src/apps/benchmarks/benchmarkCellToChildren.c
