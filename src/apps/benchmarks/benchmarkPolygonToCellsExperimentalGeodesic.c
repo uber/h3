@@ -145,20 +145,6 @@ LatLng londonNyVerts[] = {{-0.0022305307840, 0.8989737191417},
 GeoLoop londonNyGeoLoop;
 GeoPolygon londonNyGeoPolygon;
 
-BEGIN_BENCHMARKS();
-
-stateGeoLoop.numVerts = 5;
-stateGeoLoop.verts = stateVerts;
-stateGeoPolygon.geoloop = stateGeoLoop;
-
-largeEllipseGeoLoop.numVerts = 100;
-largeEllipseGeoLoop.verts = largeEllipseVerts;
-largeEllipseGeoPolygon.geoloop = largeEllipseGeoLoop;
-
-londonNyGeoLoop.numVerts = 6;
-londonNyGeoLoop.verts = londonNyVerts;
-londonNyGeoPolygon.geoloop = londonNyGeoLoop;
-
 void polygonToCellsBenchmark(const GeoPolygon *polygon, int resolution,
                              bool geodesic) {
     uint32_t flags = CONTAINMENT_OVERLAPPING;
@@ -174,6 +160,20 @@ void polygonToCellsBenchmark(const GeoPolygon *polygon, int resolution,
     (polygon, resolution, flags, numHexagons, hexagons);
     free(hexagons);
 }
+
+BEGIN_BENCHMARKS();
+
+stateGeoLoop.numVerts = 5;
+stateGeoLoop.verts = stateVerts;
+stateGeoPolygon.geoloop = stateGeoLoop;
+
+largeEllipseGeoLoop.numVerts = 100;
+largeEllipseGeoLoop.verts = largeEllipseVerts;
+largeEllipseGeoPolygon.geoloop = largeEllipseGeoLoop;
+
+londonNyGeoLoop.numVerts = 6;
+londonNyGeoLoop.verts = londonNyVerts;
+londonNyGeoPolygon.geoloop = londonNyGeoLoop;
 
 const int stateResolution = 5;
 const int largeEllipseResolution = 4;
