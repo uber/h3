@@ -38,6 +38,10 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     H3Index out;
     H3_EXPORT(constructCell)
     (args->res, args->baseCellNumber, args->digits, &out);
+    if (args->res == 0) {
+        H3_EXPORT(constructCell)
+        (args->res, args->baseCellNumber, NULL, &out);
+    }
 
     return 0;
 }
