@@ -27,6 +27,7 @@ The public API of H3 is covered in the following fuzzers:
 | cellsToDirectedEdge | [fuzzerDirectedEdge](./fuzzerDirectedEdge.c)
 | childPosToCell| [fuzzerCellToChildPos](./fuzzerCellToChildPos.c)
 | compactCells | [fuzzerCompact](./fuzzerCompact.c)
+| constructCell | [fuzzerConstructCell](./fuzzerConstructCell.c)
 | degsToRads | Trivial
 | describeH3Error | Trivial
 | directedEdgeToBoundary | [fuzzerDirectedEdge](./fuzzerDirectedEdge.c)
