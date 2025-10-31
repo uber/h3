@@ -21,6 +21,7 @@
 #define GEODESIC_CELL_BOUNDARY_H
 
 #include "constants.h"
+#include "h3api.h"  // For MAX_CELL_BNDRY_VERTS
 #include "vec3d.h"
 
 /** @struct GeodesicCellBoundary
