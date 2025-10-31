@@ -53,8 +53,6 @@
 #include <stdint.h>
 /* For size_t */
 #include <stdlib.h>
-/* For MAX_CELL_BNDRY_VERTS */
-#include "constants.h"
 
 /*
  * H3 is compiled as C, not C++ code. `extern "C"` is needed for C++ code
@@ -129,6 +127,11 @@ DECLSPEC const char *H3_EXPORT(describeH3Error)(H3Error err);
 #define H3_VERSION_MINOR @H3_VERSION_MINOR@
 #define H3_VERSION_PATCH @H3_VERSION_PATCH@
 // clang-format on
+
+/** Maximum number of cell boundary vertices; worst case is pentagon:
+ *  5 original verts + 5 edge crossings
+ */
+#define MAX_CELL_BNDRY_VERTS 10
 
 /** @struct LatLng
     @brief latitude/longitude in radians
