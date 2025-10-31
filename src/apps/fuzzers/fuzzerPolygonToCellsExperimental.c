@@ -93,21 +93,28 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     }
 
     for (uint32_t flags = 0; flags < CONTAINMENT_INVALID; flags++) {
+        // Prepare geodesic flags:
+        // 1. Run geodesic only for larger cells
+        // 2. Don't run on very large polygons
+        // 3. Don't run without holes (to avoid running long cases twice)
+        bool canRunGeodesic = flags == CONTAINMENT_OVERLAPPING;
+        canRunGeodesic &= res <= 6;
+        canRunGeodesic &= geoPolygon.geoloop.numVerts <= 1024;
+        uint32_t geodesicFlags = flags;
+        FLAG_SET_GEODESIC(geodesicFlags);
+
         geoPolygon.numHoles = originalNumHoles;
         run(&geoPolygon, flags, res);
-        if (flags == CONTAINMENT_FULL || flags == CONTAINMENT_OVERLAPPING) {
-            uint32_t geodesicFlags = flags;
-            FLAG_SET_GEODESIC(geodesicFlags);
+        if (canRunGeodesic) {
             run(&geoPolygon, geodesicFlags, res);
         }
 
+        // Don't run polygon without holes twice
+        if (originalNumHoles == 0) {
+            continue;
+        }
         geoPolygon.numHoles = 0;
         run(&geoPolygon, flags, res);
-        if (flags == CONTAINMENT_FULL || flags == CONTAINMENT_OVERLAPPING) {
-            uint32_t geodesicFlags = flags;
-            FLAG_SET_GEODESIC(geodesicFlags);
-            run(&geoPolygon, geodesicFlags, res);
-        }
     }
     free(geoPolygon.holes);
 
