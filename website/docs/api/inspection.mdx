@@ -282,6 +282,96 @@ Digits are 1-indexed starting with the resolution 1 digit.
 This function will return unused index digits as well as used ones,
 in that case they will be 7 for valid cells.
 
+## constructCell
+
+Creates a cell from its components (resolution, base cell number, and indexing digits).
+This is the inverse operation of `getResolution`, `getBaseCellNumber`, and `getIndexDigit`.
+Only allows for constructing valid H3 cells, and will return an error if the provided components would create an invalid cell.
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+    {label: 'Python', value: 'python'},
+    {label: 'Go', value: 'go'},
+    {label: 'DuckDB', value: 'duckdb'},
+    {label: 'Shell', value: 'shell'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+H3Error constructCell(int res, int baseCellNumber, const int *digits, H3Index *out);
+```
+
+- `res`: Resolution (0-15)
+- `baseCellNumber`: Base cell number (0-121)
+- `digits`: Array of indexing digits (0-6) of length `res`. Each digit `digits[i]` corresponds to the digit at resolution `i+1`. Can be `NULL` if `res` is 0.
+- `out`: Output parameter for the constructed cell
+
+Returns 0 (`E_SUCCESS`) on success. Returns an error code on failure:
+- `E_RES_DOMAIN`: Invalid resolution (must be 0-15)
+- `E_BASE_CELL_DOMAIN`: Invalid base cell number (must be 0-121)
+- `E_DIGIT_DOMAIN`: Invalid digit value (must be 0-6)
+- `E_DELETED_DIGIT`: Attempted to use digit 1 in a pentagon base cell (deleted subsequence)
+
+</TabItem>
+<TabItem value="java">
+
+:::note
+
+This function may not be available in all bindings.
+
+:::
+
+</TabItem>
+<TabItem value="javascript">
+
+:::note
+
+This function may not be available in all bindings.
+
+:::
+
+</TabItem>
+<TabItem value="python">
+
+:::note
+
+This function may not be available in all bindings.
+
+:::
+
+</TabItem>
+<TabItem value="go">
+
+:::note
+
+This function may not be available in all bindings.
+
+:::
+
+</TabItem>
+<TabItem value="duckdb">
+
+:::note
+
+This function may not be available in all bindings.
+
+:::
+
+</TabItem>
+</Tabs>
+
+:::note
+
+When constructing a cell from a pentagon base cell, digit `1` (K_AXES_DIGIT) is not allowed to follow immediately after a sequence of `0` digits. In this case, the function will return `E_DELETED_DIGIT`.
+
+:::
+
 ## stringToH3
 
 Converts the string representation to `H3Index` (`uint64_t`) representation.
