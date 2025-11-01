@@ -312,6 +312,89 @@ SUBCOMMAND(getIndexDigit,
     return E_SUCCESS;
 }
 
+SUBCOMMAND(constructCell,
+           "Construct an H3 cell from resolution, base cell, and digits") {
+    DEFINE_FORMAT_ARG(
+        "'json' for \"CELL\"\\n, 'newline' for CELL\\n (Default: json)");
+    int res = 0;
+    int bc = 0;
+    char digitsStr[1024] = {0};
+
+    Arg resArg = {.names = {"-r", "--resolution"},
+                  .required = true,
+                  .scanFormat = "%d",
+                  .valueName = "res",
+                  .value = &res,
+                  .helpText = "Resolution, 0-15 inclusive."};
+    Arg bcArg = {.names = {"-b", "--baseCell"},
+                 .required = true,
+                 .scanFormat = "%d",
+                 .valueName = "base",
+                 .value = &bc,
+                 .helpText = "Base cell number, 0-121 inclusive."};
+    Arg digitsArg = {.names = {"-d", "--digits"},
+                     .required = false,
+                     .scanFormat = "%1023c",
+                     .valueName = "d0,d1,...",
+                     .value = &digitsStr,
+                     .helpText =
+                         "Comma-separated list of child digits (0-6) of length "
+                         "resolution. Ignored if resolution is 0."};
+
+    Arg *args[] = {&constructCellArg, &helpArg,  &resArg, &bcArg,
+                   &digitsArg,        &formatArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+
+    // We expect `res` digits. We add one more to make sure that the user didn't
+    // pass more.
+    int digits[MAX_H3_RES + 1] = {0};
+    if (res > 0) {
+        if (!digitsArg.found) {
+            return E_DIGIT_DOMAIN;
+        }
+
+        int count = 0;
+        char *p = digitsStr;
+        while (*p && count < MAX_H3_RES + 1) {
+            while (*p == ',') {
+                p++;
+            }
+            if (!*p) {
+                break;
+            }
+            char *endptr = NULL;
+            long val = strtol(p, &endptr, 10);
+            if (endptr == p) {
+                // Invalid char, abort
+                return E_DIGIT_DOMAIN;
+            }
+            digits[count++] = (int)val;
+            p = endptr;
+        }
+
+        if (count != res) {
+            return E_DIGIT_DOMAIN;
+        }
+    }
+
+    H3Index out;
+    H3Error err =
+        H3_EXPORT(constructCell)(res, bc, res > 0 ? digits : NULL, &out);
+    if (err) {
+        return err;
+    }
+
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        printf("\"%" PRIx64 "\"\n", out);
+    } else if (strcmp(format, "newline") == 0) {
+        h3Println(out);
+    } else {
+        return E_FAILED;
+    }
+
+    return E_SUCCESS;
+}
+
 SUBCOMMAND(stringToInt, "Converts an H3 index in string form to integer form") {
     char *rawCell = calloc(16, sizeof(char));
     if (rawCell == NULL) {
@@ -2889,6 +2972,7 @@ SUBCOMMAND(describeH3Error,
 SUBCOMMANDS_INDEX
 
 /// Indexing subcommands
+SUBCOMMAND_INDEX(constructCell)
 SUBCOMMAND_INDEX(cellToLatLng)
 SUBCOMMAND_INDEX(latLngToCell)
 SUBCOMMAND_INDEX(cellToBoundary)
