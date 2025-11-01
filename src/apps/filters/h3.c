@@ -2972,7 +2972,6 @@ SUBCOMMAND(describeH3Error,
 SUBCOMMANDS_INDEX
 
 /// Indexing subcommands
-SUBCOMMAND_INDEX(constructCell)
 SUBCOMMAND_INDEX(cellToLatLng)
 SUBCOMMAND_INDEX(latLngToCell)
 SUBCOMMAND_INDEX(cellToBoundary)
@@ -2981,6 +2980,7 @@ SUBCOMMAND_INDEX(cellToBoundary)
 SUBCOMMAND_INDEX(getResolution)
 SUBCOMMAND_INDEX(getBaseCellNumber)
 SUBCOMMAND_INDEX(getIndexDigit)
+SUBCOMMAND_INDEX(constructCell)
 SUBCOMMAND_INDEX(stringToInt)
 SUBCOMMAND_INDEX(intToString)
 SUBCOMMAND_INDEX(isValidCell)
