@@ -35,13 +35,23 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     }
     const inputArgs *args = (const inputArgs *)data;
 
+    int *digits = calloc(args->res, sizeof(int));
+    memcpy(digits, args->digits, sizeof(int) * args->res);
+
     H3Index out;
     H3_EXPORT(constructCell)
     (args->res, args->baseCellNumber, args->digits, &out);
+    // Must be OK with the digits array being shorter than the full 15 digits,
+    // if res < 15.
+    H3_EXPORT(constructCell)
+    (args->res, args->baseCellNumber, digits, &out);
     if (args->res == 0) {
+        // If res == 0, must also be OK with NULL.
         H3_EXPORT(constructCell)
         (args->res, args->baseCellNumber, NULL, &out);
     }
+
+    free(digits);
 
     return 0;
 }
