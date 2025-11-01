@@ -613,6 +613,81 @@ true
 </Tabs>
 
 
+## isValidIndex
+
+Returns non-zero if this is a valid H3 index for any mode (cell, directed edge, or vertex).
+That is, this returns true if any of the functions `isValidCell`, `isValidDirectedEdge`, or `isValidVertex` would return true.
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+    {label: 'Python', value: 'python'},
+    {label: 'Go', value: 'go'},
+    {label: 'DuckDB', value: 'duckdb'},
+    {label: 'Shell', value: 'shell'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+int isValidIndex(H3Index h);
+```
+
+Returns 1 if the H3 index is valid for any supported type (cell, directed edge, or vertex), 0 otherwise.
+
+</TabItem>
+<TabItem value="java">
+
+:::note
+
+This function may not be available in all bindings.
+
+:::
+
+</TabItem>
+<TabItem value="javascript">
+
+:::note
+
+This function may not be available in all bindings.
+
+:::
+
+</TabItem>
+<TabItem value="python">
+
+:::note
+
+This function may not be available in all bindings.
+
+:::
+
+</TabItem>
+<TabItem value="go">
+
+:::note
+
+This function may not be available in all bindings.
+
+:::
+
+</TabItem>
+<TabItem value="duckdb">
+
+:::note
+
+This function may not be available in all bindings.
+
+:::
+
+</TabItem>
+</Tabs>
+
+
 ## isResClassIII
 
 Returns non-zero if this index has a resolution with Class III orientation.
