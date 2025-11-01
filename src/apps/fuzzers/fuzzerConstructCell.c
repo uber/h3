@@ -35,7 +35,12 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     }
     const inputArgs *args = (const inputArgs *)data;
 
-    int resForAlloc = min(max(args->res, 0), MAX_H3_RES);
+    int resForAlloc = args->res;
+    if (resForAlloc < 0) {
+        resForAlloc = 0;
+    } else if (resForAlloc > MAX_H3_RES) {
+        resForAlloc = MAX_H3_RES;
+    }
     int *digits = calloc(resForAlloc, sizeof(int));
     memcpy(digits, args->digits, sizeof(int) * resForAlloc);
 
