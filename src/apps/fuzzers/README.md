@@ -57,6 +57,7 @@ The public API of H3 is covered in the following fuzzers:
 | isResClassIII | [fuzzerCellProperties](./fuzzerCellProperties.c)
 | isValidCell | [fuzzerCellProperties](./fuzzerCellProperties.c)
 | isValidDirectedEdge | [fuzzerDirectedEdge](./fuzzerDirectedEdge.c)
+| isValidIndex | [fuzzerCellProperties](./fuzzerCellProperties.c)
 | isValidVertex | [fuzzerVertexes](./fuzzerVertexes.c)
 | latLngToCell | [fuzzerLatLngToCell](./fuzzerLatLngToCell.c)
 | localIjToCell | [fuzzerLocalIj](./fuzzerLocalIj.c)

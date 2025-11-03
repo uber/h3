@@ -35,6 +35,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 
     H3_EXPORT(getResolution)(args->index);
     H3_EXPORT(getBaseCellNumber)(args->index);
+    H3_EXPORT(isValidIndex)(args->index);
     H3_EXPORT(isValidCell)(args->index);
     H3_EXPORT(isPentagon)(args->index);
     H3_EXPORT(isResClassIII)(args->index);
