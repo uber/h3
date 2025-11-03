@@ -293,6 +293,7 @@ set(OTHER_SOURCE_FILES
     src/apps/fuzzers/fuzzerEdgeLength.c
     src/apps/fuzzers/fuzzerCellProperties.c
     src/apps/fuzzers/fuzzerIndexIO.c
+    src/apps/fuzzers/fuzzerConstructCell.c
     src/apps/fuzzers/fuzzerResolutions.c
     src/apps/fuzzers/fuzzerHierarchy.c
     src/apps/fuzzers/fuzzerVertexes.c
@@ -619,6 +620,7 @@ if(BUILD_FUZZERS)
     add_h3_fuzzer(fuzzerEdgeLength src/apps/fuzzers/fuzzerEdgeLength.c)
     add_h3_fuzzer(fuzzerCellProperties src/apps/fuzzers/fuzzerCellProperties.c)
     add_h3_fuzzer(fuzzerIndexIO src/apps/fuzzers/fuzzerIndexIO.c)
+    add_h3_fuzzer(fuzzerConstructCell src/apps/fuzzers/fuzzerConstructCell.c)
     add_h3_fuzzer(fuzzerResolutions src/apps/fuzzers/fuzzerResolutions.c)
     add_h3_fuzzer(fuzzerHierarchy src/apps/fuzzers/fuzzerHierarchy.c)
     add_h3_fuzzer(fuzzerVertexes src/apps/fuzzers/fuzzerVertexes.c)

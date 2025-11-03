@@ -132,7 +132,7 @@ H3Error H3_EXPORT(getIndexDigit)(H3Index h, int res, int *out) {
  * @param out  Created cell
  * @return 0 (E_SUCCESS) on success, otherwise some H3Error
  **/
-H3Error H3_EXPORT(constructCell)(int res, int baseCellNumber, int *digits,
+H3Error H3_EXPORT(constructCell)(int res, int baseCellNumber, const int *digits,
                                  H3Index *out) {
     if (res < 0 || res > MAX_H3_RES) {
         return E_RES_DOMAIN;
