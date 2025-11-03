@@ -322,6 +322,7 @@ set(OTHER_SOURCE_FILES
     src/apps/fuzzers/fuzzerLocalIj.c
     src/apps/fuzzers/fuzzerPolygonToCells.c
     src/apps/fuzzers/fuzzerPolygonToCellsExperimental.c
+    src/apps/fuzzers/fuzzerPolygonToCellsExperimentalGeodesic.c
     src/apps/fuzzers/fuzzerPolygonToCellsNoHoles.c
     src/apps/fuzzers/fuzzerPolygonToCellsExperimentalNoHoles.c
     src/apps/fuzzers/fuzzerCellToChildPos.c
@@ -652,6 +653,8 @@ if(BUILD_FUZZERS)
     add_h3_fuzzer(fuzzerPolygonToCells src/apps/fuzzers/fuzzerPolygonToCells.c)
     add_h3_fuzzer(fuzzerPolygonToCellsExperimental
                   src/apps/fuzzers/fuzzerPolygonToCellsExperimental.c)
+    add_h3_fuzzer(fuzzerPolygonToCellsExperimentalGeodesic
+                  src/apps/fuzzers/fuzzerPolygonToCellsExperimentalGeodesic.c)
     add_h3_fuzzer(fuzzerPolygonToCellsNoHoles
                   src/apps/fuzzers/fuzzerPolygonToCellsNoHoles.c)
     add_h3_fuzzer(fuzzerPolygonToCellsExperimentalNoHoles
