@@ -25,6 +25,6 @@ Hexagons are also optimally space-filling. On average, a polygon may be filled w
 
 ## References
 
-* Use case: [H3: Uber’s Hexagonal Hierarchical Spatial Index ](https://eng.uber.com/h3/)
+* Use case: [H3: Uber’s Hexagonal Hierarchical Spatial Index ](https://www.uber.com/en-GB/blog/h3/)
 * Observable notebook example: [Intro to h3-js](https://observablehq.com/@nrabinowitz/h3-tutorial-the-h3-js-library?collection=@nrabinowitz/h3-tutorial)
 * Jupyter notebook example: [H3 Python API](https://github.com/uber/h3-py-notebooks/blob/master/notebooks/usage.ipynb)
