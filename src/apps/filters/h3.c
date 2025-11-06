@@ -320,12 +320,16 @@ SUBCOMMAND(constructCell,
     int bc = 0;
     char digitsStr[1024] = {0};
 
-    Arg resArg = {.names = {"-r", "--resolution"},
-                  .required = true,
-                  .scanFormat = "%d",
-                  .valueName = "res",
-                  .value = &res,
-                  .helpText = "Resolution, 0-15 inclusive."};
+    Arg resArg = {
+        .names = {"-r", "--resolution"},
+        .required = false,
+        .scanFormat = "%d",
+        .valueName = "res",
+        .value = &res,
+        .helpText =
+            "Resolution, 0-15 inclusive. Inferred from digits if not provided. "
+            "If provided, an error will be returned if there is a mismatch "
+            "with the number of digits provided."};
     Arg bcArg = {.names = {"-b", "--baseCell"},
                  .required = true,
                  .scanFormat = "%d",
@@ -339,7 +343,7 @@ SUBCOMMAND(constructCell,
                      .value = &digitsStr,
                      .helpText =
                          "Comma-separated list of child digits (0-6) of length "
-                         "resolution. Ignored if resolution is 0."};
+                         "resolution."};
 
     Arg *args[] = {&constructCellArg, &helpArg,  &resArg, &bcArg,
                    &digitsArg,        &formatArg};
@@ -347,13 +351,10 @@ SUBCOMMAND(constructCell,
 
     // We expect `res` digits. We add one more to make sure that the user didn't
     // pass more.
+    int count = 0;
     int digits[MAX_H3_RES + 1] = {0};
-    if (res > 0) {
-        if (!digitsArg.found) {
-            return E_DIGIT_DOMAIN;
-        }
 
-        int count = 0;
+    if (digitsArg.found) {
         char *p = digitsStr;
         while (*p && count < MAX_H3_RES + 1) {
             bool isValid = *p >= '0' && *p <= '6';
@@ -375,10 +376,19 @@ SUBCOMMAND(constructCell,
 
             p++;
         }
+    }
 
-        if (count != res) {
-            return E_DIGIT_DOMAIN;
-        }
+    if (!resArg.found) {
+        // Infer resolution
+        res = count;
+    }
+
+    if (res < 0 || res > MAX_H3_RES) {
+        return E_RES_DOMAIN;
+    }
+
+    if (count != res) {
+        return E_DIGIT_DOMAIN;
     }
 
     H3Index out;
