@@ -6,11 +6,16 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+
+## [4.4.0] - 2025-11-06
 ### Added
 - `getIndexDigit` function for inspecting specific index digits of an H3 index. (#1024, #1042)
-- `isValidIndex` function (#1056)
-- `constructCell` function (#1063)
-- New error codes and `H3_ERROR_END` (#1063, #1064, #1065)
+- `isValidIndex` function (#1056, #1079)
+- `constructCell` function (#1063, #1074, #1078)
+- New `H3_INDEX_INVALID`, `E_BASE_CELL_DOMAIN`, `E_DIGIT_DOMAIN`, `E_DELETED_DIGIT` error codes and `H3_ERROR_END` (#1063, #1064, #1065)
+
+### Changed
+- Updated minimum version of macOS in CI. (#1069)
 
 ## [4.3.0] - 2025-06-17
 ### Added
