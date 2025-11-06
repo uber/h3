@@ -57,7 +57,11 @@ add_h3_cli_test(
 add_h3_cli_test(
     testCliConstructCellDigitDomain17
     "constructCell -r 1 -b 40 -d 17 2>&1"
-    "Error 18: Child digits invalid") 
+    "Error 18: Child digits invalid")
+add_h3_cli_test(
+    testCliConstructCellInvalidCommas
+    "constructCell -r 3 -b 40 -d 1,,2 2>&1"
+    "Error 18: Child digits invalid")
 add_h3_cli_test(
     testCliConstructCellDeletedSubsequence
     "constructCell -r 3 -b 4 -d 0,0,1 2>&1"

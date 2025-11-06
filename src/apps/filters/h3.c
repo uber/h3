@@ -356,20 +356,24 @@ SUBCOMMAND(constructCell,
         int count = 0;
         char *p = digitsStr;
         while (*p && count < MAX_H3_RES + 1) {
-            while (*p == ',') {
-                p++;
+            bool isValid = *p >= '0' && *p <= '6';
+            if (!isValid) {
+                return E_DIGIT_DOMAIN;
             }
+
+            digits[count++] = *p - '0';
+            p++;
+
             if (!*p) {
                 break;
             }
-            char *endptr = NULL;
-            long val = strtol(p, &endptr, 10);
-            if (endptr == p) {
-                // Invalid char, abort
+
+            // We expect each digit to be followed by ','
+            if (*p != ',') {
                 return E_DIGIT_DOMAIN;
             }
-            digits[count++] = (int)val;
-            p = endptr;
+
+            p++;
         }
 
         if (count != res) {
