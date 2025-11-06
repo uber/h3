@@ -2,6 +2,9 @@ add_h3_cli_test(
     testCliConstructCellRes0
     "constructCell -r 0 -b 0 -f newline" "8001fffffffffff")
 add_h3_cli_test(
+    testCliConstructCellRes0WithoutResolutionArg
+    "constructCell -b 0 -f newline" "8001fffffffffff")
+add_h3_cli_test(
     testCliConstructCellRes0Json
     "constructCell -r 0 -b 0 -f json" "\"8001fffffffffff\"")
 add_h3_cli_test(
