@@ -372,9 +372,9 @@ H3 4.3.0
 
     constructCell   Construct an H3 cell from resolution, base cell, and digits
     -h, --help      Show this help message.
-    -r, --resolution <res>  Required. Resolution, 0-15 inclusive.
+    -r, --resolution <res>  Resolution, 0-15 inclusive. Inferred from digits if not provided. If provided, an error will be returned if there is a mismatch with the number of digits provided.
     -b, --baseCell <base>   Required. Base cell number, 0-121 inclusive.
-    -d, --digits <d0,d1,...>        Comma-separated list of child digits (0-6) of length resolution. Ignored if resolution is 0.
+    -d, --digits <d0,d1,...>        Comma-separated list of child digits (0-6) of length resolution.
     -f, --format <FMT>      'json' for "CELL"\n, 'newline' for CELL\n (Default: json)
 ```
 
