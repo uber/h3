@@ -1,0 +1,78 @@
+add_h3_cli_test(
+    testCliConstructCellRes0
+    "constructCell -r 0 -b 0 -f newline" "8001fffffffffff")
+add_h3_cli_test(
+    testCliConstructCellRes0WithoutResolutionArg
+    "constructCell -b 0 -f newline" "8001fffffffffff")
+add_h3_cli_test(
+    testCliConstructCellRes0Json
+    "constructCell -r 0 -b 0 -f json" "\"8001fffffffffff\"")
+add_h3_cli_test(
+    testCliConstructCellRes0_bc1
+    "constructCell -r 0 -b 1 -f newline" "8003fffffffffff") 
+add_h3_cli_test(
+    testCliConstructCellRes0_bc121
+    "constructCell -r 0 -b 121 -f newline" "80f3fffffffffff")
+add_h3_cli_test(
+    testCliConstructCellRes3
+    "constructCell -r 3 -b 73 -d 1,2,3 -f newline" "839253fffffffff")
+add_h3_cli_test(
+    testCliConstructCellRes3WithoutResolutionArg
+    "constructCell -b 73 -d 1,2,3 -f newline" "839253fffffffff")
+add_h3_cli_test(
+    testCliConstructCellRes2
+    "constructCell -r 2 -b 15 -d 5,4 -f newline" "821f67fffffffff")
+add_h3_cli_test(
+    testCliConstructCellRes1
+    "constructCell -r 1 -b 42 -d 6 -f newline" "8155bffffffffff")
+add_h3_cli_test(
+    testCliConstructCellRes15
+    "constructCell -r 15 -b 58 -d 5,1,6,3,1,1,1,4,4,5,5,3,3,3,0 -f newline" "8f754e64992d6d8")
+add_h3_cli_test(
+    testCliConstructCellResDomain
+    "constructCell -r 16 -b 0 -d 0,1,2,3,4,5,6,0,1,2,3,4,5,6,0,1,2 2>&1"
+    "Error 4: Resolution argument was outside of acceptable range")
+add_h3_cli_test(
+    testCliConstructCellResDomainNoResArg
+    "constructCell -b 0 -d 0,1,2,3,4,5,6,0,1,2,3,4,5,6,0,1,2 2>&1"
+    "Error 4: Resolution argument was outside of acceptable range")
+add_h3_cli_test(
+    testCliConstructCellResDomainNeg
+    "constructCell -r -1 -b 0 2>&1"
+    "Error 4: Resolution argument was outside of acceptable range")
+add_h3_cli_test(
+    testCliConstructCellBaseCellDomain
+    "constructCell -r 0 -b 122 2>&1"
+    "Error 17: Base cell number was outside of acceptable range")
+add_h3_cli_test(
+    testCliConstructCellBaseCellDomainNeg  
+    "constructCell -r 0 -b -1 2>&1"
+    "Error 17: Base cell number was outside of acceptable range")
+add_h3_cli_test(
+    testCliConstructCellBaseCellDomainHigh
+    "constructCell -r 0 -b 259 2>&1" 
+    "Error 17: Base cell number was outside of acceptable range")
+add_h3_cli_test(
+    testCliConstructCellDigitDomainNeg
+    "constructCell -r 1 -b 40 -d -1 2>&1"
+    "Error 18: Child digits invalid")
+add_h3_cli_test(
+    testCliConstructCellDigitDomain7
+    "constructCell -r 1 -b 40 -d 7 2>&1"
+    "Error 18: Child digits invalid")
+add_h3_cli_test(
+    testCliConstructCellDigitDomain8  
+    "constructCell -r 1 -b 40 -d 8 2>&1"
+    "Error 18: Child digits invalid")
+add_h3_cli_test(
+    testCliConstructCellDigitDomain17
+    "constructCell -r 1 -b 40 -d 17 2>&1"
+    "Error 18: Child digits invalid")
+add_h3_cli_test(
+    testCliConstructCellInvalidCommas
+    "constructCell -r 3 -b 40 -d 1,,2 2>&1"
+    "Error 18: Child digits invalid")
+add_h3_cli_test(
+    testCliConstructCellDeletedSubsequence
+    "constructCell -r 3 -b 4 -d 0,0,1 2>&1"
+    "Error 19: Deleted subsequence indicates invalid index")
