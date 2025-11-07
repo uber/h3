@@ -321,11 +321,10 @@ Returns 0 (`E_SUCCESS`) on success. Returns an error code on failure:
 </TabItem>
 <TabItem value="java">
 
-:::note
-
-This function may not be available in all bindings.
-
-:::
+```java
+long constructCell(int res, int baseCellNumber, List<Integer> digits);
+String constructCellAddress(int res, int baseCellNumber, List<Integer> digits);
+```
 
 </TabItem>
 <TabItem value="javascript">
@@ -357,11 +356,10 @@ This function may not be available in all bindings.
 </TabItem>
 <TabItem value="duckdb">
 
-:::note
-
-This function may not be available in all bindings.
-
-:::
+```sql
+h3_construct_cell(res, base_cell_number, digits)
+h3_construct_cell_string(res, base_cell_number, digits)
+```
 
 </TabItem>
 <TabItem value="shell">
@@ -662,11 +660,10 @@ Returns 1 if the H3 index is valid for any supported type (cell, directed edge, 
 </TabItem>
 <TabItem value="java">
 
-:::note
-
-This function may not be available in all bindings.
-
-:::
+```java
+boolean isValidIndex(long h3);
+boolean isValidIndex(String h3Address);
+```
 
 </TabItem>
 <TabItem value="javascript">
@@ -698,11 +695,9 @@ This function may not be available in all bindings.
 </TabItem>
 <TabItem value="duckdb">
 
-:::note
-
-This function may not be available in all bindings.
-
-:::
+```sql
+h3_is_valid_index(h)
+```
 
 </TabItem>
 </Tabs>
