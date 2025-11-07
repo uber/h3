@@ -54,8 +54,14 @@ The type returned by most H3 functions is `H3Error`, a 32 bit integer type with 
 | 13    | E_MEMORY_ALLOC       | Necessary memory allocation failed
 | 14    | E_MEMORY_BOUNDS      | Bounds of provided memory were not large enough
 | 15    | E_OPTION_INVALID     | Mode or flags argument was not valid
+| 16    | E_INDEX_INVALID      | `H3Index` argument was not valid
+| 17    | E_BASE_CELL_DOMAIN   | Base cell number was outside of acceptable range
+| 18    | E_DIGIT_DOMAIN       | Child indexing digits invalid
+| 19    | E_DELETED_DIGIT      | Child indexing digits refer to a deleted subsequence
 
 The H3 library may always add additional error messages. Error messages not recognized by the application should be treated as `E_FAILED`.
+
+The C library has a value `H3_ERROR_END` which is one past the last defined error message. This is for convenience when iterating over error messages.
 
 ### Bindings
 
