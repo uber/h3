@@ -468,4 +468,97 @@ SUITE(directedEdge) {
         t_assert(H3_EXPORT(edgeLengthRads)(h3, &length) == E_DIR_EDGE_INVALID,
                  "Non-edge (cell) has zero edge length");
     }
+
+    TEST(reverseDirectedEdge) {
+        H3Index sf;
+        t_assertSuccess(H3_EXPORT(latLngToCell)(&sfGeo, 9, &sf));
+        H3Index ring[7] = {0};
+        t_assertSuccess(H3_EXPORT(gridRingUnsafe)(sf, 1, ring));
+        H3Index sf2 = ring[0];
+
+        H3Index edge;
+        t_assertSuccess(H3_EXPORT(cellsToDirectedEdge)(sf, sf2, &edge));
+        
+        H3Index reversedEdge;
+        t_assertSuccess(H3_EXPORT(reverseDirectedEdge)(edge, &reversedEdge));
+        
+        // Verify the reversed edge is valid
+        t_assert(H3_EXPORT(isValidDirectedEdge)(reversedEdge) == 1,
+                 "reversed edge is valid");
+        
+        // Verify the origin of the reversed edge is the destination of the original
+        H3Index reversedOrigin;
+        t_assertSuccess(
+            H3_EXPORT(getDirectedEdgeOrigin)(reversedEdge, &reversedOrigin));
+        t_assert(reversedOrigin == sf2,
+                 "reversed edge origin is original destination");
+        
+        // Verify the destination of the reversed edge is the origin of the original
+        H3Index reversedDestination;
+        t_assertSuccess(H3_EXPORT(getDirectedEdgeDestination)(
+            reversedEdge, &reversedDestination));
+        t_assert(reversedDestination == sf,
+                 "reversed edge destination is original origin");
+        
+        // Verify that reversing twice gives back the original edge
+        H3Index doubleReversed;
+        t_assertSuccess(
+            H3_EXPORT(reverseDirectedEdge)(reversedEdge, &doubleReversed));
+        t_assert(doubleReversed == edge,
+                 "reversing twice returns original edge");
+    }
+
+    TEST(reverseDirectedEdge_invalid) {
+        H3Index sf;
+        t_assertSuccess(H3_EXPORT(latLngToCell)(&sfGeo, 9, &sf));
+        
+        H3Index out;
+        // Test with a cell (not an edge)
+        t_assert(H3_EXPORT(reverseDirectedEdge)(sf, &out) == E_DIR_EDGE_INVALID,
+                 "reversing a cell fails");
+        
+        // Test with null
+        t_assert(H3_EXPORT(reverseDirectedEdge)(0, &out) == E_DIR_EDGE_INVALID,
+                 "reversing null fails");
+        
+        // Test with invalid edge
+        H3Index invalidEdge = sf;
+        H3_SET_MODE(invalidEdge, H3_DIRECTEDEDGE_MODE);
+        H3_SET_RESERVED_BITS(invalidEdge, INVALID_DIGIT);
+        t_assert(H3_EXPORT(reverseDirectedEdge)(invalidEdge, &out) != E_SUCCESS,
+                 "reversing invalid edge fails");
+    }
+
+    TEST(reverseDirectedEdge_pentagon) {
+        H3Index pentagon = 0x821c07fffffffff;
+        H3Index edges[6] = {0};
+        t_assertSuccess(H3_EXPORT(originToDirectedEdges)(pentagon, edges));
+
+        for (int i = 0; i < 6; i++) {
+            if (edges[i] == 0) continue;
+            
+            H3Index reversedEdge;
+            t_assertSuccess(H3_EXPORT(reverseDirectedEdge)(edges[i], &reversedEdge));
+            
+            t_assert(H3_EXPORT(isValidDirectedEdge)(reversedEdge) == 1,
+                     "reversed pentagon edge is valid");
+            
+            // Verify origin and destination are swapped
+            H3Index origin, destination;
+            t_assertSuccess(H3_EXPORT(getDirectedEdgeOrigin)(edges[i], &origin));
+            t_assertSuccess(
+                H3_EXPORT(getDirectedEdgeDestination)(edges[i], &destination));
+            
+            H3Index revOrigin, revDestination;
+            t_assertSuccess(
+                H3_EXPORT(getDirectedEdgeOrigin)(reversedEdge, &revOrigin));
+            t_assertSuccess(H3_EXPORT(getDirectedEdgeDestination)(
+                reversedEdge, &revDestination));
+            
+            t_assert(origin == revDestination,
+                     "pentagon edge origin matches reversed destination");
+            t_assert(destination == revOrigin,
+                     "pentagon edge destination matches reversed origin");
+        }
+    }
 }
