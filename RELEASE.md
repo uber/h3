@@ -12,4 +12,4 @@
     * Copy CHANGELOG.md into the release notes
 
 3. Publish the website to display the latest docs
-    * `make publish-website`
+    * This should now be done automatically via Github Actions.
