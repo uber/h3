@@ -10,7 +10,7 @@ The public API of this library consists of the functions declared in file
 ## [4.4.1] - 2025-11-11
 
 ### Fixed
-- Proper version set in `VERSION` file
+- Proper version set in `VERSION` file (#1091)
 
 ## [4.4.0] - 2025-11-06
 ### Added
