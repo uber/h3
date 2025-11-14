@@ -771,6 +771,16 @@ DECLSPEC H3Error H3_EXPORT(directedEdgeToBoundary)(H3Index edge,
                                                    CellBoundary *gb);
 /** @} */
 
+/** @defgroup directedEdgeToVertexes directedEdgeToVertexes
+ * Functions for directedEdgeToVertexes
+ * @{
+ */
+/** @brief Returns the start and end vertexes of a directed edge, ordered
+ * according to the right-hand rule */
+DECLSPEC H3Error H3_EXPORT(directedEdgeToVertexes)(H3Index edge,
+                                                    H3Index *vertexes);
+/** @} */
+
 /** @defgroup cellToVertex cellToVertex
  * Functions for cellToVertex
  * @{

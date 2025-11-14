@@ -468,4 +468,142 @@ SUITE(directedEdge) {
         t_assert(H3_EXPORT(edgeLengthRads)(h3, &length) == E_DIR_EDGE_INVALID,
                  "Non-edge (cell) has zero edge length");
     }
+
+    TEST(directedEdgeToVertexes) {
+        H3Index sf;
+        t_assertSuccess(H3_EXPORT(latLngToCell)(&sfGeo, 9, &sf));
+        H3Index ring[7] = {0};
+        t_assertSuccess(H3_EXPORT(gridRingUnsafe)(sf, 1, ring));
+
+        // Get an edge from sf to one of its neighbors
+        H3Index edge;
+        t_assertSuccess(H3_EXPORT(cellsToDirectedEdge)(sf, ring[0], &edge));
+
+        // Get the vertexes for this edge
+        H3Index vertexes[2];
+        t_assertSuccess(H3_EXPORT(directedEdgeToVertexes)(edge, vertexes));
+
+        // Verify both vertexes are valid
+        t_assert(H3_EXPORT(isValidVertex)(vertexes[0]),
+                 "first vertex is valid");
+        t_assert(H3_EXPORT(isValidVertex)(vertexes[1]),
+                 "second vertex is valid");
+
+        // Verify the vertexes are different
+        t_assert(vertexes[0] != vertexes[1],
+                 "start and end vertexes are different");
+
+        // Get all vertexes of the origin cell
+        H3Index cellVertexes[6];
+        t_assertSuccess(H3_EXPORT(cellToVertexes)(sf, cellVertexes));
+
+        // Verify that both edge vertexes are among the cell's vertexes
+        int foundStart = 0;
+        int foundEnd = 0;
+        for (int i = 0; i < 6; i++) {
+            if (cellVertexes[i] == vertexes[0]) foundStart = 1;
+            if (cellVertexes[i] == vertexes[1]) foundEnd = 1;
+        }
+        t_assert(foundStart, "start vertex is a vertex of the origin cell");
+        t_assert(foundEnd, "end vertex is a vertex of the origin cell");
+    }
+
+    TEST(directedEdgeToVertexes_pentagon) {
+        // Test with a pentagon
+        H3Index pentagon;
+        t_assertSuccess(H3_EXPORT(getPentagons)(9, &pentagon));
+
+        // Get edges for the pentagon
+        H3Index edges[6];
+        t_assertSuccess(H3_EXPORT(originToDirectedEdges)(pentagon, edges));
+
+        // Test the first valid edge (edges[0] is H3_NULL for pentagons)
+        H3Index vertexes[2];
+        t_assertSuccess(
+            H3_EXPORT(directedEdgeToVertexes)(edges[1], vertexes));
+
+        // Verify both vertexes are valid
+        t_assert(H3_EXPORT(isValidVertex)(vertexes[0]),
+                 "pentagon first vertex is valid");
+        t_assert(H3_EXPORT(isValidVertex)(vertexes[1]),
+                 "pentagon second vertex is valid");
+
+        // Verify the vertexes are different
+        t_assert(vertexes[0] != vertexes[1],
+                 "pentagon start and end vertexes are different");
+    }
+
+    TEST(directedEdgeToVertexes_invalid) {
+        H3Index vertexes[2];
+
+        // Test with invalid edge (H3_NULL)
+        t_assert(H3_EXPORT(directedEdgeToVertexes)(H3_NULL, vertexes) ==
+                     E_DIR_EDGE_INVALID,
+                 "directedEdgeToVertexes fails on H3_NULL");
+
+        // Test with a cell instead of an edge
+        H3Index sf;
+        t_assertSuccess(H3_EXPORT(latLngToCell)(&sfGeo, 9, &sf));
+        t_assert(H3_EXPORT(directedEdgeToVertexes)(sf, vertexes) ==
+                     E_DIR_EDGE_INVALID,
+                 "directedEdgeToVertexes fails on cell");
+
+        // Test with invalid edge
+        H3Index invalidEdge = sf;
+        H3_SET_MODE(invalidEdge, H3_DIRECTEDEDGE_MODE);
+        H3_SET_RESERVED_BITS(invalidEdge, 0);  // Invalid direction
+        t_assert(H3_EXPORT(directedEdgeToVertexes)(invalidEdge, vertexes) ==
+                     E_DIR_EDGE_INVALID,
+                 "directedEdgeToVertexes fails on invalid direction");
+    }
+
+    TEST(directedEdgeToVertexes_ordering) {
+        // Test that vertexes are ordered according to right-hand rule
+        H3Index sf;
+        t_assertSuccess(H3_EXPORT(latLngToCell)(&sfGeo, 9, &sf));
+
+        // Get all edges from the origin
+        H3Index edges[6];
+        t_assertSuccess(H3_EXPORT(originToDirectedEdges)(sf, edges));
+
+        // For each edge, verify the vertex ordering is consistent
+        for (int i = 0; i < 6; i++) {
+            if (edges[i] == H3_NULL) continue;
+
+            H3Index vertexes[2];
+            t_assertSuccess(
+                H3_EXPORT(directedEdgeToVertexes)(edges[i], vertexes));
+
+            // Get the edge boundary to compare
+            CellBoundary boundary;
+            t_assertSuccess(
+                H3_EXPORT(directedEdgeToBoundary)(edges[i], &boundary));
+
+            // The boundary should have at least 2 vertices
+            t_assert(boundary.numVerts >= 2,
+                     "edge boundary has at least 2 vertices");
+
+            // Get coordinates of the vertexes
+            LatLng v1Coord, v2Coord;
+            t_assertSuccess(H3_EXPORT(vertexToLatLng)(vertexes[0], &v1Coord));
+            t_assertSuccess(H3_EXPORT(vertexToLatLng)(vertexes[1], &v2Coord));
+
+            // The first vertex should match the first boundary point
+            // (within floating point tolerance)
+            double latDiff1 =
+                v1Coord.lat - boundary.verts[0].lat;
+            double lngDiff1 =
+                v1Coord.lng - boundary.verts[0].lng;
+            t_assert(latDiff1 * latDiff1 + lngDiff1 * lngDiff1 < 0.0001,
+                     "first vertex matches first boundary point");
+
+            // The second vertex should match the last boundary point
+            double latDiff2 =
+                v2Coord.lat - boundary.verts[boundary.numVerts - 1].lat;
+            double lngDiff2 =
+                v2Coord.lng - boundary.verts[boundary.numVerts - 1].lng;
+            t_assert(latDiff2 * latDiff2 + lngDiff2 * lngDiff2 < 0.0001,
+                     "second vertex matches last boundary point");
+        }
+    }
 }

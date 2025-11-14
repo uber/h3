@@ -202,7 +202,7 @@ set(TEST_APP_SOURCE_FILES src/apps/applib/include/test.h
                           src/apps/applib/lib/test.c)
 set(EXAMPLE_SOURCE_FILES
     examples/index.c examples/distance.c examples/neighbors.c
-    examples/compactCells.c examples/edge.c)
+    examples/compactCells.c examples/edge.c examples/edgeVertexes.c)
 set(H3_BIN_SOURCE_FILES src/apps/filters/h3.c)
 set(OTHER_SOURCE_FILES
     src/apps/filters/cellToLatLng.c
