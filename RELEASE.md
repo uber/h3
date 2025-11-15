@@ -2,8 +2,8 @@
 
 1. Create a PR "Preparing for release X.Y.Z" against master branch
     * Alter CHANGELOG.md from `[Unreleased]` to `[X.Y.Z] YYYY-MM-DD`
-    * Run `make update-version` and give `X.Y.Z` when prompted (this updates
-      the VERSION file, so don't change it manually)
+    * In the `build` directory, run `make update-version` and give `X.Y.Z` when
+      prompted (this updates the VERSION file, so don't change it manually)
     * Check that all merges that need to be in the changelog are present
     * Get reviews and merge the PR
 
@@ -12,4 +12,4 @@
     * Copy CHANGELOG.md into the release notes
 
 3. Publish the website to display the latest docs
-    * `make publish-website`
+    * This should now be done automatically via Github Actions.

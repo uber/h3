@@ -20,7 +20,7 @@ jobs:
 
       - name: Install FOSSA
         run: |
-          curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | sudo bash
+          curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install-latest.sh | bash
 
       - name: Test Website Build
         working-directory: website

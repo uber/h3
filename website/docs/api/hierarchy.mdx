@@ -237,20 +237,24 @@ Returns 0 (`E_SUCCESS`) on success.
 </TabItem>
 <TabItem value="java">
 
-:::note
-
-This function exists for memory management and is not exposed.
-
-:::
+```java
+long cellToChildrenSize(long cell, int childRes);
+long cellToChildrenSize(String cellAddress, int childRes);
+```
 
 </TabItem>
 <TabItem value="javascript">
 
-:::note
+```js
+h3.cellToChildrenSize(cell, childRes)
+```
 
-This function exists for memory management and is not exposed.
-
-:::
+```js live
+function example() {
+  const cell = '85283473fffffff';
+  return h3.cellToChildrenSize(cell, 6);
+}
+```
 
 </TabItem>
 <TabItem value="python">
@@ -559,7 +563,7 @@ parent.ChildPosToCell(childPos, res)
 <TabItem value="duckdb">
 
 ```sql
-h3_child_pos_to_cell(parent, res_child, child_pos)
+h3_child_pos_to_cell(child_pos, parent, res_child)
 ```
 
 </TabItem>
