@@ -322,18 +322,27 @@ Returns 0 (`E_SUCCESS`) on success. Returns an error code on failure:
 <TabItem value="java">
 
 ```java
-long constructCell(int res, int baseCellNumber, List<Integer> digits);
-String constructCellAddress(int res, int baseCellNumber, List<Integer> digits);
+long constructCell(int baseCellNumber, List<Integer> digits);
+long constructCell(int baseCellNumber, List<Integer> digits, int res);
+String constructCellAddress(int baseCellNumber, List<Integer> digits);
+String constructCellAddress(int baseCellNumber, List<Integer> digits, int res);
 ```
 
 </TabItem>
 <TabItem value="javascript">
 
-:::note
+```js
+h3.constructCell(baseCellNumber, digits)
+h3.constructCell(baseCellNumber, digits, res)
+```
 
-This function may not be available in all bindings.
-
-:::
+```js live
+function example() {
+  const baseCellNumber = 0;
+  const res = 2;
+  return h3.constructCell(baseCellNumber, [0], res);
+}
+```
 
 </TabItem>
 <TabItem value="python">
@@ -357,8 +366,10 @@ This function may not be available in all bindings.
 <TabItem value="duckdb">
 
 ```sql
-h3_construct_cell(res, base_cell_number, digits)
-h3_construct_cell_string(res, base_cell_number, digits)
+h3_construct_cell(base_cell_number, digits)
+h3_construct_cell(base_cell_number, digits, res)
+h3_construct_cell_string(base_cell_number, digits)
+h3_construct_cell_string(base_cell_number, digits, res)
 ```
 
 </TabItem>
