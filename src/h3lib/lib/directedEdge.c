@@ -307,7 +307,7 @@ H3Error H3_EXPORT(reverseDirectedEdge)(H3Index edge, H3Index *out) {
     err = H3_EXPORT(getDirectedEdgeDestination)(edge, &destination);
     if (err) return err;
     err = H3_EXPORT(cellsToDirectedEdge)(destination, origin, out);
-    if (err) return err;
+    if (NEVER(err)) return err;
 
     return E_SUCCESS;
 }
