@@ -506,7 +506,7 @@ SUITE(directedEdge) {
         t_assertSuccess(H3_EXPORT(cellsToDirectedEdge)(sf, sf2, &edge));
         H3_SET_RESERVED_BITS(edge, INVALID_DIGIT);
 
-        t_assert(!isValidDirectedEdge(edge), "Not a valid edge");
+        t_assert(!H3_EXPORT(isValidDirectedEdge)(edge), "Not a valid edge");
         H3Index out;
         t_assert(H3_EXPORT(reverseDirectedEdge)(edge, &out) == E_FAILED,
                  "Invalid directed edge fails");
@@ -518,7 +518,7 @@ SUITE(directedEdge) {
         // invalid indexes.
         t_assertSuccess(H3_EXPORT(cellsToDirectedEdge)(sf, sf2, &edge));
         edge = edge + 1;
-        t_assert(!isValidDirectedEdge(edge), "Not a valid edge");
+        t_assert(!H3_EXPORT(isValidDirectedEdge)(edge), "Not a valid edge");
         t_assertSuccess(H3_EXPORT(reverseDirectedEdge)(edge, &out));
     }
 }
