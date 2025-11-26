@@ -748,3 +748,100 @@ $ h3 directedEdgeToBoundary -c 115283473fffffff
 
 </TabItem>
 </Tabs>
+
+
+## reverseDirectedEdge
+
+Returns the directed edge index that represents the same edge in the opposite direction (i.e., with origin and destination cells swapped).
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+    {label: 'Python', value: 'python'},
+    {label: 'Go', value: 'go'},
+    {label: 'DuckDB', value: 'duckdb'},
+    {label: 'Shell', value: 'shell'},
+  ]}
+>
+<TabItem value="c">
+
+```c
+H3Error reverseDirectedEdge(H3Index edge, H3Index* out);
+```
+
+Takes a directed edge H3Index and returns (via out) the directed edge H3Index representing the edge in the reverse direction. Returns an error if the input is not a valid directed edge.
+
+</TabItem>
+<TabItem value="java">
+
+```java
+long reverseDirectedEdge(long edge);
+String reverseDirectedEdge(String edgeAddress);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.reverseDirectedEdge(edge)
+```
+
+```js live
+function example() {
+  const edge = '115283473fffffff';
+  return h3.reverseDirectedEdge(edge);
+}
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.reverse_directed_edge(edge)
+```
+
+</TabItem>
+<TabItem value="go">
+
+```go
+edge.Reverse()
+```
+
+(If using the raw API)
+```go
+ReverseDirectedEdge(edge)
+```
+
+</TabItem>
+<TabItem value="duckdb">
+
+```sql
+h3_reverse_directed_edge(edge)
+```
+
+</TabItem>
+<TabItem value="shell">
+
+```sh
+$ h3 reverseDirectedEdge --help
+h3: Returns the directed edge index representing the same edge in the opposite direction
+H3 4.1.0
+
+  reverseDirectedEdge Returns the directed edge index representing the same edge in the opposite direction
+  -e, --edge <EDGE> Required. Directed edge H3 index
+  -h, --help  Show this help message.
+  -f, --format <FMT>  'json' for "EDGE"\n, 'newline' for EDGE\n (Default: json)
+```
+
+```bash
+$ h3 reverseDirectedEdge -e 115283473fffffff
+"115283477fffffff"
+```
+
+</TabItem>
+</Tabs>
+```
