@@ -15,7 +15,6 @@
  */
 #include "benchmark.h"
 #include "h3api.h"
-#include "latLng.h"
 
 // Fixtures (arbitrary res 9 hexagon)
 H3Index edges[6] = {0};
@@ -23,12 +22,19 @@ H3Index hex = 0x89283080ddbffff;
 
 BEGIN_BENCHMARKS();
 
+H3Index outEdge;
 CellBoundary outBoundary;
 H3_EXPORT(originToDirectedEdges)(hex, edges);
 
 BENCHMARK(directedEdgeToBoundary, 10000, {
     for (int i = 0; i < 6; i++) {
         H3_EXPORT(directedEdgeToBoundary)(edges[i], &outBoundary);
+    }
+});
+
+BENCHMARK(reverseDirectedEdge, 10000, {
+    for (int i = 0; i < 6; i++) {
+        H3_EXPORT(reverseDirectedEdge)(edges[i], &outEdge);
     }
 });
 

@@ -19,13 +19,9 @@
  * usage: `testDirectedEdge`
  */
 
-#include <stdlib.h>
-
-#include "constants.h"
 #include "h3Index.h"
-#include "latLng.h"
+#include "h3api.h"
 #include "test.h"
-#include "utility.h"
 
 // Fixtures
 static LatLng sfGeo = {0.659966917655, -2.1364398519396};
@@ -467,5 +463,62 @@ SUITE(directedEdge) {
         t_assertSuccess(H3_EXPORT(latLngToCell)(&zero, 0, &h3));
         t_assert(H3_EXPORT(edgeLengthRads)(h3, &length) == E_DIR_EDGE_INVALID,
                  "Non-edge (cell) has zero edge length");
+    }
+
+    TEST(reverseDirectedEdge) {
+        H3Index sf, sf2;
+        H3Index ring[7];
+        t_assertSuccess(H3_EXPORT(latLngToCell)(&sfGeo, 9, &sf));
+        t_assertSuccess(H3_EXPORT(gridRing)(sf, 1, ring));
+        sf2 = ring[0];
+
+        H3Index edge, edgeOrigin, edgeDestination;
+        t_assertSuccess(H3_EXPORT(cellsToDirectedEdge)(sf, sf2, &edge));
+        t_assertSuccess(H3_EXPORT(getDirectedEdgeOrigin)(edge, &edgeOrigin));
+        t_assertSuccess(
+            H3_EXPORT(getDirectedEdgeDestination)(edge, &edgeDestination));
+
+        H3Index revEdge, revEdgeOrigin, revEdgeDestination;
+        t_assertSuccess(H3_EXPORT(reverseDirectedEdge)(edge, &revEdge));
+        t_assertSuccess(
+            H3_EXPORT(getDirectedEdgeOrigin)(revEdge, &revEdgeOrigin));
+        t_assertSuccess(H3_EXPORT(getDirectedEdgeDestination)(
+            revEdge, &revEdgeDestination));
+
+        t_assert((edgeOrigin == revEdgeDestination) &&
+                     (edgeDestination == revEdgeOrigin),
+                 "Reversed as expected.");
+
+        H3Index revRevEdge;
+        t_assertSuccess(H3_EXPORT(reverseDirectedEdge)(revEdge, &revRevEdge));
+        t_assert((revRevEdge == edge) && (revRevEdge != revEdge),
+                 "Reversing twice should recover original edge.");
+    }
+
+    TEST(reverseDirectedEdgeInvalid) {
+        H3Index sf, sf2;
+        H3Index ring[7];
+        t_assertSuccess(H3_EXPORT(latLngToCell)(&sfGeo, 9, &sf));
+        t_assertSuccess(H3_EXPORT(gridRing)(sf, 1, ring));
+        sf2 = ring[0];
+
+        H3Index edge;
+        t_assertSuccess(H3_EXPORT(cellsToDirectedEdge)(sf, sf2, &edge));
+        H3_SET_RESERVED_BITS(edge, INVALID_DIGIT);
+
+        t_assert(!isValidDirectedEdge(edge), "Not a valid edge");
+        H3Index out;
+        t_assert(H3_EXPORT(reverseDirectedEdge)(edge, &out) == E_FAILED,
+                 "Invalid directed edge fails");
+
+        t_assert(H3_EXPORT(reverseDirectedEdge)(H3_NULL, &out) != E_SUCCESS,
+                 "Invalid directed edge fails");
+
+        // Note that reverseDirectedEdge does not currently raise on *all*
+        // invalid indexes.
+        t_assertSuccess(H3_EXPORT(cellsToDirectedEdge)(sf, sf2, &edge));
+        edge = edge + 1;
+        t_assert(!isValidDirectedEdge(edge), "Not a valid edge");
+        t_assertSuccess(H3_EXPORT(reverseDirectedEdge)(edge, &out));
     }
 }
