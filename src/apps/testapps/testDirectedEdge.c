@@ -521,4 +521,11 @@ SUITE(directedEdge) {
         t_assert(!H3_EXPORT(isValidDirectedEdge)(edge), "Not a valid edge");
         t_assertSuccess(H3_EXPORT(reverseDirectedEdge)(edge, &out));
     }
+
+    TEST(fuzz_fail) {
+        H3Index out;
+        H3Index index = 0x1001fff7ff2fbfffULL;
+        t_assert(H3_EXPORT(reverseDirectedEdge)(index, &out) == E_NOT_NEIGHBORS,
+                 "Fuzz test fail.");
+    }
 }
