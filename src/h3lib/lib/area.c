@@ -10,8 +10,7 @@
 #include "alloc.h"
 #include "h3api.h"
 
-
-void H3_EXPORT(destroyGeoLoop)(GeoLoop* loop) {
+void H3_EXPORT(destroyGeoLoop)(GeoLoop *loop) {
     H3_MEMORY(free)(loop->verts);
     loop->verts = NULL;
 }

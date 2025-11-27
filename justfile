@@ -23,8 +23,8 @@ purge:
 test: build
     # ./build/bin/testH3CellAreaExhaustive
     # ./build/bin/testEdgeCellsToPoly
-    ./build/bin/testDirectedEdge
-    # ./build/bin/testArea
+    # ./build/bin/testDirectedEdge
+    ./build/bin/testArea
     # just test-slow
 
 time:

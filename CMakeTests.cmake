@@ -259,6 +259,7 @@ add_h3_test(testH3IteratorsInternal src/apps/testapps/testH3IteratorsInternal.c)
 add_h3_test(testMathExtensionsInternal
             src/apps/testapps/testMathExtensionsInternal.c)
 add_h3_test(testDescribeH3Error src/apps/testapps/testDescribeH3Error.c)
+add_h3_test(testArea src/apps/testapps/testArea.c)
 
 add_h3_test_with_arg(testH3NeighborRotations
                      src/apps/testapps/testH3NeighborRotations.c 0)

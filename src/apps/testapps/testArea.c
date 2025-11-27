@@ -3,15 +3,14 @@
 #include <math.h>
 #include <stdio.h>
 
+#include "adder.h"
 #include "h3api.h"
 #include "iterators.h"
 #include "test.h"
 #include "utility.h"
-#include "adder.h"
-
 
 static void do_res_sum(int res) {
-    Kahan k = {0,0};
+    Kahan k = {0, 0};
 
     for (IterCellsResolution iter = iterInitRes(res); iter.h;
          iterStepRes(&iter)) {
