@@ -280,7 +280,6 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testH3IteratorsInternal.c
     src/apps/testapps/testMathExtensionsInternal.c
     src/apps/testapps/testDescribeH3Error.c
-    src/apps/testapps/testArea.c
     src/apps/miscapps/cellToBoundaryHier.c
     src/apps/miscapps/cellToLatLngHier.c
     src/apps/miscapps/generateBaseCellNeighbors.c
@@ -320,7 +319,8 @@ set(OTHER_SOURCE_FILES
     src/apps/benchmarks/benchmarkDirectedEdge.c
     src/apps/benchmarks/benchmarkVertex.c
     src/apps/benchmarks/benchmarkIsValidCell.c
-    src/apps/benchmarks/benchmarkH3Api.c)
+    src/apps/benchmarks/benchmarkH3Api.c
+    src/apps/benchmarks/benchmarkArea.c)
 
 set(ALL_SOURCE_FILES
     ${LIB_SOURCE_FILES} ${APP_SOURCE_FILES} ${TEST_APP_SOURCE_FILES}
@@ -675,6 +675,8 @@ if(BUILD_BENCHMARKS)
                      src/apps/benchmarks/benchmarkPolygonToCells.c)
     add_h3_benchmark(benchmarkPolygonToCellsExperimental
                      src/apps/benchmarks/benchmarkPolygonToCellsExperimental.c)
+    add_h3_benchmark(benchmarkArea
+                     src/apps/benchmarks/benchmarkArea.c)
     if(ENABLE_REQUIRES_ALL_SYMBOLS)
         add_h3_benchmark(benchmarkPolygon
                          src/apps/benchmarks/benchmarkPolygon.c)

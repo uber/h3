@@ -24,8 +24,9 @@ test: build
     # ./build/bin/testH3CellAreaExhaustive
     # ./build/bin/testEdgeCellsToPoly
     # ./build/bin/testDirectedEdge
-    ./build/bin/testArea
+    # ./build/bin/testArea
     # just test-slow
+    just test-fast
 
 time:
     time ./build/bin/testArea
@@ -37,7 +38,8 @@ test-slow: build
     cd build; make test
 
 bench: build
-    ./build/bin/benchmarkCellsToLinkedMultiPolygon
+    ./build/bin/benchmarkArea
+    # ./build/bin/benchmarkCellsToLinkedMultiPolygon
     # ./build/bin/benchmarkCellsToMultiPolygon
     # ./build/bin/benchmarkDirectedEdge
 
