@@ -12,15 +12,18 @@
 // TODO: turn this into a benchmark, report accuracy and time
 // see if we get any benefit by avoiding the repeated sin/cos computation
 
-// TODO: document algos: https://en.wikipedia.org/wiki/Kahan_summation_algorithm#Further_enhancements
+// TODO: document algos:
+// https://en.wikipedia.org/wiki/Kahan_summation_algorithm#Further_enhancements
 // TODO: better more general name for accumulator struct and functions
 // TOOD: demonstrate the area alg works for global polygons.
 
+// TODO: is kadd faster without pointers? k = kadd(k, cellArea);
+
 static void do_res_sum(int res) {
     Kahan k = {0, 0};
+    IterCellsResolution iter = iterInitRes(res);
 
-    for (IterCellsResolution iter = iterInitRes(res); iter.h;
-         iterStepRes(&iter)) {
+    for (; iter.h; iterStepRes(&iter)) {
         double cellArea;
         H3_EXPORT(cellAreaRads2)(iter.h, &cellArea);
 
