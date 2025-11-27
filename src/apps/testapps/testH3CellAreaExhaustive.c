@@ -23,6 +23,7 @@
 
 #include <math.h>
 
+#include "adder.h"
 #include "constants.h"
 #include "h3api.h"
 #include "iterators.h"

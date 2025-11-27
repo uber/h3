@@ -9,6 +9,13 @@
 #include "test.h"
 #include "utility.h"
 
+// TODO: turn this into a benchmark, report accuracy and time
+// see if we get any benefit by avoiding the repeated sin/cos computation
+
+// TODO: document algos: https://en.wikipedia.org/wiki/Kahan_summation_algorithm#Further_enhancements
+// TODO: better more general name for accumulator struct and functions
+// TOOD: demonstrate the area alg works for global polygons.
+
 static void do_res_sum(int res) {
     Kahan k = {0, 0};
 
@@ -20,7 +27,7 @@ static void do_res_sum(int res) {
         kadd(&k, cellArea);
     }
 
-    double area = k.sum;
+    double area = kresult(k);
     double diff = fabs(area - 4 * M_PI);
     printf("res: %d, diff: %e\n", res, diff);
 }
@@ -37,9 +44,9 @@ SUITE(test_for_area) {
         do_res_sum(2);
         do_res_sum(3);
         do_res_sum(4);
-        // do_res_sum(5);
-        // do_res_sum(6);
-        // do_res_sum(7);
+        do_res_sum(5);
+        do_res_sum(6);
+        do_res_sum(7);
         // do_res_sum(8);
 
         // res: 0, diff: 7.105427e-15

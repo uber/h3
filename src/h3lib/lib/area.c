@@ -40,7 +40,7 @@ static double vertArea(LatLng *verts, int numVerts) {
     if (k.sum < 0.0) {
         kadd(&k, 4.0 * M_PI);
     }
-    return k.sum;
+    return kresult(k);
 }
 
 H3Error H3_EXPORT(geoLoopArea)(GeoLoop loop, double *out) {
