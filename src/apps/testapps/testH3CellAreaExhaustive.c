@@ -136,15 +136,16 @@ static void cell_area_assert(H3Index cell) {
  */
 static void earth_area_test(int res, H3Error (*cell_area)(H3Index, double *),
                             double target, double tol) {
-    double area = 0.0;
-    for (IterCellsResolution iter = iterInitRes(res); iter.h;
-         iterStepRes(&iter)) {
+    Kahan k = {0.0, 0.0};
+    IterCellsResolution iter = iterInitRes(res);
+
+    for (; iter.h; iterStepRes(&iter)) {
         double cellArea;
         t_assertSuccess((*cell_area)(iter.h, &cellArea));
-        area += cellArea;
+        kadd(&k, cellArea);
     }
 
-    t_assert(fabs(area - target) < tol,
+    t_assert(fabs(k.sum - target) < tol,
              "sum of all cells should give earth area");
 }
 
