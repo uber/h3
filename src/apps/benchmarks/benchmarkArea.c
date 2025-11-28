@@ -38,7 +38,7 @@ static void do_res_sum(int res) {
 BEGIN_BENCHMARKS();
 
 BENCHMARK(directedEdgeToBoundary, 1, {
-    for (int i = 0; i < 7; i++) {
+    for (int i = 0; i <= 8; i++) {
         do_res_sum(i);
     }
 });
