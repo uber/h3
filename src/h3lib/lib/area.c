@@ -10,11 +10,6 @@
 #include "alloc.h"
 #include "h3api.h"
 
-void H3_EXPORT(destroyGeoLoop)(GeoLoop *loop) {
-    H3_MEMORY(free)(loop->verts);
-    loop->verts = NULL;
-}
-
 static inline double cagnoli(LatLng x, LatLng y) {
     x.lat = x.lat / 2.0 + M_PI / 4.0;
     y.lat = y.lat / 2.0 + M_PI / 4.0;
@@ -29,22 +24,19 @@ static inline double cagnoli(LatLng x, LatLng y) {
     return -2.0 * atan2(sa * sd, sa * cd + ca);
 }
 
-static inline double vertArea(LatLng *verts, int numVerts) {
+H3Error H3_EXPORT(geoLoopArea)(GeoLoop loop, double *out) {
     Kahan k = {0.0, 0.0};
 
-    for (int i = 0; i < numVerts; i++) {
-        int j = (i + 1) % numVerts;
-        kadd(&k, cagnoli(verts[i], verts[j]));
+    for (int i = 0; i < loop.numVerts; i++) {
+        int j = (i + 1) % loop.numVerts;
+        kadd(&k, cagnoli(loop.verts[i], loop.verts[j]));
     }
 
     if (k.sum < 0.0) {
         kadd(&k, 4.0 * M_PI);
     }
-    return kresult(k);
-}
 
-H3Error H3_EXPORT(geoLoopArea)(GeoLoop loop, double *out) {
-    *out = vertArea(loop.verts, loop.numVerts);
+    *out = kresult(k);
     return E_SUCCESS;
 }
 
@@ -67,7 +59,17 @@ H3Error H3_EXPORT(cellAreaRads2)(H3Index cell, double *out) {
     if (err) {
         return err;
     }
-    *out = vertArea(cb.verts, cb.numVerts);
+
+    GeoLoop loop = {.verts = cb.verts, .numVerts = cb.numVerts};
+    err = H3_EXPORT(geoLoopArea)(loop, out);
+    if (err) {
+        return err;
+    }
 
     return E_SUCCESS;
+}
+
+void H3_EXPORT(destroyGeoLoop)(GeoLoop *loop) {
+    H3_MEMORY(free)(loop->verts);
+    loop->verts = NULL;
 }
