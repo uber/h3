@@ -15,7 +15,53 @@ void H3_EXPORT(destroyGeoLoop)(GeoLoop *loop) {
     loop->verts = NULL;
 }
 
-static double cagnoli(LatLng x, LatLng y) {
+typedef struct {
+    double s;
+    double c;
+    double lng;
+} LatLngPre;
+
+static inline LatLngPre precompute_latlng(LatLng x) {
+    double lat = x.lat / 2.0 + M_PI / 4.0;
+
+    LatLngPre llp = {.s = sin(lat), .c = cos(lat), .lng = x.lng};
+
+    return llp;
+}
+
+static inline double cagnoli_pre(LatLngPre x, LatLngPre y) {
+    double sa = x.s * y.s;
+    double ca = x.c * y.c;
+
+    double d = y.lng - x.lng;
+    double sd = sin(d);
+    double cd = cos(d);
+
+    return -2.0 * atan2(sa * sd, sa * cd + ca);
+}
+
+static inline double vertArea2(LatLng *verts, int numVerts) {
+    Kahan k = {0.0, 0.0};
+
+    LatLngPre x = precompute_latlng(verts[0]);
+    LatLngPre first = x;
+    LatLngPre y;
+
+    for (int i = 1; i < numVerts; i++) {
+        y = precompute_latlng(verts[i]);
+
+        kadd(&k, cagnoli_pre(x, y));
+        x = y;
+    }
+    kadd(&k, cagnoli_pre(x, first));
+
+    if (k.sum < 0.0) {
+        kadd(&k, 4.0 * M_PI);
+    }
+    return kresult(k);
+}
+
+static inline double cagnoli(LatLng x, LatLng y) {
     x.lat = x.lat / 2.0 + M_PI / 4.0;
     y.lat = y.lat / 2.0 + M_PI / 4.0;
 
@@ -29,7 +75,7 @@ static double cagnoli(LatLng x, LatLng y) {
     return -2.0 * atan2(sa * sd, sa * cd + ca);
 }
 
-static double vertArea(LatLng *verts, int numVerts) {
+static inline double vertArea(LatLng *verts, int numVerts) {
     Kahan k = {0.0, 0.0};
 
     for (int i = 0; i < numVerts; i++) {
@@ -44,7 +90,7 @@ static double vertArea(LatLng *verts, int numVerts) {
 }
 
 H3Error H3_EXPORT(geoLoopArea)(GeoLoop loop, double *out) {
-    *out = vertArea(loop.verts, loop.numVerts);
+    *out = vertArea2(loop.verts, loop.numVerts);
     return E_SUCCESS;
 }
 
@@ -67,7 +113,7 @@ H3Error H3_EXPORT(cellAreaRads2)(H3Index cell, double *out) {
     if (err) {
         return err;
     }
-    *out = vertArea(cb.verts, cb.numVerts);
+    *out = vertArea2(cb.verts, cb.numVerts);
 
     return E_SUCCESS;
 }
