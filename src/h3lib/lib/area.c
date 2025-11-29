@@ -26,18 +26,18 @@ static inline double cagnoli(LatLng x, LatLng y) {
 }
 
 H3Error H3_EXPORT(geoLoopArea)(GeoLoop loop, double *out) {
-    Kahan k = {0.0, 0.0};
+    Adder adder = {0.0, 0.0};
 
     for (int i = 0; i < loop.numVerts; i++) {
         int j = (i + 1) % loop.numVerts;
-        kadd(&k, cagnoli(loop.verts[i], loop.verts[j]));
+        kadd(&adder, cagnoli(loop.verts[i], loop.verts[j]));
     }
 
-    if (k.sum < 0.0) {
-        kadd(&k, 4.0 * M_PI);
+    if (adder.sum < 0.0) {
+        kadd(&adder, 4.0 * M_PI);
     }
 
-    *out = kresult(k);
+    *out = kresult(adder);
     return E_SUCCESS;
 }
 
