@@ -26,7 +26,8 @@ test: build
     # ./build/bin/testDirectedEdge
     # ./build/bin/testArea
     # just test-slow
-    just test-fast
+    # just test-fast
+    ./build/bin/testGeoLoopArea
 
 time:
     time ./build/bin/testArea

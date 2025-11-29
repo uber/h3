@@ -14,6 +14,7 @@
 // TOOD: demonstrate the area alg works for global polygons.
 
 static inline double cagnoli(LatLng x, LatLng y) {
+    // https://github.com/d3/d3-geo/blob/8c53a90ae70c94bace73ecb02f2c792c649c86ba/src/area.js#L51-L70
     x.lat = x.lat / 2.0 + M_PI / 4.0;
     y.lat = y.lat / 2.0 + M_PI / 4.0;
 
@@ -74,5 +75,6 @@ H3Error H3_EXPORT(cellAreaRads2)(H3Index cell, double *out) {
 
 void H3_EXPORT(destroyGeoLoop)(GeoLoop *loop) {
     H3_MEMORY(free)(loop->verts);
+    loop->numVerts = 0;
     loop->verts = NULL;
 }
