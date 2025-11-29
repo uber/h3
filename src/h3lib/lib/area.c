@@ -41,7 +41,7 @@ H3Error H3_EXPORT(geoLoopArea)(GeoLoop loop, double *out) {
         kadd(&adder, 4.0 * M_PI);
     }
 
-    *out = kresult(adder);
+    *out = adder.sum;
     return E_SUCCESS;
 }
 

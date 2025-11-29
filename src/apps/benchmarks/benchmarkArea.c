@@ -19,7 +19,7 @@ static void do_res_sum(int res) {
         kadd(&adder, cellArea);
     }
 
-    double total_area = kresult(adder);
+    double total_area = adder.sum;
     double diff = fabs(total_area - 4 * M_PI);
     printf("res: %d, diff: %e\n", res, diff);
 }

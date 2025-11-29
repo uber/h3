@@ -146,7 +146,7 @@ static void earth_area_test(int res, H3Error (*cell_area)(H3Index, double *),
         kadd(&adder, cellArea);
     }
 
-    t_assert(fabs(kresult(adder) - target) < tol,
+    t_assert(fabs(adder.sum - target) < tol,
              "sum of all cells should give earth area");
 }
 

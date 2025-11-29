@@ -35,43 +35,11 @@ typedef struct {
     double c;    // compensation term
 } Adder;
 
-static inline void simple_add(Adder *adder, double x) { adder->sum += x; }
-
-static inline void kahan_add(Adder *adder, double x) {
+static inline void kadd(Adder *adder, double x) {
     double y = x - adder->c;
     double t = adder->sum + y;
     adder->c = (t - adder->sum) - y;
     adder->sum = t;
-}
-
-static inline void neumaier_add(Adder *adder, double x) {
-    double t = adder->sum + x;
-
-    if (fabs(adder->sum) >= fabs(x)) {
-        adder->c += (adder->sum - t) + x;
-    } else {
-        adder->c += (x - t) + adder->sum;
-    }
-
-    adder->sum = t;
-}
-
-static inline double simple_result(Adder adder) { return adder.sum; }
-static inline double kahan_result(Adder adder) { return adder.sum; }
-static inline double neumaier_result(Adder adder) {
-    return adder.sum + adder.c;
-}
-
-static inline void kadd(Adder *adder, double x) {
-    simple_add(adder, x);
-    // kahan_add(adder, x);
-    // neumaier_add(adder, x);
-}
-
-static inline double kresult(Adder adder) {
-    return simple_result(adder);
-    // return kahan_result(adder);
-    // return neumaier_result(adder);
 }
 
 #endif
