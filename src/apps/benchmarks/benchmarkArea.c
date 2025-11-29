@@ -27,7 +27,7 @@ static void do_res_sum(int res) {
 BEGIN_BENCHMARKS();
 
 BENCHMARK(directedEdgeToBoundary, 1, {
-    int MAX_RES = 8;
+    int MAX_RES = 6;
     for (int i = 0; i <= MAX_RES; i++) {
         do_res_sum(i);
     }
