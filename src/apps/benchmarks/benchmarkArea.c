@@ -9,10 +9,6 @@
 #include "iterators.h"
 #include "utility.h"
 
-// TOOD: demonstrate the area alg works for global polygons.
-
-// TODO: is kadd faster without pointers? k = kadd(k, cellArea);
-
 static void do_res_sum(int res) {
     Adder adder = {0, 0};
     double cellArea;
@@ -31,7 +27,8 @@ static void do_res_sum(int res) {
 BEGIN_BENCHMARKS();
 
 BENCHMARK(directedEdgeToBoundary, 1, {
-    for (int i = 0; i <= 6; i++) {
+    int MAX_RES = 8;
+    for (int i = 0; i <= MAX_RES; i++) {
         do_res_sum(i);
     }
 });
