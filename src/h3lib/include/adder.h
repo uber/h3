@@ -28,6 +28,12 @@ slightly faster and simpler than Neumaier.
 
 See also: https://github.com/python/cpython/issues/100425 for discussion of
 tradeoffs between Kahan, Neumaier, and `fsum`.
+
+## Usage
+
+Adder adder = {0.0, 0.0};  // initialize
+kadd(&adder, x);  // add x to summation
+out = adder.sum;  // extract final sum
 */
 
 typedef struct {

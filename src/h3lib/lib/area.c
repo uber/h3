@@ -13,8 +13,6 @@
 
 // TOOD: demonstrate the area alg works for global polygons.
 
-// TODO: is kadd faster without pointers? k = kadd(k, cellArea);
-
 static inline double cagnoli(LatLng x, LatLng y) {
     x.lat = x.lat / 2.0 + M_PI / 4.0;
     y.lat = y.lat / 2.0 + M_PI / 4.0;
