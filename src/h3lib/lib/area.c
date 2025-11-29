@@ -9,6 +9,7 @@
 #include "adder.h"
 #include "alloc.h"
 #include "h3api.h"
+#include "constants.h"
 
 static inline double cagnoli(LatLng x, LatLng y) {
     x.lat = x.lat / 2.0 + M_PI / 4.0;
