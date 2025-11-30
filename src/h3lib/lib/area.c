@@ -115,7 +115,7 @@ H3Error H3_EXPORT(cellAreaRads2)(H3Index cell, double *out) {
 
     GeoLoop loop = {.verts = cb.verts, .numVerts = cb.numVerts};
     err = H3_EXPORT(geoLoopAreaRads2)(loop, out);
-    if (err) {
+    if (NEVER(err)) {
         return err;
     }
 
