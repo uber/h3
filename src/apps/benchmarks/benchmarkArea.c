@@ -3,9 +3,9 @@
 
 #include "adder.h"
 #include "benchmark.h"
+#include "constants.h"
 #include "h3api.h"
 #include "iterators.h"
-#include "constants.h"
 
 static void do_res_sum(int res) {
     Adder adder = {0, 0};
