@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 Uber Technologies, Inc.
+ * Copyright 2025 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,9 @@
  */
 
 /** @file
- * @brief tests H3 cell area functions on a few specific cases
+ * @brief tests H3 GeoLoop area calculation
  *
- *  usage: `testH3CellArea`
+ *  usage: `testGeoLoopArea`
  */
 
 #include <math.h>
@@ -26,142 +26,134 @@
 #include "test.h"
 #include "utility.h"
 
-// GeoMultiPolygon alloc_global_mpoly() {
-//     const int numPolygons = 8;
-//     const int numVerts = 3;
-//     const LatLng verts[numPolygons][numVerts] = {
-//         {{M_PI_2, 0.0}, {0.0, 0.0}, {0.0, M_PI_2}},
-//         {{M_PI_2, 0.0}, {0.0, M_PI_2}, {0.0, M_PI}},
-//         {{M_PI_2, 0.0}, {0.0, M_PI}, {0.0, -M_PI_2}},
-//         {{M_PI_2, 0.0}, {0.0, -M_PI_2}, {0.0, 0.0}},
-//         {{-M_PI_2, 0.0}, {0.0, 0.0}, {0.0, -M_PI_2}},
-//         {{-M_PI_2, 0.0}, {0.0, -M_PI_2}, {0.0, -M_PI}},
-//         {{-M_PI_2, 0.0}, {0.0, -M_PI}, {0.0, M_PI_2}},
-//         {{-M_PI_2, 0.0}, {0.0, M_PI_2}, {0.0, 0.0}},
-//     };
-
-//     GeoMultiPolygon mpoly = {
-//         .numPolygons = numPolygons,
-//         .polygons = H3_MEMORY(malloc)(sizeof(GeoPolygon) * numPolygons),
-//     };
-
-//     for (int i = 0; i < numPolygons; i++) {
-//         GeoPolygon *poly = &mpoly.polygons[i];
-//         poly->numHoles = 0;
-//         poly->holes = NULL;
-//         poly->geoloop.numVerts = numVerts;
-//         poly->geoloop.verts = H3_MEMORY(malloc)(sizeof(LatLng) * numVerts);
-
-//         for (int j = 0; j < numVerts; j++) {
-//             poly->geoloop.verts[j] = verts[i][j];
-//         }
-//     }
-
-//     qsort(mpoly.polygons, numPolygons, sizeof(GeoPolygon), cmp_poly_area);
-
-//     return mpoly;
-// }
-
-#define TOL 1e-14
-
-static void helper(LatLng *verts, int numVerts, double target_area) {
+static void _compareArea(LatLng *verts, int numVerts, double target_area) {
+    double tol = 1e-14;
     GeoLoop loop = {.verts = verts, .numVerts = numVerts};
 
     double out;
     t_assertSuccess(H3_EXPORT(geoLoopArea)(loop, &out));
-
-    t_assert(fabs(out - target_area) < TOL, "area should match");
+    t_assert(fabs(out - target_area) < tol, "area should match");
 }
 
 SUITE(geoLoopArea) {
     TEST(triangle) {
         // GeoLoop representing a triangle covering 1/8 of the globe, with
         // points ordered according to right-hand rule (counter-clockwise).
-        // Expected area: pi/2
-        LatLng verts[] = {{M_PI_2, 0.0}, {0.0, 0.0}, {0.0, M_PI_2}};
-        GeoLoop loop = {.verts = verts, .numVerts = ARRAY_SIZE(verts)};
+        LatLng verts[] = {
+            {M_PI_2, 0.0},
+            {0.0, 0.0},
+            {0.0, M_PI_2},
+        };
 
-        double out;
-        t_assertSuccess(H3_EXPORT(geoLoopArea)(loop, &out));
-
-        t_assert(fabs(out - M_PI / 2.0) < 1e-14, "area should match");
+        _compareArea(verts, ARRAY_SIZE(verts), M_PI / 2);
     }
+
     TEST(reverse_triangle) {
         // Reversed the order of the points, so they are in clockwise order.
         // This GeoLoop represents the whole globe minus the triangle above.
-        // Expected area: 7*pi/2
-        LatLng verts[] = {{0.0, M_PI_2}, {0.0, 0.0}, {M_PI_2, 0.0}};
-        GeoLoop loop = {.verts = verts, .numVerts = ARRAY_SIZE(verts)};
+        LatLng verts[] = {
+            {0.0, M_PI_2},
+            {0.0, 0.0},
+            {M_PI_2, 0.0},
+        };
 
-        double out;
-        t_assertSuccess(H3_EXPORT(geoLoopArea)(loop, &out));
-
-        t_assert(fabs(out - 7 * M_PI / 2.0) < 1e-14, "area should match");
+        _compareArea(verts, ARRAY_SIZE(verts), 7 * M_PI / 2);
     }
 
     TEST(slice) {
         // 1/4 slice of the globe, from north to south pole
-        // Expected area: pi
-        LatLng verts[] = {{M_PI_2, 0.0},
-                          {0.0, 0.0},
-                          {-M_PI_2, 0.0},
-                          {0.0, M_PI_2},
-                          {M_PI_2, 0.0}};
-        GeoLoop loop = {.verts = verts, .numVerts = ARRAY_SIZE(verts)};
+        LatLng verts[] = {
+            {M_PI_2, 0.0},
+            {0.0, 0.0},
+            {-M_PI_2, 0.0},
+            {0.0, M_PI_2},
+        };
 
-        double out;
-        t_assertSuccess(H3_EXPORT(geoLoopArea)(loop, &out));
-
-        t_assert(fabs(out - M_PI) < 1e-14, "area should match");
+        _compareArea(verts, ARRAY_SIZE(verts), M_PI);
     }
 
     TEST(reverse_slice) {
         // 3/4 slice of the globe, from north to south pole, formed by reversing
         // order of points from example above.
-        // Expected area: 3*pi
-        LatLng verts[] = {{M_PI_2, 0.0},
-                          {0.0, M_PI_2},
-                          {-M_PI_2, 0.0},
-                          {0.0, 0.0},
-                          {M_PI_2, 0.0}};
-        GeoLoop loop = {.verts = verts, .numVerts = ARRAY_SIZE(verts)};
+        LatLng verts[] = {
+            {M_PI_2, 0.0},
+            {0.0, M_PI_2},
+            {-M_PI_2, 0.0},
+            {0.0, 0.0},
+        };
 
-        double out;
-        t_assertSuccess(H3_EXPORT(geoLoopArea)(loop, &out));
-
-        t_assert(fabs(out - 3 * M_PI) < 1e-14, "area should match");
+        _compareArea(verts, ARRAY_SIZE(verts), 3 * M_PI);
     }
 
     TEST(hemisphere_east) {
         // one hemisphere of globe. western or eastern?
-        // Expected area: 2*pi
         LatLng verts[] = {
-            {M_PI_2, 0.0},   // north pole
-            {0.0, -M_PI_2},  // equator
-            {-M_PI_2, 0.0},  // south pole
-            {0.0, M_PI_2},   // equator
+            {M_PI_2, 0.0},
+            {0.0, -M_PI_2},
+            {-M_PI_2, 0.0},
+            {0.0, M_PI_2},
         };
-        GeoLoop loop = {.verts = verts, .numVerts = ARRAY_SIZE(verts)};
 
-        double out;
-        t_assertSuccess(H3_EXPORT(geoLoopArea)(loop, &out));
-
-        t_assert(fabs(out - 2 * M_PI) < 1e-14, "area should match");
+        _compareArea(verts, ARRAY_SIZE(verts), 2 * M_PI);
     }
 
     TEST(hemisphere_north) {
         // one hemisphere of globe. northern
-        // Expected area: 2*pi
         LatLng verts[] = {
-            {0.0, -M_PI},    // equator
-            {0.0, -M_PI_2},  // equator
-            {0.0, 0.0},      // equator
-            {0.0, M_PI_2},   // equator
-            // {0.0, M_PI},     // equator don't need last one here. last
-            // point
-            // unnecessary, but doesn't harm anything.
+            {0.0, -M_PI},
+            {0.0, -M_PI_2},
+            {0.0, 0.0},
+            {0.0, M_PI_2},
         };
 
-        helper(verts, ARRAY_SIZE(verts), 2 * M_PI);
+        _compareArea(verts, ARRAY_SIZE(verts), 2 * M_PI);
+    }
+
+    TEST(percentage_slice) {
+        // Demonstrate that edge arcs between points in a polygon or geoloop
+        // should be less than 180 degrees (M_PI radians).
+        //
+        // Create a slice from north pole to equator and back to the north pole
+        // that sweeps out an edge arc of t * M_PI radians along the equator,
+        // so it should have an area of t*M_PI for t \in [0,1].
+        //
+        // However, notice a discontinuity at t = 1 (i.e., M_PI radians or 180
+        // degrees), where expected area goes to (2 + t) * M_PI for 1 < t < 2.
+        //
+        // Recall that the area in stradians of the entire globe is 4*M_PI.
+        for (double t = 0; t <= 1.2; t += 0.01) {
+            LatLng verts[] = {
+                {M_PI_2, 0.0},
+                {0.0, -M_PI_2},
+                {0.0, t * M_PI - M_PI_2},
+            };
+            GeoLoop loop = {.verts = verts, .numVerts = ARRAY_SIZE(verts)};
+
+            double out;
+            t_assertSuccess(H3_EXPORT(geoLoopArea)(loop, &out));
+
+            double tol = 1e-13;
+            if (t < 0.99) {
+                // When t < 1, the largest angle in the triangle is less than
+                // 180 degrees
+                t_assert(fabs(out - t * M_PI) <= tol, "expected area");
+            } else if (t > 1.01) {
+                // Discontinuity at t == 1. For t > 1, the triangle "flips",
+                // because the shortest geodesic path is on the other side of
+                // the globe. The triangle is now oriented in clockwise order,
+                // and the area computed is the area *outside* of the triangle,
+                // which starts at 3*pi.
+                t_assert(fabs(out - (2 + t) * M_PI) <= tol, "expected area");
+            }
+            // Note that we avoid testing t == 1, since the triangle
+            // isn't well defined because there are many possible geodesic
+            // shortest paths when consecutive points are antipodal
+            // (180 degrees apart).
+
+            // Also note that a large polygon with t > 1 is *still*
+            // represntable and we can compute its area accurately.
+            // We just need to add intermediate vertices so that
+            // no edge arc is greater than 180 degrees.
+        }
     }
 }
