@@ -647,4 +647,94 @@ This function exists for memory management and is not exposed.
 </TabItem>
 </Tabs>
 
+## geoLoopArea
+
+Compute the spherical area, in square radians, that is enclosed by a closed
+`GeoLoop`. The loop must be a simple polygon traced counter-clockwise as viewed
+from above the Earth, and each edge is interpreted as the shortest geodesic
+between consecutive vertices (i.e., no side spans more than π radians). Areas
+are normalized to the [0, 4π] interval, so reversing the vertex order yields
+the complementary area of the loop.
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+    {label: 'Python', value: 'python'},
+    {label: 'Go', value: 'go'},
+    {label: 'DuckDB', value: 'duckdb'},
+    {label: 'Shell', value: 'shell'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+H3Error geoLoopArea(GeoLoop loop, double *out);
+```
+
+The caller supplies the `GeoLoop` memory (for example, by filling `loop.verts`
+with previously allocated `LatLng` vertices) and receives the enclosed area in
+square radians in `out`. Returns 0 (`E_SUCCESS`) on success.
+
+</TabItem>
+<TabItem value="java">
+
+:::note
+
+This function is not exposed in the Java bindings.
+
+:::
+
+</TabItem>
+<TabItem value="javascript">
+
+:::note
+
+This function is not exposed in the JavaScript bindings.
+
+:::
+
+</TabItem>
+<TabItem value="python">
+
+:::note
+
+This function is not exposed in the Python bindings.
+
+TODO: direct users to create a polygon with no holes.
+
+:::
+
+</TabItem>
+<TabItem value="go">
+
+:::note
+
+This function is not exposed in the Go bindings.
+
+:::
+
+</TabItem>
+<TabItem value="duckdb">
+
+:::note
+
+This function is not exposed in the DuckDB bindings.
+
+:::
+
+</TabItem>
+<TabItem value="shell">
+
+:::note
+
+This function is not exposed in the CLI bindings.
+
+:::
+
+</TabItem>
+</Tabs>
 
