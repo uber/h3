@@ -702,9 +702,13 @@ This function is not exposed in the JavaScript bindings.
 
 :::note
 
-This function is not exposed in the Python bindings.
+This function isn't exposed directly, but can be used
+via `h3.h3shape_area()`:
 
-TODO: direct users to create a polygon with no holes.
+```python
+poly = h3.LatLngPoly([(90,0),(0,0),(0,90)])
+h3.h3shape_area(poly, unit='km^2')
+```
 
 :::
 
