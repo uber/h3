@@ -100,6 +100,12 @@ h3_polygon_wkt_to_cells(wkt, res)
 ```sql
 h3_polygon_wkt_to_cells_string(wkt, res)
 ```
+```sql
+h3_polygon_wkb_to_cells(wkb, res)
+```
+```sql
+h3_polygon_wkb_to_cells_string(wkb, res)
+```
 
 </TabItem>
 <TabItem value="shell">
@@ -351,10 +357,16 @@ The valid values for `containmentMode` are:
 <TabItem value="duckdb">
 
 ```sql
-h3_polygon_wkt_to_cells_experimental(h3shape, res, 'overlap')
+h3_polygon_wkt_to_cells_experimental(wkt, res, 'overlap')
 ```
 ```sql
-h3_polygon_wkt_to_cells_experimental_string(h3shape, res, 'overlap')
+h3_polygon_wkt_to_cells_experimental_string(wkt, res, 'overlap')
+```
+```sql
+h3_polygon_wkb_to_cells_experimental(wkb, res, 'overlap')
+```
+```sql
+h3_polygon_wkb_to_cells_experimental_string(wkb, res, 'overlap')
 ```
 
 The valid values for the third `contain` argument are:
@@ -539,6 +551,9 @@ h3.CellsToMultiPolygon(cells)
 
 ```sql
 h3_cells_to_multi_polygon_wkt(cells)
+```
+```sql
+h3_cells_to_multi_polygon_wkb(cells)
 ```
 
 </TabItem>

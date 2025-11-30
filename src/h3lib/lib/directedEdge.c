@@ -292,3 +292,22 @@ H3Error H3_EXPORT(directedEdgeToBoundary)(H3Index edge, CellBoundary *cb) {
     }
     return E_SUCCESS;
 }
+
+/**
+ * Returns the directed edge with origin and destination cells reversed.
+ * @param edge The H3 directed edge index
+ * @param out Output: The reversed directed edge index
+ */
+H3Error H3_EXPORT(reverseDirectedEdge)(H3Index edge, H3Index *out) {
+    H3Index origin, destination;
+    H3Error err;
+
+    err = H3_EXPORT(getDirectedEdgeOrigin)(edge, &origin);
+    if (err) return err;
+    err = H3_EXPORT(getDirectedEdgeDestination)(edge, &destination);
+    if (err) return err;
+    err = H3_EXPORT(cellsToDirectedEdge)(destination, origin, out);
+    if (err) return err;
+
+    return E_SUCCESS;
+}

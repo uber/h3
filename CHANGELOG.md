@@ -7,6 +7,7 @@ The public API of this library consists of the functions declared in file
 
 ## [Unreleased]
 ### Added
+- `reverseDirectedEdge` function (#1098)
 - `geoLoopArea` function (#1101)
 
 ### Changed

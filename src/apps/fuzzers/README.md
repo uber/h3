@@ -32,6 +32,7 @@ The public API of H3 is covered in the following fuzzers:
 | describeH3Error | Trivial
 | directedEdgeToBoundary | [fuzzerDirectedEdge](./fuzzerDirectedEdge.c)
 | directedEdgeToCells | [fuzzerDirectedEdge](./fuzzerDirectedEdge.c)
+| reverseDirectedEdge | [fuzzerDirectedEdge](./fuzzerDirectedEdge.c)
 | distance | [fuzzerDistances](./fuzzerDistances.c)
 | edgeLength | [fuzzerEdgeLength](./fuzzerEdgeLength.c)
 | getBaseCellNumber | [fuzzerCellProperties](./fuzzerCellProperties.c)
