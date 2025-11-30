@@ -1,4 +1,5 @@
 #include <math.h>
+#include <stdbool.h>
 #include <stdio.h>
 
 #include "adder.h"
@@ -7,7 +8,7 @@
 #include "h3api.h"
 #include "iterators.h"
 
-static void do_res_sum(int res) {
+static void doResSum(int res, bool print) {
     Adder adder = {0, 0};
     double cellArea;
     IterCellsResolution iter = iterInitRes(res);
@@ -19,15 +20,24 @@ static void do_res_sum(int res) {
 
     double total_area = adder.sum;
     double diff = fabs(total_area - 4 * M_PI);
-    printf("res: %d, diff: %e\n", res, diff);
+    if (print) {
+        printf("res: %d, diff: %e\n", res, diff);
+    }
 }
 
 BEGIN_BENCHMARKS();
 
-BENCHMARK(directedEdgeToBoundary, 1, {
-    int MAX_RES = 6;
+static int MAX_RES = 4;
+
+BENCHMARK(allCellsAtRes_print, 1, {
     for (int i = 0; i <= MAX_RES; i++) {
-        do_res_sum(i);
+        doResSum(i, true);
+    }
+});
+
+BENCHMARK(allCellsAtRes_noprint, 100, {
+    for (int i = 0; i <= MAX_RES; i++) {
+        doResSum(i, false);
     }
 });
 
