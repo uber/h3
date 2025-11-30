@@ -348,8 +348,8 @@ DECLSPEC H3Error H3_EXPORT(cellsToLinkedMultiPolygon)(const H3Index *h3Set,
 DECLSPEC void H3_EXPORT(destroyLinkedMultiPolygon)(LinkedGeoPolygon *polygon);
 /** @} */
 
-/** @defgroup geoLoopArea geoLoopArea
- * Functions for geoLoopArea
+/** @defgroup geoLoopAreaRads2 geoLoopAreaRads2
+ * Functions for geoLoopAreaRads2
  * @{
  */
 /**
@@ -361,7 +361,7 @@ DECLSPEC void H3_EXPORT(destroyLinkedMultiPolygon)(LinkedGeoPolygon *polygon);
  * the loop. The returned area depends on vertex orientation and is in the
  * interval [0, 4*pi].
  */
-DECLSPEC H3Error H3_EXPORT(geoLoopArea)(GeoLoop loop, double *out);
+DECLSPEC H3Error H3_EXPORT(geoLoopAreaRads2)(GeoLoop loop, double *out);
 /** @} */
 
 /** @defgroup degsToRads degsToRads

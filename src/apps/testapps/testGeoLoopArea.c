@@ -31,7 +31,7 @@ static void _compareArea(LatLng *verts, int numVerts, double target_area) {
     GeoLoop loop = {.verts = verts, .numVerts = numVerts};
 
     double out;
-    t_assertSuccess(H3_EXPORT(geoLoopArea)(loop, &out));
+    t_assertSuccess(H3_EXPORT(geoLoopAreaRads2)(loop, &out));
     t_assert(fabs(out - target_area) < tol, "area should match");
 }
 
@@ -156,7 +156,7 @@ SUITE(geoLoopArea) {
             GeoLoop loop = {.verts = verts, .numVerts = ARRAY_SIZE(verts)};
 
             double out;
-            t_assertSuccess(H3_EXPORT(geoLoopArea)(loop, &out));
+            t_assertSuccess(H3_EXPORT(geoLoopAreaRads2)(loop, &out));
 
             double tol = 1e-13;
             if (t < 0.99) {

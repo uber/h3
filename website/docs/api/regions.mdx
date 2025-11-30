@@ -647,7 +647,7 @@ This function exists for memory management and is not exposed.
 </TabItem>
 </Tabs>
 
-## geoLoopArea
+## geoLoopAreaRads2
 
 Compute the spherical area, in square radians, that is enclosed by a closed
 `GeoLoop`. The loop must be a simple polygon traced counter-clockwise as viewed
@@ -672,7 +672,7 @@ the complementary area of the loop.
 <TabItem value="c">
 
 ```c
-H3Error geoLoopArea(GeoLoop loop, double *out);
+H3Error geoLoopAreaRads2(GeoLoop loop, double *out);
 ```
 
 The caller supplies the `GeoLoop` memory (for example, by filling `loop.verts`

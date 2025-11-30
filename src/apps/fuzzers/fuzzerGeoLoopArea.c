@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /** @file
- * @brief Fuzzer program for geoLoopArea
+ * @brief Fuzzer program for geoLoopAreaRads2
  */
 
 #include "aflHarness.h"
@@ -31,7 +31,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 
     GeoLoop loop = {.numVerts = numVerts, .verts = (LatLng *)data};
     double area;
-    H3_EXPORT(geoLoopArea)(loop, &area);
+    H3_EXPORT(geoLoopAreaRads2)(loop, &area);
 
     return 0;
 }

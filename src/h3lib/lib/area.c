@@ -75,7 +75,7 @@ static inline double cagnoli(LatLng x, LatLng y) {
  * @param    out  loop area in radians^2, in interval [0, 4*pi]
  * @return        E_SUCCESS on success, or an error code otherwise
  */
-H3Error H3_EXPORT(geoLoopArea)(GeoLoop loop, double *out) {
+H3Error H3_EXPORT(geoLoopAreaRads2)(GeoLoop loop, double *out) {
     // Use `Adder` to improve numerical accuracy of the sum of many Cagnoli
     // terms
     Adder adder = {0.0, 0.0};
@@ -100,7 +100,7 @@ H3Error H3_EXPORT(geoLoopArea)(GeoLoop loop, double *out) {
 /**
  * Area of H3 cell in radians^2.
  *
- * Uses `geoLoopArea` to compute cell area.
+ * Uses `geoLoopAreaRads2` to compute cell area.
  *
  * @param   cell  H3 cell
  * @param    out  cell area in radians^2
@@ -114,7 +114,7 @@ H3Error H3_EXPORT(cellAreaRads2)(H3Index cell, double *out) {
     }
 
     GeoLoop loop = {.verts = cb.verts, .numVerts = cb.numVerts};
-    err = H3_EXPORT(geoLoopArea)(loop, out);
+    err = H3_EXPORT(geoLoopAreaRads2)(loop, out);
     if (err) {
         return err;
     }
