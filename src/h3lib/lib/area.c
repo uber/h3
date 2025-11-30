@@ -11,8 +11,6 @@
 #include "constants.h"
 #include "h3api.h"
 
-// TOOD: demonstrate the area alg works for global polygons.
-
 static inline double cagnoli(LatLng x, LatLng y) {
     // https://github.com/d3/d3-geo/blob/8c53a90ae70c94bace73ecb02f2c792c649c86ba/src/area.js#L51-L70
     x.lat = x.lat / 2.0 + M_PI / 4.0;
@@ -28,6 +26,30 @@ static inline double cagnoli(LatLng x, LatLng y) {
     return -2.0 * atan2(sa * sd, sa * cd + ca);
 }
 
+/**
+ * Area in radians^2 enclosed by vertices in GeoLoop.
+ *
+ * The GeoLoop should represent a simple curve with no self-intersections.
+ * Vertices should be ordered according to the "right hand rule".
+ * That is, if you are looking from outer space at a spherical polygon
+ * on the surface of the earth whose interior is contained within a hemisphere,
+ * then the vertices should be ordered counter-clockwise. The interior of the
+ * polygon is to the left of a person walking along the boundary of the polygon
+ * in the counter-clockwise direction.
+ *
+ * Note that GeoLoops do not need to repeat the first vertex at the end of the
+ * array to close the loop; this is done automatically.
+ *
+ * The area of the entire globe is 4*pi radians^2. If, for example, you have a
+ * small GeoLoop with area `a << 4*pi` and then reverse the order of the
+ * vertices, you produce GeoLoop with area `4*pi - a`, since by the right hand
+ * rule, the interior of the new loop's interior is the majority of the globe,
+ * or "everything except the original polygon".
+ *
+ * @param   loop  GeoLoop of boundary vertices in counter-clockwise order
+ * @param    out  loop area in radians^2, in interval [0, 4*pi]
+ * @return        E_SUCCESS on success, or an error code otherwise
+ */
 H3Error H3_EXPORT(geoLoopArea)(GeoLoop loop, double *out) {
     Adder adder = {0.0, 0.0};
 
@@ -47,11 +69,7 @@ H3Error H3_EXPORT(geoLoopArea)(GeoLoop loop, double *out) {
 /**
  * Area of H3 cell in radians^2.
  *
- * The area is calculated by breaking the cell into spherical triangles and
- * summing up their areas. Note that some H3 cells (hexagons and pentagons)
- * are irregular, and have more than 6 or 5 sides.
- *
- * todo: optimize the computation by re-using the edges shared between triangles
+ * Uses `geoLoopArea` to compute cell area.
  *
  * @param   cell  H3 cell
  * @param    out  cell area in radians^2
@@ -71,10 +89,4 @@ H3Error H3_EXPORT(cellAreaRads2)(H3Index cell, double *out) {
     }
 
     return E_SUCCESS;
-}
-
-void H3_EXPORT(destroyGeoLoop)(GeoLoop *loop) {
-    H3_MEMORY(free)(loop->verts);
-    loop->numVerts = 0;
-    loop->verts = NULL;
 }
