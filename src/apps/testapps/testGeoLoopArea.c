@@ -36,9 +36,18 @@ static void _compareArea(LatLng *verts, int numVerts, double target_area) {
 }
 
 SUITE(geoLoopArea) {
-    TEST(triangle) {
-        // GeoLoop representing a triangle covering 1/8 of the globe, with
-        // points ordered according to right-hand rule (counter-clockwise).
+    TEST(triangle_basic) {
+        /*
+        GeoLoop representing a triangle covering 1/8 of the globe, with
+        points ordered according to right-hand rule (counter-clockwise).
+
+        The triangle starts at the north pole, moves down 90 degrees to the
+        equator, and then sweeps out 90 degrees along the equator
+        before returning to the north pole.
+
+        The globe has an area of 4*pi radians, so this 1/8 triangle piece of
+        the globe should have area pi/2.
+        */
         LatLng verts[] = {
             {M_PI_2, 0.0},
             {0.0, 0.0},
@@ -48,9 +57,14 @@ SUITE(geoLoopArea) {
         _compareArea(verts, ARRAY_SIZE(verts), M_PI / 2);
     }
 
-    TEST(reverse_triangle) {
-        // Reversed the order of the points, so they are in clockwise order.
-        // This GeoLoop represents the whole globe minus the triangle above.
+    TEST(triangle_reversed) {
+        /*
+        Reverse the order of the points in the triangle from the previous test,
+        so that they are in clockwise order.
+
+        Since the points are in clockwise order, GeoLoop represents the whole
+        globe minus the triangle above.
+        */
         LatLng verts[] = {
             {0.0, M_PI_2},
             {0.0, 0.0},
@@ -61,7 +75,11 @@ SUITE(geoLoopArea) {
     }
 
     TEST(slice) {
-        // 1/4 slice of the globe, from north to south pole
+        /*
+        Stitch two 1/8 triangles together, sharing an edge along the equator
+        to create a 1/4 slice of the globe, with vertices at the north and south
+        pole.
+        */
         LatLng verts[] = {
             {M_PI_2, 0.0},
             {0.0, 0.0},
@@ -72,9 +90,11 @@ SUITE(geoLoopArea) {
         _compareArea(verts, ARRAY_SIZE(verts), M_PI);
     }
 
-    TEST(reverse_slice) {
-        // 3/4 slice of the globe, from north to south pole, formed by reversing
-        // order of points from example above.
+    TEST(slice_reversed) {
+        /*
+        3/4 slice of the globe, from north to south pole, formed by reversing
+        order of points from example above.
+        */
         LatLng verts[] = {
             {M_PI_2, 0.0},
             {0.0, M_PI_2},
@@ -86,19 +106,23 @@ SUITE(geoLoopArea) {
     }
 
     TEST(hemisphere_east) {
-        // one hemisphere of globe. western or eastern?
+        /*
+        Stitch 4 1/8 triangles together to cover the eastern hemisphere.
+        */
         LatLng verts[] = {
             {M_PI_2, 0.0},
-            {0.0, -M_PI_2},
+            {0.0, 0},
             {-M_PI_2, 0.0},
-            {0.0, M_PI_2},
+            {0.0, M_PI},
         };
 
         _compareArea(verts, ARRAY_SIZE(verts), 2 * M_PI);
     }
 
     TEST(hemisphere_north) {
-        // one hemisphere of globe. northern
+        /*
+        Stitch 4 1/8 triangles together to cover the northern hemisphere.
+        */
         LatLng verts[] = {
             {0.0, -M_PI},
             {0.0, -M_PI_2},
@@ -109,18 +133,20 @@ SUITE(geoLoopArea) {
         _compareArea(verts, ARRAY_SIZE(verts), 2 * M_PI);
     }
 
-    TEST(percentage_slice) {
-        // Demonstrate that edge arcs between points in a polygon or geoloop
-        // should be less than 180 degrees (M_PI radians).
-        //
-        // Create a slice from north pole to equator and back to the north pole
-        // that sweeps out an edge arc of t * M_PI radians along the equator,
-        // so it should have an area of t*M_PI for t \in [0,1].
-        //
-        // However, notice a discontinuity at t = 1 (i.e., M_PI radians or 180
-        // degrees), where expected area goes to (2 + t) * M_PI for 1 < t < 2.
-        //
-        // Recall that the area in stradians of the entire globe is 4*M_PI.
+    TEST(percentageSlice) {
+        /*
+        Demonstrate that edge arcs between points in a polygon or geoloop
+        should be less than 180 degrees (M_PI radians).
+
+        Create a triangle from north pole to equator and back to the north pole
+        that sweeps out an edge arc of t * M_PI radians along the equator,
+        so it should have an area of t*M_PI for t \in [0,1].
+
+        However, there is a discontinuity at t = 1 (i.e., M_PI radians or 180
+        degrees), where expected area goes to (2 + t) * M_PI for 1 < t < 2.
+
+        Recall that the area in stradians of the entire globe is 4*M_PI.
+        */
         for (double t = 0; t <= 1.2; t += 0.01) {
             LatLng verts[] = {
                 {M_PI_2, 0.0},
@@ -138,22 +164,26 @@ SUITE(geoLoopArea) {
                 // 180 degrees
                 t_assert(fabs(out - t * M_PI) <= tol, "expected area");
             } else if (t > 1.01) {
-                // Discontinuity at t == 1. For t > 1, the triangle "flips",
-                // because the shortest geodesic path is on the other side of
-                // the globe. The triangle is now oriented in clockwise order,
-                // and the area computed is the area *outside* of the triangle,
-                // which starts at 3*pi.
+                /*
+                Discontinuity at t == 1. For t > 1, the triangle "flips",
+                because the shortest geodesic path is on the other side of
+                the globe. The triangle is now oriented in clockwise order,
+                and the area computed is the area *outside* of the triangle,
+                which starts at 3*pi.
+                */
                 t_assert(fabs(out - (2 + t) * M_PI) <= tol, "expected area");
             }
-            // Note that we avoid testing t == 1, since the triangle
-            // isn't well defined because there are many possible geodesic
-            // shortest paths when consecutive points are antipodal
-            // (180 degrees apart).
+            /*
+            Note that we avoid testing t == 1, since the triangle
+            isn't well defined because there are many possible geodesic
+            shortest paths when consecutive points are antipodal
+            (180 degrees apart).
 
-            // Also note that a large polygon with t > 1 is *still*
-            // represntable and we can compute its area accurately.
-            // We just need to add intermediate vertices so that
-            // no edge arc is greater than 180 degrees.
+            Also note that a large polygon with t > 1 is *still*
+            representable and we can compute its area accurately;
+            we just need to add intermediate vertices so that
+            no edge arc is greater than 180 degrees.
+            */
         }
     }
 }
