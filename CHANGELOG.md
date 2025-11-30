@@ -6,6 +6,11 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+### Added
+- `geoLoopArea` function (#1101)
+
+### Changed
+- `cellAreaRads2` uses `geoLoopArea` (#1101)
 
 ## [4.4.1] - 2025-11-11
 ### Fixed
