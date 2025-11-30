@@ -22,7 +22,7 @@
 
 #include <math.h>
 
-#include "h3Index.h"
+#include "h3api.h"
 #include "test.h"
 #include "utility.h"
 

@@ -1,13 +1,6 @@
-#include <inttypes.h>
 #include <math.h>
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 #include "adder.h"
-#include "alloc.h"
 #include "constants.h"
 #include "h3api.h"
 
