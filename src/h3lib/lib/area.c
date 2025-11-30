@@ -11,7 +11,6 @@
 #include "constants.h"
 #include "h3api.h"
 
-
 // Cagnoli contribution for edge arc x to y, following d3-geo’s
 // area implementation:
 // https://github.com/d3/d3-geo/blob/8c53a90ae70c94bace73ecb02f2c792c649c86ba/src/area.js#L51-L70
@@ -64,6 +63,8 @@ static inline double cagnoli(LatLng x, LatLng y) {
  * @return        E_SUCCESS on success, or an error code otherwise
  */
 H3Error H3_EXPORT(geoLoopArea)(GeoLoop loop, double *out) {
+    // Use `Adder` to improve numerical accuracy of the sum of many Cagnoli
+    // terms
     Adder adder = {0.0, 0.0};
 
     for (int i = 0; i < loop.numVerts; i++) {
