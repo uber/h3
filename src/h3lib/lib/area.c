@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 /** @file area.c
- * @brief   Algorithms for computing areas of regions on a sphere (GeoLoop, cells, polygons, multipolygons, etc.)
+ * @brief   Algorithms for computing areas of regions on a sphere (GeoLoop,
+ * cells, polygons, multipolygons, etc.)
  */
 
 #include <math.h>
