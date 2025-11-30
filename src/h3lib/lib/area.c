@@ -22,6 +22,7 @@
 
 #include "adder.h"
 #include "constants.h"
+#include "h3Assert.h"
 #include "h3api.h"
 
 // Cagnoli contribution for edge arc x to y, following d3-geo’s
