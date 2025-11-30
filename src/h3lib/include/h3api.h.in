@@ -348,7 +348,21 @@ DECLSPEC H3Error H3_EXPORT(cellsToLinkedMultiPolygon)(const H3Index *h3Set,
 DECLSPEC void H3_EXPORT(destroyLinkedMultiPolygon)(LinkedGeoPolygon *polygon);
 /** @} */
 
+/** @defgroup geoLoopArea geoLoopArea
+ * Functions for geoLoopArea
+ * @{
+ */
+/**
+ * @brief Area in radians^2 enclosed by vertices in a GeoLoop.
+ *
+ * Vertices should define a simple polygon ordered counter-clockwise according
+ * to the right-hand rule. Edge arcs follow the shortest geodesic path (less
+ * than pi radians), and the first vertex does not need to be repeated to close
+ * the loop. The returned area depends on vertex orientation and is in the
+ * interval [0, 4*pi].
+ */
 DECLSPEC H3Error H3_EXPORT(geoLoopArea)(GeoLoop loop, double *out);
+/** @} */
 
 /** @defgroup degsToRads degsToRads
  * Functions for degsToRads
