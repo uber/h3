@@ -79,7 +79,7 @@ static inline double cagnoli(LatLng x, LatLng y) {
 H3Error H3_EXPORT(geoLoopAreaRads2)(GeoLoop loop, double *out) {
     // Use `Adder` to improve numerical accuracy of the sum of many Cagnoli
     // terms
-    Adder adder = {0.0, 0.0};
+    Adder adder = {0};
 
     for (int i = 0; i < loop.numVerts; i++) {
         int j = (i + 1) % loop.numVerts;

@@ -9,7 +9,7 @@
 #include "iterators.h"
 
 static void doResSum(int res, bool print) {
-    Adder adder = {0, 0};
+    Adder adder = {0};
     double cellArea;
     IterCellsResolution iter = iterInitRes(res);
 
