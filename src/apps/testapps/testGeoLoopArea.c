@@ -178,12 +178,25 @@ SUITE(geoLoopArea) {
             isn't well defined because there are many possible geodesic
             shortest paths when consecutive points are antipodal
             (180 degrees apart).
-
-            Also note that a large polygon with t > 1 is *still*
-            representable and we can compute its area accurately;
-            we just need to add intermediate vertices so that
-            no edge arc is greater than 180 degrees.
             */
         }
+    }
+
+    TEST(percentageSlice_large) {
+        /*
+        Continuing from the test above, note that a large polygon with
+        t > 1 is *still* representable and we can compute its area accurately;
+        we just need to add intermediate vertices so that
+        no edge arc is greater than 180 degrees.
+        */
+        double t = 1.2;
+        LatLng verts[] = {
+            {M_PI_2, 0.0},
+            {0.0, -M_PI_2},
+            {0.0, 0.0},  // Extra vertex so every angle is < 180 degrees
+            {0.0, t * M_PI - M_PI_2},
+        };
+
+        _compareArea(verts, ARRAY_SIZE(verts), t * M_PI);
     }
 }
