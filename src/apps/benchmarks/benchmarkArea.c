@@ -27,7 +27,7 @@ static void doResSum(int res, bool print) {
 
 BEGIN_BENCHMARKS();
 
-static int MAX_RES = 4;
+static int MAX_RES = 3;
 
 BENCHMARK(allCellsAtRes_print, 1, {
     for (int i = 0; i <= MAX_RES; i++) {
@@ -35,7 +35,7 @@ BENCHMARK(allCellsAtRes_print, 1, {
     }
 });
 
-BENCHMARK(allCellsAtRes_noprint, 100, {
+BENCHMARK(allCellsAtRes_noprint, 10, {
     for (int i = 0; i <= MAX_RES; i++) {
         doResSum(i, false);
     }
