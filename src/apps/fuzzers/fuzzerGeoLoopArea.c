@@ -23,13 +23,10 @@
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     // Interpret the input buffer as an array of LatLng vertices.
-    int numVerts = (int)(size / sizeof(LatLng));
-    // Need at least 3 vertices to form a polygon.
-    if (numVerts < 3) {
-        return 0;
-    }
-
-    GeoLoop loop = {.numVerts = numVerts, .verts = (LatLng *)data};
+    GeoLoop loop = {
+        .numVerts = (int)(size / sizeof(LatLng)),
+        .verts = (LatLng *)data,
+    };
     double area;
     H3_EXPORT(geoLoopAreaRads2)(loop, &area);
 
