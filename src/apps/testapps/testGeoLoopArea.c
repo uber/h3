@@ -219,7 +219,6 @@ SUITE(geoLoopArea) {
 
     TEST(degenerateLoop0) {
         // TODO: should we raise an error when given degenerate loops?
-        LatLng verts[] = {};
-        _compareArea(verts, ARRAY_SIZE(verts), 0.0);
+        _compareArea(NULL, 0, 0.0);
     }
 }
