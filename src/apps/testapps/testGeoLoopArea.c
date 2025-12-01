@@ -199,4 +199,27 @@ SUITE(geoLoopArea) {
 
         _compareArea(verts, ARRAY_SIZE(verts), t * M_PI);
     }
+
+    TEST(degenerateLoop2) {
+        // TODO: should we raise an error when given degenerate loops?
+        LatLng verts[] = {
+            {M_PI_2, 0.0},
+            {0.0, -M_PI_2},
+        };
+        _compareArea(verts, ARRAY_SIZE(verts), 0.0);
+    }
+
+    TEST(degenerateLoop1) {
+        // TODO: should we raise an error when given degenerate loops?
+        LatLng verts[] = {
+            {0.0, 0.0},
+        };
+        _compareArea(verts, ARRAY_SIZE(verts), 0.0);
+    }
+
+    TEST(degenerateLoop0) {
+        // TODO: should we raise an error when given degenerate loops?
+        LatLng verts[] = {};
+        _compareArea(verts, ARRAY_SIZE(verts), 0.0);
+    }
 }
