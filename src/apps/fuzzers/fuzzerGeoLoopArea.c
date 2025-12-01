@@ -28,7 +28,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         .verts = (LatLng *)data,
     };
     double area;
-    H3_EXPORT(geoLoopAreaRads2)(loop, &area);
+    geoLoopAreaRads2(loop, &area);
 
     return 0;
 }
