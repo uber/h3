@@ -348,16 +348,6 @@ DECLSPEC H3Error H3_EXPORT(cellsToLinkedMultiPolygon)(const H3Index *h3Set,
 DECLSPEC void H3_EXPORT(destroyLinkedMultiPolygon)(LinkedGeoPolygon *polygon);
 /** @} */
 
-/** @defgroup geoLoopAreaRads2 geoLoopAreaRads2
- * Functions for geoLoopAreaRads2
- * @{
- */
-/**
- * @brief Area in radians^2 enclosed by vertices of a GeoLoop.
- */
-DECLSPEC H3Error geoLoopAreaRads2(GeoLoop loop, double *out);
-/** @} */
-
 /** @defgroup degsToRads degsToRads
  * Functions for degsToRads
  * @{

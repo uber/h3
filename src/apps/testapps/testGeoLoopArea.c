@@ -22,6 +22,7 @@
 
 #include <math.h>
 
+#include "area.h"
 #include "h3api.h"
 #include "test.h"
 #include "utility.h"

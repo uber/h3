@@ -171,6 +171,7 @@ set(LIB_SOURCE_FILES
     src/h3lib/include/coordijk.h
     src/h3lib/include/algos.h
     src/h3lib/include/adder.h
+    src/h3lib/include/area.h
     src/h3lib/lib/h3Assert.c
     src/h3lib/lib/algos.c
     src/h3lib/lib/coordijk.c

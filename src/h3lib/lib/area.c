@@ -18,6 +18,8 @@
  * cells, polygons, multipolygons, etc.)
  */
 
+#include "area.h"
+
 #include <math.h>
 
 #include "adder.h"
