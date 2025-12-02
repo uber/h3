@@ -162,7 +162,7 @@ H3Error geoMultiPolygonAreaRads2(GeoMultiPolygon mpoly, double *out) {
 GeoMultiPolygon createGlobalMultiPolygon() {
     const int numPolygons = 8;
     const int numVerts = 3;
-    const LatLng verts[numPolygons][numVerts] = {
+    const LatLng verts[8][3] = {
         {{M_PI_2, 0.0}, {0.0, 0.0}, {0.0, M_PI_2}},
         {{M_PI_2, 0.0}, {0.0, M_PI_2}, {0.0, M_PI}},
         {{M_PI_2, 0.0}, {0.0, M_PI}, {0.0, -M_PI_2}},
