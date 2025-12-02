@@ -21,7 +21,9 @@
  */
 
 #include <math.h>
+#include <string.h>
 
+#include "alloc.h"
 #include "area.h"
 #include "h3api.h"
 #include "test.h"
@@ -39,13 +41,29 @@ SUITE(geoMultiPolygon) {
         H3_EXPORT(destroyGeoMultiPolygon)(&mpoly);
     }
 
-    TEST(triforceArea) {
+    TEST(holeSameAsOuter) {
+        /**
+         * TODO: Replace with simpler test.
+         *
+         * I needed a test to exercize the "hole" branches of
+         * `destroyGeoMultiPolygon` and `geoMultiPolygonAreaRads2`.
+         *
+         * This is a verbose test because we have to allocate the
+         * `GeoMultiPolygon`. When we add in the `cellsToMultiPolygon` function,
+         * I can replace this with a much shorter, clearer test.
+         */
+
+        // Create a polygon with a triangle outer and a hole of exactly
+        // the same size, so the resulting polygon and multipolygons should
+        // have 0 area.
         LatLng _outer[] = {
+            // Counter-clockwise points
             {M_PI_2, 0},
             {0, 0},
             {0, M_PI_2},
         };
         LatLng _hole[] = {
+            // Same as above, but clockwise points
             {M_PI_2, 0},
             {0, M_PI_2},
             {0, 0},
@@ -53,27 +71,33 @@ SUITE(geoMultiPolygon) {
 
         GeoLoop outer = {
             .numVerts = 3,
-            .verts = _outer,
+            .verts = H3_MEMORY(malloc)(3 * sizeof(LatLng)),
         };
         GeoLoop hole = {
             .numVerts = 3,
-            .verts = _hole,
+            .verts = H3_MEMORY(malloc)(3 * sizeof(LatLng)),
         };
+
+        memcpy(outer.verts, _outer, 3 * sizeof(LatLng));
+        memcpy(hole.verts, _hole, 3 * sizeof(LatLng));
 
         GeoPolygon poly = {
             .geoloop = outer,
             .numHoles = 1,
-            .holes = &hole,
+            .holes = H3_MEMORY(malloc)(sizeof(GeoLoop)),
         };
+        poly.holes[0] = hole;
 
         GeoMultiPolygon mpoly = {
             .numPolygons = 1,
-            .polygons = &poly,
+            .polygons = H3_MEMORY(malloc)(sizeof(GeoPolygon)),
         };
+        mpoly.polygons[0] = poly;
 
-        double tol = 1e-14;
         double out;
         t_assertSuccess(geoMultiPolygonAreaRads2(mpoly, &out));
-        t_assert(fabs(out - 0) < tol, "area should match");
+        t_assert(fabs(out) < 1e-14, "Area should be 0");
+
+        H3_EXPORT(destroyGeoMultiPolygon)(&mpoly);
     }
 }
