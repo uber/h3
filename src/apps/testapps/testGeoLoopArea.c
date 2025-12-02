@@ -202,7 +202,8 @@ SUITE(geoLoopArea) {
     }
 
     TEST(degenerateLoop2) {
-        // TODO: should we raise an error when given degenerate loops?
+        // Note that `geoLoopAreaRads2()` works without error on degenerate
+        // loops, returning 0 area.
         LatLng verts[] = {
             {M_PI_2, 0.0},
             {0.0, -M_PI_2},
@@ -211,7 +212,8 @@ SUITE(geoLoopArea) {
     }
 
     TEST(degenerateLoop1) {
-        // TODO: should we raise an error when given degenerate loops?
+        // Note that `geoLoopAreaRads2()` works without error on degenerate
+        // loops, returning 0 area.
         LatLng verts[] = {
             {0.0, 0.0},
         };
@@ -219,7 +221,8 @@ SUITE(geoLoopArea) {
     }
 
     TEST(degenerateLoop0) {
-        // TODO: should we raise an error when given degenerate loops?
+        // Note that `geoLoopAreaRads2()` works without error on degenerate
+        // loops, returning 0 area.
         _compareArea(NULL, 0, 0.0);
     }
 }
