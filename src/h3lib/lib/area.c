@@ -23,6 +23,7 @@
 #include <math.h>
 
 #include "adder.h"
+#include "alloc.h"
 #include "constants.h"
 #include "h3Assert.h"
 #include "h3api.h"
@@ -156,4 +157,38 @@ H3Error geoMultiPolygonAreaRads2(GeoMultiPolygon mpoly, double *out) {
     *out = adder.sum;
 
     return E_SUCCESS;
+}
+
+GeoMultiPolygon createGlobalMultiPolygon() {
+    const int numPolygons = 8;
+    const int numVerts = 3;
+    const LatLng verts[numPolygons][numVerts] = {
+        {{M_PI_2, 0.0}, {0.0, 0.0}, {0.0, M_PI_2}},
+        {{M_PI_2, 0.0}, {0.0, M_PI_2}, {0.0, M_PI}},
+        {{M_PI_2, 0.0}, {0.0, M_PI}, {0.0, -M_PI_2}},
+        {{M_PI_2, 0.0}, {0.0, -M_PI_2}, {0.0, 0.0}},
+        {{-M_PI_2, 0.0}, {0.0, 0.0}, {0.0, -M_PI_2}},
+        {{-M_PI_2, 0.0}, {0.0, -M_PI_2}, {0.0, -M_PI}},
+        {{-M_PI_2, 0.0}, {0.0, -M_PI}, {0.0, M_PI_2}},
+        {{-M_PI_2, 0.0}, {0.0, M_PI_2}, {0.0, 0.0}},
+    };
+
+    GeoMultiPolygon mpoly = {
+        .numPolygons = numPolygons,
+        .polygons = H3_MEMORY(malloc)(sizeof(GeoPolygon) * numPolygons),
+    };
+
+    for (int i = 0; i < numPolygons; i++) {
+        GeoPolygon *poly = &mpoly.polygons[i];
+        poly->numHoles = 0;
+        poly->holes = NULL;
+        poly->geoloop.numVerts = numVerts;
+        poly->geoloop.verts = H3_MEMORY(malloc)(sizeof(LatLng) * numVerts);
+
+        for (int j = 0; j < numVerts; j++) {
+            poly->geoloop.verts[j] = verts[i][j];
+        }
+    }
+
+    return mpoly;
 }
