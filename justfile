@@ -28,6 +28,7 @@ test: build
     # just test-slow
     just test-fast
     # ./build/bin/testGeoLoopArea
+    # ./build/bin/testGeoMultiPolygon
 
 time:
     time ./build/bin/testArea
