@@ -36,6 +36,6 @@ SUITE(geoMultiPolygon) {
         t_assertSuccess(geoMultiPolygonAreaRads2(mpoly, &out));
         t_assert(fabs(out - 4 * M_PI) < tol, "area should match");
 
-        destroyGeoMultiPolygon(&mpoly);
+        H3_EXPORT(destroyGeoMultiPolygon)(&mpoly);
     }
 }

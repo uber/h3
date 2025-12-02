@@ -1288,9 +1288,9 @@ void H3_EXPORT(destroyGeoLoop)(GeoLoop *loop) {
 }
 
 void H3_EXPORT(destroyGeoPolygon)(GeoPolygon *poly) {
-    destroyGeoLoop(&poly->geoloop);
+    H3_EXPORT(destroyGeoLoop)(&poly->geoloop);
     for (int i = 0; i < poly->numHoles; i++) {
-        destroyGeoLoop(&poly->holes[i]);
+        H3_EXPORT(destroyGeoLoop)(&poly->holes[i]);
     }
     H3_MEMORY(free)(poly->holes);
     poly->holes = NULL;
@@ -1303,7 +1303,7 @@ void H3_EXPORT(destroyGeoPolygon)(GeoPolygon *poly) {
  */
 void H3_EXPORT(destroyGeoMultiPolygon)(GeoMultiPolygon *mpoly) {
     for (int i = 0; i < mpoly->numPolygons; i++) {
-        destroyGeoPolygon(&mpoly->polygons[i]);
+        H3_EXPORT(destroyGeoPolygon)(&mpoly->polygons[i]);
     }
     H3_MEMORY(free)(mpoly->polygons);
     mpoly->polygons = NULL;
