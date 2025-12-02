@@ -32,7 +32,7 @@ SUITE(geoMultiPolygon) {
         double tol = 1e-14;
         double out;
 
-        GeoMultiPolygon mpoly = createGlobalMultiPolygon();
+        GeoMultiPolygon mpoly = createGlobeMultiPolygon();
         t_assertSuccess(geoMultiPolygonAreaRads2(mpoly, &out));
         t_assert(fabs(out - 4 * M_PI) < tol, "area should match");
 

@@ -159,7 +159,15 @@ H3Error geoMultiPolygonAreaRads2(GeoMultiPolygon mpoly, double *out) {
     return E_SUCCESS;
 }
 
-GeoMultiPolygon createGlobalMultiPolygon() {
+/**
+ * Allocate a GeoMultiPolygon representing the entire globe.
+ * The globe is represented using 8 triangular polygons, with
+ * all edge arcs of exactly 90 degrees (i.e., pi/2 radians).
+ * Memory should be freed with `destroyGeoMultiPolygon`.
+ *
+ * @return GeoMultiPolygon covering entire globe
+ */
+GeoMultiPolygon createGlobeMultiPolygon() {
     const int numPolygons = 8;
     const int numVerts = 3;
     const LatLng verts[8][3] = {
