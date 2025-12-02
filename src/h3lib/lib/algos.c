@@ -1281,12 +1281,20 @@ H3Error H3_EXPORT(cellsToLinkedMultiPolygon)(const H3Index *h3Set,
     return normalizeResult;
 }
 
+/**
+ * Free all allocated memory for a GeoLoop. The caller is
+ * responsible for freeing memory allocated to input GeoLoop struct.
+ */
 void H3_EXPORT(destroyGeoLoop)(GeoLoop *loop) {
     H3_MEMORY(free)(loop->verts);
     loop->verts = NULL;
     loop->numVerts = 0;
 }
 
+/**
+ * Free all allocated memory for a GeoPolygon. The caller is
+ * responsible for freeing memory allocated to input GeoPolygon struct.
+ */
 void H3_EXPORT(destroyGeoPolygon)(GeoPolygon *poly) {
     H3_EXPORT(destroyGeoLoop)(&poly->geoloop);
     for (int i = 0; i < poly->numHoles; i++) {

@@ -126,16 +126,37 @@ H3Error H3_EXPORT(cellAreaRads2)(H3Index cell, double *out) {
     return E_SUCCESS;
 }
 
+/**
+ * Area of GeoPolygon in radians^2.
+ *
+ * Outer GeoLoop vertices should be in counter-clockwise order.
+ * Hole GeoLoop vertices should be in clockwise order.
+ * Returned area is the area contained by the outer loop, minus
+ * the areas of the holes. See `geoLoopAreaRads2` for the expected
+ * form of GeoLoops.
+ *
+ * No check is made to ensure holes are disjoint or are contained
+ * within the outer GeoLoop.
+ *
+ * @param   poly  GeoPolygon
+ * @param    out  GeoPolygon area in radians^2
+ * @return  E_SUCCESS on success; error code otherwise
+ */
 H3Error geoPolygonAreaRads2(GeoPolygon poly, double *out) {
+    H3Error err;
     Adder adder = {};
     double term;
 
-    geoLoopAreaRads2(poly.geoloop, &term);
+    err = geoLoopAreaRads2(poly.geoloop, &term);
+    if (err) return err;
     kadd(&adder, term);
 
     for (int i = 0; i < poly.numHoles; i++) {
-        geoLoopAreaRads2(poly.holes[i], &term);
+        err = geoLoopAreaRads2(poly.holes[i], &term);
+        if (err) return err;
 
+        // Due to clockwise order, holes will contribute area
+        // of "everything except the hole", so adjust with -4*pi term.
         kadd(&adder, term);
         kadd(&adder, -4.0 * M_PI);
     }
@@ -145,12 +166,25 @@ H3Error geoPolygonAreaRads2(GeoPolygon poly, double *out) {
     return E_SUCCESS;
 }
 
+/**
+ * Area of GeoMultiPolygon in radians^2.
+ *
+ * Area is the sum of the areas of the polygons contained by `mpoly`.
+ * See `geoPolygonAreaRads2` for expected polygon format.
+ * No check is made to ensure polygons are disjoint.
+ *
+ * @param   mpoly  GeoMultiPolygon
+ * @param     out  GeoMultiPolygon area in radians^2
+ * @return  E_SUCCESS on success; error code otherwise
+ */
 H3Error geoMultiPolygonAreaRads2(GeoMultiPolygon mpoly, double *out) {
+    H3Error err;
     Adder adder = {};
     double term;
 
     for (int i = 0; i < mpoly.numPolygons; i++) {
-        geoPolygonAreaRads2(mpoly.polygons[i], &term);
+        err = geoPolygonAreaRads2(mpoly.polygons[i], &term);
+        if (err) return err;
         kadd(&adder, term);
     }
 
