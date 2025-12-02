@@ -200,8 +200,7 @@ set(APP_SOURCE_FILES
     src/apps/applib/include/aflHarness.h
     src/apps/applib/lib/kml.c
     src/apps/applib/lib/utility.c
-    src/apps/applib/lib/args.c
-    src/h3lib/include/area.h)
+    src/apps/applib/lib/args.c)
 set(TEST_APP_SOURCE_FILES src/apps/applib/include/test.h
                           src/apps/applib/lib/test.c)
 set(EXAMPLE_SOURCE_FILES
@@ -312,7 +311,6 @@ set(OTHER_SOURCE_FILES
     src/apps/fuzzers/fuzzerCellToChildPos.c
     src/apps/fuzzers/fuzzerInternalAlgos.c
     src/apps/fuzzers/fuzzerInternalCoordIjk.c
-    src/apps/fuzzers/fuzzerGeoLoopArea.c
     src/apps/benchmarks/benchmarkPolygonToCells.c
     src/apps/benchmarks/benchmarkPolygonToCellsExperimental.c
     src/apps/benchmarks/benchmarkPolygon.c
@@ -642,7 +640,6 @@ if(BUILD_FUZZERS)
     add_h3_fuzzer(fuzzerPolygonToCellsExperimentalNoHoles
                   src/apps/fuzzers/fuzzerPolygonToCellsExperimentalNoHoles.c)
     add_h3_fuzzer(fuzzerCellToChildPos src/apps/fuzzers/fuzzerCellToChildPos.c)
-    add_h3_fuzzer(fuzzerGeoLoopArea src/apps/fuzzers/fuzzerGeoLoopArea.c)
     if(ENABLE_REQUIRES_ALL_SYMBOLS)
         add_h3_fuzzer(fuzzerInternalAlgos
                       src/apps/fuzzers/fuzzerInternalAlgos.c)

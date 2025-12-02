@@ -65,7 +65,6 @@ The public API of H3 is covered in the following fuzzers:
 | originToDirectedEdges | [fuzzerDirectedEdge](./fuzzerDirectedEdge.c)
 | polygonToCells | [fuzzerPoylgonToCells](./fuzzerPolygonToCells.c)
 | polygonToCellsExperimental | [fuzzerPoylgonToCellsExperimental](./fuzzerPolygonToCellsExperimental.c) [fuzzerPoylgonToCellsExperimentalNoHoles](./fuzzerPolygonToCellsExperimentalNoHoles.c)
-| geoLoopArea | [fuzzerGeoLoopArea](./fuzzerGeoLoopArea.c)
 | radsToDegs | Trivial
 | stringToH3 | [fuzzerIndexIO](./fuzzerIndexIO.c)
 | uncompactCells | [fuzzerCompact](./fuzzerCompact.c)
