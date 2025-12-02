@@ -346,6 +346,15 @@ DECLSPEC H3Error H3_EXPORT(cellsToLinkedMultiPolygon)(const H3Index *h3Set,
 
 /** @brief Free all memory created for a LinkedGeoPolygon */
 DECLSPEC void H3_EXPORT(destroyLinkedMultiPolygon)(LinkedGeoPolygon *polygon);
+
+/** @brief Free all memory created for a GeoLoop */
+DECLSPEC void H3_EXPORT(destroyGeoLoop)(GeoLoop *loop);
+
+/** @brief Free all memory created for a GeoPolygon */
+DECLSPEC void H3_EXPORT(destroyGeoPolygon)(GeoPolygon *poly);
+
+/** @brief Free all memory created for a GeoMultiPolygon */
+DECLSPEC void H3_EXPORT(destroyGeoMultiPolygon)(GeoMultiPolygon *mpoly);
 /** @} */
 
 /** @defgroup degsToRads degsToRads

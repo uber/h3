@@ -1280,3 +1280,7 @@ H3Error H3_EXPORT(cellsToLinkedMultiPolygon)(const H3Index *h3Set,
     }
     return normalizeResult;
 }
+
+void H3_EXPORT(destroyGeoLoop)(GeoLoop *loop) {}
+void H3_EXPORT(destroyGeoPolygon)(GeoPolygon *poly) {}
+void H3_EXPORT(destroyGeoMultiPolygon)(GeoMultiPolygon *mpoly) {}
