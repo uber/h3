@@ -1281,6 +1281,31 @@ H3Error H3_EXPORT(cellsToLinkedMultiPolygon)(const H3Index *h3Set,
     return normalizeResult;
 }
 
-void H3_EXPORT(destroyGeoLoop)(GeoLoop *loop) {}
-void H3_EXPORT(destroyGeoPolygon)(GeoPolygon *poly) {}
-void H3_EXPORT(destroyGeoMultiPolygon)(GeoMultiPolygon *mpoly) {}
+void H3_EXPORT(destroyGeoLoop)(GeoLoop *loop) {
+    H3_MEMORY(free)(loop->verts);
+    loop->verts = NULL;
+    loop->numVerts = 0;
+}
+
+void H3_EXPORT(destroyGeoPolygon)(GeoPolygon *poly) {
+    destroyGeoLoop(&poly->geoloop);
+    for (int i = 0; i < poly->numHoles; i++) {
+        destroyGeoLoop(&poly->holes[i]);
+    }
+    H3_MEMORY(free)(poly->holes);
+    poly->holes = NULL;
+    poly->numHoles = 0;
+}
+
+/**
+ * Free all allocated memory for a GeoMultiPolygon. The caller is
+ * responsible for freeing memory allocated to input GeoMultiPolygon struct.
+ */
+void H3_EXPORT(destroyGeoMultiPolygon)(GeoMultiPolygon *mpoly) {
+    for (int i = 0; i < mpoly->numPolygons; i++) {
+        destroyGeoPolygon(&mpoly->polygons[i]);
+    }
+    H3_MEMORY(free)(mpoly->polygons);
+    mpoly->polygons = NULL;
+    mpoly->numPolygons = 0;
+}
