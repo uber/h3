@@ -124,3 +124,36 @@ H3Error H3_EXPORT(cellAreaRads2)(H3Index cell, double *out) {
 
     return E_SUCCESS;
 }
+
+H3Error geoPolygonAreaRads2(GeoPolygon poly, double *out) {
+    Adder adder = {};
+    double term;
+
+    geoLoopAreaRads2(poly.geoloop, &term);
+    kadd(&adder, term);
+
+    for (int i = 0; i < poly.numHoles; i++) {
+        geoLoopAreaRads2(poly.holes[i], &term);
+
+        kadd(&adder, term);
+        kadd(&adder, -4.0 * M_PI);
+    }
+
+    *out = adder.sum;
+
+    return E_SUCCESS;
+}
+
+H3Error geoMultiPolygonAreaRads2(GeoMultiPolygon mpoly, double *out) {
+    Adder adder = {};
+    double term;
+
+    for (int i = 0; i < mpoly.numPolygons; i++) {
+        geoPolygonAreaRads2(mpoly.polygons[i], &term);
+        kadd(&adder, term);
+    }
+
+    *out = adder.sum;
+
+    return E_SUCCESS;
+}
