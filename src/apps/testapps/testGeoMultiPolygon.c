@@ -38,4 +38,42 @@ SUITE(geoMultiPolygon) {
 
         H3_EXPORT(destroyGeoMultiPolygon)(&mpoly);
     }
+
+    TEST(triforceArea) {
+        LatLng _outer[] = {
+            {M_PI_2, 0},
+            {0, 0},
+            {0, M_PI_2},
+        };
+        LatLng _hole[] = {
+            {M_PI_2, 0},
+            {0, M_PI_2},
+            {0, 0},
+        };
+
+        GeoLoop outer = {
+            .numVerts = 3,
+            .verts = _outer,
+        };
+        GeoLoop hole = {
+            .numVerts = 3,
+            .verts = _hole,
+        };
+
+        GeoPolygon poly = {
+            .geoloop = outer,
+            .numHoles = 1,
+            .holes = &hole,
+        };
+
+        GeoMultiPolygon mpoly = {
+            .numPolygons = 1,
+            .polygons = &poly,
+        };
+
+        double tol = 1e-14;
+        double out;
+        t_assertSuccess(geoMultiPolygonAreaRads2(mpoly, &out));
+        t_assert(fabs(out - 0) < tol, "area should match");
+    }
 }
