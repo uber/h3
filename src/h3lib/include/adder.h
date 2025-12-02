@@ -47,7 +47,7 @@ tradeoffs between Kahan, Neumaier, and `fsum`.
 
 ## Usage
 
-Adder adder = {0};  // initialize
+Adder adder = {};  // initialize
 kadd(&adder, x);  // add x to summation
 out = adder.sum;  // extract final sum
 */
