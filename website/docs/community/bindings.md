@@ -92,6 +92,7 @@ As a C library, bindings can be made to call H3 functions from different program
 
 - [neatlife/php-h3](https://github.com/neatlife/php-h3)
 - [abler98/h3-php](https://github.com/abler98/h3-php)
+- [Foysal50x/h3-php](https://github.com/Foysal50x/h3-php) - It uses PHP's built-in FFI extension, Can be installed with composer, avoiding the need to compile C code, manage system dependencies
 
 ## PostgreSQL
 
