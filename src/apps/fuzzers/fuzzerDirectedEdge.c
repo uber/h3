@@ -41,6 +41,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     H3_EXPORT(isValidDirectedEdge)(args->index);
     H3_EXPORT(getDirectedEdgeOrigin)(args->index, &out);
     H3_EXPORT(getDirectedEdgeDestination)(args->index, &out);
+    H3_EXPORT(reverseDirectedEdge)(args->index, &out);
     H3Index out2[2];
     H3_EXPORT(directedEdgeToCells)(args->index, out2);
     H3Index out6[6];
