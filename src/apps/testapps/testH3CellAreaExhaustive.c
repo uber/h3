@@ -23,6 +23,7 @@
 
 #include <math.h>
 
+#include "adder.h"
 #include "constants.h"
 #include "h3api.h"
 #include "iterators.h"
@@ -136,15 +137,16 @@ static void cell_area_assert(H3Index cell) {
  */
 static void earth_area_test(int res, H3Error (*cell_area)(H3Index, double *),
                             double target, double tol) {
-    double area = 0.0;
-    for (IterCellsResolution iter = iterInitRes(res); iter.h;
-         iterStepRes(&iter)) {
+    Adder adder = {};
+    IterCellsResolution iter = iterInitRes(res);
+
+    for (; iter.h; iterStepRes(&iter)) {
         double cellArea;
         t_assertSuccess((*cell_area)(iter.h, &cellArea));
-        area += cellArea;
+        kadd(&adder, cellArea);
     }
 
-    t_assert(fabs(area - target) < tol,
+    t_assert(fabs(adder.sum - target) < tol,
              "sum of all cells should give earth area");
 }
 
@@ -176,28 +178,24 @@ SUITE(h3CellAreaExhaustive) {
         double km2 = rads2 * EARTH_RADIUS_KM * EARTH_RADIUS_KM;
         double m2 = km2 * 1000 * 1000;
 
-        // Notice the drop in accuracy at resolution 1.
-        // I think this has something to do with Class II vs Class III
-        // resolutions.
-
         earth_area_test(0, H3_EXPORT(cellAreaRads2), rads2, 1e-14);
         earth_area_test(0, H3_EXPORT(cellAreaKm2), km2, 1e-6);
         earth_area_test(0, H3_EXPORT(cellAreaM2), m2, 1e0);
 
-        earth_area_test(1, H3_EXPORT(cellAreaRads2), rads2, 1e-9);
-        earth_area_test(1, H3_EXPORT(cellAreaKm2), km2, 1e-1);
-        earth_area_test(1, H3_EXPORT(cellAreaM2), m2, 1e5);
+        earth_area_test(1, H3_EXPORT(cellAreaRads2), rads2, 1e-14);
+        earth_area_test(1, H3_EXPORT(cellAreaKm2), km2, 1e-6);
+        earth_area_test(1, H3_EXPORT(cellAreaM2), m2, 1e0);
 
-        earth_area_test(2, H3_EXPORT(cellAreaRads2), rads2, 1e-12);
-        earth_area_test(2, H3_EXPORT(cellAreaKm2), km2, 1e-5);
+        earth_area_test(2, H3_EXPORT(cellAreaRads2), rads2, 1e-14);
+        earth_area_test(2, H3_EXPORT(cellAreaKm2), km2, 1e-6);
         earth_area_test(2, H3_EXPORT(cellAreaM2), m2, 1e0);
 
-        earth_area_test(3, H3_EXPORT(cellAreaRads2), rads2, 1e-11);
-        earth_area_test(3, H3_EXPORT(cellAreaKm2), km2, 1e-3);
-        earth_area_test(3, H3_EXPORT(cellAreaM2), m2, 1e3);
+        earth_area_test(3, H3_EXPORT(cellAreaRads2), rads2, 1e-14);
+        earth_area_test(3, H3_EXPORT(cellAreaKm2), km2, 1e-6);
+        earth_area_test(3, H3_EXPORT(cellAreaM2), m2, 1e0);
 
-        earth_area_test(4, H3_EXPORT(cellAreaRads2), rads2, 1e-11);
-        earth_area_test(4, H3_EXPORT(cellAreaKm2), km2, 1e-3);
-        earth_area_test(4, H3_EXPORT(cellAreaM2), m2, 1e2);
+        earth_area_test(4, H3_EXPORT(cellAreaRads2), rads2, 1e-14);
+        earth_area_test(4, H3_EXPORT(cellAreaKm2), km2, 1e-6);
+        earth_area_test(4, H3_EXPORT(cellAreaM2), m2, 1e0);
     }
 }
