@@ -53,14 +53,14 @@ out = adder.sum;  // extract final sum
 */
 
 typedef struct {
-    double sum;  // running total
-    double c;    // compensation term
+    double sum;  // running total. public
+    double _c;   // compensation term. private
 } Adder;
 
 static inline void kadd(Adder *adder, double x) {
-    double y = x - adder->c;
+    double y = x - adder->_c;
     double t = adder->sum + y;
-    adder->c = (t - adder->sum) - y;
+    adder->_c = (t - adder->sum) - y;
     adder->sum = t;
 }
 
