@@ -106,6 +106,7 @@ function ClickableH3IndexList({ hexes, setUserInput, showAll = true }) {
 
 export function SelectedHexDetails({
   setUserInput,
+  showCellId,
   splitUserInput,
   showNavigation = true,
   showDetails = true,
@@ -141,6 +142,12 @@ export function SelectedHexDetails({
     return (
       <p style={{ marginBottom: "0" }}>
         Lat./Lng.: <tt>{coords}</tt>
+        {showCellId ? (
+          <>
+            <br />
+            ID: <ClickableH3Index hex={hex} setUserInput={setUserInput} />
+          </>
+        ) : null}
         {showNavigation ? (
           <>
             <br />

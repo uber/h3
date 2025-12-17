@@ -233,4 +233,33 @@ GeoMultiPolygon createGlobeMultiPolygon() {
     }
 
     return mpoly;
+
+/**
+ * Area of H3 cell in kilometers^2.
+ *
+ * @param   cell  H3 cell
+ * @param    out  cell area in kilometers^2
+ * @return        E_SUCCESS on success, or an error code otherwise
+ */
+H3Error H3_EXPORT(cellAreaKm2)(H3Index cell, double *out) {
+    H3Error err = H3_EXPORT(cellAreaRads2)(cell, out);
+    if (!err) {
+        *out *= EARTH_RADIUS_KM * EARTH_RADIUS_KM;
+    }
+    return err;
+}
+
+/**
+ * Area of H3 cell in meters^2.
+ *
+ * @param   cell  H3 cell
+ * @param    out  cell area in meters^2
+ * @return        E_SUCCESS on success, or an error code otherwise
+ */
+H3Error H3_EXPORT(cellAreaM2)(H3Index cell, double *out) {
+    H3Error err = H3_EXPORT(cellAreaKm2)(cell, out);
+    if (!err) {
+        *out *= 1000 * 1000;
+    }
+    return err;
 }

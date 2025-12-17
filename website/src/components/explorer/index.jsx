@@ -41,9 +41,38 @@ function fullyUnwrap(str) {
   return str;
 }
 
+function maybeDecimalCell(input) {
+  try {
+    if (/^\d+$/.test(input)) {
+      const asBigInt = BigInt(input);
+      const asHex = asBigInt.toString(16);
+      if (isValidCell(asHex)) {
+        return asHex;
+      }
+    }
+  } catch {
+    // Ignore
+  }
+  return null;
+}
+
+function maybePrefixedHexCell(input) {
+  if (input && input.startsWith("0x")) {
+    return input.substring(2);
+  }
+  return null;
+}
+
 function doSplitUserInput(userInput) {
   if (userInput) {
-    // TODO: support WKT, GeoJSON inputs here too
+    // Acceptable inputs, in order of test preference:
+    // Valid hexadecimal cell ID
+    // Valid hexadecimal cell ID, prefixed by 0x
+    // Valid decimal cell ID
+    // lat,lng coordinate pairs
+    // TODO: support WKT, GeoJSON inputs here too. Those would consume the entire input
+
+    let showCellId = false;
     const unwrapAnyArray = fullyUnwrap(userInput);
     const split = unwrapAnyArray.split(/\s/).filter((str) => str !== "");
     const result = [];
@@ -51,9 +80,18 @@ function doSplitUserInput(userInput) {
     for (let i = 0; i < split.length; i++) {
       const currentInput = fullyTrim(split[i]);
       const nextInput = fullyTrim(split[i + 1]);
+      const cellIdFromDecimal = maybeDecimalCell(currentInput);
+      const cellIdFromPrefixedHex = maybePrefixedHexCell(currentInput);
 
       if (isValidCell(currentInput)) {
         result.push(currentInput);
+      } else if (isValidCell(cellIdFromPrefixedHex)) {
+        result.push(cellIdFromPrefixedHex);
+        showCellId = true;
+      } else if (cellIdFromDecimal) {
+        result.push(cellIdFromDecimal);
+        // Show what the cell ID would look like normally
+        showCellId = true;
       } else if (
         i < split.length - 1 &&
         Number.isFinite(Number.parseFloat(currentInput)) &&
@@ -69,13 +107,21 @@ function doSplitUserInput(userInput) {
 
         // consumed, skip next coordinate
         i++;
+        // We don't need to set showCellId, because we are showing multiple cell IDs
+        // anyways, so they will be clickable.
       }
     }
 
-    return result;
+    return {
+      splitUserInput: result,
+      showCellId,
+    };
   }
 
-  return [];
+  return {
+    splitUserInput: [],
+    showCellId: false,
+  };
 }
 
 function zoomToResolution(zoom) {
@@ -85,9 +131,10 @@ function zoomToResolution(zoom) {
 export default function HomeExporer({ children }) {
   const [userInput, setUserInput] = useQueryState("hex", "");
 
-  const splitUserInput = useMemo(() => {
-    return doSplitUserInput(userInput);
-  }, [userInput]);
+  const { splitUserInput, showCellId } = useMemo(
+    () => doSplitUserInput(userInput),
+    [userInput],
+  );
   const userValidHex = useMemo(
     () => splitUserInput.map(isValidCell).includes(true),
     [splitUserInput],
@@ -164,6 +211,7 @@ export default function HomeExporer({ children }) {
           {splitUserInput.length ? (
             <SelectedHexDetails
               splitUserInput={splitUserInput}
+              showCellId={showCellId}
               setUserInput={setUserInput}
               showNavigation={false}
               showDetails={true}

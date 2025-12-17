@@ -5,6 +5,9 @@ on:
     branches:
       - master
 
+permissions:
+  contents: write
+
 # This job installs dependencies, builds the website, and pushes it to `gh-pages`
 jobs:
   deploy-website:

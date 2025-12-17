@@ -108,11 +108,11 @@ SUITE(geoLoopArea) {
 
     TEST(hemisphere_east) {
         /*
-        Stitch 4 1/8 triangles together to cover the eastern hemisphere.
+        Stitch two 1/4 triangles together to cover the eastern hemisphere.
         */
         LatLng verts[] = {
             {M_PI_2, 0.0},
-            {0.0, 0},
+            {0.0, 0.0},
             {-M_PI_2, 0.0},
             {0.0, M_PI},
         };
