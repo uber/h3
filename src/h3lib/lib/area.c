@@ -233,6 +233,7 @@ GeoMultiPolygon createGlobeMultiPolygon() {
     }
 
     return mpoly;
+}
 
 /**
  * Area of H3 cell in kilometers^2.
