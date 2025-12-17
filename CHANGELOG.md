@@ -7,7 +7,11 @@ The public API of this library consists of the functions declared in file
 
 ## [Unreleased]
 ### Added
-- `reverseDirectedEdge` function
+- `reverseDirectedEdge` function (#1098)
+- (internal) `geoLoopArea` function (#1101)
+
+### Changed
+- `cellAreaRads2` uses `geoLoopArea` (#1101)
 
 ## [4.4.1] - 2025-11-11
 ### Fixed
