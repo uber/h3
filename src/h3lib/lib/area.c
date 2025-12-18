@@ -23,7 +23,6 @@
 #include <math.h>
 
 #include "adder.h"
-#include "alloc.h"
 #include "constants.h"
 #include "h3Assert.h"
 #include "h3api.h"
