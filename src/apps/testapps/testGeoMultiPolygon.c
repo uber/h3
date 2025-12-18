@@ -23,6 +23,7 @@
 #include <math.h>
 #include <string.h>
 
+#include "algos.h"
 #include "alloc.h"
 #include "area.h"
 #include "h3api.h"

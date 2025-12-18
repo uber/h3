@@ -194,48 +194,6 @@ H3Error geoMultiPolygonAreaRads2(GeoMultiPolygon mpoly, double *out) {
 }
 
 /**
- * Allocate a GeoMultiPolygon representing the entire globe.
- * The globe is represented using 8 triangular polygons, with
- * all edge arcs of exactly 90 degrees (i.e., pi/2 radians).
- * Memory should be freed with `destroyGeoMultiPolygon`.
- *
- * @return GeoMultiPolygon covering entire globe
- */
-GeoMultiPolygon createGlobeMultiPolygon() {
-    const int numPolygons = 8;
-    const int numVerts = 3;
-    const LatLng verts[8][3] = {
-        {{M_PI_2, 0.0}, {0.0, 0.0}, {0.0, M_PI_2}},
-        {{M_PI_2, 0.0}, {0.0, M_PI_2}, {0.0, M_PI}},
-        {{M_PI_2, 0.0}, {0.0, M_PI}, {0.0, -M_PI_2}},
-        {{M_PI_2, 0.0}, {0.0, -M_PI_2}, {0.0, 0.0}},
-        {{-M_PI_2, 0.0}, {0.0, 0.0}, {0.0, -M_PI_2}},
-        {{-M_PI_2, 0.0}, {0.0, -M_PI_2}, {0.0, -M_PI}},
-        {{-M_PI_2, 0.0}, {0.0, -M_PI}, {0.0, M_PI_2}},
-        {{-M_PI_2, 0.0}, {0.0, M_PI_2}, {0.0, 0.0}},
-    };
-
-    GeoMultiPolygon mpoly = {
-        .numPolygons = numPolygons,
-        .polygons = H3_MEMORY(malloc)(sizeof(GeoPolygon) * numPolygons),
-    };
-
-    for (int i = 0; i < numPolygons; i++) {
-        GeoPolygon *poly = &mpoly.polygons[i];
-        poly->numHoles = 0;
-        poly->holes = NULL;
-        poly->geoloop.numVerts = numVerts;
-        poly->geoloop.verts = H3_MEMORY(malloc)(sizeof(LatLng) * numVerts);
-
-        for (int j = 0; j < numVerts; j++) {
-            poly->geoloop.verts[j] = verts[i][j];
-        }
-    }
-
-    return mpoly;
-}
-
-/**
  * Area of H3 cell in kilometers^2.
  *
  * @param   cell  H3 cell

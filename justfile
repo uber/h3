@@ -25,8 +25,8 @@ test: build
     # ./build/bin/testEdgeCellsToPoly
     # ./build/bin/testDirectedEdge
     # ./build/bin/testArea
-    just test-slow
-    # just test-fast
+    # just test-slow
+    just test-fast
     # ./build/bin/testGeoLoopArea
     # ./build/bin/testGeoMultiPolygon
 
