@@ -56,4 +56,7 @@ H3Error _gridDiskDistancesInternal(H3Index origin, int k, H3Index *out,
 
 // The safe gridRing algorithm.
 H3Error _gridRingInternal(H3Index origin, int k, H3Index *out);
+
+// Create a GeoMultiPolygon covering the entire globe
+GeoMultiPolygon createGlobeMultiPolygon();
 #endif
