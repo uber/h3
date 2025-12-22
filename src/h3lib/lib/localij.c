@@ -22,9 +22,12 @@
 #include <assert.h>
 #include <inttypes.h>
 #include <math.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "algos.h"
+#include "alloc.h"
 #include "baseCells.h"
 #include "faceijk.h"
 #include "h3Assert.h"
@@ -398,9 +401,10 @@ H3Error localIjkToCell(H3Index origin, const CoordIJK *ijk, H3Index *out) {
             for (int i = 0; i < pentagonRotations; i++) {
                 dir = _rotate60ccw(dir);
             }
-            // The pentagon rotations are being chosen so that dir is not the
-            // deleted direction. If it still happens, it means we're moving
-            // into a deleted subsequence, so there is no index here.
+            // The pentagon rotations are chosen to avoid the deleted direction
+            // (the missing neighbor direction around a pentagon). If we still
+            // land on it, the coordinate would cross pentagon distortion and
+            // cannot be represented.
             if (dir == K_AXES_DIGIT) {
                 return E_PENTAGON;
             }
@@ -603,13 +607,15 @@ H3Error H3_EXPORT(gridDistance)(H3Index origin, H3Index index, int64_t *out) {
 
 /**
  * Number of indexes in a line from the start index to the end index,
- * to be used for allocating memory. Returns a negative number if the
- * line cannot be computed.
+ * to be used for allocating memory.
+ *
+ * On success, sets `*size` to `gridDistance(start, end) + 1`
+ * (including both endpoints).
  *
  * @param start Start index of the line
  * @param end End index of the line
- * @param size Size of the line
- * @returns 0 on success, or another value on error
+ * @param size Output size of the line
+ * @returns 0 on success, otherwise the error from `gridDistance`
  */
 H3Error H3_EXPORT(gridPathCellsSize)(H3Index start, H3Index end,
                                      int64_t *size) {
@@ -654,11 +660,92 @@ static void cubeRound(double i, double j, double k, CoordIJK *ijk) {
 }
 
 /**
+ * Attempts to generate a shortest-length path by interpolating through an
+ * origin-anchored local IJK coordinate space.
+ *
+ * This helper implements the interpolation-based path construction used by
+ * `gridPathCells`. It can fail if interpolation lands on intermediate IJK
+ * coordinates that cannot be mapped back to valid H3 cells. This can occur
+ * because the origin-anchored local IJ(K) space is not globally continuous, and
+ * some intermediate coordinates do not have an inverse mapping back to a cell
+ * in the chosen chart (for example, due to discontinuities or warping near
+ * pentagons).
+ *
+ * The output is written to `out[outOffset + outStep * n]`, allowing callers to
+ * fill the path in either direction without an intermediate buffer.
+ *
+ * @param start Origin cell for local IJK conversions
+ * @param end Target cell
+ * @param distance Expected edge distance between `start` and `end`
+ * @param out Output buffer
+ * @param outOffset Output index for the first element
+ * @param outStep Output stride (+1 for forward fill, -1 for reverse fill)
+ * @return E_SUCCESS if all intermediate steps convert successfully, otherwise
+ *         the first encountered conversion error
+ */
+static H3Error gridPathCellsInterpolate(H3Index start, H3Index end,
+                                        int64_t distance, H3Index *out,
+                                        int64_t outOffset, int64_t outStep) {
+    // Get IJK coords for the start and end. We've already confirmed
+    // that these can be calculated with the distance check above.
+    CoordIJK startIjk = {0};
+    CoordIJK endIjk = {0};
+
+    // Convert H3 addresses to IJK coords
+    H3Error startError = cellToLocalIjk(start, start, &startIjk);
+    if (NEVER(startError)) {
+        // Unreachable because this was called as part of gridDistance
+        return startError;
+    }
+    H3Error endError = cellToLocalIjk(start, end, &endIjk);
+    if (NEVER(endError)) {
+        // Unreachable because this was called as part of gridDistance
+        return endError;
+    }
+
+    // Convert IJK to cube coordinates suitable for linear interpolation
+    ijkToCube(&startIjk);
+    ijkToCube(&endIjk);
+
+    double invDistance = 1.0 / (double)distance;
+    double iStep = (double)(endIjk.i - startIjk.i) * invDistance;
+    double jStep = (double)(endIjk.j - startIjk.j) * invDistance;
+    double kStep = (double)(endIjk.k - startIjk.k) * invDistance;
+
+    CoordIJK currentIjk = {startIjk.i, startIjk.j, startIjk.k};
+    for (int64_t n = 0; n <= distance; n++) {
+        cubeRound((double)startIjk.i + iStep * n,
+                  (double)startIjk.j + jStep * n,
+                  (double)startIjk.k + kStep * n, &currentIjk);
+        // Convert cube -> ijk -> h3 index
+        cubeToIjk(&currentIjk);
+        const int64_t idx = outOffset + outStep * n;
+        H3Error currentError = localIjkToCell(start, &currentIjk, &out[idx]);
+        if (currentError) {
+            // The cells between `start` and `end` may fall in pentagon
+            // distortion.
+            return currentError;
+        }
+    }
+
+    return E_SUCCESS;
+}
+
+/**
  * Given two H3 indexes, return the line of indexes between them (inclusive).
  *
- * This function may fail to find the line between two indexes, for
- * example if they are very far apart. It may also fail when finding
- * distances for indexes on opposite sides of a pentagon.
+ * This function relies on `gridDistance(start, end)` to determine the expected
+ * path length, and will return the same error if `gridDistance` fails.
+ *
+ * Path construction is performed by straight-line interpolation in the
+ * origin-anchored local IJK coordinate space:
+ *
+ *  - First, interpolate using `start` as the local IJK origin.
+ *  - If interpolation fails, retry using `end` as the local IJK origin and
+ *    reverse the resulting sequence into `out`.
+ *
+ * If both interpolation attempts fail, this function returns the error from the
+ * first attempt.
  *
  * Notes:
  *
@@ -682,46 +769,26 @@ H3Error H3_EXPORT(gridPathCells)(H3Index start, H3Index end, H3Index *out) {
         return distanceError;
     }
 
-    // Get IJK coords for the start and end. We've already confirmed
-    // that these can be calculated with the distance check above.
-    CoordIJK startIjk = {0};
-    CoordIJK endIjk = {0};
-
-    // Convert H3 addresses to IJK coords
-    H3Error startError = cellToLocalIjk(start, start, &startIjk);
-    if (NEVER(startError)) {
-        // Unreachable because this was called as part of gridDistance
-        return startError;
-    }
-    H3Error endError = cellToLocalIjk(start, end, &endIjk);
-    if (NEVER(endError)) {
-        // Unreachable because this was called as part of gridDistance
-        return endError;
+    if (distance == 0) {
+        out[0] = start;
+        return E_SUCCESS;
     }
 
-    // Convert IJK to cube coordinates suitable for linear interpolation
-    ijkToCube(&startIjk);
-    ijkToCube(&endIjk);
-
-    double invDistance = distance ? 1.0 / (double)distance : 0;
-    double iStep = (double)(endIjk.i - startIjk.i) * invDistance;
-    double jStep = (double)(endIjk.j - startIjk.j) * invDistance;
-    double kStep = (double)(endIjk.k - startIjk.k) * invDistance;
-
-    CoordIJK currentIjk = {startIjk.i, startIjk.j, startIjk.k};
-    for (int64_t n = 0; n <= distance; n++) {
-        cubeRound((double)startIjk.i + iStep * n,
-                  (double)startIjk.j + jStep * n,
-                  (double)startIjk.k + kStep * n, &currentIjk);
-        // Convert cube -> ijk -> h3 index
-        cubeToIjk(&currentIjk);
-        H3Error currentError = localIjkToCell(start, &currentIjk, &out[n]);
-        if (currentError) {
-            // The cells between `start` and `end` may fall in pentagon
-            // distortion.
-            return currentError;
-        }
+    // Straight-line interpolation in local IJK space anchored at `start`.
+    H3Error interpolateErr =
+        gridPathCellsInterpolate(start, end, distance, out, 0, 1);
+    if (!interpolateErr) {
+        return E_SUCCESS;
     }
 
-    return E_SUCCESS;
+    // Retry interpolation anchored at `end` and reverse the output.
+    // This can resolve cases where the local IJK chart is discontinuous
+    // relative to one origin but not the other.
+    H3Error reverseErr =
+        gridPathCellsInterpolate(end, start, distance, out, distance, -1);
+    if (!reverseErr) {
+        return E_SUCCESS;
+    }
+
+    return interpolateErr;
 }
