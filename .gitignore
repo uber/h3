@@ -108,3 +108,4 @@ KML/res*centers.kml
 # Generated files
 src/h3lib/include/h3api.h
 src/apps/benchmarks/benchmarkCountries.c
+h3-prof.trace

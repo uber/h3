@@ -27,6 +27,7 @@
 #include <string.h>
 
 #include "alloc.h"
+#include "area.h"
 #include "baseCells.h"
 #include "bbox.h"
 #include "faceijk.h"
@@ -1281,6 +1282,22 @@ H3Error H3_EXPORT(cellsToLinkedMultiPolygon)(const H3Index *h3Set,
     return normalizeResult;
 }
 
+// TODO: annoying we have to have this here for theoretically identical area
+// polygons
+int cmp_poly_area(const void *a, const void *b) {
+    const GeoPolygon *pa = (const GeoPolygon *)a;
+    const GeoPolygon *pb = (const GeoPolygon *)b;
+
+    double area_a, area_b;
+    geoPolygonAreaRads2(*pa, &area_a);
+    geoPolygonAreaRads2(*pb, &area_b);
+
+    // by area in descending order
+    if (area_a < area_b) return +1;
+    if (area_a > area_b) return -1;
+    return 0;
+}
+
 /**
  * Allocate a GeoMultiPolygon representing the entire globe.
  * The globe is represented using 8 triangular polygons, with
@@ -1319,6 +1336,8 @@ GeoMultiPolygon createGlobeMultiPolygon() {
             poly->geoloop.verts[j] = verts[i][j];
         }
     }
+
+    qsort(mpoly.polygons, numPolygons, sizeof(GeoPolygon), cmp_poly_area);
 
     return mpoly;
 }
