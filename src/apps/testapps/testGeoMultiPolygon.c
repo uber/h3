@@ -30,18 +30,9 @@
 #include "test.h"
 #include "utility.h"
 
+// TODO: just delete these tests?
+
 SUITE(geoMultiPolygon) {
-    TEST(globalMultiPolygonArea) {
-        double tol = 1e-14;
-        double out;
-
-        GeoMultiPolygon mpoly = createGlobeMultiPolygon();
-        t_assertSuccess(geoMultiPolygonAreaRads2(mpoly, &out));
-        t_assert(fabs(out - 4 * M_PI) < tol, "area should match");
-
-        H3_EXPORT(destroyGeoMultiPolygon)(&mpoly);
-    }
-
     TEST(holeSameAsOuter) {
         /**
          * TODO: Replace with simpler test.

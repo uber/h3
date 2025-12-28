@@ -27,7 +27,6 @@
 #include <string.h>
 
 #include "alloc.h"
-#include "area.h"
 #include "baseCells.h"
 #include "bbox.h"
 #include "faceijk.h"
@@ -1280,66 +1279,6 @@ H3Error H3_EXPORT(cellsToLinkedMultiPolygon)(const H3Index *h3Set,
         H3_EXPORT(destroyLinkedMultiPolygon)(out);
     }
     return normalizeResult;
-}
-
-// TODO: annoying we have to have this here for theoretically identical area
-// polygons
-int cmp_poly_area(const void *a, const void *b) {
-    const GeoPolygon *pa = (const GeoPolygon *)a;
-    const GeoPolygon *pb = (const GeoPolygon *)b;
-
-    double area_a, area_b;
-    geoPolygonAreaRads2(*pa, &area_a);
-    geoPolygonAreaRads2(*pb, &area_b);
-
-    // by area in descending order
-    if (area_a < area_b) return +1;
-    if (area_a > area_b) return -1;
-    return 0;
-}
-
-/**
- * Allocate a GeoMultiPolygon representing the entire globe.
- * The globe is represented using 8 triangular polygons, with
- * all edge arcs of exactly 90 degrees (i.e., pi/2 radians).
- * Memory should be freed with `destroyGeoMultiPolygon`.
- *
- * @return GeoMultiPolygon covering entire globe
- */
-GeoMultiPolygon createGlobeMultiPolygon() {
-    const int numPolygons = 8;
-    const int numVerts = 3;
-    const LatLng verts[8][3] = {
-        {{M_PI_2, 0.0}, {0.0, 0.0}, {0.0, M_PI_2}},
-        {{M_PI_2, 0.0}, {0.0, M_PI_2}, {0.0, M_PI}},
-        {{M_PI_2, 0.0}, {0.0, M_PI}, {0.0, -M_PI_2}},
-        {{M_PI_2, 0.0}, {0.0, -M_PI_2}, {0.0, 0.0}},
-        {{-M_PI_2, 0.0}, {0.0, 0.0}, {0.0, -M_PI_2}},
-        {{-M_PI_2, 0.0}, {0.0, -M_PI_2}, {0.0, -M_PI}},
-        {{-M_PI_2, 0.0}, {0.0, -M_PI}, {0.0, M_PI_2}},
-        {{-M_PI_2, 0.0}, {0.0, M_PI_2}, {0.0, 0.0}},
-    };
-
-    GeoMultiPolygon mpoly = {
-        .numPolygons = numPolygons,
-        .polygons = H3_MEMORY(malloc)(sizeof(GeoPolygon) * numPolygons),
-    };
-
-    for (int i = 0; i < numPolygons; i++) {
-        GeoPolygon *poly = &mpoly.polygons[i];
-        poly->numHoles = 0;
-        poly->holes = NULL;
-        poly->geoloop.numVerts = numVerts;
-        poly->geoloop.verts = H3_MEMORY(malloc)(sizeof(LatLng) * numVerts);
-
-        for (int j = 0; j < numVerts; j++) {
-            poly->geoloop.verts[j] = verts[i][j];
-        }
-    }
-
-    qsort(mpoly.polygons, numPolygons, sizeof(GeoPolygon), cmp_poly_area);
-
-    return mpoly;
 }
 
 /**

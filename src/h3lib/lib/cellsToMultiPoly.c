@@ -451,6 +451,62 @@ static SortablePoly createSortablePoly(SortableLoop *sloop, int numHoles) {
     return spoly;
 }
 
+/**
+ * Allocate a GeoMultiPolygon representing the entire globe.
+ * The globe is represented using 8 triangular polygons, with
+ * all edge arcs of exactly 90 degrees (i.e., pi/2 radians).
+ * Memory should be freed with `destroyGeoMultiPolygon`.
+ *
+ * @return GeoMultiPolygon covering entire globe
+ */
+GeoMultiPolygon createGlobeMultiPolygon() {
+    const int numPolygons = 8;
+    const int numVerts = 3;
+    const LatLng verts[8][3] = {
+        {{M_PI_2, 0.0}, {0.0, 0.0}, {0.0, M_PI_2}},
+        {{M_PI_2, 0.0}, {0.0, M_PI_2}, {0.0, M_PI}},
+        {{M_PI_2, 0.0}, {0.0, M_PI}, {0.0, -M_PI_2}},
+        {{M_PI_2, 0.0}, {0.0, -M_PI_2}, {0.0, 0.0}},
+        {{-M_PI_2, 0.0}, {0.0, 0.0}, {0.0, -M_PI_2}},
+        {{-M_PI_2, 0.0}, {0.0, -M_PI_2}, {0.0, -M_PI}},
+        {{-M_PI_2, 0.0}, {0.0, -M_PI}, {0.0, M_PI_2}},
+        {{-M_PI_2, 0.0}, {0.0, M_PI_2}, {0.0, 0.0}},
+    };
+
+    SortablePoly *spolys =
+        H3_MEMORY(malloc)(sizeof(SortablePoly) * numPolygons);
+
+    for (int i = 0; i < numPolygons; i++) {
+        GeoPolygon *poly = &spolys[i].poly;
+        poly->numHoles = 0;
+        poly->holes = NULL;
+        poly->geoloop.numVerts = numVerts;
+        poly->geoloop.verts = H3_MEMORY(malloc)(sizeof(LatLng) * numVerts);
+
+        for (int j = 0; j < numVerts; j++) {
+            poly->geoloop.verts[j] = verts[i][j];
+        }
+
+        // Calculate outer area for sorting
+        geoLoopAreaRads2(poly->geoloop, &spolys[i].outerArea);
+    }
+
+    qsort(spolys, numPolygons, sizeof(SortablePoly), cmp_SortablePoly);
+
+    GeoMultiPolygon mpoly = {
+        .numPolygons = numPolygons,
+        .polygons = H3_MEMORY(malloc)(sizeof(GeoPolygon) * numPolygons),
+    };
+
+    for (int i = 0; i < numPolygons; i++) {
+        mpoly.polygons[i] = spolys[i].poly;
+    }
+
+    H3_MEMORY(free)(spolys);
+
+    return mpoly;
+}
+
 static GeoMultiPolygon createMultiPolygon(SortableLoopSet loopset) {
     if (loopset.numLoops == 0) {
         return createGlobeMultiPolygon();

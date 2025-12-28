@@ -425,18 +425,11 @@ SUITE(edgeCellToPoly) {
         H3_EXPORT(destroyGeoMultiPolygon)(&mpoly);
     }
 
-    TEST(global_poly_area) {
-        GeoMultiPolygon mpoly = createGlobeMultiPolygon();
-
-        check_global_poly(mpoly);
-
-        H3_EXPORT(destroyGeoMultiPolygon)(&mpoly);
-    }
-
     TEST(all_cells) {
         H3Index cells[122];
         H3_EXPORT(getRes0Cells)(cells);
 
+        // expecting a global multipolygon
         GeoMultiPolygon mpoly = get_mpoly(cells, 122);
 
         check_global_poly(mpoly);
