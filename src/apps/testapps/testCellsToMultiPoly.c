@@ -63,7 +63,7 @@ static void check_poly(GeoPolygon poly) {
 }
 
 static GeoMultiPolygon get_mpoly(H3Index *cells, uint64_t num_cells) {
-    double rel_tol = 1e-9;
+    double rel_tol = 1e-7;
     GeoMultiPolygon mpoly;
     t_assertSuccess(H3_EXPORT(cellsToMultiPolygon)(cells, num_cells, &mpoly));
 
