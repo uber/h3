@@ -10,7 +10,7 @@
 #include "h3api.h"
 
 // After rough search, 10 seems to minimize compute time for large sets
-#define HASH_TABLE_MULTIPLIER 10.0
+#define HASH_TABLE_MULTIPLIER 10
 
 typedef struct Arc {
     H3Index id;
