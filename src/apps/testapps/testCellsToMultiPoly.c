@@ -171,7 +171,7 @@ SUITE(edgeCellToPoly) {
     TEST(all_pentagons) {
         H3Index cells[12];
         for (int res = 0; res <= 15; res++) {
-            getPentagons(res, cells);
+            H3_EXPORT(getPentagons)(res, cells);
             for (int i = 0; i < 12; i++) {
                 check_cell(cells[i]);
             }

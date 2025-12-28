@@ -23,6 +23,7 @@ typedef struct Arc {
     struct Arc *prev;
 
     // For union-find datastructure
+    // https://en.wikipedia.org/wiki/Disjoint-set_data_structure
     struct Arc *parent;
     int64_t rank;
 } Arc;
