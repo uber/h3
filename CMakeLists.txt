@@ -284,7 +284,6 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testMathExtensionsInternal.c
     src/apps/testapps/testDescribeH3Error.c
     src/apps/testapps/testGeoLoopArea.c
-    src/apps/testapps/testGeoMultiPolygon.c
     src/apps/miscapps/cellToBoundaryHier.c
     src/apps/miscapps/cellToLatLngHier.c
     src/apps/miscapps/generateBaseCellNeighbors.c
