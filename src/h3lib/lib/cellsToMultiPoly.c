@@ -174,8 +174,7 @@ static inline int64_t cellToEdgeArcs(H3Index h, Arc *arcs) {
     static const uint8_t idxp[5] = {0, 1, 3, 2, 4};
     const uint8_t *idx;
 
-    H3Error err = H3_EXPORT(originToDirectedEdges)(h, _edges);
-    NEVER(err);
+    H3_EXPORT(originToDirectedEdges)(h, _edges);
 
     // the first directed edge of a pentagon is H3_NULL
     if (_edges[0] == H3_NULL) {
@@ -294,8 +293,7 @@ static void cancelArcPairs(ArcSet arcset) {
 
         if (!a->isRemoved) {
             H3Index reversedEdge;
-            H3Error err = H3_EXPORT(reverseDirectedEdge)(a->id, &reversedEdge);
-            NEVER(err);
+            H3_EXPORT(reverseDirectedEdge)(a->id, &reversedEdge);
             Arc *b = findArc(arcset, reversedEdge);
 
             if (b) {
@@ -353,7 +351,6 @@ static SortableLoop createSortableLoop(Arc *arc) {
 
     int numVerts;
     LatLng *verts;
-    H3Error err;
 
     numVerts = 0;
     do {
@@ -371,8 +368,7 @@ static SortableLoop createSortableLoop(Arc *arc) {
     numVerts = 0;
     int j = 0;
     do {
-        err = H3_EXPORT(directedEdgeToBoundary)(arc->id, &gb);
-        NEVER(err);
+        H3_EXPORT(directedEdgeToBoundary)(arc->id, &gb);
 
         for (int i = 0; i < gb.numVerts - 1; i++) {
             verts[j] = gb.verts[i];
@@ -391,8 +387,7 @@ static SortableLoop createSortableLoop(Arc *arc) {
         .root = getRoot(arc)->id,
         .loop = {.numVerts = numVerts, .verts = verts},
     };
-    err = geoLoopAreaRads2(sloop.loop, &sloop.area);
-    NEVER(err);
+    geoLoopAreaRads2(sloop.loop, &sloop.area);
 
     return sloop;
 }
