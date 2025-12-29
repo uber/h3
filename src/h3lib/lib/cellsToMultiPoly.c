@@ -82,7 +82,13 @@ static inline int cmp_SortablePoly(const void *pa, const void *pb) {
     return (B > A) - (B < A);
 }
 
-static inline int cmp_raw(const void *a, const void *b) {
+/*
+Compare H3Index values, interpreting them as uint64s.
+
+Note that, usually, we only use this ordering when we know that the
+cells in the set are all the same resolution.
+*/
+static inline int cmp_uint64(const void *a, const void *b) {
     H3Index ha = *(const H3Index *)a;
     H3Index hb = *(const H3Index *)b;
     if (ha < hb) return -1;
@@ -112,7 +118,7 @@ static inline H3Error validateCellSet(const H3Index *cells,
     if (numCells >= 2) {
         H3Index *cellsCopy = H3_MEMORY(malloc)(numCells * sizeof(H3Index));
         memcpy(cellsCopy, cells, numCells * sizeof(H3Index));
-        qsort(cellsCopy, numCells, sizeof(H3Index), cmp_raw);
+        qsort(cellsCopy, numCells, sizeof(H3Index), cmp_uint64);
         for (int64_t i = 1; i < numCells; i++) {
             if (cellsCopy[i] == cellsCopy[i - 1]) {
                 H3_MEMORY(free)(cellsCopy);
