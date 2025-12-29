@@ -117,6 +117,9 @@ static inline H3Error validateCellSet(const H3Index *cells,
     // duplicates
     if (numCells >= 2) {
         H3Index *cellsCopy = H3_MEMORY(malloc)(numCells * sizeof(H3Index));
+        if (!cellsCopy) {
+            return E_MEMORY_ALLOC;
+        }
         memcpy(cellsCopy, cells, numCells * sizeof(H3Index));
         qsort(cellsCopy, numCells, sizeof(H3Index), cmp_uint64);
         for (int64_t i = 1; i < numCells; i++) {
@@ -170,9 +173,10 @@ Fill in edge arcs for a single cell:
 
 - set prev/next arcs in arced loop. ensures edges in CCW order
 - set parent and rank for union_find
-- returns number of edges written
+- returns E_SUCCESS or error from originToDirectedEdges
 */
-static inline int64_t cellToEdgeArcs(H3Index h, Arc *arcs) {
+static inline H3Error cellToEdgeArcs(H3Index h, Arc *arcs,
+                                     int64_t *numEdgesOut) {
     int64_t numEdges;
     H3Index _edges[6];
     H3Index *edges;
@@ -182,7 +186,9 @@ static inline int64_t cellToEdgeArcs(H3Index h, Arc *arcs) {
     const uint8_t *idx;
 
     H3Error err = H3_EXPORT(originToDirectedEdges)(h, _edges);
-    NEVER(err);
+    if (err) {
+        return err;
+    }
 
     // the first directed edge of a pentagon is H3_NULL
     if (_edges[0] == H3_NULL) {
@@ -215,37 +221,52 @@ static inline int64_t cellToEdgeArcs(H3Index h, Arc *arcs) {
         arcs[cur].next = &arcs[next];
     }
 
-    return numEdges;
+    *numEdgesOut = numEdges;
+    return E_SUCCESS;
 }
 
-static ArcSet createArcSet(const H3Index *cells, const int64_t numCells) {
+static H3Error createArcSet(const H3Index *cells, const int64_t numCells,
+                            ArcSet *arcset) {
     int64_t numArcs = getNumEdges(cells, numCells);
     int64_t numBuckets = numArcs * HASH_TABLE_MULTIPLIER;
 
-    ArcSet arcset = {
-        .numArcs = numArcs,
-        .numBuckets = numBuckets,
-        .arcs = H3_MEMORY(malloc)(numArcs * sizeof(Arc)),
-        .buckets = H3_MEMORY(calloc)(numBuckets, sizeof(Arc *)),
-    };
+    arcset->numArcs = numArcs;
+    arcset->numBuckets = numBuckets;
+    arcset->arcs = H3_MEMORY(malloc)(numArcs * sizeof(Arc));
+    if (!arcset->arcs) {
+        return E_MEMORY_ALLOC;
+    }
+
+    arcset->buckets = H3_MEMORY(calloc)(numBuckets, sizeof(Arc *));
+    if (!arcset->buckets) {
+        H3_MEMORY(free)(arcset->arcs);
+        return E_MEMORY_ALLOC;
+    }
 
     int64_t j = 0;
     for (int64_t i = 0; i < numCells; i++) {
-        j += cellToEdgeArcs(cells[i], &arcset.arcs[j]);
+        int64_t numEdges;
+        H3Error err = cellToEdgeArcs(cells[i], &arcset->arcs[j], &numEdges);
+        if (err) {
+            H3_MEMORY(free)(arcset->arcs);
+            H3_MEMORY(free)(arcset->buckets);
+            return err;
+        }
+        j += numEdges;
     }
 
-    for (int64_t i = 0; i < arcset.numArcs; i++) {
+    for (int64_t i = 0; i < arcset->numArcs; i++) {
         // hash edge to initial bucket
-        int64_t j = hashEdge(arcset.arcs[i].id, arcset.numBuckets);
+        int64_t j = hashEdge(arcset->arcs[i].id, arcset->numBuckets);
 
         // linear probe to find next open bucket. wraps around if needed.
-        while (arcset.buckets[j] != NULL) {
-            j = (j + 1) % arcset.numBuckets;
+        while (arcset->buckets[j] != NULL) {
+            j = (j + 1) % arcset->numBuckets;
         }
-        arcset.buckets[j] = &arcset.arcs[i];
+        arcset->buckets[j] = &arcset->arcs[i];
     }
 
-    return arcset;
+    return E_SUCCESS;
 }
 
 static inline Arc *findArc(ArcSet arcset, H3Index e) {
@@ -353,7 +374,7 @@ static int countLoops(ArcSet arcset) {
     return numLoops;
 }
 
-static SortableLoop createSortableLoop(Arc *arc) {
+static H3Error createSortableLoop(Arc *arc, SortableLoop *sloop) {
     CellBoundary gb;
     H3Index start = arc->id;
 
@@ -372,6 +393,9 @@ static SortableLoop createSortableLoop(Arc *arc) {
     } while (arc->id != start);
 
     verts = H3_MEMORY(malloc)(sizeof(LatLng) * numVerts);
+    if (!verts) {
+        return E_MEMORY_ALLOC;
+    }
 
     numVerts = 0;
     int j = 0;
@@ -389,27 +413,43 @@ static SortableLoop createSortableLoop(Arc *arc) {
 
     // This memory ends up in GeoMultiPolygon, to be freed by caller of
     // cellsToMultiPolygon()
-    verts = H3_MEMORY(realloc)(verts, sizeof(LatLng) * numVerts);
+    LatLng *reallocVerts = H3_MEMORY(realloc)(verts, sizeof(LatLng) * numVerts);
+    if (!reallocVerts) {
+        H3_MEMORY(free)(verts);
+        return E_MEMORY_ALLOC;
+    }
+    verts = reallocVerts;
 
-    SortableLoop sloop = {
-        .root = getRoot(arc)->id,
-        .loop = {.numVerts = numVerts, .verts = verts},
-    };
-    geoLoopAreaRads2(sloop.loop, &sloop.area);
+    sloop->root = getRoot(arc)->id;
+    sloop->loop.numVerts = numVerts;
+    sloop->loop.verts = verts;
+    geoLoopAreaRads2(sloop->loop, &sloop->area);
 
-    return sloop;
+    return E_SUCCESS;
 }
 
-static SortableLoopSet createSortableLoopSet(ArcSet arcset) {
+static H3Error createSortableLoopSet(ArcSet arcset, SortableLoopSet *loopset) {
     int numLoops = countLoops(arcset);
     resetVisited(arcset);
     Arc *arcs = arcset.arcs;
 
     SortableLoop *sloops = H3_MEMORY(malloc)(sizeof(SortableLoop) * numLoops);
+    if (!sloops) {
+        return E_MEMORY_ALLOC;
+    }
+
     int j = 0;
     for (int i = 0; i < arcset.numArcs; i++) {
         if (!arcs[i].isVisited && !arcs[i].isRemoved) {
-            sloops[j] = createSortableLoop(&arcs[i]);
+            H3Error err = createSortableLoop(&arcs[i], &sloops[j]);
+            if (err) {
+                // Free any verts already allocated in previous loops
+                for (int k = 0; k < j; k++) {
+                    H3_MEMORY(free)(sloops[k].loop.verts);
+                }
+                H3_MEMORY(free)(sloops);
+                return err;
+            }
             j++;
         }
     }
@@ -418,12 +458,10 @@ static SortableLoopSet createSortableLoopSet(ArcSet arcset) {
     // contiguous in memory, so that the outer loop "contains" the holes.
     qsort(sloops, numLoops, sizeof(SortableLoop), cmp_SortableLoop);
 
-    SortableLoopSet loopset = {
-        .numLoops = numLoops,
-        .sloops = sloops,
-    };
+    loopset->numLoops = numLoops;
+    loopset->sloops = sloops;
 
-    return loopset;
+    return E_SUCCESS;
 }
 
 static int countPolys(SortableLoopSet loopset) {
@@ -440,22 +478,25 @@ static int countPolys(SortableLoopSet loopset) {
     return numPolys;
 }
 
-static SortablePoly createSortablePoly(SortableLoop *sloop, int numHoles) {
-    GeoPolygon poly = {
-        .geoloop = sloop[0].loop,
-        .numHoles = numHoles,
-        .holes = H3_MEMORY(malloc)(sizeof(GeoLoop) * numHoles),
-    };
-    for (int k = 0; k < numHoles; k++) {
-        poly.holes[k] = sloop[k + 1].loop;
+static H3Error createSortablePoly(SortableLoop *sloop, int numHoles,
+                                  SortablePoly *spoly) {
+    GeoLoop *holes = NULL;
+    if (numHoles > 0) {
+        holes = H3_MEMORY(malloc)(sizeof(GeoLoop) * numHoles);
+        if (!holes) {
+            return E_MEMORY_ALLOC;
+        }
+        for (int k = 0; k < numHoles; k++) {
+            holes[k] = sloop[k + 1].loop;
+        }
     }
 
-    SortablePoly spoly = {
-        .outerArea = sloop[0].area,  // area of outer loop
-        .poly = poly,
-    };
+    spoly->poly.geoloop = sloop[0].loop;
+    spoly->poly.numHoles = numHoles;
+    spoly->poly.holes = holes;
+    spoly->outerArea = sloop[0].area;  // area of outer loop
 
-    return spoly;
+    return E_SUCCESS;
 }
 
 /**
@@ -464,9 +505,10 @@ static SortablePoly createSortablePoly(SortableLoop *sloop, int numHoles) {
  * all edge arcs of exactly 90 degrees (i.e., pi/2 radians).
  * Memory should be freed with `destroyGeoMultiPolygon`.
  *
- * @return GeoMultiPolygon covering entire globe
+ * @param mpoly Output parameter for the resulting GeoMultiPolygon
+ * @return E_SUCCESS on success, E_MEMORY_ALLOC on allocation failure
  */
-GeoMultiPolygon createGlobeMultiPolygon() {
+static H3Error createGlobeMultiPolygon(GeoMultiPolygon *mpoly) {
     const int numPolygons = 8;
     const int numVerts = 3;
     const LatLng verts[8][3] = {
@@ -482,6 +524,9 @@ GeoMultiPolygon createGlobeMultiPolygon() {
 
     SortablePoly *spolys =
         H3_MEMORY(malloc)(sizeof(SortablePoly) * numPolygons);
+    if (!spolys) {
+        return E_MEMORY_ALLOC;
+    }
 
     for (int i = 0; i < numPolygons; i++) {
         GeoPolygon *poly = &spolys[i].poly;
@@ -489,6 +534,14 @@ GeoMultiPolygon createGlobeMultiPolygon() {
         poly->holes = NULL;
         poly->geoloop.numVerts = numVerts;
         poly->geoloop.verts = H3_MEMORY(malloc)(sizeof(LatLng) * numVerts);
+        if (!poly->geoloop.verts) {
+            // Free any verts already allocated in previous iterations
+            for (int j = 0; j < i; j++) {
+                H3_MEMORY(free)(spolys[j].poly.geoloop.verts);
+            }
+            H3_MEMORY(free)(spolys);
+            return E_MEMORY_ALLOC;
+        }
 
         for (int j = 0; j < numVerts; j++) {
             poly->geoloop.verts[j] = verts[i][j];
@@ -500,27 +553,37 @@ GeoMultiPolygon createGlobeMultiPolygon() {
 
     qsort(spolys, numPolygons, sizeof(SortablePoly), cmp_SortablePoly);
 
-    GeoMultiPolygon mpoly = {
-        .numPolygons = numPolygons,
-        .polygons = H3_MEMORY(malloc)(sizeof(GeoPolygon) * numPolygons),
-    };
+    mpoly->polygons = H3_MEMORY(malloc)(sizeof(GeoPolygon) * numPolygons);
+    if (!mpoly->polygons) {
+        // Free all verts
+        for (int i = 0; i < numPolygons; i++) {
+            H3_MEMORY(free)(spolys[i].poly.geoloop.verts);
+        }
+        H3_MEMORY(free)(spolys);
+        return E_MEMORY_ALLOC;
+    }
 
+    mpoly->numPolygons = numPolygons;
     for (int i = 0; i < numPolygons; i++) {
-        mpoly.polygons[i] = spolys[i].poly;
+        mpoly->polygons[i] = spolys[i].poly;
     }
 
     H3_MEMORY(free)(spolys);
 
-    return mpoly;
+    return E_SUCCESS;
 }
 
-static GeoMultiPolygon createMultiPolygon(SortableLoopSet loopset) {
+static H3Error createMultiPolygon(SortableLoopSet loopset,
+                                  GeoMultiPolygon *mpoly) {
     if (loopset.numLoops == 0) {
-        return createGlobeMultiPolygon();
+        return createGlobeMultiPolygon(mpoly);
     }
 
     int numPolys = countPolys(loopset);
     SortablePoly *spolys = H3_MEMORY(malloc)(sizeof(SortablePoly) * numPolys);
+    if (!spolys) {
+        return E_MEMORY_ALLOC;
+    }
 
     SortableLoop *sloop = loopset.sloops;
     int i = 0;  // index of first loop in polygon (outer loop)
@@ -530,7 +593,16 @@ static GeoMultiPolygon createMultiPolygon(SortableLoopSet loopset) {
         if (j == loopset.numLoops || sloop[i].root != sloop[j].root) {
             // We've reached the end of the loops in the polygon, so
             // now construct a polygon from the start of those loops.
-            spolys[p] = createSortablePoly(&sloop[i], (j - i) - 1);
+            H3Error err =
+                createSortablePoly(&sloop[i], (j - i) - 1, &spolys[p]);
+            if (err) {
+                // Free any holes already allocated in previous polygons
+                for (int k = 0; k < p; k++) {
+                    H3_MEMORY(free)(spolys[k].poly.holes);
+                }
+                H3_MEMORY(free)(spolys);
+                return err;
+            }
             p++;
             i = j;
         }
@@ -539,18 +611,24 @@ static GeoMultiPolygon createMultiPolygon(SortableLoopSet loopset) {
     // NOTE: sorted by area of outer loop
     qsort(spolys, numPolys, sizeof(SortablePoly), cmp_SortablePoly);
 
-    GeoMultiPolygon mpoly = {
-        .numPolygons = numPolys,
-        .polygons = H3_MEMORY(malloc)(sizeof(GeoPolygon) * numPolys),
-    };
+    mpoly->polygons = H3_MEMORY(malloc)(sizeof(GeoPolygon) * numPolys);
+    if (!mpoly->polygons) {
+        // Free all holes
+        for (int i = 0; i < numPolys; i++) {
+            H3_MEMORY(free)(spolys[i].poly.holes);
+        }
+        H3_MEMORY(free)(spolys);
+        return E_MEMORY_ALLOC;
+    }
 
+    mpoly->numPolygons = numPolys;
     for (int i = 0; i < numPolys; i++) {
-        mpoly.polygons[i] = spolys[i].poly;
+        mpoly->polygons[i] = spolys[i].poly;
     }
 
     H3_MEMORY(free)(spolys);
 
-    return mpoly;
+    return E_SUCCESS;
 }
 
 /**
@@ -598,7 +676,9 @@ H3Error H3_EXPORT(cellsToMultiPolygon)(const H3Index *cells,
 
     // arcset initializes with separate doubly-linked loops for each cell,
     // each in their own connected component
-    ArcSet arcset = createArcSet(cells, numCells);
+    ArcSet arcset;
+    err = createArcSet(cells, numCells, &arcset);
+    if (err) return err;
 
     // Cancel out pairs of edges, updating the doubly-linked loop and merging
     // them into a single connected component
@@ -612,11 +692,27 @@ H3Error H3_EXPORT(cellsToMultiPolygon)(const H3Index *cells,
     each polygon, the sorting makes the largest loop come first, which is
     what we take to be the outer loop.
     */
-    SortableLoopSet loopset = createSortableLoopSet(arcset);
+    SortableLoopSet loopset;
+    err = createSortableLoopSet(arcset, &loopset);
+    if (err) {
+        H3_MEMORY(free)(arcset.arcs);
+        H3_MEMORY(free)(arcset.buckets);
+        return err;
+    }
 
     // Extract polygons, since loops are contiguous in SortableLoopSet memory.
     // Polygons sorted by outer loop area, decreasing.
-    *out = createMultiPolygon(loopset);
+    err = createMultiPolygon(loopset, out);
+    if (err) {
+        // Free all verts allocated in loops
+        for (int i = 0; i < loopset.numLoops; i++) {
+            H3_MEMORY(free)(loopset.sloops[i].loop.verts);
+        }
+        H3_MEMORY(free)(loopset.sloops);
+        H3_MEMORY(free)(arcset.arcs);
+        H3_MEMORY(free)(arcset.buckets);
+        return err;
+    }
 
     H3_MEMORY(free)(arcset.arcs);
     H3_MEMORY(free)(arcset.buckets);
