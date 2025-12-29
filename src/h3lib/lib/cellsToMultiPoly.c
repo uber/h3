@@ -181,7 +181,8 @@ static inline int64_t cellToEdgeArcs(H3Index h, Arc *arcs) {
     static const uint8_t idxp[5] = {0, 1, 3, 2, 4};
     const uint8_t *idx;
 
-    H3_EXPORT(originToDirectedEdges)(h, _edges);
+    H3Error err = H3_EXPORT(originToDirectedEdges)(h, _edges);
+    NEVER(err);
 
     // the first directed edge of a pentagon is H3_NULL
     if (_edges[0] == H3_NULL) {
