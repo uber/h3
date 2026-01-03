@@ -611,7 +611,7 @@ H3Error H3_EXPORT(cellsToMultiPolygon)(const H3Index *cells,
     }
 
     destroyArcSet(&arcset);
-    H3_MEMORY(free)(loopset.sloops); // TODO: odd
+    H3_MEMORY(free)(loopset.sloops);  // TODO: odd
 
     return E_SUCCESS;
 }
