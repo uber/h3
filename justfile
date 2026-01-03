@@ -38,6 +38,9 @@ test-fast: build
 test-slow: build
     cd build; make test
 
+test-one TEST: build
+    ./build/bin/{{TEST}}
+
 bench: build
     ./build/bin/benchmarkCellsToPolyAlgos
 

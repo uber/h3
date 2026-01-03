@@ -491,4 +491,19 @@ SUITE(edgeCellToPoly) {
             H3_EXPORT(cellsToMultiPolygon)(cells, ARRAY_SIZE(cells), &mpoly);
         t_assert(err == E_CELL_INVALID, "Can't have invalid cells.");
     }
+
+    TEST(overflow_check) {
+        // Test an absurdly large numCells returns
+        // Use 1000x the number of cells at resolution 15
+        int64_t numCellsRes15;
+        t_assertSuccess(H3_EXPORT(getNumCells)(15, &numCellsRes15));
+
+        int64_t absurdNumCells = numCellsRes15 * 1000;
+
+        GeoMultiPolygon mpoly;
+        H3Error err =
+            H3_EXPORT(cellsToMultiPolygon)(NULL, absurdNumCells, &mpoly);
+        t_assert(err == E_MEMORY_BOUNDS,
+                 "Should return E_MEMORY_BOUNDS for absurdly large numCells");
+    }
 }

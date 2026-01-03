@@ -28,6 +28,10 @@
 
 #include "alloc.h"
 #include "h3api.h"
+#include "mathExtensions.h"
+
+// After rough search, 10 seems to minimize compute time for large sets
+#define HASH_TABLE_MULTIPLIER 10
 
 typedef struct Arc {
     H3Index id;
@@ -70,6 +74,33 @@ typedef struct {
     double outerArea;
     GeoPolygon poly;
 } SortablePoly;
+
+/**
+ * Check for potential integer overflow in cellsToMultiPolygon allocations.
+ *
+ * Validates that the two largest allocations won't overflow:
+ * 1. arcs array: numArcs * sizeof(Arc) where numArcs ~= 6 * numCells
+ * 2. buckets array: numBuckets * sizeof(Arc *)
+ *                   where numBuckets = numArcs * HASH_TABLE_MULTIPLIER
+ *
+ * @param numCells Number of cells to convert
+ * @return E_SUCCESS if allocations are safe, E_MEMORY_BOUNDS if overflow would
+ * occur
+ */
+static inline H3Error checkCellsToMultiPolyOverflow(int64_t numCells,
+                                                    int64_t hashMultiplier) {
+    // Compute the maximum bytes per cell across both allocations
+    int64_t arcsPerCell = 6 * sizeof(Arc);
+    int64_t bucketsPerCell = 6 * hashMultiplier * sizeof(Arc *);
+    int64_t maxBytesPerCell = MAX(arcsPerCell, bucketsPerCell);
+
+    // Check if maxBytesPerCell * numCells would overflow
+    if (numCells > 0 && maxBytesPerCell > INT64_MAX / numCells) {
+        return E_MEMORY_BOUNDS;
+    }
+
+    return E_SUCCESS;
+}
 
 static inline int cmp_SortableLoop(const void *pa, const void *pb) {
     const SortableLoop *a = (const SortableLoop *)pa;

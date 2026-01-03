@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 Uber Technologies, Inc.
+ * Copyright 2026 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,11 @@
 /** @file
  * @brief tests internal helper functions in cellsToMultiPoly
  *
- * This file tests internal helper functions (comparison and cleanup functions)
- * that are defined in cellsToMultiPoly.h. These functions are normally internal
- * to the implementation but are exposed via the header as static inline
- * functions to enable unit testing and ensure proper memory cleanup in all
- * error paths.
- *
- * See cellsToMultiPoly.h for more details on why these functions are in a
- * header file.
+ * This file tests internal helper functions from cellsToMultiPoly.h,
+ * primarily oriented towards getting complete line and branch coverage.
  *
  * usage: `testCellsToMultiPolyInternal`
+ *
  */
 
 #include <stdlib.h>
@@ -159,5 +154,48 @@ SUITE(cellsToMultiPolyInternal) {
         b.outerArea = 200.0;
         result = cmp_SortablePoly(&a, &b);
         t_assert(result == 1, "Smaller area should come after");
+    }
+
+    TEST(checkCellsToMultiPolyOverflow_safe) {
+        int hashMultiplier = HASH_TABLE_MULTIPLIER;
+
+        // Test with reasonable number of cells (should succeed)
+        H3Error err = checkCellsToMultiPolyOverflow(1000000, hashMultiplier);
+        t_assert(err == E_SUCCESS, "Should succeed for reasonable numCells");
+
+        // Test with zero cells (should succeed)
+        err = checkCellsToMultiPolyOverflow(0, hashMultiplier);
+        t_assert(err == E_SUCCESS, "Should succeed for zero cells");
+
+        // Test with negative cells (should succeed - validated elsewhere)
+        err = checkCellsToMultiPolyOverflow(-1, hashMultiplier);
+        t_assert(err == E_SUCCESS,
+                 "Should succeed for negative (check doesn't apply)");
+
+        // Test with small and large hash multipliers.
+        // Largest allocated array will change, depending on multiplier.
+        t_assertSuccess(checkCellsToMultiPolyOverflow(1000000, 1));
+        t_assertSuccess(checkCellsToMultiPolyOverflow(1000000, 100));
+    }
+
+    TEST(checkCellsToMultiPolyOverflow_wouldOverflow) {
+        int hashMultiplier = HASH_TABLE_MULTIPLIER;
+
+        // Test with numCells that would cause overflow
+        // Calculate: INT64_MAX / maxBytesPerCell + 1
+        int64_t maxBytesPerCell =
+            6 * HASH_TABLE_MULTIPLIER * sizeof(Arc *);  // Currently 480
+        int64_t maxSafeNumCells = INT64_MAX / maxBytesPerCell;
+        int64_t overflowNumCells = maxSafeNumCells + 1;
+
+        H3Error err =
+            checkCellsToMultiPolyOverflow(overflowNumCells, hashMultiplier);
+        t_assert(err == E_MEMORY_BOUNDS,
+                 "Should return E_MEMORY_BOUNDS when overflow would occur");
+
+        // Also test INT64_MAX directly
+        err = checkCellsToMultiPolyOverflow(INT64_MAX, hashMultiplier);
+        t_assert(err == E_MEMORY_BOUNDS,
+                 "Should return E_MEMORY_BOUNDS for INT64_MAX");
     }
 }

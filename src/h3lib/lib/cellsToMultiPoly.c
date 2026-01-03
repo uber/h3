@@ -11,9 +11,6 @@
 #include "h3Assert.h"
 #include "h3api.h"
 
-// After rough search, 10 seems to minimize compute time for large sets
-#define HASH_TABLE_MULTIPLIER 10
-
 static inline H3Error validateCellSet(const H3Index *cells,
                                       const int64_t numCells) {
     if (numCells < 0) {
@@ -573,7 +570,11 @@ H3Error H3_EXPORT(cellsToMultiPolygon)(const H3Index *cells,
         return E_SUCCESS;
     }
 
-    H3Error err = validateCellSet(cells, numCells);
+    H3Error err =
+        checkCellsToMultiPolyOverflow(numCells, HASH_TABLE_MULTIPLIER);
+    if (err) return err;
+
+    err = validateCellSet(cells, numCells);
     if (err) return err;
 
     // arcset initializes with separate doubly-linked loops for each cell,
