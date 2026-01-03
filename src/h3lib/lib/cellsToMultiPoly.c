@@ -1,3 +1,5 @@
+#include "cellsToMultiPoly.h"
+
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -11,90 +13,6 @@
 
 // After rough search, 10 seems to minimize compute time for large sets
 #define HASH_TABLE_MULTIPLIER 10
-
-typedef struct Arc {
-    H3Index id;
-
-    bool isVisited;
-    bool isRemoved;
-
-    // For doubly-arced list of edges in loop.
-    struct Arc *next;
-    struct Arc *prev;
-
-    // For union-find datastructure
-    // https://en.wikipedia.org/wiki/Disjoint-set_data_structure
-    struct Arc *parent;
-    int64_t rank;
-} Arc;
-
-typedef struct {
-    int64_t numArcs;
-    Arc *arcs;
-
-    // hash buckets for fast edge/arc lookup
-    int64_t numBuckets;
-    Arc **buckets;
-} ArcSet;
-
-typedef struct {
-    H3Index root;
-    double area;
-
-    GeoLoop loop;
-} SortableLoop;
-
-typedef struct {
-    int64_t numLoops;
-    SortableLoop *sloops;
-} SortableLoopSet;
-
-typedef struct {
-    double outerArea;
-    GeoPolygon poly;
-} SortablePoly;
-
-static inline int cmp_SortableLoop(const void *pa, const void *pb) {
-    const SortableLoop *a = (const SortableLoop *)pa;
-    const SortableLoop *b = (const SortableLoop *)pb;
-
-    // first, sort on connected component
-    if (a->root < b->root) return -1;
-    if (a->root > b->root) return 1;
-
-    // second, sort on area of loops
-    if (a->area < b->area) return -1;
-    if (a->area > b->area) return 1;
-
-    return 0;  // same root and equal area
-}
-
-static inline int cmp_SortablePoly(const void *pa, const void *pb) {
-    const SortablePoly *a = (const SortablePoly *)pa;
-    const SortablePoly *b = (const SortablePoly *)pb;
-
-    double A = a->outerArea;
-    double B = b->outerArea;
-
-    // Sort by area of outer loop, in descending order.
-    // NOTE: Using comparison trick because it is hard to hit the equality
-    // branch for coverage.
-    return (B > A) - (B < A);
-}
-
-/*
-Compare H3Index values, interpreting them as uint64s.
-
-Note that, usually, we only use this ordering when we know that the
-cells in the set are all the same resolution.
-*/
-static inline int cmp_uint64(const void *a, const void *b) {
-    H3Index ha = *(const H3Index *)a;
-    H3Index hb = *(const H3Index *)b;
-    if (ha < hb) return -1;
-    if (ha > hb) return +1;
-    return 0;
-}
 
 static inline H3Error validateCellSet(const H3Index *cells,
                                       const int64_t numCells) {
@@ -186,7 +104,8 @@ static inline H3Error cellToEdgeArcs(H3Index h, Arc *arcs,
     const uint8_t *idx;
 
     H3Error err = H3_EXPORT(originToDirectedEdges)(h, _edges);
-    if (err) {
+    if (NEVER(err)) {
+        // Since we've already validated the cells, this should never error.
         return err;
     }
 
@@ -239,7 +158,7 @@ static H3Error createArcSet(const H3Index *cells, const int64_t numCells,
 
     arcset->buckets = H3_MEMORY(calloc)(numBuckets, sizeof(Arc *));
     if (!arcset->buckets) {
-        H3_MEMORY(free)(arcset->arcs);
+        destroyArcSet(arcset);
         return E_MEMORY_ALLOC;
     }
 
@@ -247,9 +166,8 @@ static H3Error createArcSet(const H3Index *cells, const int64_t numCells,
     for (int64_t i = 0; i < numCells; i++) {
         int64_t numEdges;
         H3Error err = cellToEdgeArcs(cells[i], &arcset->arcs[j], &numEdges);
-        if (err) {
-            H3_MEMORY(free)(arcset->arcs);
-            H3_MEMORY(free)(arcset->buckets);
+        if (NEVER(err)) {
+            destroyArcSet(arcset);
             return err;
         }
         j += numEdges;
@@ -444,10 +362,9 @@ static H3Error createSortableLoopSet(ArcSet arcset, SortableLoopSet *loopset) {
             H3Error err = createSortableLoop(&arcs[i], &sloops[j]);
             if (err) {
                 // Free any verts already allocated in previous loops
-                for (int k = 0; k < j; k++) {
-                    H3_MEMORY(free)(sloops[k].loop.verts);
-                }
-                H3_MEMORY(free)(sloops);
+                SortableLoopSet partialLoopSet = {.numLoops = j,
+                                                  .sloops = sloops};
+                destroySortableLoopSet(&partialLoopSet);
                 return err;
             }
             j++;
@@ -536,10 +453,7 @@ static H3Error createGlobeMultiPolygon(GeoMultiPolygon *mpoly) {
         poly->geoloop.verts = H3_MEMORY(malloc)(sizeof(LatLng) * numVerts);
         if (!poly->geoloop.verts) {
             // Free any verts already allocated in previous iterations
-            for (int j = 0; j < i; j++) {
-                H3_MEMORY(free)(spolys[j].poly.geoloop.verts);
-            }
-            H3_MEMORY(free)(spolys);
+            destroySortablePolyVerts(spolys, i);
             return E_MEMORY_ALLOC;
         }
 
@@ -555,11 +469,7 @@ static H3Error createGlobeMultiPolygon(GeoMultiPolygon *mpoly) {
 
     mpoly->polygons = H3_MEMORY(malloc)(sizeof(GeoPolygon) * numPolygons);
     if (!mpoly->polygons) {
-        // Free all verts
-        for (int i = 0; i < numPolygons; i++) {
-            H3_MEMORY(free)(spolys[i].poly.geoloop.verts);
-        }
-        H3_MEMORY(free)(spolys);
+        destroySortablePolyVerts(spolys, numPolygons);
         return E_MEMORY_ALLOC;
     }
 
@@ -596,11 +506,7 @@ static H3Error createMultiPolygon(SortableLoopSet loopset,
             H3Error err =
                 createSortablePoly(&sloop[i], (j - i) - 1, &spolys[p]);
             if (err) {
-                // Free any holes already allocated in previous polygons
-                for (int k = 0; k < p; k++) {
-                    H3_MEMORY(free)(spolys[k].poly.holes);
-                }
-                H3_MEMORY(free)(spolys);
+                destroySortablePolys(spolys, p);
                 return err;
             }
             p++;
@@ -613,11 +519,7 @@ static H3Error createMultiPolygon(SortableLoopSet loopset,
 
     mpoly->polygons = H3_MEMORY(malloc)(sizeof(GeoPolygon) * numPolys);
     if (!mpoly->polygons) {
-        // Free all holes
-        for (int i = 0; i < numPolys; i++) {
-            H3_MEMORY(free)(spolys[i].poly.holes);
-        }
-        H3_MEMORY(free)(spolys);
+        destroySortablePolys(spolys, numPolys);
         return E_MEMORY_ALLOC;
     }
 
@@ -695,8 +597,7 @@ H3Error H3_EXPORT(cellsToMultiPolygon)(const H3Index *cells,
     SortableLoopSet loopset;
     err = createSortableLoopSet(arcset, &loopset);
     if (err) {
-        H3_MEMORY(free)(arcset.arcs);
-        H3_MEMORY(free)(arcset.buckets);
+        destroyArcSet(&arcset);
         return err;
     }
 
@@ -704,19 +605,13 @@ H3Error H3_EXPORT(cellsToMultiPolygon)(const H3Index *cells,
     // Polygons sorted by outer loop area, decreasing.
     err = createMultiPolygon(loopset, out);
     if (err) {
-        // Free all verts allocated in loops
-        for (int i = 0; i < loopset.numLoops; i++) {
-            H3_MEMORY(free)(loopset.sloops[i].loop.verts);
-        }
-        H3_MEMORY(free)(loopset.sloops);
-        H3_MEMORY(free)(arcset.arcs);
-        H3_MEMORY(free)(arcset.buckets);
+        destroySortableLoopSet(&loopset);
+        destroyArcSet(&arcset);
         return err;
     }
 
-    H3_MEMORY(free)(arcset.arcs);
-    H3_MEMORY(free)(arcset.buckets);
-    H3_MEMORY(free)(loopset.sloops);
+    destroyArcSet(&arcset);
+    H3_MEMORY(free)(loopset.sloops); // TODO: odd
 
     return E_SUCCESS;
 }

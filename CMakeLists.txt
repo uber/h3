@@ -267,6 +267,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testConstructCell.c
     src/apps/testapps/testCellsToLinkedMultiPolygon.c
     src/apps/testapps/testCellsToMultiPoly.c
+    src/apps/testapps/testCellsToMultiPolyInternal.c
     src/apps/testapps/testCellToLocalIj.c
     src/apps/testapps/testCellToLocalIjInternal.c
     src/apps/testapps/testCellToLocalIjExhaustive.c

@@ -290,4 +290,145 @@ SUITE(h3Memory) {
                  "got expected polygonToCellsExperimental size");
         free(hexagons);
     }
+
+    TEST(cellsToMultiPolygon) {
+        // Exercise all error paths in cellsToMultiPolygon for coverage
+        GeoMultiPolygon mpoly;
+        H3Index cells2[] = {sunnyvale, 0x89283470c2fffff};
+        H3Error err;
+
+        // Find minimum allocations needed for success
+        int minAllocs = 0;
+        for (int permitted = 0; permitted < 50; permitted++) {
+            resetMemoryCounters(permitted);
+            if (permitted == 0) failAlloc = true;  // Fail immediately
+            err = H3_EXPORT(cellsToMultiPolygon)(cells2, 2, &mpoly);
+            if (err == E_SUCCESS) {
+                minAllocs = permitted;
+                H3_EXPORT(destroyGeoMultiPolygon)(&mpoly);
+                break;
+            }
+        }
+        t_assert(minAllocs > 0, "Should require allocations");
+
+        // Exercise error path at each allocation point for coverage
+        for (int permitted = 0; permitted < minAllocs; permitted++) {
+            resetMemoryCounters(permitted);
+            if (permitted == 0) failAlloc = true;
+            err = H3_EXPORT(cellsToMultiPolygon)(cells2, 2, &mpoly);
+            t_assert(err == E_MEMORY_ALLOC, "Should fail before success");
+        }
+    }
+
+    TEST(cellsToMultiPolygonWithHoles) {
+        // Exercise error paths with polygons that have holes
+        H3Index cells[] = {
+            0x8027fffffffffff, 0x802bfffffffffff, 0x804dfffffffffff,
+            0x8067fffffffffff, 0x806dfffffffffff, 0x8049fffffffffff,
+        };
+        int numCells = 6;
+        GeoMultiPolygon mpoly;
+        H3Error err;
+
+        // Find minimum allocations and exercise all error paths
+        for (int permitted = 0; permitted < 50; permitted++) {
+            resetMemoryCounters(permitted);
+            if (permitted == 0) failAlloc = true;
+            err = H3_EXPORT(cellsToMultiPolygon)(cells, numCells, &mpoly);
+            if (err == E_SUCCESS) {
+                H3_EXPORT(destroyGeoMultiPolygon)(&mpoly);
+                break;
+            }
+        }
+    }
+
+    TEST(cellsToMultiPolygonEmpty) {
+        // Test the empty (globe) case
+        H3Index *cells = NULL;
+        GeoMultiPolygon mpoly;
+
+        resetMemoryCounters(0);
+        H3Error err = H3_EXPORT(cellsToMultiPolygon)(cells, 0, &mpoly);
+        t_assert(err == E_SUCCESS, "Empty set should succeed");
+        t_assert(mpoly.numPolygons == 0, "Empty set has no polygons");
+        t_assert(mpoly.polygons == NULL, "Empty set has NULL polygons");
+        t_assert(actualAllocCalls == 0, "Empty set needs no allocations");
+    }
+
+    TEST(cellsToMultiPolygonPartialFailure) {
+        // Test failure after partial allocation to hit cleanup loops
+        // Use a large diverse set of cells to create many loops and polygons
+        H3Index cells[] = {
+            // Multiple separate regions to create multiple polygons
+            0x8027fffffffffff, 0x802bfffffffffff, 0x804dfffffffffff,
+            0x8067fffffffffff, 0x806dfffffffffff, 0x8049fffffffffff,
+            0x805ffffffffffff, 0x8057fffffffffff, 0x807dfffffffffff,
+            0x80a5fffffffffff, 0x80a9fffffffffff, 0x808bfffffffffff,
+            0x801bfffffffffff, 0x8035fffffffffff, 0x803ffffffffffff,
+            0x8053fffffffffff, 0x8043fffffffffff, 0x8021fffffffffff,
+            0x8011fffffffffff, 0x801ffffffffffff, 0x8097fffffffffff,
+        };
+        int numCells = 21;
+        GeoMultiPolygon mpoly;
+        H3Error err;
+
+        // Find the allocation sequence and test every failure point
+        int successPoint = 0;
+        for (int permitted = 1; permitted < 150; permitted++) {
+            resetMemoryCounters(permitted);
+            err = H3_EXPORT(cellsToMultiPolygon)(cells, numCells, &mpoly);
+            if (err == E_SUCCESS) {
+                successPoint = permitted;
+                H3_EXPORT(destroyGeoMultiPolygon)(&mpoly);
+                break;
+            }
+        }
+
+        // Test every single failure point to maximize branch coverage
+        // This should hit all cleanup paths including:
+        // - createSortableLoop failures after j > 0
+        // - createMultiPolygon failures after createSortableLoopSet succeeds
+        // - holes allocation failures after some polygons created
+        for (int permitted = 1; permitted < successPoint; permitted++) {
+            resetMemoryCounters(permitted);
+            err = H3_EXPORT(cellsToMultiPolygon)(cells, numCells, &mpoly);
+            t_assert(err == E_MEMORY_ALLOC, "Should fail with memory error");
+        }
+    }
+
+    TEST(cellsToMultiPolygonGlobe) {
+        // Test with full set of resolution 0 cells
+        // All edges cancel out, resulting in globe (8 triangular polygons)
+        H3Index res0Cells[122];  // NUM_BASE_CELLS = 122
+        GeoMultiPolygon mpoly;
+        H3Error err;
+
+        // Get all resolution 0 cells
+        err = H3_EXPORT(getRes0Cells)(res0Cells);
+        t_assert(err == E_SUCCESS, "getRes0Cells should succeed");
+
+        // Find minimum allocations needed for success
+        int minAllocs = 0;
+        for (int permitted = 0; permitted < 100; permitted++) {
+            resetMemoryCounters(permitted);
+            if (permitted == 0) failAlloc = true;  // Fail immediately
+            err = H3_EXPORT(cellsToMultiPolygon)(res0Cells, 122, &mpoly);
+            if (err == E_SUCCESS) {
+                minAllocs = permitted;
+                H3_EXPORT(destroyGeoMultiPolygon)(&mpoly);
+                break;
+            }
+        }
+        t_assert(minAllocs > 0, "Globe case should require allocations");
+
+        // Exercise error path at each allocation point
+        // This tests the createGlobeMultiPolygon error paths
+        for (int permitted = 0; permitted < minAllocs; permitted++) {
+            resetMemoryCounters(permitted);
+            if (permitted == 0) failAlloc = true;
+            err = H3_EXPORT(cellsToMultiPolygon)(res0Cells, 122, &mpoly);
+            t_assert(err == E_MEMORY_ALLOC,
+                     "Should fail with memory error before success");
+        }
+    }
 }

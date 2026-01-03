@@ -222,6 +222,7 @@ add_h3_test(testConstructCell src/apps/testapps/testConstructCell.c)
 add_h3_test(testCellsToLinkedMultiPolygon
             src/apps/testapps/testCellsToLinkedMultiPolygon.c)
 add_h3_test(testCellsToMultiPoly src/apps/testapps/testCellsToMultiPoly.c)
+add_h3_test(testCellsToMultiPolyInternal src/apps/testapps/testCellsToMultiPolyInternal.c)
 add_h3_test(testH3SetToVertexGraphInternal
             src/apps/testapps/testH3SetToVertexGraphInternal.c)
 add_h3_test(testLinkedGeoInternal src/apps/testapps/testLinkedGeoInternal.c)
