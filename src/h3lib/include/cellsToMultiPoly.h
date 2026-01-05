@@ -174,6 +174,17 @@ static inline void destroySortableLoopSet(SortableLoopSet *loopset) {
 }
 
 /*
+Helper function to free the SortableLoopSet array without freeing vertex data.
+Used when vertex ownership has been transferred to the output GeoMultiPolygon.
+*/
+static inline void destroySortableLoopSetShallow(SortableLoopSet *loopset) {
+    if (loopset->sloops) {
+        H3_MEMORY(free)(loopset->sloops);
+        loopset->sloops = NULL;
+    }
+}
+
+/*
 Helper function to free memory allocated for an array of SortablePoly.
 Frees the holes arrays in each polygon, then the polygon array itself.
 numPolys specifies how many polygons to clean up.

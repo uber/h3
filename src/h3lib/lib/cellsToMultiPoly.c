@@ -634,7 +634,7 @@ H3Error H3_EXPORT(cellsToMultiPolygon)(const H3Index *cells,
     }
 
     destroyArcSet(&arcset);
-    H3_MEMORY(free)(loopset.sloops);  // TODO: gets its own destroy method?
+    destroySortableLoopSetShallow(&loopset);
 
     return E_SUCCESS;
 }
