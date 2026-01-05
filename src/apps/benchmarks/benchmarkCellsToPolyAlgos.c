@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/** @file benchmarkCellsToPolyAlgos.c
+ * @brief Benchmarks comparing cellsToLinkedMultiPolygon and cellsToMultiPolygon
+ */
+
 #include <stdlib.h>
 
 #include "benchmark.h"
 #include "h3api.h"
 
-/**
- * Macro to benchmark both `cellsToLinkedMultiPolygon` and
- * `cellsToMultiPolygon` on the same dataset.
- */
 #define BENCHMARK_LINKED(NAME, ITERS)                                       \
     do {                                                                    \
         BENCHMARK(linked_##NAME, ITERS, {                                   \
@@ -107,7 +107,8 @@ BEGIN_BENCHMARKS();
 }
 
 {
-    // Colorado, approximately. (4 corners, counterclockwise from southwest)
+    // Square approximating Colorado.
+    // (4 corners, counterclockwise from southwest)
     int res = 6;
     LatLng verts[] = {
         {37.0, -109.0},

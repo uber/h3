@@ -86,9 +86,10 @@ static int64_t getNumEdges(const H3Index *cells, const int64_t numCells) {
 /*
 Fill in edge arcs for a single cell:
 
-- set prev/next arcs in arced loop. ensures edges in CCW order
-- set parent and rank for union_find
-- returns E_SUCCESS or error from originToDirectedEdges
+- create one Arc for each edge of the cell
+- set prev/next arcs in linked loop. ensures edges in counter clockwise order
+- initialize parent and rank for union_find (each loop of cell edges starts as
+its own separate connected component)
 */
 static inline H3Error cellToEdgeArcs(H3Index h, Arc *arcs,
                                      int64_t *numEdgesOut) {
@@ -102,10 +103,11 @@ static inline H3Error cellToEdgeArcs(H3Index h, Arc *arcs,
 
     H3Error err = H3_EXPORT(originToDirectedEdges)(h, _edges);
     if (NEVER(err)) {
-        // Since we've already validated the cells, this should never error.
+        // Since already checked with validateCellSet, this should never error.
         return err;
     }
 
+    // Set `edges` to contain the index of cell edges in counter-clockwise order
     // the first directed edge of a pentagon is H3_NULL
     if (_edges[0] == H3_NULL) {
         numEdges = 5;
@@ -118,17 +120,20 @@ static inline H3Error cellToEdgeArcs(H3Index h, Arc *arcs,
     }
 
     for (int i = 0; i < numEdges; i++) {
-        // arcs stay in same order as output of originToDirectedEdges
+        // Arcs stay in same order as output of originToDirectedEdges.
+        // That is, they are not in CCW order in the `arcs` array, but they
+        // are in CCW in the linked loop.
         arcs[i].id = edges[i];
         arcs[i].isRemoved = false;
         arcs[i].isVisited = false;
 
         // initialize union-find datastructure
+        // all edges in loop have same parent: first edge
         arcs[i].parent = &arcs[0];
         arcs[i].rank = 1;
 
-        // connect so prev/next point to neighboring edges that share a vertex
-        // edges/vertexes should follow right-hand rule as a result
+        // Connect so prev/next point to neighboring edges that share a vertex.
+        // Edges/vertexes should follow right-hand rule as a result (CCW order).
         // TODO: this idx stuff will be cleaner when we use an edge iterator
         int cur = idx[i];
         int prev = idx[(i - 1 + numEdges) % numEdges];
@@ -187,6 +192,7 @@ static H3Error createArcSet(const H3Index *cells, const int64_t numCells,
 static inline Arc *findArc(ArcSet arcset, H3Index e) {
     int64_t j = hashEdge(e, arcset.numBuckets);
 
+    // hash + linear probe to find edge
     while (arcset.buckets[j] != NULL && arcset.buckets[j]->id != e) {
         j = (j + 1) % arcset.numBuckets;
     }
@@ -195,6 +201,8 @@ static inline Arc *findArc(ArcSet arcset, H3Index e) {
     return arcset.buckets[j];
 }
 
+// Part of union-find data structure
+// Finds the id of the connected component this arc/edge is a part of
 static inline Arc *getRoot(Arc *arc) {
     Arc *parent = arc->parent;
 
@@ -207,6 +215,8 @@ static inline Arc *getRoot(Arc *arc) {
     }
 }
 
+// Part of union-find data structure
+// Merge two arcs/edges into a single connected component
 static void unionArcs(Arc *a, Arc *b) {
     a = getRoot(a);
     b = getRoot(b);
@@ -268,6 +278,7 @@ static inline void resetVisited(ArcSet arcset) {
     }
 }
 
+// Count number of distinct loops in an ArcSet
 static int countLoops(ArcSet arcset) {
     Arc *arcs = arcset.arcs;
     resetVisited(arcset);
@@ -289,6 +300,11 @@ static int countLoops(ArcSet arcset) {
     return numLoops;
 }
 
+// Starting from a given Arc, create a SortableLoop that contains that Arc
+// SortableLoops are sorted by the root (which connected component) and then
+// by the area contained by the loop. We use this to merge all loops in a
+// connected component into a single polygon. We use the area values to
+// determine which loop will be the "outer" loop of the polygon.
 static H3Error createSortableLoop(Arc *arc, SortableLoop *sloop) {
     CellBoundary gb;
     H3Index start = arc->id;
@@ -343,6 +359,7 @@ static H3Error createSortableLoop(Arc *arc, SortableLoop *sloop) {
     return E_SUCCESS;
 }
 
+// Create set of all SortableLoops and sort them
 static H3Error createSortableLoopSet(ArcSet arcset, SortableLoopSet *loopset) {
     int numLoops = countLoops(arcset);
     resetVisited(arcset);
@@ -392,6 +409,9 @@ static int countPolys(SortableLoopSet loopset) {
     return numPolys;
 }
 
+// Create a SortablePolygon from a given SortableLoop.
+// The "outer ring" SortableLoop is first in memory, followed by its holes
+// Later, we sort the Polygons by the size of their outer loops.
 static H3Error createSortablePoly(SortableLoop *sloop, int numHoles,
                                   SortablePoly *spoly) {
     GeoLoop *holes = NULL;
@@ -511,7 +531,9 @@ static H3Error createMultiPolygon(SortableLoopSet loopset,
         }
     }
 
-    // NOTE: sorted by area of outer loop
+    // Sort polygons by their outer loop area. For example, in a multipolygon
+    // representing the USA, the continental US will come before any of the
+    // Hawaiian islands
     qsort(spolys, numPolys, sizeof(SortablePoly), cmp_SortablePoly);
 
     mpoly->polygons = H3_MEMORY(malloc)(sizeof(GeoPolygon) * numPolys);
@@ -612,7 +634,7 @@ H3Error H3_EXPORT(cellsToMultiPolygon)(const H3Index *cells,
     }
 
     destroyArcSet(&arcset);
-    H3_MEMORY(free)(loopset.sloops);  // TODO: odd
+    H3_MEMORY(free)(loopset.sloops);  // TODO: gets its own destroy method?
 
     return E_SUCCESS;
 }
