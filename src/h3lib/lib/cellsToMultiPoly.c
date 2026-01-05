@@ -87,7 +87,7 @@ static int64_t getNumEdges(const H3Index *cells, const int64_t numCells) {
 Fill in edge arcs for a single cell:
 
 - create one Arc for each edge of the cell
-- set prev/next arcs in linked loop. ensures edges in counter clockwise order
+- set prev/next arcs in linked loop. ensures edges in counter-clockwise order
 - initialize parent and rank for union_find (each loop of cell edges starts as
 its own separate connected component)
 */
@@ -107,8 +107,8 @@ static inline H3Error cellToEdgeArcs(H3Index h, Arc *arcs,
         return err;
     }
 
-    // Set `edges` to contain the index of cell edges in counter-clockwise order
-    // the first directed edge of a pentagon is H3_NULL
+    // Set `edges` to contain the indices of cell edges in counter-clockwise
+    // order the first directed edge of a pentagon is H3_NULL
     if (_edges[0] == H3_NULL) {
         numEdges = 5;
         idx = idxp;
@@ -557,8 +557,8 @@ static H3Error createMultiPolygon(SortableLoopSet loopset,
  *
  * This function converts a set of H3 cells into a GeoMultiPolygon
  * representing the region they cover. Note the difference with
- * cellsToLinkedMultiPolygon, which returns a arced-list LinkedGeoPolygon.
- * A GeoMultiPolygon has provides the sizes of its elements and supports
+ * cellsToLinkedMultiPolygon, which returns a linked-list LinkedGeoPolygon.
+ * A GeoMultiPolygon provides the sizes of its elements and supports
  * direct indexing.
  *
  * Polygons follow the right hand rule, with the outer loop oriented
