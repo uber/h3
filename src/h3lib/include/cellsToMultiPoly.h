@@ -160,6 +160,17 @@ static inline void destroyArcSet(ArcSet *arcset) {
 }
 
 /*
+Helper function to free the SortableLoopSet array without freeing vertex data.
+Used when vertex ownership has been transferred to the output GeoMultiPolygon.
+*/
+static inline void destroySortableLoopSetShallow(SortableLoopSet *loopset) {
+    if (loopset->sloops) {
+        H3_MEMORY(free)(loopset->sloops);
+        loopset->sloops = NULL;
+    }
+}
+
+/*
 Helper function to free memory allocated for a SortableLoopSet.
 Frees all vertex arrays in the loops, then the loops array itself.
 */
@@ -170,20 +181,8 @@ static inline void destroySortableLoopSet(SortableLoopSet *loopset) {
                 H3_MEMORY(free)(loopset->sloops[i].loop.verts);
             }
         }
-        H3_MEMORY(free)(loopset->sloops);
-        loopset->sloops = NULL;
     }
-}
-
-/*
-Helper function to free the SortableLoopSet array without freeing vertex data.
-Used when vertex ownership has been transferred to the output GeoMultiPolygon.
-*/
-static inline void destroySortableLoopSetShallow(SortableLoopSet *loopset) {
-    if (loopset->sloops) {
-        H3_MEMORY(free)(loopset->sloops);
-        loopset->sloops = NULL;
-    }
+    destroySortableLoopSetShallow(loopset);
 }
 
 /*
