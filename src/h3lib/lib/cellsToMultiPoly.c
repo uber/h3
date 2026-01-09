@@ -241,13 +241,17 @@ Update the doubly-linked loop list to maintain valid loops.
 Merge the connected components of edge pairs; each connected component
 denotes a separate polygon (outer loop and holes).
 */
-static void cancelArcPairs(ArcSet arcset) {
+static H3Error cancelArcPairs(ArcSet arcset) {
     for (int i = 0; i < arcset.numArcs; i++) {
         Arc *a = &arcset.arcs[i];
 
         if (!a->isRemoved) {
             H3Index reversedEdge;
-            H3_EXPORT(reverseDirectedEdge)(a->id, &reversedEdge);
+            H3Error err = H3_EXPORT(reverseDirectedEdge)(a->id, &reversedEdge);
+            if (NEVER(err)) {
+                return err;
+            }
+
             Arc *b = findArc(arcset, reversedEdge);
 
             if (b) {
@@ -270,6 +274,8 @@ static void cancelArcPairs(ArcSet arcset) {
             }
         }
     }
+
+    return E_SUCCESS;
 }
 
 static inline void resetVisited(ArcSet arcset) {
@@ -605,9 +611,13 @@ H3Error H3_EXPORT(cellsToMultiPolygon)(const H3Index *cells,
     err = createArcSet(cells, numCells, &arcset);
     if (err) return err;
 
-    // Cancel out pairs of edges, updating the doubly-linked loop and merging
+    // Cancel out pairs of edges, updating the doubly-linked loops and merging
     // them into a single connected component
-    cancelArcPairs(arcset);
+    err = cancelArcPairs(arcset);
+    if (NEVER(err)) {
+        destroyArcSet(&arcset);
+        return err;
+    }
 
     /*
     Extract all loops and sort them by:
