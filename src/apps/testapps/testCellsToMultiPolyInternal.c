@@ -181,12 +181,10 @@ SUITE(cellsToMultiPolyInternal) {
     TEST(checkCellsToMultiPolyOverflow_wouldOverflow) {
         int hashMultiplier = HASH_TABLE_MULTIPLIER;
 
-        // Test with numCells that would cause overflow
-        // Calculate: INT64_MAX / maxBytesPerCell + 1
-        int64_t maxBytesPerCell =
-            6 * HASH_TABLE_MULTIPLIER * sizeof(Arc *);  // Currently 480
-        int64_t maxSafeNumCells = INT64_MAX / maxBytesPerCell;
-        int64_t overflowNumCells = maxSafeNumCells + 1;
+        // Test with numCells that would cause size_t overflow
+        size_t maxBytesPerCell = 6 * HASH_TABLE_MULTIPLIER * sizeof(Arc *);
+        size_t maxSafeNumCells = SIZE_MAX / maxBytesPerCell;
+        size_t overflowNumCells = maxSafeNumCells + 1;
 
         H3Error err =
             checkCellsToMultiPolyOverflow(overflowNumCells, hashMultiplier);

@@ -24,6 +24,7 @@
 #define CELLS_TO_MULTI_POLY_H
 
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 
 #include "alloc.h"
@@ -90,12 +91,13 @@ typedef struct {
 static inline H3Error checkCellsToMultiPolyOverflow(int64_t numCells,
                                                     int64_t hashMultiplier) {
     // Compute the maximum bytes per cell across both allocations
-    int64_t arcsPerCell = 6 * sizeof(Arc);
-    int64_t bucketsPerCell = 6 * hashMultiplier * sizeof(Arc *);
-    int64_t maxBytesPerCell = MAX(arcsPerCell, bucketsPerCell);
+    uint64_t arcsPerCell = 6 * sizeof(Arc);
+    uint64_t bucketsPerCell = 6 * hashMultiplier * sizeof(Arc *);
+    uint64_t maxBytesPerCell = MAX(arcsPerCell, bucketsPerCell);
 
-    // Check if maxBytesPerCell * numCells would overflow
-    if (numCells > 0 && maxBytesPerCell > INT64_MAX / numCells) {
+    // Check if maxBytesPerCell * numCells would overflow size_t, which is what
+    // is used for allocations. Use SIZE_MAX since size_t may be 32 bits.
+    if (numCells > 0 && numCells > SIZE_MAX / maxBytesPerCell) {
         return E_MEMORY_BOUNDS;
     }
 

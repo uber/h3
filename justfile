@@ -19,6 +19,8 @@ purge:
     rm -rf build
     rm -rf *.trace
     rm -rf .ipynb_checkpoints
+    rm -rf .cache
+    rm -rf .claude
 
 test: build
     # ./build/bin/testH3CellAreaExhaustive
