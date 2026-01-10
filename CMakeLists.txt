@@ -802,3 +802,6 @@ set(CPACK_DEBIAN_LIBH3-DEV_PACKAGE_SECTION "libdevel")
 set(CPACK_DEBIAN_H3_PACKAGE_SECTION "science")
 
 include(CPack)
+
+configure_file(h3.pc.in ${CMAKE_BINARY_DIR}/h3.pc @ONLY)
+install(FILES ${CMAKE_BINARY_DIR}/h3.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)

@@ -1,0 +1,11 @@
+refix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=@CMAKE_INSTALL_PREFIX@
+libdir=@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@
+includedir=@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_INCLUDEDIR@
+
+Name: h3
+Description: Hexagonal hierarchical geospatial indexing system
+Version: @H3_VERSION@
+Libs: -L${libdir} -lh3
+Cflags: -I${includedir}
+
