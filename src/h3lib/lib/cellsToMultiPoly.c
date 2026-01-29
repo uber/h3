@@ -245,34 +245,41 @@ static H3Error cancelArcPairs(ArcSet arcset) {
     for (int i = 0; i < arcset.numArcs; i++) {
         Arc *a = &arcset.arcs[i];
 
-        if (!a->isRemoved) {
-            H3Index reversedEdge;
-            H3Error err = H3_EXPORT(reverseDirectedEdge)(a->id, &reversedEdge);
-            if (NEVER(err)) {
-                return err;
-            }
-
-            Arc *b = findArc(arcset, reversedEdge);
-
-            if (b) {
-                // Two loops overlap at edge a, and its reversed edge b.
-                // Remove the two edges, and merge the loops to maintain
-                // valid loops. The two loops might be the same loop.
-
-                // mark both as removed
-                a->isRemoved = true;
-                b->isRemoved = true;
-
-                // stitch together loops at removal site
-                a->next->prev = b->prev;
-                a->prev->next = b->next;
-                b->next->prev = a->prev;
-                b->prev->next = a->next;
-
-                // update parent to merge into a single connected component
-                unionArcs(a, b);
-            }
+        if (a->isRemoved) {
+            // Already removed, so we can skip.
+            continue;
         }
+
+        H3Index reversedEdge;
+        H3Error err = H3_EXPORT(reverseDirectedEdge)(a->id, &reversedEdge);
+        if (NEVER(err)) {
+            return err;
+        }
+
+        Arc *b = findArc(arcset, reversedEdge);
+        if (!b) {
+            // The reversed edge was *not* in the set, so there's nothing to do.
+            continue;
+        }
+
+        // If we're at this point, then the two loops overlap at edges
+        // `a` and `b`, which are opposites of each other.
+        // Remove the two edges, and merge the loops to maintain
+        // valid doubly-linked loops. Note that the two loops might be the
+        // *same* loop, and the logic is the same either way.
+
+        // mark both as removed
+        a->isRemoved = true;
+        b->isRemoved = true;
+
+        // stitch together loops at removal site
+        a->next->prev = b->prev;
+        a->prev->next = b->next;
+        b->next->prev = a->prev;
+        b->prev->next = a->next;
+
+        // update parent to merge into a single connected component
+        unionArcs(a, b);
     }
 
     return E_SUCCESS;
