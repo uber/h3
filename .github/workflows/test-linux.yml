@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Configure build
         run: cmake -DAUDIT_SOURCE_FILE_LIST=ON .
@@ -29,7 +29,7 @@ jobs:
         runs_on: ["ubuntu-latest", "ubuntu-22.04-arm"]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install Doxygen
         run: |
@@ -94,7 +94,7 @@ jobs:
             compile_opt: "-fsanitize=memory -fno-sanitize-recover=memory"
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install Doxygen
         run: |
@@ -145,7 +145,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install Valgrind
         run: |
@@ -172,7 +172,7 @@ jobs:
       CC: gcc
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install lcov
         run: |
