@@ -295,6 +295,7 @@ set(OTHER_SOURCE_FILES
     src/apps/fuzzers/fuzzerLatLngToCell.c
     src/apps/fuzzers/fuzzerCellToLatLng.c
     src/apps/fuzzers/fuzzerGridDisk.c
+    src/apps/fuzzers/fuzzerCellsToMultiPolygon.c
     src/apps/fuzzers/fuzzerCellsToLinkedMultiPolygon.c
     src/apps/fuzzers/fuzzerDistances.c
     src/apps/fuzzers/fuzzerCellArea.c
@@ -622,6 +623,8 @@ if(BUILD_FUZZERS)
     add_h3_fuzzer(fuzzerLatLngToCell src/apps/fuzzers/fuzzerLatLngToCell.c)
     add_h3_fuzzer(fuzzerCellToLatLng src/apps/fuzzers/fuzzerCellToLatLng.c)
     add_h3_fuzzer(fuzzerGridDisk src/apps/fuzzers/fuzzerGridDisk.c)
+    add_h3_fuzzer(fuzzerCellsToMultiPolygon
+                  src/apps/fuzzers/fuzzerCellsToMultiPolygon.c)
     add_h3_fuzzer(fuzzerCellsToLinkedMultiPolygon
                   src/apps/fuzzers/fuzzerCellsToLinkedMultiPolygon.c)
     add_h3_fuzzer(fuzzerDistances src/apps/fuzzers/fuzzerDistances.c)
