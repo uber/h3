@@ -1,0 +1,50 @@
+name: test-pkg-config
+
+on:
+  push:
+    branches: [master, stable-*]
+  pull_request:
+    branches: [master, stable-*]
+
+jobs:
+  pkg-config:
+    name: pkg-config on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build and install
+        run: |
+          cmake -Bbuild -DCMAKE_BUILD_TYPE=Release .
+          cmake --build build
+          sudo cmake --install build
+
+      - name: Confirm pkg-config is working
+        run: |
+          pkg-config --exists h3
+          pkg-config --modversion h3
+
+      - name: Write test program
+        run: |
+          cat > /tmp/test_h3.c << 'CEOF'
+          #include <h3/h3api.h>
+          #include <stdio.h>
+          int main() {
+              printf("H3 %d.%d.%d\n", H3_VERSION_MAJOR, H3_VERSION_MINOR, H3_VERSION_PATCH);
+              return isValidCell(0) != 0;
+          }
+          CEOF
+
+      - name: Verify compilation fails without pkg-config
+        run: |
+          ! cc /tmp/test_h3.c
+
+      - name: Compile and run with pkg-config
+        run: |
+          cc $(pkg-config --cflags h3) /tmp/test_h3.c $(pkg-config --libs h3) -o /tmp/test_h3
+          /tmp/test_h3
