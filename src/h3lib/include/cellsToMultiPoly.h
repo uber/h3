@@ -176,7 +176,7 @@ Frees all vertex arrays in the loops, then the loops array itself.
 */
 static inline void destroySortableLoopSet(SortableLoopSet *loopset) {
     if (loopset->sloops) {
-        for (int i = 0; i < loopset->numLoops; i++) {
+        for (int64_t i = 0; i < loopset->numLoops; i++) {
             if (loopset->sloops[i].loop.verts) {
                 H3_MEMORY(free)(loopset->sloops[i].loop.verts);
             }
@@ -190,9 +190,10 @@ Helper function to free memory allocated for an array of SortablePoly.
 Frees the holes arrays in each polygon, then the polygon array itself.
 numPolys specifies how many polygons to clean up.
 */
-static inline void destroySortablePolys(SortablePoly *spolys, int numPolys) {
+static inline void destroySortablePolys(SortablePoly *spolys,
+                                        int64_t numPolys) {
     if (spolys) {
-        for (int i = 0; i < numPolys; i++) {
+        for (int64_t i = 0; i < numPolys; i++) {
             if (spolys[i].poly.holes) {
                 H3_MEMORY(free)(spolys[i].poly.holes);
             }
@@ -209,9 +210,9 @@ numPolys specifies how many polygons to clean up.
 */
 // TODO: do we need two separate? can we avoid passing numPolys?
 static inline void destroySortablePolyVerts(SortablePoly *spolys,
-                                            int numPolys) {
+                                            int64_t numPolys) {
     if (spolys) {
-        for (int i = 0; i < numPolys; i++) {
+        for (int64_t i = 0; i < numPolys; i++) {
             if (spolys[i].poly.geoloop.verts) {
                 H3_MEMORY(free)(spolys[i].poly.geoloop.verts);
             }

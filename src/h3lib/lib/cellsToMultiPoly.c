@@ -242,7 +242,7 @@ Merge the connected components of edge pairs; each connected component
 denotes a separate polygon (outer loop and holes).
 */
 static H3Error cancelArcPairs(ArcSet arcset) {
-    for (int i = 0; i < arcset.numArcs; i++) {
+    for (int64_t i = 0; i < arcset.numArcs; i++) {
         Arc *a = &arcset.arcs[i];
 
         if (a->isRemoved) {
@@ -286,18 +286,18 @@ static H3Error cancelArcPairs(ArcSet arcset) {
 }
 
 static inline void resetVisited(ArcSet arcset) {
-    for (int i = 0; i < arcset.numArcs; i++) {
+    for (int64_t i = 0; i < arcset.numArcs; i++) {
         arcset.arcs[i].isVisited = false;
     }
 }
 
 // Count number of distinct loops in an ArcSet
-static int countLoops(ArcSet arcset) {
+static int64_t countLoops(ArcSet arcset) {
     Arc *arcs = arcset.arcs;
     resetVisited(arcset);
-    int numLoops = 0;
+    int64_t numLoops = 0;
 
-    for (int i = 0; i < arcset.numArcs; i++) {
+    for (int64_t i = 0; i < arcset.numArcs; i++) {
         Arc *arc = &arcs[i];
         if (!arc->isVisited && !arc->isRemoved) {
             numLoops++;
@@ -374,7 +374,7 @@ static H3Error createSortableLoop(Arc *arc, SortableLoop *sloop) {
 
 // Create set of all SortableLoops and sort them
 static H3Error createSortableLoopSet(ArcSet arcset, SortableLoopSet *loopset) {
-    int numLoops = countLoops(arcset);
+    int64_t numLoops = countLoops(arcset);
     resetVisited(arcset);
     Arc *arcs = arcset.arcs;
 
@@ -383,8 +383,8 @@ static H3Error createSortableLoopSet(ArcSet arcset, SortableLoopSet *loopset) {
         return E_MEMORY_ALLOC;
     }
 
-    int j = 0;
-    for (int i = 0; i < arcset.numArcs; i++) {
+    int64_t j = 0;
+    for (int64_t i = 0; i < arcset.numArcs; i++) {
         if (!arcs[i].isVisited && !arcs[i].isRemoved) {
             H3Error err = createSortableLoop(&arcs[i], &sloops[j]);
             if (err) {
@@ -408,11 +408,11 @@ static H3Error createSortableLoopSet(ArcSet arcset, SortableLoopSet *loopset) {
     return E_SUCCESS;
 }
 
-static int countPolys(SortableLoopSet loopset) {
-    int numPolys = 0;
+static int64_t countPolys(SortableLoopSet loopset) {
+    int64_t numPolys = 0;
 
     H3Index cur = H3_NULL;
-    for (int i = 0; i < loopset.numLoops; i++) {
+    for (int64_t i = 0; i < loopset.numLoops; i++) {
         if (loopset.sloops[i].root != cur) {
             numPolys++;
             cur = loopset.sloops[i].root;
@@ -425,7 +425,7 @@ static int countPolys(SortableLoopSet loopset) {
 // Create a SortablePolygon from a given SortableLoop.
 // The "outer ring" SortableLoop is first in memory, followed by its holes
 // Later, we sort the Polygons by the size of their outer loops.
-static H3Error createSortablePoly(SortableLoop *sloop, int numHoles,
+static H3Error createSortablePoly(SortableLoop *sloop, int64_t numHoles,
                                   SortablePoly *spoly) {
     GeoLoop *holes = NULL;
     if (numHoles > 0) {
@@ -433,7 +433,7 @@ static H3Error createSortablePoly(SortableLoop *sloop, int numHoles,
         if (!holes) {
             return E_MEMORY_ALLOC;
         }
-        for (int k = 0; k < numHoles; k++) {
+        for (int64_t k = 0; k < numHoles; k++) {
             holes[k] = sloop[k + 1].loop;
         }
     }
@@ -519,16 +519,16 @@ static H3Error createMultiPolygon(SortableLoopSet loopset,
         return createGlobeMultiPolygon(mpoly);
     }
 
-    int numPolys = countPolys(loopset);
+    int64_t numPolys = countPolys(loopset);
     SortablePoly *spolys = H3_MEMORY(malloc)(sizeof(SortablePoly) * numPolys);
     if (!spolys) {
         return E_MEMORY_ALLOC;
     }
 
     SortableLoop *sloop = loopset.sloops;
-    int i = 0;  // index of first loop in polygon (outer loop)
-    int j = 0;  // index + 1 of last loop in polygon (last hole + 1)
-    int p = 0;  // index of polygon we're working on
+    int64_t i = 0;  // index of first loop in polygon (outer loop)
+    int64_t j = 0;  // index + 1 of last loop in polygon (last hole + 1)
+    int64_t p = 0;  // index of polygon we're working on
     for (; j <= loopset.numLoops; j++) {
         if (j == loopset.numLoops || sloop[i].root != sloop[j].root) {
             // We've reached the end of the loops in the polygon, so
@@ -556,7 +556,7 @@ static H3Error createMultiPolygon(SortableLoopSet loopset,
     }
 
     mpoly->numPolygons = numPolys;
-    for (int i = 0; i < numPolys; i++) {
+    for (int64_t i = 0; i < numPolys; i++) {
         mpoly->polygons[i] = spolys[i].poly;
     }
 
