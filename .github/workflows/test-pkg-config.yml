@@ -24,8 +24,9 @@ jobs:
           cmake --build build
           sudo cmake --install build
 
-      - name: Confirm pkg-config is working
+      - name: Validate h3.pc
         run: |
+          pkg-config --validate h3
           pkg-config --exists h3
           pkg-config --modversion h3
 
