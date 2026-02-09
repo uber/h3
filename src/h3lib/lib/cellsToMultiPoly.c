@@ -630,9 +630,10 @@ H3Error H3_EXPORT(cellsToMultiPolygon)(const H3Index *cells,
     Extract all loops and sort them by:
       1) their connected component, and then by
       2) the loop area.
-    This makes loops for each polygon contiguous in memory, and within
-    each polygon, the sorting makes the largest loop come first, which is
-    what we take to be the outer loop.
+    This makes loops for each polygon contiguous in memory.
+    Within each polygon, the sorting makes the loop with the smallest enclosed
+    area come first (accounting for loop winding direction),
+    which is what we take to be the outer loop for that polygon.
     */
     SortableLoopSet loopset;
     err = createSortableLoopSet(arcset, &loopset);
