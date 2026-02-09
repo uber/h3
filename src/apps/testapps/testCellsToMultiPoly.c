@@ -100,7 +100,7 @@ static GeoMultiPolygon get_mpoly(H3Index *cells, uint64_t num_cells) {
         geoMultiPolygonAreaRads2(mpoly, &poly_area);
 
         Adder k = {};
-        for (int i = 0; i < num_cells; i++) {
+        for (uint64_t i = 0; i < num_cells; i++) {
             double temp;
             H3_EXPORT(cellAreaRads2)(cells[i], &temp);
             kadd(&k, temp);

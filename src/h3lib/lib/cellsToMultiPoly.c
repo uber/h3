@@ -119,7 +119,7 @@ static inline H3Error cellToEdgeArcs(H3Index h, Arc *arcs,
         edges = &_edges[0];
     }
 
-    for (int i = 0; i < numEdges; i++) {
+    for (int64_t i = 0; i < numEdges; i++) {
         // Arcs stay in same order as output of originToDirectedEdges.
         // That is, they are not in CCW order in the `arcs` array, but they
         // are in CCW in the linked loop.
@@ -135,9 +135,9 @@ static inline H3Error cellToEdgeArcs(H3Index h, Arc *arcs,
         // Connect so prev/next point to neighboring edges that share a vertex.
         // Edges/vertexes should follow right-hand rule as a result (CCW order).
         // TODO: this idx stuff will be cleaner when we use an edge iterator
-        int cur = idx[i];
-        int prev = idx[(i - 1 + numEdges) % numEdges];
-        int next = idx[(i + 1) % numEdges];
+        int64_t cur = idx[i];
+        int64_t prev = idx[(i - 1 + numEdges) % numEdges];
+        int64_t next = idx[(i + 1) % numEdges];
         arcs[cur].prev = &arcs[prev];
         arcs[cur].next = &arcs[next];
     }
@@ -314,7 +314,7 @@ static int64_t countLoops(ArcSet arcset) {
 }
 
 // Starting from a given Arc, create a SortableLoop that contains that Arc
-// SortableLoops are sorted by the root (which connected component) and then
+// SortableLoops are sorted by the root (i.e., connected component) and then
 // by the area contained by the loop. We use this to merge all loops in a
 // connected component into a single polygon. We use the area values to
 // determine which loop will be the "outer" loop of the polygon.
@@ -322,7 +322,7 @@ static H3Error createSortableLoop(Arc *arc, SortableLoop *sloop) {
     CellBoundary gb;
     H3Index start = arc->id;
 
-    int numVerts;
+    int64_t numVerts;
     LatLng *verts;
 
     numVerts = 0;
@@ -342,11 +342,11 @@ static H3Error createSortableLoop(Arc *arc, SortableLoop *sloop) {
     }
 
     numVerts = 0;
-    int j = 0;
+    int64_t j = 0;
     do {
         H3_EXPORT(directedEdgeToBoundary)(arc->id, &gb);
 
-        for (int i = 0; i < gb.numVerts - 1; i++) {
+        for (int64_t i = 0; i < gb.numVerts - 1; i++) {
             verts[j] = gb.verts[i];
             j++;
         }
