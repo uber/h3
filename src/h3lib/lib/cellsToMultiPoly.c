@@ -16,6 +16,9 @@ static inline H3Error validateCellSet(const H3Index *cells,
     if (numCells < 0) {
         return E_DOMAIN;
     }
+    if (numCells == 0) {
+        return E_SUCCESS;
+    }
 
     // Check that all cells are valid and have the same resolution
     int res = H3_EXPORT(getResolution)(cells[0]);
@@ -603,18 +606,18 @@ static H3Error createMultiPolygon(SortableLoopSet loopset,
 H3Error H3_EXPORT(cellsToMultiPolygon)(const H3Index *cells,
                                        const int64_t numCells,
                                        GeoMultiPolygon *out) {
-    if (numCells == 0) {
-        out->numPolygons = 0;
-        out->polygons = NULL;
-        return E_SUCCESS;
-    }
-
     H3Error err =
         checkCellsToMultiPolyOverflow(numCells, HASH_TABLE_MULTIPLIER);
     if (err) return err;
 
     err = validateCellSet(cells, numCells);
     if (err) return err;
+
+    if (numCells == 0) {
+        out->numPolygons = 0;
+        out->polygons = NULL;
+        return E_SUCCESS;
+    }
 
     // arcset initializes with separate doubly-linked loops for each cell,
     // each in their own connected component
