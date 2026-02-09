@@ -208,7 +208,6 @@ Frees the verts arrays from each polygon's geoloop, then the polygon array.
 Used during partial cleanup when constructing the polygon array fails.
 numPolys specifies how many polygons to clean up.
 */
-// TODO: do we need two separate? can we avoid passing numPolys?
 static inline void destroySortablePolyVerts(SortablePoly *spolys,
                                             int64_t numPolys) {
     if (spolys) {
