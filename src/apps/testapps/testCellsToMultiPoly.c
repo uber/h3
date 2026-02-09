@@ -130,7 +130,7 @@ static void check_global_poly(GeoMultiPolygon mpoly) {
     for (int i = 0; i < 8; i++) {
         t_assert((mpoly.polygons[i].numHoles == 0) &&
                      (mpoly.polygons[i].holes == NULL) &&
-                     (mpoly.polygons[i].geoloop.numVerts = 3),
+                     (mpoly.polygons[i].geoloop.numVerts == 3),
                  "Expecting each polygon is a triangle");
     }
 
