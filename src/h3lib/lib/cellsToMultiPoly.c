@@ -344,7 +344,11 @@ static H3Error createSortableLoop(Arc *arc, SortableLoop *sloop) {
     numVerts = 0;
     int64_t j = 0;
     do {
-        H3_EXPORT(directedEdgeToBoundary)(arc->id, &gb);
+        H3Error err = H3_EXPORT(directedEdgeToBoundary)(arc->id, &gb);
+        if (NEVER(err)) {
+            free(verts);
+            return err;
+        }
 
         for (int64_t i = 0; i < gb.numVerts - 1; i++) {
             verts[j] = gb.verts[i];
