@@ -172,6 +172,7 @@ set(LIB_SOURCE_FILES
     src/h3lib/include/algos.h
     src/h3lib/include/adder.h
     src/h3lib/include/area.h
+    src/h3lib/include/cellsToMultiPoly.h
     src/h3lib/lib/h3Assert.c
     src/h3lib/lib/algos.c
     src/h3lib/lib/coordijk.c
@@ -191,7 +192,8 @@ set(LIB_SOURCE_FILES
     src/h3lib/lib/vertexGraph.c
     src/h3lib/lib/faceijk.c
     src/h3lib/lib/baseCells.c
-    src/h3lib/lib/area.c)
+    src/h3lib/lib/area.c
+    src/h3lib/lib/cellsToMultiPoly.c)
 set(APP_SOURCE_FILES
     src/apps/applib/include/kml.h
     src/apps/applib/include/benchmark.h
@@ -265,6 +267,8 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testIndexDigits.c
     src/apps/testapps/testConstructCell.c
     src/apps/testapps/testCellsToLinkedMultiPolygon.c
+    src/apps/testapps/testCellsToMultiPoly.c
+    src/apps/testapps/testCellsToMultiPolyInternal.c
     src/apps/testapps/testCellToLocalIj.c
     src/apps/testapps/testCellToLocalIjInternal.c
     src/apps/testapps/testCellToLocalIjExhaustive.c
@@ -282,7 +286,6 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testMathExtensionsInternal.c
     src/apps/testapps/testDescribeH3Error.c
     src/apps/testapps/testGeoLoopArea.c
-    src/apps/testapps/testGeoMultiPolygon.c
     src/apps/miscapps/cellToBoundaryHier.c
     src/apps/miscapps/cellToLatLngHier.c
     src/apps/miscapps/generateBaseCellNeighbors.c
@@ -292,6 +295,7 @@ set(OTHER_SOURCE_FILES
     src/apps/fuzzers/fuzzerLatLngToCell.c
     src/apps/fuzzers/fuzzerCellToLatLng.c
     src/apps/fuzzers/fuzzerGridDisk.c
+    src/apps/fuzzers/fuzzerCellsToMultiPolygon.c
     src/apps/fuzzers/fuzzerCellsToLinkedMultiPolygon.c
     src/apps/fuzzers/fuzzerDistances.c
     src/apps/fuzzers/fuzzerCellArea.c
@@ -315,7 +319,7 @@ set(OTHER_SOURCE_FILES
     src/apps/benchmarks/benchmarkPolygonToCells.c
     src/apps/benchmarks/benchmarkPolygonToCellsExperimental.c
     src/apps/benchmarks/benchmarkPolygon.c
-    src/apps/benchmarks/benchmarkCellsToLinkedMultiPolygon.c
+    src/apps/benchmarks/benchmarkCellsToPolyAlgos.c
     src/apps/benchmarks/benchmarkCellToChildren.c
     src/apps/benchmarks/benchmarkGridDiskCells.c
     src/apps/benchmarks/benchmarkGridPathCells.c
@@ -619,6 +623,8 @@ if(BUILD_FUZZERS)
     add_h3_fuzzer(fuzzerLatLngToCell src/apps/fuzzers/fuzzerLatLngToCell.c)
     add_h3_fuzzer(fuzzerCellToLatLng src/apps/fuzzers/fuzzerCellToLatLng.c)
     add_h3_fuzzer(fuzzerGridDisk src/apps/fuzzers/fuzzerGridDisk.c)
+    add_h3_fuzzer(fuzzerCellsToMultiPolygon
+                  src/apps/fuzzers/fuzzerCellsToMultiPolygon.c)
     add_h3_fuzzer(fuzzerCellsToLinkedMultiPolygon
                   src/apps/fuzzers/fuzzerCellsToLinkedMultiPolygon.c)
     add_h3_fuzzer(fuzzerDistances src/apps/fuzzers/fuzzerDistances.c)
@@ -670,8 +676,8 @@ if(BUILD_BENCHMARKS)
     add_h3_benchmark(benchmarkVertex src/apps/benchmarks/benchmarkVertex.c)
     add_h3_benchmark(benchmarkIsValidCell
                      src/apps/benchmarks/benchmarkIsValidCell.c)
-    add_h3_benchmark(benchmarkCellsToLinkedMultiPolygon
-                     src/apps/benchmarks/benchmarkCellsToLinkedMultiPolygon.c)
+    add_h3_benchmark(benchmarkCellsToPolyAlgos
+                     src/apps/benchmarks/benchmarkCellsToPolyAlgos.c)
     add_h3_benchmark(benchmarkCellToChildren
                      src/apps/benchmarks/benchmarkCellToChildren.c)
     add_h3_benchmark(benchmarkPolygonToCells
