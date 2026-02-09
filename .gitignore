@@ -1,6 +1,8 @@
 # vi swap files
 .*.swp
 
+.cache/
+
 # make depends files
 *.depends
 
