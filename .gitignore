@@ -1,6 +1,8 @@
 # vi swap files
 .*.swp
 
+.cache/
+
 # make depends files
 *.depends
 
@@ -108,3 +110,4 @@ KML/res*centers.kml
 # Generated files
 src/h3lib/include/h3api.h
 src/apps/benchmarks/benchmarkCountries.c
+h3-prof.trace

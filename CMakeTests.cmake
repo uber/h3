@@ -221,6 +221,8 @@ add_h3_test(testIndexDigits src/apps/testapps/testIndexDigits.c)
 add_h3_test(testConstructCell src/apps/testapps/testConstructCell.c)
 add_h3_test(testCellsToLinkedMultiPolygon
             src/apps/testapps/testCellsToLinkedMultiPolygon.c)
+add_h3_test(testCellsToMultiPoly src/apps/testapps/testCellsToMultiPoly.c)
+add_h3_test(testCellsToMultiPolyInternal src/apps/testapps/testCellsToMultiPolyInternal.c)
 add_h3_test(testH3SetToVertexGraphInternal
             src/apps/testapps/testH3SetToVertexGraphInternal.c)
 add_h3_test(testLinkedGeoInternal src/apps/testapps/testLinkedGeoInternal.c)
@@ -260,7 +262,6 @@ add_h3_test(testMathExtensionsInternal
             src/apps/testapps/testMathExtensionsInternal.c)
 add_h3_test(testDescribeH3Error src/apps/testapps/testDescribeH3Error.c)
 add_h3_test(testGeoLoopArea src/apps/testapps/testGeoLoopArea.c)
-add_h3_test(testGeoMultiPolygon src/apps/testapps/testGeoMultiPolygon.c)
 
 add_h3_test_with_arg(testH3NeighborRotations
                      src/apps/testapps/testH3NeighborRotations.c 0)
