@@ -34,7 +34,8 @@ SUITE(Vec3d) {
     TEST(crossProductOrthogonality) {
         Vec3d i = {.x = 1.0, .y = 0.0, .z = 0.0};
         Vec3d j = {.x = 0.0, .y = 1.0, .z = 0.0};
-        Vec3d k = vec3Cross(&i, &j);
+        Vec3d k;
+        vec3Cross(&i, &j, &k);
         t_assert(fabs(k.x - 0.0) < EPSILON, "x component zero");
         t_assert(fabs(k.y - 0.0) < EPSILON, "y component zero");
         t_assert(fabs(k.z - 1.0) < EPSILON, "z component one");
@@ -66,7 +67,8 @@ SUITE(Vec3d) {
 
     TEST(latLngConversionConsistency) {
         LatLng geo = {.lat = 0.5, .lng = -1.3};
-        Vec3d viaReturn = latLngToVec3(&geo);
+        Vec3d viaReturn;
+        latLngToVec3(&geo, &viaReturn);
         Vec3d viaOut;
         _geoToVec3d(&geo, &viaOut);
 

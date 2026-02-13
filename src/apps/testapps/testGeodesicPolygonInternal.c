@@ -73,8 +73,10 @@ SUITE(GeodesicPolygonInternal) {
         LatLng insideLl = {.lat = 0.5 * DEG_TO_RAD, .lng = 0.5 * DEG_TO_RAD};
         LatLng outsideLl = {.lat = 3.0 * DEG_TO_RAD, .lng = 3.0 * DEG_TO_RAD};
 
-        Vec3d insideVec = latLngToVec3(&insideLl);
-        Vec3d outsideVec = latLngToVec3(&outsideLl);
+        Vec3d insideVec;
+        latLngToVec3(&insideLl, &insideVec);
+        Vec3d outsideVec;
+        latLngToVec3(&outsideLl, &outsideVec);
 
         t_assert(geodesicPolygonContainsPoint(poly, &insideVec),
                  "point inside polygon detected");
@@ -116,11 +118,11 @@ SUITE(GeodesicPolygonInternal) {
 
         GeodesicCellBoundary boundary = {.numVerts = triangleLoop.numVerts};
         for (int i = 0; i < triangleLoop.numVerts; i++) {
-            boundary.verts[i] = latLngToVec3(&triangleLoop.verts[i]);
+            latLngToVec3(&triangleLoop.verts[i], &boundary.verts[i]);
         }
 
-        SphereCap permissiveCap = {
-            .center = latLngToVec3(&triangleLoop.verts[0]), .cosRadius = -1.0};
+        SphereCap permissiveCap = {.cosRadius = -1.0};
+        latLngToVec3(&triangleLoop.verts[0], &permissiveCap.center);
         t_assert(
             geodesicPolygonBoundaryIntersects(poly, &boundary, &permissiveCap),
             "coincident boundaries reported as intersecting");
@@ -132,10 +134,10 @@ SUITE(GeodesicPolygonInternal) {
             {.lat = 15.0 * DEG_TO_RAD, .lng = 15.0 * DEG_TO_RAD},
             {.lat = 15.0 * DEG_TO_RAD, .lng = 10.0 * DEG_TO_RAD}};
         for (int i = 0; i < farBoundary.numVerts; i++) {
-            farBoundary.verts[i] = latLngToVec3(&squareLl[i]);
+            latLngToVec3(&squareLl[i], &farBoundary.verts[i]);
         }
-        SphereCap farCap = {.center = latLngToVec3(&squareLl[0]),
-                            .cosRadius = cos(2.0 * DEG_TO_RAD)};
+        SphereCap farCap = {.cosRadius = cos(2.0 * DEG_TO_RAD)};
+        latLngToVec3(&squareLl[0], &farCap.center);
         t_assert(
             !geodesicPolygonBoundaryIntersects(poly, &farBoundary, &farCap),
             "far boundary does not intersect");
@@ -170,11 +172,11 @@ SUITE(GeodesicPolygonInternal) {
                            {.lat = 1.0 * DEG_TO_RAD, .lng = 0.0},
                            {.lat = 1.5 * DEG_TO_RAD, .lng = 0.0}};
         for (int i = 0; i < boundary.numVerts; i++) {
-            boundary.verts[i] = latLngToVec3(&edgeLl[i]);
+            latLngToVec3(&edgeLl[i], &boundary.verts[i]);
         }
 
-        SphereCap cap = {.center = latLngToVec3(&edgeLl[0]),
-                         .cosRadius = cos(2.0 * DEG_TO_RAD)};
+        SphereCap cap = {.cosRadius = cos(2.0 * DEG_TO_RAD)};
+        latLngToVec3(&edgeLl[0], &cap.center);
         t_assert(geodesicPolygonBoundaryIntersects(poly, &boundary, &cap),
                  "colinear overlapping segment intersects polygon boundary");
 
@@ -195,7 +197,8 @@ SUITE(GeodesicPolygonInternal) {
 
         // Opposite-hemisphere point should be rejected quickly.
         LatLng oppositePt = {.lat = 0.0, .lng = M_PI};
-        Vec3d oppositeVec = latLngToVec3(&oppositePt);
+        Vec3d oppositeVec;
+        latLngToVec3(&oppositePt, &oppositeVec);
         t_assert(!geodesicPolygonContainsPoint(poly, &oppositeVec),
                  "opposite-hemisphere point is outside antipodal polygon");
 
@@ -219,7 +222,8 @@ SUITE(GeodesicPolygonInternal) {
 
         // Test with north pole which should be inside
         LatLng northPole = {.lat = M_PI_2, .lng = 0.0};
-        Vec3d northVec = latLngToVec3(&northPole);
+        Vec3d northVec;
+        latLngToVec3(&northPole, &northVec);
         t_assert(geodesicPolygonContainsPoint(poly, &northVec),
                  "north pole is inside high-latitude polygon");
 
@@ -240,7 +244,8 @@ SUITE(GeodesicPolygonInternal) {
         t_assert(poly != NULL, "tiny polygon created");
 
         LatLng farPoint = {.lat = 45.0 * DEG_TO_RAD, .lng = 45.0 * DEG_TO_RAD};
-        Vec3d farVec = latLngToVec3(&farPoint);
+        Vec3d farVec;
+        latLngToVec3(&farPoint, &farVec);
         t_assert(!geodesicPolygonContainsPoint(poly, &farVec),
                  "distant point is outside tiny polygon");
 
@@ -257,7 +262,8 @@ SUITE(GeodesicPolygonInternal) {
 
     TEST(nullArgumentGuards) {
         LatLng testLl = {.lat = 1.0 * DEG_TO_RAD, .lng = 1.0 * DEG_TO_RAD};
-        Vec3d testVec = latLngToVec3(&testLl);
+        Vec3d testVec;
+        latLngToVec3(&testLl, &testVec);
         GeodesicPolygon dummy = {0};
 
         SphereCap cap = {.center = testVec, .cosRadius = -1.0};
@@ -289,7 +295,8 @@ SUITE(GeodesicPolygonInternal) {
         poly->aabb.max = (Vec3d){3.0, 3.0, 3.0};
 
         LatLng centerLl = {.lat = 0.0, .lng = 0.0};
-        SphereCap cap = {.center = latLngToVec3(&centerLl), .cosRadius = -1.0};
+        SphereCap cap = {.cosRadius = -1.0};
+        latLngToVec3(&centerLl, &cap.center);
 
         t_assert(!geodesicPolygonCapIntersects(poly, &cap),
                  "AABB outside unit sphere rejected");

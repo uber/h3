@@ -329,8 +329,10 @@ void aabbUpdateWithVec3d(AABB *aabb, const Vec3d *v) {
 
 static inline bool _isOnArcRobust(const Vec3d *p, const Vec3d *v1,
                                   const Vec3d *v2, const Vec3d *n) {
-    Vec3d c1 = vec3Cross(v1, p);
-    Vec3d c2 = vec3Cross(p, v2);
+    Vec3d c1;
+    vec3Cross(v1, p, &c1);
+    Vec3d c2;
+    vec3Cross(p, v2, &c2);
     // If p is on the arc, the cross products of (v1, p) and (p, v2)
     // should be in the same direction as the normal vector n.
     // Using a small tolerance for floating point errors.
@@ -360,7 +362,8 @@ void aabbUpdateWithArcExtrema(AABB *aabb, const Vec3d *v1, const Vec3d *v2,
         // Find the vector in the great circle plane that is perpendicular
         // to the current Cartesian axis. This vector points to a potential
         // extremum.
-        Vec3d extremum_dir = vec3Cross(axis, &normal);
+        Vec3d extremum_dir;
+        vec3Cross(axis, &normal, &extremum_dir);
         double extremum_mag_sq = vec3Dot(&extremum_dir, &extremum_dir);
 
         // If the axis is nearly aligned with the normal, there's no unique

@@ -61,12 +61,10 @@ double vec3Dot(const Vec3d *v1, const Vec3d *v2) {
     return v1->x * v2->x + v1->y * v2->y + v1->z * v2->z;
 }
 
-Vec3d vec3Cross(const Vec3d *v1, const Vec3d *v2) {
-    Vec3d out;
-    out.x = v1->y * v2->z - v1->z * v2->y;
-    out.y = v1->z * v2->x - v1->x * v2->z;
-    out.z = v1->x * v2->y - v1->y * v2->x;
-    return out;
+void vec3Cross(const Vec3d *v1, const Vec3d *v2, Vec3d *out) {
+    out->x = v1->y * v2->z - v1->z * v2->y;
+    out->y = v1->z * v2->x - v1->x * v2->z;
+    out->z = v1->x * v2->y - v1->y * v2->x;
 }
 
 void vec3Normalize(Vec3d *v) {
@@ -92,8 +90,4 @@ double vec3DistSq(const Vec3d *v1, const Vec3d *v2) {
     return dx * dx + dy * dy + dz * dz;
 }
 
-Vec3d latLngToVec3(const LatLng *geo) {
-    Vec3d v;
-    _geoToVec3d(geo, &v);
-    return v;
-}
+void latLngToVec3(const LatLng *geo, Vec3d *v) { _geoToVec3d(geo, v); }

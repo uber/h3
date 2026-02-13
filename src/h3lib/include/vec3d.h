@@ -38,11 +38,11 @@ typedef struct {
 void _geoToVec3d(const LatLng *geo, Vec3d *point);
 double _pointSquareDist(const Vec3d *p1, const Vec3d *p2);
 double vec3Dot(const Vec3d *v1, const Vec3d *v2);
-Vec3d vec3Cross(const Vec3d *v1, const Vec3d *v2);
+void vec3Cross(const Vec3d *v1, const Vec3d *v2, Vec3d *out);
 void vec3Normalize(Vec3d *v);
 double vec3MagSq(const Vec3d *v);
 double vec3Mag(const Vec3d *v);
 double vec3DistSq(const Vec3d *v1, const Vec3d *v2);
-Vec3d latLngToVec3(const LatLng *geo);
+void latLngToVec3(const LatLng *geo, Vec3d *v);
 
 #endif
