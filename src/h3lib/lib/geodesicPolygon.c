@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-/** @file geodesic_polygon.c
+/** @file geodesicPolygon.c
  * @brief Implements geodesic polygon conversions and spatial predicates.
  */
 
@@ -22,7 +22,7 @@
 
 #include "alloc.h"
 #include "constants.h"
-#include "geodesic_polygon_internal.h"
+#include "geodesicPolygonInternal.h"
 #include "h3api.h"
 
 /**
@@ -166,7 +166,7 @@ static void _geodesicLoopToAABB(const GeodesicLoop *loop, AABB *out) {
                                  &loop->edges[i].edgeCross);
     }
 
-    // Probe cardinaal axes and expand the box if needed
+    // Probe cardinal axes and expand the box if needed
     Vec3d testVecs[] = {{1, 0, 0},  {-1, 0, 0}, {0, 1, 0},
                         {0, -1, 0}, {0, 0, 1},  {0, 0, -1}};
     for (int i = 0; i < 6; i++) {

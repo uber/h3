@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-/** @file geodesic_iterator.h
+/** @file geodesicIterator.h
  * @brief Declares helpers for the geodesic polygon iterator state machine.
  */
 
@@ -22,7 +22,7 @@
 #define GEODESIC_ITERATOR_H
 
 #include "h3api.h"
-#include "polyfill_iterator.h"
+#include "polyfillIterator.h"
 
 /**
  * Advance the geodesic polyfill iterator state for the provided starting cell.

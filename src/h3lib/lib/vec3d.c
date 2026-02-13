@@ -94,9 +94,6 @@ double vec3DistSq(const Vec3d *v1, const Vec3d *v2) {
 
 Vec3d latLngToVec3(const LatLng *geo) {
     Vec3d v;
-    double r = cos(geo->lat);
-    v.x = r * cos(geo->lng);
-    v.y = r * sin(geo->lng);
-    v.z = sin(geo->lat);
+    _geoToVec3d(geo, &v);
     return v;
 }

@@ -139,9 +139,9 @@ GeoLoop largeEllipseGeoLoop;
 GeoPolygon largeEllipseGeoPolygon;
 
 // London to NY flight
-LatLng londonNyVerts[] = {{-0.0022305307840, 0.8989737191417},
-                          {-1.2916483662309, 0.7105724077059},
-                          {-0.0022305307840, 0.8989737191417}};
+LatLng londonNyVerts[] = {{0.8989737191417, -0.0022305307840},
+                          {0.7105724077059, -1.2916483662309},
+                          {0.8989737191417, -0.0022305307840}};
 GeoLoop londonNyGeoLoop;
 GeoPolygon londonNyGeoPolygon;
 
@@ -171,7 +171,7 @@ largeEllipseGeoLoop.numVerts = 100;
 largeEllipseGeoLoop.verts = largeEllipseVerts;
 largeEllipseGeoPolygon.geoloop = largeEllipseGeoLoop;
 
-londonNyGeoLoop.numVerts = 6;
+londonNyGeoLoop.numVerts = 3;
 londonNyGeoLoop.verts = londonNyVerts;
 londonNyGeoPolygon.geoloop = londonNyGeoLoop;
 

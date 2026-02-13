@@ -24,10 +24,12 @@
  */
 
 #include <math.h>
+#include <stdlib.h>
 
-#include "geodesic_cell_boundary.h"
-#include "geodesic_polygon_internal.h"
+#include "geodesicCellBoundary.h"
+#include "geodesicPolygonInternal.h"
 #include "h3Index.h"
+#include "polygon.h"
 #include "test.h"
 #include "vec3d.h"
 
@@ -137,6 +139,177 @@ SUITE(GeodesicPolygonInternal) {
         t_assert(
             !geodesicPolygonBoundaryIntersects(poly, &farBoundary, &farCap),
             "far boundary does not intersect");
+
+        geodesicPolygonDestroy(poly);
+    }
+
+    TEST(polygonWithHolesNullPointer) {
+        GeoPolygon polyWithNullHoles = {
+            .geoloop = triangleLoop, .numHoles = 1, .holes = NULL};
+        t_assert(geodesicPolygonCreate(&polyWithNullHoles) == NULL,
+                 "polygon with holes > 0 but NULL holes pointer rejected");
+    }
+
+    TEST(destroyNullPolygon) {
+        // This should not crash
+        geodesicPolygonDestroy(NULL);
+        t_assert(true, "destroying NULL polygon is safe");
+    }
+
+    TEST(colinearEdgeIntersection) {
+        // Test edge case with nearly colinear edges that require swapping
+        // projections in _edgeIntersectsEdge
+        GeoPolygon polygon = {
+            .geoloop = triangleLoop, .numHoles = 0, .holes = NULL};
+        GeodesicPolygon *poly = geodesicPolygonCreate(&polygon);
+        t_assert(poly != NULL, "polygon created for colinear edge test");
+
+        // Test with overlapping boundary that may trigger swap paths
+        GeodesicCellBoundary boundary = {.numVerts = 3};
+        LatLng edgeLl[] = {{.lat = 0.5 * DEG_TO_RAD, .lng = 0.0},
+                           {.lat = 1.0 * DEG_TO_RAD, .lng = 0.0},
+                           {.lat = 1.5 * DEG_TO_RAD, .lng = 0.0}};
+        for (int i = 0; i < boundary.numVerts; i++) {
+            boundary.verts[i] = latLngToVec3(&edgeLl[i]);
+        }
+
+        SphereCap cap = {.center = latLngToVec3(&edgeLl[0]),
+                         .cosRadius = cos(2.0 * DEG_TO_RAD)};
+        t_assert(geodesicPolygonBoundaryIntersects(poly, &boundary, &cap),
+                 "colinear overlapping segment intersects polygon boundary");
+
+        geodesicPolygonDestroy(poly);
+    }
+
+    TEST(polygonWithAntipodal) {
+        // Test polygon with edges that may create edge cases in intersection
+        LatLng antipodeVerts[] = {{.lat = 0.0, .lng = 0.0},
+                                  {.lat = 0.0, .lng = M_PI},
+                                  {.lat = 1.0 * DEG_TO_RAD, .lng = 0.0}};
+        GeoLoop antipodeLoop = {.numVerts = 3, .verts = antipodeVerts};
+        GeoPolygon polygon = {
+            .geoloop = antipodeLoop, .numHoles = 0, .holes = NULL};
+
+        GeodesicPolygon *poly = geodesicPolygonCreate(&polygon);
+        t_assert(poly != NULL, "antipodal-edge polygon created");
+
+        // Opposite-hemisphere point should be rejected quickly.
+        LatLng oppositePt = {.lat = 0.0, .lng = M_PI};
+        Vec3d oppositeVec = latLngToVec3(&oppositePt);
+        t_assert(!geodesicPolygonContainsPoint(poly, &oppositeVec),
+                 "opposite-hemisphere point is outside antipodal polygon");
+
+        geodesicPolygonDestroy(poly);
+    }
+
+    TEST(largePolygonContainsCardinalPoints) {
+        // Test a large polygon that contains cardinal axis points
+        // to exercise cardinal-axis probing in _geodesicLoopToAABB.
+        LatLng largeVerts[] = {
+            {.lat = 60.0 * DEG_TO_RAD, .lng = 0.0},
+            {.lat = 60.0 * DEG_TO_RAD, .lng = 90.0 * DEG_TO_RAD},
+            {.lat = 60.0 * DEG_TO_RAD, .lng = 180.0 * DEG_TO_RAD},
+            {.lat = 60.0 * DEG_TO_RAD, .lng = -90.0 * DEG_TO_RAD}};
+        GeoLoop largeLoop = {.numVerts = 4, .verts = largeVerts};
+        GeoPolygon largePolygon = {
+            .geoloop = largeLoop, .numHoles = 0, .holes = NULL};
+
+        GeodesicPolygon *poly = geodesicPolygonCreate(&largePolygon);
+        t_assert(poly != NULL, "large polygon created");
+
+        // Test with north pole which should be inside
+        LatLng northPole = {.lat = M_PI_2, .lng = 0.0};
+        Vec3d northVec = latLngToVec3(&northPole);
+        t_assert(geodesicPolygonContainsPoint(poly, &northVec),
+                 "north pole is inside high-latitude polygon");
+
+        geodesicPolygonDestroy(poly);
+    }
+
+    TEST(verySmallPolygon) {
+        // Test a very small polygon to potentially trigger AABB edge cases
+        LatLng tinyVerts[] = {
+            {.lat = 0.00001 * DEG_TO_RAD, .lng = 0.0},
+            {.lat = 0.00001 * DEG_TO_RAD, .lng = 0.00001 * DEG_TO_RAD},
+            {.lat = 0.0, .lng = 0.00001 * DEG_TO_RAD}};
+        GeoLoop tinyLoop = {.numVerts = 3, .verts = tinyVerts};
+        GeoPolygon tinyPolygon = {
+            .geoloop = tinyLoop, .numHoles = 0, .holes = NULL};
+
+        GeodesicPolygon *poly = geodesicPolygonCreate(&tinyPolygon);
+        t_assert(poly != NULL, "tiny polygon created");
+
+        LatLng farPoint = {.lat = 45.0 * DEG_TO_RAD, .lng = 45.0 * DEG_TO_RAD};
+        Vec3d farVec = latLngToVec3(&farPoint);
+        t_assert(!geodesicPolygonContainsPoint(poly, &farVec),
+                 "distant point is outside tiny polygon");
+
+        // Also test cap intersection with very distant cap
+        H3Index cell;
+        t_assertSuccess(H3_EXPORT(latLngToCell)(&farPoint, 5, &cell));
+        SphereCap cap;
+        t_assertSuccess(cellToSphereCap(cell, &cap));
+        t_assert(!geodesicPolygonCapIntersects(poly, &cap),
+                 "distant cap does not intersect tiny polygon AABB");
+
+        geodesicPolygonDestroy(poly);
+    }
+
+    TEST(nullArgumentGuards) {
+        LatLng testLl = {.lat = 1.0 * DEG_TO_RAD, .lng = 1.0 * DEG_TO_RAD};
+        Vec3d testVec = latLngToVec3(&testLl);
+        GeodesicPolygon dummy = {0};
+
+        SphereCap cap = {.center = testVec, .cosRadius = -1.0};
+        GeodesicCellBoundary boundary = {.numVerts = 1, .verts = {testVec}};
+
+        t_assert(!geodesicPolygonCapIntersects(NULL, &cap),
+                 "null polygon rejected for cap test");
+        t_assert(!geodesicPolygonCapIntersects(&dummy, NULL),
+                 "null cap rejected");
+
+        t_assert(!geodesicPolygonBoundaryIntersects(NULL, &boundary, &cap),
+                 "null polygon rejected for boundary test");
+        t_assert(!geodesicPolygonBoundaryIntersects(&dummy, NULL, &cap),
+                 "null boundary rejected");
+        t_assert(!geodesicPolygonBoundaryIntersects(&dummy, &boundary, NULL),
+                 "null cap rejected for boundary test");
+
+        t_assert(!geodesicPolygonContainsPoint(NULL, &testVec),
+                 "null polygon rejected for containment test");
+        t_assert(!geodesicPolygonContainsPoint(&dummy, NULL),
+                 "null point rejected for containment test");
+    }
+
+    TEST(capRejectsAabbOutsideUnitSphere) {
+        GeodesicPolygon *poly = calloc(1, sizeof(GeodesicPolygon));
+        t_assert(poly != NULL, "allocated synthetic polygon");
+
+        poly->aabb.min = (Vec3d){2.0, 2.0, 2.0};
+        poly->aabb.max = (Vec3d){3.0, 3.0, 3.0};
+
+        LatLng centerLl = {.lat = 0.0, .lng = 0.0};
+        SphereCap cap = {.center = latLngToVec3(&centerLl), .cosRadius = -1.0};
+
+        t_assert(!geodesicPolygonCapIntersects(poly, &cap),
+                 "AABB outside unit sphere rejected");
+
+        geodesicPolygonDestroy(poly);
+    }
+
+    TEST(degenerateBoundarySegmentRejected) {
+        GeoPolygon polygon = {
+            .geoloop = triangleLoop, .numHoles = 0, .holes = NULL};
+        GeodesicPolygon *poly = geodesicPolygonCreate(&polygon);
+        t_assert(poly != NULL, "triangle polygon created");
+
+        // One repeated boundary vertex creates a zero-length segment.
+        GeodesicCellBoundary boundary = {.numVerts = 1};
+        boundary.verts[0] = poly->geoloop.edges[0].vert;
+
+        SphereCap cap = {.center = boundary.verts[0], .cosRadius = -1.0};
+        t_assert(!geodesicPolygonBoundaryIntersects(poly, &boundary, &cap),
+                 "degenerate boundary segment does not intersect");
 
         geodesicPolygonDestroy(poly);
     }

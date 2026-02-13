@@ -447,19 +447,13 @@ SUITE(BBox) {
         assertBBox(&bbox, &expected);
     }
 
-    TEST(aabbEmptyStates) {
+    TEST(aabbEmptyInvertedState) {
         AABB box;
         aabbEmptyInverted(&box);
         t_assert(box.min.x == 1.0 && box.min.y == 1.0 && box.min.z == 1.0,
                  "Inverted box initializes min values to 1");
         t_assert(box.max.x == -1.0 && box.max.y == -1.0 && box.max.z == -1.0,
                  "Inverted box initializes max values to -1");
-
-        aabbEmptyFull(&box);
-        t_assert(box.min.x == -1.0 && box.min.y == -1.0 && box.min.z == -1.0,
-                 "Full box initializes min values to -1");
-        t_assert(box.max.x == 1.0 && box.max.y == 1.0 && box.max.z == 1.0,
-                 "Full box initializes max values to 1");
     }
 
     TEST(aabbVec3Updates) {

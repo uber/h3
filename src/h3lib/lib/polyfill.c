@@ -25,7 +25,7 @@
 #include "alloc.h"
 #include "baseCells.h"
 #include "coordijk.h"
-#include "geodesic_iterator.h"
+#include "geodesicIterator.h"
 #include "h3Assert.h"
 #include "h3Index.h"
 #include "polygon.h"

@@ -19,6 +19,7 @@
  *  usage: `testH3IndexInternal`
  */
 
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -27,6 +28,7 @@
 #include "h3Index.h"
 #include "test.h"
 #include "utility.h"
+#include "vec3d.h"
 
 SUITE(h3IndexInternal) {
     TEST(faceIjkToH3ExtremeCoordinates) {
@@ -50,5 +52,49 @@ SUITE(h3IndexInternal) {
         t_assert(_faceIjkToH3(&fijk2J, 2) == 0, "j out of bounds at res 2");
         FaceIJK fijk2K = {8, {2, 0, 20}};
         t_assert(_faceIjkToH3(&fijk2K, 2) == 0, "k out of bounds at res 2");
+    }
+
+    TEST(vec3dToCell_invalidInputs) {
+        Vec3d v = {1.0, 0.0, 0.0};
+        H3Index out;
+
+        // Test invalid resolution (negative)
+        t_assert(vec3dToCell(&v, -1, &out) == E_RES_DOMAIN,
+                 "negative resolution rejected");
+
+        // Test invalid resolution (too high)
+        t_assert(vec3dToCell(&v, MAX_H3_RES + 1, &out) == E_RES_DOMAIN,
+                 "resolution above MAX_H3_RES rejected");
+
+        // Test non-finite coordinates
+        Vec3d nanVec = {NAN, 0.0, 0.0};
+        t_assert(vec3dToCell(&nanVec, 5, &out) == E_DOMAIN,
+                 "NaN x coordinate rejected");
+
+        Vec3d infVec = {INFINITY, 0.0, 0.0};
+        t_assert(vec3dToCell(&infVec, 5, &out) == E_DOMAIN,
+                 "Infinity x coordinate rejected");
+
+        Vec3d nanY = {0.0, NAN, 0.0};
+        t_assert(vec3dToCell(&nanY, 5, &out) == E_DOMAIN,
+                 "NaN y coordinate rejected");
+
+        Vec3d nanZ = {0.0, 0.0, NAN};
+        t_assert(vec3dToCell(&nanZ, 5, &out) == E_DOMAIN,
+                 "NaN z coordinate rejected");
+    }
+
+    TEST(cellToVec3_invalidCell) {
+        Vec3d v;
+        H3Index invalid = 0xFFFFFFFFFFFFFFFF;
+        t_assert(cellToVec3(invalid, &v) != E_SUCCESS,
+                 "invalid H3 index rejected in cellToVec3");
+    }
+
+    TEST(cellToGeodesicBoundary_invalidCell) {
+        GeodesicCellBoundary cb;
+        H3Index invalid = 0xFFFFFFFFFFFFFFFF;
+        t_assert(cellToGeodesicBoundary(invalid, &cb) != E_SUCCESS,
+                 "invalid H3 index rejected in cellToGeodesicBoundary");
     }
 }

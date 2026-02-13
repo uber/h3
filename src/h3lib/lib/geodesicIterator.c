@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-/** @file geodesic_iterator.c
+/** @file geodesicIterator.c
  * @brief Manages geodesic polygon iterator lifecycle and traversal helpers.
  */
 
-#include "geodesic_iterator.h"
+#include "geodesicIterator.h"
 
-#include <stdio.h>
-
-#include "geodesic_polygon_internal.h"
+#include "geodesicPolygonInternal.h"
 #include "h3Index.h"
 
 #define H3_CHECK(h3_call, iter_ptr)              \
@@ -96,7 +94,7 @@ void geodesicIteratorStep(IterCellsPolygonCompact *iter, H3Index cell) {
         }
 
         GeodesicCellBoundary boundary;
-        H3_CHECK(H3_EXPORT(cellToGeodesicBoundary)(cell, &boundary), iter);
+        H3_CHECK(cellToGeodesicBoundary(cell, &boundary), iter);
 
         const bool boundaryIntersection =
             geodesicPolygonBoundaryIntersects(poly, &boundary, &cap);

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** @file polyfill_iterator.h
+/** @file polyfillIterator.h
  * @brief   Iterators used by the polygon-to-cells functionality
  */
 
@@ -23,7 +23,7 @@
 #include <stdbool.h>
 
 #include "bbox.h"
-#include "geodesic_polygon_internal.h"
+#include "geodesicPolygonInternal.h"
 #include "h3api.h"
 #include "iterators.h"
 
@@ -45,7 +45,7 @@
  * is accessed via the `iterCellsPolygonCompact.cell` member. When the iterator
  * is exhausted  or if there was an error in initialization or iteration,
  * `iterCellsPolygonCompact.cell` will be `H3_NULL` after calling
- * `iterStepChild`. It is the responsibiliy of the caller to check
+ * `iterStepChild`. It is the responsibility of the caller to check
  * `iterCellsPolygonCompact.error` when `H3_NULL` is received.
  *
  * Cleanup:

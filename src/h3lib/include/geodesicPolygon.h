@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-/** @file geodesic_polygon.h
+/** @file geodesicPolygon.h
  * @brief Internal data structures for geodesic polygon acceleration.
  */
 
@@ -24,7 +24,7 @@
 #include <stdbool.h>
 
 #include "bbox.h"
-#include "geodesic_cell_boundary.h"
+#include "geodesicCellBoundary.h"
 #include "polygon.h"
 #include "vec3d.h"
 

@@ -74,9 +74,6 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     }
     const inputArgs *args = (const inputArgs *)data;
     int res = args->res % (MAX_GEODESIC_RES + 1);
-    if (res == 0) {
-        res = 1;  // resolution 1 tests more code paths compared to 0
-    }
 
     GeoPolygon geoPolygon;
     int originalNumHoles = args->numHoles % MAX_HOLES;

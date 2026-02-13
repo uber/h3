@@ -273,6 +273,7 @@ add_h3_test_with_arg(testH3NeighborRotations
 
 add_h3_test(testGeodesicPolygonToCellsExperimental src/apps/testapps/testGeodesicPolygonToCellsExperimental.c)
 add_h3_test(testGeodesicPolygonInternal src/apps/testapps/testGeodesicPolygonInternal.c)
+add_h3_test(testGeodesicCoverage src/apps/testapps/testGeodesicCoverage.c)
 add_h3_test(testSphereCap src/apps/testapps/testSphereCap.c)
 
 # The "Exhaustive" part of the test name is used by the test-fast to exclude

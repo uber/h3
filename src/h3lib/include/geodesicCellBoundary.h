@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** @file geodesic_cell_boundary.h
+/** @file geodesicCellBoundary.h
  * @brief   Definition of geodesic cell boundary
  */
 
