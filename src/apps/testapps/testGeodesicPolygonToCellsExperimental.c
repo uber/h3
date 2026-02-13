@@ -344,4 +344,31 @@ SUITE(geodesicPolygonToCellsExperimental) {
         t_assert(err == E_OPTION_INVALID,
                  "overlapping bbox mode rejected for geodesic");
     }
+
+    TEST(geodesicMaxSizeNoUnderAllocation) {
+        LatLng reproVerts[] = {
+            {H3_EXPORT(degsToRads)(20.0), H3_EXPORT(degsToRads)(-70.0)},
+            {H3_EXPORT(degsToRads)(20.0), H3_EXPORT(degsToRads)(70.0)},
+            {H3_EXPORT(degsToRads)(-5.0), H3_EXPORT(degsToRads)(0.0)}};
+        GeoLoop reproGeoLoop = {.numVerts = 3, .verts = reproVerts};
+        GeoPolygon reproGeoPolygon = {.geoloop = reproGeoLoop, .numHoles = 0};
+
+        uint32_t flags = CONTAINMENT_OVERLAPPING;
+        FLAG_SET_GEODESIC(flags);
+
+        int64_t size = 0;
+        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+            &reproGeoPolygon, 1, flags, &size));
+        t_assert(size > 0, "max size estimate is non-zero");
+
+        H3Index *out = calloc(size, sizeof(H3Index));
+        t_assert(out != NULL, "allocated output buffer");
+
+        H3Error err = H3_EXPORT(polygonToCellsExperimental)(&reproGeoPolygon, 1,
+                                                            flags, size, out);
+        t_assert(err == E_SUCCESS,
+                 "maxPolygonToCellsSizeExperimental must not under-allocate");
+
+        free(out);
+    }
 }

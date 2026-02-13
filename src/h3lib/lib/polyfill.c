@@ -753,8 +753,16 @@ H3Error H3_EXPORT(maxPolygonToCellsSizeExperimental)(const GeoPolygon *polygon,
         return iter.error;
     }
 
-    // Ignore the requested flags and use the faster overlapping-bbox mode
-    iter._flags = CONTAINMENT_OVERLAPPING_BBOX;
+    // Size estimates must preserve geodesic traversal semantics; otherwise the
+    // estimate can undercount and violate the API contract.
+    if (FLAG_GET_GEODESIC(iter._flags)) {
+        iter._flags = CONTAINMENT_OVERLAPPING;
+        FLAG_SET_GEODESIC(iter._flags);
+    } else {
+        // In planar mode we can safely use overlapping-bbox to speed up
+        // estimation while remaining an upper bound.
+        iter._flags = CONTAINMENT_OVERLAPPING_BBOX;
+    }
 
     // Get a (very) rough area of the polygon bounding box
     BBox *polygonBBox = &iter._bboxes[0];
@@ -763,9 +771,9 @@ H3Error H3_EXPORT(maxPolygonToCellsSizeExperimental)(const GeoPolygon *polygon,
         cos(fmin(fabs(polygonBBox->north), fabs(polygonBBox->south))) *
         EARTH_RADIUS_KM * EARTH_RADIUS_KM;
 
-    // Determine the res for the size estimate, based on a (very) rough estimate
-    // of the number of cells at various resolutions that would fit in the
-    // polygon. All we need here is a general order of magnitude.
+    // Determine the res for the size estimate, based on a (very) rough
+    // estimate of the number of cells at various resolutions that would fit in
+    // the polygon. All we need here is a general order of magnitude.
     while (iter._res > 0 &&
            polygonBBoxAreaKm2 / getAverageCellArea(iter._res - 1) >
                MAX_SIZE_CELL_THRESHOLD) {

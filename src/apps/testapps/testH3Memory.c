@@ -454,8 +454,9 @@ SUITE(h3Memory) {
         t_assert(actualFreeCalls == 0,
                  "maxPolygonToCellsSizeExperimental free not called");
 
-        // Test maxPolygonToCellsSizeExperimental with allocation success
-        resetMemoryCounters(1);
+        // Test maxPolygonToCellsSizeExperimental with allocation success.
+        // Geodesic sizing may perform multiple allocations internally.
+        resetMemoryCounters(0);
         failAlloc = false;
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
             &sfGeoPolygon, 5, flags, &numHexagons));
