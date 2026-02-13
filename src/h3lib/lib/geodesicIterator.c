@@ -23,13 +23,13 @@
 #include "geodesicPolygonInternal.h"
 #include "h3Index.h"
 
-#define H3_CHECK(h3_call, iter_ptr)              \
-    do {                                         \
-        H3Error _err = (h3_call);                \
-        if (_err != E_SUCCESS) {                 \
-            iterErrorPolygonCompact(iter, _err); \
-            return;                              \
-        }                                        \
+#define H3_CHECK(h3_call, iter_ptr)                    \
+    do {                                               \
+        H3Error _err = (h3_call);                      \
+        if (_err != E_SUCCESS) {                       \
+            iterErrorPolygonCompact((iter_ptr), _err); \
+            return;                                    \
+        }                                              \
     } while (0)
 
 static GeodesicPolygon *_getOrCreateGeodesicPolygon(
