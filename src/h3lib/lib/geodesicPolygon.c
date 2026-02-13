@@ -109,8 +109,8 @@ static bool _geodesicLoopContainsPoint(const GeodesicLoop *loop,
     double totalAngle = 0;
     double dotPV1 = vec3Dot(pointVec, &loop->edges[0].vert);
 
-    for (int i = 0; i < loop->numVerts; i++) {
-        Vec3d *vert2 = &loop->edges[(i + 1) % loop->numVerts].vert;
+    for (int i = 0; i < loop->numEdges; i++) {
+        Vec3d *vert2 = &loop->edges[(i + 1) % loop->numEdges].vert;
         double dotPV2 = vec3Dot(pointVec, vert2);
 
         double y = vec3Dot(pointVec, &loop->edges[i].edgeCross);
@@ -163,11 +163,11 @@ static bool _geodesicSphereCapOverlapsAABB(const SphereCap *cap,
 static void _geodesicLoopToAABB(const GeodesicLoop *loop, AABB *out) {
     aabbEmptyInverted(out);
 
-    for (int i = 0; i < loop->numVerts; i++) {
+    for (int i = 0; i < loop->numEdges; i++) {
         aabbUpdateWithVec3d(out, &loop->edges[i].vert);
 
         aabbUpdateWithArcExtrema(out, &loop->edges[i].vert,
-                                 &loop->edges[(i + 1) % loop->numVerts].vert,
+                                 &loop->edges[(i + 1) % loop->numEdges].vert,
                                  &loop->edges[i].edgeCross);
     }
 
@@ -195,7 +195,7 @@ static H3Error _geodesicLoopFromGeo(const GeoLoop *loop, GeodesicLoop *out) {
     }
 
     out->edges = edges;
-    out->numVerts = n;
+    out->numEdges = n;
     out->centroid.x = 0;
     out->centroid.y = 0;
     out->centroid.z = 0;
@@ -238,7 +238,7 @@ static void _geodesicLoopDestroy(GeodesicLoop *loop) {
 
     H3_MEMORY(free)(loop->edges);
     loop->edges = NULL;
-    loop->numVerts = 0;
+    loop->numEdges = 0;
 }
 
 GeodesicPolygon *geodesicPolygonCreate(const GeoPolygon *polygon) {
@@ -349,12 +349,12 @@ bool geodesicPolygonBoundaryIntersects(const GeodesicPolygon *polygon,
         const GeodesicLoop *loop =
             (loopIdx == 0) ? loops : &polygon->holes[loopIdx - 1];
 
-        for (int i = 0; i < loop->numVerts; i++) {
+        for (int i = 0; i < loop->numEdges; i++) {
             if (!_geodesicSphereCapOverlapsAABB(cap, &loop->edges[i].aabb)) {
                 continue;
             }
 
-            int nextI = (i + 1) % loop->numVerts;
+            int nextI = (i + 1) % loop->numEdges;
             for (int j = 0; j < boundary->numVerts; j++) {
                 int nextJ = (j + 1) % boundary->numVerts;
                 if (_geodesicEdgesCross(
