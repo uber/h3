@@ -1,0 +1,10 @@
+add_h3_cli_test(
+    testCliReadCellsFromFileCount
+    "uncompactCells -r 5 -i ${PROJECT_SOURCE_DIR}/tests/inputfiles/multipolygon_test5.txt -f newline | wc -l | tr -d ' '"
+    "127"
+)
+add_h3_cli_test(
+    testCliReadCellsFromStdinCount
+    "uncompactCells -r 5 -i -- < ${PROJECT_SOURCE_DIR}/tests/inputfiles/multipolygon_test5.txt -f newline | wc -l | tr -d ' '"
+    "127"
+)

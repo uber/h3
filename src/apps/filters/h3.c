@@ -1199,6 +1199,7 @@ H3Index *readCellsFromFile(FILE *fp, char *buffer, size_t *totalCells) {
     int cellsLen = 128;
     int bufferOffset = 0;
     int cellsOffset = 0;
+    size_t bytesRead = 0;
     do {
         // Always start from the beginning of the buffer
         bufferOffset = 0;
@@ -1253,9 +1254,24 @@ H3Index *readCellsFromFile(FILE *fp, char *buffer, size_t *totalCells) {
         for (int i = 0; i < BUFFER_SIZE - lastGoodOffset; i++) {
             buffer[i] = buffer[i + lastGoodOffset];
         }
-        bufferOffset = BUFFER_SIZE - lastGoodOffset;
-    } while (fp != 0 && fread(buffer + bufferOffset, 1,
-                              BUFFER_SIZE - bufferOffset, fp) != 0);
+        int tailLen = BUFFER_SIZE - lastGoodOffset;
+        bufferOffset = tailLen;
+
+        // Read the next chunk from the file, appending after the
+        // carried-over tail bytes.
+        if (fp != NULL) {
+            bytesRead = fread(buffer + tailLen, 1, BUFFER_SIZE - tailLen, fp);
+        } else {
+            bytesRead = 0;
+        }
+
+        // When fread returns fewer bytes than requested (final chunk),
+        // stale data from the previous read remains in the buffer tail.
+        // sscanf has no concept of "valid length" — it will keep parsing
+        // whatever is in the buffer — so zero the entire stale region.
+        memset(buffer + tailLen + bytesRead, 0,
+               BUFFER_SIZE - tailLen - bytesRead);
+    } while (bytesRead > 0);
     *totalCells = cellsOffset;
     return cells;
 }
