@@ -97,7 +97,12 @@ static bool _geodesicEdgesCross(const Vec3d *a1, const Vec3d *a2,
  */
 static bool _geodesicLoopContainsPoint(const GeodesicLoop *loop,
                                        const Vec3d *pointVec) {
-    if (vec3Dot(&loop->centroid, pointVec) < 0.0) {
+    // Early rejection: if the point is clearly on the opposite hemisphere
+    // from the polygon's centroid, it cannot be inside. This optimization
+    // assumes the polygon does not span more than a hemisphere. A small
+    // negative threshold avoids rejecting points near the hemisphere boundary
+    // due to floating-point imprecision.
+    if (vec3Dot(&loop->centroid, pointVec) < -1e-10) {
         return false;
     }
 
@@ -217,6 +222,10 @@ static H3Error _geodesicLoopFromGeo(const GeoLoop *loop, GeodesicLoop *out) {
         aabbUpdateWithArcExtrema(box, v1, v2, &edges[i].edgeCross);
     }
 
+    // Normalize the centroid to a unit vector. If the vertices nearly cancel
+    // out (e.g. a near-hemispheric polygon), the centroid stays near zero and
+    // the hemisphere early-exit in _geodesicLoopContainsPoint becomes a no-op,
+    // falling through to the full winding-number algorithm.
     vec3Normalize(&out->centroid);
 
     return E_SUCCESS;
