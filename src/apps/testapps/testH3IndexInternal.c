@@ -54,33 +54,33 @@ SUITE(h3IndexInternal) {
         t_assert(_faceIjkToH3(&fijk2K, 2) == 0, "k out of bounds at res 2");
     }
 
-    TEST(vec3dToCell_invalidInputs) {
+    TEST(vec3ToCell_invalidInputs) {
         Vec3d v = {1.0, 0.0, 0.0};
         H3Index out;
 
         // Test invalid resolution (negative)
-        t_assert(vec3dToCell(&v, -1, &out) == E_RES_DOMAIN,
+        t_assert(vec3ToCell(&v, -1, &out) == E_RES_DOMAIN,
                  "negative resolution rejected");
 
         // Test invalid resolution (too high)
-        t_assert(vec3dToCell(&v, MAX_H3_RES + 1, &out) == E_RES_DOMAIN,
+        t_assert(vec3ToCell(&v, MAX_H3_RES + 1, &out) == E_RES_DOMAIN,
                  "resolution above MAX_H3_RES rejected");
 
         // Test non-finite coordinates
         Vec3d nanVec = {NAN, 0.0, 0.0};
-        t_assert(vec3dToCell(&nanVec, 5, &out) == E_DOMAIN,
+        t_assert(vec3ToCell(&nanVec, 5, &out) == E_DOMAIN,
                  "NaN x coordinate rejected");
 
         Vec3d infVec = {INFINITY, 0.0, 0.0};
-        t_assert(vec3dToCell(&infVec, 5, &out) == E_DOMAIN,
+        t_assert(vec3ToCell(&infVec, 5, &out) == E_DOMAIN,
                  "Infinity x coordinate rejected");
 
         Vec3d nanY = {0.0, NAN, 0.0};
-        t_assert(vec3dToCell(&nanY, 5, &out) == E_DOMAIN,
+        t_assert(vec3ToCell(&nanY, 5, &out) == E_DOMAIN,
                  "NaN y coordinate rejected");
 
         Vec3d nanZ = {0.0, 0.0, NAN};
-        t_assert(vec3dToCell(&nanZ, 5, &out) == E_DOMAIN,
+        t_assert(vec3ToCell(&nanZ, 5, &out) == E_DOMAIN,
                  "NaN z coordinate rejected");
     }
 
