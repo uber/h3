@@ -193,7 +193,7 @@ typedef enum {
  */
 #define FLAG_CONTAINMENT_MODE_MASK ((uint32_t)(15))
 
-#define FLAG_GET_CONTAINMENT_MODE(flags) ((flags) & FLAG_CONTAINMENT_MODE_MASK)
+#define FLAG_GET_CONTAINMENT_MODE(flags) ((flags)&FLAG_CONTAINMENT_MODE_MASK)
 
 /**
  * Bit mask that enables geodesic polygon filling. Set this bit on the flags to
@@ -207,7 +207,7 @@ typedef enum {
  */
 #define FLAG_GEODESIC_MASK ((uint32_t)(16))
 
-#define FLAG_GET_GEODESIC(flags) ((flags) & FLAG_GEODESIC_MASK)
+#define FLAG_GET_GEODESIC(flags) ((flags)&FLAG_GEODESIC_MASK)
 #define FLAG_SET_GEODESIC(flags) ((flags) |= FLAG_GEODESIC_MASK)
 #define FLAG_RESET_GEODESIC(flags) ((flags) &= ~FLAG_GEODESIC_MASK)
 

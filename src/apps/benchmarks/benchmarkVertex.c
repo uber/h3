@@ -44,8 +44,9 @@ H3Index *vertexes = calloc(6, sizeof(H3Index));
 
 BENCHMARK(cellToVertexes, 10000, { H3_EXPORT(cellToVertexes)(hex, vertexes); });
 
-BENCHMARK(cellToVertexesPent, 10000,
-          { H3_EXPORT(cellToVertexes)(pentagon, vertexes); });
+BENCHMARK(cellToVertexesPent, 10000, {
+    H3_EXPORT(cellToVertexes)(pentagon, vertexes);
+});
 
 BENCHMARK(cellToVertexesRing, 10000, {
     for (int i = 0; i < ring2Count; i++) {
