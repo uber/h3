@@ -47,11 +47,10 @@ SUITE(GeodesicCoverage) {
             {.lat = 0.005 * DEG_TO_RAD, .lng = 0.0},
             {.lat = 0.005 * DEG_TO_RAD, .lng = 1.0 * DEG_TO_RAD}};
         for (int i = 0; i < 2; i++) {
-            boundary.verts[i] = latLngToVec3(&edgePts[i]);
+            latLngToVec3(&edgePts[i], &boundary.verts[i]);
         }
-
-        SphereCap cap = {.center = latLngToVec3(&edgePts[0]),
-                         .cosRadius = cos(2.0 * DEG_TO_RAD)};
+        SphereCap cap = {.cosRadius = cos(2.0 * DEG_TO_RAD)};
+        latLngToVec3(&edgePts[0], &cap.center);
         t_assert(geodesicPolygonBoundaryIntersects(poly, &boundary, &cap),
                  "boundary crossing near-parallel edges intersects");
 
@@ -77,11 +76,10 @@ SUITE(GeodesicCoverage) {
             {.lat = 0.0, .lng = 5.0 * DEG_TO_RAD},
             {.lat = 2.5 * DEG_TO_RAD, .lng = 2.5 * DEG_TO_RAD}};
         for (int i = 0; i < 3; i++) {
-            boundary.verts[i] = latLngToVec3(&boundaryPts[i]);
+            latLngToVec3(&boundaryPts[i], &boundary.verts[i]);
         }
-
-        SphereCap cap = {.center = latLngToVec3(&boundaryPts[0]),
-                         .cosRadius = -0.5};
+        SphereCap cap = {.cosRadius = -0.5};
+        latLngToVec3(&boundaryPts[0], &cap.center);
         t_assert(geodesicPolygonBoundaryIntersects(poly, &boundary, &cap),
                  "reversed projection boundary intersects");
 
@@ -102,7 +100,8 @@ SUITE(GeodesicCoverage) {
 
         // Test with a distant point
         LatLng farPt = {.lat = -89.0 * DEG_TO_RAD, .lng = 180.0 * DEG_TO_RAD};
-        Vec3d farVec = latLngToVec3(&farPt);
+        Vec3d farVec;
+        latLngToVec3(&farPt, &farVec);
         t_assert(!geodesicPolygonContainsPoint(poly, &farVec),
                  "south-pole distant point is outside north-pole polygon");
 

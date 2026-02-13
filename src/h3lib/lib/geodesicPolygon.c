@@ -36,7 +36,8 @@
 static bool _geodesicEdgesCross(const Vec3d *a1, const Vec3d *a2,
                                 const Vec3d *b1, const Vec3d *b2,
                                 const Vec3d *normalB) {
-    const Vec3d normalA = vec3Cross(a1, a2);
+    Vec3d normalA;
+    vec3Cross(a1, a2, &normalA);
 
     const double b1Side = vec3Dot(&normalA, b1);
     const double b2Side = vec3Dot(&normalA, b2);
@@ -47,7 +48,8 @@ static bool _geodesicEdgesCross(const Vec3d *a1, const Vec3d *a2,
         return false;
     }
 
-    const Vec3d intersectionLine = vec3Cross(&normalA, normalB);
+    Vec3d intersectionLine;
+    vec3Cross(&normalA, normalB, &intersectionLine);
 
     if (vec3MagSq(&intersectionLine) < EPSILON * EPSILON) {
         const Vec3d refDir = {a2->x - a1->x, a2->y - a1->y, a2->z - a1->z};
@@ -212,7 +214,7 @@ static H3Error _geodesicLoopFromGeo(const GeoLoop *loop, GeodesicLoop *out) {
         out->centroid.y += v1->y;
         out->centroid.z += v1->z;
 
-        edges[i].edgeCross = vec3Cross(v1, v2);
+        vec3Cross(v1, v2, &edges[i].edgeCross);
         edges[i].edgeDot = vec3Dot(v1, v2);
 
         AABB *box = &edges[i].aabb;

@@ -77,7 +77,8 @@ static bool _cellWithinCap(const H3Index cell, const SphereCap *cap) {
     }
 
     for (int i = 0; i < boundary.numVerts; i++) {
-        Vec3d vertex = latLngToVec3(&boundary.verts[i]);
+        Vec3d vertex;
+        latLngToVec3(&boundary.verts[i], &vertex);
         double dot = vec3Dot(&vertex, &cap->center);
         if (dot + EPSILON < cap->cosRadius) {
             printf(
@@ -86,7 +87,8 @@ static bool _cellWithinCap(const H3Index cell, const SphereCap *cap) {
             return false;
         }
 
-        Vec3d next = latLngToVec3(&boundary.verts[(i + 1) % boundary.numVerts]);
+        Vec3d next;
+        latLngToVec3(&boundary.verts[(i + 1) % boundary.numVerts], &next);
         Vec3d midpoint = {vertex.x + next.x, vertex.y + next.y,
                           vertex.z + next.z};
         double mag = vec3Mag(&midpoint);

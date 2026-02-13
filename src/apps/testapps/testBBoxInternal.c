@@ -483,9 +483,12 @@ SUITE(BBox) {
     TEST(aabbArcExtrema) {
         const LatLng ll1 = {-0.15745782909055106, -1.4432851587832365};
         const LatLng ll2 = {0.36335746078285036, -1.680739052834902};
-        Vec3d v1 = latLngToVec3(&ll1);
-        Vec3d v2 = latLngToVec3(&ll2);
-        Vec3d normal = vec3Cross(&v1, &v2);
+        Vec3d v1;
+        latLngToVec3(&ll1, &v1);
+        Vec3d v2;
+        latLngToVec3(&ll2, &v2);
+        Vec3d normal;
+        vec3Cross(&v1, &v2, &normal);
 
         AABB box;
         aabbEmptyInverted(&box);

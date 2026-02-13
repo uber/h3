@@ -380,7 +380,8 @@ static double _vec3dAzimuthRads(const Vec3d *p1, const Vec3d *p2) {
     vec3Normalize(&northDir);
 
     // local east direction on tangent plane
-    Vec3d eastDir = vec3Cross(&northDir, p1);
+    Vec3d eastDir;
+    vec3Cross(&northDir, p1, &eastDir);
 
     // vector from p1 to p2 on tangent plane
     Vec3d p2_on_tangent;
@@ -486,7 +487,8 @@ void _geoToFaceIjk(const LatLng *g, int res, FaceIJK *h) {
  * @param v The 2D hex coordinates of the cell containing the point.
  */
 void _geoToHex2d(const LatLng *g, int res, int *face, Vec2d *v) {
-    Vec3d p = latLngToVec3(g);
+    Vec3d p;
+    latLngToVec3(g, &p);
     _vec3dToHex2d(&p, res, face, v);
 }
 
@@ -555,7 +557,8 @@ void _hex2dToVec3(const Vec2d *v, int face, int res, int substrate,
     vec3Normalize(&northDir);
 
     // local east direction on tangent plane
-    Vec3d eastDir = vec3Cross(&northDir, center);
+    Vec3d eastDir;
+    vec3Cross(&northDir, center, &eastDir);
 
     // Rodrigues' rotation formula, simplified for orthogonal vectors
     // Direction vector D = northDir * cos(theta) + (center x northDir) *
@@ -1348,6 +1351,7 @@ static void _vec3dToClosestFace(const Vec3d *v3d, int *face, double *sqd) {
  * @param sqd The squared euclidean distance to its icosahedral face center.
  */
 void _geoToClosestFace(const LatLng *g, int *face, double *sqd) {
-    Vec3d v3d = latLngToVec3(g);
+    Vec3d v3d;
+    latLngToVec3(g, &v3d);
     _vec3dToClosestFace(&v3d, face, sqd);
 }
