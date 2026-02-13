@@ -175,7 +175,6 @@ set(LIB_SOURCE_FILES
     src/h3lib/include/cellsToMultiPoly.h
     src/h3lib/include/polyfillIterator.h
     src/h3lib/include/geodesicIterator.h
-    src/h3lib/include/geodesicPolygon.h
     src/h3lib/include/geodesicPolygonInternal.h
     src/h3lib/include/geodesicCellBoundary.h
     src/h3lib/include/sphereCapTables.h
