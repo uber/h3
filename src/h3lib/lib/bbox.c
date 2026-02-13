@@ -383,16 +383,6 @@ void aabbUpdateWithArcExtrema(AABB *aabb, const Vec3d *v1, const Vec3d *v2,
     }
 }
 
-/**
- * Precomputed cosine values for the bounding cap radius at each resolution.
- * Each entry is an IEEE-754 hex float literal equal to
- *   cos(MAX_EDGE_LENGTH_RADS[res] * CAP_SCALE_FACTOR)
- *
- * CAP_SCALE_FACTOR (1.01) is the smallest multiplier such that a circle with
- * radius MAX_EDGE_LENGTH_RADS[res] * CAP_SCALE_FACTOR fully encloses the cell
- * and all of its descendants.
- */
-
 /** Create a bounding sphere cap for a cell. */
 H3Error cellToSphereCap(H3Index cell, SphereCap *out) {
     out->cosRadius = PRECOMPUTED_COS_RADIUS[H3_GET_RESOLUTION(cell)];

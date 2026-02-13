@@ -26,6 +26,15 @@
 
 #include "constants.h"
 
+/**
+ * Precomputed cosine values for the bounding cap radius at each resolution.
+ * Each entry is an IEEE-754 hex float literal equal to
+ *   cos(MAX_EDGE_LENGTH_RADS[res] * CAP_SCALE_FACTOR)
+ *
+ * CAP_SCALE_FACTOR (1.01) is the smallest multiplier such that a circle with
+ * radius MAX_EDGE_LENGTH_RADS[res] * CAP_SCALE_FACTOR fully encloses the cell
+ * and all of its descendants.
+ */
 #define H3_SPHERE_CAP_SCALE_FACTOR ((double)1.01)
 
 static const double MAX_EDGE_LENGTH_RADS[MAX_H3_RES + 1] = {
