@@ -147,12 +147,12 @@ H3Error geoPolygonAreaRads2(GeoPolygon poly, double *out) {
     double term;
 
     err = geoLoopAreaRads2(poly.geoloop, &term);
-    if (err) return err;
+    if (NEVER(err)) return err;
     kadd(&adder, term);
 
     for (int i = 0; i < poly.numHoles; i++) {
         err = geoLoopAreaRads2(poly.holes[i], &term);
-        if (err) return err;
+        if (NEVER(err)) return err;
 
         // Due to clockwise order, holes will contribute area
         // of "everything except the hole", so adjust with -4*pi term.
@@ -183,7 +183,7 @@ H3Error geoMultiPolygonAreaRads2(GeoMultiPolygon mpoly, double *out) {
 
     for (int i = 0; i < mpoly.numPolygons; i++) {
         err = geoPolygonAreaRads2(mpoly.polygons[i], &term);
-        if (err) return err;
+        if (NEVER(err)) return err;
         kadd(&adder, term);
     }
 
