@@ -154,4 +154,23 @@ SUITE(latLngInternal) {
         t_assert(H3_EXPORT(greatCircleDistanceRads)(&start, &out) < 0.01,
                  "moved back to origin");
     }
+
+    TEST(_geoAzimuthRads) {
+        LatLng p1, p2;
+        setGeoDegs(&p1, 0, 0);
+        setGeoDegs(&p2, 1, 0);
+
+        double azimuth = _geoAzimuthRads(&p1, &p2);
+        t_assert(fabs(azimuth - 0) < EPSILON_RAD, "azimuth due north is 0");
+
+        setGeoDegs(&p2, 0, 1);
+        azimuth = _geoAzimuthRads(&p1, &p2);
+        t_assert(fabs(azimuth - M_PI_2) < EPSILON_RAD,
+                 "azimuth due east is pi/2");
+
+        setGeoDegs(&p2, -1, 0);
+        azimuth = _geoAzimuthRads(&p1, &p2);
+        t_assert(fabs(fabs(azimuth) - M_PI) < EPSILON_RAD,
+                 "azimuth due south is pi or -pi");
+    }
 }

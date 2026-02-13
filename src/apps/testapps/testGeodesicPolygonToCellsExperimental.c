@@ -298,6 +298,29 @@ SUITE(geodesicPolygonToCellsExperimental) {
                  "NaN verts handled with empty result");
     }
 
+    TEST(geodesicMismatchedHoles) {
+        // Test case: numHoles > 0 but holes pointer is NULL
+        GeoPolygon mismatchedPolygon = {
+            .geoloop = sfGeoLoop,
+            .numHoles = 1,  // Says there's 1 hole
+            .holes = NULL   // But holes pointer is NULL
+        };
+
+        int64_t size = 0;
+        H3Error err =
+            geodesicFill(&mismatchedPolygon, 5, CONTAINMENT_FULL, &size, NULL);
+        t_assert(err == E_DOMAIN,
+                 "numHoles > 0 with NULL holes returns E_DOMAIN");
+    }
+
+    TEST(geodesicNullHolePolygon) {
+        // Test polygon with a hole that has 0 vertices
+        int64_t size = 0;
+        H3Error err =
+            geodesicFill(&nullHoleGeoPolygon, 5, CONTAINMENT_FULL, &size, NULL);
+        t_assert(err == E_DOMAIN, "hole with 0 vertices returns E_DOMAIN");
+    }
+
     TEST(geodesicPointHolePolygon) {
         int64_t count =
             geodesicFillCount(&pointHoleGeoPolygon, 5, CONTAINMENT_OVERLAPPING);

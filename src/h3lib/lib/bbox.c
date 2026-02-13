@@ -318,11 +318,6 @@ void aabbEmptyInverted(AABB *box) {
     box->max.x = box->max.y = box->max.z = -1.0;
 }
 
-void aabbEmptyFull(AABB *box) {
-    box->min.x = box->min.y = box->min.z = -1.0;
-    box->max.x = box->max.y = box->max.z = 1.0;
-}
-
 void aabbUpdateWithVec3d(AABB *aabb, const Vec3d *v) {
     aabb->min.x = fmin(aabb->min.x, v->x);
     aabb->min.y = fmin(aabb->min.y, v->y);

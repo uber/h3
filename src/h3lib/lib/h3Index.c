@@ -1233,8 +1233,7 @@ H3Error H3_EXPORT(cellToBoundary)(H3Index h3, CellBoundary *cb) {
  * @param h3 The H3 index.
  * @param cb The boundary of the H3 cell in spherical coordinates.
  */
-H3Error H3_EXPORT(cellToGeodesicBoundary)(H3Index h3,
-                                          GeodesicCellBoundary *cb) {
+H3Error cellToGeodesicBoundary(H3Index h3, GeodesicCellBoundary *cb) {
     FaceIJK fijk;
     H3Error e = _h3ToFaceIjk(h3, &fijk);
     if (e) {

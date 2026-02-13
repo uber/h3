@@ -84,9 +84,6 @@ void aabbUpdateWithArcExtrema(AABB *aabb, const Vec3d *v1, const Vec3d *v2,
 /** Reset an AABB to an empty inverted state (min > max on every axis). */
 void aabbEmptyInverted(AABB *box);
 
-/** Reset an AABB to cover the entire unit cube. */
-void aabbEmptyFull(AABB *box);
-
 /** Expand an AABB with a single Cartesian point. */
 void aabbUpdateWithVec3d(AABB *aabb, const Vec3d *v);
 

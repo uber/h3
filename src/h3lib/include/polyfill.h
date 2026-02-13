@@ -22,7 +22,7 @@
 
 #include <stdbool.h>
 
-#include "polyfill_iterator.h"
+#include "polyfillIterator.h"
 
 typedef struct {
     H3Index cell;                       // current value

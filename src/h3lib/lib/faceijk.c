@@ -361,28 +361,8 @@ static const int unitScaleByCIIres[] = {
     5764801  // res 16
 };
 
-/**
- * Encodes a Vec3d coordinate to the corresponding icosahedral face and
- * squared euclidean distance to that face center.
- *
- * @param v3d The Vec3d coordinates to encode.
- * @param face The icosahedral face containing the coordinates.
- * @param sqd The squared euclidean distance to its icosahedral face center.
- */
-static void _vec3dToClosestFace(const Vec3d *v3d, int *face, double *sqd) {
-    // determine the icosahedron face
-    *face = 0;
-    // The distance between two farthest points is 2.0, therefore the square of
-    // the distance between two points should always be less or equal than 4.0 .
-    *sqd = 5.0;
-    for (int f = 0; f < NUM_ICOSA_FACES; ++f) {
-        double sqdT = vec3DistSq(&faceCenterPoint[f], v3d);
-        if (sqdT < *sqd) {
-            *face = f;
-            *sqd = sqdT;
-        }
-    }
-}
+// Private function declaration
+static void _vec3dToClosestFace(const Vec3d *v3d, int *face, double *sqd);
 
 /**
  * Calculates the azimuth from p1 to p2.
@@ -525,7 +505,7 @@ void _geoToHex2d(const LatLng *g, int res, int *face, Vec2d *v) {
 void _hex2dToVec3(const Vec2d *v, int face, int res, int substrate,
                   Vec3d *v3d) {
     /* Can be done with this, but we want more optimized approach: perf is
-     * improtant Use the same coordinate transformation as _hex2dToGeo for
+     * important. Use the same coordinate transformation as _hex2dToGeo for
      * consistency LatLng g; _hex2dToGeo(v, face, res, substrate, &g);
      * _geoToVec3d(&g, v3d);
      */
@@ -1090,7 +1070,7 @@ void _faceIjkToCellBoundaryGeodesic(const FaceIJK *h, int res, int start,
     // of a distortion vertex on the last edge
     int additionalIteration = length == NUM_HEX_VERTS ? 1 : 0;
 
-    // convert each vertex to lat/lng
+    // convert each vertex to xyz
     // adjust the face of each vertex as appropriate and introduce
     // edge-crossing vertices as needed
     g->numVerts = 0;
@@ -1334,6 +1314,29 @@ Overage _adjustPentVertOverage(FaceIJK *fijk, int res) {
         overage = _adjustOverageClassII(fijk, res, pentLeading4, 1);
     } while (overage == NEW_FACE);
     return overage;
+}
+
+/**
+ * Encodes a Vec3d coordinate to the corresponding icosahedral face and
+ * squared euclidean distance to that face center.
+ *
+ * @param v3d The Vec3d coordinates to encode.
+ * @param face The icosahedral face containing the coordinates.
+ * @param sqd The squared euclidean distance to its icosahedral face center.
+ */
+static void _vec3dToClosestFace(const Vec3d *v3d, int *face, double *sqd) {
+    // determine the icosahedron face
+    *face = 0;
+    // The distance between two farthest points is 2.0, therefore the square of
+    // the distance between two points should always be less or equal than 4.0 .
+    *sqd = 5.0;
+    for (int f = 0; f < NUM_ICOSA_FACES; ++f) {
+        double sqdT = vec3DistSq(&faceCenterPoint[f], v3d);
+        if (sqdT < *sqd) {
+            *face = f;
+            *sqd = sqdT;
+        }
+    }
 }
 
 /**
