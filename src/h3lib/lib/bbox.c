@@ -343,7 +343,12 @@ void aabbUpdateWithArcExtrema(AABB *aabb, const Vec3d *v1, const Vec3d *v2,
     // endpoints (v1 and v2) before this function is called.
 
     // Normalize the normal vector for stable projection calculations.
+    // If the normal is near-zero (degenerate edge, e.g. v1 == v2), there are
+    // no meaningful extrema to find — the AABB from the endpoints suffices.
     Vec3d normal = *n;
+    if (vec3MagSq(&normal) < EPSILON * EPSILON) {
+        return;
+    }
     vec3Normalize(&normal);
 
     static const Vec3d UNIT_AXES[3] = {
