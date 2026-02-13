@@ -515,7 +515,7 @@ SUITE(h3Memory) {
                      "Should fail with memory error before success");
         }
     }
-    
+
     TEST(polygonToCellsExperimentalGeodesic) {
         sfGeoPolygon.geoloop = sfGeoLoop;
         sfGeoPolygon.numHoles = 0;
