@@ -244,6 +244,7 @@ add_h3_test(testPolygonInternal src/apps/testapps/testPolygonInternal.c)
 add_h3_test(testPolyfillInternal src/apps/testapps/testPolyfillInternal.c)
 add_h3_test(testVec2dInternal src/apps/testapps/testVec2dInternal.c)
 add_h3_test(testVec3dInternal src/apps/testapps/testVec3dInternal.c)
+add_h3_test(testVec3d src/apps/testapps/testVec3d.c)
 add_h3_test(testCellToLocalIj src/apps/testapps/testCellToLocalIj.c)
 add_h3_test(testCellToLocalIjInternal
             src/apps/testapps/testCellToLocalIjInternal.c)
@@ -269,6 +270,11 @@ add_h3_test_with_arg(testH3NeighborRotations
                      src/apps/testapps/testH3NeighborRotations.c 1)
 add_h3_test_with_arg(testH3NeighborRotations
                      src/apps/testapps/testH3NeighborRotations.c 2)
+
+add_h3_test(testGeodesicPolygonToCellsExperimental src/apps/testapps/testGeodesicPolygonToCellsExperimental.c)
+add_h3_test(testGeodesicPolygonInternal src/apps/testapps/testGeodesicPolygonInternal.c)
+add_h3_test(testGeodesicCoverage src/apps/testapps/testGeodesicCoverage.c)
+add_h3_test(testSphereCap src/apps/testapps/testSphereCap.c)
 
 # The "Exhaustive" part of the test name is used by the test-fast to exclude
 # these files. test-fast exists so that Travis CI can run Valgrind on tests

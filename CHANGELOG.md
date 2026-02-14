@@ -9,6 +9,7 @@ The public API of this library consists of the functions declared in file
 ### Added
 - `reverseDirectedEdge` function (#1098)
 - (internal) `geoLoopArea` function (#1101)
+- Geodesic coverage flag for `polygonToCellsExperimental` that follows great-circle edges when covering very large polygons. This mode is significantly slower than the planar algorithm, so prefer lower resolutions when using it.
 
 ### Changed
 - `cellAreaRads2` uses `geoLoopArea` (#1101)

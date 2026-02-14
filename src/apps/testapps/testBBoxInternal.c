@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+/** @file testBBoxInternal.c
+ * @brief Tests the internal bounding box helpers used by polyfill.
+ */
+
 #include <math.h>
 #include <stdlib.h>
 
@@ -23,6 +27,7 @@
 #include "polygon.h"
 #include "test.h"
 #include "utility.h"
+#include "vec3d.h"
 
 void assertBBoxFromGeoLoop(const GeoLoop *geoloop, const BBox *expected,
                            const LatLng *inside, const LatLng *outside) {
@@ -440,5 +445,59 @@ SUITE(BBox) {
         BBox expected = {1.0, 0.0, -M_PI + 0.9, M_PI - 0.1};
         scaleBBox(&bbox, 2);
         assertBBox(&bbox, &expected);
+    }
+
+    TEST(aabbEmptyInvertedState) {
+        AABB box;
+        aabbEmptyInverted(&box);
+        t_assert(box.min.x == 1.0 && box.min.y == 1.0 && box.min.z == 1.0,
+                 "Inverted box initializes min values to 1");
+        t_assert(box.max.x == -1.0 && box.max.y == -1.0 && box.max.z == -1.0,
+                 "Inverted box initializes max values to -1");
+    }
+
+    TEST(aabbVec3Updates) {
+        AABB box;
+        aabbEmptyInverted(&box);
+
+        Vec3d first = {0.5, -0.25, 0.75};
+        Vec3d second = {-0.25, 0.5, -0.5};
+
+        aabbUpdateWithVec3d(&box, &first);
+        t_assert(box.min.x == 0.5 && box.max.x == 0.5,
+                 "Single point updates x");
+        t_assert(box.min.y == -0.25 && box.max.y == -0.25,
+                 "Single point updates y");
+        t_assert(box.min.z == 0.75 && box.max.z == 0.75,
+                 "Single point updates z");
+
+        aabbUpdateWithVec3d(&box, &second);
+        t_assert(box.min.x == -0.25 && box.max.x == 0.5,
+                 "Second point expands x range");
+        t_assert(box.min.y == -0.25 && box.max.y == 0.5,
+                 "Second point expands y range");
+        t_assert(box.min.z == -0.5 && box.max.z == 0.75,
+                 "Second point expands z range");
+    }
+
+    TEST(aabbArcExtrema) {
+        const LatLng ll1 = {-0.15745782909055106, -1.4432851587832365};
+        const LatLng ll2 = {0.36335746078285036, -1.680739052834902};
+        Vec3d v1;
+        latLngToVec3(&ll1, &v1);
+        Vec3d v2;
+        latLngToVec3(&ll2, &v2);
+        Vec3d normal;
+        vec3Cross(&v1, &v2, &normal);
+
+        AABB box;
+        aabbEmptyInverted(&box);
+        aabbUpdateWithVec3d(&box, &v1);
+        aabbUpdateWithVec3d(&box, &v2);
+
+        double minYBefore = box.min.y;
+        aabbUpdateWithArcExtrema(&box, &v1, &v2, &normal);
+        t_assert(box.min.y < minYBefore,
+                 "Arc extrema expands bounding box for intermediate point");
     }
 }

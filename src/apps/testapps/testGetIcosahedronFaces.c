@@ -21,6 +21,7 @@
 #include <stdlib.h>
 
 #include "baseCells.h"
+#include "faceijk.h"
 #include "h3Index.h"
 #include "h3api.h"
 #include "test.h"
@@ -152,5 +153,33 @@ SUITE(getIcosahedronFaces) {
         t_assert(H3_EXPORT(getIcosahedronFaces)(invalid, faces) == E_FAILED,
                  "Invalid cell");
         free(faces);
+    }
+
+    TEST(_geoToClosestFace) {
+        LatLng g;
+        int face;
+        double sqd;
+
+        // Test point on face 0 (near north pole)
+        g.lat = H3_EXPORT(degsToRads)(30);
+        g.lng = H3_EXPORT(degsToRads)(10);
+        _geoToClosestFace(&g, &face, &sqd);
+        t_assert(face >= 0 && face < NUM_ICOSA_FACES,
+                 "face is valid for point near north");
+        t_assert(sqd >= 0, "squared distance is non-negative");
+
+        // Test point near equator
+        g.lat = H3_EXPORT(degsToRads)(0);
+        g.lng = H3_EXPORT(degsToRads)(0);
+        _geoToClosestFace(&g, &face, &sqd);
+        t_assert(face >= 0 && face < NUM_ICOSA_FACES,
+                 "face is valid for equator point");
+
+        // Test point on different face
+        g.lat = H3_EXPORT(degsToRads)(-30);
+        g.lng = H3_EXPORT(degsToRads)(150);
+        _geoToClosestFace(&g, &face, &sqd);
+        t_assert(face >= 0 && face < NUM_ICOSA_FACES,
+                 "face is valid for southern hemisphere");
     }
 }
