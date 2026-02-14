@@ -61,10 +61,11 @@ typedef struct {
  * Build a geodesic acceleration structure from a geographic polygon.
  *
  * @param polygon Source polygon expressed in lat/lng.
- * @return Allocated geodesic polygon, or `NULL` on invalid input/allocation
- *         failure.
+ * @param out     Output pointer to the allocated geodesic polygon.
+ * @return E_SUCCESS on success, or an error code (e.g. E_DOMAIN for
+ *         non-finite vertices, E_MEMORY_ALLOC for allocation failure).
  */
-GeodesicPolygon *geodesicPolygonCreate(const GeoPolygon *polygon);
+H3Error geodesicPolygonCreate(const GeoPolygon *polygon, GeodesicPolygon **out);
 
 /** Destroy a geodesic polygon created by `geodesicPolygonCreate`. */
 void geodesicPolygonDestroy(GeodesicPolygon *polygon);
