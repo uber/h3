@@ -49,9 +49,10 @@ static GeodesicPolygon *_getOrCreateGeodesicPolygon(
                 return NULL;
             }
         }
-        GeodesicPolygon *poly = geodesicPolygonCreate(iter->_polygon);
-        if (!poly) {
-            iterErrorPolygonCompact(iter, E_MEMORY_ALLOC);
+        GeodesicPolygon *poly = NULL;
+        H3Error createErr = geodesicPolygonCreate(iter->_polygon, &poly);
+        if (createErr != E_SUCCESS) {
+            iterErrorPolygonCompact(iter, createErr);
             return NULL;
         }
         iter->geodesicPoly = poly;

@@ -47,28 +47,30 @@ SUITE(GeodesicPolygonInternal) {
     TEST(createAndDestroy) {
         GeoPolygon polygon = {
             .geoloop = triangleLoop, .numHoles = 0, .holes = NULL};
-        GeodesicPolygon *poly = geodesicPolygonCreate(&polygon);
+        GeodesicPolygon *poly = NULL;
+        t_assertSuccess(geodesicPolygonCreate(&polygon, &poly));
         t_assert(poly != NULL, "triangle polygon builds geodesic structure");
         t_assert(poly->numHoles == 0, "no holes copied");
         geodesicPolygonDestroy(poly);
     }
 
     TEST(invalidInputs) {
-        t_assert(geodesicPolygonCreate(&zeroLoopPolygon) == NULL,
+        GeodesicPolygon *poly = NULL;
+        t_assert(geodesicPolygonCreate(&zeroLoopPolygon, &poly) == E_DOMAIN,
                  "zero-vertex polygon rejected");
 
         GeoLoop invalidHole = {.numVerts = 0, .verts = NULL};
         GeoPolygon polyWithInvalidHole = {
             .geoloop = triangleLoop, .numHoles = 1, .holes = &invalidHole};
-        t_assert(geodesicPolygonCreate(&polyWithInvalidHole) == NULL,
+        t_assert(geodesicPolygonCreate(&polyWithInvalidHole, &poly) == E_DOMAIN,
                  "hole with zero vertices rejected");
     }
 
     TEST(containsPoint) {
         GeoPolygon polygon = {
             .geoloop = triangleLoop, .numHoles = 0, .holes = NULL};
-        GeodesicPolygon *poly = geodesicPolygonCreate(&polygon);
-        t_assert(poly != NULL, "triangle polygon created");
+        GeodesicPolygon *poly = NULL;
+        t_assertSuccess(geodesicPolygonCreate(&polygon, &poly));
 
         LatLng insideLl = {.lat = 0.5 * DEG_TO_RAD, .lng = 0.5 * DEG_TO_RAD};
         LatLng outsideLl = {.lat = 3.0 * DEG_TO_RAD, .lng = 3.0 * DEG_TO_RAD};
@@ -89,8 +91,8 @@ SUITE(GeodesicPolygonInternal) {
     TEST(capIntersection) {
         GeoPolygon polygon = {
             .geoloop = triangleLoop, .numHoles = 0, .holes = NULL};
-        GeodesicPolygon *poly = geodesicPolygonCreate(&polygon);
-        t_assert(poly != NULL, "triangle polygon created");
+        GeodesicPolygon *poly = NULL;
+        t_assertSuccess(geodesicPolygonCreate(&polygon, &poly));
 
         LatLng centerLl = {.lat = 0.5 * DEG_TO_RAD, .lng = 0.5 * DEG_TO_RAD};
         H3Index cell;
@@ -113,8 +115,8 @@ SUITE(GeodesicPolygonInternal) {
     TEST(boundaryIntersection) {
         GeoPolygon polygon = {
             .geoloop = triangleLoop, .numHoles = 0, .holes = NULL};
-        GeodesicPolygon *poly = geodesicPolygonCreate(&polygon);
-        t_assert(poly != NULL, "triangle polygon created");
+        GeodesicPolygon *poly = NULL;
+        t_assertSuccess(geodesicPolygonCreate(&polygon, &poly));
 
         GeodesicCellBoundary boundary = {.numVerts = triangleLoop.numVerts};
         for (int i = 0; i < triangleLoop.numVerts; i++) {
@@ -148,7 +150,8 @@ SUITE(GeodesicPolygonInternal) {
     TEST(polygonWithHolesNullPointer) {
         GeoPolygon polyWithNullHoles = {
             .geoloop = triangleLoop, .numHoles = 1, .holes = NULL};
-        t_assert(geodesicPolygonCreate(&polyWithNullHoles) == NULL,
+        GeodesicPolygon *poly = NULL;
+        t_assert(geodesicPolygonCreate(&polyWithNullHoles, &poly) == E_DOMAIN,
                  "polygon with holes > 0 but NULL holes pointer rejected");
     }
 
@@ -163,8 +166,8 @@ SUITE(GeodesicPolygonInternal) {
         // projections in _edgeIntersectsEdge
         GeoPolygon polygon = {
             .geoloop = triangleLoop, .numHoles = 0, .holes = NULL};
-        GeodesicPolygon *poly = geodesicPolygonCreate(&polygon);
-        t_assert(poly != NULL, "polygon created for colinear edge test");
+        GeodesicPolygon *poly = NULL;
+        t_assertSuccess(geodesicPolygonCreate(&polygon, &poly));
 
         // Test with overlapping boundary that may trigger swap paths
         GeodesicCellBoundary boundary = {.numVerts = 3};
@@ -192,8 +195,8 @@ SUITE(GeodesicPolygonInternal) {
         GeoPolygon polygon = {
             .geoloop = antipodeLoop, .numHoles = 0, .holes = NULL};
 
-        GeodesicPolygon *poly = geodesicPolygonCreate(&polygon);
-        t_assert(poly != NULL, "antipodal-edge polygon created");
+        GeodesicPolygon *poly = NULL;
+        t_assertSuccess(geodesicPolygonCreate(&polygon, &poly));
 
         // Opposite-hemisphere point should be rejected quickly.
         LatLng oppositePt = {.lat = 0.0, .lng = M_PI};
@@ -217,8 +220,8 @@ SUITE(GeodesicPolygonInternal) {
         GeoPolygon largePolygon = {
             .geoloop = largeLoop, .numHoles = 0, .holes = NULL};
 
-        GeodesicPolygon *poly = geodesicPolygonCreate(&largePolygon);
-        t_assert(poly != NULL, "large polygon created");
+        GeodesicPolygon *poly = NULL;
+        t_assertSuccess(geodesicPolygonCreate(&largePolygon, &poly));
 
         // Test with north pole which should be inside
         LatLng northPole = {.lat = M_PI_2, .lng = 0.0};
@@ -240,8 +243,8 @@ SUITE(GeodesicPolygonInternal) {
         GeoPolygon tinyPolygon = {
             .geoloop = tinyLoop, .numHoles = 0, .holes = NULL};
 
-        GeodesicPolygon *poly = geodesicPolygonCreate(&tinyPolygon);
-        t_assert(poly != NULL, "tiny polygon created");
+        GeodesicPolygon *poly = NULL;
+        t_assertSuccess(geodesicPolygonCreate(&tinyPolygon, &poly));
 
         LatLng farPoint = {.lat = 45.0 * DEG_TO_RAD, .lng = 45.0 * DEG_TO_RAD};
         Vec3d farVec;
@@ -307,8 +310,8 @@ SUITE(GeodesicPolygonInternal) {
     TEST(degenerateBoundarySegmentRejected) {
         GeoPolygon polygon = {
             .geoloop = triangleLoop, .numHoles = 0, .holes = NULL};
-        GeodesicPolygon *poly = geodesicPolygonCreate(&polygon);
-        t_assert(poly != NULL, "triangle polygon created");
+        GeodesicPolygon *poly = NULL;
+        t_assertSuccess(geodesicPolygonCreate(&polygon, &poly));
 
         // One repeated boundary vertex creates a zero-length segment.
         GeodesicCellBoundary boundary = {.numVerts = 1};

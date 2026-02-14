@@ -289,13 +289,11 @@ SUITE(geodesicPolygonToCellsExperimental) {
         int64_t size = 0;
         H3Error err =
             geodesicFill(&invalidGeoPolygon, 5, CONTAINMENT_FULL, &size, NULL);
-        t_assert(err == E_SUCCESS && size == 0,
-                 "invalid range verts handled with empty result");
+        t_assert(err == E_DOMAIN, "infinite verts rejected with E_DOMAIN");
 
         err =
             geodesicFill(&invalid2GeoPolygon, 5, CONTAINMENT_FULL, &size, NULL);
-        t_assert(err == E_SUCCESS && size == 0,
-                 "NaN verts handled with empty result");
+        t_assert(err == E_DOMAIN, "NaN verts rejected with E_DOMAIN");
     }
 
     TEST(geodesicMismatchedHoles) {

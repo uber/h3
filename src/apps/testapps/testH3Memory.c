@@ -509,17 +509,19 @@ SUITE(h3Memory) {
         GeoPolygon twoHolesValid = {
             .geoloop = outer, .numHoles = 2, .holes = validHoles};
 
+        GeodesicPolygon *poly = NULL;
+
         // Fail allocating the GeodesicPolygon container.
         resetMemoryCounters(0);
         failAlloc = true;
-        t_assert(geodesicPolygonCreate(&noHoles) == NULL,
+        t_assert(geodesicPolygonCreate(&noHoles, &poly) == E_MEMORY_ALLOC,
                  "geodesicPolygonCreate fails with first allocation failure");
         t_assert(actualAllocCalls == 1, "first allocation attempted once");
         t_assert(actualFreeCalls == 0, "no free needed when first alloc fails");
 
         // Fail allocating the outer loop edges.
         resetMemoryCounters(1);
-        t_assert(geodesicPolygonCreate(&noHoles) == NULL,
+        t_assert(geodesicPolygonCreate(&noHoles, &poly) == E_MEMORY_ALLOC,
                  "geodesicPolygonCreate fails creating outer loop");
         t_assert(actualAllocCalls == 2,
                  "outer loop failure reached the second allocation");
@@ -527,7 +529,7 @@ SUITE(h3Memory) {
 
         // Fail allocating the holes array.
         resetMemoryCounters(2);
-        t_assert(geodesicPolygonCreate(&oneHole) == NULL,
+        t_assert(geodesicPolygonCreate(&oneHole, &poly) == E_MEMORY_ALLOC,
                  "geodesicPolygonCreate fails allocating holes array");
         t_assert(actualAllocCalls == 3,
                  "holes-array failure reached the third allocation");
@@ -535,14 +537,14 @@ SUITE(h3Memory) {
 
         // Invalid second hole cleans up first hole and container state.
         resetMemoryCounters(0);
-        t_assert(geodesicPolygonCreate(&twoHolesInvalid) == NULL,
+        t_assert(geodesicPolygonCreate(&twoHolesInvalid, &poly) == E_DOMAIN,
                  "invalid second hole triggers cleanup path");
         t_assert(actualAllocCalls == 4, "allocations reached first hole edges");
         t_assert(actualFreeCalls == 4, "all intermediate allocations freed");
 
         // Fail allocating the second hole edges after first hole succeeds.
         resetMemoryCounters(4);
-        t_assert(geodesicPolygonCreate(&twoHolesValid) == NULL,
+        t_assert(geodesicPolygonCreate(&twoHolesValid, &poly) == E_MEMORY_ALLOC,
                  "second hole allocation failure triggers deep cleanup");
         t_assert(actualAllocCalls == 5,
                  "second-hole failure reached fifth allocation");

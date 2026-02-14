@@ -38,8 +38,8 @@ SUITE(GeodesicCoverage) {
         GeoLoop loop = {.numVerts = 4, .verts = verts};
         GeoPolygon polygon = {.geoloop = loop, .numHoles = 0, .holes = NULL};
 
-        GeodesicPolygon *poly = geodesicPolygonCreate(&polygon);
-        t_assert(poly != NULL, "parallel-edge polygon created");
+        GeodesicPolygon *poly = NULL;
+        t_assertSuccess(geodesicPolygonCreate(&polygon, &poly));
 
         // Test boundary intersection with parallel edges
         GeodesicCellBoundary boundary = {.numVerts = 2};
@@ -66,8 +66,8 @@ SUITE(GeodesicCoverage) {
         GeoLoop loop = {.numVerts = 3, .verts = verts};
         GeoPolygon polygon = {.geoloop = loop, .numHoles = 0, .holes = NULL};
 
-        GeodesicPolygon *poly = geodesicPolygonCreate(&polygon);
-        t_assert(poly != NULL, "reversed-projection polygon created");
+        GeodesicPolygon *poly = NULL;
+        t_assertSuccess(geodesicPolygonCreate(&polygon, &poly));
 
         // Create a boundary that might have reversed projections
         GeodesicCellBoundary boundary = {.numVerts = 3};
@@ -95,8 +95,8 @@ SUITE(GeodesicCoverage) {
         GeoLoop loop = {.numVerts = 3, .verts = verts};
         GeoPolygon polygon = {.geoloop = loop, .numHoles = 0, .holes = NULL};
 
-        GeodesicPolygon *poly = geodesicPolygonCreate(&polygon);
-        t_assert(poly != NULL, "north-pole polygon created");
+        GeodesicPolygon *poly = NULL;
+        t_assertSuccess(geodesicPolygonCreate(&polygon, &poly));
 
         // Test with a distant point
         LatLng farPt = {.lat = -89.0 * DEG_TO_RAD, .lng = 180.0 * DEG_TO_RAD};

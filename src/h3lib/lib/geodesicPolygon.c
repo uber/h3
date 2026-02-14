@@ -203,6 +203,12 @@ static H3Error _geodesicLoopFromGeo(const GeoLoop *loop, GeodesicLoop *out) {
     out->centroid.z = 0;
 
     for (int i = 0; i < n; i++) {
+        if (!isfinite(loop->verts[i].lat) || !isfinite(loop->verts[i].lng)) {
+            H3_MEMORY(free)(edges);
+            out->edges = NULL;
+            out->numEdges = 0;
+            return E_DOMAIN;
+        }
         _geoToVec3d(&loop->verts[i], &edges[i].vert);
     }
 
@@ -243,21 +249,22 @@ static void _geodesicLoopDestroy(GeodesicLoop *loop) {
     loop->numEdges = 0;
 }
 
-GeodesicPolygon *geodesicPolygonCreate(const GeoPolygon *polygon) {
-    if (!polygon || polygon->geoloop.numVerts <= 0) {
-        return NULL;
+H3Error geodesicPolygonCreate(const GeoPolygon *polygon,
+                              GeodesicPolygon **out) {
+    if (!polygon || !out || polygon->geoloop.numVerts <= 0) {
+        return E_DOMAIN;
     }
 
     GeodesicPolygon *result = H3_MEMORY(calloc)(1, sizeof(GeodesicPolygon));
     if (!result) {
-        return NULL;
+        return E_MEMORY_ALLOC;
     }
 
     H3Error loopErr = _geodesicLoopFromGeo(&polygon->geoloop, &result->geoloop);
     if (loopErr != E_SUCCESS) {
         _geodesicLoopDestroy(&result->geoloop);
         H3_MEMORY(free)(result);
-        return NULL;
+        return loopErr;
     }
 
     const int holeCount = polygon->numHoles;
@@ -266,13 +273,13 @@ GeodesicPolygon *geodesicPolygonCreate(const GeoPolygon *polygon) {
         if (!polygon->holes) {
             _geodesicLoopDestroy(&result->geoloop);
             H3_MEMORY(free)(result);
-            return NULL;
+            return E_DOMAIN;
         }
         result->holes = H3_MEMORY(calloc)(holeCount, sizeof(GeodesicLoop));
         if (!result->holes) {
             _geodesicLoopDestroy(&result->geoloop);
             H3_MEMORY(free)(result);
-            return NULL;
+            return E_MEMORY_ALLOC;
         }
         for (int i = 0; i < holeCount; i++) {
             if (polygon->holes[i].numVerts <= 0) {
@@ -282,7 +289,7 @@ GeodesicPolygon *geodesicPolygonCreate(const GeoPolygon *polygon) {
                 H3_MEMORY(free)(result->holes);
                 _geodesicLoopDestroy(&result->geoloop);
                 H3_MEMORY(free)(result);
-                return NULL;
+                return E_DOMAIN;
             }
             H3Error holeErr =
                 _geodesicLoopFromGeo(&polygon->holes[i], &result->holes[i]);
@@ -293,14 +300,15 @@ GeodesicPolygon *geodesicPolygonCreate(const GeoPolygon *polygon) {
                 H3_MEMORY(free)(result->holes);
                 _geodesicLoopDestroy(&result->geoloop);
                 H3_MEMORY(free)(result);
-                return NULL;
+                return holeErr;
             }
         }
     }
 
     _geodesicLoopToAABB(&result->geoloop, &result->aabb);
 
-    return result;
+    *out = result;
+    return E_SUCCESS;
 }
 
 void geodesicPolygonDestroy(GeodesicPolygon *polygon) {
