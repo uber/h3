@@ -24,7 +24,6 @@
 
 #include "alloc.h"
 #include "h3api.h"
-#include "latLng.h"
 
 /**
  * Add a linked polygon to the current polygon
@@ -135,7 +134,7 @@ void H3_EXPORT(destroyLinkedMultiPolygon)(LinkedGeoPolygon *polygon) {
  * @param  polygon Starting polygon
  * @return         Count
  */
-int countLinkedPolygons(LinkedGeoPolygon *polygon) {
+int countLinkedPolygons(const LinkedGeoPolygon *polygon) {
     int count = 0;
     while (polygon != NULL) {
         count++;
@@ -149,7 +148,7 @@ int countLinkedPolygons(LinkedGeoPolygon *polygon) {
  * @param  polygon Polygon to count loops for
  * @return         Count
  */
-int countLinkedLoops(LinkedGeoPolygon *polygon) {
+int countLinkedLoops(const LinkedGeoPolygon *polygon) {
     LinkedGeoLoop *loop = polygon->first;
     int count = 0;
     while (loop != NULL) {
@@ -164,7 +163,7 @@ int countLinkedLoops(LinkedGeoPolygon *polygon) {
  * @param  loop Loop to count coordinates for
  * @return      Count
  */
-int countLinkedCoords(LinkedGeoLoop *loop) {
+int countLinkedCoords(const LinkedGeoLoop *loop) {
     LinkedLatLng *coord = loop->first;
     int count = 0;
     while (coord != NULL) {
@@ -172,6 +171,215 @@ int countLinkedCoords(LinkedGeoLoop *loop) {
         coord = coord->next;
     }
     return count;
+}
+
+/**
+ * Convert a linked geo loop to a GeoLoop by counting coords and copying.
+ * @param  linked  Source linked loop
+ * @param  out     Output GeoLoop (verts will be allocated)
+ * @return         E_SUCCESS, E_FAILED (< 3 verts), or E_MEMORY_ALLOC
+ */
+static H3Error linkedGeoLoopToGeoLoop(const LinkedGeoLoop *linked,
+                                      GeoLoop *out) {
+    int numVerts = countLinkedCoords(linked);
+    if (numVerts < 3) {
+        return E_FAILED;
+    }
+    LatLng *verts = H3_MEMORY(malloc)(numVerts * sizeof(LatLng));
+    if (!verts) return E_MEMORY_ALLOC;
+
+    LinkedLatLng *coord = linked->first;
+    for (int i = 0; coord != NULL; i++) {
+        verts[i] = coord->vertex;
+        coord = coord->next;
+    }
+    out->numVerts = numVerts;
+    out->verts = verts;
+    return E_SUCCESS;
+}
+
+/**
+ * Convert a single LinkedGeoPolygon (outer loop + holes) to a GeoPolygon.
+ * The output's geoloop and holes are allocated; on failure, partially
+ * filled fields are safe for destroyGeoPolygon (calloc-zeroed).
+ * @param  linked  Source linked polygon
+ * @param  out     Output GeoPolygon (caller-owned, will be populated)
+ * @return         E_SUCCESS or E_MEMORY_ALLOC
+ */
+static H3Error linkedGeoPolygonToGeoPolygon(const LinkedGeoPolygon *linked,
+                                            GeoPolygon *out) {
+    // Convert outer loop
+    const LinkedGeoLoop *firstLoop = linked->first;
+    H3Error err = linkedGeoLoopToGeoLoop(firstLoop, &out->geoloop);
+    if (err) return err;
+
+    // Count and convert holes
+    int numHoles = countLinkedLoops(linked) - 1;
+    if (numHoles > 0) {
+        GeoLoop *holes = H3_MEMORY(calloc)(numHoles, sizeof(GeoLoop));
+        if (!holes) return E_MEMORY_ALLOC;
+        out->holes = holes;
+        out->numHoles = numHoles;
+
+        LinkedGeoLoop *loop = firstLoop->next;
+        for (int i = 0; loop != NULL; i++) {
+            err = linkedGeoLoopToGeoLoop(loop, &holes[i]);
+            if (err) return err;
+            loop = loop->next;
+        }
+    }
+
+    return E_SUCCESS;
+}
+
+/**
+ * Convert a LinkedGeoPolygon to a GeoMultiPolygon.
+ *
+ * An empty chain (head node with no loops and no `next`) produces an empty
+ * output (numPolygons=0) and returns E_SUCCESS. Every non-empty polygon
+ * node must have an outer loop, and every loop must have >= 3 vertices;
+ * otherwise, E_FAILED is returned.
+ *
+ * On error, any (partial) output is cleaned up via `destroyGeoMultiPolygon()`.
+ * On success the caller owns the output and must free
+ * it with `destroyGeoMultiPolygon()`.
+ *
+ * @param  linked  Head of linked polygon chain
+ * @param  out     Output GeoMultiPolygon (caller-owned, will be populated)
+ * @return         E_SUCCESS, E_FAILED (invalid geometry), or E_MEMORY_ALLOC
+ */
+H3Error H3_EXPORT(linkedGeoPolygonToGeoMultiPolygon)(
+    const LinkedGeoPolygon *linked, GeoMultiPolygon *out) {
+    out->numPolygons = 0;
+    out->polygons = NULL;
+
+    // Empty chain (head has no loops and no next) is valid: 0 polygons
+    if (linked->first == NULL && linked->next == NULL) {
+        return E_SUCCESS;
+    }
+
+    int numPolygons = countLinkedPolygons(linked);
+
+    GeoPolygon *polygons = H3_MEMORY(calloc)(numPolygons, sizeof(GeoPolygon));
+    if (!polygons) return E_MEMORY_ALLOC;
+
+    out->polygons = polygons;
+    out->numPolygons = numPolygons;
+
+    const LinkedGeoPolygon *lpoly = linked;
+    for (int i = 0; lpoly != NULL; i++) {
+        if (lpoly->first == NULL) {
+            H3_EXPORT(destroyGeoMultiPolygon)(out);
+            return E_FAILED;
+        }
+        H3Error err = linkedGeoPolygonToGeoPolygon(lpoly, &polygons[i]);
+        if (err) {
+            H3_EXPORT(destroyGeoMultiPolygon)(out);
+            return err;
+        }
+        lpoly = lpoly->next;
+    }
+
+    return E_SUCCESS;
+}
+
+/**
+ * Populate a LinkedGeoLoop with vertices from a GeoLoop.
+ * @param  src   Source GeoLoop
+ * @param  loop  Target linked loop (must be calloc-zeroed)
+ * @return       E_SUCCESS or E_MEMORY_ALLOC
+ */
+static H3Error geoLoopToLinkedGeoLoop(const GeoLoop *src, LinkedGeoLoop *loop) {
+    if (src->numVerts < 3) return E_FAILED;
+    for (int i = 0; i < src->numVerts; i++) {
+        LinkedLatLng *coord = H3_MEMORY(malloc)(sizeof(LinkedLatLng));
+        if (!coord) return E_MEMORY_ALLOC;
+
+        *coord = (LinkedLatLng){.vertex = src->verts[i], .next = NULL};
+        if (loop->last == NULL) {
+            loop->first = coord;
+        } else {
+            loop->last->next = coord;
+        }
+        loop->last = coord;
+    }
+    return E_SUCCESS;
+}
+
+/**
+ * Convert a single GeoPolygon to linked loops within a LinkedGeoPolygon.
+ * @param  poly        Source GeoPolygon
+ * @param  currentPoly Target LinkedGeoPolygon to populate
+ * @return             E_SUCCESS or E_MEMORY_ALLOC
+ */
+static H3Error addLinkedGeoLoop(const GeoLoop *gl,
+                                LinkedGeoPolygon *currentPoly) {
+    LinkedGeoLoop *loop = H3_MEMORY(calloc)(1, sizeof(LinkedGeoLoop));
+    if (!loop) return E_MEMORY_ALLOC;
+
+    if (currentPoly->last) {
+        currentPoly->last->next = loop;
+    } else {
+        currentPoly->first = loop;
+    }
+    currentPoly->last = loop;
+
+    return geoLoopToLinkedGeoLoop(gl, loop);
+}
+
+static H3Error geoPolygonToLinkedGeoLoops(const GeoPolygon *poly,
+                                          LinkedGeoPolygon *currentPoly) {
+    H3Error err = addLinkedGeoLoop(&poly->geoloop, currentPoly);
+    if (err) return err;
+
+    for (int i = 0; i < poly->numHoles; i++) {
+        err = addLinkedGeoLoop(&poly->holes[i], currentPoly);
+        if (err) return err;
+    }
+
+    return E_SUCCESS;
+}
+
+/**
+ * Convert a GeoMultiPolygon to a LinkedGeoPolygon.
+ *
+ * The first polygon is placed in the caller-owned `out` node.
+ * Every loop must have >= 3 vertices; otherwise E_FAILED is returned.
+ *
+ * On error, the output is cleaned up via `destroyLinkedMultiPolygon()`.
+ * On success, the caller owns the output and must free it with
+ * `destroyLinkedMultiPolygon()`.
+ *
+ * @param  mpoly  Source GeoMultiPolygon
+ * @param  out    Output LinkedGeoPolygon
+ * @return        E_SUCCESS, E_FAILED (invalid geometry), or E_MEMORY_ALLOC
+ */
+H3Error H3_EXPORT(geoMultiPolygonToLinkedGeoPolygon)(
+    const GeoMultiPolygon *mpoly, LinkedGeoPolygon *out) {
+    *out = (LinkedGeoPolygon){0};
+
+    LinkedGeoPolygon *currentPoly = out;
+    for (int i = 0; i < mpoly->numPolygons; i++) {
+        if (i > 0) {
+            LinkedGeoPolygon *newPoly =
+                H3_MEMORY(calloc)(1, sizeof(LinkedGeoPolygon));
+            if (!newPoly) {
+                H3_EXPORT(destroyLinkedMultiPolygon)(out);
+                return E_MEMORY_ALLOC;
+            }
+            currentPoly->next = newPoly;
+            currentPoly = newPoly;
+        }
+
+        H3Error err =
+            geoPolygonToLinkedGeoLoops(&mpoly->polygons[i], currentPoly);
+        if (err) {
+            H3_EXPORT(destroyLinkedMultiPolygon)(out);
+            return err;
+        }
+    }
+
+    return E_SUCCESS;
 }
 
 /**

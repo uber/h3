@@ -262,6 +262,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testDirectedEdge.c
     src/apps/testapps/testDirectedEdgeExhaustive.c
     src/apps/testapps/testLinkedGeoInternal.c
+    src/apps/testapps/testLinkedGeoConvert.c
     src/apps/testapps/mkRandGeo.c
     src/apps/testapps/testH3Api.c
     src/apps/testapps/testIndexDigits.c

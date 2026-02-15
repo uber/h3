@@ -52,9 +52,9 @@ LinkedGeoPolygon *addNewLinkedPolygon(LinkedGeoPolygon *polygon);
 LinkedGeoLoop *addNewLinkedLoop(LinkedGeoPolygon *polygon);
 LinkedGeoLoop *addLinkedLoop(LinkedGeoPolygon *polygon, LinkedGeoLoop *loop);
 LinkedLatLng *addLinkedCoord(LinkedGeoLoop *loop, const LatLng *vertex);
-int countLinkedPolygons(LinkedGeoPolygon *polygon);
-int countLinkedLoops(LinkedGeoPolygon *polygon);
-int countLinkedCoords(LinkedGeoLoop *loop);
+int countLinkedPolygons(const LinkedGeoPolygon *polygon);
+int countLinkedLoops(const LinkedGeoPolygon *polygon);
+int countLinkedCoords(const LinkedGeoLoop *loop);
 void destroyLinkedGeoLoop(LinkedGeoLoop *loop);
 
 // The following functions are created via macro in polygonAlgos.h,
