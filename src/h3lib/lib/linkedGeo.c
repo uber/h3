@@ -185,7 +185,7 @@ static H3Error linkedGeoLoopToGeoLoop(const LinkedGeoLoop *linked,
     if (numVerts < 3) {
         return E_FAILED;
     }
-    LatLng *verts = H3_MEMORY(malloc)(numVerts * sizeof(LatLng));
+    LatLng *verts = H3_MEMORY(calloc)(numVerts, sizeof(LatLng));
     if (!verts) return E_MEMORY_ALLOC;
 
     LinkedLatLng *coord = linked->first;
