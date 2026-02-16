@@ -358,7 +358,6 @@ DECLSPEC H3Error H3_EXPORT(cellsToMultiPolygon)(const H3Index *cells,
 
 /** @brief Free all memory created for a GeoMultiPolygon */
 DECLSPEC void H3_EXPORT(destroyGeoMultiPolygon)(GeoMultiPolygon *mpoly);
-
 /** @} */
 
 /** @defgroup degsToRads degsToRads
