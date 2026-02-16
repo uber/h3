@@ -77,10 +77,8 @@ SUITE(linkedGeoConvert) {
             H3_EXPORT(cellsToMultiPolygon)(cells, ARRAY_SIZE(cells), &mpoly));
         t_assert(mpoly.numPolygons == 2, "has two polygons");
 
-        t_assertSuccess(
-            H3_EXPORT(geoMultiPolygonToLinkedGeoPolygon)(&mpoly, &lpoly));
-        t_assertSuccess(
-            H3_EXPORT(linkedGeoPolygonToGeoMultiPolygon)(&lpoly, &mpoly2));
+        t_assertSuccess(geoMultiPolygonToLinkedGeoPolygon(&mpoly, &lpoly));
+        t_assertSuccess(linkedGeoPolygonToGeoMultiPolygon(&lpoly, &mpoly2));
 
         assertSameMultiPoly(&lpoly, &mpoly);
         assertSameMultiPoly(&lpoly, &mpoly2);
@@ -101,8 +99,7 @@ SUITE(linkedGeoConvert) {
         addLinkedCoord(loop1, &v2);
 
         GeoMultiPolygon mpoly;
-        t_assert(H3_EXPORT(linkedGeoPolygonToGeoMultiPolygon)(&poly1, &mpoly) ==
-                     E_FAILED,
+        t_assert(linkedGeoPolygonToGeoMultiPolygon(&poly1, &mpoly) == E_FAILED,
                  "rejects loop with < 3 verts");
 
         H3_EXPORT(destroyLinkedMultiPolygon)(&poly1);
@@ -115,8 +112,7 @@ SUITE(linkedGeoConvert) {
         addNewLinkedPolygon(&poly1);  // empty node with no loops
 
         GeoMultiPolygon mpoly;
-        t_assert(H3_EXPORT(linkedGeoPolygonToGeoMultiPolygon)(&poly1, &mpoly) ==
-                     E_FAILED,
+        t_assert(linkedGeoPolygonToGeoMultiPolygon(&poly1, &mpoly) == E_FAILED,
                  "rejects empty polygon node");
 
         H3_EXPORT(destroyLinkedMultiPolygon)(&poly1);
@@ -128,16 +124,14 @@ SUITE(linkedGeoConvert) {
         GeoMultiPolygon mpoly = {.numPolygons = 1, .polygons = &poly};
 
         LinkedGeoPolygon out;
-        t_assert(H3_EXPORT(geoMultiPolygonToLinkedGeoPolygon)(&mpoly, &out) ==
-                     E_FAILED,
+        t_assert(geoMultiPolygonToLinkedGeoPolygon(&mpoly, &out) == E_FAILED,
                  "rejects geoloop with < 3 verts");
     }
 
     TEST(linkedToGeoMultiPolygonEmpty) {
         LinkedGeoPolygon empty = {0};
         GeoMultiPolygon mpoly;
-        t_assertSuccess(
-            H3_EXPORT(linkedGeoPolygonToGeoMultiPolygon)(&empty, &mpoly));
+        t_assertSuccess(linkedGeoPolygonToGeoMultiPolygon(&empty, &mpoly));
         t_assert(mpoly.numPolygons == 0, "0 polygons for empty input");
         t_assert(mpoly.polygons == NULL, "NULL polygons for empty input");
     }
@@ -145,8 +139,7 @@ SUITE(linkedGeoConvert) {
     TEST(geoToLinkedMultiPolygonEmpty) {
         GeoMultiPolygon mpoly = {.numPolygons = 0, .polygons = NULL};
         LinkedGeoPolygon out;
-        t_assertSuccess(
-            H3_EXPORT(geoMultiPolygonToLinkedGeoPolygon)(&mpoly, &out));
+        t_assertSuccess(geoMultiPolygonToLinkedGeoPolygon(&mpoly, &out));
         t_assert(out.first == NULL, "empty linked polygon");
         t_assert(out.next == NULL, "no next polygon");
     }

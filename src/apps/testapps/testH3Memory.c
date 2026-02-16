@@ -25,6 +25,7 @@
 #include "h3Index.h"
 #include "h3api.h"
 #include "latLng.h"
+#include "linkedGeo.h"
 #include "polyfill.h"
 #include "polygon.h"
 #include "test.h"
@@ -410,8 +411,7 @@ SUITE(h3Memory) {
 
         LinkedGeoPolygon linked;
         resetMemoryCounters(0);
-        t_assertSuccess(
-            H3_EXPORT(geoMultiPolygonToLinkedGeoPolygon)(&src, &linked));
+        t_assertSuccess(geoMultiPolygonToLinkedGeoPolygon(&src, &linked));
         H3_EXPORT(destroyGeoMultiPolygon)(&src);
 
         // Now test linkedGeoPolygonToGeoMultiPolygon failure paths
@@ -421,7 +421,7 @@ SUITE(h3Memory) {
         int minAllocs = 0;
         for (int permitted = 1; permitted < 50; permitted++) {
             resetMemoryCounters(permitted);
-            err = H3_EXPORT(linkedGeoPolygonToGeoMultiPolygon)(&linked, &mpoly);
+            err = linkedGeoPolygonToGeoMultiPolygon(&linked, &mpoly);
             if (err == E_SUCCESS) {
                 minAllocs = permitted;
                 H3_EXPORT(destroyGeoMultiPolygon)(&mpoly);
@@ -433,7 +433,7 @@ SUITE(h3Memory) {
         for (int permitted = 0; permitted < minAllocs; permitted++) {
             resetMemoryCounters(permitted);
             if (permitted == 0) failAlloc = true;
-            err = H3_EXPORT(linkedGeoPolygonToGeoMultiPolygon)(&linked, &mpoly);
+            err = linkedGeoPolygonToGeoMultiPolygon(&linked, &mpoly);
             t_assert(err == E_MEMORY_ALLOC, "Should fail before success");
         }
 
@@ -458,7 +458,7 @@ SUITE(h3Memory) {
         int minAllocs = 0;
         for (int permitted = 1; permitted < 50; permitted++) {
             resetMemoryCounters(permitted);
-            err = H3_EXPORT(geoMultiPolygonToLinkedGeoPolygon)(&mpoly, &out);
+            err = geoMultiPolygonToLinkedGeoPolygon(&mpoly, &out);
             if (err == E_SUCCESS) {
                 minAllocs = permitted;
                 H3_EXPORT(destroyLinkedMultiPolygon)(&out);
@@ -470,7 +470,7 @@ SUITE(h3Memory) {
         for (int permitted = 0; permitted < minAllocs; permitted++) {
             resetMemoryCounters(permitted);
             if (permitted == 0) failAlloc = true;
-            err = H3_EXPORT(geoMultiPolygonToLinkedGeoPolygon)(&mpoly, &out);
+            err = geoMultiPolygonToLinkedGeoPolygon(&mpoly, &out);
             t_assert(err == E_MEMORY_ALLOC, "Should fail before success");
         }
 

@@ -248,8 +248,8 @@ static H3Error linkedGeoPolygonToGeoPolygon(const LinkedGeoPolygon *linked,
  * @param  out     Output GeoMultiPolygon (caller-owned, will be populated)
  * @return         E_SUCCESS, E_FAILED (invalid geometry), or E_MEMORY_ALLOC
  */
-H3Error H3_EXPORT(linkedGeoPolygonToGeoMultiPolygon)(
-    const LinkedGeoPolygon *linked, GeoMultiPolygon *out) {
+H3Error linkedGeoPolygonToGeoMultiPolygon(const LinkedGeoPolygon *linked,
+                                          GeoMultiPolygon *out) {
     out->numPolygons = 0;
     out->polygons = NULL;
 
@@ -354,8 +354,8 @@ static H3Error geoPolygonToLinkedGeoLoops(const GeoPolygon *poly,
  * @param  out    Output LinkedGeoPolygon
  * @return        E_SUCCESS, E_FAILED (invalid geometry), or E_MEMORY_ALLOC
  */
-H3Error H3_EXPORT(geoMultiPolygonToLinkedGeoPolygon)(
-    const GeoMultiPolygon *mpoly, LinkedGeoPolygon *out) {
+H3Error geoMultiPolygonToLinkedGeoPolygon(const GeoMultiPolygon *mpoly,
+                                          LinkedGeoPolygon *out) {
     *out = (LinkedGeoPolygon){0};
 
     LinkedGeoPolygon *currentPoly = out;

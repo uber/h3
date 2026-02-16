@@ -47,6 +47,10 @@
 /** Macro: Whether a LinkedGeoLoop is empty */
 #define IS_EMPTY_LINKED_LOOP(loop) loop->first == NULL
 
+H3Error linkedGeoPolygonToGeoMultiPolygon(const LinkedGeoPolygon *linked,
+                                          GeoMultiPolygon *out);
+H3Error geoMultiPolygonToLinkedGeoPolygon(const GeoMultiPolygon *mpoly,
+                                          LinkedGeoPolygon *out);
 H3Error normalizeMultiPolygon(LinkedGeoPolygon *root);
 LinkedGeoPolygon *addNewLinkedPolygon(LinkedGeoPolygon *polygon);
 LinkedGeoLoop *addNewLinkedLoop(LinkedGeoPolygon *polygon);

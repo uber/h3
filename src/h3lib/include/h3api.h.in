@@ -359,13 +359,6 @@ DECLSPEC H3Error H3_EXPORT(cellsToMultiPolygon)(const H3Index *cells,
 /** @brief Free all memory created for a GeoMultiPolygon */
 DECLSPEC void H3_EXPORT(destroyGeoMultiPolygon)(GeoMultiPolygon *mpoly);
 
-/** @brief Convert a LinkedGeoPolygon to a GeoMultiPolygon */
-DECLSPEC H3Error H3_EXPORT(linkedGeoPolygonToGeoMultiPolygon)(
-    const LinkedGeoPolygon *linked, GeoMultiPolygon *out);
-
-/** @brief Convert a GeoMultiPolygon to a LinkedGeoPolygon */
-DECLSPEC H3Error H3_EXPORT(geoMultiPolygonToLinkedGeoPolygon)(
-    const GeoMultiPolygon *mpoly, LinkedGeoPolygon *out);
 /** @} */
 
 /** @defgroup degsToRads degsToRads
