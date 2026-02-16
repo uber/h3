@@ -516,4 +516,112 @@ SUITE(polygonToCells) {
         free(found);
         free(search);
     }
+
+    TEST(polygonToCellsBarbell) {
+        // Two lobes connected by a bridge thinner than a hexagon
+        LatLng verts[] = {
+            {0.010, 0.000},  {0.010, 0.010},  {0.000, 0.010},  // Lobe 1
+            {0.0051, 0.010}, {0.0051, 0.050},                  // Bridge top
+            {0.000, 0.050},  {0.000, 0.060},  {0.010, 0.060},  // Lobe 2
+            {0.010, 0.050},                                    // Lobe 2
+            {0.0050, 0.050}, {0.0050, 0.010},                  // Bridge bottom
+            {0.000, 0.000}                                     // Close
+        };
+        GeoLoop loop = {.numVerts = 12, .verts = verts};
+        GeoPolygon polygon = {.geoloop = loop, .numHoles = 0, .holes = NULL};
+
+        int res = 9;
+        int64_t numHexagons;
+        t_assertSuccess(
+            H3_EXPORT(maxPolygonToCellsSize)(&polygon, res, 0, &numHexagons));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+
+        t_assertSuccess(H3_EXPORT(polygonToCells)(&polygon, res, 0, hexagons));
+        int64_t count = countNonNullIndexes(hexagons, numHexagons);
+
+        // Expect hexes in both lobes. If it was a flood-fill, it would only
+        // find ~half.
+        t_assert(count > 1000, "Should find hexagons in both barbell lobes");
+        free(hexagons);
+    }
+
+    TEST(polygonToCellsSplittingHole) {
+        // A square with a hole that almost cuts it in half
+        LatLng outerVerts[] = {
+            {0.0, 0.0}, {0.0, 0.08}, {0.08, 0.08}, {0.08, 0.0}};
+        GeoLoop outerLoop = {.numVerts = 4, .verts = outerVerts};
+
+        LatLng holeVerts[] = {
+            {0.0001, 0.03}, {0.0799, 0.03}, {0.0799, 0.05}, {0.0001, 0.05}};
+        GeoLoop holeLoop = {.numVerts = 4, .verts = holeVerts};
+
+        GeoPolygon polygon = {
+            .geoloop = outerLoop, .numHoles = 1, .holes = &holeLoop};
+
+        int res = 9;
+        int64_t numHexagons;
+        t_assertSuccess(
+            H3_EXPORT(maxPolygonToCellsSize)(&polygon, res, 0, &numHexagons));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+
+        t_assertSuccess(H3_EXPORT(polygonToCells)(&polygon, res, 0, hexagons));
+        int64_t count = countNonNullIndexes(hexagons, numHexagons);
+
+        t_assert(count > 500,
+                 "Should find hexagons on both sides of a splitting hole");
+        free(hexagons);
+    }
+
+    TEST(polygonToCellsMultiIslandSerpent) {
+        // A winding shape that results in 3+ disconnected cell clusters
+        LatLng verts[] = {
+            {0.00, 0.00},   {0.01, 0.00},   {0.01, 0.01},  // Island 1
+            {0.0051, 0.01}, {0.0051, 0.02},                // Neck 1
+            {0.00, 0.02},   {0.00, 0.03},   {0.01, 0.03},  // Island 2
+            {0.0051, 0.03}, {0.0051, 0.04},                // Neck 2
+            {0.00, 0.04},   {0.00, 0.05},   {0.01, 0.05},  // Island 3
+            {0.01, 0.06},   {-0.01, 0.06},                 // Back wall
+            {-0.01, 0.00}                                  // Close
+        };
+        GeoLoop loop = {.numVerts = 16, .verts = verts};
+        GeoPolygon polygon = {.geoloop = loop, .numHoles = 0, .holes = NULL};
+
+        int res = 9;
+        int64_t numHexagons;
+        t_assertSuccess(
+            H3_EXPORT(maxPolygonToCellsSize)(&polygon, res, 0, &numHexagons));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+
+        t_assertSuccess(H3_EXPORT(polygonToCells)(&polygon, res, 0, hexagons));
+        int64_t count = countNonNullIndexes(hexagons, numHexagons);
+
+        t_assert(count > 1500, "Should find hexagons in all 3 serpent islands");
+        free(hexagons);
+    }
+
+    TEST(polygonToCellsTransmeridianBarbell) {
+        // Barbell shape crossing the 180/-180 meridian
+        double east = M_PI - 0.001;
+        double west = -M_PI + 0.001;
+
+        LatLng verts[] = {{0.01, east},    {0.01, M_PI},    {0.00, M_PI},
+                          {0.0051, M_PI},  {0.0051, -M_PI}, {0.00, -M_PI},
+                          {0.00, west},    {0.01, west},    {0.01, -M_PI},
+                          {0.0050, -M_PI}, {0.0050, M_PI},  {0.00, east}};
+        GeoLoop loop = {.numVerts = 12, .verts = verts};
+        GeoPolygon polygon = {.geoloop = loop, .numHoles = 0, .holes = NULL};
+
+        int res = 9;
+        int64_t numHexagons;
+        t_assertSuccess(
+            H3_EXPORT(maxPolygonToCellsSize)(&polygon, res, 0, &numHexagons));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+
+        t_assertSuccess(H3_EXPORT(polygonToCells)(&polygon, res, 0, hexagons));
+        int64_t count = countNonNullIndexes(hexagons, numHexagons);
+
+        t_assert(count > 10,
+                 "Should find hexagons on both sides of antimeridian");
+        free(hexagons);
+    }
 }
