@@ -189,7 +189,7 @@ static H3Error linkedGeoLoopToGeoLoop(const LinkedGeoLoop *linked,
     if (!verts) return E_MEMORY_ALLOC;
 
     LinkedLatLng *coord = linked->first;
-    for (int i = 0; coord != NULL; i++) {
+    for (int i = 0; coord != NULL && ALWAYS(i < numVerts); i++) {
         verts[i] = coord->vertex;
         coord = coord->next;
     }
@@ -222,7 +222,7 @@ static H3Error linkedGeoPolygonToGeoPolygon(const LinkedGeoPolygon *linked,
         out->numHoles = numHoles;
 
         LinkedGeoLoop *loop = firstLoop->next;
-        for (int i = 0; loop != NULL; i++) {
+        for (int i = 0; loop != NULL && ALWAYS(i < numHoles); i++) {
             err = linkedGeoLoopToGeoLoop(loop, &holes[i]);
             if (err) return err;
             loop = loop->next;
@@ -267,7 +267,7 @@ H3Error linkedGeoPolygonToGeoMultiPolygon(const LinkedGeoPolygon *linked,
     out->numPolygons = numPolygons;
 
     const LinkedGeoPolygon *lpoly = linked;
-    for (int i = 0; lpoly != NULL; i++) {
+    for (int i = 0; lpoly != NULL && ALWAYS(i < numPolygons); i++) {
         if (lpoly->first == NULL) {
             H3_EXPORT(destroyGeoMultiPolygon)(out);
             return E_FAILED;
