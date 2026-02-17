@@ -23,6 +23,7 @@
 #include <stdlib.h>
 
 #include "alloc.h"
+#include "h3Assert.h"
 #include "h3api.h"
 
 /**
