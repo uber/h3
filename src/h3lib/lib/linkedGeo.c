@@ -25,6 +25,7 @@
 #include "alloc.h"
 #include "h3Assert.h"
 #include "h3api.h"
+#include "polygon.h"
 
 /**
  * Add a linked polygon to the current polygon
@@ -201,8 +202,8 @@ static H3Error linkedGeoLoopToGeoLoop(const LinkedGeoLoop *linked,
 
 /**
  * Convert a single LinkedGeoPolygon (outer loop + holes) to a GeoPolygon.
- * The output's geoloop and holes are allocated; on failure, partially
- * filled fields are safe for destroyGeoPolygon (calloc-zeroed).
+ * The output's geoloop and holes are allocated; on failure, all partial
+ * allocations are freed and `out` is left in a clean (zeroed) state.
  * @param  linked  Source linked polygon
  * @param  out     Output GeoPolygon (caller-owned, will be populated)
  * @return         E_SUCCESS or E_MEMORY_ALLOC
@@ -218,14 +219,20 @@ static H3Error linkedGeoPolygonToGeoPolygon(const LinkedGeoPolygon *linked,
     int numHoles = countLinkedLoops(linked) - 1;
     if (numHoles > 0) {
         GeoLoop *holes = H3_MEMORY(calloc)(numHoles, sizeof(GeoLoop));
-        if (!holes) return E_MEMORY_ALLOC;
+        if (!holes) {
+            destroyGeoPolygon(out);
+            return E_MEMORY_ALLOC;
+        }
         out->holes = holes;
         out->numHoles = numHoles;
 
         LinkedGeoLoop *loop = firstLoop->next;
         for (int i = 0; loop != NULL && ALWAYS(i < numHoles); i++) {
             err = linkedGeoLoopToGeoLoop(loop, &holes[i]);
-            if (err) return err;
+            if (err) {
+                destroyGeoPolygon(out);
+                return err;
+            }
             loop = loop->next;
         }
     }
