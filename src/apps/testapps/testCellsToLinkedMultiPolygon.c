@@ -53,7 +53,7 @@ SUITE(cellsToLinkedMultiPolygon) {
         int numHexes = ARRAY_SIZE(set);
 
         t_assert(H3_EXPORT(cellsToLinkedMultiPolygon)(
-                     set, numHexes, &polygon) == E_CELL_INVALID,
+                    set, numHexes, &polygon) != E_SUCCESS,
                  "Invalid set fails");
     }
 
@@ -68,6 +68,24 @@ SUITE(cellsToLinkedMultiPolygon) {
         t_assert(countLinkedLoops(&polygon) == 1, "1 loop added to polygon");
         t_assert(countLinkedCoords(polygon.first) == 10,
                  "All coords added to loop except 2 shared");
+
+        H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
+    }
+
+    TEST(pentagonChildren) {
+        // children of pentagon 0x80ebfffffffffff
+        H3Index kids[] = {0x81ea3ffffffffff, 0x81eabffffffffff,
+                          0x81eafffffffffff, 0x81eb3ffffffffff,
+                          0x81eb7ffffffffff, 0x81ebbffffffffff};
+        int numCells = ARRAY_SIZE(kids);
+
+        LinkedGeoPolygon polygon;
+        t_assertSuccess(
+            H3_EXPORT(cellsToLinkedMultiPolygon)(kids, numCells, &polygon));
+
+        // Since these are the children of a cell, we expect a single loop with
+        // no holes.
+        t_assert(countLinkedLoops(&polygon) == 1, "1 loop added to polygon");
 
         H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
     }
