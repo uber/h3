@@ -44,6 +44,10 @@
 #define FLAG_CONTAINMENT_MODE_MASK ((uint32_t)(15))
 #define FLAG_GET_CONTAINMENT_MODE(flags) (flags & FLAG_CONTAINMENT_MODE_MASK)
 
+// Defined in algos.c:
+void destroyGeoLoop(GeoLoop *loop);
+void destroyGeoPolygon(GeoPolygon *poly);
+
 // Defined directly in polygon.c:
 H3Error validatePolygonFlags(uint32_t flags);
 void bboxesFromGeoPolygon(const GeoPolygon *polygon, BBox *bboxes);
