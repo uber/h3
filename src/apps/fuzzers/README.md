@@ -24,6 +24,8 @@ The public API of H3 is covered in the following fuzzers:
 | cellToParent | [fuzzerHierarchy](./fuzzerHierarchy.c)
 | cellToVertex | [fuzzerVertexes](./fuzzerVertexes.c)
 | cellToVertexes | [fuzzerVertexes](./fuzzerVertexes.c)
+| cellsToMultiPolygon | [fuzzerCellsToMultiPolygon.c](./fuzzerCellsToMultiPolygon.c)
+| cellsToLinkedMultiPolygon | [fuzzerCellsToLinkedMultiPolygon.c](./fuzzerCellsToLinkedMultiPolygon.c)
 | cellsToDirectedEdge | [fuzzerDirectedEdge](./fuzzerDirectedEdge.c)
 | childPosToCell| [fuzzerCellToChildPos](./fuzzerCellToChildPos.c)
 | compactCells | [fuzzerCompact](./fuzzerCompact.c)
