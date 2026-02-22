@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** @file
- * @brief tests main H3 core library memory management.
+/** @file testH3Memory.c
+ * @brief Exercises memory allocation hooks in the H3 core library.
  *
  *  usage: `testH3Memory`
  */
@@ -22,6 +22,8 @@
 #include <math.h>
 #include <string.h>
 
+#include "geodesicIterator.h"
+#include "geodesicPolygonInternal.h"
 #include "h3Index.h"
 #include "h3api.h"
 #include "latLng.h"
@@ -430,5 +432,189 @@ SUITE(h3Memory) {
             t_assert(err == E_MEMORY_ALLOC,
                      "Should fail with memory error before success");
         }
+    }
+
+    TEST(polygonToCellsExperimentalGeodesic) {
+        sfGeoPolygon.geoloop = sfGeoLoop;
+        sfGeoPolygon.numHoles = 0;
+
+        uint32_t flags = CONTAINMENT_OVERLAPPING;
+        FLAG_SET_GEODESIC(flags);
+
+        // Test maxPolygonToCellsSizeExperimental with allocation failure
+        resetMemoryCounters(0);
+        failAlloc = true;
+        int64_t numHexagons;
+        H3Error err = H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+            &sfGeoPolygon, 5, flags, &numHexagons);
+        t_assert(err == E_MEMORY_ALLOC,
+                 "geodesic maxPolygonToCellsSizeExperimental failed on alloc");
+        t_assert(actualAllocCalls == 1,
+                 "maxPolygonToCellsSizeExperimental alloc called once");
+        t_assert(actualFreeCalls == 0,
+                 "maxPolygonToCellsSizeExperimental free not called");
+
+        // Test maxPolygonToCellsSizeExperimental with allocation success.
+        // Geodesic sizing may perform multiple allocations internally.
+        resetMemoryCounters(0);
+        failAlloc = false;
+        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+            &sfGeoPolygon, 5, flags, &numHexagons));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+
+        // Test polygonToCellsExperimental with allocation failure
+        resetMemoryCounters(0);
+        failAlloc = true;
+        err = H3_EXPORT(polygonToCellsExperimental)(&sfGeoPolygon, 5, flags,
+                                                    numHexagons, hexagons);
+        t_assert(err == E_MEMORY_ALLOC,
+                 "geodesic polygonToCellsExperimental failed (1)");
+        t_assert(actualAllocCalls == 1, "alloc called once");
+        t_assert(actualFreeCalls == 0, "free not called");
+
+        resetMemoryCounters(3);
+        err = H3_EXPORT(polygonToCellsExperimental)(&sfGeoPolygon, 5, flags,
+                                                    numHexagons, hexagons);
+        t_assert(err == E_SUCCESS,
+                 "geodesic polygonToCellsExperimental succeeded (1)");
+        t_assert(actualAllocCalls == 3, "alloc called three times");
+        t_assert(actualFreeCalls == 3, "free called three times");
+
+        int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
+        t_assert(actualNumIndexes == 3,
+                 "got expected geodesic polygonToCellsExperimental size");
+        free(hexagons);
+    }
+
+    TEST(geodesicPolygonCreateAllocationFailures) {
+        LatLng outerVerts[] = {{0.659966917655, -2.1364398519396},
+                               {0.6595011102219, -2.1359434279405},
+                               {0.6583348114025, -2.1354884206045}};
+        GeoLoop outer = {.numVerts = 3, .verts = outerVerts};
+
+        LatLng hole0Verts[] = {
+            {0.6598, -2.1362}, {0.6597, -2.1360}, {0.6596, -2.1362}};
+        LatLng hole1Verts[] = {
+            {0.65955, -2.13630}, {0.65950, -2.13615}, {0.65945, -2.13630}};
+        GeoLoop validHoles[] = {{.numVerts = 3, .verts = hole0Verts},
+                                {.numVerts = 3, .verts = hole1Verts}};
+        GeoLoop secondHoleInvalid[] = {{.numVerts = 3, .verts = hole0Verts},
+                                       {.numVerts = 0, .verts = NULL}};
+
+        GeoPolygon noHoles = {.geoloop = outer, .numHoles = 0, .holes = NULL};
+        GeoPolygon oneHole = {
+            .geoloop = outer, .numHoles = 1, .holes = validHoles};
+        GeoPolygon twoHolesInvalid = {
+            .geoloop = outer, .numHoles = 2, .holes = secondHoleInvalid};
+        GeoPolygon twoHolesValid = {
+            .geoloop = outer, .numHoles = 2, .holes = validHoles};
+
+        GeodesicPolygon *poly = NULL;
+
+        // Fail allocating the GeodesicPolygon container.
+        resetMemoryCounters(0);
+        failAlloc = true;
+        t_assert(geodesicPolygonCreate(&noHoles, &poly) == E_MEMORY_ALLOC,
+                 "geodesicPolygonCreate fails with first allocation failure");
+        t_assert(actualAllocCalls == 1, "first allocation attempted once");
+        t_assert(actualFreeCalls == 0, "no free needed when first alloc fails");
+
+        // Fail allocating the outer loop edges.
+        resetMemoryCounters(1);
+        t_assert(geodesicPolygonCreate(&noHoles, &poly) == E_MEMORY_ALLOC,
+                 "geodesicPolygonCreate fails creating outer loop");
+        t_assert(actualAllocCalls == 2,
+                 "outer loop failure reached the second allocation");
+        t_assert(actualFreeCalls == 1, "container freed on outer loop failure");
+
+        // Fail allocating the holes array.
+        resetMemoryCounters(2);
+        t_assert(geodesicPolygonCreate(&oneHole, &poly) == E_MEMORY_ALLOC,
+                 "geodesicPolygonCreate fails allocating holes array");
+        t_assert(actualAllocCalls == 3,
+                 "holes-array failure reached the third allocation");
+        t_assert(actualFreeCalls == 2, "outer loop and container freed");
+
+        // Invalid second hole cleans up first hole and container state.
+        resetMemoryCounters(0);
+        t_assert(geodesicPolygonCreate(&twoHolesInvalid, &poly) == E_DOMAIN,
+                 "invalid second hole triggers cleanup path");
+        t_assert(actualAllocCalls == 4, "allocations reached first hole edges");
+        t_assert(actualFreeCalls == 4, "all intermediate allocations freed");
+
+        // Fail allocating the second hole edges after first hole succeeds.
+        resetMemoryCounters(4);
+        t_assert(geodesicPolygonCreate(&twoHolesValid, &poly) == E_MEMORY_ALLOC,
+                 "second hole allocation failure triggers deep cleanup");
+        t_assert(actualAllocCalls == 5,
+                 "second-hole failure reached fifth allocation");
+        t_assert(actualFreeCalls == 4,
+                 "first hole, holes array, outer loop, and container freed");
+    }
+
+    TEST(geodesicIteratorStepDefensivePaths) {
+        uint32_t geodesicFlags = CONTAINMENT_OVERLAPPING;
+        FLAG_SET_GEODESIC(geodesicFlags);
+
+        GeoPolygon zeroLoop = {.geoloop = {.numVerts = 0, .verts = NULL},
+                               .numHoles = 0,
+                               .holes = NULL};
+        IterCellsPolygonCompact zeroLoopIter = {.cell = 0x8001fffffffffff,
+                                                .error = E_SUCCESS,
+                                                ._res = 0,
+                                                ._flags = geodesicFlags,
+                                                ._polygon = &zeroLoop,
+                                                ._bboxes = NULL,
+                                                ._started = true,
+                                                .geodesicPoly = NULL};
+        geodesicIteratorStep(&zeroLoopIter, zeroLoopIter.cell);
+        t_assert(zeroLoopIter.error == E_DOMAIN,
+                 "zero-vertex geodesic iterator polygon rejected");
+        t_assert(zeroLoopIter.cell == H3_NULL, "iterator moved to exhausted");
+
+        LatLng outerVerts[] = {{0.659966917655, -2.1364398519396},
+                               {0.6595011102219, -2.1359434279405},
+                               {0.6583348114025, -2.1354884206045}};
+        GeoPolygon nullHoles = {.geoloop = {.numVerts = 3, .verts = outerVerts},
+                                .numHoles = 1,
+                                .holes = NULL};
+        IterCellsPolygonCompact nullHolesIter = {.cell = 0x8001fffffffffff,
+                                                 .error = E_SUCCESS,
+                                                 ._res = 0,
+                                                 ._flags = geodesicFlags,
+                                                 ._polygon = &nullHoles,
+                                                 ._bboxes = NULL,
+                                                 ._started = true,
+                                                 .geodesicPoly = NULL};
+        geodesicIteratorStep(&nullHolesIter, nullHolesIter.cell);
+        t_assert(nullHolesIter.error == E_DOMAIN,
+                 "holes count with NULL holes pointer rejected");
+        t_assert(nullHolesIter.cell == H3_NULL, "iterator moved to exhausted");
+
+        GeoPolygon valid = {.geoloop = {.numVerts = 3, .verts = outerVerts},
+                            .numHoles = 0,
+                            .holes = NULL};
+        IterCellsPolygonCompact allocFailIter = {.cell = 0x8001fffffffffff,
+                                                 .error = E_SUCCESS,
+                                                 ._res = 0,
+                                                 ._flags = geodesicFlags,
+                                                 ._polygon = &valid,
+                                                 ._bboxes = NULL,
+                                                 ._started = true,
+                                                 .geodesicPoly = NULL};
+        resetMemoryCounters(0);
+        failAlloc = true;
+        geodesicIteratorStep(&allocFailIter, allocFailIter.cell);
+        t_assert(allocFailIter.error == E_MEMORY_ALLOC,
+                 "geodesic iterator reports allocation failure");
+        t_assert(allocFailIter.cell == H3_NULL, "iterator moved to exhausted");
+        t_assert(actualAllocCalls == 1,
+                 "attempted geodesic polygon allocation");
+        t_assert(actualFreeCalls == 0,
+                 "no state to free when geodesic allocation fails");
+
+        geodesicIteratorDestroyState(NULL);
+        geodesicIteratorDestroyState(&allocFailIter);
+        t_assert(true, "destroy state accepts null and empty iterator");
     }
 }

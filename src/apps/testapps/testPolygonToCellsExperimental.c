@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+/** @file testPolygonToCellsExperimental.c
+ * @brief Tests the experimental polygon-to-cells traversal algorithm.
+ */
+
 #include <assert.h>
 #include <math.h>
 #include <stdlib.h>
@@ -1090,23 +1094,103 @@ SUITE(polygonToCells) {
 
     TEST(invalidFlags) {
         int64_t numHexagons;
-        for (uint32_t flags = CONTAINMENT_INVALID; flags <= 32; flags++) {
+
+        // Test invalid containment modes (>= CONTAINMENT_INVALID) for
+        // non-geodesic
+        for (uint32_t mode = CONTAINMENT_INVALID;
+             mode <= CONTAINMENT_INVALID + 5; mode++) {
             t_assert(
                 H3_EXPORT(maxPolygonToCellsSizeExperimental)(
-                    &sfGeoPolygon, 9, flags, &numHexagons) == E_OPTION_INVALID,
-                "Flags other than polyfill modes are invalid for "
-                "maxPolygonToCellsSizeExperimental");
+                    &sfGeoPolygon, 9, mode, &numHexagons) == E_OPTION_INVALID,
+                "Invalid containment modes should be rejected");
         }
+
+        // Test invalid containment modes for geodesic (only FULL and
+        // OVERLAPPING are valid)
+        uint32_t invalidGeodesicFlags[] = {
+            FLAG_GEODESIC_MASK | CONTAINMENT_CENTER,
+            FLAG_GEODESIC_MASK | CONTAINMENT_OVERLAPPING_BBOX,
+            FLAG_GEODESIC_MASK | CONTAINMENT_INVALID};
+        for (int i = 0; i < 3; i++) {
+            t_assert(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+                         &sfGeoPolygon, 9, invalidGeodesicFlags[i],
+                         &numHexagons) == E_OPTION_INVALID,
+                     "Invalid geodesic containment modes should be rejected");
+        }
+
+        // Test invalid flag bits (bits outside valid masks)
+        t_assert(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+                     &sfGeoPolygon, 9, 0x100, &numHexagons) == E_OPTION_INVALID,
+                 "Invalid flag bits should be rejected");
+
+        // Test valid flags work
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
             &sfGeoPolygon, 9, CONTAINMENT_CENTER, &numHexagons));
+        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+            &sfGeoPolygon, 9, FLAG_GEODESIC_MASK | CONTAINMENT_FULL,
+            &numHexagons));
+
+        // Test polygonToCellsExperimental with same invalid flags
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
-        for (uint32_t flags = CONTAINMENT_INVALID; flags <= 32; flags++) {
-            t_assert(H3_EXPORT(polygonToCellsExperimental)(
-                         &sfGeoPolygon, 9, flags, numHexagons, hexagons) ==
-                         E_OPTION_INVALID,
-                     "Flags other than polyfill modes are invalid for "
-                     "polygonToCellsExperimental");
+        t_assert(H3_EXPORT(polygonToCellsExperimental)(
+                     &sfGeoPolygon, 9, CONTAINMENT_INVALID, numHexagons,
+                     hexagons) == E_OPTION_INVALID,
+                 "Invalid flags should be rejected");
+        t_assert(H3_EXPORT(polygonToCellsExperimental)(&sfGeoPolygon, 9, 0x100,
+                                                       numHexagons, hexagons) ==
+                     E_OPTION_INVALID,
+                 "Invalid flag bits should be rejected");
+        free(hexagons);
+    }
+
+    TEST(invalidFlagsExperimental) {
+        int64_t numHexagons;
+
+        // Test invalid containment modes (>= CONTAINMENT_INVALID) for
+        // non-geodesic
+        for (uint32_t mode = CONTAINMENT_INVALID;
+             mode <= CONTAINMENT_INVALID + 5; mode++) {
+            t_assert(
+                H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+                    &sfGeoPolygon, 9, mode, &numHexagons) == E_OPTION_INVALID,
+                "Invalid containment modes should be rejected");
         }
+
+        // Test invalid containment modes for geodesic (only FULL and
+        // OVERLAPPING are valid)
+        uint32_t invalidGeodesicFlags[] = {
+            FLAG_GEODESIC_MASK | CONTAINMENT_CENTER,
+            FLAG_GEODESIC_MASK | CONTAINMENT_OVERLAPPING_BBOX,
+            FLAG_GEODESIC_MASK | CONTAINMENT_INVALID};
+        for (int i = 0; i < 3; i++) {
+            t_assert(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+                         &sfGeoPolygon, 9, invalidGeodesicFlags[i],
+                         &numHexagons) == E_OPTION_INVALID,
+                     "Invalid geodesic containment modes should be rejected");
+        }
+
+        // Test invalid flag bits (bits outside valid masks)
+        t_assert(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+                     &sfGeoPolygon, 9, 0x100, &numHexagons) == E_OPTION_INVALID,
+                 "Invalid flag bits should be rejected");
+
+        // Test valid flags work
+        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+            &sfGeoPolygon, 9, CONTAINMENT_CENTER, &numHexagons));
+        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+            &sfGeoPolygon, 9, FLAG_GEODESIC_MASK | CONTAINMENT_FULL,
+            &numHexagons));
+
+        // Test polygonToCellsExperimental with same invalid flags
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+        t_assert(H3_EXPORT(polygonToCellsExperimental)(
+                     &sfGeoPolygon, 9, CONTAINMENT_INVALID, numHexagons,
+                     hexagons) == E_OPTION_INVALID,
+                 "Invalid flags should be rejected");
+        t_assert(H3_EXPORT(polygonToCellsExperimental)(&sfGeoPolygon, 9, 0x100,
+                                                       numHexagons, hexagons) ==
+                     E_OPTION_INVALID,
+                 "Invalid flag bits should be rejected");
         free(hexagons);
     }
 

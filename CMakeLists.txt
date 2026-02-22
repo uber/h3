@@ -173,6 +173,11 @@ set(LIB_SOURCE_FILES
     src/h3lib/include/adder.h
     src/h3lib/include/area.h
     src/h3lib/include/cellsToMultiPoly.h
+    src/h3lib/include/polyfillIterator.h
+    src/h3lib/include/geodesicIterator.h
+    src/h3lib/include/geodesicPolygonInternal.h
+    src/h3lib/include/geodesicCellBoundary.h
+    src/h3lib/include/sphereCapTables.h
     src/h3lib/lib/h3Assert.c
     src/h3lib/lib/algos.c
     src/h3lib/lib/coordijk.c
@@ -193,7 +198,9 @@ set(LIB_SOURCE_FILES
     src/h3lib/lib/faceijk.c
     src/h3lib/lib/baseCells.c
     src/h3lib/lib/area.c
-    src/h3lib/lib/cellsToMultiPoly.c)
+    src/h3lib/lib/cellsToMultiPoly.c
+    src/h3lib/lib/geodesicIterator.c
+    src/h3lib/lib/geodesicPolygon.c)
 set(APP_SOURCE_FILES
     src/apps/applib/include/kml.h
     src/apps/applib/include/benchmark.h
@@ -226,6 +233,9 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testPolygonToCellsExperimental.c
     src/apps/testapps/testPolygonToCellsReported.c
     src/apps/testapps/testPolygonToCellsReportedExperimental.c
+    src/apps/testapps/testGeodesicPolygonInternal.c
+    src/apps/testapps/testGeodesicPolygonToCellsExperimental.c
+    src/apps/testapps/testGeodesicCoverage.c
     src/apps/testapps/testPentagonIndexes.c
     src/apps/testapps/testGridDisk.c
     src/apps/testapps/testGridDiskInternal.c
@@ -247,6 +257,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testGetIcosahedronFaces.c
     src/apps/testapps/testLatLng.c
     src/apps/testapps/testLatLngInternal.c
+    src/apps/testapps/testVec3d.c
     src/apps/testapps/testGridRing.c
     src/apps/testapps/testGridRingInternal.c
     src/apps/testapps/testGridRingUnsafe.c
@@ -286,6 +297,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testMathExtensionsInternal.c
     src/apps/testapps/testDescribeH3Error.c
     src/apps/testapps/testGeoLoopArea.c
+    src/apps/testapps/testSphereCap.c
     src/apps/miscapps/cellToBoundaryHier.c
     src/apps/miscapps/cellToLatLngHier.c
     src/apps/miscapps/generateBaseCellNeighbors.c
@@ -311,6 +323,7 @@ set(OTHER_SOURCE_FILES
     src/apps/fuzzers/fuzzerLocalIj.c
     src/apps/fuzzers/fuzzerPolygonToCells.c
     src/apps/fuzzers/fuzzerPolygonToCellsExperimental.c
+    src/apps/fuzzers/fuzzerPolygonToCellsExperimentalGeodesic.c
     src/apps/fuzzers/fuzzerPolygonToCellsNoHoles.c
     src/apps/fuzzers/fuzzerPolygonToCellsExperimentalNoHoles.c
     src/apps/fuzzers/fuzzerCellToChildPos.c
@@ -318,6 +331,7 @@ set(OTHER_SOURCE_FILES
     src/apps/fuzzers/fuzzerInternalCoordIjk.c
     src/apps/benchmarks/benchmarkPolygonToCells.c
     src/apps/benchmarks/benchmarkPolygonToCellsExperimental.c
+    src/apps/benchmarks/benchmarkPolygonToCellsExperimentalGeodesic.c
     src/apps/benchmarks/benchmarkPolygon.c
     src/apps/benchmarks/benchmarkCellsToPolyAlgos.c
     src/apps/benchmarks/benchmarkCellToChildren.c
@@ -642,6 +656,8 @@ if(BUILD_FUZZERS)
     add_h3_fuzzer(fuzzerPolygonToCells src/apps/fuzzers/fuzzerPolygonToCells.c)
     add_h3_fuzzer(fuzzerPolygonToCellsExperimental
                   src/apps/fuzzers/fuzzerPolygonToCellsExperimental.c)
+    add_h3_fuzzer(fuzzerPolygonToCellsExperimentalGeodesic
+                  src/apps/fuzzers/fuzzerPolygonToCellsExperimentalGeodesic.c)
     add_h3_fuzzer(fuzzerPolygonToCellsNoHoles
                   src/apps/fuzzers/fuzzerPolygonToCellsNoHoles.c)
     add_h3_fuzzer(fuzzerPolygonToCellsExperimentalNoHoles
@@ -686,6 +702,8 @@ if(BUILD_BENCHMARKS)
                      src/apps/benchmarks/benchmarkPolygonToCellsExperimental.c)
     add_h3_benchmark(benchmarkArea
                      src/apps/benchmarks/benchmarkArea.c)
+    add_h3_benchmark(benchmarkPolygonToCellsExperimentalGeodesic
+                     src/apps/benchmarks/benchmarkPolygonToCellsExperimentalGeodesic.c)
     if(ENABLE_REQUIRES_ALL_SYMBOLS)
         add_h3_benchmark(benchmarkPolygon
                          src/apps/benchmarks/benchmarkPolygon.c)
