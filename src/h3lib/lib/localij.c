@@ -204,9 +204,9 @@ H3Error cellToLocalIjk(H3Index origin, H3Index h3, CoordIJK *out) {
                 return E_CELL_INVALID;
             }
             if (FAILED_DIRECTIONS[originLeadingDigit][dir]) {
-                // TODO: We may be unfolding the pentagon incorrectly in this
-                // case; return an error code until this is guaranteed to be
-                // correct.
+                // NOTE: Known limitation - pentagon unfolding may be
+                // incorrect in this case; return an error code until this
+                // is guaranteed to be correct.
                 return E_FAILED;
             }
 
@@ -219,9 +219,9 @@ H3Error cellToLocalIjk(H3Index origin, H3Index h3, CoordIJK *out) {
                 return E_CELL_INVALID;
             }
             if (FAILED_DIRECTIONS[indexLeadingDigit][revDir]) {
-                // TODO: We may be unfolding the pentagon incorrectly in this
-                // case; return an error code until this is guaranteed to be
-                // correct.
+                // NOTE: Known limitation - pentagon unfolding may be
+                // incorrect in this case; return an error code until this
+                // is guaranteed to be correct.
                 return E_FAILED;
             }
 
@@ -271,8 +271,9 @@ H3Error cellToLocalIjk(H3Index origin, H3Index h3, CoordIJK *out) {
             return E_CELL_INVALID;
         }
         if (FAILED_DIRECTIONS[originLeadingDigit][indexLeadingDigit]) {
-            // TODO: We may be unfolding the pentagon incorrectly in this case;
-            // return an error code until this is guaranteed to be correct.
+            // NOTE: Known limitation - pentagon unfolding may be incorrect
+            // in this case; return an error code until this is guaranteed
+            // to be correct.
             return E_FAILED;
         }
 
@@ -496,9 +497,9 @@ H3Error localIjkToCell(H3Index origin, const CoordIJK *ijk, H3Index *out) {
     }
 
     if (indexOnPent) {
-        // TODO: There are cases in cellToLocalIjk which are failed but not
-        // accounted for here - instead just fail if the recovered index is
-        // invalid.
+        // NOTE: Known limitation - There are cases in cellToLocalIjk which
+        // are failed but not accounted for here - instead just fail if the
+        // recovered index is invalid.
         if (_h3LeadingNonZeroDigit(*out) == K_AXES_DIGIT) {
             return E_PENTAGON;
         }

@@ -62,9 +62,9 @@ void destroyVertexGraph(VertexGraph *graph) {
 /**
  * Get an integer hash for a lat/lng point, at a precision determined
  * by the current hexagon resolution.
- * TODO: Light testing suggests this might not be sufficient at resolutions
- * finer than 10. Design a better hash function if performance and collisions
- * seem to be an issue here.
+ * NOTE: Light testing suggests this might not be sufficient at resolutions
+ * finer than 10. Consider designing a better hash function if performance
+ * and collisions seem to be an issue here.
  * @param  vertex     Lat/lng vertex to hash
  * @param  res        Resolution of the hexagon the vertex belongs to
  * @param  numBuckets Number of buckets in the graph

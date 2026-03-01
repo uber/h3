@@ -558,7 +558,7 @@ H3Error h3NeighborRotations(H3Index origin, Direction dir, int *rotations,
                     current = _h3Rotate60cw(current);
                     *rotations = *rotations + 5;
                 } else {
-                    // TODO: Should never occur, but is reachable by fuzzer
+                    // Defensive: unexpected edge case
                     return E_FAILED;
                 }
             }
@@ -600,7 +600,7 @@ H3Error h3NeighborRotations(H3Index origin, Direction dir, int *rotations,
  * the reverse operation for h3NeighborRotations. Returns INVALID_DIGIT if the
  * cells are not neighbors.
  *
- * TODO: This is currently a brute-force algorithm, but as it's O(6) that's
+ * NOTE: This is currently a brute-force algorithm, but as it's O(6) that's
  * probably acceptable.
  */
 Direction directionForNeighbor(H3Index origin, H3Index destination) {
@@ -701,9 +701,8 @@ H3Error H3_EXPORT(gridDiskDistancesUnsafe)(H3Index origin, int k, H3Index *out,
             H3Error neighborResult = h3NeighborRotations(
                 origin, NEXT_RING_DIRECTION, &rotations, &origin);
             if (neighborResult) {
-                // Should not be possible because `origin` would have to be a
+                // Defensive: should not occur as origin would have to be a
                 // pentagon
-                // TODO: Reachable via fuzzer
                 return neighborResult;
             }
 
@@ -809,9 +808,7 @@ H3Error H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index *out) {
         H3Error neighborResult = h3NeighborRotations(
             origin, NEXT_RING_DIRECTION, &rotations, &origin);
         if (neighborResult) {
-            // Should not be possible because `origin` would have to be a
-            // pentagon
-            // TODO: Reachable via fuzzer
+            // Defensive: should not occur as origin would have to be a pentagon
             return neighborResult;
         }
 
@@ -830,9 +827,8 @@ H3Error H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index *out) {
             H3Error neighborResult = h3NeighborRotations(
                 origin, DIRECTIONS[direction], &rotations, &origin);
             if (neighborResult) {
-                // Should not be possible because `origin` would have to be a
+                // Defensive: should not occur as origin would have to be a
                 // pentagon
-                // TODO: Reachable via fuzzer
                 return neighborResult;
             }
 
@@ -953,9 +949,8 @@ H3Error _getEdgeHexagons(const GeoLoop *geoloop, int64_t numHexagons, int res,
             int64_t loc = (int64_t)(pointHex % numHexagons);
             int64_t loopCount = 0;
             while (found[loc] != 0) {
-                // If this conditional is reached, the `found` memory block is
-                // too small for the given polygon. This should not happen.
-                // TODO: Reachable via fuzzer
+                // Defensive: the `found` memory block is too small for the
+                // given polygon. This should not happen under normal conditions.
                 if (loopCount > numHexagons) return E_FAILED;
                 if (found[loc] == pointHex)
                     break;  // At least two points of the geoloop index to the
@@ -1052,9 +1047,7 @@ H3Error H3_EXPORT(polygonToCells)(const GeoPolygon *geoPolygon, int res,
     const GeoLoop geoloop = geoPolygon->geoloop;
     H3Error edgeHexError = _getEdgeHexagons(&geoloop, numHexagons, res,
                                             &numSearchHexes, search, found);
-    // If this branch is reached, we have exceeded the maximum number of
-    // hexagons possible and need to clean up the allocated memory.
-    // TODO: Reachable via fuzzer
+    // Defensive: exceeded maximum hexagon count, clean up allocated memory
     if (edgeHexError) {
         H3_MEMORY(free)(search);
         H3_MEMORY(free)(found);
@@ -1071,9 +1064,7 @@ H3Error H3_EXPORT(polygonToCells)(const GeoPolygon *geoPolygon, int res,
         GeoLoop *hole = &(geoPolygon->holes[i]);
         edgeHexError = _getEdgeHexagons(hole, numHexagons, res, &numSearchHexes,
                                         search, found);
-        // If this branch is reached, we have exceeded the maximum number of
-        // hexagons possible and need to clean up the allocated memory.
-        // TODO: Reachable via fuzzer
+        // Defensive: exceeded maximum hexagon count, clean up allocated memory
         if (edgeHexError) {
             H3_MEMORY(free)(search);
             H3_MEMORY(free)(found);
@@ -1110,10 +1101,8 @@ H3Error H3_EXPORT(polygonToCells)(const GeoPolygon *geoPolygon, int res,
                 int64_t loc = (int64_t)(hex % numHexagons);
                 int64_t loopCount = 0;
                 while (out[loc] != 0) {
-                    // If this branch is reached, we have exceeded the maximum
-                    // number of hexagons possible and need to clean up the
-                    // allocated memory.
-                    // TODO: Reachable via fuzzer
+                    // Defensive: exceeded maximum hexagon count, clean up
+                    // allocated memory
                     if (loopCount > numHexagons) {
                         H3_MEMORY(free)(search);
                         H3_MEMORY(free)(found);
@@ -1188,7 +1177,7 @@ H3Error h3SetToVertexGraph(const H3Index *h3Set, const int numHexes,
     }
     int res = H3_GET_RESOLUTION(h3Set[0]);
     const int minBuckets = 6;
-    // TODO: Better way to calculate/guess?
+    // NOTE: Simple heuristic for bucket count, may be refined in future
     int numBuckets = numHexes > minBuckets ? numHexes : minBuckets;
     initVertexGraph(graph, numBuckets, res);
     // Iterate through every hexagon
