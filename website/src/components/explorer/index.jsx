@@ -78,7 +78,7 @@ function geoJsonToCells(geoJson) {
 
   for (let res = 0; res < 16; res++) {
     const cells = geojson2h3.featureToH3Set(geoJson, res);
-    if (cells.length > CELL_COUNT_THRESHOLD) {
+    if (cells.length > CELL_COUNT_THRESHOLD || res === 15) {
       return {
         splitUserInput: cells,
         showCellId: false,
