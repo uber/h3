@@ -20,6 +20,27 @@
 #include "test.h"
 #include "utility.h"
 
+
+/*
+Search a `LinkedGeoPolygon` and return first polygon whose
+outer loop has exactly `n` coords.
+
+Used for order-independent testing of `LinkedGeoPolygon` output.
+Returns the first match, so results are ambiguous if multiple polygons
+share the size outer loop.
+*/
+static LinkedGeoPolygon *findLinkedPolygonByOuterCount(
+    LinkedGeoPolygon *root, int n) {
+    LinkedGeoPolygon *poly = root;
+    while (poly) {
+        if (poly->first &&
+            countLinkedCoords(poly->first) == n)
+            return poly;
+        poly = poly->next;
+    }
+    return NULL;
+}
+
 SUITE(cellsToLinkedMultiPolygon) {
     TEST(empty) {
         LinkedGeoPolygon polygon;
@@ -208,21 +229,21 @@ SUITE(cellsToLinkedMultiPolygon) {
         t_assertSuccess(
             H3_EXPORT(cellsToLinkedMultiPolygon)(set, numHexes, &polygon));
 
-        // Note that the polygon order here is arbitrary, making this test
-        // somewhat brittle, but it's difficult to assert correctness otherwise
         t_assert(countLinkedPolygons(&polygon) == 2, "Polygon count correct");
-        t_assert(countLinkedLoops(&polygon) == 2,
-                 "Loop count on first polygon correct");
-        t_assert(countLinkedCoords(polygon.first) == 42,
-                 "Got expected big outer loop");
-        t_assert(countLinkedCoords(polygon.first->next) == 30,
+
+        LinkedGeoPolygon *big = findLinkedPolygonByOuterCount(&polygon, 42);
+        t_assert(big != NULL, "Found big polygon by outer count");
+        t_assert(countLinkedLoops(big) == 2,
+                 "Loop count on big polygon correct");
+        t_assert(countLinkedCoords(big->first->next) == 30,
                  "Got expected big inner loop");
-        t_assert(countLinkedLoops(polygon.next) == 2,
-                 "Loop count on second polygon correct");
-        t_assert(countLinkedCoords(polygon.next->first) == 18,
-                 "Got expected outer loop");
-        t_assert(countLinkedCoords(polygon.next->first->next) == 6,
-                 "Got expected inner loop");
+
+        LinkedGeoPolygon *small = findLinkedPolygonByOuterCount(&polygon, 18);
+        t_assert(small != NULL, "Found small polygon by outer count");
+        t_assert(countLinkedLoops(small) == 2,
+                 "Loop count on small polygon correct");
+        t_assert(countLinkedCoords(small->first->next) == 6,
+                 "Got expected small inner loop");
 
         H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
     }
@@ -244,21 +265,21 @@ SUITE(cellsToLinkedMultiPolygon) {
         t_assertSuccess(
             H3_EXPORT(cellsToLinkedMultiPolygon)(set, numHexes, &polygon));
 
-        // Note that the polygon order here is arbitrary, making this test
-        // somewhat brittle, but it's difficult to assert correctness otherwise
         t_assert(countLinkedPolygons(&polygon) == 2, "Polygon count correct");
-        t_assert(countLinkedLoops(&polygon) == 2,
-                 "Loop count on first polygon correct");
-        t_assert(countLinkedCoords(polygon.first) == 18,
-                 "Got expected outer loop");
-        t_assert(countLinkedCoords(polygon.first->next) == 6,
-                 "Got expected inner loop");
-        t_assert(countLinkedLoops(polygon.next) == 2,
-                 "Loop count on second polygon correct");
-        t_assert(countLinkedCoords(polygon.next->first) == 42,
-                 "Got expected big outer loop");
-        t_assert(countLinkedCoords(polygon.next->first->next) == 30,
+
+        LinkedGeoPolygon *big = findLinkedPolygonByOuterCount(&polygon, 42);
+        t_assert(big != NULL, "Found big polygon by outer count");
+        t_assert(countLinkedLoops(big) == 2,
+                 "Loop count on big polygon correct");
+        t_assert(countLinkedCoords(big->first->next) == 30,
                  "Got expected big inner loop");
+
+        LinkedGeoPolygon *small = findLinkedPolygonByOuterCount(&polygon, 18);
+        t_assert(small != NULL, "Found small polygon by outer count");
+        t_assert(countLinkedLoops(small) == 2,
+                 "Loop count on small polygon correct");
+        t_assert(countLinkedCoords(small->first->next) == 6,
+                 "Got expected small inner loop");
 
         H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
     }
