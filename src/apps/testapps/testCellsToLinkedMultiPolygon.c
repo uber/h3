@@ -391,4 +391,38 @@ SUITE(cellsToLinkedMultiPolygon) {
             H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
         }
     }
+
+    // Global polygon: a continuous band of res-1 cells around the equator.
+    // Currently fails with `cellsToLinkedMultiPolygon`, but should succeed
+    // after migrating backend to `cellsToMultiPolygon`.
+    TEST(globalEquatorCells) {
+        H3Index cells[] = {
+            0x81807ffffffffff, 0x817efffffffffff, 0x81723ffffffffff,
+            0x817ebffffffffff, 0x817c3ffffffffff, 0x817e3ffffffffff,
+            0x817a3ffffffffff, 0x8166fffffffffff, 0x8172bffffffffff,
+            0x816afffffffffff, 0x81933ffffffffff, 0x8168fffffffffff,
+            0x8188fffffffffff, 0x81853ffffffffff, 0x817f7ffffffffff,
+            0x8180bffffffffff, 0x81783ffffffffff, 0x81743ffffffffff,
+            0x8170bffffffffff, 0x8173bffffffffff, 0x8179bffffffffff,
+            0x817cbffffffffff, 0x8188bffffffffff, 0x81857ffffffffff,
+            0x816f7ffffffffff, 0x8177bffffffffff, 0x81617ffffffffff,
+            0x816f3ffffffffff, 0x8174bffffffffff, 0x8180fffffffffff,
+            0x817a7ffffffffff, 0x81767ffffffffff, 0x81757ffffffffff,
+            0x81957ffffffffff, 0x81787ffffffffff, 0x81847ffffffffff,
+            0x81653ffffffffff, 0x817bbffffffffff, 0x816cfffffffffff,
+            0x816abffffffffff, 0x815f3ffffffffff, 0x817c7ffffffffff,
+            0x8168bffffffffff, 0x818cbffffffffff, 0x818cfffffffffff,
+            0x818afffffffffff, 0x8174fffffffffff, 0x8172fffffffffff,
+            0x8170fffffffffff, 0x816fbffffffffff, 0x81657ffffffffff,
+            0x816c7ffffffffff, 0x8186bffffffffff, 0x81763ffffffffff,
+            0x818a7ffffffffff, 0x8186fffffffffff, 0x81707ffffffffff,
+            0x8182bffffffffff, 0x818f3ffffffffff, 0x8182fffffffffff,
+        };
+        int numCells = ARRAY_SIZE(cells);
+
+        LinkedGeoPolygon polygon;
+        t_assert(H3_EXPORT(cellsToLinkedMultiPolygon)(cells, numCells,
+                                                      &polygon) == E_FAILED,
+                 "Global polygon fails with current implementation");
+    }
 }
