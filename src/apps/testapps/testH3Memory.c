@@ -25,6 +25,7 @@
 #include "h3Index.h"
 #include "h3api.h"
 #include "latLng.h"
+#include "linkedGeo.h"
 #include "polyfill.h"
 #include "polygon.h"
 #include "test.h"
@@ -394,6 +395,87 @@ SUITE(h3Memory) {
             err = H3_EXPORT(cellsToMultiPolygon)(cells, numCells, &mpoly);
             t_assert(err == E_MEMORY_ALLOC, "Should fail with memory error");
         }
+    }
+
+    TEST(linkedGeoPolygonToGeoMultiPolygon) {
+        // Generate a multi-polygon GeoMultiPolygon with holes from real
+        // cells, then convert to linked form to use as test input
+        H3Index cells[] = {
+            0x8027fffffffffff, 0x802bfffffffffff, 0x804dfffffffffff,
+            0x8067fffffffffff, 0x806dfffffffffff, 0x8049fffffffffff,
+            0x8055fffffffffff,
+        };
+        GeoMultiPolygon src;
+        resetMemoryCounters(0);
+        t_assertSuccess(H3_EXPORT(cellsToMultiPolygon)(cells, 7, &src));
+
+        LinkedGeoPolygon linked;
+        resetMemoryCounters(0);
+        t_assertSuccess(geoMultiPolygonToLinkedGeoPolygon(&src, &linked));
+        H3_EXPORT(destroyGeoMultiPolygon)(&src);
+
+        // Now test linkedGeoPolygonToGeoMultiPolygon failure paths
+        GeoMultiPolygon mpoly;
+        H3Error err;
+
+        int minAllocs = 0;
+        for (int permitted = 1; permitted < 50; permitted++) {
+            resetMemoryCounters(permitted);
+            err = linkedGeoPolygonToGeoMultiPolygon(&linked, &mpoly);
+            if (err == E_SUCCESS) {
+                minAllocs = permitted;
+                H3_EXPORT(destroyGeoMultiPolygon)(&mpoly);
+                break;
+            }
+        }
+        t_assert(minAllocs > 0, "Should require allocations");
+
+        for (int permitted = 0; permitted < minAllocs; permitted++) {
+            resetMemoryCounters(permitted);
+            if (permitted == 0) failAlloc = true;
+            err = linkedGeoPolygonToGeoMultiPolygon(&linked, &mpoly);
+            t_assert(err == E_MEMORY_ALLOC, "Should fail before success");
+        }
+
+        resetMemoryCounters(0);
+        H3_EXPORT(destroyLinkedMultiPolygon)(&linked);
+    }
+
+    TEST(geoMultiPolygonToLinkedGeoPolygon) {
+        // Generate a multi-polygon GeoMultiPolygon with holes from real cells
+        H3Index cells[] = {
+            0x8027fffffffffff, 0x802bfffffffffff, 0x804dfffffffffff,
+            0x8067fffffffffff, 0x806dfffffffffff, 0x8049fffffffffff,
+            0x8055fffffffffff,
+        };
+        GeoMultiPolygon mpoly;
+        resetMemoryCounters(0);
+        t_assertSuccess(H3_EXPORT(cellsToMultiPolygon)(cells, 7, &mpoly));
+
+        LinkedGeoPolygon out;
+        H3Error err;
+
+        int minAllocs = 0;
+        for (int permitted = 1; permitted < 50; permitted++) {
+            resetMemoryCounters(permitted);
+            err = geoMultiPolygonToLinkedGeoPolygon(&mpoly, &out);
+            if (err == E_SUCCESS) {
+                minAllocs = permitted;
+                H3_EXPORT(destroyLinkedMultiPolygon)(&out);
+                break;
+            }
+        }
+        t_assert(minAllocs > 0, "Should require allocations");
+
+        for (int permitted = 0; permitted < minAllocs; permitted++) {
+            resetMemoryCounters(permitted);
+            if (permitted == 0) failAlloc = true;
+            err = geoMultiPolygonToLinkedGeoPolygon(&mpoly, &out);
+            t_assert(err == E_MEMORY_ALLOC, "Should fail before success");
+        }
+
+        resetMemoryCounters(0);
+        H3_EXPORT(destroyGeoMultiPolygon)(&mpoly);
     }
 
     TEST(cellsToMultiPolygonGlobe) {
