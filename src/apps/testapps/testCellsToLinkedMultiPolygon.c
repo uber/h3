@@ -20,7 +20,6 @@
 #include "test.h"
 #include "utility.h"
 
-
 /*
 Search a `LinkedGeoPolygon` and return first polygon whose
 outer loop has exactly `n` coords.
@@ -29,13 +28,11 @@ Used for order-independent testing of `LinkedGeoPolygon` output.
 Returns the first match, so results are ambiguous if multiple polygons
 share the size outer loop.
 */
-static LinkedGeoPolygon *findLinkedPolygonByOuterCount(
-    LinkedGeoPolygon *root, int n) {
+static LinkedGeoPolygon *findLinkedPolygonByOuterCount(LinkedGeoPolygon *root,
+                                                       int n) {
     LinkedGeoPolygon *poly = root;
     while (poly) {
-        if (poly->first &&
-            countLinkedCoords(poly->first) == n)
-            return poly;
+        if (poly->first && countLinkedCoords(poly->first) == n) return poly;
         poly = poly->next;
     }
     return NULL;
