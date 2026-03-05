@@ -511,7 +511,7 @@ SUITE(h3Memory) {
             if (permitted == 0) failAlloc = true;
             err =
                 H3_EXPORT(cellsToLinkedMultiPolygon)(cells, numCells, &polygon);
-            t_assert(err != E_SUCCESS, "Should fail before success");
+            t_assert(err == E_MEMORY_ALLOC, "Should fail before success");
         }
     }
 
