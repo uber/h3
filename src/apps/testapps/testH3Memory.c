@@ -478,6 +478,43 @@ SUITE(h3Memory) {
         H3_EXPORT(destroyGeoMultiPolygon)(&mpoly);
     }
 
+    TEST(cellsToLinkedMultiPolygon) {
+        // Exercise allocation failure paths in cellsToLinkedMultiPolygon,
+        // which composes cellsToMultiPolygon +
+        // geoMultiPolygonToLinkedGeoPolygon. This catches double-free bugs when
+        // the second phase fails and both the callee and caller attempt
+        // cleanup.
+        H3Index cells[] = {
+            0x8027fffffffffff, 0x802bfffffffffff, 0x804dfffffffffff,
+            0x8067fffffffffff, 0x806dfffffffffff, 0x8049fffffffffff,
+            0x8055fffffffffff,
+        };
+        int numCells = ARRAY_SIZE(cells);
+        LinkedGeoPolygon polygon;
+        H3Error err;
+
+        int minAllocs = 0;
+        for (int permitted = 1; permitted < 100; permitted++) {
+            resetMemoryCounters(permitted);
+            err =
+                H3_EXPORT(cellsToLinkedMultiPolygon)(cells, numCells, &polygon);
+            if (err == E_SUCCESS) {
+                minAllocs = permitted;
+                H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
+                break;
+            }
+        }
+        t_assert(minAllocs > 0, "Should require allocations");
+
+        for (int permitted = 0; permitted < minAllocs; permitted++) {
+            resetMemoryCounters(permitted);
+            if (permitted == 0) failAlloc = true;
+            err =
+                H3_EXPORT(cellsToLinkedMultiPolygon)(cells, numCells, &polygon);
+            t_assert(err != E_SUCCESS, "Should fail before success");
+        }
+    }
+
     TEST(cellsToMultiPolygonGlobe) {
         // Test with full set of resolution 0 cells
         // All edges cancel out, resulting in globe (8 triangular polygons)
