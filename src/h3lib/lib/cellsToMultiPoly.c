@@ -137,7 +137,7 @@ static inline H3Error cellToEdgeArcs(H3Index h, Arc *arcs,
 
         // Connect so prev/next point to neighboring edges that share a vertex.
         // Edges/vertexes should follow right-hand rule as a result (CCW order).
-        // TODO: this idx stuff will be cleaner when we use an edge iterator
+        // NOTE: This idx logic will be cleaner when an edge iterator is used
         int64_t cur = idx[i];
         int64_t prev = idx[(i - 1 + numEdges) % numEdges];
         int64_t next = idx[(i + 1) % numEdges];

@@ -61,11 +61,18 @@ H3Error H3_EXPORT(areNeighborCells)(H3Index origin, H3Index destination,
     // is a super-cheap way to possibly determine they are neighbors.
     int parentRes = H3_GET_RESOLUTION(origin) - 1;
     if (parentRes > 0) {
-        // TODO: Return error codes here
         H3Index originParent;
-        H3_EXPORT(cellToParent)(origin, parentRes, &originParent);
+        H3Error originErr =
+            H3_EXPORT(cellToParent)(origin, parentRes, &originParent);
+        if (originErr) {
+            return originErr;
+        }
         H3Index destinationParent;
-        H3_EXPORT(cellToParent)(destination, parentRes, &destinationParent);
+        H3Error destErr =
+            H3_EXPORT(cellToParent)(destination, parentRes, &destinationParent);
+        if (destErr) {
+            return destErr;
+        }
         if (originParent == destinationParent) {
             Direction originResDigit =
                 H3_GET_INDEX_DIGIT(origin, parentRes + 1);

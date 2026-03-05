@@ -33,7 +33,7 @@
 #include "mathExtensions.h"
 #include "vertex.h"
 
-// TODO: https://github.com/uber/h3/issues/984
+// See: https://github.com/uber/h3/issues/984
 static const bool isBaseCellPentagonArr[128] = {
     [4] = 1,  [14] = 1, [24] = 1, [38] = 1, [49] = 1,  [58] = 1,
     [63] = 1, [72] = 1, [83] = 1, [97] = 1, [107] = 1, [117] = 1};
@@ -590,7 +590,7 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
             // to track how many times a parent is duplicated
             for (int64_t i = 0; i < numRemainingHexes; i++) {
                 H3Index currIndex = remainingHexes[i];
-                // TODO: This case is coverable (reachable by fuzzer)
+                // Defensive: handle edge case where currIndex is non-zero
                 if (currIndex != 0) {
                     // If the reserved bits were set by the caller, the
                     // algorithm below may encounter undefined behavior
@@ -699,7 +699,7 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
         int64_t uncompactableCount = 0;
         for (int64_t i = 0; i < numRemainingHexes; i++) {
             H3Index currIndex = remainingHexes[i];
-            // TODO: This case is coverable (reachable by fuzzer)
+            // Defensive: handle edge case where currIndex is non-null
             if (currIndex != H3_NULL) {
                 bool isUncompactable = true;
                 // Resolution 0 cells always uncompactable, and trying to take

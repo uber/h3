@@ -44,7 +44,7 @@
 
 /**
  * Whether the flags for the polyfill operation are valid
- * TODO: Move to polyfill.c when the old algo is removed
+ * NOTE: Consider moving to polyfill.c when the old algorithm is removed
  * @param  flags Flags to validate
  * @return       Whether the flags are valid
  */
