@@ -1193,9 +1193,6 @@ H3Error H3_EXPORT(cellsToLinkedMultiPolygon)(const H3Index *h3Set,
     }
     err = geoMultiPolygonToLinkedGeoPolygon(&mpoly, out);
     H3_EXPORT(destroyGeoMultiPolygon)(&mpoly);
-    if (err) {
-        H3_EXPORT(destroyLinkedMultiPolygon)(out);
-    }
     return err;
 }
 

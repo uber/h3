@@ -123,7 +123,9 @@ void H3_EXPORT(destroyLinkedMultiPolygon)(LinkedGeoPolygon *polygon) {
         }
         nextPolygon = currentPolygon->next;
         if (skip) {
-            // do not free the input polygon
+            // do not free the input polygon, but zero it so this
+            // function is idempotent (safe to call twice)
+            *polygon = (LinkedGeoPolygon){0};
             skip = false;
         } else {
             H3_MEMORY(free)(currentPolygon);
