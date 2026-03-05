@@ -497,8 +497,7 @@ static const LinkedGeoPolygon *findPolygonForHole(
  * Normalize a LinkedGeoPolygon in-place into a structure following GeoJSON
  * MultiPolygon rules: Each polygon must have exactly one outer loop, which
  * must be first in the list, followed by any holes. Holes in this algorithm
- * are identified by winding order (holes are clockwise), which is guaranteed
- * by the h3SetToVertexGraph algorithm.
+ * are identified by winding order (holes are clockwise).
  *
  * Input to this function is assumed to be a single polygon including all
  * loops to normalize. It's assumed that a valid arrangement is possible.

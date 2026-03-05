@@ -29,6 +29,7 @@
 #include "alloc.h"
 #include "baseCells.h"
 #include "bbox.h"
+#include "cellsToMultiPoly.h"
 #include "faceijk.h"
 #include "h3Assert.h"
 #include "h3Index.h"
@@ -36,7 +37,6 @@
 #include "latLng.h"
 #include "linkedGeo.h"
 #include "polygon.h"
-#include "vertexGraph.h"
 
 /*
  * Return codes from gridDiskUnsafe and related functions.
@@ -1166,87 +1166,6 @@ H3Error H3_EXPORT(polygonToCells)(const GeoPolygon *geoPolygon, int res,
 }
 
 /**
- * Internal: Create a vertex graph from a set of hexagons. It is the
- * responsibility of the caller to call destroyVertexGraph on the populated
- * graph, otherwise the memory in the graph nodes will not be freed.
- * @private
- * @param h3Set    Set of hexagons
- * @param numHexes Number of hexagons in the set
- * @param graph    Output graph
- */
-H3Error h3SetToVertexGraph(const H3Index *h3Set, const int numHexes,
-                           VertexGraph *graph) {
-    CellBoundary vertices;
-    LatLng *fromVtx;
-    LatLng *toVtx;
-    VertexNode *edge;
-    if (numHexes < 1) {
-        // We still need to init the graph, or calls to destroyVertexGraph will
-        // fail
-        initVertexGraph(graph, 0, 0);
-        return E_SUCCESS;
-    }
-    int res = H3_GET_RESOLUTION(h3Set[0]);
-    const int minBuckets = 6;
-    // TODO: Better way to calculate/guess?
-    int numBuckets = numHexes > minBuckets ? numHexes : minBuckets;
-    initVertexGraph(graph, numBuckets, res);
-    // Iterate through every hexagon
-    for (int i = 0; i < numHexes; i++) {
-        H3Error boundaryErr = H3_EXPORT(cellToBoundary)(h3Set[i], &vertices);
-        if (boundaryErr) {
-            // Destroy vertex graph as caller will not know to do so.
-            destroyVertexGraph(graph);
-            return boundaryErr;
-        }
-        // iterate through every edge
-        for (int j = 0; j < vertices.numVerts; j++) {
-            fromVtx = &vertices.verts[j];
-            toVtx = &vertices.verts[(j + 1) % vertices.numVerts];
-            // If we've seen this edge already, it will be reversed
-            edge = findNodeForEdge(graph, toVtx, fromVtx);
-            if (edge != NULL) {
-                // If we've seen it, drop it. No edge is shared by more than 2
-                // hexagons, so we'll never see it again.
-                removeVertexNode(graph, edge);
-            } else {
-                // Add a new node for this edge
-                addVertexNode(graph, fromVtx, toVtx);
-            }
-        }
-    }
-    return E_SUCCESS;
-}
-
-/**
- * Internal: Create a LinkedGeoPolygon from a vertex graph. It is the
- * responsibility of the caller to call destroyLinkedMultiPolygon on the
- * populated linked geo structure, or the memory for that structure will not be
- * freed.
- * @private
- * @param graph Input graph
- * @param out   Output polygon
- */
-void _vertexGraphToLinkedGeo(VertexGraph *graph, LinkedGeoPolygon *out) {
-    *out = (LinkedGeoPolygon){0};
-    LinkedGeoLoop *loop;
-    VertexNode *edge;
-    LatLng nextVtx;
-    // Find the next unused entry point
-    while ((edge = firstVertexNode(graph)) != NULL) {
-        loop = addNewLinkedLoop(out);
-        // Walk the graph to get the outline
-        do {
-            addLinkedCoord(loop, &edge->from);
-            nextVtx = edge->to;
-            // Remove frees the node, so we can't use edge after this
-            removeVertexNode(graph, edge);
-            edge = findNodeForVertex(graph, &nextVtx);
-        } while (edge);
-    }
-}
-
-/**
  * Create a LinkedGeoPolygon describing the outline(s) of a set of  hexagons.
  * Polygon outlines will follow GeoJSON MultiPolygon order: Each polygon will
  * have one outer loop, which is first in the list, followed by any holes.
@@ -1267,18 +1186,17 @@ void _vertexGraphToLinkedGeo(VertexGraph *graph, LinkedGeoPolygon *out) {
 H3Error H3_EXPORT(cellsToLinkedMultiPolygon)(const H3Index *h3Set,
                                              const int numHexes,
                                              LinkedGeoPolygon *out) {
-    VertexGraph graph;
-    H3Error err = h3SetToVertexGraph(h3Set, numHexes, &graph);
+    GeoMultiPolygon mpoly;
+    H3Error err = H3_EXPORT(cellsToMultiPolygon)(h3Set, numHexes, &mpoly);
     if (err) {
         return err;
     }
-    _vertexGraphToLinkedGeo(&graph, out);
-    destroyVertexGraph(&graph);
-    H3Error normalizeResult = normalizeMultiPolygon(out);
-    if (normalizeResult) {
+    err = geoMultiPolygonToLinkedGeoPolygon(&mpoly, out);
+    H3_EXPORT(destroyGeoMultiPolygon)(&mpoly);
+    if (err) {
         H3_EXPORT(destroyLinkedMultiPolygon)(out);
     }
-    return normalizeResult;
+    return err;
 }
 
 /**
