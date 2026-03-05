@@ -12,6 +12,10 @@ import { useQueryState } from "use-location-state";
 import { SelectedHexDetails } from "./details";
 import { ExplorerMap } from "./map";
 import { WhereAmIButton } from "./where-am-i";
+import geojson2h3 from "geojson2h3";
+import wkt from "wkt";
+
+const CELL_COUNT_THRESHOLD = 50;
 
 function fullyTrim(str) {
   if (!str) {
@@ -63,14 +67,68 @@ function maybePrefixedHexCell(input) {
   return null;
 }
 
+function geoJsonToCells(geoJson) {
+  // TODO: Handle point geometries, lines, etc. Only polygons and multipolygons supported.
+  if (geoJson.type === "Polygon" || geoJson.type === "MultiPolygon") {
+    geoJson = {
+      type: "Feature",
+      geometry: geoJson,
+    };
+  }
+
+  for (let res = 0; res < 16; res++) {
+    const cells = geojson2h3.featureToH3Set(geoJson, res);
+    if (cells.length > CELL_COUNT_THRESHOLD || res === 15) {
+      return {
+        splitUserInput: cells,
+        showCellId: false,
+        inputGeoJson: geoJson,
+      };
+    }
+  }
+  return null;
+}
+
+function tryParsePolygonInput(input) {
+  try {
+    const parsed = JSON.parse(input);
+    if (parsed && parsed.type) {
+      const geoJsonResult = geoJsonToCells(parsed);
+      if (geoJsonResult) {
+        return geoJsonResult;
+      }
+    }
+  } catch {
+    // No-op
+  }
+
+  try {
+    const parsed = wkt.parse(input);
+    if (parsed && parsed.type) {
+      const wktResult = geoJsonToCells(parsed);
+      if (wktResult) {
+        return wktResult;
+      }
+    }
+  } catch {
+    // No-op
+  }
+}
+
 function doSplitUserInput(userInput) {
   if (userInput) {
     // Acceptable inputs, in order of test preference:
+    // GeoJSON
+    // WKT
     // Valid hexadecimal cell ID
     // Valid hexadecimal cell ID, prefixed by 0x
     // Valid decimal cell ID
     // lat,lng coordinate pairs
-    // TODO: support WKT, GeoJSON inputs here too. Those would consume the entire input
+
+    const resultPolygon = tryParsePolygonInput(userInput);
+    if (resultPolygon) {
+      return resultPolygon;
+    }
 
     let showCellId = false;
     const unwrapAnyArray = fullyUnwrap(userInput);
@@ -131,7 +189,7 @@ function zoomToResolution(zoom) {
 export default function HomeExporer({ children }) {
   const [userInput, setUserInput] = useQueryState("hex", "");
 
-  const { splitUserInput, showCellId } = useMemo(
+  const { splitUserInput, showCellId, inputGeoJson } = useMemo(
     () => doSplitUserInput(userInput),
     [userInput],
   );
@@ -185,6 +243,7 @@ export default function HomeExporer({ children }) {
           <DemoContainer>
             <ExplorerMap
               userInput={splitUserInput}
+              inputGeoJson={inputGeoJson}
               userValidHex={userValidHex}
               objectOnClick={objectOnClick}
               coordinateOnClick={coordinateOnClick}
