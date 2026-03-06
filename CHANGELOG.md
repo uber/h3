@@ -7,12 +7,19 @@ The public API of this library consists of the functions declared in file
 
 ## [Unreleased]
 ### Added
+- `cellsToMultiPolygon` function (#1113)
+    - (internal) `geoLoopArea` function (#1101)
 - `reverseDirectedEdge` function (#1098)
-- (internal) `geoLoopArea` function (#1101)
+- Bidirectional `gridPathCells` (#1111)
+- `h3.pc` pkg-config file (#1115)
+
+
+### Fixed
+- CLI handling of invalid cell input (#1125, #1124)
 
 ### Changed
 - `cellAreaRads2` uses `geoLoopArea` (#1101)
-- `cellsToLinkedMultiPolygon` now uses `cellsToMultiPolygon` internally (#1136)
+- `cellsToLinkedMultiPolygon` now uses `cellsToMultiPolygon` internally (#1104, #1113, #1126, #1133, #1136)
     - `cellsToLinkedMultiPolygon` (and `cellsToMultiPolygon`) now return errors for invalid cells (`E_CELL_INVALID`), mixed resolutions (`E_RES_MISMATCH`), and duplicate cells (`E_DOMAIN`) instead of producing undefined output
     - remove VertexGraph code
 - `destroyLinkedMultiPolygon` is now idempotent (safe to call twice) (#1136)
