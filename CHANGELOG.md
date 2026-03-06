@@ -8,6 +8,7 @@ The public API of this library consists of the functions declared in file
 ## [Unreleased]
 ### Added
 - `cellsToMultiPolygon` function (#1104, #1113)
+    - `destroyGeoMultiPolygon` function (#1104)
     - (internal) `geoLoopArea` function (#1101)
 - `reverseDirectedEdge` function (#1098)
 - Bidirectional `gridPathCells` (#1111)
