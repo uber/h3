@@ -13,6 +13,7 @@ The public API of this library consists of the functions declared in file
 ### Changed
 - `cellAreaRads2` uses `geoLoopArea` (#1101)
 - `cellsToLinkedMultiPolygon` now uses `cellsToMultiPolygon` internally
+- `cellsToLinkedMultiPolygon` and `cellsToMultiPolygon` now return errors for invalid cells (`E_CELL_INVALID`), mixed resolutions (`E_RES_MISMATCH`), and duplicate cells (`E_DOMAIN`) instead of producing undefined output
 - remove VertexGraph code
 - `destroyLinkedMultiPolygon` is now idempotent (safe to call twice)
 

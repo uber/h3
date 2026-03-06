@@ -1174,10 +1174,8 @@ H3Error H3_EXPORT(polygonToCells)(const GeoPolygon *geoPolygon, int res,
  * the populated linked geo structure, or the memory for that structure will not
  * be freed.
  *
- * It is expected that all hexagons in the set have the same resolution and
- * that the set contains no duplicates. Behavior is undefined if duplicates
- * or multiple resolutions are present, and the algorithm may produce
- * unexpected or invalid output.
+ * All cells in the set must be valid, have the same resolution, and contain
+ * no duplicates. Returns an error if these conditions are not met.
  *
  * @param h3Set    Set of hexagons
  * @param numHexes Number of hexagons in set
