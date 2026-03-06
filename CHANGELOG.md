@@ -12,7 +12,8 @@ The public API of this library consists of the functions declared in file
 
 ### Changed
 - `cellAreaRads2` uses `geoLoopArea` (#1101)
-- `cellsToLinkedMultiPolygon` now uses `cellsToMultiPolygon` internally, removing the VertexGraph code (#1127)
+- `cellsToLinkedMultiPolygon` now uses `cellsToMultiPolygon` internally
+- remove VertexGraph code
 - `destroyLinkedMultiPolygon` is now idempotent (safe to call twice)
 
 ## [4.4.1] - 2025-11-11
