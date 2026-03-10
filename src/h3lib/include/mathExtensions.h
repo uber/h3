@@ -28,6 +28,11 @@
  */
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 
+/**
+ * MIN returns the minimum of two values.
+ */
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
+
 /** Evaluates to true if a + b would overflow for int32 */
 static inline bool ADD_INT32S_OVERFLOWS(int32_t a, int32_t b) {
     if (a > 0) {
