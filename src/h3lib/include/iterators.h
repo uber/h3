@@ -124,7 +124,7 @@ typedef struct {
     bool _isPentagon;
 } IterEdgesGosper;
 
-IterEdgesGosper iterInitGosper(H3Index h, int childRes);
-void iterStepGosper(IterEdgesGosper *iter);
+DECLSPEC IterEdgesGosper iterInitGosper(H3Index h, int childRes);
+DECLSPEC void iterStepGosper(IterEdgesGosper *iter);
 
 #endif
