@@ -22,8 +22,10 @@
 #ifndef ITERATORS_H
 #define ITERATORS_H
 
+#include <stdbool.h>
 #include <stdint.h>
 
+#include "h3Index.h"
 #include "h3api.h"
 
 /**
@@ -83,5 +85,46 @@ typedef struct {
 
 DECLSPEC IterCellsResolution iterInitRes(int res);
 DECLSPEC void iterStepRes(IterCellsResolution *iter);
+
+/**
+ * IterEdgesGosper: iterator for the directed edges on the boundary of a cell's
+ * child set (the Gosper island outline) at a given resolution.
+ *
+ * Each yielded edge is a directed edge whose origin cell is a child of the
+ * parent cell and whose destination cell is not. The edges form a closed loop
+ * in counter-clockwise order around the Gosper island. The starting edge is
+ * not guaranteed; any cyclic rotation of the sequence is a valid output.
+ *
+ * Constructor:
+ *
+ * Initialize with `iterInitGosper(cell, childRes)`.
+ * Requires `childRes >= getResolution(cell)` and a valid cell.
+ *
+ * Iteration:
+ *
+ * Step iterator with `iterStepGosper`.
+ * The current edge is accessed via the `.e` member.
+ * The `.remaining` member gives the number of edges left to yield
+ * (including the current edge).
+ * When the iterator is exhausted, `.e` will be `H3_NULL` even after
+ * further calls to `iterStepGosper`.
+ */
+typedef struct {
+    H3Index e;          // Current directed edge (H3_NULL when exhausted)
+    int64_t remaining;  // Number of edges left to yield (including current)
+
+    // Internal state — cyclic position trackers:
+    int8_t _edgePos;                  // Position in edge_dir cycle (period 6)
+    int8_t _walkPos[MAX_H3_RES + 1];  // Position in walk_digit cycle
+                                      // (period 18) per resolution level
+
+    // Additional internal state
+    int8_t _parentRes;
+    int8_t _childRes;
+    bool _isPentagon;
+} IterEdgesGosper;
+
+IterEdgesGosper iterInitGosper(H3Index h, int childRes);
+void iterStepGosper(IterEdgesGosper *iter);
 
 #endif
