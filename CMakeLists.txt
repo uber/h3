@@ -236,6 +236,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testGeodesicPolygonInternal.c
     src/apps/testapps/testGeodesicPolygonToCellsExperimental.c
     src/apps/testapps/testGeodesicCoverage.c
+    src/apps/testapps/testGeodesicGridDiskRoundtrip.c
     src/apps/testapps/testPentagonIndexes.c
     src/apps/testapps/testGridDisk.c
     src/apps/testapps/testGridDiskInternal.c

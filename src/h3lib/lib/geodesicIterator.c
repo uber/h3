@@ -101,8 +101,10 @@ void geodesicIteratorStep(IterCellsPolygonCompact *iter, H3Index cell) {
             geodesicPolygonBoundaryIntersects(poly, &boundary, &cap);
 
         if (!boundaryIntersection) {
+            Vec3d cellCenter;
+            H3_CHECK(cellToVec3(cell, &cellCenter), iter);
             const bool pointInside =
-                geodesicPolygonContainsPoint(poly, &boundary.verts[0]);
+                geodesicPolygonContainsPoint(poly, &cellCenter);
             if (pointInside) {
                 iter->cell = cell;
                 return;

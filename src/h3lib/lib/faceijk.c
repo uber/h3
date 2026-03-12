@@ -506,11 +506,6 @@ void _geoToHex2d(const LatLng *g, int res, int *face, Vec2d *v) {
  */
 void _hex2dToVec3(const Vec2d *v, int face, int res, int substrate,
                   Vec3d *v3d) {
-    /* Can be done with this, but we want more optimized approach: perf is
-     * important. Use the same coordinate transformation as _hex2dToGeo for
-     * consistency LatLng g; _hex2dToGeo(v, face, res, substrate, &g);
-     * _geoToVec3d(&g, v3d);
-     */
     // calculate (r, theta) in hex2d
     double r = _v2dMag(v);
 
@@ -576,6 +571,23 @@ void _hex2dToVec3(const Vec2d *v, int face, int res, int substrate,
     v3d->y = center->y * cos_r + dir.y * sin_r;
     v3d->z = center->z * cos_r + dir.z * sin_r;
     vec3Normalize(v3d);
+}
+
+/**
+ * Converts hex 2D coordinates to Vec3d through the LatLng path
+ * (_hex2dToGeo -> _geoToVec3d), ensuring bitwise-identical results
+ * with polygon vertices produced by cellToBoundary.
+ *
+ * This MUST be used for geodesic cell boundary computation.
+ * The direct _hex2dToVec3 uses a different floating-point path
+ * (Rodrigues' rotation + slerp) that produces ~1e-16 divergence,
+ * which breaks coincident-edge detection in _geodesicEdgesCross.
+ */
+static void _hex2dToVec3Consistent(const Vec2d *v, int face, int res,
+                                   int substrate, Vec3d *v3d) {
+    LatLng g;
+    _hex2dToGeo(v, face, res, substrate, &g);
+    _geoToVec3d(&g, v3d);
 }
 
 /**
@@ -858,8 +870,8 @@ void _faceIjkPentToCellBoundaryGeodesic(const FaceIJK *h, int res, int start,
             // find the intersection and add the lat/lng point to the result
             Vec2d inter;
             _v2dIntersect(&orig2d0, &orig2d1, edge0, edge1, &inter);
-            _hex2dToVec3(&inter, tmpFijk.face, adjRes, 1,
-                         &g->verts[g->numVerts]);
+            _hex2dToVec3Consistent(&inter, tmpFijk.face, adjRes, 1,
+                                   &g->verts[g->numVerts]);
             g->numVerts++;
         }
 
@@ -869,7 +881,8 @@ void _faceIjkPentToCellBoundaryGeodesic(const FaceIJK *h, int res, int start,
         if (vert < start + NUM_PENT_VERTS) {
             Vec2d vec;
             _ijkToHex2d(&fijk.coord, &vec);
-            _hex2dToVec3(&vec, fijk.face, adjRes, 1, &g->verts[g->numVerts]);
+            _hex2dToVec3Consistent(&vec, fijk.face, adjRes, 1,
+                                   &g->verts[g->numVerts]);
             g->numVerts++;
         }
 
@@ -1144,8 +1157,8 @@ void _faceIjkToCellBoundaryGeodesic(const FaceIJK *h, int res, int start,
             bool isIntersectionAtVertex = _v2dAlmostEquals(&orig2d0, &inter) ||
                                           _v2dAlmostEquals(&orig2d1, &inter);
             if (!isIntersectionAtVertex) {
-                _hex2dToVec3(&inter, centerIJK.face, adjRes, 1,
-                             &g->verts[g->numVerts]);
+                _hex2dToVec3Consistent(&inter, centerIJK.face, adjRes, 1,
+                                       &g->verts[g->numVerts]);
                 g->numVerts++;
             }
         }
@@ -1156,7 +1169,8 @@ void _faceIjkToCellBoundaryGeodesic(const FaceIJK *h, int res, int start,
         if (vert < start + NUM_HEX_VERTS) {
             Vec2d vec;
             _ijkToHex2d(&fijk.coord, &vec);
-            _hex2dToVec3(&vec, fijk.face, adjRes, 1, &g->verts[g->numVerts]);
+            _hex2dToVec3Consistent(&vec, fijk.face, adjRes, 1,
+                                   &g->verts[g->numVerts]);
             g->numVerts++;
         }
 
