@@ -1105,13 +1105,11 @@ SUITE(polygonToCells) {
                 "Invalid containment modes should be rejected");
         }
 
-        // Test invalid containment modes for geodesic (only FULL and
-        // OVERLAPPING are valid)
+        // Test invalid containment modes for geodesic
         uint32_t invalidGeodesicFlags[] = {
-            FLAG_GEODESIC_MASK | CONTAINMENT_CENTER,
             FLAG_GEODESIC_MASK | CONTAINMENT_OVERLAPPING_BBOX,
             FLAG_GEODESIC_MASK | CONTAINMENT_INVALID};
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 2; i++) {
             t_assert(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
                          &sfGeoPolygon, 9, invalidGeodesicFlags[i],
                          &numHexagons) == E_OPTION_INVALID,
@@ -1156,13 +1154,11 @@ SUITE(polygonToCells) {
                 "Invalid containment modes should be rejected");
         }
 
-        // Test invalid containment modes for geodesic (only FULL and
-        // OVERLAPPING are valid)
+        // Test invalid containment modes for geodesic
         uint32_t invalidGeodesicFlags[] = {
-            FLAG_GEODESIC_MASK | CONTAINMENT_CENTER,
             FLAG_GEODESIC_MASK | CONTAINMENT_OVERLAPPING_BBOX,
             FLAG_GEODESIC_MASK | CONTAINMENT_INVALID};
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 2; i++) {
             t_assert(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
                          &sfGeoPolygon, 9, invalidGeodesicFlags[i],
                          &numHexagons) == E_OPTION_INVALID,

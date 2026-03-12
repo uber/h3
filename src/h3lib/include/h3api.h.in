@@ -201,9 +201,10 @@ typedef enum {
  *
  * Geodesic coverage is intended for very large polygons (hundreds of
  * kilometers). It is substantially slower than the default planar mode, so
- * consider lowering the target resolution when enabling it. Only
- * `CONTAINMENT_FULL` and `CONTAINMENT_OVERLAPPING` containment modes are valid
- * while the geodesic bit is set.
+ * consider lowering the target resolution when enabling it.
+ * `CONTAINMENT_CENTER`, `CONTAINMENT_FULL`, and
+ * `CONTAINMENT_OVERLAPPING` containment modes are valid while the geodesic
+ * bit is set.
  */
 #define FLAG_GEODESIC_MASK ((uint32_t)(16))
 

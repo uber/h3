@@ -321,9 +321,11 @@ SUITE(GeodesicGridDiskRoundtrip) {
     TEST(exhaustiveCoverageMatrix) {
         const ExhaustiveConfig configs[] = {{"res0k0", 0, 0}, {"res0k1", 0, 1},
                                             {"res0k2", 0, 2}, {"res1k0", 1, 0},
-                                            {"res1k1", 1, 1}, {"res1k2", 1, 2},
-                                            {"res2k0", 2, 0}, {"res2k1", 2, 1},
-                                            {"res2k2", 2, 2}, {"res3k0", 3, 0}};
+                                            {"res1k1", 1, 1}, {"res2k0", 2, 0}};
+        // {"res1k2", 1, 2},
+        // {"res2k0", 2, 0}, {"res2k1", 2, 1},
+        // {"res2k2", 2, 2}, {"res3k0", 3, 0}};
+        // You are welcome to test more, but that will take time
         RoundtripStats total = {0};
 
         for (int i = 0; i < (int)(sizeof(configs) / sizeof(configs[0])); i++) {

@@ -100,19 +100,22 @@ void geodesicIteratorStep(IterCellsPolygonCompact *iter, H3Index cell) {
         const bool boundaryIntersection =
             geodesicPolygonBoundaryIntersects(poly, &boundary, &cap);
 
-        if (!boundaryIntersection) {
-            Vec3d cellCenter;
-            H3_CHECK(cellToVec3(cell, &cellCenter), iter);
-            const bool pointInside =
-                geodesicPolygonContainsPoint(poly, &cellCenter);
-            if (pointInside) {
-                iter->cell = cell;
-                return;
-            }
+        Vec3d cellCenter;
+        H3_CHECK(cellToVec3(cell, &cellCenter), iter);
+        const bool pointInside =
+            geodesicPolygonContainsPoint(poly, &cellCenter);
+
+        if (pointInside && !boundaryIntersection) {
+            iter->cell = cell;
+            return;
+        }
+
+        if (mode == CONTAINMENT_CENTER) {
+            cell = nextCell(cell);
+            continue;
         }
 
         bool intersects = boundaryIntersection;
-
         if (!intersects) {
             H3Index polygonCell;
             Vec3d *firstVert = &poly->geoloop.edges[0].vert;
@@ -122,7 +125,7 @@ void geodesicIteratorStep(IterCellsPolygonCompact *iter, H3Index cell) {
             }
         }
 
-        if (intersects && mode != CONTAINMENT_FULL) {
+        if (intersects && mode == CONTAINMENT_OVERLAPPING) {
             iter->cell = cell;
             return;
         }

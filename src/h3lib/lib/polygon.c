@@ -54,8 +54,9 @@ H3Error validatePolygonFlags(uint32_t flags) {
 
     // Check containment mode validity based on geodesic flag
     if (isGeodesic) {
-        // For geodesic: only FULL, and OVERLAPPING are valid
-        if (containmentMode != CONTAINMENT_FULL &&
+        // For geodesic: CENTER, FULL, and OVERLAPPING are valid
+        if (containmentMode != CONTAINMENT_CENTER &&
+            containmentMode != CONTAINMENT_FULL &&
             containmentMode != CONTAINMENT_OVERLAPPING) {
             return E_OPTION_INVALID;
         }

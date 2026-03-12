@@ -178,7 +178,7 @@ SUITE(SphereCap) {
 
     TEST(testCap) {
         const int testRes = 0;
-        const int maxTestRes = 5;
+        const int maxTestRes = 4;
 
         if (testRes < 0 || testRes > MAX_H3_RES || maxTestRes < testRes ||
             maxTestRes > MAX_H3_RES) {

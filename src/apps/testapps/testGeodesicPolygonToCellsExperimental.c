@@ -283,6 +283,19 @@ SUITE(geodesicPolygonToCellsExperimental) {
         t_assert(count == 2469, "matches expected geodesic overlapping count");
     }
 
+    TEST(geodesicCenter) {
+        int64_t fullCount =
+            geodesicFillCount(&sfGeoPolygon, 5, CONTAINMENT_FULL);
+        int64_t centerCount =
+            geodesicFillCount(&sfGeoPolygon, 5, CONTAINMENT_CENTER);
+        int64_t overlapCount =
+            geodesicFillCount(&sfGeoPolygon, 5, CONTAINMENT_OVERLAPPING);
+        t_assert(centerCount >= fullCount,
+                 "center count should be >= geodesic full count");
+        t_assert(centerCount <= overlapCount,
+                 "center count should be <= geodesic overlapping count");
+    }
+
     TEST(geodesicHoleFullContainment) {
         int64_t count = geodesicFillCount(&holeGeoPolygon, 5, CONTAINMENT_FULL);
         t_assert(count == 2123, "hole respected in full containment");
@@ -292,6 +305,19 @@ SUITE(geodesicPolygonToCellsExperimental) {
         int64_t count =
             geodesicFillCount(&holeGeoPolygon, 5, CONTAINMENT_OVERLAPPING);
         t_assert(count == 2436, "hole respected in overlapping containment");
+    }
+
+    TEST(geodesicHoleCenter) {
+        int64_t fullCount =
+            geodesicFillCount(&holeGeoPolygon, 5, CONTAINMENT_FULL);
+        int64_t centerCount =
+            geodesicFillCount(&holeGeoPolygon, 5, CONTAINMENT_CENTER);
+        int64_t overlapCount =
+            geodesicFillCount(&holeGeoPolygon, 5, CONTAINMENT_OVERLAPPING);
+        t_assert(centerCount >= fullCount,
+                 "center count should be >= geodesic full count with holes");
+        t_assert(centerCount <= overlapCount,
+                 "center count should be <= geodesic overlap count with holes");
     }
 
     TEST(geodesicTransmeridianFull) {
@@ -304,6 +330,20 @@ SUITE(geodesicPolygonToCellsExperimental) {
         int64_t count =
             geodesicFillCount(&transGeoPolygon, 4, CONTAINMENT_OVERLAPPING);
         t_assert(count == 2554, "large transmeridian overlapping count");
+    }
+
+    TEST(geodesicTransmeridianCenter) {
+        int64_t fullCount =
+            geodesicFillCount(&transGeoPolygon, 4, CONTAINMENT_FULL);
+        int64_t centerCount =
+            geodesicFillCount(&transGeoPolygon, 4, CONTAINMENT_CENTER);
+        int64_t overlapCount =
+            geodesicFillCount(&transGeoPolygon, 4, CONTAINMENT_OVERLAPPING);
+        t_assert(centerCount >= fullCount,
+                 "center count should be >= geodesic full count transmeridian");
+        t_assert(centerCount <= overlapCount,
+                 "center count should be <= geodesic overlapping count "
+                 "transmeridian");
     }
 
     TEST(geodesicEmptyPolygon) {
@@ -319,19 +359,28 @@ SUITE(geodesicPolygonToCellsExperimental) {
     }
 
     TEST(geodesicPointPolygon) {
+        int64_t centerCount =
+            geodesicFillCount(&pointGeoPolygon, 5, CONTAINMENT_CENTER);
         int64_t fullCount =
             geodesicFillCount(&pointGeoPolygon, 5, CONTAINMENT_FULL);
         int64_t overlapCount =
             geodesicFillCount(&pointGeoPolygon, 5, CONTAINMENT_OVERLAPPING);
+        t_assert(centerCount >= fullCount,
+                 "point polygon center count should be >= full");
+        t_assert(centerCount <= overlapCount,
+                 "point polygon center count should be <= overlap");
         t_assert(fullCount == 0, "point polygon full containment empty");
         t_assert(overlapCount == 1, "point polygon overlapping includes one");
     }
 
     TEST(geodesicLinePolygon) {
+        int64_t centerCount =
+            geodesicFillCount(&lineGeoPolygon, 5, CONTAINMENT_CENTER);
         int64_t fullCount =
             geodesicFillCount(&lineGeoPolygon, 5, CONTAINMENT_FULL);
         int64_t overlapCount =
             geodesicFillCount(&lineGeoPolygon, 5, CONTAINMENT_OVERLAPPING);
+        t_assert(centerCount == 0, "line polygon center includes no cells");
         t_assert(fullCount == 0, "line polygon full containment empty");
         t_assert(overlapCount == 2, "line polygon overlapping captures edge");
     }
@@ -384,14 +433,17 @@ SUITE(geodesicPolygonToCellsExperimental) {
 
     TEST(geodesicInvalidContainmentModes) {
         int64_t size = 0;
-        H3Error err =
-            geodesicFill(&sfGeoPolygon, 5, CONTAINMENT_CENTER, &size, NULL);
-        t_assert(err == E_OPTION_INVALID, "center mode rejected for geodesic");
-
-        err = geodesicFill(&sfGeoPolygon, 5, CONTAINMENT_OVERLAPPING_BBOX,
-                           &size, NULL);
+        H3Error err = geodesicFill(&sfGeoPolygon, 5,
+                                   CONTAINMENT_OVERLAPPING_BBOX, &size, NULL);
         t_assert(err == E_OPTION_INVALID,
                  "overlapping bbox mode rejected for geodesic");
+        err = geodesicFill(&sfGeoPolygon, 5, CONTAINMENT_INVALID, &size, NULL);
+        t_assert(err == E_OPTION_INVALID,
+                 "invalid containment mode rejected for geodesic");
+        err = geodesicFill(&sfGeoPolygon, 5, CONTAINMENT_INVALID + 1, &size,
+                           NULL);
+        t_assert(err == E_OPTION_INVALID,
+                 "out-of-range containment mode rejected for geodesic");
     }
 
     TEST(geodesicMaxSizeNoUnderAllocation) {
@@ -436,5 +488,22 @@ SUITE(geodesicPolygonToCellsExperimental) {
                            CONTAINMENT_OVERLAPPING, &size, NULL);
         t_assert(err == E_DOMAIN,
                  "equatorial wrap loop that spans globe is rejected");
+    }
+
+    TEST(geodesicRejectsGreatCircleBoundaryLoop) {
+        LatLng equatorLineVerts[] = {{0.0, -60.0 * M_PI / 180.0},
+                                     {0.0, -20.0 * M_PI / 180.0},
+                                     {0.0, 20.0 * M_PI / 180.0},
+                                     {0.0, 60.0 * M_PI / 180.0}};
+        GeoLoop equatorLineLoop = {.numVerts = ARRAY_SIZE(equatorLineVerts),
+                                   .verts = equatorLineVerts};
+        GeoPolygon equatorLinePolygon = {
+            .geoloop = equatorLineLoop, .numHoles = 0, .holes = NULL};
+
+        int64_t size = 0;
+        H3Error err = geodesicFill(&equatorLinePolygon, 2,
+                                   CONTAINMENT_OVERLAPPING, &size, NULL);
+        t_assert(err == E_DOMAIN,
+                 "all-vertices-on-great-circle loop is rejected");
     }
 }

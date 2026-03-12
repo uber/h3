@@ -263,6 +263,66 @@ SUITE(GeodesicPolygonInternal) {
         geodesicPolygonDestroy(poly);
     }
 
+    TEST(greatCircleBoundaryLoopRejected) {
+        // All vertices lie on the equator (a single great circle), yielding a
+        // zero-area boundary loop. Reject to avoid ambiguous containment.
+        LatLng equatorLineVerts[] = {{.lat = 0.0, .lng = -60.0 * DEG_TO_RAD},
+                                     {.lat = 0.0, .lng = -20.0 * DEG_TO_RAD},
+                                     {.lat = 0.0, .lng = 20.0 * DEG_TO_RAD},
+                                     {.lat = 0.0, .lng = 60.0 * DEG_TO_RAD}};
+        GeoLoop equatorLineLoop = {.numVerts = 4, .verts = equatorLineVerts};
+        GeoPolygon polygon = {
+            .geoloop = equatorLineLoop, .numHoles = 0, .holes = NULL};
+
+        GeodesicPolygon *poly = NULL;
+        t_assert(geodesicPolygonCreate(&polygon, &poly) == E_DOMAIN,
+                 "great-circle boundary loop rejected in geodesic mode");
+        geodesicPolygonDestroy(poly);
+    }
+
+    TEST(nearGreatCircleLoopAccepted) {
+        // Similar to the great-circle boundary case, but one vertex is a few
+        // degrees off the equator so the loop encloses non-zero area.
+        LatLng nearEquatorVerts[] = {
+            {.lat = 0.0, .lng = -60.0 * DEG_TO_RAD},
+            {.lat = 0.0, .lng = -20.0 * DEG_TO_RAD},
+            {.lat = 3.0 * DEG_TO_RAD, .lng = 20.0 * DEG_TO_RAD},
+            {.lat = 0.0, .lng = 60.0 * DEG_TO_RAD}};
+        GeoLoop nearEquatorLoop = {.numVerts = 4, .verts = nearEquatorVerts};
+        GeoPolygon polygon = {
+            .geoloop = nearEquatorLoop, .numHoles = 0, .holes = NULL};
+
+        GeodesicPolygon *poly = NULL;
+        t_assertSuccess(geodesicPolygonCreate(&polygon, &poly));
+        t_assert(poly != NULL, "near-great-circle loop remains valid");
+        geodesicPolygonDestroy(poly);
+    }
+
+    TEST(polarCapSmallCircleLoopAccepted) {
+        // Vertices share a high latitude (small circle, not a great circle).
+        // This is a valid polygon and should be accepted.
+        LatLng polarCapVerts[] = {
+            {.lat = 80.0 * DEG_TO_RAD, .lng = -170.0 * DEG_TO_RAD},
+            {.lat = 80.0 * DEG_TO_RAD, .lng = -60.0 * DEG_TO_RAD},
+            {.lat = 80.0 * DEG_TO_RAD, .lng = 60.0 * DEG_TO_RAD},
+            {.lat = 80.0 * DEG_TO_RAD, .lng = 170.0 * DEG_TO_RAD}};
+        GeoLoop polarCapLoop = {.numVerts = 4, .verts = polarCapVerts};
+        GeoPolygon polygon = {
+            .geoloop = polarCapLoop, .numHoles = 0, .holes = NULL};
+
+        GeodesicPolygon *poly = NULL;
+        t_assertSuccess(geodesicPolygonCreate(&polygon, &poly));
+        t_assert(poly != NULL, "polar-cap small-circle loop is accepted");
+
+        LatLng northPole = {.lat = M_PI_2, .lng = 0.0};
+        Vec3d northVec;
+        latLngToVec3(&northPole, &northVec);
+        t_assert(geodesicPolygonContainsPoint(poly, &northVec),
+                 "north pole is inside polar-cap polygon");
+
+        geodesicPolygonDestroy(poly);
+    }
+
     TEST(nullArgumentGuards) {
         LatLng testLl = {.lat = 1.0 * DEG_TO_RAD, .lng = 1.0 * DEG_TO_RAD};
         Vec3d testVec;
@@ -288,6 +348,133 @@ SUITE(GeodesicPolygonInternal) {
                  "null polygon rejected for containment test");
         t_assert(!geodesicPolygonContainsPoint(&dummy, NULL),
                  "null point rejected for containment test");
+    }
+
+    TEST(largePolygonGlobalCoverage) {
+        // Polar cap at 30 deg N with 8 equally spaced vertices.
+        // This covers approximately 25% of the sphere (the northern cap above
+        // the geodesic boundary).  With approximately uniform sampling of the
+        // whole globe, expect ~25% of points inside.  Assert <=50% to catch
+        // the case where the algorithm misidentifies the complement region
+        // (75%) as the interior.
+        LatLng capVerts[] = {
+            {.lat = 30.0 * DEG_TO_RAD, .lng = 0.0},
+            {.lat = 30.0 * DEG_TO_RAD, .lng = 45.0 * DEG_TO_RAD},
+            {.lat = 30.0 * DEG_TO_RAD, .lng = 90.0 * DEG_TO_RAD},
+            {.lat = 30.0 * DEG_TO_RAD, .lng = 135.0 * DEG_TO_RAD},
+            {.lat = 30.0 * DEG_TO_RAD, .lng = 180.0 * DEG_TO_RAD},
+            {.lat = 30.0 * DEG_TO_RAD, .lng = -135.0 * DEG_TO_RAD},
+            {.lat = 30.0 * DEG_TO_RAD, .lng = -90.0 * DEG_TO_RAD},
+            {.lat = 30.0 * DEG_TO_RAD, .lng = -45.0 * DEG_TO_RAD}};
+        GeoLoop capLoop = {.numVerts = 8, .verts = capVerts};
+        GeoPolygon capPolygon = {
+            .geoloop = capLoop, .numHoles = 0, .holes = NULL};
+
+        GeodesicPolygon *poly = NULL;
+        t_assertSuccess(geodesicPolygonCreate(&capPolygon, &poly));
+
+        // Sanity: north pole must be inside, south pole outside.
+        LatLng northPole = {.lat = M_PI_2, .lng = 0.0};
+        Vec3d northVec;
+        latLngToVec3(&northPole, &northVec);
+        t_assert(geodesicPolygonContainsPoint(poly, &northVec),
+                 "north pole is inside cap polygon");
+
+        LatLng southPole = {.lat = -M_PI_2, .lng = 0.0};
+        Vec3d southVec;
+        latLngToVec3(&southPole, &southVec);
+        t_assert(!geodesicPolygonContainsPoint(poly, &southVec),
+                 "south pole is outside cap polygon");
+
+        // Sample points approximately uniformly on the sphere.
+        // Rows are uniform in sin(lat) for area-preserving distribution.
+        int insideCount = 0;
+        int totalCount = 0;
+        const int nRows = 90;
+        const int nCols = 180;
+        for (int i = 0; i <= nRows; i++) {
+            double sinLat = -1.0 + 2.0 * i / nRows;
+            double lat = asin(sinLat);
+            for (int j = 0; j < nCols; j++) {
+                double lng = -M_PI + 2.0 * M_PI * j / nCols;
+                LatLng ll = {.lat = lat, .lng = lng};
+                Vec3d vec;
+                latLngToVec3(&ll, &vec);
+                if (geodesicPolygonContainsPoint(poly, &vec)) {
+                    insideCount++;
+                }
+                totalCount++;
+            }
+        }
+
+        // Polygon covers ~25% of the sphere.  Use generous <=50% bound.
+        double fraction = (double)insideCount / totalCount;
+        t_assert(fraction <= 0.30,
+                 "cap polygon contains at most 30%% of globe sample points");
+        // Ensure some meaningful fraction is inside (not all-reject).
+        t_assert(fraction > 0.20,
+                 "cap polygon contains at least 20%% of globe sample points");
+
+        geodesicPolygonDestroy(poly);
+    }
+
+    TEST(nearHemisphericPolygonGlobalCoverage) {
+        // Polar cap at 10 deg N with 12 equally spaced vertices.
+        // Covers approximately 41% of the sphere
+        LatLng capVerts[12];
+        for (int i = 0; i < 12; i++) {
+            capVerts[i].lat = 10.0 * DEG_TO_RAD;
+            capVerts[i].lng = (i * 30.0) * DEG_TO_RAD;
+        }
+        GeoLoop capLoop = {.numVerts = 12, .verts = capVerts};
+        GeoPolygon capPolygon = {
+            .geoloop = capLoop, .numHoles = 0, .holes = NULL};
+
+        GeodesicPolygon *poly = NULL;
+        t_assertSuccess(geodesicPolygonCreate(&capPolygon, &poly));
+
+        // Sanity: north pole inside, equatorial point outside.
+        LatLng northPole = {.lat = M_PI_2, .lng = 0.0};
+        Vec3d northVec;
+        latLngToVec3(&northPole, &northVec);
+        t_assert(geodesicPolygonContainsPoint(poly, &northVec),
+                 "north pole is inside near-hemispheric cap");
+
+        LatLng equatorPt = {.lat = 0.0, .lng = 0.0};
+        Vec3d equatorVec;
+        latLngToVec3(&equatorPt, &equatorVec);
+        t_assert(!geodesicPolygonContainsPoint(poly, &equatorVec),
+                 "equator point is outside near-hemispheric cap");
+
+        // Uniform spherical sampling
+        int insideCount = 0;
+        int totalCount = 0;
+        const int nRows = 90;
+        const int nCols = 180;
+        for (int i = 0; i <= nRows; i++) {
+            double sinLat = -1.0 + 2.0 * i / nRows;
+            double lat = asin(sinLat);
+            for (int j = 0; j < nCols; j++) {
+                double lng = -M_PI + 2.0 * M_PI * j / nCols;
+                LatLng ll = {.lat = lat, .lng = lng};
+                Vec3d vec;
+                latLngToVec3(&ll, &vec);
+                if (geodesicPolygonContainsPoint(poly, &vec)) {
+                    insideCount++;
+                }
+                totalCount++;
+            }
+        }
+
+        double fraction = (double)insideCount / totalCount;
+        t_assert(fraction <= 0.45,
+                 "near-hemispheric cap contains at most 45%% of globe sample "
+                 "points");
+        t_assert(fraction > 0.35,
+                 "near-hemispheric cap contains at least 35%% of globe sample "
+                 "points");
+
+        geodesicPolygonDestroy(poly);
     }
 
     TEST(capRejectsAabbOutsideUnitSphere) {

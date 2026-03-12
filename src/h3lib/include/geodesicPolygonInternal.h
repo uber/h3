@@ -42,9 +42,11 @@ typedef struct {
  *  @brief Polygon loop represented in geodesic space.
  */
 typedef struct {
-    int numEdges;         ///< Number of edges in the loop
-    GeodesicEdge *edges;  ///< Edge data for the loop
-    Vec3d centroid;       ///< Approximate centroid used for hemisphere tests
+    int numEdges;          ///< Number of edges in the loop
+    GeodesicEdge *edges;   ///< Edge data for the loop
+    Vec3d centroid;        ///< Approximate centroid used for hemisphere tests
+    Vec3d hemispherePole;  ///< Pole for a containing hemisphere (if available)
+    bool hasHemispherePole;  ///< Whether hemispherePole is initialized
 } GeodesicLoop;
 
 /** @struct GeodesicPolygon

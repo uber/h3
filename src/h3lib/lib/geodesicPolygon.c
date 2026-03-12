@@ -102,15 +102,20 @@ static bool _geodesicEdgesCross(const Vec3d *a1, const Vec3d *a2,
  * The algorithm walks the loop once, accumulating the signed angle subtended by
  * consecutive vertices as seen from the query point. When the total winding
  * exceeds pi in magnitude the point is inside; otherwise it is outside.
+ *
+ * A hemisphere-pole early rejection ensures that points on the far side of the
+ * sphere (where the winding formula can give spurious +-2pi results) are
+ * correctly classified as outside. This is safe because the polygon must fit
+ * within a hemisphere; any point in the opposite hemisphere is guaranteed to be
+ * outside.
  */
 static bool _geodesicLoopContainsPoint(const GeodesicLoop *loop,
                                        const Vec3d *pointVec) {
-    // Early rejection: if the point is clearly on the opposite hemisphere
-    // from the polygon's centroid, it cannot be inside. This optimization
-    // assumes the polygon does not span more than a hemisphere. A small
-    // negative threshold avoids rejecting points near the hemisphere boundary
-    // due to floating-point imprecision.
-    if (vec3Dot(&loop->centroid, pointVec) < -1e-10) {
+    // Early rejection: if the loop has a known hemisphere pole and the point
+    // lies in the opposite hemisphere, it cannot be inside the polygon.
+    // This also prevents spurious winding-number results for antipodal points.
+    if (loop->hasHemispherePole &&
+        vec3Dot(&loop->hemispherePole, pointVec) < -1e-10) {
         return false;
     }
 
@@ -223,7 +228,7 @@ static bool _candidateContainsVerts(const Vec3d *candidate,
  * fallback pairwise search is more expensive (O(n^3) worst case).
  */
 static bool _geoLoopVerticesFitHemisphere(const GeodesicEdge *edges,
-                                          int numEdges) {
+                                          int numEdges, Vec3d *poleOut) {
     Vec3d centroid = {0};
     for (int i = 0; i < numEdges; i++) {
         centroid.x += edges[i].vert.x;
@@ -235,12 +240,19 @@ static bool _geoLoopVerticesFitHemisphere(const GeodesicEdge *edges,
     // More tight epsilon check for more conclusive result
     if (vec3MagSq(&centroid) >= 1e-12) {
         if (_candidateContainsVerts(&centroid, edges, numEdges)) {
+            if (poleOut) {
+                *poleOut = centroid;
+                vec3Normalize(poleOut);
+            }
             return true;
         }
     }
 
     for (int i = 0; i < numEdges; i++) {
         if (_candidateContainsVerts(&edges[i].vert, edges, numEdges)) {
+            if (poleOut) {
+                *poleOut = edges[i].vert;
+            }
             return true;
         }
     }
@@ -251,18 +263,64 @@ static bool _geoLoopVerticesFitHemisphere(const GeodesicEdge *edges,
             vec3Cross(&edges[i].vert, &edges[j].vert, &candidate);
 
             if (_candidateContainsVerts(&candidate, edges, numEdges)) {
+                if (poleOut) {
+                    *poleOut = candidate;
+                    vec3Normalize(poleOut);
+                }
                 return true;
             }
 
             Vec3d opposite = {
                 .x = -candidate.x, .y = -candidate.y, .z = -candidate.z};
             if (_candidateContainsVerts(&opposite, edges, numEdges)) {
+                if (poleOut) {
+                    *poleOut = opposite;
+                    vec3Normalize(poleOut);
+                }
                 return true;
             }
         }
     }
 
     return false;
+}
+
+/**
+ * Test whether all loop vertices lie on a single great circle.
+ */
+static bool _geoLoopVerticesOnGreatCircle(const GeodesicEdge *edges,
+                                          int numEdges) {
+    // Keep legacy handling for point/line/triangle degeneracies and only
+    // reject larger boundary-only loops that produce ambiguous containment.
+    if (numEdges < 4) {
+        return false;
+    }
+
+    Vec3d normal = {0};
+    bool foundNormal = false;
+    for (int i = 0; i < numEdges && !foundNormal; i++) {
+        for (int j = i + 1; j < numEdges; j++) {
+            vec3Cross(&edges[i].vert, &edges[j].vert, &normal);
+            if (vec3MagSq(&normal) > 1e-12) {
+                foundNormal = true;
+                break;
+            }
+        }
+    }
+
+    if (!foundNormal) {
+        return false;
+    }
+
+    vec3Normalize(&normal);
+    const double greatCircleEpsilon = 1e-14;
+    for (int i = 0; i < numEdges; i++) {
+        if (fabs(vec3Dot(&normal, &edges[i].vert)) > greatCircleEpsilon) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 static H3Error _geodesicLoopFromGeo(const GeoLoop *loop, GeodesicLoop *out,
@@ -294,11 +352,25 @@ static H3Error _geodesicLoopFromGeo(const GeoLoop *loop, GeodesicLoop *out,
         _geoToVec3d(&loop->verts[i], &edges[i].vert);
     }
 
-    if (rejectLargeLoop && !_geoLoopVerticesFitHemisphere(edges, n)) {
+    // Great-circle boundary loops are always ambiguous (zero enclosed area)
+    // regardless of polygon size, so reject them unconditionally.
+    if (_geoLoopVerticesOnGreatCircle(edges, n)) {
         H3_MEMORY(free)(edges);
         out->edges = NULL;
         out->numEdges = 0;
         return E_DOMAIN;
+    }
+
+    if (rejectLargeLoop) {
+        Vec3d pole;
+        if (!_geoLoopVerticesFitHemisphere(edges, n, &pole)) {
+            H3_MEMORY(free)(edges);
+            out->edges = NULL;
+            out->numEdges = 0;
+            return E_DOMAIN;
+        }
+        out->hemispherePole = pole;
+        out->hasHemispherePole = true;
     }
 
     for (int i = 0; i < n; i++) {
@@ -319,10 +391,8 @@ static H3Error _geodesicLoopFromGeo(const GeoLoop *loop, GeodesicLoop *out,
         aabbUpdateWithArcExtrema(box, v1, v2, &edges[i].edgeCross);
     }
 
-    // Normalize the centroid to a unit vector. If the vertices nearly cancel
-    // out (e.g. a near-hemispheric polygon), the centroid stays near zero and
-    // the hemisphere early-exit in _geodesicLoopContainsPoint becomes a no-op,
-    // falling through to the full winding-number algorithm.
+    // Normalize the centroid to a unit vector for use in AABB construction
+    // and other geometric queries.
     vec3Normalize(&out->centroid);
 
     return E_SUCCESS;
