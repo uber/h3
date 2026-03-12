@@ -79,6 +79,7 @@ void geodesicIteratorStep(IterCellsPolygonCompact *iter, H3Index cell) {
     while (cell) {
         int cellRes = H3_GET_RESOLUTION(cell);
 
+        // Coarse cells: prune by cap/AABB, otherwise descend into children.
         SphereCap cap;
         H3_CHECK(cellToSphereCap(cell, &cap), iter);
         if (cellRes < iter->_res) {
@@ -94,38 +95,65 @@ void geodesicIteratorStep(IterCellsPolygonCompact *iter, H3Index cell) {
             continue;
         }
 
+        // Fine cells: start with center-in-polygon classification.
+        Vec3d cellCenter;
+        H3_CHECK(cellToVec3(cell, &cellCenter), iter);
+        const bool pointInside =
+            geodesicPolygonContainsPoint(poly, &cellCenter);
+
+        // CENTER mode uses center-only semantics.
+        if (mode == CONTAINMENT_CENTER) {
+            if (pointInside) {
+                iter->cell = cell;
+                return;
+            }
+            cell = nextCell(cell);
+            continue;
+        }
+
+        // OVERLAPPING can accept immediately when center is inside.
+        if (mode == CONTAINMENT_OVERLAPPING && pointInside) {
+            iter->cell = cell;
+            return;
+        }
+
+        // FULL cannot match when the center is outside.
+        if (mode == CONTAINMENT_FULL && !pointInside) {
+            cell = nextCell(cell);
+            continue;
+        }
+
+        // Expensive boundary tests are only needed for unresolved cases.
         GeodesicCellBoundary boundary;
         H3_CHECK(cellToGeodesicBoundary(cell, &boundary), iter);
 
         const bool boundaryIntersection =
             geodesicPolygonBoundaryIntersects(poly, &boundary, &cap);
 
-        Vec3d cellCenter;
-        H3_CHECK(cellToVec3(cell, &cellCenter), iter);
-        const bool pointInside =
-            geodesicPolygonContainsPoint(poly, &cellCenter);
-
-        if (pointInside && !boundaryIntersection) {
-            iter->cell = cell;
-            return;
-        }
-
-        if (mode == CONTAINMENT_CENTER) {
+        if (mode == CONTAINMENT_FULL) {
+            // Center is inside (guaranteed above). Fully inside only if 
+            // boundaries do not intersect
+            if (!boundaryIntersection) {
+                iter->cell = cell;
+                return;
+            }
             cell = nextCell(cell);
             continue;
         }
 
-        bool intersects = boundaryIntersection;
-        if (!intersects) {
-            H3Index polygonCell;
-            Vec3d *firstVert = &poly->geoloop.edges[0].vert;
-            H3_CHECK(vec3ToCell(firstVert, cellRes, &polygonCell), iter);
-            if (polygonCell == cell) {
-                intersects = true;
-            }
+        // OVERLAPPING and center outside - match if we intersect
+        if (boundaryIntersection) {
+            iter->cell = cell;
+            return;
         }
 
-        if (intersects && mode == CONTAINMENT_OVERLAPPING) {
+        // Center is outside and no edge intersection. The polygon may
+        // be inside the cell. Check by testing if polygon vertex is 
+        // inside the cell.
+        H3Index polygonCell;
+        Vec3d *firstVert = &poly->geoloop.edges[0].vert;
+        H3_CHECK(vec3ToCell(firstVert, cellRes, &polygonCell), iter);
+        if (polygonCell == cell) {
             iter->cell = cell;
             return;
         }
