@@ -85,6 +85,48 @@ static LatLng lineVerts[] = {{0.6595072188743, -2.1371053983433},
 static GeoLoop lineGeoLoop = {.numVerts = 2, .verts = lineVerts};
 static GeoPolygon lineGeoPolygon;
 
+// Unsupported in geodesic mode: loop cannot fit into a hemisphere.
+// Very wide loop that wraps almost all longitudes with low area.
+static LatLng wideWrapVerts[] = {{10.0 * M_PI / 180.0, -170.0 * M_PI / 180.0},
+                                 {10.0 * M_PI / 180.0, -110.0 * M_PI / 180.0},
+                                 {10.0 * M_PI / 180.0, -50.0 * M_PI / 180.0},
+                                 {10.0 * M_PI / 180.0, 10.0 * M_PI / 180.0},
+                                 {10.0 * M_PI / 180.0, 70.0 * M_PI / 180.0},
+                                 {10.0 * M_PI / 180.0, 130.0 * M_PI / 180.0},
+                                 {10.0 * M_PI / 180.0, 170.0 * M_PI / 180.0},
+                                 {-10.0 * M_PI / 180.0, 170.0 * M_PI / 180.0},
+                                 {-10.0 * M_PI / 180.0, 130.0 * M_PI / 180.0},
+                                 {-10.0 * M_PI / 180.0, 70.0 * M_PI / 180.0},
+                                 {-10.0 * M_PI / 180.0, 10.0 * M_PI / 180.0},
+                                 {-10.0 * M_PI / 180.0, -50.0 * M_PI / 180.0},
+                                 {-10.0 * M_PI / 180.0, -110.0 * M_PI / 180.0},
+                                 {-10.0 * M_PI / 180.0, -170.0 * M_PI / 180.0}};
+static GeoLoop wideWrapGeoLoop = {.numVerts = ARRAY_SIZE(wideWrapVerts),
+                                  .verts = wideWrapVerts};
+static GeoPolygon wideWrapGeoPolygon;
+
+// Very tall north-south loop crossing multiple hemispheres.
+static LatLng tallSliceVerts[] = {{60.0 * M_PI / 180.0, 0.0},
+                                  {0.0, 120.0 * M_PI / 180.0},
+                                  {-60.0 * M_PI / 180.0, 0.0},
+                                  {0.0, -120.0 * M_PI / 180.0}};
+static GeoLoop tallSliceGeoLoop = {.numVerts = ARRAY_SIZE(tallSliceVerts),
+                                   .verts = tallSliceVerts};
+static GeoPolygon tallSliceGeoPolygon;
+
+// Another unsupported loop that cannot fit into one hemisphere.
+static LatLng reversedTriangleVerts[] = {
+    {10.0 * M_PI / 180.0, 0.0},
+    {10.0 * M_PI / 180.0, 120.0 * M_PI / 180.0},
+    {10.0 * M_PI / 180.0, -120.0 * M_PI / 180.0},
+    {-10.0 * M_PI / 180.0, -120.0 * M_PI / 180.0},
+    {-10.0 * M_PI / 180.0, 120.0 * M_PI / 180.0},
+    {-10.0 * M_PI / 180.0, 0.0}};
+static GeoLoop reversedTriangleGeoLoop = {
+    .numVerts = ARRAY_SIZE(reversedTriangleVerts),
+    .verts = reversedTriangleVerts};
+static GeoPolygon reversedTriangleGeoPolygon;
+
 // Large transmeridian polygon covering Pacific (approx 6000km x 4000km)
 static LatLng transVerts[] = {{0.698132, -2.967060},   // 40°N, 170°W
                               {0.698132, 2.967060},    // 40°N, 170°E
@@ -197,6 +239,15 @@ SUITE(geodesicPolygonToCellsExperimental) {
 
     lineGeoPolygon.geoloop = lineGeoLoop;
     lineGeoPolygon.numHoles = 0;
+
+    wideWrapGeoPolygon.geoloop = wideWrapGeoLoop;
+    wideWrapGeoPolygon.numHoles = 0;
+
+    tallSliceGeoPolygon.geoloop = tallSliceGeoLoop;
+    tallSliceGeoPolygon.numHoles = 0;
+
+    reversedTriangleGeoPolygon.geoloop = reversedTriangleGeoLoop;
+    reversedTriangleGeoPolygon.numHoles = 0;
 
     transGeoPolygon.geoloop = transGeoLoop;
     transGeoPolygon.numHoles = 0;
@@ -368,5 +419,22 @@ SUITE(geodesicPolygonToCellsExperimental) {
                  "maxPolygonToCellsSizeExperimental must not under-allocate");
 
         free(out);
+    }
+
+    TEST(geodesicRejectsPolygonsLargerThanHemisphere) {
+        int64_t size = 0;
+        H3Error err = geodesicFill(&wideWrapGeoPolygon, 2,
+                                   CONTAINMENT_OVERLAPPING, &size, NULL);
+        t_assert(err == E_DOMAIN,
+                 "very wide low-area loop that wraps globe is rejected");
+
+        err = geodesicFill(&tallSliceGeoPolygon, 2, CONTAINMENT_OVERLAPPING,
+                           &size, NULL);
+        t_assert(err == E_DOMAIN, "very tall north-south loop is rejected");
+
+        err = geodesicFill(&reversedTriangleGeoPolygon, 2,
+                           CONTAINMENT_OVERLAPPING, &size, NULL);
+        t_assert(err == E_DOMAIN,
+                 "equatorial wrap loop that spans globe is rejected");
     }
 }

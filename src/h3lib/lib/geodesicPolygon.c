@@ -189,11 +189,87 @@ static void _geodesicLoopToAABB(const GeodesicLoop *loop, AABB *out) {
     }
 }
 
-static H3Error _geodesicLoopFromGeo(const GeoLoop *loop, GeodesicLoop *out) {
+static bool _candidateContainsVerts(const Vec3d *candidate,
+                                    const GeodesicEdge *edges, int numEdges) {
+    if (vec3MagSq(candidate) < EPSILON * EPSILON) {
+        return false;
+    }
+
+    Vec3d normalized = *candidate;
+    vec3Normalize(&normalized);
+
+    const double hemisphereEpsilon = -1e-12;
+    for (int i = 0; i < numEdges; i++) {
+        if (vec3Dot(&normalized, &edges[i].vert) < hemisphereEpsilon) {
+            return false;
+        }
+    }
+    return true;
+}
+
+/**
+ * Test whether all loop vertices fit within some closed hemisphere.
+ *
+ * A hemisphere can be described by a pole vector c such that dot(c, v) >= 0
+ * for every vertex v in the loop.
+ *
+ * This checks a deterministic set of candidate poles and returns true once
+ * one contains all vertices:
+ * - The vertex centroid
+ * - Each vertex
+ * - cross(v_i, v_j) and its negation for each vertex pair
+ *
+ * In the common case, the centroid check succeeds in O(n). If not, the
+ * fallback pairwise search is more expensive (O(n^3) worst case).
+ */
+static bool _geoLoopVerticesFitHemisphere(const GeodesicEdge *edges,
+                                          int numEdges) {
+    Vec3d centroid = {0};
+    for (int i = 0; i < numEdges; i++) {
+        centroid.x += edges[i].vert.x;
+        centroid.y += edges[i].vert.y;
+        centroid.z += edges[i].vert.z;
+    }
+
+    // Near-zero centroid direction is numerically inconclusive, so skip it.
+    // More tight epsilon check for more conclusive result
+    if (vec3MagSq(&centroid) >= 1e-12) {
+        if (_candidateContainsVerts(&centroid, edges, numEdges)) {
+            return true;
+        }
+    }
+
+    for (int i = 0; i < numEdges; i++) {
+        if (_candidateContainsVerts(&edges[i].vert, edges, numEdges)) {
+            return true;
+        }
+    }
+
+    for (int i = 0; i < numEdges; i++) {
+        for (int j = i + 1; j < numEdges; j++) {
+            Vec3d candidate;
+            vec3Cross(&edges[i].vert, &edges[j].vert, &candidate);
+
+            if (_candidateContainsVerts(&candidate, edges, numEdges)) {
+                return true;
+            }
+
+            Vec3d opposite = {
+                .x = -candidate.x, .y = -candidate.y, .z = -candidate.z};
+            if (_candidateContainsVerts(&opposite, edges, numEdges)) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+static H3Error _geodesicLoopFromGeo(const GeoLoop *loop, GeodesicLoop *out,
+                                    bool rejectLargeLoop) {
     if (!out || !loop || loop->numVerts <= 0) {
         return E_DOMAIN;
     }
-
     *out = (GeodesicLoop){0};
 
     const int n = loop->numVerts;
@@ -216,6 +292,13 @@ static H3Error _geodesicLoopFromGeo(const GeoLoop *loop, GeodesicLoop *out) {
             return E_DOMAIN;
         }
         _geoToVec3d(&loop->verts[i], &edges[i].vert);
+    }
+
+    if (rejectLargeLoop && !_geoLoopVerticesFitHemisphere(edges, n)) {
+        H3_MEMORY(free)(edges);
+        out->edges = NULL;
+        out->numEdges = 0;
+        return E_DOMAIN;
     }
 
     for (int i = 0; i < n; i++) {
@@ -266,7 +349,8 @@ H3Error geodesicPolygonCreate(const GeoPolygon *polygon,
         return E_MEMORY_ALLOC;
     }
 
-    H3Error loopErr = _geodesicLoopFromGeo(&polygon->geoloop, &result->geoloop);
+    H3Error loopErr =
+        _geodesicLoopFromGeo(&polygon->geoloop, &result->geoloop, true);
     if (loopErr != E_SUCCESS) {
         _geodesicLoopDestroy(&result->geoloop);
         H3_MEMORY(free)(result);
@@ -297,8 +381,8 @@ H3Error geodesicPolygonCreate(const GeoPolygon *polygon,
                 H3_MEMORY(free)(result);
                 return E_DOMAIN;
             }
-            H3Error holeErr =
-                _geodesicLoopFromGeo(&polygon->holes[i], &result->holes[i]);
+            H3Error holeErr = _geodesicLoopFromGeo(&polygon->holes[i],
+                                                   &result->holes[i], false);
             if (holeErr != E_SUCCESS) {
                 for (int j = 0; j < i; j++) {
                     _geodesicLoopDestroy(&result->holes[j]);
