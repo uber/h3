@@ -45,11 +45,16 @@ static bool _geodesicEdgesCross(const Vec3d *a1, const Vec3d *a2,
     const double a2Side = vec3Dot(normalB, a2);
 
     // For coincident arcs (shared cell/polygon boundary edges), the triple
-    // scalar products b1Side/b2Side are mathematically zero but ~1e-16 in FP.
-    // When both errors share the same sign, their product is positive and
-    // this early-out would incorrectly reject the overlap.  Use an epsilon
-    // guard so near-zero products fall through to the collinear-overlap check.
-    const double sideEps = EPSILON * EPSILON;
+    // scalar products b1Side/b2Side are mathematically zero but may reach
+    // ~2e-32 in FP due to per-operand rounding (~1e-16 per dot product, two
+    // of them multiplied together).  EPSILON*EPSILON = 1e-32 sits right at
+    // that noise floor, so some coincident pairs exceed it and are wrongly
+    // rejected.  Use 1e-28 — four orders of magnitude above machine_epsilon^2
+    // (~5e-32) but far below the smallest genuine same-side product observed
+    // in practice (~1e-18) — so coincident arcs reliably fall through to the
+    // collinear-overlap check while non-coincident same-side pairs still
+    // early-exit.
+    const double sideEps = 1e-28;
     if ((b1Side * b2Side > sideEps) || (a1Side * a2Side > sideEps)) {
         return false;
     }

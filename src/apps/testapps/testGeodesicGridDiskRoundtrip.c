@@ -227,11 +227,6 @@ static void gridDiskRoundtripCheck(H3Index center, int k,
         return;
     }
 
-    /*
-     * Skip cases where the disk doesn't form a single simple polygon.
-     * This can happen for grid disks that span more than a hemisphere
-     * at very low resolutions.
-     */
     if (mpoly.numPolygons != 1 || mpoly.polygons[0].numHoles != 0) {
         H3_EXPORT(destroyGeoMultiPolygon)(&mpoly);
         free(disk);

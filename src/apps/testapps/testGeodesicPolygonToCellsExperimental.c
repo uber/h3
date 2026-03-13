@@ -27,6 +27,7 @@
 #include <stdlib.h>
 
 #include "h3Index.h"
+#include "iterators.h"
 #include "polyfill.h"
 #include "polygon.h"
 #include "test.h"
@@ -197,6 +198,46 @@ static H3Error geodesicFill(const GeoPolygon *polygon, int res, uint32_t mode,
         free(cells);
     }
     return E_SUCCESS;
+}
+
+static int _cmpH3Index(const void *a, const void *b) {
+    H3Index ha = *(const H3Index *)a;
+    H3Index hb = *(const H3Index *)b;
+    if (ha < hb) return -1;
+    if (ha > hb) return 1;
+    return 0;
+}
+
+// Fill polygon geodesically, compact non-null results and sort them in-place.
+// Returns the count of non-null results, or -1 on error. Caller must free *out.
+static int64_t _geodesicFillSorted(const GeoPolygon *polygon, int res,
+                                   uint32_t mode, H3Index **out) {
+    uint32_t flags = mode;
+    FLAG_SET_GEODESIC(flags);
+
+    int64_t sz = 0;
+    if (H3_EXPORT(maxPolygonToCellsSizeExperimental)(polygon, res, flags,
+                                                     &sz) != E_SUCCESS) {
+        return -1;
+    }
+
+    H3Index *cells = sz > 0 ? calloc((size_t)sz, sizeof(H3Index)) : NULL;
+    if (sz > 0 && !cells) return -1;
+
+    if (H3_EXPORT(polygonToCellsExperimental)(polygon, res, flags, sz, cells) !=
+        E_SUCCESS) {
+        free(cells);
+        return -1;
+    }
+
+    int64_t n = 0;
+    for (int64_t i = 0; i < sz; i++) {
+        if (cells[i] != H3_NULL) cells[n++] = cells[i];
+    }
+    qsort(cells, (size_t)n, sizeof(H3Index), _cmpH3Index);
+
+    *out = cells;
+    return n;
 }
 
 SUITE(geodesicPolygonToCellsExperimental) {
@@ -478,6 +519,62 @@ SUITE(geodesicPolygonToCellsExperimental) {
                            CONTAINMENT_OVERLAPPING, &size, NULL);
         t_assert(err == E_DOMAIN,
                  "equatorial wrap loop that spans globe is rejected");
+    }
+
+    // Regression test: FULL and OVERLAPPING results must be identical for CCW
+    // and CW loop orientation. Previously, a too-tight epsilon in
+    // _geodesicEdgesCross caused coincident arcs (shared cell boundaries) to
+    // be misclassified, making OVERLAPPING sensitive to vertex order. Sweeps
+    // all res-0 (122 cells) and res-1 (842 cells) to catch any recurrence.
+    TEST(geodesicOrientationInvariantExhaustive) {
+        const int resolutions[] = {0, 1};
+        const uint32_t modes[] = {CONTAINMENT_FULL, CONTAINMENT_OVERLAPPING};
+
+        for (int ri = 0; ri < 2; ri++) {
+            int res = resolutions[ri];
+            for (IterCellsResolution it = iterInitRes(res); it.h;
+                 iterStepRes(&it)) {
+                H3Index cell = it.h;
+
+                CellBoundary bnd = {0};
+                t_assertSuccess(H3_EXPORT(cellToBoundary)(cell, &bnd));
+
+                LatLng ccwVerts[MAX_CELL_BNDRY_VERTS];
+                LatLng cwVerts[MAX_CELL_BNDRY_VERTS];
+                for (int i = 0; i < bnd.numVerts; i++) {
+                    ccwVerts[i] = bnd.verts[i];
+                    cwVerts[i] = bnd.verts[bnd.numVerts - 1 - i];
+                }
+
+                GeoLoop loopCCW = {.numVerts = bnd.numVerts, .verts = ccwVerts};
+                GeoLoop loopCW = {.numVerts = bnd.numVerts, .verts = cwVerts};
+                GeoPolygon polyCCW = {.geoloop = loopCCW, .numHoles = 0};
+                GeoPolygon polyCW = {.geoloop = loopCW, .numHoles = 0};
+
+                for (int mi = 0; mi < 2; mi++) {
+                    H3Index *outCCW = NULL, *outCW = NULL;
+                    int64_t nCCW =
+                        _geodesicFillSorted(&polyCCW, res, modes[mi], &outCCW);
+                    int64_t nCW =
+                        _geodesicFillSorted(&polyCW, res, modes[mi], &outCW);
+
+                    t_assert(nCCW >= 0 && nCW >= 0, "fill succeeded");
+                    t_assert(nCCW == nCW,
+                             "CCW and CW must yield same count for each mode");
+
+                    bool equal = true;
+                    for (int64_t i = 0; i < nCCW && equal; i++) {
+                        if (outCCW[i] != outCW[i]) equal = false;
+                    }
+                    t_assert(
+                        equal,
+                        "CCW and CW must yield identical sorted cell sets");
+
+                    free(outCCW);
+                    free(outCW);
+                }
+            }
+        }
     }
 
     TEST(geodesicRejectsGreatCircleBoundaryLoop) {
