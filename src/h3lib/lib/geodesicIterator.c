@@ -148,14 +148,24 @@ void geodesicIteratorStep(IterCellsPolygonCompact *iter, H3Index cell) {
         }
 
         // Center is outside and no edge intersection. The polygon may
-        // be inside the cell. Check by testing if polygon vertex is
-        // inside the cell.
+        // be inside the cell. Check if any loop vertex (outer shell or hole)
+        // falls inside the cell. An outer vertex here means the polygon is
+        // smaller than the cell; a hole vertex here means the hole is inside
+        // the cell, so the filled region (outer minus holes) still overlaps it.
         H3Index polygonCell;
         Vec3d *firstVert = &poly->geoloop.edges[0].vert;
         H3_CHECK(vec3ToCell(firstVert, cellRes, &polygonCell), iter);
         if (polygonCell == cell) {
             iter->cell = cell;
             return;
+        }
+        for (int hi = 0; hi < poly->numHoles; hi++) {
+            Vec3d *holeVert = &poly->holes[hi].edges[0].vert;
+            H3_CHECK(vec3ToCell(holeVert, cellRes, &polygonCell), iter);
+            if (polygonCell == cell) {
+                iter->cell = cell;
+                return;
+            }
         }
 
         cell = nextCell(cell);
