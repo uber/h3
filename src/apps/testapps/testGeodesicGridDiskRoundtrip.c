@@ -181,6 +181,31 @@ static int traceMissingCellAgainstPolygon(const GeoPolygon *polygon,
 }
 
 /* ------------------------------------------------------------------ */
+/*  Helper: build the outer polygon for gridDisk(center, k).          */
+/*  Returns E_SUCCESS and populates *mpoly on success.                */
+/*  Caller must call destroyGeoMultiPolygon on E_SUCCESS.             */
+/* ------------------------------------------------------------------ */
+static H3Error buildDiskPolygon(H3Index center, int k, GeoMultiPolygon *mpoly) {
+    int64_t diskMax = 0;
+    H3Error err = H3_EXPORT(maxGridDiskSize)(k, &diskMax);
+    if (err != E_SUCCESS) return err;
+
+    H3Index *disk = calloc((size_t)diskMax, sizeof(H3Index));
+    if (!disk) return E_MEMORY_ALLOC;
+
+    err = H3_EXPORT(gridDisk)(center, k, disk);
+    if (err != E_SUCCESS) {
+        free(disk);
+        return err;
+    }
+
+    const int64_t diskCount = compactNonZeroCells(disk, diskMax);
+    err = H3_EXPORT(cellsToMultiPolygon)(disk, diskCount, mpoly);
+    free(disk);
+    return err;
+}
+
+/* ------------------------------------------------------------------ */
 /*  Helper: run the roundtrip check for one (cell, k) pair.           */
 /*  Updates aggregate stats instead of asserting internally.          */
 /* ------------------------------------------------------------------ */
@@ -339,5 +364,157 @@ SUITE(GeodesicGridDiskRoundtrip) {
                  "exhaustive configs should not hit helper errors");
         t_assert(total.missingCells == 0,
                  "all exhaustive res/k configs should round-trip");
+    }
+
+    // Stage 1: for each res-0 and res-1 cell, build the k=1 disk polygon
+    // (the union of the cell and its 6 neighbours) and run FULL geodesic
+    // polyfill.  The center cell has no edges on the outer polygon boundary, so
+    // it must appear in the FULL result.
+    TEST(ringPolygonFullContainment) {
+        const int resolutions[] = {0, 1};
+        for (int ri = 0; ri < 2; ri++) {
+            int res = resolutions[ri];
+            for (IterCellsResolution it = iterInitRes(res); it.h;
+                 iterStepRes(&it)) {
+                H3Index center = it.h;
+
+                GeoMultiPolygon mpoly = {0};
+                if (buildDiskPolygon(center, 1, &mpoly) != E_SUCCESS) continue;
+                if (mpoly.numPolygons != 1 || mpoly.polygons[0].numHoles != 0) {
+                    H3_EXPORT(destroyGeoMultiPolygon)(&mpoly);
+                    continue;
+                }
+
+                uint32_t flags = CONTAINMENT_FULL;
+                FLAG_SET_GEODESIC(flags);
+
+                int64_t outMax = 0;
+                t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+                    &mpoly.polygons[0], res, flags, &outMax));
+
+                H3Index *out =
+                    outMax > 0 ? calloc((size_t)outMax, sizeof(H3Index)) : NULL;
+                t_assert(outMax == 0 || out != NULL, "alloc succeeded");
+                t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
+                    &mpoly.polygons[0], res, flags, outMax, out));
+
+                bool found = false;
+                for (int64_t i = 0; i < outMax && !found; i++) {
+                    if (out[i] == center) found = true;
+                }
+                t_assert(found,
+                         "center cell must be in FULL result of k=1 disk "
+                         "polygon");
+
+                free(out);
+                H3_EXPORT(destroyGeoMultiPolygon)(&mpoly);
+            }
+        }
+    }
+
+    // Stage 2: same k=1 disk polygon but with a hole punched through the
+    // center cell.  The hole vertices are midpoints between each center-cell
+    // boundary vertex and the cell center, so the hole lies entirely inside
+    // the center cell.
+    //
+    // Expected behaviour:
+    //   FULL       – center cell excluded (its center is inside the hole, so
+    //                point-in-polygon returns false and FULL skips it)
+    //   OVERLAPPING – center cell included (the hole's first vertex maps to
+    //                the center cell, detected by the hole-vertex fallback)
+    //               – all 6 neighbours included (their centers are inside the
+    //                filled region)
+    TEST(ringPolygonHoleExcludes) {
+        for (IterCellsResolution it = iterInitRes(0); it.h; iterStepRes(&it)) {
+            H3Index center = it.h;
+            int res = H3_GET_RESOLUTION(center);
+
+            GeoMultiPolygon mpoly = {0};
+            if (buildDiskPolygon(center, 1, &mpoly) != E_SUCCESS) continue;
+            if (mpoly.numPolygons != 1 || mpoly.polygons[0].numHoles != 0) {
+                H3_EXPORT(destroyGeoMultiPolygon)(&mpoly);
+                continue;
+            }
+
+            // Build the k=1 disk cells list to verify OVERLAPPING later.
+            int64_t diskMax = 0;
+            t_assertSuccess(H3_EXPORT(maxGridDiskSize)(1, &diskMax));
+            H3Index *disk = calloc((size_t)diskMax, sizeof(H3Index));
+            t_assert(disk != NULL, "alloc disk succeeded");
+            t_assertSuccess(H3_EXPORT(gridDisk)(center, 1, disk));
+            const int64_t diskCount = compactNonZeroCells(disk, diskMax);
+
+            // Build hole: midpoints between boundary vertices and cell center,
+            // with longitude wrapped to [-pi, pi] to handle transmeridian
+            // cells.
+            CellBoundary bnd = {0};
+            t_assertSuccess(H3_EXPORT(cellToBoundary)(center, &bnd));
+            LatLng cellCenter;
+            t_assertSuccess(H3_EXPORT(cellToLatLng)(center, &cellCenter));
+
+            LatLng holeVerts[MAX_CELL_BNDRY_VERTS];
+            for (int i = 0; i < bnd.numVerts; i++) {
+                double dlng = bnd.verts[i].lng - cellCenter.lng;
+                if (dlng > M_PI) dlng -= 2.0 * M_PI;
+                if (dlng < -M_PI) dlng += 2.0 * M_PI;
+                holeVerts[i].lat = (bnd.verts[i].lat + cellCenter.lat) / 2.0;
+                holeVerts[i].lng = cellCenter.lng + dlng / 2.0;
+            }
+            GeoLoop holeLoop = {.numVerts = bnd.numVerts, .verts = holeVerts};
+
+            // Attach the hole to the outer polygon.
+            GeoPolygon polyWithHole = mpoly.polygons[0];
+            polyWithHole.numHoles = 1;
+            polyWithHole.holes = &holeLoop;
+
+            uint32_t flagsFull = CONTAINMENT_FULL;
+            FLAG_SET_GEODESIC(flagsFull);
+            uint32_t flagsOver = CONTAINMENT_OVERLAPPING;
+            FLAG_SET_GEODESIC(flagsOver);
+
+            // FULL: center cell must NOT be in result.
+            int64_t fullMax = 0;
+            t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+                &polyWithHole, res, flagsFull, &fullMax));
+            H3Index *fullOut =
+                fullMax > 0 ? calloc((size_t)fullMax, sizeof(H3Index)) : NULL;
+            t_assert(fullMax == 0 || fullOut != NULL, "alloc full succeeded");
+            t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
+                &polyWithHole, res, flagsFull, fullMax, fullOut));
+
+            bool inFull = false;
+            for (int64_t i = 0; i < fullMax && !inFull; i++) {
+                if (fullOut[i] == center) inFull = true;
+            }
+            t_assert(!inFull,
+                     "center cell must NOT appear in FULL result when hole "
+                     "is inside it");
+            free(fullOut);
+
+            // OVERLAPPING: every k=1 disk cell (including center) must be in
+            // result.
+            int64_t overMax = 0;
+            t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+                &polyWithHole, res, flagsOver, &overMax));
+            H3Index *overOut =
+                overMax > 0 ? calloc((size_t)overMax, sizeof(H3Index)) : NULL;
+            t_assert(overMax == 0 || overOut != NULL, "alloc over succeeded");
+            t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
+                &polyWithHole, res, flagsOver, overMax, overOut));
+
+            for (int64_t i = 0; i < diskCount; i++) {
+                bool found = false;
+                for (int64_t j = 0; j < overMax && !found; j++) {
+                    if (overOut[j] == disk[i]) found = true;
+                }
+                t_assert(found,
+                         "every k=1 disk cell must be in OVERLAPPING result "
+                         "even with hole inside center cell");
+            }
+            free(overOut);
+
+            free(disk);
+            H3_EXPORT(destroyGeoMultiPolygon)(&mpoly);
+        }
     }
 }
