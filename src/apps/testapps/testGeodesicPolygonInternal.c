@@ -323,6 +323,65 @@ SUITE(GeodesicPolygonInternal) {
         geodesicPolygonDestroy(poly);
     }
 
+    TEST(hemispherePoleFallsBackToVertexCandidate) {
+        // This loop is crafted so the centroid candidate is rejected, while
+        // one vertex is a valid containing-hemisphere pole.
+        LatLng verts[] = {{.lat = 29.512732152343 * DEG_TO_RAD,
+                           .lng = -159.155546799103 * DEG_TO_RAD},
+                          {.lat = -11.073667682726 * DEG_TO_RAD,
+                           .lng = -154.999100885587 * DEG_TO_RAD},
+                          {.lat = 73.688809451961 * DEG_TO_RAD,
+                           .lng = -161.574247136150 * DEG_TO_RAD},
+                          {.lat = -79.396090284140 * DEG_TO_RAD,
+                           .lng = 63.249426974972 * DEG_TO_RAD}};
+        GeoLoop loop = {.numVerts = 4, .verts = verts};
+        GeoPolygon polygon = {.geoloop = loop, .numHoles = 0, .holes = NULL};
+
+        GeodesicPolygon *poly = NULL;
+        t_assertSuccess(geodesicPolygonCreate(&polygon, &poly));
+        t_assert(poly->geoloop.hasHemispherePole, "hemisphere pole is stored");
+
+        Vec3d expectedPole;
+        latLngToVec3(&verts[1], &expectedPole);
+        t_assert(vec3Dot(&poly->geoloop.hemispherePole, &expectedPole) > 0.9999,
+                 "fallback pole matches the vertex candidate");
+
+        geodesicPolygonDestroy(poly);
+    }
+
+    TEST(hemispherePoleFallsBackToOppositeCrossCandidate) {
+        // This loop is crafted so centroid and vertex candidates are rejected,
+        // and the accepted pole comes from -cross(v0, v1).
+        LatLng verts[] = {{.lat = -39.222488834958 * DEG_TO_RAD,
+                           .lng = 17.278671407850 * DEG_TO_RAD},
+                          {.lat = 77.709767848239 * DEG_TO_RAD,
+                           .lng = -177.944713397859 * DEG_TO_RAD},
+                          {.lat = 48.221389544616 * DEG_TO_RAD,
+                           .lng = 115.374928293173 * DEG_TO_RAD},
+                          {.lat = 65.650528740421 * DEG_TO_RAD,
+                           .lng = 86.581228259951 * DEG_TO_RAD}};
+        GeoLoop loop = {.numVerts = 4, .verts = verts};
+        GeoPolygon polygon = {.geoloop = loop, .numHoles = 0, .holes = NULL};
+
+        GeodesicPolygon *poly = NULL;
+        t_assertSuccess(geodesicPolygonCreate(&polygon, &poly));
+        t_assert(poly->geoloop.hasHemispherePole, "hemisphere pole is stored");
+
+        Vec3d v0, v1, expectedPole;
+        latLngToVec3(&verts[0], &v0);
+        latLngToVec3(&verts[1], &v1);
+        vec3Cross(&v0, &v1, &expectedPole);
+        expectedPole.x = -expectedPole.x;
+        expectedPole.y = -expectedPole.y;
+        expectedPole.z = -expectedPole.z;
+        vec3Normalize(&expectedPole);
+
+        t_assert(vec3Dot(&poly->geoloop.hemispherePole, &expectedPole) > 0.9999,
+                 "fallback pole matches opposite cross-product candidate");
+
+        geodesicPolygonDestroy(poly);
+    }
+
     TEST(nullArgumentGuards) {
         LatLng testLl = {.lat = 1.0 * DEG_TO_RAD, .lng = 1.0 * DEG_TO_RAD};
         Vec3d testVec;
