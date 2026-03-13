@@ -638,6 +638,41 @@ SUITE(h3Memory) {
         uint32_t geodesicFlags = CONTAINMENT_OVERLAPPING;
         FLAG_SET_GEODESIC(geodesicFlags);
 
+        LatLng pointVerts[] = {{0.659966917655, -2.1364398519396}};
+        GeoPolygon pointLoop = {.geoloop = {.numVerts = 1, .verts = pointVerts},
+                                .numHoles = 0,
+                                .holes = NULL};
+        IterCellsPolygonCompact pointLoopIter = {.cell = 0x8001fffffffffff,
+                                                 .error = E_SUCCESS,
+                                                 ._res = 0,
+                                                 ._flags = geodesicFlags,
+                                                 ._polygon = &pointLoop,
+                                                 ._bboxes = NULL,
+                                                 ._started = true,
+                                                 .geodesicPoly = NULL};
+        geodesicIteratorStep(&pointLoopIter, pointLoopIter.cell);
+        t_assert(pointLoopIter.error == E_DOMAIN,
+                 "single-vertex geodesic iterator polygon rejected");
+        t_assert(pointLoopIter.cell == H3_NULL, "iterator moved to exhausted");
+
+        LatLng lineVerts[] = {{0.659966917655, -2.1364398519396},
+                              {0.6595011102219, -2.1359434279405}};
+        GeoPolygon lineLoop = {.geoloop = {.numVerts = 2, .verts = lineVerts},
+                               .numHoles = 0,
+                               .holes = NULL};
+        IterCellsPolygonCompact lineLoopIter = {.cell = 0x8001fffffffffff,
+                                                .error = E_SUCCESS,
+                                                ._res = 0,
+                                                ._flags = geodesicFlags,
+                                                ._polygon = &lineLoop,
+                                                ._bboxes = NULL,
+                                                ._started = true,
+                                                .geodesicPoly = NULL};
+        geodesicIteratorStep(&lineLoopIter, lineLoopIter.cell);
+        t_assert(lineLoopIter.error == E_DOMAIN,
+                 "two-vertex geodesic iterator polygon rejected");
+        t_assert(lineLoopIter.cell == H3_NULL, "iterator moved to exhausted");
+
         GeoPolygon zeroLoop = {.geoloop = {.numVerts = 0, .verts = NULL},
                                .numHoles = 0,
                                .holes = NULL};
@@ -672,6 +707,42 @@ SUITE(h3Memory) {
         t_assert(nullHolesIter.error == E_DOMAIN,
                  "holes count with NULL holes pointer rejected");
         t_assert(nullHolesIter.cell == H3_NULL, "iterator moved to exhausted");
+
+        GeoLoop pointHole = {.numVerts = 1, .verts = pointVerts};
+        GeoPolygon pointHolePoly = {
+            .geoloop = {.numVerts = 3, .verts = outerVerts},
+            .numHoles = 1,
+            .holes = &pointHole};
+        IterCellsPolygonCompact pointHoleIter = {.cell = 0x8001fffffffffff,
+                                                 .error = E_SUCCESS,
+                                                 ._res = 0,
+                                                 ._flags = geodesicFlags,
+                                                 ._polygon = &pointHolePoly,
+                                                 ._bboxes = NULL,
+                                                 ._started = true,
+                                                 .geodesicPoly = NULL};
+        geodesicIteratorStep(&pointHoleIter, pointHoleIter.cell);
+        t_assert(pointHoleIter.error == E_DOMAIN,
+                 "single-vertex geodesic iterator hole rejected");
+        t_assert(pointHoleIter.cell == H3_NULL, "iterator moved to exhausted");
+
+        GeoLoop lineHole = {.numVerts = 2, .verts = lineVerts};
+        GeoPolygon lineHolePoly = {
+            .geoloop = {.numVerts = 3, .verts = outerVerts},
+            .numHoles = 1,
+            .holes = &lineHole};
+        IterCellsPolygonCompact lineHoleIter = {.cell = 0x8001fffffffffff,
+                                                .error = E_SUCCESS,
+                                                ._res = 0,
+                                                ._flags = geodesicFlags,
+                                                ._polygon = &lineHolePoly,
+                                                ._bboxes = NULL,
+                                                ._started = true,
+                                                .geodesicPoly = NULL};
+        geodesicIteratorStep(&lineHoleIter, lineHoleIter.cell);
+        t_assert(lineHoleIter.error == E_DOMAIN,
+                 "two-vertex geodesic iterator hole rejected");
+        t_assert(lineHoleIter.cell == H3_NULL, "iterator moved to exhausted");
 
         GeoPolygon valid = {.geoloop = {.numVerts = 3, .verts = outerVerts},
                             .numHoles = 0,

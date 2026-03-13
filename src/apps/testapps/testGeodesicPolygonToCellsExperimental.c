@@ -252,16 +252,17 @@ SUITE(geodesicPolygonToCellsExperimental) {
     transGeoPolygon.geoloop = transGeoLoop;
     transGeoPolygon.numHoles = 0;
 
-    TEST(edgePoint) {
+    TEST(edgePointRejected) {
         static LatLng point[] = {{-0.0002458237579169511, 0.12401960784313724}};
         static GeoLoop pointLoop = {.numVerts = 1, .verts = point};
         static GeoPolygon pointPolygon;
         pointPolygon.geoloop = pointLoop;
         pointPolygon.numHoles = 0;
 
-        int64_t count =
-            geodesicFillCount(&pointPolygon, 1, CONTAINMENT_OVERLAPPING);
-        t_assert(count == 1, "point should produce exactly one cell");
+        int64_t size = 0;
+        H3Error err = geodesicFill(&pointPolygon, 1, CONTAINMENT_OVERLAPPING,
+                                   &size, NULL);
+        t_assert(err == E_DOMAIN, "single-vertex geodesic loops are rejected");
     }
 
     TEST(geodesicZeroSize) {
@@ -359,30 +360,17 @@ SUITE(geodesicPolygonToCellsExperimental) {
     }
 
     TEST(geodesicPointPolygon) {
-        int64_t centerCount =
-            geodesicFillCount(&pointGeoPolygon, 5, CONTAINMENT_CENTER);
-        int64_t fullCount =
-            geodesicFillCount(&pointGeoPolygon, 5, CONTAINMENT_FULL);
-        int64_t overlapCount =
-            geodesicFillCount(&pointGeoPolygon, 5, CONTAINMENT_OVERLAPPING);
-        t_assert(centerCount >= fullCount,
-                 "point polygon center count should be >= full");
-        t_assert(centerCount <= overlapCount,
-                 "point polygon center count should be <= overlap");
-        t_assert(fullCount == 0, "point polygon full containment empty");
-        t_assert(overlapCount == 1, "point polygon overlapping includes one");
+        int64_t size = 0;
+        H3Error err = geodesicFill(&pointGeoPolygon, 5, CONTAINMENT_OVERLAPPING,
+                                   &size, NULL);
+        t_assert(err == E_DOMAIN, "single-vertex polygon rejected");
     }
 
     TEST(geodesicLinePolygon) {
-        int64_t centerCount =
-            geodesicFillCount(&lineGeoPolygon, 5, CONTAINMENT_CENTER);
-        int64_t fullCount =
-            geodesicFillCount(&lineGeoPolygon, 5, CONTAINMENT_FULL);
-        int64_t overlapCount =
-            geodesicFillCount(&lineGeoPolygon, 5, CONTAINMENT_OVERLAPPING);
-        t_assert(centerCount == 0, "line polygon center includes no cells");
-        t_assert(fullCount == 0, "line polygon full containment empty");
-        t_assert(overlapCount == 2, "line polygon overlapping captures edge");
+        int64_t size = 0;
+        H3Error err = geodesicFill(&lineGeoPolygon, 5, CONTAINMENT_OVERLAPPING,
+                                   &size, NULL);
+        t_assert(err == E_DOMAIN, "two-vertex polygon rejected");
     }
 
     TEST(geodesicInvalidLoopValues) {
@@ -420,15 +408,17 @@ SUITE(geodesicPolygonToCellsExperimental) {
     }
 
     TEST(geodesicPointHolePolygon) {
-        int64_t count =
-            geodesicFillCount(&pointHoleGeoPolygon, 5, CONTAINMENT_OVERLAPPING);
-        t_assert(count == 2469, "point hole ignored for overlap");
+        int64_t size = 0;
+        H3Error err = geodesicFill(&pointHoleGeoPolygon, 5,
+                                   CONTAINMENT_OVERLAPPING, &size, NULL);
+        t_assert(err == E_DOMAIN, "single-vertex hole rejected");
     }
 
     TEST(geodesicLineHolePolygon) {
-        int64_t count =
-            geodesicFillCount(&lineHoleGeoPolygon, 5, CONTAINMENT_OVERLAPPING);
-        t_assert(count == 2469, "line hole ignored for overlap");
+        int64_t size = 0;
+        H3Error err = geodesicFill(&lineHoleGeoPolygon, 5,
+                                   CONTAINMENT_OVERLAPPING, &size, NULL);
+        t_assert(err == E_DOMAIN, "two-vertex hole rejected");
     }
 
     TEST(geodesicInvalidContainmentModes) {

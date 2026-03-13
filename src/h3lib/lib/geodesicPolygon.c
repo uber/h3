@@ -325,7 +325,7 @@ static bool _geoLoopVerticesOnGreatCircle(const GeodesicEdge *edges,
 
 static H3Error _geodesicLoopFromGeo(const GeoLoop *loop, GeodesicLoop *out,
                                     bool rejectLargeLoop) {
-    if (!out || !loop || loop->numVerts <= 0) {
+    if (!out || !loop || loop->numVerts < 3) {
         return E_DOMAIN;
     }
     *out = (GeodesicLoop){0};
@@ -410,7 +410,7 @@ static void _geodesicLoopDestroy(GeodesicLoop *loop) {
 
 H3Error geodesicPolygonCreate(const GeoPolygon *polygon,
                               GeodesicPolygon **out) {
-    if (!polygon || !out || polygon->geoloop.numVerts <= 0) {
+    if (!polygon || !out || polygon->geoloop.numVerts < 3) {
         return E_DOMAIN;
     }
 
@@ -442,7 +442,7 @@ H3Error geodesicPolygonCreate(const GeoPolygon *polygon,
             return E_MEMORY_ALLOC;
         }
         for (int i = 0; i < holeCount; i++) {
-            if (polygon->holes[i].numVerts <= 0) {
+            if (polygon->holes[i].numVerts < 3) {
                 for (int j = 0; j < i; j++) {
                     _geodesicLoopDestroy(&result->holes[j]);
                 }

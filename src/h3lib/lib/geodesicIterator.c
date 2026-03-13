@@ -35,7 +35,7 @@
 static GeodesicPolygon *_getOrCreateGeodesicPolygon(
     IterCellsPolygonCompact *iter) {
     if (iter->geodesicPoly == NULL) {
-        if (iter->_polygon->geoloop.numVerts <= 0) {
+        if (iter->_polygon->geoloop.numVerts < 3) {
             iterErrorPolygonCompact(iter, E_DOMAIN);
             return NULL;
         }
@@ -44,7 +44,7 @@ static GeodesicPolygon *_getOrCreateGeodesicPolygon(
             return NULL;
         }
         for (int i = 0; i < iter->_polygon->numHoles; i++) {
-            if (iter->_polygon->holes[i].numVerts <= 0) {
+            if (iter->_polygon->holes[i].numVerts < 3) {
                 iterErrorPolygonCompact(iter, E_DOMAIN);
                 return NULL;
             }
@@ -131,7 +131,7 @@ void geodesicIteratorStep(IterCellsPolygonCompact *iter, H3Index cell) {
             geodesicPolygonBoundaryIntersects(poly, &boundary, &cap);
 
         if (mode == CONTAINMENT_FULL) {
-            // Center is inside (guaranteed above). Fully inside only if 
+            // Center is inside (guaranteed above). Fully inside only if
             // boundaries do not intersect
             if (!boundaryIntersection) {
                 iter->cell = cell;
@@ -148,7 +148,7 @@ void geodesicIteratorStep(IterCellsPolygonCompact *iter, H3Index cell) {
         }
 
         // Center is outside and no edge intersection. The polygon may
-        // be inside the cell. Check by testing if polygon vertex is 
+        // be inside the cell. Check by testing if polygon vertex is
         // inside the cell.
         H3Index polygonCell;
         Vec3d *firstVert = &poly->geoloop.edges[0].vert;
