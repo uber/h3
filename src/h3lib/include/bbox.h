@@ -24,6 +24,7 @@
 
 #include "h3api.h"
 #include "latLng.h"
+#include "vec3d.h"
 
 /** @struct BBox
  *  @brief  Geographic bounding box with coordinates defined in radians
@@ -34,6 +35,23 @@ typedef struct {
     double east;   ///< east longitude
     double west;   ///< west longitude
 } BBox;
+
+/** @struct AABB
+ *  @brief Axis-aligned bounding box expressed in Cartesian space on the unit
+ *         sphere.
+ */
+typedef struct {
+    Vec3d min;  ///< Minimum corner of the box
+    Vec3d max;  ///< Maximum corner of the box
+} AABB;
+
+/** @struct SphereCap
+ *  @brief Bounding cap described by its center vector and cosine radius.
+ */
+typedef struct {
+    Vec3d center;      ///< Unit vector pointing to the cap center
+    double cosRadius;  ///< Cosine of the angular radius of the cap
+} SphereCap;
 
 double bboxWidthRads(const BBox *bbox);
 double bboxHeightRads(const BBox *bbox);
@@ -51,5 +69,31 @@ void scaleBBox(BBox *bbox, double scale);
 void bboxNormalization(const BBox *a, const BBox *b,
                        LongitudeNormalization *aNormalization,
                        LongitudeNormalization *bNormalization);
+
+/**
+ * Expand an AABB with extrema from the great-circle arc connecting two points.
+ *
+ * @param aabb Axis-aligned bounding box to expand.
+ * @param v1 First endpoint of the arc.
+ * @param v2 Second endpoint of the arc.
+ * @param n Normal vector of the great circle defined by the arc.
+ */
+void aabbUpdateWithArcExtrema(AABB *aabb, const Vec3d *v1, const Vec3d *v2,
+                              const Vec3d *n);
+
+/** Reset an AABB to an empty inverted state (min > max on every axis). */
+void aabbEmptyInverted(AABB *box);
+
+/** Expand an AABB with a single Cartesian point. */
+void aabbUpdateWithVec3d(AABB *aabb, const Vec3d *v);
+
+/**
+ * Compute a bounding sphere cap for a cell index.
+ *
+ * @param cell Cell to bound.
+ * @param out Output bounding cap.
+ * @return `E_SUCCESS` on success, or another error code on failure.
+ */
+H3Error cellToSphereCap(H3Index cell, SphereCap *out);
 
 #endif
