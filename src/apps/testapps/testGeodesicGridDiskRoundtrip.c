@@ -65,8 +65,7 @@ static int traceCellBoundaryPathMismatch(H3Index cell) {
     GeodesicCellBoundary geodesicBoundary = {0};
 
     if (H3_EXPORT(cellToBoundary)(cell, &latLngBoundary) != E_SUCCESS ||
-        H3_EXPORT(cellToGeodesicBoundary)(cell, &geodesicBoundary) !=
-            E_SUCCESS) {
+        cellToGeodesicBoundary(cell, &geodesicBoundary) != E_SUCCESS) {
         fprintf(stderr,
                 "    unable to trace boundary path mismatch for 0x%llx\n",
                 (unsigned long long)cell);
@@ -92,8 +91,7 @@ static int traceCellBoundaryPathMismatch(H3Index cell) {
 static int traceMissingCellAgainstPolygon(const GeoPolygon *polygon,
                                           H3Index missingCell) {
     GeodesicCellBoundary cellBoundary = {0};
-    if (H3_EXPORT(cellToGeodesicBoundary)(missingCell, &cellBoundary) !=
-        E_SUCCESS) {
+    if (cellToGeodesicBoundary(missingCell, &cellBoundary) != E_SUCCESS) {
         fprintf(stderr,
                 "    unable to trace missing cell boundary for 0x%llx\n",
                 (unsigned long long)missingCell);
