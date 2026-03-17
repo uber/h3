@@ -322,8 +322,8 @@ SUITE(cellsToLinkedMultiPolygon) {
         LinkedGeoPolygon polygon;
         H3Index set[] = {0xd60006d60000f100, 0x3c3c403c1300d668};
         int numHexes = ARRAY_SIZE(set);
-        t_assert(H3_EXPORT(cellsToLinkedMultiPolygon)(set, numHexes,
-                                                      &polygon) == E_FAILED,
+        t_assert(H3_EXPORT(cellsToLinkedMultiPolygon)(
+                     set, numHexes, &polygon) == E_CELL_INVALID,
                  "invalid cells fail");
     }
 
@@ -393,8 +393,6 @@ SUITE(cellsToLinkedMultiPolygon) {
     }
 
     // Global polygon: a continuous band of res-1 cells around the equator.
-    // Currently fails with `cellsToLinkedMultiPolygon`, but should succeed
-    // after migrating backend to `cellsToMultiPolygon`.
     TEST(globalEquatorCells) {
         H3Index cells[] = {
             0x81807ffffffffff, 0x817efffffffffff, 0x81723ffffffffff,
@@ -421,8 +419,8 @@ SUITE(cellsToLinkedMultiPolygon) {
         int numCells = ARRAY_SIZE(cells);
 
         LinkedGeoPolygon polygon;
-        t_assert(H3_EXPORT(cellsToLinkedMultiPolygon)(cells, numCells,
-                                                      &polygon) == E_FAILED,
-                 "Global polygon fails with current implementation");
+        t_assertSuccess(
+            H3_EXPORT(cellsToLinkedMultiPolygon)(cells, numCells, &polygon));
+        H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
     }
 }

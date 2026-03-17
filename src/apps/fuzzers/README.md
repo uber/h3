@@ -80,8 +80,6 @@ In addition to the public API, the following internal functions of H3 are covere
 | -------- | ----
 | h3NeighborRotations | [fuzzerInternalAlgos](./fuzzerInternalAlgos.c)
 | directionForNeighbor | [fuzzerInternalAlgos](./fuzzerInternalAlgos.c)
-| h3SetToVertexGraph | [fuzzerInternalAlgos](./fuzzerInternalAlgos.c)
-| _vertexGraphToLinkedGeo | [fuzzerInternalAlgos](./fuzzerInternalAlgos.c)
 | _upAp7Checked | [fuzzerInternalCoordIjk](./fuzzerInternalCoordIjk.c)
 | _upAp7rChecked | [fuzzerInternalCoordIjk](./fuzzerInternalCoordIjk.c)
 | _ijkNormalizeCouldOverflow | [fuzzerInternalCoordIjk](./fuzzerInternalCoordIjk.c)
