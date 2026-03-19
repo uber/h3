@@ -27,7 +27,7 @@ As a C library, bindings can be made to call H3 functions from different program
 
 ## ClickHouse
 
-- [Functions for Working with H3 Indexes](https://clickhouse.tech/docs/en/sql-reference/functions/geo/h3/)
+- [Functions for Working with H3 Indexes](https://clickhouse.com/docs/en/sql-reference/functions/geo/h3/)
 
 ## Clojure 
 
