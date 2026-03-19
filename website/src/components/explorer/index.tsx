@@ -1,6 +1,6 @@
 // Contains code adapted from https://observablehq.com/@nrabinowitz/h3-index-inspector under the ISC license
 
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, ReactNode } from "react";
 import { isValidCell, latLngToCell, getResolution } from "h3-js";
 import {
   Banner,
@@ -14,10 +14,12 @@ import { ExplorerMap } from "./map";
 import { WhereAmIButton } from "./where-am-i";
 import geojson2h3 from "geojson2h3";
 import wkt from "wkt";
+import {Feature, MultiPolygon, Polygon} from "geojson";
 
 const CELL_COUNT_THRESHOLD = 50;
+const CELL_COUNT_UPPER_THRESHOLD = 5000;
 
-function fullyTrim(str) {
+function fullyTrim(str: string) {
   if (!str) {
     return "";
   }
@@ -25,7 +27,7 @@ function fullyTrim(str) {
   return str.trim();
 }
 
-function fullyUnwrap(str) {
+function fullyUnwrap(str: string) {
   if (!str) {
     return "";
   }
@@ -45,7 +47,7 @@ function fullyUnwrap(str) {
   return str;
 }
 
-function maybeDecimalCell(input) {
+function maybeDecimalCell(input: string) {
   try {
     if (/^\d+$/.test(input)) {
       const asBigInt = BigInt(input);
@@ -60,28 +62,33 @@ function maybeDecimalCell(input) {
   return null;
 }
 
-function maybePrefixedHexCell(input) {
+function maybePrefixedHexCell(input: string) {
   if (input && input.startsWith("0x")) {
     return input.substring(2);
   }
   return null;
 }
 
-function geoJsonToCells(geoJson) {
+function geoJsonToCells(geoJson: Feature | Polygon | MultiPolygon, userResolution: number) {
   // TODO: Handle point geometries, lines, etc. Only polygons and multipolygons supported.
+  // TODO: Pass containment in to featureToH3Set.
   if (geoJson.type === "Polygon" || geoJson.type === "MultiPolygon") {
     geoJson = {
       type: "Feature",
       geometry: geoJson,
-    };
+    } as Feature;
   }
+
+  const hasUserResolution = userResolution !== -1;
 
   for (let res = 0; res < 16; res++) {
     const cells = geojson2h3.featureToH3Set(geoJson, res);
-    if (cells.length > CELL_COUNT_THRESHOLD || res === 15) {
+    if ((!hasUserResolution && (cells.length > CELL_COUNT_THRESHOLD || res === 15))
+    || (hasUserResolution && (cells.length > CELL_COUNT_UPPER_THRESHOLD || res === userResolution))) {
       return {
         splitUserInput: cells,
         showCellId: false,
+        showResolutionInput: res,
         inputGeoJson: geoJson,
       };
     }
@@ -89,11 +96,11 @@ function geoJsonToCells(geoJson) {
   return null;
 }
 
-function tryParsePolygonInput(input) {
+function tryParsePolygonInput(input: string, userResolution: number) {
   try {
-    const parsed = JSON.parse(input);
+    const parsed = JSON.parse(input) as Feature;
     if (parsed && parsed.type) {
-      const geoJsonResult = geoJsonToCells(parsed);
+      const geoJsonResult = geoJsonToCells(parsed, userResolution);
       if (geoJsonResult) {
         return geoJsonResult;
       }
@@ -103,9 +110,9 @@ function tryParsePolygonInput(input) {
   }
 
   try {
-    const parsed = wkt.parse(input);
+    const parsed = wkt.parse(input) as Feature;
     if (parsed && parsed.type) {
-      const wktResult = geoJsonToCells(parsed);
+      const wktResult = geoJsonToCells(parsed, userResolution);
       if (wktResult) {
         return wktResult;
       }
@@ -115,7 +122,7 @@ function tryParsePolygonInput(input) {
   }
 }
 
-function doSplitUserInput(userInput) {
+function doSplitUserInput(userInput: string, userResolution: number) {
   if (userInput) {
     // Acceptable inputs, in order of test preference:
     // GeoJSON
@@ -125,12 +132,13 @@ function doSplitUserInput(userInput) {
     // Valid decimal cell ID
     // lat,lng coordinate pairs
 
-    const resultPolygon = tryParsePolygonInput(userInput);
+    const resultPolygon = tryParsePolygonInput(userInput, userResolution);
     if (resultPolygon) {
       return resultPolygon;
     }
 
     let showCellId = false;
+    let showResolutionInput = null;
     const unwrapAnyArray = fullyUnwrap(userInput);
     const split = unwrapAnyArray.split(/\s/).filter((str) => str !== "");
     const result = [];
@@ -143,7 +151,7 @@ function doSplitUserInput(userInput) {
 
       if (isValidCell(currentInput)) {
         result.push(currentInput);
-      } else if (isValidCell(cellIdFromPrefixedHex)) {
+      } else if (cellIdFromPrefixedHex !== null && isValidCell(cellIdFromPrefixedHex)) {
         result.push(cellIdFromPrefixedHex);
         showCellId = true;
       } else if (cellIdFromDecimal) {
@@ -158,40 +166,51 @@ function doSplitUserInput(userInput) {
         const lat = Number.parseFloat(currentInput);
         const lng = Number.parseFloat(nextInput);
 
+        if (userResolution === -1) {
         // Note this order is important for picking to work correctly
         for (let res = 0; res < 16; res++) {
           result.push(latLngToCell(lat, lng, res));
         }
 
-        // consumed, skip next coordinate
-        i++;
         // We don't need to set showCellId, because we are showing multiple cell IDs
         // anyways, so they will be clickable.
+      } else {
+        result.push(latLngToCell(lat, lng, userResolution));
+        showCellId = true;
+      }
+        showResolutionInput = -1;
+        // consumed, skip next coordinate
+        i++;
       }
     }
 
     return {
       splitUserInput: result,
+      showResolutionInput,
       showCellId,
+    inputGeoJson: null,
     };
   }
 
   return {
     splitUserInput: [],
     showCellId: false,
+    showResolutionInput: null,
+    inputGeoJson: null,
   };
 }
 
-function zoomToResolution(zoom) {
+function zoomToResolution(zoom: number) {
   return Math.max(Math.min(zoom / 1.5, 15), 0);
 }
 
-export default function HomeExporer({ children }) {
+export default function HomeExporer({ children }: { children: ReactNode }) {
   const [userInput, setUserInput] = useQueryState("hex", "");
+  const [userResolution, setUserResolution] = useQueryState<number>("res", -1);
 
-  const { splitUserInput, showCellId, inputGeoJson } = useMemo(
-    () => doSplitUserInput(userInput),
-    [userInput],
+  const { splitUserInput, showCellId, inputGeoJson, showResolutionInput } = useMemo(
+    () => doSplitUserInput(userInput, userResolution),
+    [userInput, userResolution],
   );
   const userValidHex = useMemo(
     () => splitUserInput.map(isValidCell).includes(true),
@@ -207,7 +226,7 @@ export default function HomeExporer({ children }) {
   }, [splitUserInput]);
 
   const objectOnClick = useCallback(
-    ({ hex }) => {
+    ({ hex }: { hex: string }) => {
       const asSet = new Set(splitUserInput);
       if (!asSet.delete(hex)) {
         asSet.add(hex);
@@ -217,7 +236,7 @@ export default function HomeExporer({ children }) {
     [splitUserInput, setUserInput],
   );
   const coordinateOnClick = useCallback(
-    ({ coordinate, zoom, resolution }) => {
+    ({ coordinate, zoom, resolution }: { coordinate: [number, number]; zoom: number; resolution?: number }) => {
       if (constantResolution !== undefined) {
         const asSet = new Set(splitUserInput);
         asSet.add(
@@ -252,7 +271,6 @@ export default function HomeExporer({ children }) {
         </HeroExampleContainer>
         <BannerContainer>
           <textarea
-            type="text"
             value={userInput}
             onChange={(e) => {
               setUserInput(e.target.value);
@@ -275,9 +293,23 @@ export default function HomeExporer({ children }) {
               showNavigation={false}
               showDetails={true}
             />
-          ) : (
-            <></>
-          )}
+          ) : null}
+          {showResolutionInput !== null ? (
+            <div>
+              <input type="number" min="0" max="15" placeholder="Resolution" value={`${userResolution}`}
+              onChange={(e) => {
+                try {
+                  const res = parseInt(e.target.value, 10);
+                  if (!isNaN(res) && res >= 0 && res <= 15) {
+                    setUserResolution(res);
+                  }
+                } catch (err) {
+                  // Ignore
+                  console.error(err);
+                }
+              }} />
+            </div>
+          ) : null}
         </BannerContainer>
         <WhereAmIButton setUserInput={setUserInput} />
       </Banner>
