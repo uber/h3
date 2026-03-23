@@ -20,6 +20,24 @@
 #include "test.h"
 #include "utility.h"
 
+/*
+Search a `LinkedGeoPolygon` and return first polygon whose
+outer loop has exactly `n` coords.
+
+Used for order-independent testing of `LinkedGeoPolygon` output.
+Returns the first match, so results are ambiguous if multiple polygons
+share the size outer loop.
+*/
+static LinkedGeoPolygon *findLinkedPolygonByOuterCount(LinkedGeoPolygon *root,
+                                                       int n) {
+    LinkedGeoPolygon *poly = root;
+    while (poly) {
+        if (poly->first && countLinkedCoords(poly->first) == n) return poly;
+        poly = poly->next;
+    }
+    return NULL;
+}
+
 SUITE(cellsToLinkedMultiPolygon) {
     TEST(empty) {
         LinkedGeoPolygon polygon;
@@ -208,21 +226,21 @@ SUITE(cellsToLinkedMultiPolygon) {
         t_assertSuccess(
             H3_EXPORT(cellsToLinkedMultiPolygon)(set, numHexes, &polygon));
 
-        // Note that the polygon order here is arbitrary, making this test
-        // somewhat brittle, but it's difficult to assert correctness otherwise
         t_assert(countLinkedPolygons(&polygon) == 2, "Polygon count correct");
-        t_assert(countLinkedLoops(&polygon) == 2,
-                 "Loop count on first polygon correct");
-        t_assert(countLinkedCoords(polygon.first) == 42,
-                 "Got expected big outer loop");
-        t_assert(countLinkedCoords(polygon.first->next) == 30,
+
+        LinkedGeoPolygon *big = findLinkedPolygonByOuterCount(&polygon, 42);
+        t_assert(big != NULL, "Found big polygon by outer count");
+        t_assert(countLinkedLoops(big) == 2,
+                 "Loop count on big polygon correct");
+        t_assert(countLinkedCoords(big->first->next) == 30,
                  "Got expected big inner loop");
-        t_assert(countLinkedLoops(polygon.next) == 2,
-                 "Loop count on second polygon correct");
-        t_assert(countLinkedCoords(polygon.next->first) == 18,
-                 "Got expected outer loop");
-        t_assert(countLinkedCoords(polygon.next->first->next) == 6,
-                 "Got expected inner loop");
+
+        LinkedGeoPolygon *small = findLinkedPolygonByOuterCount(&polygon, 18);
+        t_assert(small != NULL, "Found small polygon by outer count");
+        t_assert(countLinkedLoops(small) == 2,
+                 "Loop count on small polygon correct");
+        t_assert(countLinkedCoords(small->first->next) == 6,
+                 "Got expected small inner loop");
 
         H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
     }
@@ -244,21 +262,21 @@ SUITE(cellsToLinkedMultiPolygon) {
         t_assertSuccess(
             H3_EXPORT(cellsToLinkedMultiPolygon)(set, numHexes, &polygon));
 
-        // Note that the polygon order here is arbitrary, making this test
-        // somewhat brittle, but it's difficult to assert correctness otherwise
         t_assert(countLinkedPolygons(&polygon) == 2, "Polygon count correct");
-        t_assert(countLinkedLoops(&polygon) == 2,
-                 "Loop count on first polygon correct");
-        t_assert(countLinkedCoords(polygon.first) == 18,
-                 "Got expected outer loop");
-        t_assert(countLinkedCoords(polygon.first->next) == 6,
-                 "Got expected inner loop");
-        t_assert(countLinkedLoops(polygon.next) == 2,
-                 "Loop count on second polygon correct");
-        t_assert(countLinkedCoords(polygon.next->first) == 42,
-                 "Got expected big outer loop");
-        t_assert(countLinkedCoords(polygon.next->first->next) == 30,
+
+        LinkedGeoPolygon *big = findLinkedPolygonByOuterCount(&polygon, 42);
+        t_assert(big != NULL, "Found big polygon by outer count");
+        t_assert(countLinkedLoops(big) == 2,
+                 "Loop count on big polygon correct");
+        t_assert(countLinkedCoords(big->first->next) == 30,
                  "Got expected big inner loop");
+
+        LinkedGeoPolygon *small = findLinkedPolygonByOuterCount(&polygon, 18);
+        t_assert(small != NULL, "Found small polygon by outer count");
+        t_assert(countLinkedLoops(small) == 2,
+                 "Loop count on small polygon correct");
+        t_assert(countLinkedCoords(small->first->next) == 6,
+                 "Got expected small inner loop");
 
         H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
     }
@@ -304,8 +322,8 @@ SUITE(cellsToLinkedMultiPolygon) {
         LinkedGeoPolygon polygon;
         H3Index set[] = {0xd60006d60000f100, 0x3c3c403c1300d668};
         int numHexes = ARRAY_SIZE(set);
-        t_assert(H3_EXPORT(cellsToLinkedMultiPolygon)(set, numHexes,
-                                                      &polygon) == E_FAILED,
+        t_assert(H3_EXPORT(cellsToLinkedMultiPolygon)(
+                     set, numHexes, &polygon) == E_CELL_INVALID,
                  "invalid cells fail");
     }
 
@@ -372,5 +390,37 @@ SUITE(cellsToLinkedMultiPolygon) {
 
             H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
         }
+    }
+
+    // Global polygon: a continuous band of res-1 cells around the equator.
+    TEST(globalEquatorCells) {
+        H3Index cells[] = {
+            0x81807ffffffffff, 0x817efffffffffff, 0x81723ffffffffff,
+            0x817ebffffffffff, 0x817c3ffffffffff, 0x817e3ffffffffff,
+            0x817a3ffffffffff, 0x8166fffffffffff, 0x8172bffffffffff,
+            0x816afffffffffff, 0x81933ffffffffff, 0x8168fffffffffff,
+            0x8188fffffffffff, 0x81853ffffffffff, 0x817f7ffffffffff,
+            0x8180bffffffffff, 0x81783ffffffffff, 0x81743ffffffffff,
+            0x8170bffffffffff, 0x8173bffffffffff, 0x8179bffffffffff,
+            0x817cbffffffffff, 0x8188bffffffffff, 0x81857ffffffffff,
+            0x816f7ffffffffff, 0x8177bffffffffff, 0x81617ffffffffff,
+            0x816f3ffffffffff, 0x8174bffffffffff, 0x8180fffffffffff,
+            0x817a7ffffffffff, 0x81767ffffffffff, 0x81757ffffffffff,
+            0x81957ffffffffff, 0x81787ffffffffff, 0x81847ffffffffff,
+            0x81653ffffffffff, 0x817bbffffffffff, 0x816cfffffffffff,
+            0x816abffffffffff, 0x815f3ffffffffff, 0x817c7ffffffffff,
+            0x8168bffffffffff, 0x818cbffffffffff, 0x818cfffffffffff,
+            0x818afffffffffff, 0x8174fffffffffff, 0x8172fffffffffff,
+            0x8170fffffffffff, 0x816fbffffffffff, 0x81657ffffffffff,
+            0x816c7ffffffffff, 0x8186bffffffffff, 0x81763ffffffffff,
+            0x818a7ffffffffff, 0x8186fffffffffff, 0x81707ffffffffff,
+            0x8182bffffffffff, 0x818f3ffffffffff, 0x8182fffffffffff,
+        };
+        int numCells = ARRAY_SIZE(cells);
+
+        LinkedGeoPolygon polygon;
+        t_assertSuccess(
+            H3_EXPORT(cellsToLinkedMultiPolygon)(cells, numCells, &polygon));
+        H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
     }
 }
