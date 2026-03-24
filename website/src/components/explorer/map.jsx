@@ -31,16 +31,16 @@ const INITIAL_VIEW_STATE = {
 const MAP_STYLE = "mapbox://styles/mapbox/light-v11";
 
 /**
- * 
+ *
  * @param {Object} opts
- * @param {string[]} opts.userInput 
+ * @param {string[]} opts.userInput
  * @param {object | null} opts.inputGeoJson
  * @param {boolean} opts.userValidHex
  * @param {Object} [opts.initialViewState]
  * @param {string} [opts.mapStyle]
  * @param {({ hex: string }) => void | undefined} [opts.objectOnClick]
  * @param {({ coordinate: [number, number], zoom: number, resolution: number }) => void | undefined} [opts.coordinateOnClick]
- * @returns 
+ * @returns
  */
 export function ExplorerMap(opts) {
   const {
