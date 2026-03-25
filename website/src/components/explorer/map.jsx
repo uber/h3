@@ -11,10 +11,12 @@ import { Map } from "react-map-gl";
 import DeckGL from "@deck.gl/react";
 import { H3HexagonLayer } from "@deck.gl/geo-layers";
 import { WebMercatorViewport, FlyToInterpolator, MapView } from "@deck.gl/core";
-import { getRes0Cells, uncompactCells, cellToBoundary } from "h3-js";
+import { cellToBoundary } from "h3-js";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import { MOBILE_CUTOFF_WINDOW_WIDTH } from "../common";
 import { useHex } from "./useHex";
+import { GeoJsonLayer } from "deck.gl";
+import { PathStyleExtension } from "@deck.gl/extensions";
 
 const INITIAL_VIEW_STATE = {
   longitude: -74.012,
@@ -28,28 +30,33 @@ const INITIAL_VIEW_STATE = {
 
 const MAP_STYLE = "mapbox://styles/mapbox/light-v11";
 
-export function ExplorerMap({
-  userInput = [],
-  userValidHex = false,
-  initialViewState = INITIAL_VIEW_STATE,
-  mapStyle = MAP_STYLE,
-  objectOnClick = undefined,
-  coordinateOnClick = undefined,
-}) {
+/**
+ *
+ * @param {Object} opts
+ * @param {string[]} opts.userInput
+ * @param {object | null} opts.inputGeoJson
+ * @param {boolean} opts.userValidHex
+ * @param {Object} [opts.initialViewState]
+ * @param {string} [opts.mapStyle]
+ * @param {({ hex: string }) => void | undefined} [opts.objectOnClick]
+ * @param {({ coordinate: [number, number], zoom: number, resolution: number }) => void | undefined} [opts.coordinateOnClick]
+ * @returns
+ */
+export function ExplorerMap(opts) {
+  const {
+    userInput = [],
+    inputGeoJson = null,
+    userValidHex = false,
+    initialViewState = INITIAL_VIEW_STATE,
+    mapStyle = MAP_STYLE,
+    objectOnClick = undefined,
+    coordinateOnClick = undefined,
+  } = opts;
   const context = useDocusaurusContext();
   const [currentInitialViewState, setCurrentInitialViewState] =
     useState(initialViewState);
   const [deckLoaded, setDeckLoaded] = useState(false);
   const deckRef = useRef();
-  const res0Cells = useMemo(() => getRes0Cells().map((hex) => ({ hex })), []);
-  const res1Cells = useMemo(
-    () => uncompactCells(getRes0Cells(), 1).map((hex) => ({ hex })),
-    [],
-  );
-  const res2Cells = useMemo(
-    () => uncompactCells(getRes0Cells(), 2).map((hex) => ({ hex })),
-    [],
-  );
   const [windowWidth, setWindowWidth] = useState(null);
 
   useEffect(() => {
@@ -132,6 +139,28 @@ export function ExplorerMap({
     addSelectedHexes,
   });
 
+  const inputGeoJsonLayers = inputGeoJson
+    ? [
+        new GeoJsonLayer({
+          id: "userinput",
+          data: inputGeoJson,
+          getFillColor: [0, 0, 0],
+          getLineColor: [100, 100, 100],
+          getLineWidth: 1,
+          lineWidthMinPixels: 1,
+          lineWidthUnits: "pixels",
+          pickable: false,
+          stroked: true,
+          filled: false,
+          // @ts-expect-error
+          getDashArray: [5, 1],
+          dashJustified: true,
+          dashGapPickable: true,
+          extensions: [new PathStyleExtension({ dash: true })],
+        }),
+      ]
+    : [];
+
   const layers = userValidHex
     ? [
         new H3HexagonLayer({
@@ -150,6 +179,7 @@ export function ExplorerMap({
           filled: true,
           getFillColor: [0, 0, 0, 30],
         }),
+        ...inputGeoJsonLayers,
       ]
     : backgroundHexLayers;
 
