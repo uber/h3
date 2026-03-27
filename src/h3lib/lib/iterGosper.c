@@ -45,6 +45,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "coordijk.h"
 #include "h3Assert.h"
 #include "h3Index.h"
 #include "iterators.h"
@@ -55,12 +56,20 @@
 // the hexagon, each repeated 3x for the fractal subdivision at each side.
 // Note: walk_digit[i] == edge_dir[(i/3 + 1) % 6]; the same cyclic sequence
 // of digits, rotated by 1 and each element repeated 3x.
-static const int8_t walk_digit[] = {1, 1, 1, 5, 5, 5, 4, 4, 4,
-                                    6, 6, 6, 2, 2, 2, 3, 3, 3};
+static const Direction walk_digit[] = {
+    K_AXES_DIGIT,  K_AXES_DIGIT,  K_AXES_DIGIT,    // 1,1,1
+    IK_AXES_DIGIT, IK_AXES_DIGIT, IK_AXES_DIGIT,   // 5,5,5
+    I_AXES_DIGIT,  I_AXES_DIGIT,  I_AXES_DIGIT,    // 4,4,4
+    IJ_AXES_DIGIT, IJ_AXES_DIGIT, IJ_AXES_DIGIT,   // 6,6,6
+    J_AXES_DIGIT,  J_AXES_DIGIT,  J_AXES_DIGIT,    // 2,2,2
+    JK_AXES_DIGIT, JK_AXES_DIGIT, JK_AXES_DIGIT};  // 3,3,3
 
 // H3 edge direction at each edge index, in counter-clockwise order around the
 // hexagon. Stored in the directed edge's reserved bits.
-static const int8_t edge_dir[] = {3, 1, 5, 4, 6, 2};
+// Numeric values: {3, 1, 5, 4, 6, 2}
+static const Direction edge_dir[] = {JK_AXES_DIGIT, K_AXES_DIGIT,
+                                     IK_AXES_DIGIT, I_AXES_DIGIT,
+                                     IJ_AXES_DIGIT, J_AXES_DIGIT};
 
 /**
  * Advance the walk along origin cells on the Gosper island boundary,
@@ -96,7 +105,7 @@ static bool advanceOriginCell(int8_t *walkPos, H3Index *h, int8_t r,
     walkPos[r] = (walkPos[r] + 19) % 18;
 
     // Update the child digit
-    int8_t newDigit = walk_digit[walkPos[r]];
+    Direction newDigit = walk_digit[walkPos[r]];
     H3_SET_INDEX_DIGIT(*h, r, newDigit);
 
     // A change in the finest digit is sufficient to detect a cell change.
@@ -144,8 +153,9 @@ void iterStepGosper(IterEdgesGosper *iter) {
         // Cycle through edge indices, skipping the
         // deleted subsequence for pentagons.
         iter->_edgePos++;
-        if (iter->_isPentagon && edge_dir[iter->_edgePos] == 1)
+        if (iter->_isPentagon && edge_dir[iter->_edgePos] == K_AXES_DIGIT) {
             iter->_edgePos++;
+        }
 
         H3_SET_RESERVED_BITS(iter->e, edge_dir[iter->_edgePos]);
     } else {
@@ -186,7 +196,9 @@ IterEdgesGosper iterInitGosper(H3Index h, int childRes) {
         H3_SET_MODE(iter.e, H3_DIRECTEDEDGE_MODE);
         // Skip the deleted subsequence for pentagons (if edge_dir happens
         // to start there)
-        if (NEVER(isPent && edge_dir[iter._edgePos] == 1)) iter._edgePos++;
+        if (NEVER(isPent && edge_dir[iter._edgePos] == K_AXES_DIGIT)) {
+            iter._edgePos++;
+        }
         H3_SET_RESERVED_BITS(iter.e, edge_dir[iter._edgePos]);
         return iter;
     }
