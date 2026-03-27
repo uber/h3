@@ -574,11 +574,6 @@ void _hex2dToVec3(const Vec2d *v, int face, int res, int substrate,
 }
 
 /**
- * Converts hex 2D coordinates to Vec3d through the LatLng path
- * (_hex2dToGeo -> _geoToVec3d), ensuring bitwise-identical results
- * with polygon vertices produced by cellToBoundary.
- *
-/**
  * Determines the center point in spherical coordinates of a cell given by 2D
  * hex coordinates on a particular icosahedral face.
  *
@@ -767,10 +762,6 @@ void _faceIjkPentToCellBoundary(const FaceIJK *h, int res, int start,
 }
 
 /**
- * Generates the cell boundary in 3D coordinates for a pentagonal cell
- * given by a FaceIJK address at a specified resolution.
- *
-/**
  * Get the vertices of a pentagon cell as substrate FaceIJK addresses
  *
  * @param fijk The FaceIJK address of the cell.
@@ -945,10 +936,6 @@ void _faceIjkToCellBoundary(const FaceIJK *h, int res, int start, int length,
     }
 }
 
-/**
- * Generates the cell boundary in 3D coordinates for a cell given by a
- * FaceIJK address at a specified resolution.
- *
 /**
  * Get the vertices of a cell as substrate FaceIJK addresses
  *

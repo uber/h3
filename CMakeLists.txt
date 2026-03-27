@@ -255,6 +255,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testPolyfillInternal.c
     src/apps/testapps/testVec2dInternal.c
     src/apps/testapps/testVec3dInternal.c
+    src/apps/testapps/testVec3d.c
     src/apps/testapps/testDirectedEdge.c
     src/apps/testapps/testDirectedEdgeExhaustive.c
     src/apps/testapps/testLinkedGeoInternal.c
