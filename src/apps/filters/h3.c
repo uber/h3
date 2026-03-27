@@ -1382,7 +1382,7 @@ SUBCOMMAND(compactCells,
 }
 
 SUBCOMMAND(uncompactCells,
-           "Unompacts the provided set of compacted cells."
+           "Uncompacts the provided set of compacted cells. "
            "The uncompacted "
            "cells will be printed one per line to stdout.") {
     // TODO: *Most* of this logic is shared with compactCells. See about DRYing
