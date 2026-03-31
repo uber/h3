@@ -87,17 +87,41 @@ typedef enum {
 
 // Internal functions
 
-void _setIJK(CoordIJK *ijk, int i, int j, int k);
+static inline void _setIJK(CoordIJK *ijk, int i, int j, int k) {
+    ijk->i = i;
+    ijk->j = j;
+    ijk->k = k;
+}
+
 void _vec2ToCoordIJK(const Vec2 *v, CoordIJK *h);
+
 static inline Vec2 _ijkToVec2(CoordIJK h) {
     int i = h.i - h.k;
     int j = h.j - h.k;
     return (Vec2){i - 0.5 * j, j * M_SQRT3_2};
 }
+
 int _ijkMatches(const CoordIJK *c1, const CoordIJK *c2);
-void _ijkAdd(const CoordIJK *h1, const CoordIJK *h2, CoordIJK *sum);
-void _ijkSub(const CoordIJK *h1, const CoordIJK *h2, CoordIJK *diff);
-void _ijkScale(CoordIJK *c, int factor);
+
+static inline void _ijkAdd(const CoordIJK *h1, const CoordIJK *h2,
+                           CoordIJK *sum) {
+    sum->i = h1->i + h2->i;
+    sum->j = h1->j + h2->j;
+    sum->k = h1->k + h2->k;
+}
+
+static inline void _ijkSub(const CoordIJK *h1, const CoordIJK *h2,
+                           CoordIJK *diff) {
+    diff->i = h1->i - h2->i;
+    diff->j = h1->j - h2->j;
+    diff->k = h1->k - h2->k;
+}
+
+static inline void _ijkScale(CoordIJK *c, int factor) {
+    c->i *= factor;
+    c->j *= factor;
+    c->k *= factor;
+}
 bool _ijkNormalizeCouldOverflow(const CoordIJK *ijk);
 void _ijkNormalize(CoordIJK *c);
 Direction _unitIjkToDigit(const CoordIJK *ijk);
@@ -112,8 +136,43 @@ void _downAp3r(CoordIJK *ijk);
 void _neighbor(CoordIJK *ijk, Direction digit);
 void _ijkRotate60ccw(CoordIJK *ijk);
 void _ijkRotate60cw(CoordIJK *ijk);
-Direction _rotate60ccw(Direction digit);
-Direction _rotate60cw(Direction digit);
+static inline Direction _rotate60ccw(Direction digit) {
+    switch (digit) {
+        case K_AXES_DIGIT:
+            return IK_AXES_DIGIT;
+        case IK_AXES_DIGIT:
+            return I_AXES_DIGIT;
+        case I_AXES_DIGIT:
+            return IJ_AXES_DIGIT;
+        case IJ_AXES_DIGIT:
+            return J_AXES_DIGIT;
+        case J_AXES_DIGIT:
+            return JK_AXES_DIGIT;
+        case JK_AXES_DIGIT:
+            return K_AXES_DIGIT;
+        default:
+            return digit;
+    }
+}
+
+static inline Direction _rotate60cw(Direction digit) {
+    switch (digit) {
+        case K_AXES_DIGIT:
+            return JK_AXES_DIGIT;
+        case JK_AXES_DIGIT:
+            return J_AXES_DIGIT;
+        case J_AXES_DIGIT:
+            return IJ_AXES_DIGIT;
+        case IJ_AXES_DIGIT:
+            return I_AXES_DIGIT;
+        case I_AXES_DIGIT:
+            return IK_AXES_DIGIT;
+        case IK_AXES_DIGIT:
+            return K_AXES_DIGIT;
+        default:
+            return digit;
+    }
+}
 int ijkDistance(const CoordIJK *a, const CoordIJK *b);
 void ijkToIj(const CoordIJK *ijk, CoordIJ *ij);
 H3Error ijToIjk(const CoordIJ *ij, CoordIJK *ijk);

@@ -33,20 +33,6 @@
 #define INT32_MAX_3 (INT32_MAX / 3)
 
 /**
- * Sets an IJK coordinate to the specified component values.
- *
- * @param ijk The IJK coordinate to set.
- * @param i The desired i component value.
- * @param j The desired j component value.
- * @param k The desired k component value.
- */
-void _setIJK(CoordIJK *ijk, int i, int j, int k) {
-    ijk->i = i;
-    ijk->j = j;
-    ijk->k = k;
-}
-
-/**
  * Determine the containing hex in ijk+ coordinates for a 2D cartesian
  * coordinate vector (from DGGRID).
  *
@@ -156,44 +142,6 @@ void _vec2ToCoordIJK(const Vec2 *v, CoordIJK *h) {
  */
 int _ijkMatches(const CoordIJK *c1, const CoordIJK *c2) {
     return (c1->i == c2->i && c1->j == c2->j && c1->k == c2->k);
-}
-
-/**
- * Add two ijk coordinates.
- *
- * @param h1 The first set of ijk coordinates.
- * @param h2 The second set of ijk coordinates.
- * @param sum The sum of the two sets of ijk coordinates.
- */
-void _ijkAdd(const CoordIJK *h1, const CoordIJK *h2, CoordIJK *sum) {
-    sum->i = h1->i + h2->i;
-    sum->j = h1->j + h2->j;
-    sum->k = h1->k + h2->k;
-}
-
-/**
- * Subtract two ijk coordinates.
- *
- * @param h1 The first set of ijk coordinates.
- * @param h2 The second set of ijk coordinates.
- * @param diff The difference of the two sets of ijk coordinates (h1 - h2).
- */
-void _ijkSub(const CoordIJK *h1, const CoordIJK *h2, CoordIJK *diff) {
-    diff->i = h1->i - h2->i;
-    diff->j = h1->j - h2->j;
-    diff->k = h1->k - h2->k;
-}
-
-/**
- * Uniformly scale ijk coordinates by a scalar. Works in place.
- *
- * @param c The ijk coordinates to scale.
- * @param factor The scaling factor.
- */
-void _ijkScale(CoordIJK *c, int factor) {
-    c->i *= factor;
-    c->j *= factor;
-    c->k *= factor;
 }
 
 /**
@@ -525,54 +473,6 @@ void _ijkRotate60cw(CoordIJK *ijk) {
     _ijkAdd(ijk, &kVec, ijk);
 
     _ijkNormalize(ijk);
-}
-
-/**
- * Rotates indexing digit 60 degrees counter-clockwise. Returns result.
- *
- * @param digit Indexing digit (between 1 and 6 inclusive)
- */
-Direction _rotate60ccw(Direction digit) {
-    switch (digit) {
-        case K_AXES_DIGIT:
-            return IK_AXES_DIGIT;
-        case IK_AXES_DIGIT:
-            return I_AXES_DIGIT;
-        case I_AXES_DIGIT:
-            return IJ_AXES_DIGIT;
-        case IJ_AXES_DIGIT:
-            return J_AXES_DIGIT;
-        case J_AXES_DIGIT:
-            return JK_AXES_DIGIT;
-        case JK_AXES_DIGIT:
-            return K_AXES_DIGIT;
-        default:
-            return digit;
-    }
-}
-
-/**
- * Rotates indexing digit 60 degrees clockwise. Returns result.
- *
- * @param digit Indexing digit (between 1 and 6 inclusive)
- */
-Direction _rotate60cw(Direction digit) {
-    switch (digit) {
-        case K_AXES_DIGIT:
-            return JK_AXES_DIGIT;
-        case JK_AXES_DIGIT:
-            return J_AXES_DIGIT;
-        case J_AXES_DIGIT:
-            return IJ_AXES_DIGIT;
-        case IJ_AXES_DIGIT:
-            return I_AXES_DIGIT;
-        case I_AXES_DIGIT:
-            return IK_AXES_DIGIT;
-        case IK_AXES_DIGIT:
-            return K_AXES_DIGIT;
-        default:
-            return digit;
-    }
 }
 
 /**
