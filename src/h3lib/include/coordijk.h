@@ -16,13 +16,13 @@
 /** @file coordijk.h
  * @brief   Header file for CoordIJK functions including conversion from lat/lng
  *
- * References two Vec2d cartesian coordinate systems:
+ * References two Vec2 cartesian coordinate systems:
  *
  *    1. gnomonic: face-centered polyhedral gnomonic projection space with
  *             traditional scaling and x-axes aligned with the face Class II
  *             i-axes.
  *
- *    2. Vec2d: local face-centered coordinate system scaled a specific H3 grid
+ *    2. Vec2: local face-centered coordinate system scaled a specific H3 grid
  *             resolution unit length and with x-axes aligned with the local
  *             i-axes
  */
@@ -32,7 +32,7 @@
 
 #include "h3api.h"
 #include "latLng.h"
-#include "vec2d.h"
+#include "vec2.h"
 
 /** @struct CoordIJK
  * @brief IJK hexagon coordinates
@@ -87,8 +87,8 @@ typedef enum {
 // Internal functions
 
 void _setIJK(CoordIJK *ijk, int i, int j, int k);
-void _vec2dToCoordIJK(const Vec2d *v, CoordIJK *h);
-void _ijkToVec2d(const CoordIJK *h, Vec2d *v);
+void _vec2ToCoordIJK(const Vec2 *v, CoordIJK *h);
+void _ijkToVec2(const CoordIJK *h, Vec2 *v);
 int _ijkMatches(const CoordIJK *c1, const CoordIJK *c2);
 void _ijkAdd(const CoordIJK *h1, const CoordIJK *h2, CoordIJK *sum);
 void _ijkSub(const CoordIJK *h1, const CoordIJK *h2, CoordIJK *diff);

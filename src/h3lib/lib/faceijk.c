@@ -30,7 +30,7 @@
 #include "coordijk.h"
 #include "h3Index.h"
 #include "latLng.h"
-#include "vec3d.h"
+#include "vec3.h"
 
 /** square root of 7 and inverse square root of 7 */
 #define M_SQRT7 2.6457513110645905905016157536392604257102
@@ -61,7 +61,7 @@ const LatLng faceCenterGeo[NUM_ICOSA_FACES] = {
 };
 
 /** @brief icosahedron face centers in x/y/z on the unit sphere */
-static const Vec3d faceCenterPoint[NUM_ICOSA_FACES] = {
+static const Vec3 faceCenterPoint[NUM_ICOSA_FACES] = {
     {0.2199307791404606, 0.6583691780274996, 0.7198475378926182},     // face  0
     {-0.2139234834501421, 0.1478171829550703, 0.9656017935214205},    // face  1
     {0.1092625278784797, -0.4811951572873210, 0.8697775121287253},    // face  2
@@ -362,7 +362,7 @@ static const int unitScaleByCIIres[] = {
 };
 
 // Private function declaration
-static void _vec3dToClosestFace(const Vec3d *v3d, int *face, double *sqd);
+static void _vec3ToClosestFace(const Vec3 *v3, int *face, double *sqd);
 
 /**
  * Calculates the azimuth from p1 to p2.
@@ -370,21 +370,21 @@ static void _vec3dToClosestFace(const Vec3d *v3d, int *face, double *sqd);
  * @param p2 The second vector.
  * @return The azimuth in radians.
  */
-static double _vec3dAzimuthRads(const Vec3d *p1, const Vec3d *p2) {
-    Vec3d northPole = {0.0, 0.0, 1.0};
+static double _vec3AzimuthRads(const Vec3 *p1, const Vec3 *p2) {
+    Vec3 northPole = {0.0, 0.0, 1.0};
 
     // local north direction on tangent plane.
     double NdotC = vec3Dot(&northPole, p1);
-    Vec3d northDir = {northPole.x - NdotC * p1->x, northPole.y - NdotC * p1->y,
-                      northPole.z - NdotC * p1->z};
+    Vec3 northDir = {northPole.x - NdotC * p1->x, northPole.y - NdotC * p1->y,
+                     northPole.z - NdotC * p1->z};
     vec3Normalize(&northDir);
 
     // local east direction on tangent plane
-    Vec3d eastDir;
+    Vec3 eastDir;
     vec3Cross(&northDir, p1, &eastDir);
 
     // vector from p1 to p2 on tangent plane
-    Vec3d p2_on_tangent;
+    Vec3 p2_on_tangent;
     double p2dotp1 = vec3Dot(p2, p1);
     p2_on_tangent.x = p2->x - p2dotp1 * p1->x;
     p2_on_tangent.y = p2->y - p2dotp1 * p1->y;
@@ -402,15 +402,15 @@ static double _vec3dAzimuthRads(const Vec3d *p1, const Vec3d *p2) {
  * Encodes a coordinate on the sphere to the corresponding icosahedral face and
  * containing 2D hex coordinates relative to that face center.
  *
- * @param p The Vec3d coordinates to encode.
+ * @param p The Vec3 coordinates to encode.
  * @param res The desired H3 resolution for the encoding.
  * @param face The icosahedral face containing the spherical coordinates.
  * @param v The 2D hex coordinates of the cell containing the point.
  */
-static void _vec3dToVec2d(const Vec3d *p, int res, int *face, Vec2d *v) {
+static void _vec3ToVec2(const Vec3 *p, int res, int *face, Vec2 *v) {
     // determine the icosahedron face
     double sqd;
-    _vec3dToClosestFace(p, face, &sqd);
+    _vec3ToClosestFace(p, face, &sqd);
 
     // cos(r) = 1 - 2 * sin^2(r/2) = 1 - 2 * (sqd / 4) = 1 - sqd/2
     double r = acos(1 - sqd * 0.5);
@@ -421,7 +421,7 @@ static void _vec3dToVec2d(const Vec3d *p, int res, int *face, Vec2d *v) {
     }
 
     // now have face and r, now find CCW theta from CII i-axis
-    double p_az = _vec3dAzimuthRads(&faceCenterPoint[*face], p);
+    double p_az = _vec3AzimuthRads(&faceCenterPoint[*face], p);
     double theta =
         _posAngleRads(faceAxesAzRadsCII[*face][0] - _posAngleRads(p_az));
 
@@ -436,7 +436,7 @@ static void _vec3dToVec2d(const Vec3d *p, int res, int *face, Vec2d *v) {
     r *= INV_RES0_U_GNOMONIC;
     for (int i = 0; i < res; i++) r *= M_SQRT7;
 
-    // we now have (r, theta) in Vec2d with theta ccw from x-axes
+    // we now have (r, theta) in Vec2 with theta ccw from x-axes
 
     // convert to local x,y
     v->x = r * cos(theta);
@@ -444,20 +444,20 @@ static void _vec3dToVec2d(const Vec3d *p, int res, int *face, Vec2d *v) {
 }
 
 /**
- * Encodes a Vec3d coordinate to the FaceIJK address of the containing cell at
+ * Encodes a Vec3 coordinate to the FaceIJK address of the containing cell at
  * the specified resolution.
  *
- * @param p The Vec3d coordinates to encode.
+ * @param p The Vec3 coordinates to encode.
  * @param res The desired H3 resolution for the encoding.
  * @param h The FaceIJK address of the containing cell at resolution res.
  */
-void _vec3dToFaceIjk(const Vec3d *p, int res, FaceIJK *h) {
-    // first convert to Vec2d
-    Vec2d v;
-    _vec3dToVec2d(p, res, &h->face, &v);
+void _vec3ToFaceIjk(const Vec3 *p, int res, FaceIJK *h) {
+    // first convert to Vec2
+    Vec2 v;
+    _vec3ToVec2(p, res, &h->face, &v);
 
     // then convert to ijk+
-    _vec2dToCoordIJK(&v, &h->coord);
+    _vec2ToCoordIJK(&v, &h->coord);
 }
 
 /**
@@ -470,15 +470,14 @@ void _vec3dToFaceIjk(const Vec3d *p, int res, FaceIJK *h) {
  * @param res The H3 resolution of the cell.
  * @param substrate Indicates whether or not this grid is actually a substrate
  *        grid relative to the specified resolution.
- * @param v3d The 3D coordinates of the cell center point.
+ * @param v3 The 3D coordinates of the cell center point.
  */
-void _vec2dToVec3(const Vec2d *v, int face, int res, int substrate,
-                  Vec3d *v3d) {
-    // calculate (r, theta) in Vec2d
-    double r = _v2dMag(v);
+void _vec2ToVec3(const Vec2 *v, int face, int res, int substrate, Vec3 *v3) {
+    // calculate (r, theta) in Vec2
+    double r = _vec2Mag(v);
 
     if (r < EPSILON) {
-        *v3d = faceCenterPoint[face];
+        *v3 = faceCenterPoint[face];
         return;
     }
 
@@ -507,20 +506,20 @@ void _vec2dToVec3(const Vec2d *v, int face, int res, int substrate,
     theta = _posAngleRads(faceAxesAzRadsCII[face][0] - theta);
 
     // now find the point at (r,theta) from the face center
-    const Vec3d *center = &faceCenterPoint[face];
-    Vec3d northPole = {0.0, 0.0, 1.0};
+    const Vec3 *center = &faceCenterPoint[face];
+    Vec3 northPole = {0.0, 0.0, 1.0};
 
     // local north direction on tangent plane.
     // N.B. this will not work if the center is at a pole, but
     // icosahedron faces are not at the poles.
     double NdotC = vec3Dot(&northPole, center);
-    Vec3d northDir = {northPole.x - NdotC * center->x,
-                      northPole.y - NdotC * center->y,
-                      northPole.z - NdotC * center->z};
+    Vec3 northDir = {northPole.x - NdotC * center->x,
+                     northPole.y - NdotC * center->y,
+                     northPole.z - NdotC * center->z};
     vec3Normalize(&northDir);
 
     // local east direction on tangent plane
-    Vec3d eastDir;
+    Vec3 eastDir;
     vec3Cross(&northDir, center, &eastDir);
 
     // Rodrigues' rotation formula, simplified for orthogonal vectors
@@ -528,17 +527,17 @@ void _vec2dToVec3(const Vec2d *v, int face, int res, int substrate,
     // sin(theta) where `center x northDir` is `eastDir`
     double cosTheta = cos(theta);
     double sinTheta = sin(theta);
-    Vec3d dir = {northDir.x * cosTheta + eastDir.x * sinTheta,
-                 northDir.y * cosTheta + eastDir.y * sinTheta,
-                 northDir.z * cosTheta + eastDir.z * sinTheta};
+    Vec3 dir = {northDir.x * cosTheta + eastDir.x * sinTheta,
+                northDir.y * cosTheta + eastDir.y * sinTheta,
+                northDir.z * cosTheta + eastDir.z * sinTheta};
 
     // slerp to get the new point
     double cos_r = cos(r);
     double sin_r = sin(r);
-    v3d->x = center->x * cos_r + dir.x * sin_r;
-    v3d->y = center->y * cos_r + dir.y * sin_r;
-    v3d->z = center->z * cos_r + dir.z * sin_r;
-    vec3Normalize(v3d);
+    v3->x = center->x * cos_r + dir.x * sin_r;
+    v3->y = center->y * cos_r + dir.y * sin_r;
+    v3->z = center->z * cos_r + dir.z * sin_r;
+    vec3Normalize(v3);
 }
 
 /**
@@ -547,12 +546,12 @@ void _vec2dToVec3(const Vec2d *v, int face, int res, int substrate,
  *
  * @param h The FaceIJK address of the cell.
  * @param res The H3 resolution of the cell.
- * @param v3d The 3D coordinates of the cell center point.
+ * @param v3 The 3D coordinates of the cell center point.
  */
-void _faceIjkToVec3(const FaceIJK *h, int res, Vec3d *v3d) {
-    Vec2d v;
-    _ijkToVec2d(&h->coord, &v);
-    _vec2dToVec3(&v, h->face, res, 0, v3d);
+void _faceIjkToVec3(const FaceIJK *h, int res, Vec3 *v3) {
+    Vec2 v;
+    _ijkToVec2(&h->coord, &v);
+    _vec2ToVec3(&v, h->face, res, 0, v3);
 }
 
 /**
@@ -593,12 +592,12 @@ void _faceIjkPentToCellBoundary(const FaceIJK *h, int res, int start,
         // note that Class II pentagons have vertices on the edge,
         // not edge intersections
         if (isResolutionClassIII(res) && vert > start) {
-            // find Vec2d of the two vertexes on the last face
+            // find Vec2 of the two vertexes on the last face
 
             FaceIJK tmpFijk = fijk;
 
-            Vec2d orig2d0;
-            _ijkToVec2d(&lastFijk.coord, &orig2d0);
+            Vec2 orig2d0;
+            _ijkToVec2(&lastFijk.coord, &orig2d0);
 
             int currentToLastDir = adjacentFaceDir[tmpFijk.face][lastFijk.face];
 
@@ -616,17 +615,17 @@ void _faceIjkPentToCellBoundary(const FaceIJK *h, int res, int start,
             _ijkAdd(ijk, &transVec, ijk);
             _ijkNormalize(ijk);
 
-            Vec2d orig2d1;
-            _ijkToVec2d(ijk, &orig2d1);
+            Vec2 orig2d1;
+            _ijkToVec2(ijk, &orig2d1);
 
             // find the appropriate icosa face edge vertexes
             int maxDim = maxDimByCIIres[adjRes];
-            Vec2d v0 = {3.0 * maxDim, 0.0};
-            Vec2d v1 = {-1.5 * maxDim, 3.0 * M_SQRT3_2 * maxDim};
-            Vec2d v2 = {-1.5 * maxDim, -3.0 * M_SQRT3_2 * maxDim};
+            Vec2 v0 = {3.0 * maxDim, 0.0};
+            Vec2 v1 = {-1.5 * maxDim, 3.0 * M_SQRT3_2 * maxDim};
+            Vec2 v2 = {-1.5 * maxDim, -3.0 * M_SQRT3_2 * maxDim};
 
-            Vec2d *edge0;
-            Vec2d *edge1;
+            Vec2 *edge0;
+            Vec2 *edge1;
             switch (adjacentFaceDir[tmpFijk.face][fijk.face]) {
                 case IJ:
                     edge0 = &v0;
@@ -645,11 +644,11 @@ void _faceIjkPentToCellBoundary(const FaceIJK *h, int res, int start,
             }
 
             // find the intersection and add the lat/lng point to the result
-            Vec2d inter;
-            _v2dIntersect(&orig2d0, &orig2d1, edge0, edge1, &inter);
-            Vec3d v3d;
-            _vec2dToVec3(&inter, tmpFijk.face, adjRes, 1, &v3d);
-            vec3ToLatLng(&v3d, &g->verts[g->numVerts]);
+            Vec2 inter;
+            _vec2Intersect(&orig2d0, &orig2d1, edge0, edge1, &inter);
+            Vec3 v3;
+            _vec2ToVec3(&inter, tmpFijk.face, adjRes, 1, &v3);
+            vec3ToLatLng(&v3, &g->verts[g->numVerts]);
             g->numVerts++;
         }
 
@@ -657,11 +656,11 @@ void _faceIjkPentToCellBoundary(const FaceIJK *h, int res, int start,
         // vert == start + NUM_PENT_VERTS is only used to test for possible
         // intersection on last edge
         if (vert < start + NUM_PENT_VERTS) {
-            Vec2d vec;
-            _ijkToVec2d(&fijk.coord, &vec);
-            Vec3d v3d;
-            _vec2dToVec3(&vec, fijk.face, adjRes, 1, &v3d);
-            vec3ToLatLng(&v3d, &g->verts[g->numVerts]);
+            Vec2 vec;
+            _ijkToVec2(&fijk.coord, &vec);
+            Vec3 v3;
+            _vec2ToVec3(&vec, fijk.face, adjRes, 1, &v3);
+            vec3ToLatLng(&v3, &g->verts[g->numVerts]);
             g->numVerts++;
         }
 
@@ -778,23 +777,23 @@ void _faceIjkToCellBoundary(const FaceIJK *h, int res, int start, int length,
         */
         if (isResolutionClassIII(res) && vert > start &&
             fijk.face != lastFace && lastOverage != FACE_EDGE) {
-            // find Vec2d of the two vertexes on original face
+            // find Vec2 of the two vertexes on original face
             int lastV = (v + 5) % NUM_HEX_VERTS;
-            Vec2d orig2d0;
-            _ijkToVec2d(&fijkVerts[lastV].coord, &orig2d0);
+            Vec2 orig2d0;
+            _ijkToVec2(&fijkVerts[lastV].coord, &orig2d0);
 
-            Vec2d orig2d1;
-            _ijkToVec2d(&fijkVerts[v].coord, &orig2d1);
+            Vec2 orig2d1;
+            _ijkToVec2(&fijkVerts[v].coord, &orig2d1);
 
             // find the appropriate icosa face edge vertexes
             int maxDim = maxDimByCIIres[adjRes];
-            Vec2d v0 = {3.0 * maxDim, 0.0};
-            Vec2d v1 = {-1.5 * maxDim, 3.0 * M_SQRT3_2 * maxDim};
-            Vec2d v2 = {-1.5 * maxDim, -3.0 * M_SQRT3_2 * maxDim};
+            Vec2 v0 = {3.0 * maxDim, 0.0};
+            Vec2 v1 = {-1.5 * maxDim, 3.0 * M_SQRT3_2 * maxDim};
+            Vec2 v2 = {-1.5 * maxDim, -3.0 * M_SQRT3_2 * maxDim};
 
             int face2 = ((lastFace == centerIJK.face) ? fijk.face : lastFace);
-            Vec2d *edge0;
-            Vec2d *edge1;
+            Vec2 *edge0;
+            Vec2 *edge1;
             switch (adjacentFaceDir[centerIJK.face][face2]) {
                 case IJ:
                     edge0 = &v0;
@@ -813,19 +812,19 @@ void _faceIjkToCellBoundary(const FaceIJK *h, int res, int start, int length,
             }
 
             // find the intersection and add the lat/lng point to the result
-            Vec2d inter;
-            _v2dIntersect(&orig2d0, &orig2d1, edge0, edge1, &inter);
+            Vec2 inter;
+            _vec2Intersect(&orig2d0, &orig2d1, edge0, edge1, &inter);
             /*
             If a point of intersection occurs at a hexagon vertex, then each
             adjacent hexagon edge will lie completely on a single icosahedron
             face, and no additional vertex is required.
             */
-            bool isIntersectionAtVertex = _v2dAlmostEquals(&orig2d0, &inter) ||
-                                          _v2dAlmostEquals(&orig2d1, &inter);
+            bool isIntersectionAtVertex = _vec2AlmostEquals(&orig2d0, &inter) ||
+                                          _vec2AlmostEquals(&orig2d1, &inter);
             if (!isIntersectionAtVertex) {
-                Vec3d v3d;
-                _vec2dToVec3(&inter, centerIJK.face, adjRes, 1, &v3d);
-                vec3ToLatLng(&v3d, &g->verts[g->numVerts]);
+                Vec3 v3;
+                _vec2ToVec3(&inter, centerIJK.face, adjRes, 1, &v3);
+                vec3ToLatLng(&v3, &g->verts[g->numVerts]);
                 g->numVerts++;
             }
         }
@@ -834,11 +833,11 @@ void _faceIjkToCellBoundary(const FaceIJK *h, int res, int start, int length,
         // vert == start + NUM_HEX_VERTS is only used to test for possible
         // intersection on last edge
         if (vert < start + NUM_HEX_VERTS) {
-            Vec2d vec;
-            _ijkToVec2d(&fijk.coord, &vec);
-            Vec3d v3d;
-            _vec2dToVec3(&vec, fijk.face, adjRes, 1, &v3d);
-            vec3ToLatLng(&v3d, &g->verts[g->numVerts]);
+            Vec2 vec;
+            _ijkToVec2(&fijk.coord, &vec);
+            Vec3 v3;
+            _vec2ToVec3(&vec, fijk.face, adjRes, 1, &v3);
+            vec3ToLatLng(&v3, &g->verts[g->numVerts]);
             g->numVerts++;
         }
 
@@ -1002,21 +1001,21 @@ Overage _adjustPentVertOverage(FaceIJK *fijk, int res) {
 }
 
 /**
- * Encodes a Vec3d coordinate to the corresponding icosahedral face and
+ * Encodes a Vec3 coordinate to the corresponding icosahedral face and
  * squared euclidean distance to that face center.
  *
- * @param v3d The Vec3d coordinates to encode.
+ * @param v3 The Vec3 coordinates to encode.
  * @param face The icosahedral face containing the coordinates.
  * @param sqd The squared euclidean distance to its icosahedral face center.
  */
-static void _vec3dToClosestFace(const Vec3d *v3d, int *face, double *sqd) {
+static void _vec3ToClosestFace(const Vec3 *v3, int *face, double *sqd) {
     // determine the icosahedron face
     *face = 0;
     // The distance between two farthest points is 2.0, therefore the square of
     // the distance between two points should always be less or equal than 4.0 .
     *sqd = 5.0;
     for (int f = 0; f < NUM_ICOSA_FACES; ++f) {
-        double sqdT = vec3DistSq(&faceCenterPoint[f], v3d);
+        double sqdT = vec3DistSq(&faceCenterPoint[f], v3);
         if (sqdT < *sqd) {
             *face = f;
             *sqd = sqdT;

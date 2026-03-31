@@ -22,7 +22,7 @@
 #include <stdlib.h>
 
 #include "faceijk.h"
-#include "vec3d.h"
+#include "vec3.h"
 
 /** @brief icosahedron face centers in lat/lng radians. Copied from faceijk.c.
  */
@@ -53,11 +53,11 @@ const LatLng faceCenterGeoCopy[NUM_ICOSA_FACES] = {
  * Generates and prints the faceCenterPoint table.
  */
 static void generate(void) {
-    printf("static const Vec3d faceCenterPoint[NUM_ICOSA_FACES] = {\n");
+    printf("static const Vec3 faceCenterPoint[NUM_ICOSA_FACES] = {\n");
     for (int i = 0; i < NUM_ICOSA_FACES; i++) {
         LatLng centerCoords = faceCenterGeoCopy[i];
-        Vec3d centerPoint;
-        _geoToVec3d(&centerCoords, &centerPoint);
+        Vec3 centerPoint;
+        latLngToVec3(&centerCoords, &centerPoint);
         printf("    {%.16f, %.16f, %.16f}, // face %2d\n", centerPoint.x,
                centerPoint.y, centerPoint.z, i);
     }

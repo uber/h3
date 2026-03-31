@@ -16,7 +16,7 @@
 /** @file faceijk.h
  * @brief   FaceIJK functions including conversion to/from lat/lng.
  *
- *  References the Vec2d cartesian coordinate system: local face-centered
+ *  References the Vec2 cartesian coordinate system: local face-centered
  *     coordinate system scaled a specific H3 grid resolution unit length and
  *     with x-axes aligned with the local i-axes
  */
@@ -26,8 +26,8 @@
 
 #include "coordijk.h"
 #include "latLng.h"
-#include "vec2d.h"
-#include "vec3d.h"
+#include "vec2.h"
+#include "vec3.h"
 
 /** @struct FaceIJK
  * @brief Face number and ijk coordinates on that face-centered coordinate
@@ -73,8 +73,8 @@ typedef enum {
 
 // Internal functions
 
-void _vec3dToFaceIjk(const Vec3d *p, int res, FaceIJK *h);
-void _faceIjkToVec3(const FaceIJK *h, int res, Vec3d *v3d);
+void _vec3ToFaceIjk(const Vec3 *p, int res, FaceIJK *h);
+void _faceIjkToVec3(const FaceIJK *h, int res, Vec3 *v3);
 void _faceIjkToCellBoundary(const FaceIJK *h, int res, int start, int length,
                             CellBoundary *g);
 void _faceIjkPentToCellBoundary(const FaceIJK *h, int res, int start,

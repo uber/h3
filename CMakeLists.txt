@@ -157,8 +157,8 @@ set(LIB_SOURCE_FILES
     src/h3lib/include/h3Index.h
     src/h3lib/include/directedEdge.h
     src/h3lib/include/latLng.h
-    src/h3lib/include/vec2d.h
-    src/h3lib/include/vec3d.h
+    src/h3lib/include/vec2.h
+    src/h3lib/include/vec3.h
     src/h3lib/include/linkedGeo.h
     src/h3lib/include/localij.h
     src/h3lib/include/baseCells.h
@@ -179,8 +179,8 @@ set(LIB_SOURCE_FILES
     src/h3lib/lib/polygon.c
     src/h3lib/lib/polyfill.c
     src/h3lib/lib/h3Index.c
-    src/h3lib/lib/vec2d.c
-    src/h3lib/lib/vec3d.c
+    src/h3lib/lib/vec2.c
+    src/h3lib/lib/vec3.c
     src/h3lib/lib/vertex.c
     src/h3lib/lib/linkedGeo.c
     src/h3lib/lib/localij.c
@@ -253,9 +253,9 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testVertexExhaustive.c
     src/apps/testapps/testPolygonInternal.c
     src/apps/testapps/testPolyfillInternal.c
-    src/apps/testapps/testVec2dInternal.c
-    src/apps/testapps/testVec3dInternal.c
-    src/apps/testapps/testVec3d.c
+    src/apps/testapps/testVec2Internal.c
+    src/apps/testapps/testVec3Internal.c
+    src/apps/testapps/testVec3.c
     src/apps/testapps/testDirectedEdge.c
     src/apps/testapps/testDirectedEdgeExhaustive.c
     src/apps/testapps/testLinkedGeoInternal.c

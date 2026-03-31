@@ -13,36 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** @file vec3d.h
+/** @file vec3.h
  * @brief   3D floating point vector functions.
  */
 
-#ifndef VEC3D_H
-#define VEC3D_H
+#ifndef VEC3_H
+#define VEC3_H
 
 #include "h3api.h"
 #include "latLng.h"
 
-/** @struct Vec3d
+/** @struct Vec3
  *  @brief 3D floating point structure
  *
  *  For geodesic calulations represents a point on the surface of the Earth
  *  as a unit vector in 3D Cartesian space (ECEF-like coordinates).
  */
 typedef struct {
-    double x;  ///< x component (towards 0° lat, 0° lon)
-    double y;  ///< y component (towards 0° lat, 90° lon)
+    double x;  ///< x component (towards 0deg lat, 0deg lon)
+    double y;  ///< y component (towards 0deg lat, 90deg lon)
     double z;  ///< z component (towards north pole)
-} Vec3d;
+} Vec3;
 
-void _geoToVec3d(const LatLng *geo, Vec3d *point);
-double vec3Dot(const Vec3d *v1, const Vec3d *v2);
-void vec3Cross(const Vec3d *v1, const Vec3d *v2, Vec3d *out);
-void vec3Normalize(Vec3d *v);
-double vec3MagSq(const Vec3d *v);
-double vec3Mag(const Vec3d *v);
-double vec3DistSq(const Vec3d *v1, const Vec3d *v2);
-void latLngToVec3(const LatLng *geo, Vec3d *v);
-void vec3ToLatLng(const Vec3d *v, LatLng *geo);
+double vec3Dot(const Vec3 *v1, const Vec3 *v2);
+void vec3Cross(const Vec3 *v1, const Vec3 *v2, Vec3 *out);
+void vec3Normalize(Vec3 *v);
+double vec3MagSq(const Vec3 *v);
+double vec3Mag(const Vec3 *v);
+double vec3DistSq(const Vec3 *v1, const Vec3 *v2);
+void latLngToVec3(const LatLng *geo, Vec3 *v);
+void vec3ToLatLng(const Vec3 *v, LatLng *geo);
 
 #endif

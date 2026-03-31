@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-/** @file testVec3d.c
- * @brief Tests the vec3d helpers used by the geodesic polyfill path.
+/** @file testVec3.c
+ * @brief Tests the Vec3 helpers used by the geodesic polyfill path.
  */
 
 #include <math.h>
@@ -23,19 +23,19 @@
 #include "constants.h"
 #include "h3Index.h"
 #include "test.h"
-#include "vec3d.h"
+#include "vec3.h"
 
-SUITE(Vec3d) {
+SUITE(Vec3) {
     TEST(dotProduct) {
-        Vec3d a = {.x = 1.0, .y = 0.0, .z = 0.0};
-        Vec3d b = {.x = -1.0, .y = 0.0, .z = 0.0};
+        Vec3 a = {.x = 1.0, .y = 0.0, .z = 0.0};
+        Vec3 b = {.x = -1.0, .y = 0.0, .z = 0.0};
         t_assert(vec3Dot(&a, &b) == -1.0, "dot product matches expected value");
     }
 
     TEST(crossProductOrthogonality) {
-        Vec3d i = {.x = 1.0, .y = 0.0, .z = 0.0};
-        Vec3d j = {.x = 0.0, .y = 1.0, .z = 0.0};
-        Vec3d k;
+        Vec3 i = {.x = 1.0, .y = 0.0, .z = 0.0};
+        Vec3 j = {.x = 0.0, .y = 1.0, .z = 0.0};
+        Vec3 k;
         vec3Cross(&i, &j, &k);
         t_assert(fabs(k.x - 0.0) < EPSILON, "x component zero");
         t_assert(fabs(k.y - 0.0) < EPSILON, "y component zero");
@@ -45,7 +45,7 @@ SUITE(Vec3d) {
     }
 
     TEST(normalizeAndMagnitude) {
-        Vec3d v = {.x = 3.0, .y = -4.0, .z = 12.0};
+        Vec3 v = {.x = 3.0, .y = -4.0, .z = 12.0};
         double magSq = vec3MagSq(&v);
         t_assert(fabs(magSq - 169.0) < EPSILON, "magnitude squared matches");
         t_assert(fabs(vec3Mag(&v) - 13.0) < EPSILON, "magnitude matches");
@@ -53,38 +53,29 @@ SUITE(Vec3d) {
         vec3Normalize(&v);
         t_assert(fabs(vec3Mag(&v) - 1.0) < 1e-12, "normalized vector is unit");
 
-        Vec3d zero = {.x = 0.0, .y = 0.0, .z = 0.0};
+        Vec3 zero = {.x = 0.0, .y = 0.0, .z = 0.0};
         vec3Normalize(&zero);
         t_assert(zero.x == 0.0 && zero.y == 0.0 && zero.z == 0.0,
                  "zero vector remains unchanged when normalizing");
     }
 
     TEST(distance) {
-        Vec3d a = {.x = 0.0, .y = 0.0, .z = 0.0};
-        Vec3d b = {.x = 1.0, .y = 2.0, .z = 2.0};
+        Vec3 a = {.x = 0.0, .y = 0.0, .z = 0.0};
+        Vec3 b = {.x = 1.0, .y = 2.0, .z = 2.0};
         t_assert(fabs(vec3DistSq(&a, &b) - 9.0) < EPSILON,
                  "distance squared matches");
     }
 
-    TEST(latLngConversionConsistency) {
+    TEST(latLngToVec3_unitSphere) {
         LatLng geo = {.lat = 0.5, .lng = -1.3};
-        Vec3d viaReturn;
-        latLngToVec3(&geo, &viaReturn);
-        Vec3d viaOut;
-        _geoToVec3d(&geo, &viaOut);
-
-        t_assert(fabs(viaReturn.x - viaOut.x) < EPSILON,
-                 "x coordinate consistent");
-        t_assert(fabs(viaReturn.y - viaOut.y) < EPSILON,
-                 "y coordinate consistent");
-        t_assert(fabs(viaReturn.z - viaOut.z) < EPSILON,
-                 "z coordinate consistent");
-        t_assert(fabs(vec3Mag(&viaReturn) - 1.0) < 1e-12,
+        Vec3 v;
+        latLngToVec3(&geo, &v);
+        t_assert(fabs(vec3Mag(&v) - 1.0) < 1e-12,
                  "converted vector lives on the unit sphere");
     }
 
     TEST(vec3ToCell_invalidRes) {
-        Vec3d v = {.x = 1.0, .y = 0.0, .z = 0.0};
+        Vec3 v = {.x = 1.0, .y = 0.0, .z = 0.0};
         H3Index out;
         t_assert(vec3ToCell(&v, -1, &out) == E_RES_DOMAIN,
                  "negative resolution is rejected");
@@ -94,12 +85,12 @@ SUITE(Vec3d) {
 
     TEST(vec3ToCell_nonFinite) {
         H3Index out;
-        Vec3d nan_x = {.x = NAN, .y = 0.0, .z = 0.0};
+        Vec3 nan_x = {.x = NAN, .y = 0.0, .z = 0.0};
         t_assert(vec3ToCell(&nan_x, 0, &out) == E_DOMAIN, "NaN x is rejected");
-        Vec3d inf_y = {.x = 0.0, .y = INFINITY, .z = 0.0};
+        Vec3 inf_y = {.x = 0.0, .y = INFINITY, .z = 0.0};
         t_assert(vec3ToCell(&inf_y, 0, &out) == E_DOMAIN,
                  "infinite y is rejected");
-        Vec3d inf_z = {.x = 0.0, .y = 0.0, .z = -INFINITY};
+        Vec3 inf_z = {.x = 0.0, .y = 0.0, .z = -INFINITY};
         t_assert(vec3ToCell(&inf_z, 0, &out) == E_DOMAIN,
                  "infinite z is rejected");
     }

@@ -17,27 +17,27 @@
 #include <math.h>
 
 #include "test.h"
-#include "vec3d.h"
+#include "vec3.h"
 
-SUITE(Vec3dInternal) {
-    TEST(_geoToVec3d) {
-        Vec3d origin = {0};
+SUITE(Vec3Internal) {
+    TEST(latLngToVec3) {
+        Vec3 origin = {0};
 
         LatLng c1 = {0, 0};
-        Vec3d p1;
-        _geoToVec3d(&c1, &p1);
+        Vec3 p1;
+        latLngToVec3(&c1, &p1);
         t_assert(fabs(vec3DistSq(&origin, &p1) - 1) < EPSILON_RAD,
                  "Geo point is on the unit sphere");
 
         LatLng c2 = {M_PI_2, 0};
-        Vec3d p2;
-        _geoToVec3d(&c2, &p2);
+        Vec3 p2;
+        latLngToVec3(&c2, &p2);
         t_assert(fabs(vec3DistSq(&p1, &p2) - 2) < EPSILON_RAD,
                  "Geo point is on another axis");
 
         LatLng c3 = {M_PI, 0};
-        Vec3d p3;
-        _geoToVec3d(&c3, &p3);
+        Vec3 p3;
+        latLngToVec3(&c3, &p3);
         t_assert(fabs(vec3DistSq(&p1, &p3) - 4) < EPSILON_RAD,
                  "Geo point is the other side of the sphere");
     }

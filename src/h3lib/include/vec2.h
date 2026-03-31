@@ -13,32 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** @file vec2d.h
+/** @file vec2.h
  * @brief   2D floating point vector functions.
  */
 
-#ifndef VEC2D_H
-#define VEC2D_H
+#ifndef VEC2_H
+#define VEC2_H
 
 #include <stdbool.h>
 
-/** @struct Vec2d
+/** @struct Vec2
  *  @brief 2D floating-point vector
  *
- *  Represents a point in the face-local Vec2d coordinate system:
+ *  Represents a point in the face-local Vec2 coordinate system:
  *  an orthogonal 2D plane centered on an icosahedron face, with the
  *  x-axis aligned to the face's i-axis and y perpendicular to it.
  */
 typedef struct {
     double x;  ///< x component (aligned with face i-axis)
     double y;  ///< y component (perpendicular to face i-axis)
-} Vec2d;
+} Vec2;
 
 // Internal functions
 
-double _v2dMag(const Vec2d *v);
-void _v2dIntersect(const Vec2d *p0, const Vec2d *p1, const Vec2d *p2,
-                   const Vec2d *p3, Vec2d *inter);
-bool _v2dAlmostEquals(const Vec2d *p0, const Vec2d *p1);
+double _vec2Mag(const Vec2 *v);
+void _vec2Intersect(const Vec2 *p0, const Vec2 *p1, const Vec2 *p2,
+                    const Vec2 *p3, Vec2 *inter);
+bool _vec2AlmostEquals(const Vec2 *p0, const Vec2 *p1);
 
 #endif

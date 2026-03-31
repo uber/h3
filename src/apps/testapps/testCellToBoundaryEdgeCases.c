@@ -28,7 +28,7 @@ SUITE(cellToBoundaryEdgeCases) {
     TEST(doublePrecisionVertex) {
         // The carefully constructed case here:
         // - A res 1 pentagon cell with distortion vertexes that change
-        //   when we use a double instead of a float in _v2dIntersect
+        //   when we use a double instead of a float in _vec2Intersect
         // - One of the previous (float-based) distortion vertexes
         // This is the only case yet found where a point indexed to the
         // cell is shown to be incorrectly outside of the geo boundary
