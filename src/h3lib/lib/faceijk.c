@@ -366,8 +366,8 @@ static const int unitScaleByCIIres[] = {
  * containing the squared euclidean distance to that face center.
  *
  * @param v3 The Vec3 coordinates to encode.
- * @param face The icosahedral face containing the coordinates.
- * @param sqd The squared euclidean distance to its icosahedral face center.
+ * @param face Output: the icosahedral face containing the coordinates.
+ * @param sqd Output: the squared euclidean distance to its face center.
  */
 static void _vec3ToClosestFace(const Vec3 *v3, int *face, double *sqd) {
     *face = 0;
@@ -427,8 +427,8 @@ static double _vec3AzimuthRads(const Vec3 *p1, const Vec3 *p2) {
  *
  * @param p The Vec3 coordinates to encode.
  * @param res The desired H3 resolution for the encoding.
- * @param face The icosahedral face containing the spherical coordinates.
- * @param v The 2D hex coordinates of the cell containing the point.
+ * @param face Output: the icosahedral face containing the coordinates.
+ * @param v Output: the 2D hex coordinates of the cell containing the point.
  */
 static void _vec3ToVec2(const Vec3 *p, int res, int *face, Vec2 *v) {
     // determine the icosahedron face
@@ -531,12 +531,11 @@ Vec3 _vec2ToVec3(Vec2 v, int face, int res, int substrate) {
  *
  * @param h The FaceIJK address of the cell.
  * @param res The H3 resolution of the cell.
- * @param v3 The 3D coordinates of the cell center point.
  */
-void _faceIjkToVec3(const FaceIJK *h, int res, Vec3 *v3) {
+Vec3 _faceIjkToVec3(const FaceIJK *h, int res) {
     Vec2 v;
     _ijkToVec2(&h->coord, &v);
-    *v3 = _vec2ToVec3(v, h->face, res, 0);
+    return _vec2ToVec3(v, h->face, res, 0);
 }
 
 /**
@@ -547,7 +546,7 @@ void _faceIjkToVec3(const FaceIJK *h, int res, Vec3 *v3) {
  * @param res The H3 resolution of the cell.
  * @param start The first topological vertex to return.
  * @param length The number of topological vertexes to return.
- * @param g The spherical coordinates of the cell boundary.
+ * @param g Output: the spherical coordinates of the cell boundary.
  */
 void _faceIjkPentToCellBoundary(const FaceIJK *h, int res, int start,
                                 int length, CellBoundary *g) {
@@ -655,9 +654,8 @@ void _faceIjkPentToCellBoundary(const FaceIJK *h, int res, int start,
  * Get the vertices of a pentagon cell as substrate FaceIJK addresses
  *
  * @param fijk The FaceIJK address of the cell.
- * @param res The H3 resolution of the cell. This may be adjusted if
- *            necessary for the substrate grid resolution.
- * @param fijkVerts Output array for the vertices
+ * @param res In/out: the H3 resolution of the cell, adjusted for substrate.
+ * @param fijkVerts Output: array for the vertices.
  */
 void _faceIjkPentToVerts(FaceIJK *fijk, int *res, FaceIJK *fijkVerts) {
     // the vertexes of an origin-centered pentagon in a Class II resolution on a
@@ -721,7 +719,7 @@ void _faceIjkPentToVerts(FaceIJK *fijk, int *res, FaceIJK *fijkVerts) {
  * @param res The H3 resolution of the cell.
  * @param start The first topological vertex to return.
  * @param length The number of topological vertexes to return.
- * @param g The spherical coordinates of the cell boundary.
+ * @param g Output: the spherical coordinates of the cell boundary.
  */
 void _faceIjkToCellBoundary(const FaceIJK *h, int res, int start, int length,
                             CellBoundary *g) {
@@ -831,9 +829,8 @@ void _faceIjkToCellBoundary(const FaceIJK *h, int res, int start, int length,
  * Get the vertices of a cell as substrate FaceIJK addresses
  *
  * @param fijk The FaceIJK address of the cell.
- * @param res The H3 resolution of the cell. This may be adjusted if
- *            necessary for the substrate grid resolution.
- * @param fijkVerts Output array for the vertices
+ * @param res In/out: the H3 resolution of the cell, adjusted for substrate.
+ * @param fijkVerts Output: array for the vertices.
  */
 void _faceIjkToVerts(FaceIJK *fijk, int *res, FaceIJK *fijkVerts) {
     // the vertexes of an origin-centered cell in a Class II resolution on a
