@@ -61,13 +61,18 @@ int main(void) {
         }
     }
 
-    // Pre-compute directed edges
+    // Pre-compute directed edges and vertices
     H3Index edges[N_POINTS * N_RESOLUTIONS];
+    H3Index verts[N_POINTS * N_RESOLUTIONS];
     int nEdges = 0;
+    int nVerts = 0;
     for (int c = 0; c < nCells; c++) {
-        H3Index out[6];
-        H3_EXPORT(originToDirectedEdges)(cells[c], out);
-        edges[nEdges++] = out[0];
+        H3Index edgeOut[6];
+        H3_EXPORT(originToDirectedEdges)(cells[c], edgeOut);
+        edges[nEdges++] = edgeOut[0];
+        H3Index vertOut[6];
+        H3_EXPORT(cellToVertexes)(cells[c], vertOut);
+        verts[nVerts++] = vertOut[0];
     }
 
     // Benchmark latLngToCell
@@ -129,6 +134,21 @@ int main(void) {
         }
         END_TIMER(duration);
         printf("directedEdgeToBoundary: %.4Lf us/call (%d calls)\n",
+               duration / totalCalls, totalCalls);
+    }
+
+    // Benchmark vertexToLatLng
+    {
+        LatLng out;
+        int totalCalls = ITERATIONS * nVerts;
+        START_TIMER;
+        for (int iter = 0; iter < ITERATIONS; iter++) {
+            for (int v = 0; v < nVerts; v++) {
+                H3_EXPORT(vertexToLatLng)(verts[v], &out);
+            }
+        }
+        END_TIMER(duration);
+        printf("vertexToLatLng: %.4Lf us/call (%d calls)\n",
                duration / totalCalls, totalCalls);
     }
 
