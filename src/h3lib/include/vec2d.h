@@ -24,10 +24,14 @@
 
 /** @struct Vec2d
  *  @brief 2D floating-point vector
+ *
+ *  Represents a point in the face-local Vec2d coordinate system:
+ *  an orthogonal 2D plane centered on an icosahedron face, with the
+ *  x-axis aligned to the face's i-axis and y perpendicular to it.
  */
 typedef struct {
-    double x;  ///< x component
-    double y;  ///< y component
+    double x;  ///< x component (aligned with face i-axis)
+    double y;  ///< y component (perpendicular to face i-axis)
 } Vec2d;
 
 // Internal functions

@@ -53,7 +53,7 @@ void _setIJK(CoordIJK *ijk, int i, int j, int k) {
  * @param v The 2D cartesian coordinate vector.
  * @param h The ijk+ coordinates of the containing hex.
  */
-void _hex2dToCoordIJK(const Vec2d *v, CoordIJK *h) {
+void _vec2dToCoordIJK(const Vec2d *v, CoordIJK *h) {
     double a1, a2;
     double x1, x2;
     int m1, m2;
@@ -152,7 +152,7 @@ void _hex2dToCoordIJK(const Vec2d *v, CoordIJK *h) {
  * @param h The ijk coordinates of the hex.
  * @param v The 2D cartesian coordinates of the hex center point.
  */
-void _ijkToHex2d(const CoordIJK *h, Vec2d *v) {
+void _ijkToVec2d(const CoordIJK *h, Vec2d *v) {
     int i = h->i - h->k;
     int j = h->j - h->k;
 
