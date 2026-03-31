@@ -469,13 +469,15 @@ static void _vec3ToVec2(const Vec3 *p, int res, int *face, Vec2 *v) {
 /**
  * Encodes a Vec3 coordinate to the FaceIJK address of the containing cell at
  * the specified resolution.
+ *
+ * @param p The Vec3 coordinates to encode.
+ * @param res The desired H3 resolution for the encoding.
+ * @param h Output: the FaceIJK address of the containing cell.
  */
-FaceIJK _vec3ToFaceIjk(Vec3 p, int res) {
-    FaceIJK h;
+void _vec3ToFaceIjk(Vec3 p, int res, FaceIJK *h) {
     Vec2 v;
-    _vec3ToVec2(&p, res, &h.face, &v);
-    _vec2ToCoordIJK(&v, &h.coord);
-    return h;
+    _vec3ToVec2(&p, res, &h->face, &v);
+    _vec2ToCoordIJK(&v, &h->coord);
 }
 
 /**

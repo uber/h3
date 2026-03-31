@@ -1067,7 +1067,8 @@ H3Error vec3ToCell(const Vec3 *v, int res, H3Index *out) {
         return E_DOMAIN;
     }
 
-    FaceIJK fijk = _vec3ToFaceIjk(*v, res);
+    FaceIJK fijk;
+    _vec3ToFaceIjk(*v, res, &fijk);
     *out = _faceIjkToCell(&fijk, res);
     if (ALWAYS(*out)) {
         return E_SUCCESS;
