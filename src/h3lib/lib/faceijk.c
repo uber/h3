@@ -535,7 +535,9 @@ Vec3 _vec2ToVec3(Vec2 v, int face, int res, int substrate) {
  * @param res The H3 resolution of the cell.
  */
 Vec3 _faceIjkToVec3(const FaceIJK *h, int res) {
-    return _vec2ToVec3(_ijkToVec2(h->coord), h->face, res, 0);
+    Vec2 v;
+    _ijkToVec2(&h->coord, &v);
+    return _vec2ToVec3(v, h->face, res, 0);
 }
 
 /**
@@ -580,7 +582,8 @@ void _faceIjkPentToCellBoundary(const FaceIJK *h, int res, int start,
 
             FaceIJK tmpFijk = fijk;
 
-            Vec2 orig2d0 = _ijkToVec2(lastFijk.coord);
+            Vec2 orig2d0;
+            _ijkToVec2(&lastFijk.coord, &orig2d0);
 
             int currentToLastDir = adjacentFaceDir[tmpFijk.face][lastFijk.face];
 
@@ -598,7 +601,8 @@ void _faceIjkPentToCellBoundary(const FaceIJK *h, int res, int start,
             _ijkAdd(ijk, &transVec, ijk);
             _ijkNormalize(ijk);
 
-            Vec2 orig2d1 = _ijkToVec2(*ijk);
+            Vec2 orig2d1;
+            _ijkToVec2(ijk, &orig2d1);
 
             // find the appropriate icosa face edge vertexes
             int maxDim = maxDimByCIIres[adjRes];
@@ -637,8 +641,10 @@ void _faceIjkPentToCellBoundary(const FaceIJK *h, int res, int start,
         // vert == start + NUM_PENT_VERTS is only used to test for possible
         // intersection on last edge
         if (vert < start + NUM_PENT_VERTS) {
-            g->verts[g->numVerts] = vec3ToLatLng(
-                _vec2ToVec3(_ijkToVec2(fijk.coord), fijk.face, adjRes, 1));
+            Vec2 vec;
+            _ijkToVec2(&fijk.coord, &vec);
+            g->verts[g->numVerts] =
+                vec3ToLatLng(_vec2ToVec3(vec, fijk.face, adjRes, 1));
             g->numVerts++;
         }
 
@@ -756,9 +762,11 @@ void _faceIjkToCellBoundary(const FaceIJK *h, int res, int start, int length,
             fijk.face != lastFace && lastOverage != FACE_EDGE) {
             // find Vec2 of the two vertexes on original face
             int lastV = (v + 5) % NUM_HEX_VERTS;
-            Vec2 orig2d0 = _ijkToVec2(fijkVerts[lastV].coord);
+            Vec2 orig2d0;
+            _ijkToVec2(&fijkVerts[lastV].coord, &orig2d0);
 
-            Vec2 orig2d1 = _ijkToVec2(fijkVerts[v].coord);
+            Vec2 orig2d1;
+            _ijkToVec2(&fijkVerts[v].coord, &orig2d1);
 
             // find the appropriate icosa face edge vertexes
             int maxDim = maxDimByCIIres[adjRes];
@@ -807,8 +815,10 @@ void _faceIjkToCellBoundary(const FaceIJK *h, int res, int start, int length,
         // vert == start + NUM_HEX_VERTS is only used to test for possible
         // intersection on last edge
         if (vert < start + NUM_HEX_VERTS) {
-            g->verts[g->numVerts] = vec3ToLatLng(
-                _vec2ToVec3(_ijkToVec2(fijk.coord), fijk.face, adjRes, 1));
+            Vec2 vec;
+            _ijkToVec2(&fijk.coord, &vec);
+            g->verts[g->numVerts] =
+                vec3ToLatLng(_vec2ToVec3(vec, fijk.face, adjRes, 1));
             g->numVerts++;
         }
 
