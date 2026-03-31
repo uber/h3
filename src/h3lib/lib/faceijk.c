@@ -380,7 +380,7 @@ static void _vec3TangentBasis(const Vec3 *p, Vec3 *north, Vec3 *east) {
     double NdotP = vec3Dot(&northPole, p);
     *north = vec3LinComb(1.0, &northPole, -NdotP, p);
     vec3Normalize(north);
-    vec3Cross(north, p, east);
+    *east = vec3Cross(north, p);
 }
 
 /**
@@ -631,7 +631,7 @@ void _faceIjkPentToCellBoundary(const FaceIJK *h, int res, int start,
             _vec2Intersect(&orig2d0, &orig2d1, edge0, edge1, &inter);
             Vec3 v3;
             _vec2ToVec3(&inter, tmpFijk.face, adjRes, 1, &v3);
-            vec3ToLatLng(&v3, &g->verts[g->numVerts]);
+            g->verts[g->numVerts] = vec3ToLatLng(&v3);
             g->numVerts++;
         }
 
@@ -643,7 +643,7 @@ void _faceIjkPentToCellBoundary(const FaceIJK *h, int res, int start,
             _ijkToVec2(&fijk.coord, &vec);
             Vec3 v3;
             _vec2ToVec3(&vec, fijk.face, adjRes, 1, &v3);
-            vec3ToLatLng(&v3, &g->verts[g->numVerts]);
+            g->verts[g->numVerts] = vec3ToLatLng(&v3);
             g->numVerts++;
         }
 
@@ -807,7 +807,7 @@ void _faceIjkToCellBoundary(const FaceIJK *h, int res, int start, int length,
             if (!isIntersectionAtVertex) {
                 Vec3 v3;
                 _vec2ToVec3(&inter, centerIJK.face, adjRes, 1, &v3);
-                vec3ToLatLng(&v3, &g->verts[g->numVerts]);
+                g->verts[g->numVerts] = vec3ToLatLng(&v3);
                 g->numVerts++;
             }
         }
@@ -820,7 +820,7 @@ void _faceIjkToCellBoundary(const FaceIJK *h, int res, int start, int length,
             _ijkToVec2(&fijk.coord, &vec);
             Vec3 v3;
             _vec2ToVec3(&vec, fijk.face, adjRes, 1, &v3);
-            vec3ToLatLng(&v3, &g->verts[g->numVerts]);
+            g->verts[g->numVerts] = vec3ToLatLng(&v3);
             g->numVerts++;
         }
 

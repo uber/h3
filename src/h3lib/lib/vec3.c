@@ -29,17 +29,13 @@
  * @param geo The latitude and longitude of the point.
  * @param v The 3D coordinate of the point.
  */
-void latLngToVec3(const LatLng *geo, Vec3 *v) {
+Vec3 latLngToVec3(const LatLng *geo) {
     double r = cos(geo->lat);
-
-    v->z = sin(geo->lat);
-    v->x = cos(geo->lng) * r;
-    v->y = sin(geo->lng) * r;
+    return (Vec3){cos(geo->lng) * r, sin(geo->lng) * r, sin(geo->lat)};
 }
 
-void vec3ToLatLng(const Vec3 *v, LatLng *geo) {
-    geo->lat = asin(v->z);
-    geo->lng = atan2(v->y, v->x);
+LatLng vec3ToLatLng(const Vec3 *v) {
+    return (LatLng){asin(v->z), atan2(v->y, v->x)};
 }
 
 Vec3 vec3LinComb(double s1, const Vec3 *a, double s2, const Vec3 *b) {
@@ -50,10 +46,9 @@ Vec3 vec3LinComb(double s1, const Vec3 *a, double s2, const Vec3 *b) {
     };
 }
 
-void vec3Cross(const Vec3 *v1, const Vec3 *v2, Vec3 *out) {
-    out->x = v1->y * v2->z - v1->z * v2->y;
-    out->y = v1->z * v2->x - v1->x * v2->z;
-    out->z = v1->x * v2->y - v1->y * v2->x;
+Vec3 vec3Cross(const Vec3 *v1, const Vec3 *v2) {
+    return (Vec3){v1->y * v2->z - v1->z * v2->y, v1->z * v2->x - v1->x * v2->z,
+                  v1->x * v2->y - v1->y * v2->x};
 }
 
 double vec3Dot(const Vec3 *v1, const Vec3 *v2) {

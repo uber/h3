@@ -35,8 +35,7 @@ SUITE(Vec3) {
     TEST(crossProductOrthogonality) {
         Vec3 i = {.x = 1.0, .y = 0.0, .z = 0.0};
         Vec3 j = {.x = 0.0, .y = 1.0, .z = 0.0};
-        Vec3 k;
-        vec3Cross(&i, &j, &k);
+        Vec3 k = vec3Cross(&i, &j);
         t_assert(fabs(k.x - 0.0) < EPSILON, "x component zero");
         t_assert(fabs(k.y - 0.0) < EPSILON, "y component zero");
         t_assert(fabs(k.z - 1.0) < EPSILON, "z component one");
@@ -68,8 +67,7 @@ SUITE(Vec3) {
 
     TEST(latLngToVec3_unitSphere) {
         LatLng geo = {.lat = 0.5, .lng = -1.3};
-        Vec3 v;
-        latLngToVec3(&geo, &v);
+        Vec3 v = latLngToVec3(&geo);
         t_assert(fabs(vec3Norm(&v) - 1.0) < 1e-12,
                  "converted vector lives on the unit sphere");
     }
