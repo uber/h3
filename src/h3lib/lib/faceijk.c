@@ -361,8 +361,29 @@ static const int unitScaleByCIIres[] = {
     5764801  // res 16
 };
 
-// Private function declaration
+// Private function declarations
 static void _vec3ToClosestFace(const Vec3 *v3, int *face, double *sqd);
+
+/**
+ * Compute the local north and east directions on the tangent plane
+ * at a point on the unit sphere.
+ *
+ * Will not work if p is at a pole, but icosahedron face centers
+ * are never at the poles.
+ *
+ * @param p Unit vector on the sphere.
+ * @param north Output: local north direction on tangent plane.
+ * @param east Output: local east direction on tangent plane.
+ */
+static void _vec3TangentBasis(const Vec3 *p, Vec3 *north, Vec3 *east) {
+    Vec3 northPole = {0.0, 0.0, 1.0};
+    double NdotP = vec3Dot(&northPole, p);
+    north->x = northPole.x - NdotP * p->x;
+    north->y = northPole.y - NdotP * p->y;
+    north->z = northPole.z - NdotP * p->z;
+    vec3Normalize(north);
+    vec3Cross(north, p, east);
+}
 
 /**
  * Calculates the azimuth from p1 to p2.
@@ -371,31 +392,20 @@ static void _vec3ToClosestFace(const Vec3 *v3, int *face, double *sqd);
  * @return The azimuth in radians.
  */
 static double _vec3AzimuthRads(const Vec3 *p1, const Vec3 *p2) {
-    Vec3 northPole = {0.0, 0.0, 1.0};
+    Vec3 northDir, eastDir;
+    _vec3TangentBasis(p1, &northDir, &eastDir);
 
-    // local north direction on tangent plane.
-    double NdotC = vec3Dot(&northPole, p1);
-    Vec3 northDir = {northPole.x - NdotC * p1->x, northPole.y - NdotC * p1->y,
-                     northPole.z - NdotC * p1->z};
-    vec3Normalize(&northDir);
-
-    // local east direction on tangent plane
-    Vec3 eastDir;
-    vec3Cross(&northDir, p1, &eastDir);
-
-    // vector from p1 to p2 on tangent plane
-    Vec3 p2_on_tangent;
+    // project p2 onto tangent plane at p1
     double p2dotp1 = vec3Dot(p2, p1);
-    p2_on_tangent.x = p2->x - p2dotp1 * p1->x;
-    p2_on_tangent.y = p2->y - p2dotp1 * p1->y;
-    p2_on_tangent.z = p2->z - p2dotp1 * p1->z;
+    Vec3 p2_on_tangent = {
+        p2->x - p2dotp1 * p1->x,
+        p2->y - p2dotp1 * p1->y,
+        p2->z - p2dotp1 * p1->z,
+    };
     vec3Normalize(&p2_on_tangent);
 
-    // azimuth is angle between north direction and p2_on_tangent
-    double azimuth = atan2(vec3Dot(&p2_on_tangent, &eastDir),
-                           vec3Dot(&p2_on_tangent, &northDir));
-
-    return azimuth;
+    return atan2(vec3Dot(&p2_on_tangent, &eastDir),
+                 vec3Dot(&p2_on_tangent, &northDir));
 }
 
 /**
@@ -507,20 +517,8 @@ void _vec2ToVec3(const Vec2 *v, int face, int res, int substrate, Vec3 *v3) {
 
     // now find the point at (r,theta) from the face center
     const Vec3 *center = &faceCenterPoint[face];
-    Vec3 northPole = {0.0, 0.0, 1.0};
-
-    // local north direction on tangent plane.
-    // N.B. this will not work if the center is at a pole, but
-    // icosahedron faces are not at the poles.
-    double NdotC = vec3Dot(&northPole, center);
-    Vec3 northDir = {northPole.x - NdotC * center->x,
-                     northPole.y - NdotC * center->y,
-                     northPole.z - NdotC * center->z};
-    vec3Normalize(&northDir);
-
-    // local east direction on tangent plane
-    Vec3 eastDir;
-    vec3Cross(&northDir, center, &eastDir);
+    Vec3 northDir, eastDir;
+    _vec3TangentBasis(center, &northDir, &eastDir);
 
     // Rodrigues' rotation formula, simplified for orthogonal vectors
     // Direction vector D = northDir * cos(theta) + (center x northDir) *
