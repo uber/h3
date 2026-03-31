@@ -73,7 +73,7 @@ typedef enum {
 
 // Internal functions
 
-void _vec3ToFaceIjk(const Vec3 *p, int res, FaceIJK *h);
+FaceIJK _vec3ToFaceIjk(Vec3 p, int res);
 void _faceIjkToVec3(const FaceIJK *h, int res, Vec3 *v3);
 void _faceIjkToCellBoundary(const FaceIJK *h, int res, int start, int length,
                             CellBoundary *g);
