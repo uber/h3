@@ -147,20 +147,6 @@ void _vec2ToCoordIJK(const Vec2 *v, CoordIJK *h) {
 }
 
 /**
- * Find the center point in 2D cartesian coordinates of a hex.
- *
- * @param h The ijk coordinates of the hex.
- * @param v The 2D cartesian coordinates of the hex center point.
- */
-void _ijkToVec2(const CoordIJK *h, Vec2 *v) {
-    int i = h->i - h->k;
-    int j = h->j - h->k;
-
-    v->x = i - 0.5 * j;
-    v->y = j * M_SQRT3_2;
-}
-
-/**
  * Returns whether or not two ijk coordinates contain exactly the same
  * component values.
  *
