@@ -180,7 +180,6 @@ set(LIB_SOURCE_FILES
     src/h3lib/lib/polyfill.c
     src/h3lib/lib/h3Index.c
     src/h3lib/lib/vec2.c
-    src/h3lib/lib/vec3.c
     src/h3lib/lib/vertex.c
     src/h3lib/lib/linkedGeo.c
     src/h3lib/lib/localij.c

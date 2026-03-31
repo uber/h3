@@ -20,6 +20,8 @@
 #ifndef VEC3_H
 #define VEC3_H
 
+#include <math.h>
+
 #include "h3api.h"
 #include "latLng.h"
 
@@ -30,19 +32,64 @@
  *  as a unit vector in 3D Cartesian space (ECEF-like coordinates).
  */
 typedef struct {
-    double x;  ///< x component (towards 0deg lat, 0deg lon)
-    double y;  ///< y component (towards 0deg lat, 90deg lon)
-    double z;  ///< z component (towards north pole)
+    double x;  /// towards 0deg lat, 0deg lon
+    double y;  /// towards 0deg lat, 90deg lon
+    double z;  /// towards north pole
 } Vec3;
 
-Vec3 latLngToVec3(LatLng geo);
-LatLng vec3ToLatLng(Vec3 v);
-Vec3 vec3LinComb(double s1, Vec3 a, double s2, Vec3 b);
-Vec3 vec3Cross(Vec3 v1, Vec3 v2);
-double vec3Dot(Vec3 v1, Vec3 v2);
-double vec3NormSq(Vec3 v);
-double vec3Norm(Vec3 v);
-void vec3Normalize(Vec3 *v);
-double vec3DistSq(Vec3 v1, Vec3 v2);
+/** Convert latitude and longitude to a unit Vec3 on the sphere. */
+static inline Vec3 latLngToVec3(LatLng geo) {
+    double r = cos(geo.lat);
+    return (Vec3){
+        cos(geo.lng) * r,
+        sin(geo.lng) * r,
+        sin(geo.lat),
+    };
+}
+
+static inline LatLng vec3ToLatLng(Vec3 v) {
+    return (LatLng){
+        asin(v.z),
+        atan2(v.y, v.x),
+    };
+}
+
+static inline Vec3 vec3LinComb(double s1, Vec3 a, double s2, Vec3 b) {
+    return (Vec3){
+        s1 * a.x + s2 * b.x,
+        s1 * a.y + s2 * b.y,
+        s1 * a.z + s2 * b.z,
+    };
+}
+
+static inline Vec3 vec3Cross(Vec3 v1, Vec3 v2) {
+    return (Vec3){
+        v1.y * v2.z - v1.z * v2.y,
+        v1.z * v2.x - v1.x * v2.z,
+        v1.x * v2.y - v1.y * v2.x,
+    };
+}
+
+static inline double vec3Dot(Vec3 v1, Vec3 v2) {
+    return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+}
+
+static inline double vec3NormSq(Vec3 v) { return vec3Dot(v, v); }
+
+static inline double vec3Norm(Vec3 v) { return sqrt(vec3NormSq(v)); }
+
+static inline void vec3Normalize(Vec3 *v) {
+    double norm = vec3Norm(*v);
+    if (norm == 0.0) return;
+    double inv = 1.0 / norm;
+    v->x *= inv;
+    v->y *= inv;
+    v->z *= inv;
+}
+
+static inline double vec3DistSq(Vec3 v1, Vec3 v2) {
+    Vec3 d = vec3LinComb(1.0, v1, -1.0, v2);
+    return vec3NormSq(d);
+}
 
 #endif

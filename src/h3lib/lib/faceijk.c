@@ -375,10 +375,7 @@ static void _vec3ToClosestFace(const Vec3 *v3, int *face, double *sqd) {
     // the distance between two points should always be less or equal than 4.0 .
     *sqd = 5.0;
     for (int f = 0; f < NUM_ICOSA_FACES; ++f) {
-        double dx = faceCenterPoint[f].x - v3->x;
-        double dy = faceCenterPoint[f].y - v3->y;
-        double dz = faceCenterPoint[f].z - v3->z;
-        double sqdT = dx * dx + dy * dy + dz * dz;
+        double sqdT = vec3DistSq(faceCenterPoint[f], *v3);
         if (sqdT < *sqd) {
             *face = f;
             *sqd = sqdT;
