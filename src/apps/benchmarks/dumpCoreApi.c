@@ -43,8 +43,7 @@ static void dumpLatLngToCell(double lat, double lng) {
     for (int r = 0; r < (int)N_RES; r++) {
         H3Index h;
         H3_EXPORT(latLngToCell)(&g, testResolutions[r], &h);
-        printf("%.17g %.17g %d %" PRIx64 "\n", lat, lng,
-               testResolutions[r], h);
+        printf("%.17g %.17g %d %" PRIx64 "\n", lat, lng, testResolutions[r], h);
     }
 }
 

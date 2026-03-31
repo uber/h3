@@ -16,13 +16,11 @@
 
 /**
  * @file benchmarkCoreApi.c
- * @brief Benchmark latLngToCell, cellToLatLng, cellToBoundary with
- *        diverse inputs across faces and resolutions.
+ * @brief Benchmark latLngToCell, cellToLatLng, cellToBoundary,
+ *        directedEdgeToBoundary with diverse inputs.
  */
 
-#include <stdio.h>
-#include <time.h>
-
+#include "benchmark.h"
 #include "h3api.h"
 
 #define N_POINTS 20
@@ -31,126 +29,68 @@
 
 // Points spread across the globe (hitting different icosahedron faces)
 static const LatLng points[N_POINTS] = {
-    {0.659966917655, -2.1364398519396},   // San Francisco area
-    {0.8527087756, -0.0405865662},        // London area
-    {0.6234025842, 2.0075945568},         // Tokyo area
-    {-0.5934119457, 2.5368879644},        // Sydney area
-    {0.4799655443, 0.6457718232},         // Cairo area
-    {-0.4014257280, -0.7610418886},       // São Paulo area
-    {0.9679776674, -1.7453292520},        // Alaska
-    {-1.2217304764, 0.0000000000},        // near south pole
-    {1.2217304764, 0.0000000000},         // near north pole
-    {0.0000000000, 0.0000000000},         // null island
-    {0.0000000000, 3.1415926536},         // antimeridian
-    {0.7853981634, 1.5707963268},         // 45N 90E
-    {-0.7853981634, -1.5707963268},       // 45S 90W
-    {0.3490658504, -1.2217304764},        // 20N 70W
-    {-0.1745329252, 0.5235987756},        // 10S 30E
-    {1.0471975512, -0.5235987756},        // 60N 30W
-    {-1.0471975512, 2.0943951024},        // 60S 120E
-    {0.2617993878, 1.8325957146},         // 15N 105E
-    {-0.8726646260, -1.0471975512},       // 50S 60W
-    {0.5235987756, -2.6179938780},        // 30N 150W
+    {0.659966917655, -2.1364398519396}, {0.8527087756, -0.0405865662},
+    {0.6234025842, 2.0075945568},       {-0.5934119457, 2.5368879644},
+    {0.4799655443, 0.6457718232},       {-0.4014257280, -0.7610418886},
+    {0.9679776674, -1.7453292520},      {-1.2217304764, 0.0000000000},
+    {1.2217304764, 0.0000000000},       {0.0000000000, 0.0000000000},
+    {0.0000000000, 3.1415926536},       {0.7853981634, 1.5707963268},
+    {-0.7853981634, -1.5707963268},     {0.3490658504, -1.2217304764},
+    {-0.1745329252, 0.5235987756},      {1.0471975512, -0.5235987756},
+    {-1.0471975512, 2.0943951024},      {0.2617993878, 1.8325957146},
+    {-0.8726646260, -1.0471975512},     {0.5235987756, -2.6179938780},
 };
 
 static const int resolutions[N_RESOLUTIONS] = {0, 5, 9, 15};
 
-static double elapsed_us(struct timespec *start, struct timespec *end) {
-    double sec = end->tv_sec - start->tv_sec;
-    double nsec = end->tv_nsec - start->tv_nsec;
-    return (sec * 1e9 + nsec) / 1e3;
+H3Index cells[N_POINTS * N_RESOLUTIONS];
+int nCells = 0;
+H3Index edges[N_POINTS * N_RESOLUTIONS];
+int nEdges = 0;
+
+BEGIN_BENCHMARKS();
+
+// Pre-compute cells and edges
+for (int r = 0; r < N_RESOLUTIONS; r++) {
+    for (int p = 0; p < N_POINTS; p++) {
+        H3_EXPORT(latLngToCell)(&points[p], resolutions[r], &cells[nCells]);
+        nCells++;
+    }
+}
+for (int c = 0; c < nCells; c++) {
+    H3Index out[6];
+    H3_EXPORT(originToDirectedEdges)(cells[c], out);
+    edges[nEdges++] = out[0];
 }
 
-int main(void) {
-    H3Index cells[N_POINTS * N_RESOLUTIONS];
-    int nCells = 0;
+H3Index h;
+LatLng outCoord;
+CellBoundary cb;
 
-    // Pre-compute cells for inverse benchmarks
+BENCHMARK(latLngToCell, ITERATIONS, {
     for (int r = 0; r < N_RESOLUTIONS; r++) {
         for (int p = 0; p < N_POINTS; p++) {
-            H3_EXPORT(latLngToCell)(&points[p], resolutions[r], &cells[nCells]);
-            nCells++;
+            H3_EXPORT(latLngToCell)(&points[p], resolutions[r], &h);
         }
     }
+});
 
-    // Benchmark latLngToCell
-    {
-        struct timespec start, end;
-        H3Index h;
-        clock_gettime(CLOCK_MONOTONIC, &start);
-        for (int iter = 0; iter < ITERATIONS; iter++) {
-            for (int r = 0; r < N_RESOLUTIONS; r++) {
-                for (int p = 0; p < N_POINTS; p++) {
-                    H3_EXPORT(latLngToCell)(&points[p], resolutions[r], &h);
-                }
-            }
-        }
-        clock_gettime(CLOCK_MONOTONIC, &end);
-        double us = elapsed_us(&start, &end);
-        double per_call = us / (ITERATIONS * N_POINTS * N_RESOLUTIONS);
-        printf("latLngToCell: %.4f us/call (%d calls)\n",
-               per_call, ITERATIONS * N_POINTS * N_RESOLUTIONS);
-    }
-
-    // Benchmark cellToLatLng
-    {
-        struct timespec start, end;
-        LatLng out;
-        clock_gettime(CLOCK_MONOTONIC, &start);
-        for (int iter = 0; iter < ITERATIONS; iter++) {
-            for (int c = 0; c < nCells; c++) {
-                H3_EXPORT(cellToLatLng)(cells[c], &out);
-            }
-        }
-        clock_gettime(CLOCK_MONOTONIC, &end);
-        double us = elapsed_us(&start, &end);
-        double per_call = us / (ITERATIONS * nCells);
-        printf("cellToLatLng: %.4f us/call (%d calls)\n",
-               per_call, ITERATIONS * nCells);
-    }
-
-    // Benchmark cellToBoundary
-    {
-        struct timespec start, end;
-        CellBoundary cb;
-        clock_gettime(CLOCK_MONOTONIC, &start);
-        for (int iter = 0; iter < ITERATIONS; iter++) {
-            for (int c = 0; c < nCells; c++) {
-                H3_EXPORT(cellToBoundary)(cells[c], &cb);
-            }
-        }
-        clock_gettime(CLOCK_MONOTONIC, &end);
-        double us = elapsed_us(&start, &end);
-        double per_call = us / (ITERATIONS * nCells);
-        printf("cellToBoundary: %.4f us/call (%d calls)\n",
-               per_call, ITERATIONS * nCells);
-    }
-
-    // Pre-compute directed edges for edge boundary benchmark
-    H3Index edges[N_POINTS * N_RESOLUTIONS];
-    int nEdges = 0;
+BENCHMARK(cellToLatLng, ITERATIONS, {
     for (int c = 0; c < nCells; c++) {
-        H3Index out[6];
-        H3_EXPORT(originToDirectedEdges)(cells[c], out);
-        edges[nEdges++] = out[0];  // first edge of each cell
+        H3_EXPORT(cellToLatLng)(cells[c], &outCoord);
     }
+});
 
-    // Benchmark directedEdgeToBoundary
-    {
-        struct timespec start, end;
-        CellBoundary cb;
-        clock_gettime(CLOCK_MONOTONIC, &start);
-        for (int iter = 0; iter < ITERATIONS; iter++) {
-            for (int e = 0; e < nEdges; e++) {
-                H3_EXPORT(directedEdgeToBoundary)(edges[e], &cb);
-            }
-        }
-        clock_gettime(CLOCK_MONOTONIC, &end);
-        double us = elapsed_us(&start, &end);
-        double per_call = us / (ITERATIONS * nEdges);
-        printf("directedEdgeToBoundary: %.4f us/call (%d calls)\n",
-               per_call, ITERATIONS * nEdges);
+BENCHMARK(cellToBoundary, ITERATIONS, {
+    for (int c = 0; c < nCells; c++) {
+        H3_EXPORT(cellToBoundary)(cells[c], &cb);
     }
+});
 
-    return 0;
-}
+BENCHMARK(directedEdgeToBoundary, ITERATIONS, {
+    for (int e = 0; e < nEdges; e++) {
+        H3_EXPORT(directedEdgeToBoundary)(edges[e], &cb);
+    }
+});
+
+END_BENCHMARKS();
