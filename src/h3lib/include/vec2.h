@@ -30,8 +30,8 @@
  *  x-axis aligned to the face's i-axis and y perpendicular to it.
  */
 typedef struct {
-    double x;  ///< x component (aligned with face i-axis)
-    double y;  ///< y component (perpendicular to face i-axis)
+    double x;  /// aligned with face i-axis
+    double y;  /// perpendicular to face i-axis
 } Vec2;
 
 // Internal functions
