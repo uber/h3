@@ -5,6 +5,9 @@
 """
 Run benchmarkCoreApi multiple times on two git refs and compare.
 
+Copies the benchmark C file and CMakeLists entry to a temp location
+so they survive branch switches. Restores the original branch on exit.
+
 Usage: edit BRANCH_A, BRANCH_B, and N_RUNS below, then run with:
     uv run bench.py
 """
@@ -12,6 +15,8 @@ Usage: edit BRANCH_A, BRANCH_B, and N_RUNS below, then run with:
 import subprocess
 import re
 import os
+import shutil
+import tempfile
 
 BRANCH_A = "master"
 BRANCH_B = "vec3d-core"
@@ -20,6 +25,8 @@ BUILD_DIR = "build"
 BENCH_BIN = "bin/benchmarkCoreApi"
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
+BENCH_SRC_REL = "src/apps/benchmarks/benchmarkCoreApi.c"
+CMAKE_LINE = "    add_h3_benchmark(benchmarkCoreApi src/apps/benchmarks/benchmarkCoreApi.c)"
 
 
 def run(cmd, **kwargs):
@@ -27,24 +34,7 @@ def run(cmd, **kwargs):
                           cwd=ROOT, **kwargs)
 
 
-def build_bench(ref):
-    """Check out ref, build benchmarkCoreApi in release mode."""
-    run(["git", "checkout", ref])
-    # The benchmark file may not exist on the other branch, so copy it
-    run(["mkdir", "-p", f"{BUILD_DIR}"])
-    r = subprocess.run(
-        f"cd {BUILD_DIR} && cmake -DCMAKE_BUILD_TYPE=Release .. && make benchmarkCoreApi",
-        shell=True, capture_output=True, text=True, cwd=ROOT
-    )
-    if r.returncode != 0:
-        print(f"Build failed on {ref}:")
-        print(r.stderr[-500:] if len(r.stderr) > 500 else r.stderr)
-        return False
-    return True
-
-
 def parse_output(text):
-    """Parse benchmark output lines into dict of {name: us_per_call}."""
     results = {}
     for line in text.strip().split("\n"):
         m = re.match(r"(\w+):\s+([\d.]+)\s+us/call", line)
@@ -54,7 +44,6 @@ def parse_output(text):
 
 
 def run_bench(n_runs):
-    """Run benchmark n_runs times, return dict of {name: min_us}."""
     all_results = {}
     bin_path = os.path.join(ROOT, BUILD_DIR, BENCH_BIN)
     for i in range(n_runs):
@@ -66,59 +55,89 @@ def run_bench(n_runs):
     return all_results
 
 
+def setup_bench_on_branch(bench_content):
+    """Ensure benchmark C file and CMakeLists entry exist on current checkout."""
+    bench_path = os.path.join(ROOT, BENCH_SRC_REL)
+    cmake_path = os.path.join(ROOT, "CMakeLists.txt")
+
+    os.makedirs(os.path.dirname(bench_path), exist_ok=True)
+    with open(bench_path, "w") as f:
+        f.write(bench_content)
+
+    with open(cmake_path) as f:
+        cmake = f.read()
+    if "benchmarkCoreApi" not in cmake:
+        cmake = cmake.replace(
+            "add_h3_benchmark(benchmarkH3Api",
+            CMAKE_LINE + "\n    add_h3_benchmark(benchmarkH3Api"
+        )
+        with open(cmake_path, "w") as f:
+            f.write(cmake)
+
+
+def cleanup_branch():
+    """Restore tracked files and remove untracked benchmark file."""
+    bench_path = os.path.join(ROOT, BENCH_SRC_REL)
+    run(["git", "checkout", "--", "."])
+    # Remove benchmark file if it's untracked (doesn't exist on this branch)
+    r = run(["git", "ls-files", BENCH_SRC_REL])
+    if not r.stdout.strip() and os.path.exists(bench_path):
+        os.remove(bench_path)
+
+
 def main():
     # Save current branch
     r = run(["git", "rev-parse", "--abbrev-ref", "HEAD"])
     original_branch = r.stdout.strip()
 
-    # Copy benchmark file so it exists on both branches
-    bench_src = os.path.join(ROOT, "src/apps/benchmarks/benchmarkCoreApi.c")
-    with open(bench_src) as f:
+    # Save benchmark C file content before any branch switches
+    bench_path = os.path.join(ROOT, BENCH_SRC_REL)
+    if not os.path.exists(bench_path):
+        print(f"Error: {BENCH_SRC_REL} not found. Run from the branch that has it.")
+        return
+    with open(bench_path) as f:
         bench_content = f.read()
 
-    # Also need the CMakeLists line - read current CMakeLists
-    cmake_path = os.path.join(ROOT, "CMakeLists.txt")
-    with open(cmake_path) as f:
-        cmake_content = f.read()
-    cmake_line = "    add_h3_benchmark(benchmarkCoreApi src/apps/benchmarks/benchmarkCoreApi.c)"
-
     results = {}
-    for ref in [BRANCH_A, BRANCH_B]:
-        print(f"\n{'='*50}")
-        print(f"Benchmarking: {ref}")
-        print(f"{'='*50}")
+    try:
+        for ref in [BRANCH_A, BRANCH_B]:
+            print(f"\n{'='*50}")
+            print(f"Benchmarking: {ref}")
+            print(f"{'='*50}")
 
-        run(["git", "checkout", ref])
+            run(["git", "checkout", ref])
 
-        # Ensure benchmark file exists on this branch
-        with open(bench_src, "w") as f:
-            f.write(bench_content)
+            # Verify branch
+            r = run(["git", "rev-parse", "--short", "HEAD"])
+            sha = r.stdout.strip()
+            r = run(["git", "rev-parse", "--abbrev-ref", "HEAD"])
+            branch = r.stdout.strip()
+            print(f"  branch: {branch}  commit: {sha}")
 
-        # Ensure CMakeLists has the benchmark entry
-        with open(cmake_path) as f:
-            current_cmake = f.read()
-        if "benchmarkCoreApi" not in current_cmake:
-            current_cmake = current_cmake.replace(
-                "add_h3_benchmark(benchmarkH3Api",
-                cmake_line + "\n    add_h3_benchmark(benchmarkH3Api"
+            setup_bench_on_branch(bench_content)
+
+            # Build
+            run(["mkdir", "-p", BUILD_DIR])
+            r = subprocess.run(
+                f"cd {BUILD_DIR} && cmake -DCMAKE_BUILD_TYPE=Release .. && make benchmarkCoreApi",
+                shell=True, capture_output=True, text=True, cwd=ROOT
             )
-            with open(cmake_path, "w") as f:
-                f.write(current_cmake)
+            if r.returncode != 0:
+                print(f"Build failed on {ref}:")
+                print(r.stderr[-500:])
+                continue
 
-        if not build_bench(ref):
-            print(f"Skipping {ref}")
-            continue
+            print(f"Running {N_RUNS} iterations...")
+            results[ref] = run_bench(N_RUNS)
+            for name, us in results[ref].items():
+                print(f"  {name}: {us:.4f} us/call (min of {N_RUNS})")
 
-        print(f"Running {N_RUNS} iterations...")
-        results[ref] = run_bench(N_RUNS)
-        for name, us in results[ref].items():
-            print(f"  {name}: {us:.4f} us/call (min of {N_RUNS})")
-
-        # Clean up uncommitted benchmark file on non-original branches
-        run(["git", "checkout", "--", "."])
-
-    # Restore original branch
-    run(["git", "checkout", original_branch])
+            cleanup_branch()
+    finally:
+        # Always restore original branch
+        cleanup_branch()
+        run(["git", "checkout", original_branch])
+        print(f"\nRestored branch: {original_branch}")
 
     # Print comparison
     if len(results) == 2:
