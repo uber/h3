@@ -665,6 +665,8 @@ if(BUILD_BENCHMARKS)
     endmacro()
 
     add_h3_benchmark(benchmarkH3Api src/apps/benchmarks/benchmarkH3Api.c)
+    add_h3_benchmark(benchmarkCoreApi src/apps/benchmarks/benchmarkCoreApi.c)
+    add_h3_benchmark(dumpCoreApi src/apps/benchmarks/dumpCoreApi.c)
     add_h3_benchmark(benchmarkGridDiskCells
                      src/apps/benchmarks/benchmarkGridDiskCells.c)
     add_h3_benchmark(benchmarkGridPathCells

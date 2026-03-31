@@ -112,8 +112,8 @@ def parse_sections(text):
     return sections
 
 
-def compare_latLngToCell(lines_a, lines_b):
-    print(f"\n--- latLngToCell ---")
+def compare_latLngToCell(lines_a, lines_b, label="latLngToCell"):
+    print(f"\n--- {label} ---")
     if len(lines_a) != len(lines_b):
         print(f"  LINE COUNT MISMATCH: {len(lines_a)} vs {len(lines_b)}")
         return
@@ -265,6 +265,8 @@ def main():
     print(f"{'='*50}")
 
     compare_latLngToCell(sec_a["latLngToCell"], sec_b["latLngToCell"])
+    compare_latLngToCell(sec_a["latLngToCellVertices"], sec_b["latLngToCellVertices"],
+                         label="latLngToCell (vertices & edges)")
     compare_cellToLatLng(sec_a["cellToLatLng"], sec_b["cellToLatLng"])
     compare_cellToBoundary(sec_a["cellToBoundary"], sec_b["cellToBoundary"])
 
