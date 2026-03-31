@@ -28,7 +28,7 @@
  * @param v The 2D cartesian vector.
  * @return The magnitude of the vector.
  */
-double _vec2Mag(const Vec2 *v) { return sqrt(v->x * v->x + v->y * v->y); }
+double _vec2Norm(const Vec2 *v) { return sqrt(v->x * v->x + v->y * v->y); }
 
 /**
  * Finds the intersection between two lines. Assumes that the lines intersect

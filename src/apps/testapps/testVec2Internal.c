@@ -22,10 +22,10 @@
 #include "vec2.h"
 
 SUITE(Vec2Internal) {
-    TEST(_vec2Mag) {
+    TEST(_vec2Norm) {
         Vec2 v = {3.0, 4.0};
         double expected = 5.0;
-        double mag = _vec2Mag(&v);
+        double mag = _vec2Norm(&v);
         t_assert(fabs(mag - expected) < DBL_EPSILON, "magnitude as expected");
     }
 

@@ -474,7 +474,7 @@ void _vec3ToFaceIjk(const Vec3 *p, int res, FaceIJK *h) {
  */
 void _vec2ToVec3(const Vec2 *v, int face, int res, int substrate, Vec3 *v3) {
     // calculate (r, theta) in Vec2
-    double r = _vec2Mag(v);
+    double r = _vec2Norm(v);
 
     if (r < EPSILON) {
         *v3 = faceCenterPoint[face];

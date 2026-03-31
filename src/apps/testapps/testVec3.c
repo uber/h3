@@ -46,12 +46,12 @@ SUITE(Vec3) {
 
     TEST(normalizeAndMagnitude) {
         Vec3 v = {.x = 3.0, .y = -4.0, .z = 12.0};
-        double magSq = vec3MagSq(&v);
+        double magSq = vec3NormSq(&v);
         t_assert(fabs(magSq - 169.0) < EPSILON, "magnitude squared matches");
-        t_assert(fabs(vec3Mag(&v) - 13.0) < EPSILON, "magnitude matches");
+        t_assert(fabs(vec3Norm(&v) - 13.0) < EPSILON, "magnitude matches");
 
         vec3Normalize(&v);
-        t_assert(fabs(vec3Mag(&v) - 1.0) < 1e-12, "normalized vector is unit");
+        t_assert(fabs(vec3Norm(&v) - 1.0) < 1e-12, "normalized vector is unit");
 
         Vec3 zero = {.x = 0.0, .y = 0.0, .z = 0.0};
         vec3Normalize(&zero);
@@ -70,7 +70,7 @@ SUITE(Vec3) {
         LatLng geo = {.lat = 0.5, .lng = -1.3};
         Vec3 v;
         latLngToVec3(&geo, &v);
-        t_assert(fabs(vec3Mag(&v) - 1.0) < 1e-12,
+        t_assert(fabs(vec3Norm(&v) - 1.0) < 1e-12,
                  "converted vector lives on the unit sphere");
     }
 

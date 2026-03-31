@@ -37,8 +37,9 @@ void latLngToVec3(const LatLng *geo, Vec3 *v) {
     v->y = sin(geo->lng) * r;
 }
 
-double vec3Dot(const Vec3 *v1, const Vec3 *v2) {
-    return v1->x * v2->x + v1->y * v2->y + v1->z * v2->z;
+void vec3ToLatLng(const Vec3 *v, LatLng *geo) {
+    geo->lat = asin(v->z);
+    geo->lng = atan2(v->y, v->x);
 }
 
 void vec3Cross(const Vec3 *v1, const Vec3 *v2, Vec3 *out) {
@@ -47,30 +48,27 @@ void vec3Cross(const Vec3 *v1, const Vec3 *v2, Vec3 *out) {
     out->z = v1->x * v2->y - v1->y * v2->x;
 }
 
-void vec3Normalize(Vec3 *v) {
-    double mag = vec3Mag(v);
-    // Check for zero-length vector to avoid division by zero.
-    // Using a small epsilon for robustness.
-    if (mag > EPSILON) {
-        double invMag = 1.0 / mag;
-        v->x *= invMag;
-        v->y *= invMag;
-        v->z *= invMag;
-    }
+double vec3Dot(const Vec3 *v1, const Vec3 *v2) {
+    return v1->x * v2->x + v1->y * v2->y + v1->z * v2->z;
 }
 
-double vec3MagSq(const Vec3 *v) { return vec3Dot(v, v); }
+double vec3NormSq(const Vec3 *v) { return vec3Dot(v, v); }
 
-double vec3Mag(const Vec3 *v) { return sqrt(vec3Dot(v, v)); }
+double vec3Norm(const Vec3 *v) { return sqrt(vec3NormSq(v)); }
+
+void vec3Normalize(Vec3 *v) {
+    double norm = vec3Norm(v);
+    if (norm == 0.0) return;
+
+    double inv = 1.0 / norm;
+    v->x *= inv;
+    v->y *= inv;
+    v->z *= inv;
+}
 
 double vec3DistSq(const Vec3 *v1, const Vec3 *v2) {
     double dx = v1->x - v2->x;
     double dy = v1->y - v2->y;
     double dz = v1->z - v2->z;
     return dx * dx + dy * dy + dz * dz;
-}
-
-void vec3ToLatLng(const Vec3 *v, LatLng *geo) {
-    geo->lat = asin(v->z);
-    geo->lng = atan2(v->y, v->x);
 }

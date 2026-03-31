@@ -38,8 +38,8 @@ typedef struct {
 double vec3Dot(const Vec3 *v1, const Vec3 *v2);
 void vec3Cross(const Vec3 *v1, const Vec3 *v2, Vec3 *out);
 void vec3Normalize(Vec3 *v);
-double vec3MagSq(const Vec3 *v);
-double vec3Mag(const Vec3 *v);
+double vec3NormSq(const Vec3 *v);
+double vec3Norm(const Vec3 *v);
 double vec3DistSq(const Vec3 *v1, const Vec3 *v2);
 void latLngToVec3(const LatLng *geo, Vec3 *v);
 void vec3ToLatLng(const Vec3 *v, LatLng *geo);
