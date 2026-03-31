@@ -126,5 +126,31 @@ int main(void) {
                per_call, ITERATIONS * nCells);
     }
 
+    // Pre-compute directed edges for edge boundary benchmark
+    H3Index edges[N_POINTS * N_RESOLUTIONS];
+    int nEdges = 0;
+    for (int c = 0; c < nCells; c++) {
+        H3Index out[6];
+        H3_EXPORT(originToDirectedEdges)(cells[c], out);
+        edges[nEdges++] = out[0];  // first edge of each cell
+    }
+
+    // Benchmark directedEdgeToBoundary
+    {
+        struct timespec start, end;
+        CellBoundary cb;
+        clock_gettime(CLOCK_MONOTONIC, &start);
+        for (int iter = 0; iter < ITERATIONS; iter++) {
+            for (int e = 0; e < nEdges; e++) {
+                H3_EXPORT(directedEdgeToBoundary)(edges[e], &cb);
+            }
+        }
+        clock_gettime(CLOCK_MONOTONIC, &end);
+        double us = elapsed_us(&start, &end);
+        double per_call = us / (ITERATIONS * nEdges);
+        printf("directedEdgeToBoundary: %.4f us/call (%d calls)\n",
+               per_call, ITERATIONS * nEdges);
+    }
+
     return 0;
 }
