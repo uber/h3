@@ -30,7 +30,6 @@
 #ifndef COORDIJK_H
 #define COORDIJK_H
 
-#include "constants.h"
 #include "h3api.h"
 #include "latLng.h"
 #include "vec2.h"
@@ -89,11 +88,7 @@ typedef enum {
 
 void _setIJK(CoordIJK *ijk, int i, int j, int k);
 void _vec2ToCoordIJK(const Vec2 *v, CoordIJK *h);
-static inline Vec2 _ijkToVec2(CoordIJK h) {
-    int i = h.i - h.k;
-    int j = h.j - h.k;
-    return (Vec2){i - 0.5 * j, j * M_SQRT3_2};
-}
+void _ijkToVec2(const CoordIJK *h, Vec2 *v);
 int _ijkMatches(const CoordIJK *c1, const CoordIJK *c2);
 void _ijkAdd(const CoordIJK *h1, const CoordIJK *h2, CoordIJK *sum);
 void _ijkSub(const CoordIJK *h1, const CoordIJK *h2, CoordIJK *diff);
