@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018, 2020-2021 Uber Technologies, Inc.
+ * Copyright 2017-2018, 2020-2021, 2026 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -278,7 +278,7 @@ H3Error H3_EXPORT(directedEdgeToBoundary)(H3Index edge, CellBoundary *cb) {
     // resulting edge boundary may have an additional distortion vertex if it
     // crosses an edge of the icosahedron.
     FaceIJK fijk;
-    H3Error fijkResult = _h3ToFaceIjk(origin, &fijk);
+    H3Error fijkResult = _cellToFaceIjk(origin, &fijk);
     if (NEVER(fijkResult)) {
         return fijkResult;
     }

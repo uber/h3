@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2020 Uber Technologies, Inc.
+ * Copyright 2018-2020, 2026 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -188,7 +188,7 @@ H3Error cellToLocalIjk(H3Index origin, H3Index h3, CoordIJK *out) {
         }
     }
     // Face is unused. This produces coordinates in base cell coordinate space.
-    _h3ToFaceIjkWithInitializedFijk(h3, &indexFijk);
+    _cellToFaceIjkWithInitializedFijk(h3, &indexFijk);
 
     if (dir != CENTER_DIGIT) {
         assert(baseCell != originBaseCell);

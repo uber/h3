@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 Uber Technologies, Inc.
+ * Copyright 2020-2021, 2026 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ static const PentagonDirectionFaces pentagonDirectionFaces[NUM_PENTAGONS] = {
 static H3Error vertexRotations(H3Index cell, int *out) {
     // Get the face and other info for the origin
     FaceIJK fijk;
-    H3Error err = _h3ToFaceIjk(cell, &fijk);
+    H3Error err = _cellToFaceIjk(cell, &fijk);
     if (err) {
         return err;
     }
@@ -329,7 +329,7 @@ H3Error H3_EXPORT(vertexToLatLng)(H3Index vertex, LatLng *coord) {
     // Get the single vertex from the boundary
     CellBoundary gb;
     FaceIJK fijk;
-    H3Error fijkError = _h3ToFaceIjk(owner, &fijk);
+    H3Error fijkError = _cellToFaceIjk(owner, &fijk);
     if (fijkError) {
         return fijkError;
     }

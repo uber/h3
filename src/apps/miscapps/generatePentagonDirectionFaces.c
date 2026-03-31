@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Uber Technologies, Inc.
+ * Copyright 2020, 2026 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ static void generate(void) {
             int r = 0;
             H3Index neighbor;
             h3NeighborRotations(pentagon, dir, &r, &neighbor);
-            _h3ToFaceIjk(neighbor, &fijk);
+            _cellToFaceIjk(neighbor, &fijk);
 
             if (dir > J_AXES_DIGIT) printf(", ");
             printf("%d", fijk.face);

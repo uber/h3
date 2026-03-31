@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2018, 2020 Uber Technologies, Inc.
+ * Copyright 2016-2018, 2020, 2026 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -169,9 +169,9 @@ int isResolutionClassIII(int r);
 
 // Internal functions
 
-int _h3ToFaceIjkWithInitializedFijk(H3Index h, FaceIJK *fijk);
-H3Error _h3ToFaceIjk(H3Index h, FaceIJK *fijk);
-H3Index _faceIjkToH3(const FaceIJK *fijk, int res);
+int _cellToFaceIjkWithInitializedFijk(H3Index h, FaceIJK *fijk);
+H3Error _cellToFaceIjk(H3Index h, FaceIJK *fijk);
+H3Index _faceIjkToCell(const FaceIJK *fijk, int res);
 Direction _h3LeadingNonZeroDigit(H3Index h);
 H3Index _h3RotatePent60ccw(H3Index h);
 H3Index _h3RotatePent60cw(H3Index h);
