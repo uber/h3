@@ -15,6 +15,9 @@
  */
 /** @file vec3.h
  * @brief   3D floating point vector functions.
+ *
+ * Header-only (static inline) so callers in other translation units
+ * can inline these without requiring LTO.
  */
 
 #ifndef VEC3_H
