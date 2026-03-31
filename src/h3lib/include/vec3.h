@@ -35,6 +35,7 @@ typedef struct {
     double z;  ///< z component (towards north pole)
 } Vec3;
 
+Vec3 vec3LinComb(double s1, const Vec3 *a, double s2, const Vec3 *b);
 double vec3Dot(const Vec3 *v1, const Vec3 *v2);
 void vec3Cross(const Vec3 *v1, const Vec3 *v2, Vec3 *out);
 void vec3Normalize(Vec3 *v);

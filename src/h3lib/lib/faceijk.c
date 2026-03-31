@@ -378,9 +378,7 @@ static void _vec3ToClosestFace(const Vec3 *v3, int *face, double *sqd);
 static void _vec3TangentBasis(const Vec3 *p, Vec3 *north, Vec3 *east) {
     Vec3 northPole = {0.0, 0.0, 1.0};
     double NdotP = vec3Dot(&northPole, p);
-    north->x = northPole.x - NdotP * p->x;
-    north->y = northPole.y - NdotP * p->y;
-    north->z = northPole.z - NdotP * p->z;
+    *north = vec3LinComb(1.0, &northPole, -NdotP, p);
     vec3Normalize(north);
     vec3Cross(north, p, east);
 }
@@ -397,11 +395,7 @@ static double _vec3AzimuthRads(const Vec3 *p1, const Vec3 *p2) {
 
     // project p2 onto tangent plane at p1
     double p2dotp1 = vec3Dot(p2, p1);
-    Vec3 p2_on_tangent = {
-        p2->x - p2dotp1 * p1->x,
-        p2->y - p2dotp1 * p1->y,
-        p2->z - p2dotp1 * p1->z,
-    };
+    Vec3 p2_on_tangent = vec3LinComb(1.0, p2, -p2dotp1, p1);
     vec3Normalize(&p2_on_tangent);
 
     return atan2(vec3Dot(&p2_on_tangent, &eastDir),
@@ -523,18 +517,9 @@ void _vec2ToVec3(const Vec2 *v, int face, int res, int substrate, Vec3 *v3) {
     // Rodrigues' rotation formula, simplified for orthogonal vectors
     // Direction vector D = northDir * cos(theta) + (center x northDir) *
     // sin(theta) where `center x northDir` is `eastDir`
-    double cosTheta = cos(theta);
-    double sinTheta = sin(theta);
-    Vec3 dir = {northDir.x * cosTheta + eastDir.x * sinTheta,
-                northDir.y * cosTheta + eastDir.y * sinTheta,
-                northDir.z * cosTheta + eastDir.z * sinTheta};
+    Vec3 dir = vec3LinComb(cos(theta), &northDir, sin(theta), &eastDir);
 
-    // slerp to get the new point
-    double cos_r = cos(r);
-    double sin_r = sin(r);
-    v3->x = center->x * cos_r + dir.x * sin_r;
-    v3->y = center->y * cos_r + dir.y * sin_r;
-    v3->z = center->z * cos_r + dir.z * sin_r;
+    *v3 = vec3LinComb(cos(r), center, sin(r), &dir);
     vec3Normalize(v3);
 }
 

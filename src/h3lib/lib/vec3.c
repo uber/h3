@@ -42,6 +42,14 @@ void vec3ToLatLng(const Vec3 *v, LatLng *geo) {
     geo->lng = atan2(v->y, v->x);
 }
 
+Vec3 vec3LinComb(double s1, const Vec3 *a, double s2, const Vec3 *b) {
+    return (Vec3){
+        s1 * a->x + s2 * b->x,
+        s1 * a->y + s2 * b->y,
+        s1 * a->z + s2 * b->z,
+    };
+}
+
 void vec3Cross(const Vec3 *v1, const Vec3 *v2, Vec3 *out) {
     out->x = v1->y * v2->z - v1->z * v2->y;
     out->y = v1->z * v2->x - v1->x * v2->z;
@@ -49,7 +57,7 @@ void vec3Cross(const Vec3 *v1, const Vec3 *v2, Vec3 *out) {
 }
 
 double vec3Dot(const Vec3 *v1, const Vec3 *v2) {
-    return v1->x * v2->x + v1->y * v2->y + v1->z * v2->z;
+    return (v1->x * v2->x + v1->y * v2->y + v1->z * v2->z);
 }
 
 double vec3NormSq(const Vec3 *v) { return vec3Dot(v, v); }
@@ -67,8 +75,6 @@ void vec3Normalize(Vec3 *v) {
 }
 
 double vec3DistSq(const Vec3 *v1, const Vec3 *v2) {
-    double dx = v1->x - v2->x;
-    double dy = v1->y - v2->y;
-    double dz = v1->z - v2->z;
-    return dx * dx + dy * dy + dz * dz;
+    Vec3 d = vec3LinComb(1.0, v1, -1.0, v2);
+    return vec3NormSq(&d);
 }
