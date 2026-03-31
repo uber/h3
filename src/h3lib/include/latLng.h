@@ -52,7 +52,5 @@ bool geoAlmostEqualThreshold(const LatLng *p1, const LatLng *p2,
 
 double _posAngleRads(double rads);
 void _setGeoRads(LatLng *p, double latRads, double lngRads);
-void _geoAzDistanceRads(const LatLng *p1, double az, double distance,
-                        LatLng *p2);
 
 #endif

@@ -542,55 +542,6 @@ void _hex2dToVec3(const Vec2d *v, int face, int res, int substrate,
 }
 
 /**
- * Determines the center point in spherical coordinates of a cell given by 2D
- * hex coordinates on a particular icosahedral face.
- *
- * @param v The 2D hex coordinates of the cell.
- * @param face The icosahedral face upon which the 2D hex coordinate system is
- *             centered.
- * @param res The H3 resolution of the cell.
- * @param substrate Indicates whether or not this grid is actually a substrate
- *        grid relative to the specified resolution.
- * @param g The spherical coordinates of the cell center point.
- */
-void _hex2dToGeo(const Vec2d *v, int face, int res, int substrate, LatLng *g) {
-    // calculate (r, theta) in hex2d
-    double r = _v2dMag(v);
-
-    if (r < EPSILON) {
-        *g = faceCenterGeo[face];
-        return;
-    }
-
-    double theta = atan2(v->y, v->x);
-
-    // scale for current resolution length u
-    for (int i = 0; i < res; i++) r *= M_RSQRT7;
-
-    // scale accordingly if this is a substrate grid
-    if (substrate) {
-        r *= M_ONETHIRD;
-        if (isResolutionClassIII(res)) r *= M_RSQRT7;
-    }
-
-    r *= RES0_U_GNOMONIC;
-
-    // perform inverse gnomonic scaling of r
-    r = atan(r);
-
-    // adjust theta for Class III
-    // if a substrate grid, then it's already been adjusted for Class III
-    if (!substrate && isResolutionClassIII(res))
-        theta = _posAngleRads(theta + M_AP7_ROT_RADS);
-
-    // find theta as an azimuth
-    theta = _posAngleRads(faceAxesAzRadsCII[face][0] - theta);
-
-    // now find the point at (r,theta) from the face center
-    _geoAzDistanceRads(&faceCenterGeo[face], theta, r, g);
-}
-
-/**
  * Determines the center point in 3D coordinates of a cell given by
  * a FaceIJK address at a specified resolution.
  *
@@ -696,8 +647,9 @@ void _faceIjkPentToCellBoundary(const FaceIJK *h, int res, int start,
             // find the intersection and add the lat/lng point to the result
             Vec2d inter;
             _v2dIntersect(&orig2d0, &orig2d1, edge0, edge1, &inter);
-            _hex2dToGeo(&inter, tmpFijk.face, adjRes, 1,
-                        &g->verts[g->numVerts]);
+            Vec3d v3d;
+            _hex2dToVec3(&inter, tmpFijk.face, adjRes, 1, &v3d);
+            vec3ToLatLng(&v3d, &g->verts[g->numVerts]);
             g->numVerts++;
         }
 
@@ -707,7 +659,9 @@ void _faceIjkPentToCellBoundary(const FaceIJK *h, int res, int start,
         if (vert < start + NUM_PENT_VERTS) {
             Vec2d vec;
             _ijkToHex2d(&fijk.coord, &vec);
-            _hex2dToGeo(&vec, fijk.face, adjRes, 1, &g->verts[g->numVerts]);
+            Vec3d v3d;
+            _hex2dToVec3(&vec, fijk.face, adjRes, 1, &v3d);
+            vec3ToLatLng(&v3d, &g->verts[g->numVerts]);
             g->numVerts++;
         }
 
@@ -869,8 +823,9 @@ void _faceIjkToCellBoundary(const FaceIJK *h, int res, int start, int length,
             bool isIntersectionAtVertex = _v2dAlmostEquals(&orig2d0, &inter) ||
                                           _v2dAlmostEquals(&orig2d1, &inter);
             if (!isIntersectionAtVertex) {
-                _hex2dToGeo(&inter, centerIJK.face, adjRes, 1,
-                            &g->verts[g->numVerts]);
+                Vec3d v3d;
+                _hex2dToVec3(&inter, centerIJK.face, adjRes, 1, &v3d);
+                vec3ToLatLng(&v3d, &g->verts[g->numVerts]);
                 g->numVerts++;
             }
         }
@@ -881,7 +836,9 @@ void _faceIjkToCellBoundary(const FaceIJK *h, int res, int start, int length,
         if (vert < start + NUM_HEX_VERTS) {
             Vec2d vec;
             _ijkToHex2d(&fijk.coord, &vec);
-            _hex2dToGeo(&vec, fijk.face, adjRes, 1, &g->verts[g->numVerts]);
+            Vec3d v3d;
+            _hex2dToVec3(&vec, fijk.face, adjRes, 1, &v3d);
+            vec3ToLatLng(&v3d, &g->verts[g->numVerts]);
             g->numVerts++;
         }
 
