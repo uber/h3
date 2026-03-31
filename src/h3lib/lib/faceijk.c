@@ -377,10 +377,10 @@ static void _vec3ToClosestFace(const Vec3 *v3, int *face, double *sqd);
  */
 static void _vec3TangentBasis(const Vec3 *p, Vec3 *north, Vec3 *east) {
     Vec3 northPole = {0.0, 0.0, 1.0};
-    double NdotP = vec3Dot(&northPole, p);
-    *north = vec3LinComb(1.0, &northPole, -NdotP, p);
+    double NdotP = vec3Dot(northPole, *p);
+    *north = vec3LinComb(1.0, northPole, -NdotP, *p);
     vec3Normalize(north);
-    *east = vec3Cross(north, p);
+    *east = vec3Cross(*north, *p);
 }
 
 /**
@@ -394,12 +394,12 @@ static double _vec3AzimuthRads(const Vec3 *p1, const Vec3 *p2) {
     _vec3TangentBasis(p1, &northDir, &eastDir);
 
     // project p2 onto tangent plane at p1
-    double p2dotp1 = vec3Dot(p2, p1);
-    Vec3 p2_on_tangent = vec3LinComb(1.0, p2, -p2dotp1, p1);
+    double p2dotp1 = vec3Dot(*p2, *p1);
+    Vec3 p2_on_tangent = vec3LinComb(1.0, *p2, -p2dotp1, *p1);
     vec3Normalize(&p2_on_tangent);
 
-    return atan2(vec3Dot(&p2_on_tangent, &eastDir),
-                 vec3Dot(&p2_on_tangent, &northDir));
+    return atan2(vec3Dot(p2_on_tangent, eastDir),
+                 vec3Dot(p2_on_tangent, northDir));
 }
 
 /**
@@ -517,9 +517,9 @@ void _vec2ToVec3(const Vec2 *v, int face, int res, int substrate, Vec3 *v3) {
     // Rodrigues' rotation formula, simplified for orthogonal vectors
     // Direction vector D = northDir * cos(theta) + (center x northDir) *
     // sin(theta) where `center x northDir` is `eastDir`
-    Vec3 dir = vec3LinComb(cos(theta), &northDir, sin(theta), &eastDir);
+    Vec3 dir = vec3LinComb(cos(theta), northDir, sin(theta), eastDir);
 
-    *v3 = vec3LinComb(cos(r), center, sin(r), &dir);
+    *v3 = vec3LinComb(cos(r), *center, sin(r), dir);
     vec3Normalize(v3);
 }
 
@@ -631,7 +631,7 @@ void _faceIjkPentToCellBoundary(const FaceIJK *h, int res, int start,
             _vec2Intersect(&orig2d0, &orig2d1, edge0, edge1, &inter);
             Vec3 v3;
             _vec2ToVec3(&inter, tmpFijk.face, adjRes, 1, &v3);
-            g->verts[g->numVerts] = vec3ToLatLng(&v3);
+            g->verts[g->numVerts] = vec3ToLatLng(v3);
             g->numVerts++;
         }
 
@@ -643,7 +643,7 @@ void _faceIjkPentToCellBoundary(const FaceIJK *h, int res, int start,
             _ijkToVec2(&fijk.coord, &vec);
             Vec3 v3;
             _vec2ToVec3(&vec, fijk.face, adjRes, 1, &v3);
-            g->verts[g->numVerts] = vec3ToLatLng(&v3);
+            g->verts[g->numVerts] = vec3ToLatLng(v3);
             g->numVerts++;
         }
 
@@ -807,7 +807,7 @@ void _faceIjkToCellBoundary(const FaceIJK *h, int res, int start, int length,
             if (!isIntersectionAtVertex) {
                 Vec3 v3;
                 _vec2ToVec3(&inter, centerIJK.face, adjRes, 1, &v3);
-                g->verts[g->numVerts] = vec3ToLatLng(&v3);
+                g->verts[g->numVerts] = vec3ToLatLng(v3);
                 g->numVerts++;
             }
         }
@@ -820,7 +820,7 @@ void _faceIjkToCellBoundary(const FaceIJK *h, int res, int start, int length,
             _ijkToVec2(&fijk.coord, &vec);
             Vec3 v3;
             _vec2ToVec3(&vec, fijk.face, adjRes, 1, &v3);
-            g->verts[g->numVerts] = vec3ToLatLng(&v3);
+            g->verts[g->numVerts] = vec3ToLatLng(v3);
             g->numVerts++;
         }
 
@@ -998,7 +998,7 @@ static void _vec3ToClosestFace(const Vec3 *v3, int *face, double *sqd) {
     // the distance between two points should always be less or equal than 4.0 .
     *sqd = 5.0;
     for (int f = 0; f < NUM_ICOSA_FACES; ++f) {
-        double sqdT = vec3DistSq(&faceCenterPoint[f], v3);
+        double sqdT = vec3DistSq(faceCenterPoint[f], *v3);
         if (sqdT < *sqd) {
             *face = f;
             *sqd = sqdT;

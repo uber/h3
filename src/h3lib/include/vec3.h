@@ -35,14 +35,14 @@ typedef struct {
     double z;  ///< z component (towards north pole)
 } Vec3;
 
-Vec3 latLngToVec3(const LatLng *geo);
-LatLng vec3ToLatLng(const Vec3 *v);
-Vec3 vec3LinComb(double s1, const Vec3 *a, double s2, const Vec3 *b);
-Vec3 vec3Cross(const Vec3 *v1, const Vec3 *v2);
-double vec3Dot(const Vec3 *v1, const Vec3 *v2);
-double vec3NormSq(const Vec3 *v);
-double vec3Norm(const Vec3 *v);
+Vec3 latLngToVec3(LatLng geo);
+LatLng vec3ToLatLng(Vec3 v);
+Vec3 vec3LinComb(double s1, Vec3 a, double s2, Vec3 b);
+Vec3 vec3Cross(Vec3 v1, Vec3 v2);
+double vec3Dot(Vec3 v1, Vec3 v2);
+double vec3NormSq(Vec3 v);
+double vec3Norm(Vec3 v);
 void vec3Normalize(Vec3 *v);
-double vec3DistSq(const Vec3 *v1, const Vec3 *v2);
+double vec3DistSq(Vec3 v1, Vec3 v2);
 
 #endif

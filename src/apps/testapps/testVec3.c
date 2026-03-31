@@ -29,28 +29,28 @@ SUITE(Vec3) {
     TEST(dotProduct) {
         Vec3 a = {.x = 1.0, .y = 0.0, .z = 0.0};
         Vec3 b = {.x = -1.0, .y = 0.0, .z = 0.0};
-        t_assert(vec3Dot(&a, &b) == -1.0, "dot product matches expected value");
+        t_assert(vec3Dot(a, b) == -1.0, "dot product matches expected value");
     }
 
     TEST(crossProductOrthogonality) {
         Vec3 i = {.x = 1.0, .y = 0.0, .z = 0.0};
         Vec3 j = {.x = 0.0, .y = 1.0, .z = 0.0};
-        Vec3 k = vec3Cross(&i, &j);
+        Vec3 k = vec3Cross(i, j);
         t_assert(fabs(k.x - 0.0) < EPSILON, "x component zero");
         t_assert(fabs(k.y - 0.0) < EPSILON, "y component zero");
         t_assert(fabs(k.z - 1.0) < EPSILON, "z component one");
-        t_assert(fabs(vec3Dot(&k, &i)) < EPSILON, "cross is orthogonal to i");
-        t_assert(fabs(vec3Dot(&k, &j)) < EPSILON, "cross is orthogonal to j");
+        t_assert(fabs(vec3Dot(k, i)) < EPSILON, "cross is orthogonal to i");
+        t_assert(fabs(vec3Dot(k, j)) < EPSILON, "cross is orthogonal to j");
     }
 
     TEST(normalizeAndMagnitude) {
         Vec3 v = {.x = 3.0, .y = -4.0, .z = 12.0};
-        double magSq = vec3NormSq(&v);
+        double magSq = vec3NormSq(v);
         t_assert(fabs(magSq - 169.0) < EPSILON, "magnitude squared matches");
-        t_assert(fabs(vec3Norm(&v) - 13.0) < EPSILON, "magnitude matches");
+        t_assert(fabs(vec3Norm(v) - 13.0) < EPSILON, "magnitude matches");
 
         vec3Normalize(&v);
-        t_assert(fabs(vec3Norm(&v) - 1.0) < 1e-12, "normalized vector is unit");
+        t_assert(fabs(vec3Norm(v) - 1.0) < 1e-12, "normalized vector is unit");
 
         Vec3 zero = {.x = 0.0, .y = 0.0, .z = 0.0};
         vec3Normalize(&zero);
@@ -61,14 +61,14 @@ SUITE(Vec3) {
     TEST(distance) {
         Vec3 a = {.x = 0.0, .y = 0.0, .z = 0.0};
         Vec3 b = {.x = 1.0, .y = 2.0, .z = 2.0};
-        t_assert(fabs(vec3DistSq(&a, &b) - 9.0) < EPSILON,
+        t_assert(fabs(vec3DistSq(a, b) - 9.0) < EPSILON,
                  "distance squared matches");
     }
 
     TEST(latLngToVec3_unitSphere) {
         LatLng geo = {.lat = 0.5, .lng = -1.3};
-        Vec3 v = latLngToVec3(&geo);
-        t_assert(fabs(vec3Norm(&v) - 1.0) < 1e-12,
+        Vec3 v = latLngToVec3(geo);
+        t_assert(fabs(vec3Norm(v) - 1.0) < 1e-12,
                  "converted vector lives on the unit sphere");
     }
 

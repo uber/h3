@@ -1044,7 +1044,7 @@ H3Error H3_EXPORT(latLngToCell)(const LatLng *g, int res, H3Index *out) {
         return E_LATLNG_DOMAIN;
     }
 
-    Vec3 v = latLngToVec3(g);
+    Vec3 v = latLngToVec3(*g);
     return vec3ToCell(&v, res, out);
 }
 
@@ -1178,7 +1178,7 @@ H3Error H3_EXPORT(cellToLatLng)(H3Index h3, LatLng *g) {
     if (e) {
         return e;
     }
-    *g = vec3ToLatLng(&v);
+    *g = vec3ToLatLng(v);
     return E_SUCCESS;
 }
 
