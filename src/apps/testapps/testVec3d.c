@@ -21,6 +21,7 @@
 #include <math.h>
 
 #include "constants.h"
+#include "h3Index.h"
 #include "test.h"
 #include "vec3d.h"
 
@@ -80,5 +81,26 @@ SUITE(Vec3d) {
                  "z coordinate consistent");
         t_assert(fabs(vec3Mag(&viaReturn) - 1.0) < 1e-12,
                  "converted vector lives on the unit sphere");
+    }
+
+    TEST(vec3ToCell_invalidRes) {
+        Vec3d v = {.x = 1.0, .y = 0.0, .z = 0.0};
+        H3Index out;
+        t_assert(vec3ToCell(&v, -1, &out) == E_RES_DOMAIN,
+                 "negative resolution is rejected");
+        t_assert(vec3ToCell(&v, 16, &out) == E_RES_DOMAIN,
+                 "resolution above max is rejected");
+    }
+
+    TEST(vec3ToCell_nonFinite) {
+        H3Index out;
+        Vec3d nan_x = {.x = NAN, .y = 0.0, .z = 0.0};
+        t_assert(vec3ToCell(&nan_x, 0, &out) == E_DOMAIN, "NaN x is rejected");
+        Vec3d inf_y = {.x = 0.0, .y = INFINITY, .z = 0.0};
+        t_assert(vec3ToCell(&inf_y, 0, &out) == E_DOMAIN,
+                 "infinite y is rejected");
+        Vec3d inf_z = {.x = 0.0, .y = 0.0, .z = -INFINITY};
+        t_assert(vec3ToCell(&inf_z, 0, &out) == E_DOMAIN,
+                 "infinite z is rejected");
     }
 }
