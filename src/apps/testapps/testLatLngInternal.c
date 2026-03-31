@@ -64,5 +64,7 @@ SUITE(latLngInternal) {
         t_assert(constrainLng(2 * M_PI) == 0, "lng 2pi");
         t_assert(constrainLng(3 * M_PI) == M_PI, "lng 2pi");
         t_assert(constrainLng(4 * M_PI) == 0, "lng 4pi");
+        t_assert(constrainLng(-2 * M_PI) == 0, "lng -2pi");
+        t_assert(constrainLng(-3 * M_PI) == -M_PI, "lng -3pi");
     }
 }
