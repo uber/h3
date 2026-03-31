@@ -18,7 +18,13 @@
  * @file benchmarkCoreApi.c
  * @brief Benchmark latLngToCell, cellToLatLng, cellToBoundary,
  *        directedEdgeToBoundary with diverse inputs.
+ *
+ * Uses START_TIMER/END_TIMER from benchmark.h for cross-platform timing,
+ * but reports per-call microseconds (not per-iteration) for use with
+ * bench.py.
  */
+
+#include <stdio.h>
 
 #include "benchmark.h"
 #include "h3api.h"
@@ -43,54 +49,88 @@ static const LatLng points[N_POINTS] = {
 
 static const int resolutions[N_RESOLUTIONS] = {0, 5, 9, 15};
 
-H3Index cells[N_POINTS * N_RESOLUTIONS];
-int nCells = 0;
-H3Index edges[N_POINTS * N_RESOLUTIONS];
-int nEdges = 0;
+int main(void) {
+    H3Index cells[N_POINTS * N_RESOLUTIONS];
+    int nCells = 0;
 
-BEGIN_BENCHMARKS();
-
-// Pre-compute cells and edges
-for (int r = 0; r < N_RESOLUTIONS; r++) {
-    for (int p = 0; p < N_POINTS; p++) {
-        H3_EXPORT(latLngToCell)(&points[p], resolutions[r], &cells[nCells]);
-        nCells++;
-    }
-}
-for (int c = 0; c < nCells; c++) {
-    H3Index out[6];
-    H3_EXPORT(originToDirectedEdges)(cells[c], out);
-    edges[nEdges++] = out[0];
-}
-
-H3Index h;
-LatLng outCoord;
-CellBoundary cb;
-
-BENCHMARK(latLngToCell, ITERATIONS, {
+    // Pre-compute cells for inverse benchmarks
     for (int r = 0; r < N_RESOLUTIONS; r++) {
         for (int p = 0; p < N_POINTS; p++) {
-            H3_EXPORT(latLngToCell)(&points[p], resolutions[r], &h);
+            H3_EXPORT(latLngToCell)(&points[p], resolutions[r], &cells[nCells]);
+            nCells++;
         }
     }
-});
 
-BENCHMARK(cellToLatLng, ITERATIONS, {
+    // Pre-compute directed edges
+    H3Index edges[N_POINTS * N_RESOLUTIONS];
+    int nEdges = 0;
     for (int c = 0; c < nCells; c++) {
-        H3_EXPORT(cellToLatLng)(cells[c], &outCoord);
+        H3Index out[6];
+        H3_EXPORT(originToDirectedEdges)(cells[c], out);
+        edges[nEdges++] = out[0];
     }
-});
 
-BENCHMARK(cellToBoundary, ITERATIONS, {
-    for (int c = 0; c < nCells; c++) {
-        H3_EXPORT(cellToBoundary)(cells[c], &cb);
+    // Benchmark latLngToCell
+    {
+        H3Index h;
+        int totalCalls = ITERATIONS * N_POINTS * N_RESOLUTIONS;
+        START_TIMER;
+        for (int iter = 0; iter < ITERATIONS; iter++) {
+            for (int r = 0; r < N_RESOLUTIONS; r++) {
+                for (int p = 0; p < N_POINTS; p++) {
+                    H3_EXPORT(latLngToCell)(&points[p], resolutions[r], &h);
+                }
+            }
+        }
+        END_TIMER(duration);
+        printf("latLngToCell: %.4Lf us/call (%d calls)\n",
+               duration / totalCalls, totalCalls);
     }
-});
 
-BENCHMARK(directedEdgeToBoundary, ITERATIONS, {
-    for (int e = 0; e < nEdges; e++) {
-        H3_EXPORT(directedEdgeToBoundary)(edges[e], &cb);
+    // Benchmark cellToLatLng
+    {
+        LatLng out;
+        int totalCalls = ITERATIONS * nCells;
+        START_TIMER;
+        for (int iter = 0; iter < ITERATIONS; iter++) {
+            for (int c = 0; c < nCells; c++) {
+                H3_EXPORT(cellToLatLng)(cells[c], &out);
+            }
+        }
+        END_TIMER(duration);
+        printf("cellToLatLng: %.4Lf us/call (%d calls)\n",
+               duration / totalCalls, totalCalls);
     }
-});
 
-END_BENCHMARKS();
+    // Benchmark cellToBoundary
+    {
+        CellBoundary cb;
+        int totalCalls = ITERATIONS * nCells;
+        START_TIMER;
+        for (int iter = 0; iter < ITERATIONS; iter++) {
+            for (int c = 0; c < nCells; c++) {
+                H3_EXPORT(cellToBoundary)(cells[c], &cb);
+            }
+        }
+        END_TIMER(duration);
+        printf("cellToBoundary: %.4Lf us/call (%d calls)\n",
+               duration / totalCalls, totalCalls);
+    }
+
+    // Benchmark directedEdgeToBoundary
+    {
+        CellBoundary cb;
+        int totalCalls = ITERATIONS * nEdges;
+        START_TIMER;
+        for (int iter = 0; iter < ITERATIONS; iter++) {
+            for (int e = 0; e < nEdges; e++) {
+                H3_EXPORT(directedEdgeToBoundary)(edges[e], &cb);
+            }
+        }
+        END_TIMER(duration);
+        printf("directedEdgeToBoundary: %.4Lf us/call (%d calls)\n",
+               duration / totalCalls, totalCalls);
+    }
+
+    return 0;
+}
