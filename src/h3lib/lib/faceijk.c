@@ -361,8 +361,27 @@ static const int unitScaleByCIIres[] = {
     5764801  // res 16
 };
 
-// Private function declarations
-static void _vec3ToClosestFace(const Vec3 *v3, int *face, double *sqd);
+/**
+ * Encodes a coordinate on the sphere to the corresponding icosahedral face and
+ * containing the squared euclidean distance to that face center.
+ *
+ * @param v3 The Vec3 coordinates to encode.
+ * @param face The icosahedral face containing the coordinates.
+ * @param sqd The squared euclidean distance to its icosahedral face center.
+ */
+static void _vec3ToClosestFace(const Vec3 *v3, int *face, double *sqd) {
+    *face = 0;
+    // The distance between two farthest points is 2.0, therefore the square of
+    // the distance between two points should always be less or equal than 4.0 .
+    *sqd = 5.0;
+    for (int f = 0; f < NUM_ICOSA_FACES; ++f) {
+        double sqdT = vec3DistSq(faceCenterPoint[f], *v3);
+        if (sqdT < *sqd) {
+            *face = f;
+            *sqd = sqdT;
+        }
+    }
+}
 
 /**
  * Compute the local north and east directions on the tangent plane
@@ -981,27 +1000,4 @@ Overage _adjustPentVertOverage(FaceIJK *fijk, int res) {
         overage = _adjustOverageClassII(fijk, res, pentLeading4, 1);
     } while (overage == NEW_FACE);
     return overage;
-}
-
-/**
- * Encodes a Vec3 coordinate to the corresponding icosahedral face and
- * squared euclidean distance to that face center.
- *
- * @param v3 The Vec3 coordinates to encode.
- * @param face The icosahedral face containing the coordinates.
- * @param sqd The squared euclidean distance to its icosahedral face center.
- */
-static void _vec3ToClosestFace(const Vec3 *v3, int *face, double *sqd) {
-    // determine the icosahedron face
-    *face = 0;
-    // The distance between two farthest points is 2.0, therefore the square of
-    // the distance between two points should always be less or equal than 4.0 .
-    *sqd = 5.0;
-    for (int f = 0; f < NUM_ICOSA_FACES; ++f) {
-        double sqdT = vec3DistSq(faceCenterPoint[f], *v3);
-        if (sqdT < *sqd) {
-            *face = f;
-            *sqd = sqdT;
-        }
-    }
 }

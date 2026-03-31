@@ -23,18 +23,22 @@
 
 #include "constants.h"
 
-/**
- * Calculate the 3D coordinate on unit sphere from the latitude and longitude.
- *
- * @param geo The latitude and longitude of the point.
- * @param v The 3D coordinate of the point.
- */
+/** Convert latitude and longitude to a unit Vec3 on the sphere. */
 Vec3 latLngToVec3(LatLng geo) {
     double r = cos(geo.lat);
-    return (Vec3){cos(geo.lng) * r, sin(geo.lng) * r, sin(geo.lat)};
+    return (Vec3){
+        cos(geo.lng) * r,
+        sin(geo.lng) * r,
+        sin(geo.lat),
+    };
 }
 
-LatLng vec3ToLatLng(Vec3 v) { return (LatLng){asin(v.z), atan2(v.y, v.x)}; }
+LatLng vec3ToLatLng(Vec3 v) {
+    return (LatLng){
+        asin(v.z),
+        atan2(v.y, v.x),
+    };
+}
 
 Vec3 vec3LinComb(double s1, Vec3 a, double s2, Vec3 b) {
     return (Vec3){
@@ -45,8 +49,11 @@ Vec3 vec3LinComb(double s1, Vec3 a, double s2, Vec3 b) {
 }
 
 Vec3 vec3Cross(Vec3 v1, Vec3 v2) {
-    return (Vec3){v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z,
-                  v1.x * v2.y - v1.y * v2.x};
+    return (Vec3){
+        v1.y * v2.z - v1.z * v2.y,
+        v1.z * v2.x - v1.x * v2.z,
+        v1.x * v2.y - v1.y * v2.x,
+    };
 }
 
 double vec3Dot(Vec3 v1, Vec3 v2) {
