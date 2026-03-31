@@ -461,38 +461,6 @@ void _vec3dToFaceIjk(const Vec3d *p, int res, FaceIJK *h) {
 }
 
 /**
- * Encodes a coordinate on the sphere to the FaceIJK address of the containing
- * cell at the specified resolution.
- *
- * @param g The spherical coordinates to encode.
- * @param res The desired H3 resolution for the encoding.
- * @param h The FaceIJK address of the containing cell at resolution res.
- */
-void _geoToFaceIjk(const LatLng *g, int res, FaceIJK *h) {
-    // first convert to hex2d
-    Vec2d v;
-    _geoToHex2d(g, res, &h->face, &v);
-
-    // then convert to ijk+
-    _hex2dToCoordIJK(&v, &h->coord);
-}
-
-/**
- * Encodes a coordinate on the sphere to the corresponding icosahedral face and
- * containing 2D hex coordinates relative to that face center.
- *
- * @param g The spherical coordinates to encode.
- * @param res The desired H3 resolution for the encoding.
- * @param face The icosahedral face containing the spherical coordinates.
- * @param v The 2D hex coordinates of the cell containing the point.
- */
-void _geoToHex2d(const LatLng *g, int res, int *face, Vec2d *v) {
-    Vec3d p;
-    latLngToVec3(g, &p);
-    _vec3dToHex2d(&p, res, face, v);
-}
-
-/**
  * Determines the center point in 3D coordinates of a cell given by 2D
  * hex coordinates on a particular icosahedral face.
  *
@@ -620,20 +588,6 @@ void _hex2dToGeo(const Vec2d *v, int face, int res, int substrate, LatLng *g) {
 
     // now find the point at (r,theta) from the face center
     _geoAzDistanceRads(&faceCenterGeo[face], theta, r, g);
-}
-
-/**
- * Determines the center point in spherical coordinates of a cell given by
- * a FaceIJK address at a specified resolution.
- *
- * @param h The FaceIJK address of the cell.
- * @param res The H3 resolution of the cell.
- * @param g The spherical coordinates of the cell center point.
- */
-void _faceIjkToGeo(const FaceIJK *h, int res, LatLng *g) {
-    Vec2d v;
-    _ijkToHex2d(&h->coord, &v);
-    _hex2dToGeo(&v, h->face, res, 0, g);
 }
 
 /**
@@ -1111,18 +1065,4 @@ static void _vec3dToClosestFace(const Vec3d *v3d, int *face, double *sqd) {
             *sqd = sqdT;
         }
     }
-}
-
-/**
- * Encodes a coordinate on the sphere to the corresponding icosahedral face and
- * containing the squared euclidean distance to that face center.
- *
- * @param g The spherical coordinates to encode.
- * @param face The icosahedral face containing the spherical coordinates.
- * @param sqd The squared euclidean distance to its icosahedral face center.
- */
-void _geoToClosestFace(const LatLng *g, int *face, double *sqd) {
-    Vec3d v3d;
-    latLngToVec3(g, &v3d);
-    _vec3dToClosestFace(&v3d, face, sqd);
 }

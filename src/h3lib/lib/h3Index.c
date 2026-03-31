@@ -1044,14 +1044,9 @@ H3Error H3_EXPORT(latLngToCell)(const LatLng *g, int res, H3Index *out) {
         return E_LATLNG_DOMAIN;
     }
 
-    FaceIJK fijk;
-    _geoToFaceIjk(g, res, &fijk);
-    *out = _faceIjkToH3(&fijk, res);
-    if (ALWAYS(*out)) {
-        return E_SUCCESS;
-    } else {
-        return E_FAILED;
-    }
+    Vec3d v;
+    latLngToVec3(g, &v);
+    return vec3ToCell(&v, res, out);
 }
 
 /**
@@ -1179,12 +1174,12 @@ H3Error _h3ToFaceIjk(H3Index h, FaceIJK *fijk) {
  * @param g The spherical coordinates of the H3 cell center.
  */
 H3Error H3_EXPORT(cellToLatLng)(H3Index h3, LatLng *g) {
-    FaceIJK fijk;
-    H3Error e = _h3ToFaceIjk(h3, &fijk);
+    Vec3d v;
+    H3Error e = cellToVec3(h3, &v);
     if (e) {
         return e;
     }
-    _faceIjkToGeo(&fijk, H3_GET_RESOLUTION(h3), g);
+    vec3ToLatLng(&v, g);
     return E_SUCCESS;
 }
 

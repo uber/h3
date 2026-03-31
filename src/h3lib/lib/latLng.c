@@ -202,19 +202,6 @@ double H3_EXPORT(greatCircleDistanceM)(const LatLng *a, const LatLng *b) {
 }
 
 /**
- * Determines the azimuth to p2 from p1 in radians.
- *
- * @param p1 The first spherical coordinates.
- * @param p2 The second spherical coordinates.
- * @return The azimuth in radians from p1 to p2.
- */
-double _geoAzimuthRads(const LatLng *p1, const LatLng *p2) {
-    return atan2(cos(p2->lat) * sin(p2->lng - p1->lng),
-                 cos(p1->lat) * sin(p2->lat) -
-                     sin(p1->lat) * cos(p2->lat) * cos(p2->lng - p1->lng));
-}
-
-/**
  * Computes the point on the sphere a specified azimuth and distance from
  * another point.
  *

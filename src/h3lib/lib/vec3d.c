@@ -24,26 +24,6 @@
 #include "constants.h"
 
 /**
- * Square of a number
- *
- * @param x The input number.
- * @return The square of the input number.
- */
-double _square(double x) { return x * x; }
-
-/**
- * Calculate the square of the distance between two 3D coordinates.
- *
- * @param v1 The first 3D coordinate.
- * @param v2 The second 3D coordinate.
- * @return The square of the distance between the given points.
- */
-double _pointSquareDist(const Vec3d *v1, const Vec3d *v2) {
-    return _square(v1->x - v2->x) + _square(v1->y - v2->y) +
-           _square(v1->z - v2->z);
-}
-
-/**
  * Calculate the 3D coordinate on unit sphere from the latitude and longitude.
  *
  * @param geo The latitude and longitude of the point.
@@ -91,3 +71,8 @@ double vec3DistSq(const Vec3d *v1, const Vec3d *v2) {
 }
 
 void latLngToVec3(const LatLng *geo, Vec3d *v) { _geoToVec3d(geo, v); }
+
+void vec3ToLatLng(const Vec3d *v, LatLng *geo) {
+    geo->lat = asin(v->z);
+    geo->lng = atan2(v->y, v->x);
+}
