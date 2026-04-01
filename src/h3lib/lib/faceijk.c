@@ -525,12 +525,12 @@ void _hex2dToVec3(const Vec2d *v, int face, int res, int substrate, Vec3d *v3) {
  *
  * @param h The FaceIJK address of the cell.
  * @param res The H3 resolution of the cell.
- * @param v3 Output: the 3D coordinates of the cell center point.
+ * @param v3 Output: The 3D coordinates of the cell center point.
  */
-void _faceIjkToVec3(const FaceIJK *h, int res, Vec3d *v3) {
+void _faceIjkToVec3(const FaceIJK *h, int res, Vec3d *g) {
     Vec2d v;
     _ijkToHex2d(&h->coord, &v);
-    _hex2dToVec3(&v, h->face, res, 0, v3);
+    _hex2dToVec3(&v, h->face, res, 0, g);
 }
 
 /**
@@ -541,7 +541,7 @@ void _faceIjkToVec3(const FaceIJK *h, int res, Vec3d *v3) {
  * @param res The H3 resolution of the cell.
  * @param start The first topological vertex to return.
  * @param length The number of topological vertexes to return.
- * @param g Output: the spherical coordinates of the cell boundary.
+ * @param g Output: The spherical coordinates of the cell boundary.
  */
 void _faceIjkPentToCellBoundary(const FaceIJK *h, int res, int start,
                                 int length, CellBoundary *g) {
