@@ -324,7 +324,6 @@ set(OTHER_SOURCE_FILES
     src/apps/benchmarks/benchmarkVertex.c
     src/apps/benchmarks/benchmarkIsValidCell.c
     src/apps/benchmarks/benchmarkH3Api.c
-    src/apps/benchmarks/benchmarkCoreApi.c
     src/apps/benchmarks/benchmarkArea.c)
 
 set(ALL_SOURCE_FILES
@@ -665,7 +664,6 @@ if(BUILD_BENCHMARKS)
     endmacro()
 
     add_h3_benchmark(benchmarkH3Api src/apps/benchmarks/benchmarkH3Api.c)
-    add_h3_benchmark(benchmarkCoreApi src/apps/benchmarks/benchmarkCoreApi.c)
     add_h3_benchmark(benchmarkGridDiskCells
                      src/apps/benchmarks/benchmarkGridDiskCells.c)
     add_h3_benchmark(benchmarkGridPathCells
