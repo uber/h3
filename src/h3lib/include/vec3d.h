@@ -57,11 +57,11 @@ static inline LatLng vec3ToLatLng(Vec3d v) {
     };
 }
 
-static inline Vec3d vec3LinComb(double s1, Vec3d a, double s2, Vec3d b) {
+static inline Vec3d vec3LinComb(double a, Vec3d v1, double b, Vec3d v2) {
     return (Vec3d){
-        s1 * a.x + s2 * b.x,
-        s1 * a.y + s2 * b.y,
-        s1 * a.z + s2 * b.z,
+        a * v1.x + b * v2.x,
+        a * v1.y + b * v2.y,
+        a * v1.z + b * v2.z,
     };
 }
 
