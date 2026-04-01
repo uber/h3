@@ -397,8 +397,7 @@ void _vec3ToFaceIjk(Vec3d p, int res, FaceIJK *h) {
 static inline void _vec3TangentBasis(const Vec3d *p, Vec3d *north,
                                      Vec3d *east) {
     Vec3d northPole = {0.0, 0.0, 1.0};
-    double NdotP = vec3Dot(northPole, *p);
-    *north = vec3LinComb(1.0, northPole, -NdotP, *p);
+    *north = vec3LinComb(1.0, northPole, -vec3Dot(northPole, *p), *p);
     vec3Normalize(north);
     *east = vec3Cross(*north, *p);
 }
@@ -414,8 +413,7 @@ static inline double _vec3AzimuthRads(Vec3d p1, Vec3d p2) {
     _vec3TangentBasis(&p1, &northDir, &eastDir);
 
     // project p2 onto tangent plane at p1
-    double p2dotp1 = vec3Dot(p2, p1);
-    Vec3d p2_on_tangent = vec3LinComb(1.0, p2, -p2dotp1, p1);
+    Vec3d p2_on_tangent = vec3LinComb(1.0, p2, -vec3Dot(p2, p1), p1);
     vec3Normalize(&p2_on_tangent);
 
     return atan2(vec3Dot(p2_on_tangent, eastDir),
