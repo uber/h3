@@ -188,7 +188,7 @@ H3Error cellToLocalIjk(H3Index origin, H3Index h3, CoordIJK *out) {
         }
     }
     // Face is unused. This produces coordinates in base cell coordinate space.
-    _cellToFaceIjkWithInitializedFijk(h3, &indexFijk);
+    _h3ToFaceIjkWithInitializedFijk(h3, &indexFijk);
 
     if (dir != CENTER_DIGIT) {
         assert(baseCell != originBaseCell);

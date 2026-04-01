@@ -46,7 +46,7 @@ static void generate(void) {
             int r = 0;
             H3Index neighbor;
             h3NeighborRotations(pentagon, dir, &r, &neighbor);
-            _cellToFaceIjk(neighbor, &fijk);
+            _h3ToFaceIjk(neighbor, &fijk);
 
             if (dir > J_AXES_DIGIT) printf(", ");
             printf("%d", fijk.face);

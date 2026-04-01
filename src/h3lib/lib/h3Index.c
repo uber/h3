@@ -939,7 +939,7 @@ H3Index _h3Rotate60cw(H3Index h) {
  * @param res The cell resolution.
  * @return The encoded H3Index (or H3_NULL on failure).
  */
-H3Index _faceIjkToCell(const FaceIJK *fijk, int res) {
+H3Index _faceIjkToH3(const FaceIJK *fijk, int res) {
     // initialize the index
     H3Index h = H3_INIT;
     H3_SET_MODE(h, H3_CELL_MODE);
@@ -1069,7 +1069,7 @@ H3Error vec3ToCell(const Vec3 *v, int res, H3Index *out) {
 
     FaceIJK fijk;
     _vec3ToFaceIjk(*v, res, &fijk);
-    *out = _faceIjkToCell(&fijk, res);
+    *out = _faceIjkToH3(&fijk, res);
     if (ALWAYS(*out)) {
         return E_SUCCESS;
     } else {
@@ -1084,7 +1084,7 @@ H3Error vec3ToCell(const Vec3 *v, int res, H3Index *out) {
  *        and normalized base cell coordinates.
  * @return Returns 1 if the possibility of overage exists, otherwise 0.
  */
-int _cellToFaceIjkWithInitializedFijk(H3Index h, FaceIJK *fijk) {
+int _h3ToFaceIjkWithInitializedFijk(H3Index h, FaceIJK *fijk) {
     CoordIJK *ijk = &fijk->coord;
     int res = H3_GET_RESOLUTION(h);
 
@@ -1115,7 +1115,7 @@ int _cellToFaceIjkWithInitializedFijk(H3Index h, FaceIJK *fijk) {
  * @param h The H3Index.
  * @param fijk The corresponding FaceIJK address.
  */
-H3Error _cellToFaceIjk(H3Index h, FaceIJK *fijk) {
+H3Error _h3ToFaceIjk(H3Index h, FaceIJK *fijk) {
     int baseCell = H3_GET_BASE_CELL(h);
     if (NEVER(baseCell < 0) || baseCell >= NUM_BASE_CELLS) {
         // Base cells less than zero can not be represented in an index
@@ -1131,7 +1131,7 @@ H3Error _cellToFaceIjk(H3Index h, FaceIJK *fijk) {
 
     // start with the "home" face and ijk+ coordinates for the base cell of c
     *fijk = baseCellData[baseCell].homeFijk;
-    if (!_cellToFaceIjkWithInitializedFijk(h, fijk))
+    if (!_h3ToFaceIjkWithInitializedFijk(h, fijk))
         return E_SUCCESS;  // no overage is possible; h lies on this face
 
     // if we're here we have the potential for an "overage"; i.e., it is
@@ -1191,7 +1191,7 @@ H3Error H3_EXPORT(cellToLatLng)(H3Index h3, LatLng *g) {
  */
 H3Error cellToVec3(H3Index h3, Vec3 *v) {
     FaceIJK fijk;
-    H3Error e = _cellToFaceIjk(h3, &fijk);
+    H3Error e = _h3ToFaceIjk(h3, &fijk);
     if (e) {
         return e;
     }
@@ -1207,7 +1207,7 @@ H3Error cellToVec3(H3Index h3, Vec3 *v) {
  */
 H3Error H3_EXPORT(cellToBoundary)(H3Index h3, CellBoundary *cb) {
     FaceIJK fijk;
-    H3Error e = _cellToFaceIjk(h3, &fijk);
+    H3Error e = _h3ToFaceIjk(h3, &fijk);
     if (e) {
         return e;
     }
@@ -1215,8 +1215,8 @@ H3Error H3_EXPORT(cellToBoundary)(H3Index h3, CellBoundary *cb) {
         _faceIjkPentToCellBoundary(&fijk, H3_GET_RESOLUTION(h3), 0,
                                    NUM_PENT_VERTS, cb);
     } else {
-        _faceIjkToCellBoundary(&fijk, H3_GET_RESOLUTION(h3), 0, NUM_HEX_VERTS,
-                               cb);
+        _faceIjkToH3Boundary(&fijk, H3_GET_RESOLUTION(h3), 0, NUM_HEX_VERTS,
+                             cb);
     }
     return E_SUCCESS;
 }
@@ -1259,7 +1259,7 @@ H3Error H3_EXPORT(getIcosahedronFaces)(H3Index h3, int *out) {
 
     // convert to FaceIJK
     FaceIJK fijk;
-    H3Error err = _cellToFaceIjk(h3, &fijk);
+    H3Error err = _h3ToFaceIjk(h3, &fijk);
     if (err) {
         return err;
     }

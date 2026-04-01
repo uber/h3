@@ -723,8 +723,8 @@ void _faceIjkPentToVerts(FaceIJK *fijk, int *res, FaceIJK *fijkVerts) {
  * @param length The number of topological vertexes to return.
  * @param g Output: the spherical coordinates of the cell boundary.
  */
-void _faceIjkToCellBoundary(const FaceIJK *h, int res, int start, int length,
-                            CellBoundary *g) {
+void _faceIjkToH3Boundary(const FaceIJK *h, int res, int start, int length,
+                          CellBoundary *g) {
     int adjRes = res;
     FaceIJK centerIJK = *h;
     FaceIJK fijkVerts[NUM_HEX_VERTS];

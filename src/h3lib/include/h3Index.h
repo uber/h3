@@ -169,9 +169,9 @@ int isResolutionClassIII(int r);
 
 // Internal functions
 
-int _cellToFaceIjkWithInitializedFijk(H3Index h, FaceIJK *fijk);
-H3Error _cellToFaceIjk(H3Index h, FaceIJK *fijk);
-H3Index _faceIjkToCell(const FaceIJK *fijk, int res);
+int _h3ToFaceIjkWithInitializedFijk(H3Index h, FaceIJK *fijk);
+H3Error _h3ToFaceIjk(H3Index h, FaceIJK *fijk);
+H3Index _faceIjkToH3(const FaceIJK *fijk, int res);
 Direction _h3LeadingNonZeroDigit(H3Index h);
 H3Index _h3RotatePent60ccw(H3Index h);
 H3Index _h3RotatePent60cw(H3Index h);

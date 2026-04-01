@@ -278,7 +278,7 @@ H3Error H3_EXPORT(directedEdgeToBoundary)(H3Index edge, CellBoundary *cb) {
     // resulting edge boundary may have an additional distortion vertex if it
     // crosses an edge of the icosahedron.
     FaceIJK fijk;
-    H3Error fijkResult = _cellToFaceIjk(origin, &fijk);
+    H3Error fijkResult = _h3ToFaceIjk(origin, &fijk);
     if (NEVER(fijkResult)) {
         return fijkResult;
     }
@@ -288,7 +288,7 @@ H3Error H3_EXPORT(directedEdgeToBoundary)(H3Index edge, CellBoundary *cb) {
     if (isPent) {
         _faceIjkPentToCellBoundary(&fijk, res, startVertex, 2, cb);
     } else {
-        _faceIjkToCellBoundary(&fijk, res, startVertex, 2, cb);
+        _faceIjkToH3Boundary(&fijk, res, startVertex, 2, cb);
     }
     return E_SUCCESS;
 }
