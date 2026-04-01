@@ -430,7 +430,7 @@ static double _vec3AzimuthRads(const Vec3d *p1, const Vec3d *p2) {
  * @param face Output: the icosahedral face containing the coordinates.
  * @param v Output: the 2D hex coordinates of the cell containing the point.
  */
-static void _vec3ToVec2(const Vec3d *p, int res, int *face, Vec2d *v) {
+static void _vec3ToHex2d(const Vec3d *p, int res, int *face, Vec2d *v) {
     // determine the icosahedron face
     double sqd;
     _vec3ToClosestFace(p, face, &sqd);
@@ -476,7 +476,7 @@ static void _vec3ToVec2(const Vec3d *p, int res, int *face, Vec2d *v) {
  */
 void _vec3ToFaceIjk(Vec3d p, int res, FaceIJK *h) {
     Vec2d v;
-    _vec3ToVec2(&p, res, &h->face, &v);
+    _vec3ToHex2d(&p, res, &h->face, &v);
     _hex2dToCoordIJK(&v, &h->coord);
 }
 
