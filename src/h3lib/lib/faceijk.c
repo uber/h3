@@ -370,7 +370,7 @@ static void _vec3ToHex2d(const Vec3d *p, int res, int *face, Vec2d *v);
  *
  * @param p The Vec3d coordinates to encode.
  * @param res The desired H3 resolution for the encoding.
- * @param h Output: the FaceIJK address of the containing cell.
+ * @param h Output: FaceIJK address of the containing cell at resolution res.
  */
 void _vec3ToFaceIjk(Vec3d p, int res, FaceIJK *h) {
     // first convert to hex2d
