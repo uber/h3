@@ -169,6 +169,7 @@ set(LIB_SOURCE_FILES
     src/h3lib/include/constants.h
     src/h3lib/include/coordijk.h
     src/h3lib/include/algos.h
+    src/h3lib/lib/coordijk.c
     src/h3lib/include/adder.h
     src/h3lib/include/area.h
     src/h3lib/include/cellsToMultiPoly.h
@@ -179,7 +180,6 @@ set(LIB_SOURCE_FILES
     src/h3lib/lib/polyfill.c
     src/h3lib/lib/h3Index.c
     src/h3lib/lib/vec2d.c
-    src/h3lib/lib/coordijk.c
     src/h3lib/lib/vertex.c
     src/h3lib/lib/linkedGeo.c
     src/h3lib/lib/localij.c
