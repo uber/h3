@@ -19,7 +19,7 @@
 #include <stdlib.h>
 
 #include "test.h"
-#include "vec2.h"
+#include "vec2d.h"
 
 SUITE(Vec2Internal) {
     TEST(_vec2Norm) {

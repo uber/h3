@@ -17,8 +17,8 @@
  * @brief   2D floating point vector functions.
  */
 
-#ifndef VEC2_H
-#define VEC2_H
+#ifndef VEC2D_H
+#define VEC2D_H
 
 #include <stdbool.h>
 

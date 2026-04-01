@@ -26,7 +26,7 @@
 
 #include "coordijk.h"
 #include "latLng.h"
-#include "vec2.h"
+#include "vec2d.h"
 #include "vec3d.h"
 
 /** @struct FaceIJK

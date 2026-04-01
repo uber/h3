@@ -32,7 +32,7 @@
 
 #include "h3api.h"
 #include "latLng.h"
-#include "vec2.h"
+#include "vec2d.h"
 
 /** @struct CoordIJK
  * @brief IJK hexagon coordinates
