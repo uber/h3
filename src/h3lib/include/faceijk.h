@@ -48,8 +48,6 @@ typedef struct {
                    /// face
 } FaceOrientIJK;
 
-extern const LatLng faceCenterGeo[NUM_ICOSA_FACES];
-
 // indexes for faceNeighbors table
 /** IJ quadrant faceNeighbors table direction */
 #define IJ 1
