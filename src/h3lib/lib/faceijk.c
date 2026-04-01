@@ -442,9 +442,9 @@ static void _vec3ToHex2d(const Vec3d *p, int res, int *face, Vec2d *v) {
     }
 
     // now have face and r, now find CCW theta from CII i-axis
-    double p_az = _vec3AzimuthRads(faceCenterPoint[*face], *p);
-    double theta =
-        _posAngleRads(faceAxesAzRadsCII[*face][0] - _posAngleRads(p_az));
+    double theta = _posAngleRads(
+        faceAxesAzRadsCII[*face][0] -
+        _posAngleRads(_vec3AzimuthRads(faceCenterPoint[*face], *p)));
 
     // adjust theta for Class III (odd resolutions)
     if (isResolutionClassIII(res))
