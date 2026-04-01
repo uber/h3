@@ -394,12 +394,11 @@ void _vec3ToFaceIjk(Vec3d p, int res, FaceIJK *h) {
  * @param north Output: local north direction on tangent plane.
  * @param east Output: local east direction on tangent plane.
  */
-static inline void _vec3TangentBasis(const Vec3d *p, Vec3d *north,
-                                     Vec3d *east) {
+static inline void _vec3TangentBasis(Vec3d p, Vec3d *north, Vec3d *east) {
     Vec3d northPole = {0.0, 0.0, 1.0};
-    *north = vec3LinComb(1.0, northPole, -vec3Dot(northPole, *p), *p);
+    *north = vec3LinComb(1.0, northPole, -vec3Dot(northPole, p), p);
     vec3Normalize(north);
-    *east = vec3Cross(*north, *p);
+    *east = vec3Cross(*north, p);
 }
 
 /**
@@ -410,7 +409,7 @@ static inline void _vec3TangentBasis(const Vec3d *p, Vec3d *north,
  */
 static inline double _vec3AzimuthRads(Vec3d p1, Vec3d p2) {
     Vec3d northDir, eastDir;
-    _vec3TangentBasis(&p1, &northDir, &eastDir);
+    _vec3TangentBasis(p1, &northDir, &eastDir);
 
     // project p2 onto tangent plane at p1
     Vec3d p2_on_tangent = vec3LinComb(1.0, p2, -vec3Dot(p2, p1), p1);
@@ -508,13 +507,12 @@ void _hex2dToVec3(const Vec2d *v, int face, int res, int substrate, Vec3d *v3) {
     theta = _posAngleRads(faceAxesAzRadsCII[face][0] - theta);
 
     // now find the point at (r,theta) from the face center
-    const Vec3d *center = &faceCenterPoint[face];
     Vec3d northDir, eastDir;
-    _vec3TangentBasis(center, &northDir, &eastDir);
+    _vec3TangentBasis(faceCenterPoint[face], &northDir, &eastDir);
 
     Vec3d dir = vec3LinComb(cos(theta), northDir, sin(theta), eastDir);
 
-    *v3 = vec3LinComb(cos(r), *center, sin(r), dir);
+    *v3 = vec3LinComb(cos(r), faceCenterPoint[face], sin(r), dir);
     vec3Normalize(v3);
 }
 
