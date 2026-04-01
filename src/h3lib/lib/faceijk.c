@@ -362,6 +362,7 @@ static const int unitScaleByCIIres[] = {
 };
 
 // Forward declares to make diff nicer
+// TODO: remove and reorder functions after landing
 static void _vec3ToHex2d(const Vec3d *p, int res, int *face, Vec2d *v);
 static void _vec3ToClosestFace(const Vec3d *v3, int *face, double *sqd);
 
