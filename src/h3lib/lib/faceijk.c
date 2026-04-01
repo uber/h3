@@ -373,8 +373,8 @@ static void _vec3ToHex2d(const Vec3d *p, int res, int *face, Vec2d *v);
  * @param h Output: the FaceIJK address of the containing cell.
  */
 void _vec3ToFaceIjk(Vec3d p, int res, FaceIJK *h) {
-    Vec2d v;
     // first convert to hex2d
+    Vec2d v;
     _vec3ToHex2d(&p, res, &h->face, &v);
 
     // then convert to ijk+
