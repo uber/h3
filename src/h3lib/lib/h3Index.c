@@ -1167,22 +1167,6 @@ H3Error _h3ToFaceIjk(H3Index h, FaceIJK *fijk) {
 }
 
 /**
- * Determines the spherical coordinates of the center point of an H3 index.
- *
- * @param h3 The H3 index.
- * @param g The spherical coordinates of the H3 cell center.
- */
-H3Error H3_EXPORT(cellToLatLng)(H3Index h3, LatLng *g) {
-    Vec3d v;
-    H3Error e = cellToVec3(h3, &v);
-    if (e) {
-        return e;
-    }
-    *g = vec3ToLatLng(v);
-    return E_SUCCESS;
-}
-
-/**
  * Determines the 3D cartesian coordinates of the center of an H3 cell.
  *
  * @param h3 The H3 index.
@@ -1196,6 +1180,22 @@ H3Error cellToVec3(H3Index h3, Vec3d *v) {
         return e;
     }
     _faceIjkToVec3(&fijk, H3_GET_RESOLUTION(h3), v);
+    return E_SUCCESS;
+}
+
+/**
+ * Determines the spherical coordinates of the center point of an H3 index.
+ *
+ * @param h3 The H3 index.
+ * @param g The spherical coordinates of the H3 cell center.
+ */
+H3Error H3_EXPORT(cellToLatLng)(H3Index h3, LatLng *g) {
+    Vec3d v;
+    H3Error e = cellToVec3(h3, &v);
+    if (e) {
+        return e;
+    }
+    *g = vec3ToLatLng(v);
     return E_SUCCESS;
 }
 
