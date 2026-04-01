@@ -1195,7 +1195,7 @@ H3Error cellToVec3(H3Index h3, Vec3d *v) {
     if (e) {
         return e;
     }
-    *v = _faceIjkToVec3(&fijk, H3_GET_RESOLUTION(h3));
+    _faceIjkToVec3(&fijk, H3_GET_RESOLUTION(h3), v);
     return E_SUCCESS;
 }
 

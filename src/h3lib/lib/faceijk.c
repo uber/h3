@@ -483,15 +483,22 @@ void _vec3ToFaceIjk(Vec3d p, int res, FaceIJK *h) {
 /**
  * Determines the 3D coordinates of a point given by 2D hex coordinates
  * on a particular icosahedral face.
+ *
+ * @param v The 2D hex coordinates of the point.
+ * @param face The icosahedral face.
+ * @param res The H3 resolution of the cell.
+ * @param substrate Whether this is a substrate grid.
+ * @param v3 Output: the 3D coordinates of the point.
  */
-Vec3d _hex2dToVec3(Vec2d v, int face, int res, int substrate) {
-    double r = _v2dMag(&v);
+void _hex2dToVec3(const Vec2d *v, int face, int res, int substrate, Vec3d *v3) {
+    double r = _v2dMag(v);
 
     if (r < EPSILON) {
-        return faceCenterPoint[face];
+        *v3 = faceCenterPoint[face];
+        return;
     }
 
-    double theta = atan2(v.y, v.x);
+    double theta = atan2(v->y, v->x);
 
     // scale for current resolution length u
     for (int i = 0; i < res; i++) r *= M_RSQRT7;
@@ -516,15 +523,14 @@ Vec3d _hex2dToVec3(Vec2d v, int face, int res, int substrate) {
     theta = _posAngleRads(faceAxesAzRadsCII[face][0] - theta);
 
     // now find the point at (r,theta) from the face center
-    Vec3d center = faceCenterPoint[face];
+    const Vec3d *center = &faceCenterPoint[face];
     Vec3d northDir, eastDir;
-    _vec3TangentBasis(&center, &northDir, &eastDir);
+    _vec3TangentBasis(center, &northDir, &eastDir);
 
     Vec3d dir = vec3LinComb(cos(theta), northDir, sin(theta), eastDir);
 
-    Vec3d result = vec3LinComb(cos(r), center, sin(r), dir);
-    vec3Normalize(&result);
-    return result;
+    *v3 = vec3LinComb(cos(r), *center, sin(r), dir);
+    vec3Normalize(v3);
 }
 
 /**
@@ -533,11 +539,12 @@ Vec3d _hex2dToVec3(Vec2d v, int face, int res, int substrate) {
  *
  * @param h The FaceIJK address of the cell.
  * @param res The H3 resolution of the cell.
+ * @param v3 Output: the 3D coordinates of the cell center point.
  */
-Vec3d _faceIjkToVec3(const FaceIJK *h, int res) {
+void _faceIjkToVec3(const FaceIJK *h, int res, Vec3d *v3) {
     Vec2d v;
     _ijkToHex2d(&h->coord, &v);
-    return _hex2dToVec3(v, h->face, res, 0);
+    _hex2dToVec3(&v, h->face, res, 0, v3);
 }
 
 /**
@@ -632,8 +639,9 @@ void _faceIjkPentToCellBoundary(const FaceIJK *h, int res, int start,
             // find the intersection and add the lat/lng point to the result
             Vec2d inter;
             _v2dIntersect(&orig2d0, &orig2d1, edge0, edge1, &inter);
-            g->verts[g->numVerts] =
-                vec3ToLatLng(_hex2dToVec3(inter, tmpFijk.face, adjRes, 1));
+            Vec3d v3;
+            _hex2dToVec3(&inter, tmpFijk.face, adjRes, 1, &v3);
+            g->verts[g->numVerts] = vec3ToLatLng(v3);
             g->numVerts++;
         }
 
@@ -643,8 +651,9 @@ void _faceIjkPentToCellBoundary(const FaceIJK *h, int res, int start,
         if (vert < start + NUM_PENT_VERTS) {
             Vec2d vec;
             _ijkToHex2d(&fijk.coord, &vec);
-            g->verts[g->numVerts] =
-                vec3ToLatLng(_hex2dToVec3(vec, fijk.face, adjRes, 1));
+            Vec3d v3;
+            _hex2dToVec3(&vec, fijk.face, adjRes, 1, &v3);
+            g->verts[g->numVerts] = vec3ToLatLng(v3);
             g->numVerts++;
         }
 
@@ -805,8 +814,9 @@ void _faceIjkToCellBoundary(const FaceIJK *h, int res, int start, int length,
             bool isIntersectionAtVertex = _v2dAlmostEquals(&orig2d0, &inter) ||
                                           _v2dAlmostEquals(&orig2d1, &inter);
             if (!isIntersectionAtVertex) {
-                g->verts[g->numVerts] = vec3ToLatLng(
-                    _hex2dToVec3(inter, centerIJK.face, adjRes, 1));
+                Vec3d v3;
+                _hex2dToVec3(&inter, centerIJK.face, adjRes, 1, &v3);
+                g->verts[g->numVerts] = vec3ToLatLng(v3);
                 g->numVerts++;
             }
         }
@@ -817,8 +827,9 @@ void _faceIjkToCellBoundary(const FaceIJK *h, int res, int start, int length,
         if (vert < start + NUM_HEX_VERTS) {
             Vec2d vec;
             _ijkToHex2d(&fijk.coord, &vec);
-            g->verts[g->numVerts] =
-                vec3ToLatLng(_hex2dToVec3(vec, fijk.face, adjRes, 1));
+            Vec3d v3;
+            _hex2dToVec3(&vec, fijk.face, adjRes, 1, &v3);
+            g->verts[g->numVerts] = vec3ToLatLng(v3);
             g->numVerts++;
         }
 
