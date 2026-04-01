@@ -365,8 +365,8 @@ static const int unitScaleByCIIres[] = {
 static void _vec3ToHex2d(const Vec3d *p, int res, int *face, Vec2d *v);
 
 /**
- * Encodes a Vec3d coordinate to the FaceIJK address of the containing cell at
- * the specified resolution.
+ * Encodes a Vec3d coordinate to the FaceIJK address of the containing
+ * cell at the specified resolution.
  *
  * @param p The Vec3d coordinates to encode.
  * @param res The desired H3 resolution for the encoding.
@@ -374,7 +374,10 @@ static void _vec3ToHex2d(const Vec3d *p, int res, int *face, Vec2d *v);
  */
 void _vec3ToFaceIjk(Vec3d p, int res, FaceIJK *h) {
     Vec2d v;
+    // first convert to hex2d
     _vec3ToHex2d(&p, res, &h->face, &v);
+
+    // then convert to ijk+
     _hex2dToCoordIJK(&v, &h->coord);
 }
 
