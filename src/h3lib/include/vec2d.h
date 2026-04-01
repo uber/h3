@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017, 2026 Uber Technologies, Inc.
+ * Copyright 2016-2017 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** @file vec2.h
+/** @file vec2d.h
  * @brief   2D floating point vector functions.
  */
 
@@ -24,14 +24,10 @@
 
 /** @struct Vec2d
  *  @brief 2D floating-point vector
- *
- *  Represents a point in the face-local Vec2d coordinate system:
- *  an orthogonal 2D plane centered on an icosahedron face, with the
- *  x-axis aligned to the face's i-axis and y perpendicular to it.
  */
 typedef struct {
-    double x;  /// aligned with face i-axis
-    double y;  /// perpendicular to face i-axis
+    double x;  ///< x component
+    double y;  ///< y component
 } Vec2d;
 
 // Internal functions

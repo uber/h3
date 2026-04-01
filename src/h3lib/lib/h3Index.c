@@ -1215,8 +1215,8 @@ H3Error H3_EXPORT(cellToBoundary)(H3Index h3, CellBoundary *cb) {
         _faceIjkPentToCellBoundary(&fijk, H3_GET_RESOLUTION(h3), 0,
                                    NUM_PENT_VERTS, cb);
     } else {
-        _faceIjkToH3Boundary(&fijk, H3_GET_RESOLUTION(h3), 0, NUM_HEX_VERTS,
-                             cb);
+        _faceIjkToCellBoundary(&fijk, H3_GET_RESOLUTION(h3), 0, NUM_HEX_VERTS,
+                               cb);
     }
     return E_SUCCESS;
 }

@@ -338,7 +338,7 @@ H3Error H3_EXPORT(vertexToLatLng)(H3Index vertex, LatLng *coord) {
     if (H3_EXPORT(isPentagon)(owner)) {
         _faceIjkPentToCellBoundary(&fijk, res, vertexNum, 1, &gb);
     } else {
-        _faceIjkToH3Boundary(&fijk, res, vertexNum, 1, &gb);
+        _faceIjkToCellBoundary(&fijk, res, vertexNum, 1, &gb);
     }
 
     // Copy from boundary to output coord

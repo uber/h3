@@ -288,7 +288,7 @@ H3Error H3_EXPORT(directedEdgeToBoundary)(H3Index edge, CellBoundary *cb) {
     if (isPent) {
         _faceIjkPentToCellBoundary(&fijk, res, startVertex, 2, cb);
     } else {
-        _faceIjkToH3Boundary(&fijk, res, startVertex, 2, cb);
+        _faceIjkToCellBoundary(&fijk, res, startVertex, 2, cb);
     }
     return E_SUCCESS;
 }

@@ -75,8 +75,8 @@ typedef enum {
 
 void _vec3ToFaceIjk(Vec3d p, int res, FaceIJK *h);
 Vec3d _faceIjkToVec3(const FaceIJK *h, int res);
-void _faceIjkToH3Boundary(const FaceIJK *h, int res, int start, int length,
-                          CellBoundary *g);
+void _faceIjkToCellBoundary(const FaceIJK *h, int res, int start, int length,
+                            CellBoundary *g);
 void _faceIjkPentToCellBoundary(const FaceIJK *h, int res, int start,
                                 int length, CellBoundary *g);
 void _faceIjkToVerts(FaceIJK *fijk, int *res, FaceIJK *fijkVerts);
