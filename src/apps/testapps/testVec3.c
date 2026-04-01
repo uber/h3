@@ -15,7 +15,7 @@
  */
 
 /** @file testVec3.c
- * @brief Tests the Vec3 helpers used by the geodesic polyfill path.
+ * @brief Tests the Vec3d helpers used by the geodesic polyfill path.
  */
 
 #include <math.h>
@@ -25,17 +25,17 @@
 #include "test.h"
 #include "vec3d.h"
 
-SUITE(Vec3) {
+SUITE(Vec3d) {
     TEST(dotProduct) {
-        Vec3 a = {.x = 1.0, .y = 0.0, .z = 0.0};
-        Vec3 b = {.x = -1.0, .y = 0.0, .z = 0.0};
+        Vec3d a = {.x = 1.0, .y = 0.0, .z = 0.0};
+        Vec3d b = {.x = -1.0, .y = 0.0, .z = 0.0};
         t_assert(vec3Dot(a, b) == -1.0, "dot product matches expected value");
     }
 
     TEST(crossProductOrthogonality) {
-        Vec3 i = {.x = 1.0, .y = 0.0, .z = 0.0};
-        Vec3 j = {.x = 0.0, .y = 1.0, .z = 0.0};
-        Vec3 k = vec3Cross(i, j);
+        Vec3d i = {.x = 1.0, .y = 0.0, .z = 0.0};
+        Vec3d j = {.x = 0.0, .y = 1.0, .z = 0.0};
+        Vec3d k = vec3Cross(i, j);
         t_assert(fabs(k.x - 0.0) < EPSILON, "x component zero");
         t_assert(fabs(k.y - 0.0) < EPSILON, "y component zero");
         t_assert(fabs(k.z - 1.0) < EPSILON, "z component one");
@@ -44,7 +44,7 @@ SUITE(Vec3) {
     }
 
     TEST(normalizeAndMagnitude) {
-        Vec3 v = {.x = 3.0, .y = -4.0, .z = 12.0};
+        Vec3d v = {.x = 3.0, .y = -4.0, .z = 12.0};
         double magSq = vec3NormSq(v);
         t_assert(fabs(magSq - 169.0) < EPSILON, "magnitude squared matches");
         t_assert(fabs(vec3Norm(v) - 13.0) < EPSILON, "magnitude matches");
@@ -52,28 +52,28 @@ SUITE(Vec3) {
         vec3Normalize(&v);
         t_assert(fabs(vec3Norm(v) - 1.0) < 1e-12, "normalized vector is unit");
 
-        Vec3 zero = {.x = 0.0, .y = 0.0, .z = 0.0};
+        Vec3d zero = {.x = 0.0, .y = 0.0, .z = 0.0};
         vec3Normalize(&zero);
         t_assert(zero.x == 0.0 && zero.y == 0.0 && zero.z == 0.0,
                  "zero vector remains unchanged when normalizing");
     }
 
     TEST(distance) {
-        Vec3 a = {.x = 0.0, .y = 0.0, .z = 0.0};
-        Vec3 b = {.x = 1.0, .y = 2.0, .z = 2.0};
+        Vec3d a = {.x = 0.0, .y = 0.0, .z = 0.0};
+        Vec3d b = {.x = 1.0, .y = 2.0, .z = 2.0};
         t_assert(fabs(vec3DistSq(a, b) - 9.0) < EPSILON,
                  "distance squared matches");
     }
 
     TEST(latLngToVec3_unitSphere) {
         LatLng geo = {.lat = 0.5, .lng = -1.3};
-        Vec3 v = latLngToVec3(geo);
+        Vec3d v = latLngToVec3(geo);
         t_assert(fabs(vec3Norm(v) - 1.0) < 1e-12,
                  "converted vector lives on the unit sphere");
     }
 
     TEST(vec3ToCell_invalidRes) {
-        Vec3 v = {.x = 1.0, .y = 0.0, .z = 0.0};
+        Vec3d v = {.x = 1.0, .y = 0.0, .z = 0.0};
         H3Index out;
         t_assert(vec3ToCell(&v, -1, &out) == E_RES_DOMAIN,
                  "negative resolution is rejected");
@@ -83,12 +83,12 @@ SUITE(Vec3) {
 
     TEST(vec3ToCell_nonFinite) {
         H3Index out;
-        Vec3 nan_x = {.x = NAN, .y = 0.0, .z = 0.0};
+        Vec3d nan_x = {.x = NAN, .y = 0.0, .z = 0.0};
         t_assert(vec3ToCell(&nan_x, 0, &out) == E_DOMAIN, "NaN x is rejected");
-        Vec3 inf_y = {.x = 0.0, .y = INFINITY, .z = 0.0};
+        Vec3d inf_y = {.x = 0.0, .y = INFINITY, .z = 0.0};
         t_assert(vec3ToCell(&inf_y, 0, &out) == E_DOMAIN,
                  "infinite y is rejected");
-        Vec3 inf_z = {.x = 0.0, .y = 0.0, .z = -INFINITY};
+        Vec3d inf_z = {.x = 0.0, .y = 0.0, .z = -INFINITY};
         t_assert(vec3ToCell(&inf_z, 0, &out) == E_DOMAIN,
                  "infinite z is rejected");
     }

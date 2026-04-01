@@ -53,10 +53,10 @@ const LatLng faceCenterGeoCopy[NUM_ICOSA_FACES] = {
  * Generates and prints the faceCenterPoint table.
  */
 static void generate(void) {
-    printf("static const Vec3 faceCenterPoint[NUM_ICOSA_FACES] = {\n");
+    printf("static const Vec3d faceCenterPoint[NUM_ICOSA_FACES] = {\n");
     for (int i = 0; i < NUM_ICOSA_FACES; i++) {
         LatLng centerCoords = faceCenterGeoCopy[i];
-        Vec3 centerPoint = latLngToVec3(centerCoords);
+        Vec3d centerPoint = latLngToVec3(centerCoords);
         printf("    {%.16f, %.16f, %.16f}, // face %2d\n", centerPoint.x,
                centerPoint.y, centerPoint.z, i);
     }

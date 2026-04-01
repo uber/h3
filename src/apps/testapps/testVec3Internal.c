@@ -19,22 +19,22 @@
 #include "test.h"
 #include "vec3d.h"
 
-SUITE(Vec3Internal) {
+SUITE(Vec3dInternal) {
     TEST(latLngToVec3) {
-        Vec3 origin = {0};
+        Vec3d origin = {0};
 
         LatLng c1 = {0, 0};
-        Vec3 p1 = latLngToVec3(c1);
+        Vec3d p1 = latLngToVec3(c1);
         t_assert(fabs(vec3DistSq(origin, p1) - 1) < EPSILON_RAD,
                  "Geo point is on the unit sphere");
 
         LatLng c2 = {M_PI_2, 0};
-        Vec3 p2 = latLngToVec3(c2);
+        Vec3d p2 = latLngToVec3(c2);
         t_assert(fabs(vec3DistSq(p1, p2) - 2) < EPSILON_RAD,
                  "Geo point is on another axis");
 
         LatLng c3 = {M_PI, 0};
-        Vec3 p3 = latLngToVec3(c3);
+        Vec3d p3 = latLngToVec3(c3);
         t_assert(fabs(vec3DistSq(p1, p3) - 4) < EPSILON_RAD,
                  "Geo point is the other side of the sphere");
     }

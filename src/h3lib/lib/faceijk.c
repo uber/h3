@@ -61,7 +61,7 @@ const LatLng faceCenterGeo[NUM_ICOSA_FACES] = {
 };
 
 /** @brief icosahedron face centers in x/y/z on the unit sphere */
-static const Vec3 faceCenterPoint[NUM_ICOSA_FACES] = {
+static const Vec3d faceCenterPoint[NUM_ICOSA_FACES] = {
     {0.2199307791404606, 0.6583691780274996, 0.7198475378926182},     // face  0
     {-0.2139234834501421, 0.1478171829550703, 0.9656017935214205},    // face  1
     {0.1092625278784797, -0.4811951572873210, 0.8697775121287253},    // face  2
@@ -365,11 +365,11 @@ static const int unitScaleByCIIres[] = {
  * Encodes a coordinate on the sphere to the corresponding icosahedral face and
  * containing the squared euclidean distance to that face center.
  *
- * @param v3 The Vec3 coordinates to encode.
+ * @param v3 The Vec3d coordinates to encode.
  * @param face Output: the icosahedral face containing the coordinates.
  * @param sqd Output: the squared euclidean distance to its face center.
  */
-static void _vec3ToClosestFace(const Vec3 *v3, int *face, double *sqd) {
+static void _vec3ToClosestFace(const Vec3d *v3, int *face, double *sqd) {
     *face = 0;
     // The distance between two farthest points is 2.0, therefore the square of
     // the distance between two points should always be less or equal than 4.0 .
@@ -394,8 +394,8 @@ static void _vec3ToClosestFace(const Vec3 *v3, int *face, double *sqd) {
  * @param north Output: local north direction on tangent plane.
  * @param east Output: local east direction on tangent plane.
  */
-static void _vec3TangentBasis(const Vec3 *p, Vec3 *north, Vec3 *east) {
-    Vec3 northPole = {0.0, 0.0, 1.0};
+static void _vec3TangentBasis(const Vec3d *p, Vec3d *north, Vec3d *east) {
+    Vec3d northPole = {0.0, 0.0, 1.0};
     double NdotP = vec3Dot(northPole, *p);
     *north = vec3LinComb(1.0, northPole, -NdotP, *p);
     vec3Normalize(north);
@@ -408,13 +408,13 @@ static void _vec3TangentBasis(const Vec3 *p, Vec3 *north, Vec3 *east) {
  * @param p2 The second vector.
  * @return The azimuth in radians.
  */
-static double _vec3AzimuthRads(const Vec3 *p1, const Vec3 *p2) {
-    Vec3 northDir, eastDir;
+static double _vec3AzimuthRads(const Vec3d *p1, const Vec3d *p2) {
+    Vec3d northDir, eastDir;
     _vec3TangentBasis(p1, &northDir, &eastDir);
 
     // project p2 onto tangent plane at p1
     double p2dotp1 = vec3Dot(*p2, *p1);
-    Vec3 p2_on_tangent = vec3LinComb(1.0, *p2, -p2dotp1, *p1);
+    Vec3d p2_on_tangent = vec3LinComb(1.0, *p2, -p2dotp1, *p1);
     vec3Normalize(&p2_on_tangent);
 
     return atan2(vec3Dot(p2_on_tangent, eastDir),
@@ -425,12 +425,12 @@ static double _vec3AzimuthRads(const Vec3 *p1, const Vec3 *p2) {
  * Encodes a coordinate on the sphere to the corresponding icosahedral face and
  * containing 2D hex coordinates relative to that face center.
  *
- * @param p The Vec3 coordinates to encode.
+ * @param p The Vec3d coordinates to encode.
  * @param res The desired H3 resolution for the encoding.
  * @param face Output: the icosahedral face containing the coordinates.
  * @param v Output: the 2D hex coordinates of the cell containing the point.
  */
-static void _vec3ToVec2(const Vec3 *p, int res, int *face, Vec2 *v) {
+static void _vec3ToVec2(const Vec3d *p, int res, int *face, Vec2 *v) {
     // determine the icosahedron face
     double sqd;
     _vec3ToClosestFace(p, face, &sqd);
@@ -467,14 +467,14 @@ static void _vec3ToVec2(const Vec3 *p, int res, int *face, Vec2 *v) {
 }
 
 /**
- * Encodes a Vec3 coordinate to the FaceIJK address of the containing cell at
+ * Encodes a Vec3d coordinate to the FaceIJK address of the containing cell at
  * the specified resolution.
  *
- * @param p The Vec3 coordinates to encode.
+ * @param p The Vec3d coordinates to encode.
  * @param res The desired H3 resolution for the encoding.
  * @param h Output: the FaceIJK address of the containing cell.
  */
-void _vec3ToFaceIjk(Vec3 p, int res, FaceIJK *h) {
+void _vec3ToFaceIjk(Vec3d p, int res, FaceIJK *h) {
     Vec2 v;
     _vec3ToVec2(&p, res, &h->face, &v);
     _vec2ToCoordIJK(&v, &h->coord);
@@ -484,7 +484,7 @@ void _vec3ToFaceIjk(Vec3 p, int res, FaceIJK *h) {
  * Determines the 3D coordinates of a point given by 2D hex coordinates
  * on a particular icosahedral face.
  */
-Vec3 _vec2ToVec3(Vec2 v, int face, int res, int substrate) {
+Vec3d _vec2ToVec3(Vec2 v, int face, int res, int substrate) {
     double r = _vec2Norm(&v);
 
     if (r < EPSILON) {
@@ -516,13 +516,13 @@ Vec3 _vec2ToVec3(Vec2 v, int face, int res, int substrate) {
     theta = _posAngleRads(faceAxesAzRadsCII[face][0] - theta);
 
     // now find the point at (r,theta) from the face center
-    Vec3 center = faceCenterPoint[face];
-    Vec3 northDir, eastDir;
+    Vec3d center = faceCenterPoint[face];
+    Vec3d northDir, eastDir;
     _vec3TangentBasis(&center, &northDir, &eastDir);
 
-    Vec3 dir = vec3LinComb(cos(theta), northDir, sin(theta), eastDir);
+    Vec3d dir = vec3LinComb(cos(theta), northDir, sin(theta), eastDir);
 
-    Vec3 result = vec3LinComb(cos(r), center, sin(r), dir);
+    Vec3d result = vec3LinComb(cos(r), center, sin(r), dir);
     vec3Normalize(&result);
     return result;
 }
@@ -534,7 +534,7 @@ Vec3 _vec2ToVec3(Vec2 v, int face, int res, int substrate) {
  * @param h The FaceIJK address of the cell.
  * @param res The H3 resolution of the cell.
  */
-Vec3 _faceIjkToVec3(const FaceIJK *h, int res) {
+Vec3d _faceIjkToVec3(const FaceIJK *h, int res) {
     Vec2 v;
     _ijkToVec2(&h->coord, &v);
     return _vec2ToVec3(v, h->face, res, 0);

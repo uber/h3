@@ -1044,7 +1044,7 @@ H3Error H3_EXPORT(latLngToCell)(const LatLng *g, int res, H3Index *out) {
         return E_LATLNG_DOMAIN;
     }
 
-    Vec3 v = latLngToVec3(*g);
+    Vec3d v = latLngToVec3(*g);
     return vec3ToCell(&v, res, out);
 }
 
@@ -1059,7 +1059,7 @@ H3Error H3_EXPORT(latLngToCell)(const LatLng *g, int res, H3Index *out) {
  * @param out The encoded H3Index.
  * @returns E_SUCCESS on success, another value otherwise
  */
-H3Error vec3ToCell(const Vec3 *v, int res, H3Index *out) {
+H3Error vec3ToCell(const Vec3d *v, int res, H3Index *out) {
     if (res < 0 || res > MAX_H3_RES) {
         return E_RES_DOMAIN;
     }
@@ -1173,7 +1173,7 @@ H3Error _h3ToFaceIjk(H3Index h, FaceIJK *fijk) {
  * @param g The spherical coordinates of the H3 cell center.
  */
 H3Error H3_EXPORT(cellToLatLng)(H3Index h3, LatLng *g) {
-    Vec3 v;
+    Vec3d v;
     H3Error e = cellToVec3(h3, &v);
     if (e) {
         return e;
@@ -1189,7 +1189,7 @@ H3Error H3_EXPORT(cellToLatLng)(H3Index h3, LatLng *g) {
  * @param v The 3D cartesian coordinates of the H3 cell center.
  * @return E_SUCCESS on success, or another H3Error code on failure.
  */
-H3Error cellToVec3(H3Index h3, Vec3 *v) {
+H3Error cellToVec3(H3Index h3, Vec3d *v) {
     FaceIJK fijk;
     H3Error e = _h3ToFaceIjk(h3, &fijk);
     if (e) {
