@@ -465,16 +465,19 @@ static void _vec3ToHex2d(const Vec3d *p, int res, int *face, Vec2d *v) {
 }
 
 /**
- * Determines the 3D coordinates of a point given by 2D hex coordinates
- * on a particular icosahedral face.
+ * Determines the 3D coordinates of a cell given by 2D
+ * hex coordinates on a particular icosahedral face.
  *
- * @param v The 2D hex coordinates of the point.
- * @param face The icosahedral face.
+ * @param v The 2D hex coordinates of the cell.
+ * @param face The icosahedral face upon which the 2D hex coordinate system is
+ *             centered.
  * @param res The H3 resolution of the cell.
- * @param substrate Whether this is a substrate grid.
- * @param v3 Output: the 3D coordinates of the point.
+ * @param substrate Indicates whether or not this grid is actually a substrate
+ *        grid relative to the specified resolution.
+ * @param v3 Output: the 3D coordinates of the cell center point
  */
 void _hex2dToVec3(const Vec2d *v, int face, int res, int substrate, Vec3d *v3) {
+    // calculate (r, theta) in hex2d
     double r = _v2dMag(v);
 
     if (r < EPSILON) {
