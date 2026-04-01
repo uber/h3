@@ -22,7 +22,7 @@
  *             traditional scaling and x-axes aligned with the face Class II
  *             i-axes.
  *
- *    2. Vec2d: local face-centered coordinate system scaled a specific H3 grid
+ *    2. hex2d: local face-centered coordinate system scaled a specific H3 grid
  *             resolution unit length and with x-axes aligned with the local
  *             i-axes
  */

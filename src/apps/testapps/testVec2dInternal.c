@@ -1,5 +1,5 @@
 /*
- * Copyright 2018, 2026 Uber Technologies, Inc.
+ * Copyright 2018 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
 #include "test.h"
 #include "vec2d.h"
 
-SUITE(Vec2Internal) {
+SUITE(Vec2dInternal) {
     TEST(_v2dMag) {
         Vec2d v = {3.0, 4.0};
         double expected = 5.0;

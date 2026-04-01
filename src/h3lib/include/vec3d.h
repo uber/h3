@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** @file vec3.h
+/** @file vec3d.h
  * @brief   3D floating point vector functions.
  *
  * Header-only (static inline) so callers in other translation units

@@ -16,7 +16,7 @@
 /** @file faceijk.h
  * @brief   FaceIJK functions including conversion to/from lat/lng.
  *
- *  References the Vec2d cartesian coordinate system: local face-centered
+ *  References the Vec2d cartesian coordinate systems hex2d: local face-centered
  *     coordinate system scaled a specific H3 grid resolution unit length and
  *     with x-axes aligned with the local i-axes
  */
