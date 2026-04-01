@@ -713,7 +713,7 @@ void _faceIjkPentToVerts(FaceIJK *fijk, int *res, FaceIJK *fijkVerts) {
  * @param res The H3 resolution of the cell.
  * @param start The first topological vertex to return.
  * @param length The number of topological vertexes to return.
- * @param g Output: the spherical coordinates of the cell boundary.
+ * @param g Output: The spherical coordinates of the cell boundary.
  */
 void _faceIjkToCellBoundary(const FaceIJK *h, int res, int start, int length,
                             CellBoundary *g) {
@@ -752,7 +752,7 @@ void _faceIjkToCellBoundary(const FaceIJK *h, int res, int start, int length,
         */
         if (isResolutionClassIII(res) && vert > start &&
             fijk.face != lastFace && lastOverage != FACE_EDGE) {
-            // find Vec2d of the two vertexes on original face
+            // find hex2d of the two vertexes on original face
             int lastV = (v + 5) % NUM_HEX_VERTS;
             Vec2d orig2d0;
             _ijkToHex2d(&fijkVerts[lastV].coord, &orig2d0);
@@ -979,8 +979,8 @@ Overage _adjustPentVertOverage(FaceIJK *fijk, int res) {
  * containing the squared euclidean distance to that face center.
  *
  * @param v3 The Vec3d coordinates to encode.
- * @param face Output: the icosahedral face containing the coordinates.
- * @param sqd Output: the squared euclidean distance to its face center.
+ * @param face Output: The icosahedral face containing the coordinates.
+ * @param sqd Output: The squared euclidean distance to its face center.
  */
 static void _vec3ToClosestFace(const Vec3d *v3, int *face, double *sqd) {
     *face = 0;
