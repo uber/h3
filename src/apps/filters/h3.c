@@ -2642,7 +2642,7 @@ SUBCOMMAND(edgeLengthM,
     if (err) {
         return err;
     }
-    printf("%.6lf\n", length);
+    printf("%.9lf\n", length);
     return E_SUCCESS;
 }
 
