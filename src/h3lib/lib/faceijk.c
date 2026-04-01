@@ -361,6 +361,23 @@ static const int unitScaleByCIIres[] = {
     5764801  // res 16
 };
 
+// Forward declares to make diff nicer
+static void _vec3ToHex2d(const Vec3d *p, int res, int *face, Vec2d *v);
+
+/**
+ * Encodes a Vec3d coordinate to the FaceIJK address of the containing cell at
+ * the specified resolution.
+ *
+ * @param p The Vec3d coordinates to encode.
+ * @param res The desired H3 resolution for the encoding.
+ * @param h Output: the FaceIJK address of the containing cell.
+ */
+void _vec3ToFaceIjk(Vec3d p, int res, FaceIJK *h) {
+    Vec2d v;
+    _vec3ToHex2d(&p, res, &h->face, &v);
+    _hex2dToCoordIJK(&v, &h->coord);
+}
+
 /**
  * Encodes a coordinate on the sphere to the corresponding icosahedral face and
  * containing the squared euclidean distance to that face center.
@@ -464,20 +481,6 @@ static void _vec3ToHex2d(const Vec3d *p, int res, int *face, Vec2d *v) {
     // convert to local x,y
     v->x = r * cos(theta);
     v->y = r * sin(theta);
-}
-
-/**
- * Encodes a Vec3d coordinate to the FaceIJK address of the containing cell at
- * the specified resolution.
- *
- * @param p The Vec3d coordinates to encode.
- * @param res The desired H3 resolution for the encoding.
- * @param h Output: the FaceIJK address of the containing cell.
- */
-void _vec3ToFaceIjk(Vec3d p, int res, FaceIJK *h) {
-    Vec2d v;
-    _vec3ToHex2d(&p, res, &h->face, &v);
-    _hex2dToCoordIJK(&v, &h->coord);
 }
 
 /**
