@@ -425,8 +425,8 @@ static inline double _vec3AzimuthRads(Vec3d p1, Vec3d p2) {
  *
  * @param p The Vec3d coordinates to encode.
  * @param res The desired H3 resolution for the encoding.
- * @param face Output: the icosahedral face containing the coordinates.
- * @param v Output: the 2D hex coordinates of the cell containing the point.
+ * @param face Output: The icosahedral face containing the coordinates.
+ * @param v Output: The 2D hex coordinates of the cell containing the point.
  */
 static void _vec3ToHex2d(const Vec3d *p, int res, int *face, Vec2d *v) {
     // determine the icosahedron face
@@ -457,7 +457,7 @@ static void _vec3ToHex2d(const Vec3d *p, int res, int *face, Vec2d *v) {
     r *= INV_RES0_U_GNOMONIC;
     for (int i = 0; i < res; i++) r *= M_SQRT7;
 
-    // we now have (r, theta) in Vec2d with theta ccw from x-axes
+    // we now have (r, theta) in hex2d with theta ccw from x-axes
 
     // convert to local x,y
     v->x = r * cos(theta);
