@@ -28,7 +28,7 @@
  * @param v The 2D cartesian vector.
  * @return The magnitude of the vector.
  */
-double _vec2Norm(const Vec2 *v) { return sqrt(v->x * v->x + v->y * v->y); }
+double _vec2Norm(const Vec2d *v) { return sqrt(v->x * v->x + v->y * v->y); }
 
 /**
  * Finds the intersection between two lines. Assumes that the lines intersect
@@ -39,9 +39,9 @@ double _vec2Norm(const Vec2 *v) { return sqrt(v->x * v->x + v->y * v->y); }
  * @param p3 The second endpoint of the second line.
  * @param inter The intersection point.
  */
-void _vec2Intersect(const Vec2 *p0, const Vec2 *p1, const Vec2 *p2,
-                    const Vec2 *p3, Vec2 *inter) {
-    Vec2 s1, s2;
+void _vec2Intersect(const Vec2d *p0, const Vec2d *p1, const Vec2d *p2,
+                    const Vec2d *p3, Vec2d *inter) {
+    Vec2d s1, s2;
     s1.x = p1->x - p0->x;
     s1.y = p1->y - p0->y;
     s2.x = p3->x - p2->x;
@@ -61,7 +61,7 @@ void _vec2Intersect(const Vec2 *p0, const Vec2 *p1, const Vec2 *p2,
  * @param v2 Second vector to compare
  * @return Whether the vectors are almost equal
  */
-bool _vec2AlmostEquals(const Vec2 *v1, const Vec2 *v2) {
+bool _vec2AlmostEquals(const Vec2d *v1, const Vec2d *v2) {
     return fabs(v1->x - v2->x) < FLT_EPSILON &&
            fabs(v1->y - v2->y) < FLT_EPSILON;
 }

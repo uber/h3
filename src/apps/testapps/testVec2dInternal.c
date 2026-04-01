@@ -23,18 +23,18 @@
 
 SUITE(Vec2Internal) {
     TEST(_vec2Norm) {
-        Vec2 v = {3.0, 4.0};
+        Vec2d v = {3.0, 4.0};
         double expected = 5.0;
         double mag = _vec2Norm(&v);
         t_assert(fabs(mag - expected) < DBL_EPSILON, "magnitude as expected");
     }
 
     TEST(_vec2Intersect) {
-        Vec2 p0 = {2.0, 2.0};
-        Vec2 p1 = {6.0, 6.0};
-        Vec2 p2 = {0.0, 4.0};
-        Vec2 p3 = {10.0, 4.0};
-        Vec2 intersection = {0.0, 0.0};
+        Vec2d p0 = {2.0, 2.0};
+        Vec2d p1 = {6.0, 6.0};
+        Vec2d p2 = {0.0, 4.0};
+        Vec2d p3 = {10.0, 4.0};
+        Vec2d intersection = {0.0, 0.0};
 
         _vec2Intersect(&p0, &p1, &p2, &p3, &intersection);
 
@@ -48,11 +48,11 @@ SUITE(Vec2Internal) {
     }
 
     TEST(_vec2AlmostEquals) {
-        Vec2 v1 = {3.0, 4.0};
-        Vec2 v2 = {3.0, 4.0};
-        Vec2 v3 = {3.5, 4.0};
-        Vec2 v4 = {3.0, 4.5};
-        Vec2 v5 = {3.0 + DBL_EPSILON, 4.0 - DBL_EPSILON};
+        Vec2d v1 = {3.0, 4.0};
+        Vec2d v2 = {3.0, 4.0};
+        Vec2d v3 = {3.5, 4.0};
+        Vec2d v4 = {3.0, 4.5};
+        Vec2d v5 = {3.0 + DBL_EPSILON, 4.0 - DBL_EPSILON};
 
         t_assert(_vec2AlmostEquals(&v1, &v2), "true for equal vectors");
         t_assert(!_vec2AlmostEquals(&v1, &v3), "false for different x");

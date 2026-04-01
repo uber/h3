@@ -22,23 +22,23 @@
 
 #include <stdbool.h>
 
-/** @struct Vec2
+/** @struct Vec2d
  *  @brief 2D floating-point vector
  *
- *  Represents a point in the face-local Vec2 coordinate system:
+ *  Represents a point in the face-local Vec2d coordinate system:
  *  an orthogonal 2D plane centered on an icosahedron face, with the
  *  x-axis aligned to the face's i-axis and y perpendicular to it.
  */
 typedef struct {
     double x;  /// aligned with face i-axis
     double y;  /// perpendicular to face i-axis
-} Vec2;
+} Vec2d;
 
 // Internal functions
 
-double _vec2Norm(const Vec2 *v);
-void _vec2Intersect(const Vec2 *p0, const Vec2 *p1, const Vec2 *p2,
-                    const Vec2 *p3, Vec2 *inter);
-bool _vec2AlmostEquals(const Vec2 *p0, const Vec2 *p1);
+double _vec2Norm(const Vec2d *v);
+void _vec2Intersect(const Vec2d *p0, const Vec2d *p1, const Vec2d *p2,
+                    const Vec2d *p3, Vec2d *inter);
+bool _vec2AlmostEquals(const Vec2d *p0, const Vec2d *p1);
 
 #endif

@@ -430,7 +430,7 @@ static double _vec3AzimuthRads(const Vec3d *p1, const Vec3d *p2) {
  * @param face Output: the icosahedral face containing the coordinates.
  * @param v Output: the 2D hex coordinates of the cell containing the point.
  */
-static void _vec3ToVec2(const Vec3d *p, int res, int *face, Vec2 *v) {
+static void _vec3ToVec2(const Vec3d *p, int res, int *face, Vec2d *v) {
     // determine the icosahedron face
     double sqd;
     _vec3ToClosestFace(p, face, &sqd);
@@ -459,7 +459,7 @@ static void _vec3ToVec2(const Vec3d *p, int res, int *face, Vec2 *v) {
     r *= INV_RES0_U_GNOMONIC;
     for (int i = 0; i < res; i++) r *= M_SQRT7;
 
-    // we now have (r, theta) in Vec2 with theta ccw from x-axes
+    // we now have (r, theta) in Vec2d with theta ccw from x-axes
 
     // convert to local x,y
     v->x = r * cos(theta);
@@ -475,7 +475,7 @@ static void _vec3ToVec2(const Vec3d *p, int res, int *face, Vec2 *v) {
  * @param h Output: the FaceIJK address of the containing cell.
  */
 void _vec3ToFaceIjk(Vec3d p, int res, FaceIJK *h) {
-    Vec2 v;
+    Vec2d v;
     _vec3ToVec2(&p, res, &h->face, &v);
     _vec2ToCoordIJK(&v, &h->coord);
 }
@@ -484,7 +484,7 @@ void _vec3ToFaceIjk(Vec3d p, int res, FaceIJK *h) {
  * Determines the 3D coordinates of a point given by 2D hex coordinates
  * on a particular icosahedral face.
  */
-Vec3d _vec2ToVec3(Vec2 v, int face, int res, int substrate) {
+Vec3d _vec2ToVec3(Vec2d v, int face, int res, int substrate) {
     double r = _vec2Norm(&v);
 
     if (r < EPSILON) {
@@ -535,7 +535,7 @@ Vec3d _vec2ToVec3(Vec2 v, int face, int res, int substrate) {
  * @param res The H3 resolution of the cell.
  */
 Vec3d _faceIjkToVec3(const FaceIJK *h, int res) {
-    Vec2 v;
+    Vec2d v;
     _ijkToVec2(&h->coord, &v);
     return _vec2ToVec3(v, h->face, res, 0);
 }
@@ -578,11 +578,11 @@ void _faceIjkPentToCellBoundary(const FaceIJK *h, int res, int start,
         // note that Class II pentagons have vertices on the edge,
         // not edge intersections
         if (isResolutionClassIII(res) && vert > start) {
-            // find Vec2 of the two vertexes on the last face
+            // find Vec2d of the two vertexes on the last face
 
             FaceIJK tmpFijk = fijk;
 
-            Vec2 orig2d0;
+            Vec2d orig2d0;
             _ijkToVec2(&lastFijk.coord, &orig2d0);
 
             int currentToLastDir = adjacentFaceDir[tmpFijk.face][lastFijk.face];
@@ -601,17 +601,17 @@ void _faceIjkPentToCellBoundary(const FaceIJK *h, int res, int start,
             _ijkAdd(ijk, &transVec, ijk);
             _ijkNormalize(ijk);
 
-            Vec2 orig2d1;
+            Vec2d orig2d1;
             _ijkToVec2(ijk, &orig2d1);
 
             // find the appropriate icosa face edge vertexes
             int maxDim = maxDimByCIIres[adjRes];
-            Vec2 v0 = {3.0 * maxDim, 0.0};
-            Vec2 v1 = {-1.5 * maxDim, 3.0 * M_SQRT3_2 * maxDim};
-            Vec2 v2 = {-1.5 * maxDim, -3.0 * M_SQRT3_2 * maxDim};
+            Vec2d v0 = {3.0 * maxDim, 0.0};
+            Vec2d v1 = {-1.5 * maxDim, 3.0 * M_SQRT3_2 * maxDim};
+            Vec2d v2 = {-1.5 * maxDim, -3.0 * M_SQRT3_2 * maxDim};
 
-            Vec2 *edge0;
-            Vec2 *edge1;
+            Vec2d *edge0;
+            Vec2d *edge1;
             switch (adjacentFaceDir[tmpFijk.face][fijk.face]) {
                 case IJ:
                     edge0 = &v0;
@@ -630,7 +630,7 @@ void _faceIjkPentToCellBoundary(const FaceIJK *h, int res, int start,
             }
 
             // find the intersection and add the lat/lng point to the result
-            Vec2 inter;
+            Vec2d inter;
             _vec2Intersect(&orig2d0, &orig2d1, edge0, edge1, &inter);
             g->verts[g->numVerts] =
                 vec3ToLatLng(_vec2ToVec3(inter, tmpFijk.face, adjRes, 1));
@@ -641,7 +641,7 @@ void _faceIjkPentToCellBoundary(const FaceIJK *h, int res, int start,
         // vert == start + NUM_PENT_VERTS is only used to test for possible
         // intersection on last edge
         if (vert < start + NUM_PENT_VERTS) {
-            Vec2 vec;
+            Vec2d vec;
             _ijkToVec2(&fijk.coord, &vec);
             g->verts[g->numVerts] =
                 vec3ToLatLng(_vec2ToVec3(vec, fijk.face, adjRes, 1));
@@ -760,23 +760,23 @@ void _faceIjkToH3Boundary(const FaceIJK *h, int res, int start, int length,
         */
         if (isResolutionClassIII(res) && vert > start &&
             fijk.face != lastFace && lastOverage != FACE_EDGE) {
-            // find Vec2 of the two vertexes on original face
+            // find Vec2d of the two vertexes on original face
             int lastV = (v + 5) % NUM_HEX_VERTS;
-            Vec2 orig2d0;
+            Vec2d orig2d0;
             _ijkToVec2(&fijkVerts[lastV].coord, &orig2d0);
 
-            Vec2 orig2d1;
+            Vec2d orig2d1;
             _ijkToVec2(&fijkVerts[v].coord, &orig2d1);
 
             // find the appropriate icosa face edge vertexes
             int maxDim = maxDimByCIIres[adjRes];
-            Vec2 v0 = {3.0 * maxDim, 0.0};
-            Vec2 v1 = {-1.5 * maxDim, 3.0 * M_SQRT3_2 * maxDim};
-            Vec2 v2 = {-1.5 * maxDim, -3.0 * M_SQRT3_2 * maxDim};
+            Vec2d v0 = {3.0 * maxDim, 0.0};
+            Vec2d v1 = {-1.5 * maxDim, 3.0 * M_SQRT3_2 * maxDim};
+            Vec2d v2 = {-1.5 * maxDim, -3.0 * M_SQRT3_2 * maxDim};
 
             int face2 = ((lastFace == centerIJK.face) ? fijk.face : lastFace);
-            Vec2 *edge0;
-            Vec2 *edge1;
+            Vec2d *edge0;
+            Vec2d *edge1;
             switch (adjacentFaceDir[centerIJK.face][face2]) {
                 case IJ:
                     edge0 = &v0;
@@ -795,7 +795,7 @@ void _faceIjkToH3Boundary(const FaceIJK *h, int res, int start, int length,
             }
 
             // find the intersection and add the lat/lng point to the result
-            Vec2 inter;
+            Vec2d inter;
             _vec2Intersect(&orig2d0, &orig2d1, edge0, edge1, &inter);
             /*
             If a point of intersection occurs at a hexagon vertex, then each
@@ -815,7 +815,7 @@ void _faceIjkToH3Boundary(const FaceIJK *h, int res, int start, int length,
         // vert == start + NUM_HEX_VERTS is only used to test for possible
         // intersection on last edge
         if (vert < start + NUM_HEX_VERTS) {
-            Vec2 vec;
+            Vec2d vec;
             _ijkToVec2(&fijk.coord, &vec);
             g->verts[g->numVerts] =
                 vec3ToLatLng(_vec2ToVec3(vec, fijk.face, adjRes, 1));

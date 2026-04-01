@@ -66,7 +66,7 @@
 /** earth radius in kilometers using WGS84 authalic radius */
 #define EARTH_RADIUS_KM 6371.007180918475
 
-/** scaling factor from Vec2 resolution 0 unit length
+/** scaling factor from Vec2d resolution 0 unit length
  * (or distance between adjacent cell center points
  * on the plane) to gnomonic unit length. */
 #define RES0_U_GNOMONIC 0.38196601125010500003
