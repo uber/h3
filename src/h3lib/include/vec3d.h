@@ -20,8 +20,8 @@
  * can inline these without requiring LTO.
  */
 
-#ifndef VEC3_H
-#define VEC3_H
+#ifndef VEC3D_H
+#define VEC3D_H
 
 #include <math.h>
 

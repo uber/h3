@@ -22,7 +22,7 @@
 #include <stdlib.h>
 
 #include "faceijk.h"
-#include "vec3.h"
+#include "vec3d.h"
 
 /** @brief icosahedron face centers in lat/lng radians. Copied from faceijk.c.
  */

@@ -23,7 +23,7 @@
 #include "constants.h"
 #include "h3Index.h"
 #include "test.h"
-#include "vec3.h"
+#include "vec3d.h"
 
 SUITE(Vec3) {
     TEST(dotProduct) {

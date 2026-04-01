@@ -27,7 +27,7 @@
 #include "coordijk.h"
 #include "latLng.h"
 #include "vec2.h"
-#include "vec3.h"
+#include "vec3d.h"
 
 /** @struct FaceIJK
  * @brief Face number and ijk coordinates on that face-centered coordinate

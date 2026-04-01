@@ -158,7 +158,7 @@ set(LIB_SOURCE_FILES
     src/h3lib/include/directedEdge.h
     src/h3lib/include/latLng.h
     src/h3lib/include/vec2.h
-    src/h3lib/include/vec3.h
+    src/h3lib/include/vec3d.h
     src/h3lib/include/linkedGeo.h
     src/h3lib/include/localij.h
     src/h3lib/include/baseCells.h

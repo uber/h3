@@ -17,7 +17,7 @@
 #include <math.h>
 
 #include "test.h"
-#include "vec3.h"
+#include "vec3d.h"
 
 SUITE(Vec3Internal) {
     TEST(latLngToVec3) {

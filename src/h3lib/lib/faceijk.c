@@ -30,7 +30,7 @@
 #include "coordijk.h"
 #include "h3Index.h"
 #include "latLng.h"
-#include "vec3.h"
+#include "vec3d.h"
 
 /** square root of 7 and inverse square root of 7 */
 #define M_SQRT7 2.6457513110645905905016157536392604257102
