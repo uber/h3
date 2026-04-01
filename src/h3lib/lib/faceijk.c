@@ -394,7 +394,8 @@ void _vec3ToFaceIjk(Vec3d p, int res, FaceIJK *h) {
  * @param north Output: local north direction on tangent plane.
  * @param east Output: local east direction on tangent plane.
  */
-static void _vec3TangentBasis(const Vec3d *p, Vec3d *north, Vec3d *east) {
+static inline void _vec3TangentBasis(const Vec3d *p, Vec3d *north,
+                                     Vec3d *east) {
     Vec3d northPole = {0.0, 0.0, 1.0};
     double NdotP = vec3Dot(northPole, *p);
     *north = vec3LinComb(1.0, northPole, -NdotP, *p);
@@ -408,13 +409,13 @@ static void _vec3TangentBasis(const Vec3d *p, Vec3d *north, Vec3d *east) {
  * @param p2 The second vector.
  * @return The azimuth in radians.
  */
-static double _vec3AzimuthRads(const Vec3d *p1, const Vec3d *p2) {
+static inline double _vec3AzimuthRads(Vec3d p1, Vec3d p2) {
     Vec3d northDir, eastDir;
-    _vec3TangentBasis(p1, &northDir, &eastDir);
+    _vec3TangentBasis(&p1, &northDir, &eastDir);
 
     // project p2 onto tangent plane at p1
-    double p2dotp1 = vec3Dot(*p2, *p1);
-    Vec3d p2_on_tangent = vec3LinComb(1.0, *p2, -p2dotp1, *p1);
+    double p2dotp1 = vec3Dot(p2, p1);
+    Vec3d p2_on_tangent = vec3LinComb(1.0, p2, -p2dotp1, p1);
     vec3Normalize(&p2_on_tangent);
 
     return atan2(vec3Dot(p2_on_tangent, eastDir),
@@ -444,7 +445,7 @@ static void _vec3ToHex2d(const Vec3d *p, int res, int *face, Vec2d *v) {
     }
 
     // now have face and r, now find CCW theta from CII i-axis
-    double p_az = _vec3AzimuthRads(&faceCenterPoint[*face], p);
+    double p_az = _vec3AzimuthRads(faceCenterPoint[*face], *p);
     double theta =
         _posAngleRads(faceAxesAzRadsCII[*face][0] - _posAngleRads(p_az));
 
