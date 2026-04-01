@@ -22,21 +22,21 @@
 #include "vec2d.h"
 
 SUITE(Vec2Internal) {
-    TEST(_vec2Norm) {
+    TEST(_v2dMag) {
         Vec2d v = {3.0, 4.0};
         double expected = 5.0;
-        double mag = _vec2Norm(&v);
+        double mag = _v2dMag(&v);
         t_assert(fabs(mag - expected) < DBL_EPSILON, "magnitude as expected");
     }
 
-    TEST(_vec2Intersect) {
+    TEST(_v2dIntersect) {
         Vec2d p0 = {2.0, 2.0};
         Vec2d p1 = {6.0, 6.0};
         Vec2d p2 = {0.0, 4.0};
         Vec2d p3 = {10.0, 4.0};
         Vec2d intersection = {0.0, 0.0};
 
-        _vec2Intersect(&p0, &p1, &p2, &p3, &intersection);
+        _v2dIntersect(&p0, &p1, &p2, &p3, &intersection);
 
         double expectedX = 4.0;
         double expectedY = 4.0;
@@ -47,16 +47,16 @@ SUITE(Vec2Internal) {
                  "Y coord as expected");
     }
 
-    TEST(_vec2AlmostEquals) {
+    TEST(_v2dAlmostEquals) {
         Vec2d v1 = {3.0, 4.0};
         Vec2d v2 = {3.0, 4.0};
         Vec2d v3 = {3.5, 4.0};
         Vec2d v4 = {3.0, 4.5};
         Vec2d v5 = {3.0 + DBL_EPSILON, 4.0 - DBL_EPSILON};
 
-        t_assert(_vec2AlmostEquals(&v1, &v2), "true for equal vectors");
-        t_assert(!_vec2AlmostEquals(&v1, &v3), "false for different x");
-        t_assert(!_vec2AlmostEquals(&v1, &v4), "false for different y");
-        t_assert(_vec2AlmostEquals(&v1, &v5), "true for almost equal");
+        t_assert(_v2dAlmostEquals(&v1, &v2), "true for equal vectors");
+        t_assert(!_v2dAlmostEquals(&v1, &v3), "false for different x");
+        t_assert(!_v2dAlmostEquals(&v1, &v4), "false for different y");
+        t_assert(_v2dAlmostEquals(&v1, &v5), "true for almost equal");
     }
 }

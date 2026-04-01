@@ -36,9 +36,9 @@ typedef struct {
 
 // Internal functions
 
-double _vec2Norm(const Vec2d *v);
-void _vec2Intersect(const Vec2d *p0, const Vec2d *p1, const Vec2d *p2,
-                    const Vec2d *p3, Vec2d *inter);
-bool _vec2AlmostEquals(const Vec2d *p0, const Vec2d *p1);
+double _v2dMag(const Vec2d *v);
+void _v2dIntersect(const Vec2d *p0, const Vec2d *p1, const Vec2d *p2,
+                   const Vec2d *p3, Vec2d *inter);
+bool _v2dAlmostEquals(const Vec2d *p0, const Vec2d *p1);
 
 #endif

@@ -485,7 +485,7 @@ void _vec3ToFaceIjk(Vec3d p, int res, FaceIJK *h) {
  * on a particular icosahedral face.
  */
 Vec3d _vec2ToVec3(Vec2d v, int face, int res, int substrate) {
-    double r = _vec2Norm(&v);
+    double r = _v2dMag(&v);
 
     if (r < EPSILON) {
         return faceCenterPoint[face];
@@ -631,7 +631,7 @@ void _faceIjkPentToCellBoundary(const FaceIJK *h, int res, int start,
 
             // find the intersection and add the lat/lng point to the result
             Vec2d inter;
-            _vec2Intersect(&orig2d0, &orig2d1, edge0, edge1, &inter);
+            _v2dIntersect(&orig2d0, &orig2d1, edge0, edge1, &inter);
             g->verts[g->numVerts] =
                 vec3ToLatLng(_vec2ToVec3(inter, tmpFijk.face, adjRes, 1));
             g->numVerts++;
@@ -796,14 +796,14 @@ void _faceIjkToH3Boundary(const FaceIJK *h, int res, int start, int length,
 
             // find the intersection and add the lat/lng point to the result
             Vec2d inter;
-            _vec2Intersect(&orig2d0, &orig2d1, edge0, edge1, &inter);
+            _v2dIntersect(&orig2d0, &orig2d1, edge0, edge1, &inter);
             /*
             If a point of intersection occurs at a hexagon vertex, then each
             adjacent hexagon edge will lie completely on a single icosahedron
             face, and no additional vertex is required.
             */
-            bool isIntersectionAtVertex = _vec2AlmostEquals(&orig2d0, &inter) ||
-                                          _vec2AlmostEquals(&orig2d1, &inter);
+            bool isIntersectionAtVertex = _v2dAlmostEquals(&orig2d0, &inter) ||
+                                          _v2dAlmostEquals(&orig2d1, &inter);
             if (!isIntersectionAtVertex) {
                 g->verts[g->numVerts] =
                     vec3ToLatLng(_vec2ToVec3(inter, centerIJK.face, adjRes, 1));
