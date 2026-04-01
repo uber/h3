@@ -484,7 +484,7 @@ void _vec3ToFaceIjk(Vec3d p, int res, FaceIJK *h) {
  * Determines the 3D coordinates of a point given by 2D hex coordinates
  * on a particular icosahedral face.
  */
-Vec3d _vec2ToVec3(Vec2d v, int face, int res, int substrate) {
+Vec3d _hex2dToVec3(Vec2d v, int face, int res, int substrate) {
     double r = _v2dMag(&v);
 
     if (r < EPSILON) {
@@ -537,7 +537,7 @@ Vec3d _vec2ToVec3(Vec2d v, int face, int res, int substrate) {
 Vec3d _faceIjkToVec3(const FaceIJK *h, int res) {
     Vec2d v;
     _ijkToHex2d(&h->coord, &v);
-    return _vec2ToVec3(v, h->face, res, 0);
+    return _hex2dToVec3(v, h->face, res, 0);
 }
 
 /**
@@ -578,7 +578,7 @@ void _faceIjkPentToCellBoundary(const FaceIJK *h, int res, int start,
         // note that Class II pentagons have vertices on the edge,
         // not edge intersections
         if (isResolutionClassIII(res) && vert > start) {
-            // find Vec2d of the two vertexes on the last face
+            // find hex2d of the two vertexes on the last face
 
             FaceIJK tmpFijk = fijk;
 
@@ -633,7 +633,7 @@ void _faceIjkPentToCellBoundary(const FaceIJK *h, int res, int start,
             Vec2d inter;
             _v2dIntersect(&orig2d0, &orig2d1, edge0, edge1, &inter);
             g->verts[g->numVerts] =
-                vec3ToLatLng(_vec2ToVec3(inter, tmpFijk.face, adjRes, 1));
+                vec3ToLatLng(_hex2dToVec3(inter, tmpFijk.face, adjRes, 1));
             g->numVerts++;
         }
 
@@ -644,7 +644,7 @@ void _faceIjkPentToCellBoundary(const FaceIJK *h, int res, int start,
             Vec2d vec;
             _ijkToHex2d(&fijk.coord, &vec);
             g->verts[g->numVerts] =
-                vec3ToLatLng(_vec2ToVec3(vec, fijk.face, adjRes, 1));
+                vec3ToLatLng(_hex2dToVec3(vec, fijk.face, adjRes, 1));
             g->numVerts++;
         }
 
@@ -805,8 +805,8 @@ void _faceIjkToCellBoundary(const FaceIJK *h, int res, int start, int length,
             bool isIntersectionAtVertex = _v2dAlmostEquals(&orig2d0, &inter) ||
                                           _v2dAlmostEquals(&orig2d1, &inter);
             if (!isIntersectionAtVertex) {
-                g->verts[g->numVerts] =
-                    vec3ToLatLng(_vec2ToVec3(inter, centerIJK.face, adjRes, 1));
+                g->verts[g->numVerts] = vec3ToLatLng(
+                    _hex2dToVec3(inter, centerIJK.face, adjRes, 1));
                 g->numVerts++;
             }
         }
@@ -818,7 +818,7 @@ void _faceIjkToCellBoundary(const FaceIJK *h, int res, int start, int length,
             Vec2d vec;
             _ijkToHex2d(&fijk.coord, &vec);
             g->verts[g->numVerts] =
-                vec3ToLatLng(_vec2ToVec3(vec, fijk.face, adjRes, 1));
+                vec3ToLatLng(_hex2dToVec3(vec, fijk.face, adjRes, 1));
             g->numVerts++;
         }
 
