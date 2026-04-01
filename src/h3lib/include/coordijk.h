@@ -87,8 +87,8 @@ typedef enum {
 // Internal functions
 
 void _setIJK(CoordIJK *ijk, int i, int j, int k);
-void _vec2ToCoordIJK(const Vec2d *v, CoordIJK *h);
-void _ijkToVec2(const CoordIJK *h, Vec2d *v);
+void _hex2dToCoordIJK(const Vec2d *v, CoordIJK *h);
+void _ijkToHex2d(const CoordIJK *h, Vec2d *v);
 int _ijkMatches(const CoordIJK *c1, const CoordIJK *c2);
 void _ijkAdd(const CoordIJK *h1, const CoordIJK *h2, CoordIJK *sum);
 void _ijkSub(const CoordIJK *h1, const CoordIJK *h2, CoordIJK *diff);
