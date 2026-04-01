@@ -363,6 +363,7 @@ static const int unitScaleByCIIres[] = {
 
 // Forward declares to make diff nicer
 static void _vec3ToHex2d(const Vec3d *p, int res, int *face, Vec2d *v);
+static void _vec3ToClosestFace(const Vec3d *v3, int *face, double *sqd);
 
 /**
  * Encodes a Vec3d coordinate to the FaceIJK address of the containing
@@ -379,28 +380,6 @@ void _vec3ToFaceIjk(Vec3d p, int res, FaceIJK *h) {
 
     // then convert to ijk+
     _hex2dToCoordIJK(&v, &h->coord);
-}
-
-/**
- * Encodes a coordinate on the sphere to the corresponding icosahedral face and
- * containing the squared euclidean distance to that face center.
- *
- * @param v3 The Vec3d coordinates to encode.
- * @param face Output: the icosahedral face containing the coordinates.
- * @param sqd Output: the squared euclidean distance to its face center.
- */
-static void _vec3ToClosestFace(const Vec3d *v3, int *face, double *sqd) {
-    *face = 0;
-    // The distance between two farthest points is 2.0, therefore the square of
-    // the distance between two points should always be less or equal than 4.0 .
-    *sqd = 5.0;
-    for (int f = 0; f < NUM_ICOSA_FACES; ++f) {
-        double sqdT = vec3DistSq(faceCenterPoint[f], *v3);
-        if (sqdT < *sqd) {
-            *face = f;
-            *sqd = sqdT;
-        }
-    }
 }
 
 /**
@@ -995,4 +974,26 @@ Overage _adjustPentVertOverage(FaceIJK *fijk, int res) {
         overage = _adjustOverageClassII(fijk, res, pentLeading4, 1);
     } while (overage == NEW_FACE);
     return overage;
+}
+
+/**
+ * Encodes a coordinate on the sphere to the corresponding icosahedral face and
+ * containing the squared euclidean distance to that face center.
+ *
+ * @param v3 The Vec3d coordinates to encode.
+ * @param face Output: the icosahedral face containing the coordinates.
+ * @param sqd Output: the squared euclidean distance to its face center.
+ */
+static void _vec3ToClosestFace(const Vec3d *v3, int *face, double *sqd) {
+    *face = 0;
+    // The distance between two farthest points is 2.0, therefore the square of
+    // the distance between two points should always be less or equal than 4.0 .
+    *sqd = 5.0;
+    for (int f = 0; f < NUM_ICOSA_FACES; ++f) {
+        double sqdT = vec3DistSq(faceCenterPoint[f], *v3);
+        if (sqdT < *sqd) {
+            *face = f;
+            *sqd = sqdT;
+        }
+    }
 }
