@@ -534,7 +534,7 @@ void _faceIjkPentToCellBoundary(const FaceIJK *h, int res, int start,
     // adjust the face of each vertex as appropriate and introduce
     // edge-crossing vertices as needed
     g->numVerts = 0;
-    FaceIJK lastFijk;
+    FaceIJK lastFijk = {0};
     for (int vert = start; vert < start + length + additionalIteration;
          vert++) {
         int v = vert % NUM_PENT_VERTS;
