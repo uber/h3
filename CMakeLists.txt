@@ -174,7 +174,6 @@ set(LIB_SOURCE_FILES
     src/h3lib/include/cellsToMultiPoly.h
     src/h3lib/lib/h3Assert.c
     src/h3lib/lib/algos.c
-    src/h3lib/lib/coordijk.c
     src/h3lib/lib/bbox.c
     src/h3lib/lib/polygon.c
     src/h3lib/lib/polyfill.c
