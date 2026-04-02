@@ -37,7 +37,6 @@
 #include "constants.h"
 #include "h3Assert.h"
 #include "h3api.h"
-#include "latLng.h"
 #include "mathExtensions.h"
 #include "vec2d.h"
 
@@ -764,5 +763,7 @@ static inline void cubeToIjk(CoordIJK *ijk) {
     ijk->k = 0;
     _ijkNormalize(ijk);
 }
+
+#undef INT32_MAX_3
 
 #endif
