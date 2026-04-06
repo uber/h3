@@ -83,13 +83,13 @@ SUITE(Vec3d) {
 
     TEST(vec3ToCell_nonFinite) {
         H3Index out;
-        Vec3d nan_x = {.x = NAN, .y = 0.0, .z = 0.0};
-        t_assert(vec3ToCell(&nan_x, 0, &out) == E_DOMAIN, "NaN x is rejected");
-        Vec3d inf_y = {.x = 0.0, .y = INFINITY, .z = 0.0};
-        t_assert(vec3ToCell(&inf_y, 0, &out) == E_DOMAIN,
+        Vec3d nanX = {.x = NAN, .y = 0.0, .z = 0.0};
+        t_assert(vec3ToCell(&nanX, 0, &out) == E_DOMAIN, "NaN x is rejected");
+        Vec3d infY = {.x = 0.0, .y = INFINITY, .z = 0.0};
+        t_assert(vec3ToCell(&infY, 0, &out) == E_DOMAIN,
                  "infinite y is rejected");
-        Vec3d inf_z = {.x = 0.0, .y = 0.0, .z = -INFINITY};
-        t_assert(vec3ToCell(&inf_z, 0, &out) == E_DOMAIN,
+        Vec3d infZ = {.x = 0.0, .y = 0.0, .z = -INFINITY};
+        t_assert(vec3ToCell(&infZ, 0, &out) == E_DOMAIN,
                  "infinite z is rejected");
     }
 }
