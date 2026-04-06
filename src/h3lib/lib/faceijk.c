@@ -388,11 +388,10 @@ static inline double _vec3AzimuthRads(Vec3d p1, Vec3d p2) {
     _vec3TangentBasis(p1, &northDir, &eastDir);
 
     // project p2 onto tangent plane at p1
-    Vec3d p2_on_tangent = vec3LinComb(1.0, p2, -vec3Dot(p2, p1), p1);
-    vec3Normalize(&p2_on_tangent);
+    Vec3d p2Proj = vec3LinComb(1.0, p2, -vec3Dot(p2, p1), p1);
+    vec3Normalize(&p2Proj);
 
-    return atan2(vec3Dot(p2_on_tangent, eastDir),
-                 vec3Dot(p2_on_tangent, northDir));
+    return atan2(vec3Dot(p2Proj, eastDir), vec3Dot(p2Proj, northDir));
 }
 
 /**
