@@ -451,7 +451,8 @@ static void _vec3ToHex2d(const Vec3d *p, int res, int *face, Vec2d *v) {
  *        grid relative to the specified resolution.
  * @param v3 Output: the 3D coordinates of the cell center point
  */
-void _hex2dToVec3(const Vec2d *v, int face, int res, int substrate, Vec3d *v3) {
+static void _hex2dToVec3(const Vec2d *v, int face, int res, int substrate,
+                         Vec3d *v3) {
     // calculate (r, theta) in hex2d
     double r = _v2dMag(v);
 
