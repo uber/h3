@@ -43,34 +43,38 @@ typedef struct {
 /** Convert latitude and longitude to a unit Vec3d on the sphere. */
 static inline Vec3d latLngToVec3(LatLng geo) {
     double r = cos(geo.lat);
-    return (Vec3d){
-        cos(geo.lng) * r,
-        sin(geo.lng) * r,
-        sin(geo.lat),
+    Vec3d out = {
+        .x = cos(geo.lng) * r,
+        .y = sin(geo.lng) * r,
+        .z = sin(geo.lat),
     };
+    return out;
 }
 
 static inline LatLng vec3ToLatLng(Vec3d v) {
-    return (LatLng){
-        asin(v.z),
-        atan2(v.y, v.x),
+    LatLng out = {
+        .lat = asin(v.z),
+        .lng = atan2(v.y, v.x),
     };
+    return out;
 }
 
 static inline Vec3d vec3LinComb(double a, Vec3d v1, double b, Vec3d v2) {
-    return (Vec3d){
-        a * v1.x + b * v2.x,
-        a * v1.y + b * v2.y,
-        a * v1.z + b * v2.z,
+    Vec3d out = {
+        .x = a * v1.x + b * v2.x,
+        .y = a * v1.y + b * v2.y,
+        .z = a * v1.z + b * v2.z,
     };
+    return out;
 }
 
 static inline Vec3d vec3Cross(Vec3d v1, Vec3d v2) {
-    return (Vec3d){
-        v1.y * v2.z - v1.z * v2.y,
-        v1.z * v2.x - v1.x * v2.z,
-        v1.x * v2.y - v1.y * v2.x,
+    Vec3d out = {
+        .x = v1.y * v2.z - v1.z * v2.y,
+        .y = v1.z * v2.x - v1.x * v2.z,
+        .z = v1.x * v2.y - v1.y * v2.x,
     };
+    return out;
 }
 
 static inline double vec3Dot(Vec3d v1, Vec3d v2) {
