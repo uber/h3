@@ -83,11 +83,19 @@ static inline double vec3Norm(Vec3d v) { return sqrt(vec3NormSq(v)); }
 
 static inline void vec3Normalize(Vec3d *v) {
     double norm = vec3Norm(*v);
-    if (norm == 0.0) return;
-    double inv = 1.0 / norm;
-    v->x *= inv;
-    v->y *= inv;
-    v->z *= inv;
+
+    // Norm can be zero either from true zero vector, or from squaring
+    // underflowing to zero.
+    // If the norm is nonzero, we normalize v using it.
+    // If the norm is zero, we set the vector to be exactly zero.
+    double s = 0.0;
+    if (norm > 0.0) {
+        s = 1.0 / norm;
+    }
+
+    v->x *= s;
+    v->y *= s;
+    v->z *= s;
 }
 
 static inline double vec3DistSq(Vec3d v1, Vec3d v2) {

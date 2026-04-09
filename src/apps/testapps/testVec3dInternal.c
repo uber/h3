@@ -40,6 +40,30 @@ SUITE(Vec3dInternal) {
                  "distance to <1,1,2> is 6");
     }
 
+    TEST(vec3Normalize_smallNonzero) {
+        // 1e-163 squared underflows to 0, so norm == 0.
+        // vec3Normalize should produce the zero vector.
+        Vec3d v = {1e-163, 0, 0};
+
+        t_assert(v.x != 0.0, "vector is nonzero");
+        t_assert(vec3Norm(v) == 0.0, "norm underflows to zero");
+
+        vec3Normalize(&v);
+        t_assert(v.x == 0.0 && v.y == 0.0 && v.z == 0.0,
+                 "underflowed vector normalizes to zero");
+    }
+
+    TEST(vec3Normalize_dblEpsilonHalf) {
+        // DBL_EPSILON/2 is small but normalizes fine.
+        Vec3d v = {DBL_EPSILON / 2.0, 0, 0};
+
+        t_assert(vec3Norm(v) < DBL_EPSILON, "norm is small but nonzero");
+
+        vec3Normalize(&v);
+        t_assert(fabs(v.x - 1.0) < DBL_EPSILON && v.y == 0 && v.z == 0,
+                 "still normalizable to unit vector");
+    }
+
     TEST(latLngToVec3) {
         Vec3d origin = {0};
 
