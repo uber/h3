@@ -501,7 +501,7 @@ static void _hex2dToVec3(const Vec2d *v, int face, int res, int substrate,
  *
  * @param h The FaceIJK address of the cell.
  * @param res The H3 resolution of the cell.
- * @param v3 Output: The 3D coordinates of the cell center point.
+ * @param g Output: The 3D coordinates of the cell center point.
  */
 void _faceIjkToVec3(const FaceIJK *h, int res, Vec3d *g) {
     Vec2d v;
