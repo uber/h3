@@ -340,11 +340,13 @@ static const int unitScaleByCIIres[] = {
 // Forward declares to make diff nicer
 // TODO: remove and reorder functions after landing
 static void _vec3ToHex2d(const Vec3d *p, int res, int *face, Vec2d *v);
-static void _vec3ToClosestFace(const Vec3d *v3, int *face, double *sqd);
+static void _vec3ToClosestFace(const Vec3d *v, int *face, double *sqd);
 
 /**
  * Encodes a Vec3d coordinate to the FaceIJK address of the containing
  * cell at the specified resolution.
+ *
+ * Vec3d p is expected to be on the unit sphere.
  *
  * @param p The Vec3d coordinates to encode.
  * @param res The desired H3 resolution for the encoding.
@@ -397,6 +399,8 @@ static inline double _vec3AzimuthRads(Vec3d p1, Vec3d p2) {
 /**
  * Encodes a coordinate on the sphere to the corresponding icosahedral face and
  * containing 2D hex coordinates relative to that face center.
+ *
+ * Vec3d p is expected to be on the unit sphere.
  *
  * @param p The Vec3d coordinates to encode.
  * @param res The desired H3 resolution for the encoding.
@@ -957,17 +961,19 @@ Overage _adjustPentVertOverage(FaceIJK *fijk, int res) {
  * Encodes a coordinate on the sphere to the corresponding icosahedral face and
  * containing the squared euclidean distance to that face center.
  *
- * @param v3 The Vec3d coordinates to encode.
+ * Vec3d v is expected to be on the unit sphere.
+ *
+ * @param v The Vec3d coordinates to encode.
  * @param face Output: The icosahedral face containing the coordinates.
  * @param sqd Output: The squared euclidean distance to its face center.
  */
-static void _vec3ToClosestFace(const Vec3d *v3, int *face, double *sqd) {
+static void _vec3ToClosestFace(const Vec3d *v, int *face, double *sqd) {
     *face = 0;
     // The distance between two farthest points is 2.0, therefore the square of
     // the distance between two points should always be less or equal than 4.0 .
     *sqd = 5.0;
     for (int f = 0; f < NUM_ICOSA_FACES; ++f) {
-        double sqdT = vec3DistSq(faceCenterPoint[f], *v3);
+        double sqdT = vec3DistSq(faceCenterPoint[f], *v);
         if (sqdT < *sqd) {
             *face = f;
             *sqd = sqdT;

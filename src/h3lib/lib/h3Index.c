@@ -1052,7 +1052,7 @@ H3Error H3_EXPORT(latLngToCell)(const LatLng *g, int res, H3Index *out) {
  * Encodes a coordinate on the sphere to the H3 index of the containing cell at
  * the specified resolution.
  *
- * The cartesian 3D coordinate is expected to be on the unit sphere.
+ * Vec3d v is expected to be on the unit sphere.
  *
  * @param v The 3D cartesian coordinates to encode.
  * @param res The desired H3 resolution for the encoding.
