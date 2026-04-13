@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2018, 2020 Uber Technologies, Inc.
+ * Copyright 2016-2018, 2020, 2026 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -178,5 +178,8 @@ H3Index _h3RotatePent60cw(H3Index h);
 H3Index _h3Rotate60ccw(H3Index h);
 H3Index _h3Rotate60cw(H3Index h);
 DECLSPEC H3Index _zeroIndexDigits(H3Index h, int start, int end);
+
+H3Error vec3ToCell(const Vec3d *v, int res, H3Index *out);
+H3Error cellToVec3(H3Index h3, Vec3d *v);
 
 #endif

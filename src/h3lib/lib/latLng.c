@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 Uber Technologies, Inc.
+ * Copyright 2016-2023, 2026 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -199,86 +199,6 @@ double H3_EXPORT(greatCircleDistanceKm)(const LatLng *a, const LatLng *b) {
  */
 double H3_EXPORT(greatCircleDistanceM)(const LatLng *a, const LatLng *b) {
     return H3_EXPORT(greatCircleDistanceKm)(a, b) * 1000;
-}
-
-/**
- * Determines the azimuth to p2 from p1 in radians.
- *
- * @param p1 The first spherical coordinates.
- * @param p2 The second spherical coordinates.
- * @return The azimuth in radians from p1 to p2.
- */
-double _geoAzimuthRads(const LatLng *p1, const LatLng *p2) {
-    return atan2(cos(p2->lat) * sin(p2->lng - p1->lng),
-                 cos(p1->lat) * sin(p2->lat) -
-                     sin(p1->lat) * cos(p2->lat) * cos(p2->lng - p1->lng));
-}
-
-/**
- * Computes the point on the sphere a specified azimuth and distance from
- * another point.
- *
- * @param p1 The first spherical coordinates.
- * @param az The desired azimuth from p1.
- * @param distance The desired distance from p1, must be non-negative.
- * @param p2 The spherical coordinates at the desired azimuth and distance from
- * p1.
- */
-void _geoAzDistanceRads(const LatLng *p1, double az, double distance,
-                        LatLng *p2) {
-    if (distance < EPSILON) {
-        *p2 = *p1;
-        return;
-    }
-
-    double sinlat, sinlng, coslng;
-
-    az = _posAngleRads(az);
-
-    // check for due north/south azimuth
-    if (az < EPSILON || fabs(az - M_PI) < EPSILON) {
-        if (az < EPSILON)  // due north
-            p2->lat = p1->lat + distance;
-        else  // due south
-            p2->lat = p1->lat - distance;
-
-        if (fabs(p2->lat - M_PI_2) < EPSILON)  // north pole
-        {
-            p2->lat = M_PI_2;
-            p2->lng = 0.0;
-        } else if (fabs(p2->lat + M_PI_2) < EPSILON)  // south pole
-        {
-            p2->lat = -M_PI_2;
-            p2->lng = 0.0;
-        } else
-            p2->lng = constrainLng(p1->lng);
-    } else  // not due north or south
-    {
-        sinlat = sin(p1->lat) * cos(distance) +
-                 cos(p1->lat) * sin(distance) * cos(az);
-        if (sinlat > 1.0) sinlat = 1.0;
-        if (sinlat < -1.0) sinlat = -1.0;
-        p2->lat = asin(sinlat);
-        if (fabs(p2->lat - M_PI_2) < EPSILON)  // north pole
-        {
-            p2->lat = M_PI_2;
-            p2->lng = 0.0;
-        } else if (fabs(p2->lat + M_PI_2) < EPSILON)  // south pole
-        {
-            p2->lat = -M_PI_2;
-            p2->lng = 0.0;
-        } else {
-            double invcosp2lat = 1.0 / cos(p2->lat);
-            sinlng = sin(az) * sin(distance) * invcosp2lat;
-            coslng = (cos(distance) - sin(p1->lat) * sin(p2->lat)) /
-                     cos(p1->lat) * invcosp2lat;
-            if (sinlng > 1.0) sinlng = 1.0;
-            if (sinlng < -1.0) sinlng = -1.0;
-            if (coslng > 1.0) coslng = 1.0;
-            if (coslng < -1.0) coslng = -1.0;
-            p2->lng = constrainLng(p1->lng + atan2(sinlng, coslng));
-        }
-    }
 }
 
 /*
