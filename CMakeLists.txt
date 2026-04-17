@@ -174,7 +174,6 @@ set(LIB_SOURCE_FILES
     src/h3lib/include/cellsToMultiPoly.h
     src/h3lib/lib/h3Assert.c
     src/h3lib/lib/algos.c
-    src/h3lib/lib/coordijk.c
     src/h3lib/lib/bbox.c
     src/h3lib/lib/polygon.c
     src/h3lib/lib/polyfill.c
@@ -510,6 +509,9 @@ macro(add_h3_executable name)
         )
         target_compile_options(${name} PRIVATE ${H3_COMPILE_FLAGS})
         target_link_libraries(${name} PRIVATE ${H3_LINK_FLAGS})
+        if(ENABLE_COVERAGE)
+            target_compile_definitions(${name} PRIVATE H3_COVERAGE_TEST=1)
+        endif()
     endif()
 endmacro()
 
