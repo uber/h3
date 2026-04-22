@@ -31,7 +31,7 @@
 /** @struct Vec3d
  *  @brief 3D floating point structure
  *
- *  For geodesic calulations represents a point on the surface of the Earth
+ *  For geodesic calculations represents a point on the surface of the Earth
  *  as a unit vector in 3D Cartesian space (ECEF-like coordinates).
  */
 typedef struct {
