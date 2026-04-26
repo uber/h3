@@ -8,6 +8,7 @@ The public API of this library consists of the functions declared in file
 ## [Unreleased]
 ### Added
 - `cellsToMultiPolygon` function (#1104, #1113)
+    - Internal for now, will be added to the public API in a future release
     - `destroyGeoMultiPolygon` function (#1104)
     - (internal) `geoLoopArea` function (#1101)
 - `reverseDirectedEdge` function (#1098)
@@ -18,6 +19,8 @@ The public API of this library consists of the functions declared in file
 - `cellsToLinkedMultiPolygon` now uses `cellsToMultiPolygon` internally (#1126, #1133, #1136)
     - `cellsToLinkedMultiPolygon` (and `cellsToMultiPolygon`) now return errors for invalid cells (`E_CELL_INVALID`), mixed resolutions (`E_RES_MISMATCH`), and duplicate cells (`E_DOMAIN`) instead of producing undefined output
 - `cellAreaRads2` uses `geoLoopArea` (#1101)
+- Refactor of indexing code to use Vec3d (#1145, #1155)
+- Refactor of CoordIJK code to be inlineable (#1154)
 
 ### Fixed
 - CLI handling of invalid cell input (#1125, #1124)
