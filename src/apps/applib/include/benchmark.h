@@ -29,6 +29,7 @@
 
 #ifdef _WIN32
 
+#define NOGDI
 #include <Windows.h>
 
 #define START_TIMER                   \
