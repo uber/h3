@@ -6,6 +6,8 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+
+## [4.5.0] - 2026-05-20
 ### Added
 - `cellsToMultiPolygon` function (#1104, #1113)
     - Internal for now, will be added to the public API in a future release
