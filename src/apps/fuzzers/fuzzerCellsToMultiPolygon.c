@@ -18,6 +18,7 @@
  */
 
 #include "aflHarness.h"
+#include "cellsToMultiPoly.h"
 #include "h3api.h"
 #include "utility.h"
 

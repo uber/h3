@@ -22,6 +22,7 @@
 #include <math.h>
 #include <string.h>
 
+#include "cellsToMultiPoly.h"
 #include "h3Index.h"
 #include "h3api.h"
 #include "latLng.h"

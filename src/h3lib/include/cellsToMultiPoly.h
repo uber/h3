@@ -220,4 +220,16 @@ static inline void destroySortablePolyVerts(SortablePoly *spolys,
     }
 }
 
+/** @brief Create a GeoMultiPolygon from a set of cells
+ *
+ * NOTE: This definition is tentative as we work to finish the implementation.
+ * TODO: This will be moved to h3api.h.in when it is ready to release.
+ * */
+DECLSPEC H3Error H3_EXPORT(cellsToMultiPolygon)(const H3Index *cells,
+                                                const int64_t numCells,
+                                                GeoMultiPolygon *out);
+
+/** @brief Free all memory created for a GeoMultiPolygon */
+DECLSPEC void H3_EXPORT(destroyGeoMultiPolygon)(GeoMultiPolygon *mpoly);
+
 #endif

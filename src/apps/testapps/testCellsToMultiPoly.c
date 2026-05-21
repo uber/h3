@@ -22,6 +22,7 @@
 #include "adder.h"
 #include "algos.h"
 #include "area.h"
+#include "cellsToMultiPoly.h"
 #include "h3api.h"
 #include "iterators.h"
 #include "test.h"

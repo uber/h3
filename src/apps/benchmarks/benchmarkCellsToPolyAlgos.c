@@ -20,6 +20,7 @@
 #include <stdlib.h>
 
 #include "benchmark.h"
+#include "cellsToMultiPoly.h"
 #include "h3api.h"
 
 #define BENCHMARK_LINKED(NAME, ITERS)                                       \
