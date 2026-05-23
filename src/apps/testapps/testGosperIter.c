@@ -65,11 +65,15 @@ void check_edge_correctness(H3Index h, int childRes) {
         t_assert(H3_EXPORT(getResolution)(iter.e) == childRes,
                  "correct resolution");
 
-        H3Index s, d, ps, pd;
-        H3_EXPORT(getDirectedEdgeOrigin)(iter.e, &s);  // source/origin cell
-        H3_EXPORT(getDirectedEdgeDestination)(iter.e, &d);  // destination cell
-        H3_EXPORT(cellToParent)(s, parentRes, &ps);         // parent of source
-        H3_EXPORT(cellToParent)(d, parentRes, &pd);  // parent of destination
+        H3Index s;   // source/origin cell
+        H3Index d;   // destination cell
+        H3Index ps;  // parent of source
+        H3Index pd;  // parent of destination
+
+        t_assertSuccess(H3_EXPORT(getDirectedEdgeOrigin)(iter.e, &s));
+        t_assertSuccess(H3_EXPORT(getDirectedEdgeDestination)(iter.e, &d));
+        t_assertSuccess(H3_EXPORT(cellToParent)(s, parentRes, &ps));
+        t_assertSuccess(H3_EXPORT(cellToParent)(d, parentRes, &pd));
 
         t_assert(ps == h, "origin *is* child of parent cell");
         t_assert(pd != h, "destination *is not* child of parent cell");
@@ -90,8 +94,8 @@ bool do_edges_connect(H3Index edge_a, H3Index edge_b) {
     double tol = MIN(len_a, len_b) / 1000.0;
 
     CellBoundary bd_a, bd_b;
-    H3_EXPORT(directedEdgeToBoundary)(edge_a, &bd_a);
-    H3_EXPORT(directedEdgeToBoundary)(edge_b, &bd_b);
+    t_assertSuccess(H3_EXPORT(directedEdgeToBoundary)(edge_a, &bd_a));
+    t_assertSuccess(H3_EXPORT(directedEdgeToBoundary)(edge_b, &bd_b));
 
     LatLng end_a = bd_a.verts[bd_a.numVerts - 1];
     LatLng start_b = bd_b.verts[0];
