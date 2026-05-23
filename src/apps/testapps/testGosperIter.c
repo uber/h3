@@ -21,10 +21,9 @@
 #include "test.h"
 #include "utility.h"
 
-// Iterator mechanics:
-//   1. produces exact number of edges:
-//         num_edges = num_sides * 3^(childRes - parentRes)
-//   2. each step produces a different edge
+// Check iterator mechanics:
+//   1. produces correct number of edges
+//   2. each step produces an edge that's different from the previous edge
 //   3. stays H3_NULL after finishing
 void check_iterator_mechanics(H3Index h, int childRes) {
     bool isPent = H3_EXPORT(isPentagon)(h);
