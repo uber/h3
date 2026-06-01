@@ -14,120 +14,40 @@
  * limitations under the License.
  */
 #include "benchmark.h"
-#include "gosperIter.h"
+#include "iterators.h"
 
-// Res 2 cells
 H3Index hex2 = 0x820887fffffffff;   // res 2 hexagon
 H3Index pent2 = 0x820807fffffffff;  // res 2 pentagon
 
-// Res 5 cells
-H3Index hex5 = 0x85283473fffffff;   // res 5 hexagon
-H3Index pent5 = 0x85080003fffffff;  // res 5 pentagon
-
-// Res 8 cell
-H3Index hex8 = 0x8828308281fffff;  // res 8 hexagon
+void exhaustGosper(H3Index cell, int childRes) {
+    IterEdgesGosper iter = iterInitGosper(cell, childRes);
+    while (iter.e) iterStepGosper(&iter);
+}
 
 BEGIN_BENCHMARKS();
 
-// +0: same resolution (6 edges for hex, 5 for pent)
-BENCHMARK(hex2_plus0, 50000000, {
-    IterGosper iter = iterInitGosper(hex2, 2);
-    while (iter.e) iterStepGosper(&iter);
-});
+// res: 2 -> 2
+BENCHMARK(hex_plus0, 50000000, { exhaustGosper(hex2, 2); });
+BENCHMARK(pent_plus0, 50000000, { exhaustGosper(pent2, 2); });
 
-BENCHMARK(pent2_plus0, 50000000, {
-    IterGosper iter = iterInitGosper(pent2, 2);
-    while (iter.e) iterStepGosper(&iter);
-});
+// res: 2 -> 3
+BENCHMARK(hex_plus1, 500000, { exhaustGosper(hex2, 3); });
+BENCHMARK(pent_plus1, 500000, { exhaustGosper(pent2, 3); });
 
-BENCHMARK(hex5_plus0, 50000000, {
-    IterGosper iter = iterInitGosper(hex5, 5);
-    while (iter.e) iterStepGosper(&iter);
-});
+// res: 2 -> 4
+BENCHMARK(hex_plus2, 100000, { exhaustGosper(hex2, 4); });
+BENCHMARK(pent_plus2, 100000, { exhaustGosper(pent2, 4); });
 
-BENCHMARK(pent5_plus0, 50000000, {
-    IterGosper iter = iterInitGosper(pent5, 5);
-    while (iter.e) iterStepGosper(&iter);
-});
+// res: 2 -> 7
+BENCHMARK(hex_plus5, 1000, { exhaustGosper(hex2, 7); });
+BENCHMARK(pent_plus5, 1000, { exhaustGosper(pent2, 7); });
 
-BENCHMARK(hex8_plus0, 50000000, {
-    IterGosper iter = iterInitGosper(hex8, 8);
-    while (iter.e) iterStepGosper(&iter);
-});
+// res: 2 -> 10
+BENCHMARK(hex_plus8, 100, { exhaustGosper(hex2, 10); });
+BENCHMARK(pent_plus8, 100, { exhaustGosper(pent2, 10); });
 
-// +1 (18 edges for hex, 15 for pent)
-BENCHMARK(hex2_plus1, 500000, {
-    IterGosper iter = iterInitGosper(hex2, 3);
-    while (iter.e) iterStepGosper(&iter);
-});
-
-BENCHMARK(pent2_plus1, 500000, {
-    IterGosper iter = iterInitGosper(pent2, 3);
-    while (iter.e) iterStepGosper(&iter);
-});
-
-BENCHMARK(hex5_plus1, 500000, {
-    IterGosper iter = iterInitGosper(hex5, 6);
-    while (iter.e) iterStepGosper(&iter);
-});
-
-BENCHMARK(pent5_plus1, 500000, {
-    IterGosper iter = iterInitGosper(pent5, 6);
-    while (iter.e) iterStepGosper(&iter);
-});
-
-// +2 (54 edges for hex, 45 for pent)
-BENCHMARK(hex2_plus2, 100000, {
-    IterGosper iter = iterInitGosper(hex2, 4);
-    while (iter.e) iterStepGosper(&iter);
-});
-
-BENCHMARK(pent2_plus2, 100000, {
-    IterGosper iter = iterInitGosper(pent2, 4);
-    while (iter.e) iterStepGosper(&iter);
-});
-
-BENCHMARK(hex5_plus2, 100000, {
-    IterGosper iter = iterInitGosper(hex5, 7);
-    while (iter.e) iterStepGosper(&iter);
-});
-
-BENCHMARK(pent5_plus2, 100000, {
-    IterGosper iter = iterInitGosper(pent5, 7);
-    while (iter.e) iterStepGosper(&iter);
-});
-
-// +5 (1458 edges for hex, 1215 for pent)
-BENCHMARK(hex2_plus5, 1000, {
-    IterGosper iter = iterInitGosper(hex2, 7);
-    while (iter.e) iterStepGosper(&iter);
-});
-
-BENCHMARK(pent2_plus5, 1000, {
-    IterGosper iter = iterInitGosper(pent2, 7);
-    while (iter.e) iterStepGosper(&iter);
-});
-
-// +8 (39366 edges for hex, 32805 for pent)
-BENCHMARK(hex2_plus8, 100, {
-    IterGosper iter = iterInitGosper(hex2, 10);
-    while (iter.e) iterStepGosper(&iter);
-});
-
-BENCHMARK(pent2_plus8, 100, {
-    IterGosper iter = iterInitGosper(pent2, 10);
-    while (iter.e) iterStepGosper(&iter);
-});
-
-// +11 (1062882 edges for hex, 885735 for pent)
-BENCHMARK(hex2_plus11, 10, {
-    IterGosper iter = iterInitGosper(hex2, 13);
-    while (iter.e) iterStepGosper(&iter);
-});
-
-BENCHMARK(pent2_plus11, 10, {
-    IterGosper iter = iterInitGosper(pent2, 13);
-    while (iter.e) iterStepGosper(&iter);
-});
+// res: 2 -> 13
+BENCHMARK(hex_plus11, 10, { exhaustGosper(hex2, 13); });
+BENCHMARK(pent_plus11, 10, { exhaustGosper(pent2, 13); });
 
 END_BENCHMARKS();

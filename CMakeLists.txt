@@ -156,7 +156,6 @@ set(LIB_SOURCE_FILES
     src/h3lib/include/polyfill.h
     src/h3lib/include/h3Index.h
     src/h3lib/include/directedEdge.h
-    src/h3lib/include/gosperIter.h
     src/h3lib/include/latLng.h
     src/h3lib/include/vec2d.h
     src/h3lib/include/vec3d.h
@@ -185,7 +184,7 @@ set(LIB_SOURCE_FILES
     src/h3lib/lib/localij.c
     src/h3lib/lib/latLng.c
     src/h3lib/lib/directedEdge.c
-    src/h3lib/lib/gosperIter.c
+    src/h3lib/lib/iterGosper.c
     src/h3lib/lib/mathExtensions.c
     src/h3lib/lib/iterators.c
     src/h3lib/lib/faceijk.c

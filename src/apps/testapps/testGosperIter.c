@@ -16,38 +16,23 @@
 
 #include <stdlib.h>
 
-#include "gosperIter.h"
 #include "iterators.h"
 #include "mathExtensions.h"
 #include "test.h"
 #include "utility.h"
 
-/*
- * Properties verified by check_all(cell, childRes):
- *
- * Iterator mechanics (check_iter):
- *   1. Count        — produces exactly faces * 3^(childRes - parentRes) edges
- *   2. Advancement  — each step produces a different edge
- *   3. Exhaustion   — stays H3_NULL after finishing
- *
- * Per-edge correctness (check_edges):
- *   4. Validity     — each edge is a valid directed edge
- *   5. Resolution   — each edge is at childRes
- *   6. Boundary     — origin is a child of parent, destination is not
- *
- * Loop structure (check_loop):
- *   7. Connectivity — consecutive edges share an endpoint, loop closes
- */
-
-// Iterator mechanics: count, advancement, exhaustion
-void check_iter(H3Index h, int childRes) {
-    bool pent = H3_EXPORT(isPentagon)(h);
+// Check iterator mechanics:
+//   1. produces correct number of edges
+//   2. each step produces an edge that's different from the previous edge
+//   3. stays H3_NULL after finishing
+void check_iterator_mechanics(H3Index h, int childRes) {
+    bool isPent = H3_EXPORT(isPentagon)(h);
     int parentRes = H3_EXPORT(getResolution)(h);
+    int numSides = isPent ? 5 : 6;
+    int64_t expectedEdges = numSides * _ipow(3, childRes - parentRes);
 
-    IterGosper iter = iterInitGosper(h, childRes);
-
-    int64_t expectedEdges = (pent ? 5 : 6) * _ipow(3, childRes - parentRes);
-    t_assert(iter._numEdges == expectedEdges, "correct number of edges");
+    IterEdgesGosper iter = iterInitGosper(h, childRes);
+    t_assert(iter.remaining == expectedEdges, "correct number of edges");
 
     int64_t i;
     for (i = 0; iter.e; i++) {
@@ -57,32 +42,40 @@ void check_iter(H3Index h, int childRes) {
     }
     t_assert(i == expectedEdges, "correct number of edges");
 
+    // iterator should stay exhausted
     for (int j = 0; j < 100; j++) {
-        t_assert(iter._numEdges == 0, "num edges to zero");
+        t_assert(iter.remaining == 0, "num edges to zero");
         t_assert(iter.e == H3_NULL, "iterator exhausted");
         iterStepGosper(&iter);
     }
 }
 
-// Per-edge correctness: valid, correct resolution, is boundary edge
-void check_edges(H3Index h, int childRes) {
+// Per-edge correctness:
+//   1. each edge is a valid directed edge
+//   2. each edge is at childRes
+//   3. confirm the edge is on the Gosper island boundary:
+//      origin cell is a child of parent cell, destination cell is not
+void check_edge_correctness(H3Index h, int childRes) {
     int parentRes = H3_EXPORT(getResolution)(h);
-    IterGosper iter = iterInitGosper(h, childRes);
+    IterEdgesGosper iter = iterInitGosper(h, childRes);
 
     while (iter.e) {
         t_assert(H3_EXPORT(isValidDirectedEdge)(iter.e), "edge is valid");
         t_assert(H3_EXPORT(getResolution)(iter.e) == childRes,
                  "correct resolution");
 
-        H3Index origin, destination, originParent, destinationParent;
-        H3_EXPORT(getDirectedEdgeOrigin)(iter.e, &origin);
-        H3_EXPORT(getDirectedEdgeDestination)(iter.e, &destination);
-        H3_EXPORT(cellToParent)(origin, parentRes, &originParent);
-        H3_EXPORT(cellToParent)(destination, parentRes, &destinationParent);
+        H3Index s;   // source/origin cell
+        H3Index d;   // destination cell
+        H3Index ps;  // parent of source
+        H3Index pd;  // parent of destination
 
-        t_assert(originParent == h, "edge origin is child of parent cell");
-        t_assert(destinationParent != h,
-                 "edge destination is *not* child of parent cell");
+        t_assertSuccess(H3_EXPORT(getDirectedEdgeOrigin)(iter.e, &s));
+        t_assertSuccess(H3_EXPORT(getDirectedEdgeDestination)(iter.e, &d));
+        t_assertSuccess(H3_EXPORT(cellToParent)(s, parentRes, &ps));
+        t_assertSuccess(H3_EXPORT(cellToParent)(d, parentRes, &pd));
+
+        t_assert(ps == h, "origin *is* child of parent cell");
+        t_assert(pd != h, "destination *is not* child of parent cell");
 
         iterStepGosper(&iter);
     }
@@ -91,6 +84,8 @@ void check_edges(H3Index h, int childRes) {
 // Check that edge_a's last vertex matches edge_b's first vertex,
 // i.e. the edges connect end-to-start. Tolerance is relative to
 // the shorter edge length to handle varying resolutions.
+// TODO: Replace floating-point distance check with exact vertex comparison
+// once an edgeToVertexes function exists.
 bool do_edges_connect(H3Index edge_a, H3Index edge_b) {
     double len_a, len_b;
     H3_EXPORT(edgeLengthRads)(edge_a, &len_a);
@@ -98,8 +93,8 @@ bool do_edges_connect(H3Index edge_a, H3Index edge_b) {
     double tol = MIN(len_a, len_b) / 1000.0;
 
     CellBoundary bd_a, bd_b;
-    H3_EXPORT(directedEdgeToBoundary)(edge_a, &bd_a);
-    H3_EXPORT(directedEdgeToBoundary)(edge_b, &bd_b);
+    t_assertSuccess(H3_EXPORT(directedEdgeToBoundary)(edge_a, &bd_a));
+    t_assertSuccess(H3_EXPORT(directedEdgeToBoundary)(edge_b, &bd_b));
 
     LatLng end_a = bd_a.verts[bd_a.numVerts - 1];
     LatLng start_b = bd_b.verts[0];
@@ -108,10 +103,12 @@ bool do_edges_connect(H3Index edge_a, H3Index edge_b) {
     return dist < tol;
 }
 
-void check_loop(H3Index h, int childRes) {
-    IterGosper iter = iterInitGosper(h, childRes);
+// Loop structure:
+//   1. consecutive edges share an endpoint (floating-point test)
+//   2. loop closes (returns to where it started)
+void check_loop_valid(H3Index h, int childRes) {
+    IterEdgesGosper iter = iterInitGosper(h, childRes);
     H3Index first_edge = iter.e;
-
     H3Index prev_edge = iter.e;
     iterStepGosper(&iter);
 
@@ -125,17 +122,17 @@ void check_loop(H3Index h, int childRes) {
     t_assert(do_edges_connect(prev_edge, first_edge), "loop should close");
 }
 
-void check_all(H3Index h, int childRes) {
-    check_iter(h, childRes);
-    check_edges(h, childRes);
-    check_loop(h, childRes);
+void check_gosper_island(H3Index h, int childRes) {
+    check_iterator_mechanics(h, childRes);
+    check_edge_correctness(h, childRes);
+    check_loop_valid(h, childRes);
 }
 
 // Verify iterator produces some cyclic rotation of the expected edges
 void check_expected_edges(H3Index h, int childRes, H3Index *expected,
                           int numExpected) {
-    IterGosper iter = iterInitGosper(h, childRes);
-    t_assert(iter._numEdges == numExpected, "correct number of edges");
+    IterEdgesGosper iter = iterInitGosper(h, childRes);
+    t_assert(iter.remaining == numExpected, "correct number of edges");
 
     // Find rotation offset: where does the iterator's first edge appear?
     int offset = -1;
@@ -155,22 +152,53 @@ void check_expected_edges(H3Index h, int childRes, H3Index *expected,
 }
 
 SUITE(gosper_iter) {
-    TEST(test_exhaustive) {
+    // Exhaustive test of all cells, resolutions 0,1,2,3,4.
+    // Expanding to Gosper islands up to res 4.
+    TEST(coarse_resolutions_exhaustive) {
         for (int childRes = 0; childRes <= 4; childRes++) {
             for (int parentRes = 0; parentRes <= childRes; parentRes++) {
                 IterCellsResolution cell_iter = iterInitRes(parentRes);
                 while (cell_iter.h) {
-                    check_all(cell_iter.h, childRes);
+                    check_gosper_island(cell_iter.h, childRes);
                     iterStepRes(&cell_iter);
                 }
             }
         }
     }
 
-    // Expected edge sequences below were generated by an independent
-    // implementation and verified by check_all (validity, boundary
-    // membership, loop connectivity). The iterator may start at a
-    // different rotation, so check_expected_edges allows cyclic offset.
+    // Since an exhaustive test of all resolutions would take too long,
+    // we test a few specific cells at finer resolutions, including
+    // expanding up to res 15.
+    TEST(finer_resolutions) {
+        H3Index cells[] = {
+            0x8508000ffffffff,  // res 5 hexagon
+            0x85080003fffffff,  // res 5 pentagon
+
+            0x8808000009fffff,  // res 8 hexagon
+            0x8808000001fffff,  // res 8 pentagon
+
+            0x8a0800000017fff,  // res 10 hexagon
+            0x8a0800000007fff,  // res 10 pentagon
+
+            0x8e754e64992d6c7,  // res 14 hexagon
+            0x8e0800000000007,  // res 14 pentagon
+
+            0x8f754e64992d6d8,  // res 15 hexagon
+            0x8f0800000000000,  // res 15 pentagon
+        };
+        for (int i = 0; i < (int)ARRAY_SIZE(cells); i++) {
+            int parentRes = H3_EXPORT(getResolution)(cells[i]);
+            for (int gap = 0; gap <= 5; gap++) {
+                int childRes = parentRes + gap;
+                if (childRes > 15) continue;
+                check_gosper_island(cells[i], childRes);
+            }
+        }
+    }
+
+    // `check_expected_edges` tests below check for a specific sequence
+    // edges for a given cell and resolution input. Any cyclic rotation
+    // should pass the test.
 
     TEST(just_hex_2) {
         H3Index h = 0x820887fffffffff;
@@ -262,26 +290,6 @@ SUITE(gosper_iter) {
             0x113c65bfffffffff, 0x133c659fffffffff, 0x113c659fffffffff,
         };
         check_expected_edges(h, res, expected, ARRAY_SIZE(expected));
-    }
-
-    TEST(high_res_full) {
-        // Hex and pentagon at res 5, 8, 10 with gaps reaching res 15
-        H3Index cells[] = {
-            0x85080003fffffff,  // res 5 pentagon
-            0x8508000ffffffff,  // res 5 hexagon
-            0x8808000001fffff,  // res 8 pentagon
-            0x8808000009fffff,  // res 8 hexagon
-            0x8a0800000007fff,  // res 10 pentagon
-            0x8a0800000017fff,  // res 10 hexagon
-        };
-        for (int i = 0; i < (int)ARRAY_SIZE(cells); i++) {
-            int parentRes = H3_EXPORT(getResolution)(cells[i]);
-            for (int gap = 3; gap <= 5; gap++) {
-                int childRes = parentRes + gap;
-                if (childRes > 15) continue;
-                check_all(cells[i], childRes);
-            }
-        }
     }
 
     TEST(hex_edges_2_to_4) {

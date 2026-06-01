@@ -8,9 +8,9 @@
 #include "algos.h"
 #include "alloc.h"
 #include "area.h"
-#include "gosperIter.h"
 #include "h3Assert.h"
 #include "h3api.h"
+#include "iterators.h"
 #include "mathExtensions.h"
 
 static inline H3Error validateCellSet(const H3Index *cells,
@@ -705,7 +705,7 @@ static H3Error createArcSetGosper(const H3Index *cells, int64_t numCells,
     // doubly-linked loop in their own connected component.
     int64_t j = 0;
     for (int64_t i = 0; i < numCells; i++) {
-        IterGosper iter = iterInitGosper(cells[i], targetRes);
+        IterEdgesGosper iter = iterInitGosper(cells[i], targetRes);
         int64_t loopStart = j;
 
         while (iter.e) {
