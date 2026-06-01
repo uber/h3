@@ -24,8 +24,6 @@
 #include "coordijk.h"
 #include "h3api.h"
 #include "linkedGeo.h"
-#include "vertexGraph.h"
-
 // neighbor along the ijk coordinate system of the current face, rotated
 H3Error h3NeighborRotations(H3Index origin, Direction dir, int *rotations,
                             H3Index *out);
@@ -36,13 +34,6 @@ Direction directionForNeighbor(H3Index origin, H3Index destination);
 // k-ring implementation
 void _kRingInternal(H3Index origin, int k, H3Index *out, int *distances,
                     int maxIdx, int curK);
-
-// Create a vertex graph from a set of hexagons
-H3Error h3SetToVertexGraph(const H3Index *h3Set, const int numHexes,
-                           VertexGraph *out);
-
-// Create a LinkedGeoPolygon from a vertex graph
-void _vertexGraphToLinkedGeo(VertexGraph *graph, LinkedGeoPolygon *out);
 
 // Internal function for polygonToCells that traces a geoloop with hexagons of
 // a specific size

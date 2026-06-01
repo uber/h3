@@ -19,7 +19,6 @@
 
 #include "aflHarness.h"
 #include "algos.h"
-#include "h3api.h"
 #include "utility.h"
 
 typedef struct {
@@ -41,16 +40,6 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 
     directionForNeighbor(args->index, args->index2);
 
-    VertexGraph graph;
-    H3Index *h3Set = (H3Index *)data;
-    size_t inputSize = size / sizeof(H3Index);
-    H3Error err = h3SetToVertexGraph(h3Set, inputSize, &graph);
-    if (!err) {
-        LinkedGeoPolygon linkedGeoPolygon;
-        _vertexGraphToLinkedGeo(&graph, &linkedGeoPolygon);
-        H3_EXPORT(destroyLinkedMultiPolygon)(&linkedGeoPolygon);
-        destroyVertexGraph(&graph);
-    }
     return 0;
 }
 

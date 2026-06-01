@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 Uber Technologies, Inc.
+ * Copyright 2016-2021, 2026 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@
 #include "coordijk.h"
 #include "latLng.h"
 #include "vec2d.h"
+#include "vec3d.h"
 
 /** @struct FaceIJK
  * @brief Face number and ijk coordinates on that face-centered coordinate
@@ -46,8 +47,6 @@ typedef struct {
     int ccwRot60;  ///< number of 60 degree ccw rotations relative to primary
                    /// face
 } FaceOrientIJK;
-
-extern const LatLng faceCenterGeo[NUM_ICOSA_FACES];
 
 // indexes for faceNeighbors table
 /** IJ quadrant faceNeighbors table direction */
@@ -72,19 +71,16 @@ typedef enum {
 
 // Internal functions
 
-void _geoToFaceIjk(const LatLng *g, int res, FaceIJK *h);
-void _geoToHex2d(const LatLng *g, int res, int *face, Vec2d *v);
-void _faceIjkToGeo(const FaceIJK *h, int res, LatLng *g);
+void _vec3ToFaceIjk(Vec3d p, int res, FaceIJK *h);
+void _faceIjkToVec3(const FaceIJK *h, int res, Vec3d *g);
 void _faceIjkToCellBoundary(const FaceIJK *h, int res, int start, int length,
                             CellBoundary *g);
 void _faceIjkPentToCellBoundary(const FaceIJK *h, int res, int start,
                                 int length, CellBoundary *g);
 void _faceIjkToVerts(FaceIJK *fijk, int *res, FaceIJK *fijkVerts);
 void _faceIjkPentToVerts(FaceIJK *fijk, int *res, FaceIJK *fijkVerts);
-void _hex2dToGeo(const Vec2d *v, int face, int res, int substrate, LatLng *g);
 Overage _adjustOverageClassII(FaceIJK *fijk, int res, int pentLeading4,
                               int substrate);
 Overage _adjustPentVertOverage(FaceIJK *fijk, int res);
-void _geoToClosestFace(const LatLng *g, int *face, double *sqd);
 
 #endif

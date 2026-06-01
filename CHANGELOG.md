@@ -6,12 +6,27 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+
+## [4.5.0] - 2026-05-21
 ### Added
+- `cellsToMultiPolygon` function (#1104, #1113)
+    - Internal for now, will be added to the public API in a future release
+    - `destroyGeoMultiPolygon` function (#1104)
+    - (internal) `geoLoopArea` function (#1101)
 - `reverseDirectedEdge` function (#1098)
-- (internal) `geoLoopArea` function (#1101)
+- Bidirectional `gridPathCells` (#1111)
+- `h3.pc` pkg-config file (#1115)
 
 ### Changed
+- `cellsToLinkedMultiPolygon` now uses `cellsToMultiPolygon` internally (#1126, #1133, #1136)
+    - `cellsToLinkedMultiPolygon` (and `cellsToMultiPolygon`) now return errors for invalid cells (`E_CELL_INVALID`), mixed resolutions (`E_RES_MISMATCH`), and duplicate cells (`E_DOMAIN`) instead of producing undefined output
 - `cellAreaRads2` uses `geoLoopArea` (#1101)
+- Refactor of indexing code to use Vec3d (#1145, #1155)
+- Refactor of CoordIJK code to be inlineable (#1154)
+
+### Fixed
+- CLI handling of invalid cell input (#1125, #1124)
+- `destroyLinkedMultiPolygon` is now idempotent (safe to call twice) (#1136)
 
 ## [4.4.1] - 2025-11-11
 ### Fixed

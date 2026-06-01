@@ -165,7 +165,6 @@ set(LIB_SOURCE_FILES
     src/h3lib/include/baseCells.h
     src/h3lib/include/faceijk.h
     src/h3lib/include/vertex.h
-    src/h3lib/include/vertexGraph.h
     src/h3lib/include/mathExtensions.h
     src/h3lib/include/iterators.h
     src/h3lib/include/constants.h
@@ -176,13 +175,11 @@ set(LIB_SOURCE_FILES
     src/h3lib/include/cellsToMultiPoly.h
     src/h3lib/lib/h3Assert.c
     src/h3lib/lib/algos.c
-    src/h3lib/lib/coordijk.c
     src/h3lib/lib/bbox.c
     src/h3lib/lib/polygon.c
     src/h3lib/lib/polyfill.c
     src/h3lib/lib/h3Index.c
     src/h3lib/lib/vec2d.c
-    src/h3lib/lib/vec3d.c
     src/h3lib/lib/vertex.c
     src/h3lib/lib/linkedGeo.c
     src/h3lib/lib/localij.c
@@ -191,7 +188,6 @@ set(LIB_SOURCE_FILES
     src/h3lib/lib/gosperIter.c
     src/h3lib/lib/mathExtensions.c
     src/h3lib/lib/iterators.c
-    src/h3lib/lib/vertexGraph.c
     src/h3lib/lib/faceijk.c
     src/h3lib/lib/baseCells.c
     src/h3lib/lib/area.c
@@ -222,7 +218,6 @@ set(OTHER_SOURCE_FILES
     src/apps/filters/gridDiskUnsafe.c
     src/apps/testapps/testBaseCells.c
     src/apps/testapps/testBaseCellsInternal.c
-    src/apps/testapps/testVertexGraphInternal.c
     src/apps/testapps/testCompactCells.c
     src/apps/testapps/testPolygonToCells.c
     src/apps/testapps/testPolygonToCellsExperimental.c
@@ -252,7 +247,6 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testGridRing.c
     src/apps/testapps/testGridRingInternal.c
     src/apps/testapps/testGridRingUnsafe.c
-    src/apps/testapps/testH3SetToVertexGraphInternal.c
     src/apps/testapps/testBBoxInternal.c
     src/apps/testapps/testVertex.c
     src/apps/testapps/testVertexInternal.c
@@ -261,6 +255,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testPolyfillInternal.c
     src/apps/testapps/testVec2dInternal.c
     src/apps/testapps/testVec3dInternal.c
+    src/apps/testapps/testVec3.c
     src/apps/testapps/testDirectedEdge.c
     src/apps/testapps/testDirectedEdgeExhaustive.c
     src/apps/testapps/testLinkedGeoInternal.c
@@ -518,6 +513,9 @@ macro(add_h3_executable name)
         )
         target_compile_options(${name} PRIVATE ${H3_COMPILE_FLAGS})
         target_link_libraries(${name} PRIVATE ${H3_LINK_FLAGS})
+        if(ENABLE_COVERAGE)
+            target_compile_definitions(${name} PRIVATE H3_COVERAGE_TEST=1)
+        endif()
     endif()
 endmacro()
 

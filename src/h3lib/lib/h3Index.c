@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021, 2024 Uber Technologies, Inc.
+ * Copyright 2016-2021, 2024, 2026 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1044,8 +1044,31 @@ H3Error H3_EXPORT(latLngToCell)(const LatLng *g, int res, H3Index *out) {
         return E_LATLNG_DOMAIN;
     }
 
+    Vec3d v = latLngToVec3(*g);
+    return vec3ToCell(&v, res, out);
+}
+
+/**
+ * Encodes a coordinate on the sphere to the H3 index of the containing cell at
+ * the specified resolution.
+ *
+ * Vec3d v is expected to be on the unit sphere.
+ *
+ * @param v The 3D cartesian coordinates to encode.
+ * @param res The desired H3 resolution for the encoding.
+ * @param out The encoded H3Index.
+ * @returns E_SUCCESS on success, another value otherwise
+ */
+H3Error vec3ToCell(const Vec3d *v, int res, H3Index *out) {
+    if (res < 0 || res > MAX_H3_RES) {
+        return E_RES_DOMAIN;
+    }
+    if (!isfinite(v->x) || !isfinite(v->y) || !isfinite(v->z)) {
+        return E_DOMAIN;
+    }
+
     FaceIJK fijk;
-    _geoToFaceIjk(g, res, &fijk);
+    _vec3ToFaceIjk(*v, res, &fijk);
     *out = _faceIjkToH3(&fijk, res);
     if (ALWAYS(*out)) {
         return E_SUCCESS;
@@ -1144,18 +1167,35 @@ H3Error _h3ToFaceIjk(H3Index h, FaceIJK *fijk) {
 }
 
 /**
+ * Determines the 3D cartesian coordinates of the center of an H3 cell.
+ *
+ * @param h3 The H3 index.
+ * @param v The 3D cartesian coordinates of the H3 cell center.
+ * @return E_SUCCESS on success, or another H3Error code on failure.
+ */
+H3Error cellToVec3(H3Index h3, Vec3d *v) {
+    FaceIJK fijk;
+    H3Error e = _h3ToFaceIjk(h3, &fijk);
+    if (e) {
+        return e;
+    }
+    _faceIjkToVec3(&fijk, H3_GET_RESOLUTION(h3), v);
+    return E_SUCCESS;
+}
+
+/**
  * Determines the spherical coordinates of the center point of an H3 index.
  *
  * @param h3 The H3 index.
  * @param g The spherical coordinates of the H3 cell center.
  */
 H3Error H3_EXPORT(cellToLatLng)(H3Index h3, LatLng *g) {
-    FaceIJK fijk;
-    H3Error e = _h3ToFaceIjk(h3, &fijk);
+    Vec3d v;
+    H3Error e = cellToVec3(h3, &v);
     if (e) {
         return e;
     }
-    _faceIjkToGeo(&fijk, H3_GET_RESOLUTION(h3), g);
+    *g = vec3ToLatLng(v);
     return E_SUCCESS;
 }
 
