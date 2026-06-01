@@ -30,8 +30,8 @@
  * At delta 1 (for a hexagon), each side of the parent subdivides into 3 edges
  * at the finer resolution, giving 6 * 3 = 18 edges total. The origin cells
  * share the parent's digit path, extended by one digit into the child
- * resolution. The `walk_digit` array maps these 18 walk positions to
- * H3 digit values: the 6 non-center child digits in counter-clockwise order,
+ * resolution. The `walk_digit` array maps these WALK_CYCLE_LEN walk positions
+ * to H3 digit values: the 6 non-center child digits in counter-clockwise order,
  * each repeated 3x for the subdivision.
  *
  * ## Pentagon handling
@@ -51,7 +51,7 @@
 #include "iterators.h"
 #include "mathExtensions.h"
 
-// H3 digit at each of the 18 boundary walk positions.
+// H3 digit at each of the WALK_CYCLE_LEN boundary walk positions.
 // The 6 non-center digits {1,5,4,6,2,3} in counter-clockwise order around
 // the hexagon, each repeated 3x for the fractal subdivision at each side.
 // Note: walk_digit[i] == edge_dir[(i/3 + 1) % 6]; the same cyclic sequence
@@ -64,6 +64,8 @@ static const Direction walk_digit[] = {
     J_AXES_DIGIT,  J_AXES_DIGIT,  J_AXES_DIGIT,    // 2,2,2
     JK_AXES_DIGIT, JK_AXES_DIGIT, JK_AXES_DIGIT};  // 3,3,3
 
+#define WALK_CYCLE_LEN ((int)(sizeof(walk_digit) / sizeof(walk_digit[0])))
+
 // H3 edge direction at each edge index, in counter-clockwise order around the
 // hexagon. Stored in the directed edge's reserved bits.
 // Numeric values: {3, 1, 5, 4, 6, 2}
@@ -75,10 +77,10 @@ static const Direction edge_dir[] = {JK_AXES_DIGIT, K_AXES_DIGIT,
  * Advance the walk along origin cells on the Gosper island boundary,
  * updating the child digits.
  *
- * Each resolution level cycles through 18 walk positions (6 sides * 3
- * segments per side). Across resolutions, each step at a coarser level
- * maps to 3 steps at the next finer level. When the coarser level
- * moves to the next cell, the finer level shifts back by 6 positions.
+ * Each resolution level cycles through WALK_CYCLE_LEN walk positions (6 sides *
+ * 3 segments per side). Across resolutions, each step at a coarser level maps
+ * to 3 steps at the next finer level. When the coarser level moves to the next
+ * cell, the finer level shifts back by 6 positions.
  *
  * The point where each level moves to the next cell depends on
  * resolution parity: Class II (even r) at walkPos % 3 == 0,
@@ -100,9 +102,9 @@ static bool advanceOriginCell(int8_t *walkPos, H3Index *h, int8_t r,
     }
 
     // Advance to next position: Increase the cyclic index by one, but
-    // we use +19 == +1 (mod 18), so that it stays positive,
-    // even after potentially subtracting by 6 above.
-    walkPos[r] = (walkPos[r] + 19) % 18;
+    // we use + (WALK_CYCLE_LEN + 1) == +1 (mod WALK_CYCLE_LEN), so that it
+    // stays positive, even after potentially subtracting by 6 above.
+    walkPos[r] = (walkPos[r] + WALK_CYCLE_LEN + 1) % WALK_CYCLE_LEN;
 
     // Update the child digit
     Direction newDigit = walk_digit[walkPos[r]];
