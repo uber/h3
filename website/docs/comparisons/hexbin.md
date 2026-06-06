@@ -15,6 +15,6 @@ Hexbins are also limited by the projection system they are created on top of. Th
 
 ## Hexbin vs H3 Comparison
 
-<iframe width="100%" height="500px" src="https://studio.unfolded.ai/public/0beb2afb-9dd4-400b-90dd-f61580c582b9/embed" frameborder="0" allowfullscreen></iframe>
+<iframe width="100%" height="500px" src="https://studio.foursquare.com/public/0beb2afb-9dd4-400b-90dd-f61580c582b9/embed" frameborder="0" allowfullscreen></iframe>
 
 Hexbins on the left, H3 on the right. Data: [San Francisco Street Tree List](https://data.sfgov.org/City-Infrastructure/Street-Tree-List/tkzw-k3nq)
