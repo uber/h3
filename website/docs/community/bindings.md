@@ -80,6 +80,10 @@ As a C library, bindings can be made to call H3 functions from different program
 
 - [H3 Functions](https://docs.kinetica.com/7.1/sql/query/#h3-functions)
 
+## Nim
+
+- [ayman-albaz/nim-h3](https://github.com/ayman-albaz/nim-h3)
+
 ## OCaml
 
 - [travisbrady/ocaml-h3](https://github.com/travisbrady/ocaml-h3)
