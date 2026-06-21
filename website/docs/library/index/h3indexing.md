@@ -14,10 +14,10 @@ The H3 system assigns a unique hierarchical index to each cell. Each directed ed
 An `H3Index` is the 64-bit integer representation of an H3 index, which may be one of multiple modes to indicate the concept being indexed.
 
 * Mode 0 is reserved and indicates an [invalid H3 index](#invalid-index).
-* Mode 1 is an *[H3 Cell](../library/index/cell)* (Hexagon/Pentagon) index.
-* Mode 2 is an *[H3 Directed Edge](../library/index/directededge)* (Cell A -> Cell B) index.
+* Mode 1 is an *[H3 Cell](./cell)* (Hexagon/Pentagon) index.
+* Mode 2 is an *[H3 Directed Edge](./directededge)* (Cell A -> Cell B) index.
 * Mode 3 is planned to be a bidirectional edge (Cell A <-> Cell B).
-* Mode 4 is an *[H3 Vertex](../library/index/vertex)* (i.e. a single vertex of an H3 Cell).
+* Mode 4 is an *[H3 Vertex](./vertex)* (i.e. a single vertex of an H3 Cell).
 
 The canonical string representation of an `H3Index` is the hexadecimal representation of the integer, using lowercase letters. The string representation is variable length (no zero padding) and is not prefixed or suffixed.
 
