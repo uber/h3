@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** @file fuzzerPolygonToCellsExperimental.c
- * @brief Fuzzes the experimental polygon-to-cells implementation.
+/** @file fuzzerPolygonToCellsExperimentalGeodesic.c
+ * @brief Fuzzes the experimental polygon-to-cells implementation in geodesic
+ *        mode.
  */
 
 #include "aflHarness.h"
@@ -32,12 +33,12 @@ typedef struct {
     uint8_t buffer[1024];
 } inputArgs;
 
-const int MAX_RES = 15;
-const int MAX_SZ = 4000000;
+const int MAX_GEODESIC_RES = 4;
+const int MAX_SZ = 100000;
 const int MAX_HOLES = 100;
 
-int populateGeoLoop(GeoLoop *g, const uint8_t *data, size_t *offset,
-                    size_t size) {
+static int populateGeoLoop(GeoLoop *g, const uint8_t *data, size_t *offset,
+                           size_t size) {
     if (size < *offset + sizeof(int)) {
         return 1;
     }
@@ -52,26 +53,27 @@ int populateGeoLoop(GeoLoop *g, const uint8_t *data, size_t *offset,
     return 0;
 }
 
-void run(GeoPolygon *geoPolygon, uint32_t flags, int res) {
+static void runGeodesic(GeoPolygon *geoPolygon, uint32_t flags, int res) {
+    uint32_t geodesicFlags = flags;
+    FLAG_SET_GEODESIC(geodesicFlags);
+
     int64_t sz;
-    H3Error err = H3_EXPORT(maxPolygonToCellsSizeExperimental)(geoPolygon, res,
-                                                               flags, &sz);
+    H3Error err = H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+        geoPolygon, res, geodesicFlags, &sz);
     if (!err && sz < MAX_SZ) {
         H3Index *out = calloc(sz, sizeof(H3Index));
-        H3_EXPORT(polygonToCellsExperimental)(geoPolygon, res, flags, sz, out);
+        H3_EXPORT(polygonToCellsExperimental)
+        (geoPolygon, res, geodesicFlags, sz, out);
         free(out);
     }
 }
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
-    // TODO: It is difficult for the fuzzer to generate inputs that are
-    // considered valid by this fuzzer. fuzzerPolygonToCellsNoHoles.c
-    // is a workaround for that.
     if (size < sizeof(inputArgs)) {
         return 0;
     }
     const inputArgs *args = (const inputArgs *)data;
-    int res = args->res % (MAX_RES + 1);
+    int res = args->res % (MAX_GEODESIC_RES + 1);
 
     GeoPolygon geoPolygon;
     int originalNumHoles = args->numHoles % MAX_HOLES;
@@ -93,15 +95,23 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     }
 
     for (uint32_t flags = 0; flags < CONTAINMENT_INVALID; flags++) {
-        geoPolygon.numHoles = originalNumHoles;
-        run(&geoPolygon, flags, res);
+        bool canRunGeodesic =
+            flags == CONTAINMENT_OVERLAPPING || flags == CONTAINMENT_FULL;
+        canRunGeodesic &= geoPolygon.geoloop.numVerts <= 256;
 
-        // Don't run polygon without holes twice
+        if (!canRunGeodesic) {
+            continue;
+        }
+
+        geoPolygon.numHoles = originalNumHoles;
+        runGeodesic(&geoPolygon, flags, res);
+
         if (originalNumHoles == 0) {
             continue;
         }
+
         geoPolygon.numHoles = 0;
-        run(&geoPolygon, flags, res);
+        runGeodesic(&geoPolygon, flags, res);
     }
     free(geoPolygon.holes);
 
