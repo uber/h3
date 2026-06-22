@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Uber Technologies, Inc.
+ * Copyright 2023-2026 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,11 +41,6 @@
 // passed exhaustive tests.
 #define CHILD_SCALE_FACTOR 1.4
 
-/**
- * Max cell edge length, in radians, for each resolution. This was computed
- * by taking the max exact edge length for cells at the center of each base
- * cell at that resolution.
- */
 /** All cells that contain the north pole, by res */
 static H3Index NORTH_POLE_CELLS[MAX_H3_RES + 1] = {
     0x8001fffffffffff, 0x81033ffffffffff, 0x820327fffffffff, 0x830326fffffffff,
