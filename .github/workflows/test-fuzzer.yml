@@ -2,9 +2,9 @@ name: test-fuzzer
 
 on:
   push:
-    branches: [master, stable-*]
+    branches: [master, stable-*, geodesic_coverage_draft]
   pull_request:
-    branches: [master, stable-*]
+    branches: [master, stable-*, geodesic_coverage_draft]
 
 jobs:
   afl-tests:
