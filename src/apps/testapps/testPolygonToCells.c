@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+/** @file testPolygonToCells.c
+ * @brief Tests the legacy polygon-to-cells traversal algorithm.
+ */
+
 #include <assert.h>
 #include <math.h>
 #include <stdlib.h>

@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** @file
- * @brief Fuzzer program for polygonToCellsExperimental and related functions,
- * without holes
+/** @file fuzzerPolygonToCellsExperimentalNoHoles.c
+ * @brief Fuzzes the experimental polygon-to-cells path without holes.
  */
 
 #include "aflHarness.h"

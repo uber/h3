@@ -235,7 +235,15 @@ It produces a collection of cells that are contained within the polygon.
 
 This function differs from `polygonToCells` in that it uses an experimental
 new algorithm which supports center-based, fully-contained, and
-overlapping containment modes.
+overlapping containment modes. You can additionally request a geodesic
+traversal (great-circle edges) for very large polygons by enabling the
+geodesic flag; this mode is significantly slower than the planar
+algorithm, so prefer lower resolutions when using it for global-scale
+objects.
+
+When geodesic traversal is enabled, only `FULL` and `OVERLAPPING`
+containment modes are valid. `CENTER` and `OVERLAPPING_BBOX` are invalid in
+geodesic mode.
 
 <Tabs
   groupId="language"
@@ -270,6 +278,13 @@ The valid values for `flags` are:
 | `CONTAINMENT_OVERLAPPING` | 2 | Cell overlaps the shape at any point
 | `CONTAINMENT_OVERLAPPING_BBOX` | 3 | Cell bounding box overlaps shape
 
+To cover polygons along geodesic edges, set the geodesic bit with
+`FLAG_SET_GEODESIC(flags)` (equivalent to OR-ing with `FLAG_GEODESIC_MASK`).
+Geodesic coverage is intended for huge polygons and is substantially
+slower; reduce the target resolution when using it.
+Only `CONTAINMENT_FULL` and `CONTAINMENT_OVERLAPPING` are valid when the
+geodesic bit is enabled.
+
 Returns 0 (`E_SUCCESS`) on success.
 
 </TabItem>
@@ -288,6 +303,10 @@ The valid values for `flags` are:
 | `PolygonToCellsFlags.containment_full` | Cell is fully contained in the shape
 | `PolygonToCellsFlags.containment_overlapping` | Cell overlaps the shape at any point
 | `PolygonToCellsFlags.containment_overlapping_bbox` | Cell bounding box overlaps shape
+
+When geodesic mode is enabled in Java, only
+`PolygonToCellsFlags.containment_full` and
+`PolygonToCellsFlags.containment_overlapping` are valid.
 
 </TabItem>
 <TabItem value="javascript">
@@ -317,6 +336,10 @@ The valid values for `flags` are:
 | `POLYGON_TO_CELLS_FLAGS.containment_overlapping` | Cell overlaps the shape at any point
 | `POLYGON_TO_CELLS_FLAGS.containment_overlapping_bbox` | Cell bounding box overlaps shape
 
+When geodesic mode is enabled in JavaScript, only
+`POLYGON_TO_CELLS_FLAGS.containment_full` and
+`POLYGON_TO_CELLS_FLAGS.containment_overlapping` are valid.
+
 </TabItem>
 <TabItem value="python">
 
@@ -337,6 +360,8 @@ The valid values for `contain` are:
 | `overlap` | Cell overlaps the shape at any point
 | `bbox_overlap` | Cell bounding box overlaps shape
 
+When geodesic mode is enabled in Python, only `full` and `overlap` are valid.
+
 </TabItem>
 <TabItem value="go">
 
@@ -352,6 +377,9 @@ The valid values for `containmentMode` are:
 | `h3.ContainmentFull` | Cell is fully contained in the shape
 | `h3.ContainmentOverlapping` | Cell overlaps the shape at any point
 | `h3.ContainmentOverlappingBbox` | Cell bounding box overlaps shape
+
+When geodesic mode is enabled in Go, only `h3.ContainmentFull` and
+`h3.ContainmentOverlapping` are valid.
 
 </TabItem>
 <TabItem value="duckdb">
@@ -377,6 +405,8 @@ The valid values for the third `contain` argument are:
 | `full` | Cell is fully contained in the shape
 | `overlap` | Cell overlaps the shape at any point
 | `bbox_overlap` | Cell bounding box overlaps shape
+
+When geodesic mode is enabled in DuckDB, only `full` and `overlap` are valid.
 
 </TabItem>
 <TabItem value="shell">
@@ -661,5 +691,3 @@ This function exists for memory management and is not exposed.
 
 </TabItem>
 </Tabs>
-
-
