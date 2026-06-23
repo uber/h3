@@ -241,8 +241,8 @@ geodesic flag; this mode is significantly slower than the planar
 algorithm, so prefer lower resolutions when using it for global-scale
 objects.
 
-When geodesic traversal is enabled, only `FULL` and `OVERLAPPING`
-containment modes are valid. `CENTER` and `OVERLAPPING_BBOX` are invalid in
+When geodesic traversal is enabled, only `CENTER`, `FULL`, and
+`OVERLAPPING` containment modes are valid. `OVERLAPPING_BBOX` is invalid in
 geodesic mode.
 
 <Tabs
@@ -305,7 +305,8 @@ The valid values for `flags` are:
 | `PolygonToCellsFlags.containment_overlapping_bbox` | Cell bounding box overlaps shape
 
 When geodesic mode is enabled in Java, only
-`PolygonToCellsFlags.containment_full` and
+`PolygonToCellsFlags.containment_center`,
+`PolygonToCellsFlags.containment_full`, and
 `PolygonToCellsFlags.containment_overlapping` are valid.
 
 </TabItem>
@@ -337,7 +338,8 @@ The valid values for `flags` are:
 | `POLYGON_TO_CELLS_FLAGS.containment_overlapping_bbox` | Cell bounding box overlaps shape
 
 When geodesic mode is enabled in JavaScript, only
-`POLYGON_TO_CELLS_FLAGS.containment_full` and
+`POLYGON_TO_CELLS_FLAGS.containment_center`,
+`POLYGON_TO_CELLS_FLAGS.containment_full`, and
 `POLYGON_TO_CELLS_FLAGS.containment_overlapping` are valid.
 
 </TabItem>
@@ -360,7 +362,7 @@ The valid values for `contain` are:
 | `overlap` | Cell overlaps the shape at any point
 | `bbox_overlap` | Cell bounding box overlaps shape
 
-When geodesic mode is enabled in Python, only `full` and `overlap` are valid.
+When geodesic mode is enabled in Python, only `center`, `full`, and `overlap` are valid.
 
 </TabItem>
 <TabItem value="go">
@@ -378,8 +380,8 @@ The valid values for `containmentMode` are:
 | `h3.ContainmentOverlapping` | Cell overlaps the shape at any point
 | `h3.ContainmentOverlappingBbox` | Cell bounding box overlaps shape
 
-When geodesic mode is enabled in Go, only `h3.ContainmentFull` and
-`h3.ContainmentOverlapping` are valid.
+When geodesic mode is enabled in Go, only `h3.ContainmentCenter`,
+`h3.ContainmentFull`, and `h3.ContainmentOverlapping` are valid.
 
 </TabItem>
 <TabItem value="duckdb">
@@ -406,7 +408,7 @@ The valid values for the third `contain` argument are:
 | `overlap` | Cell overlaps the shape at any point
 | `bbox_overlap` | Cell bounding box overlaps shape
 
-When geodesic mode is enabled in DuckDB, only `full` and `overlap` are valid.
+When geodesic mode is enabled in DuckDB, only `center`, `full`, and `overlap` are valid.
 
 </TabItem>
 <TabItem value="shell">
