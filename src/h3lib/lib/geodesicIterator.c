@@ -131,14 +131,37 @@ void geodesicIteratorStep(IterCellsPolygonCompact *iter, H3Index cell) {
             geodesicPolygonBoundaryIntersects(poly, &boundary, &cap);
 
         if (mode == CONTAINMENT_FULL) {
-            // Center is inside (guaranteed above). Fully inside only if
-            // boundaries do not intersect
-            if (!boundaryIntersection) {
-                iter->cell = cell;
-                return;
+            // A cell is fully contained only when all of the following hold
+            //   1. the cell boundary does not cross the polygon boundary
+            //      (outer loop or any hole),
+            //   2. a cell boundary vertex lies inside the filled polygon, and
+            //   3. no hole lies entirely inside the cell.
+            if (boundaryIntersection) {
+                cell = nextCell(cell);
+                continue;
             }
-            cell = nextCell(cell);
-            continue;
+            if (!geodesicPolygonContainsPoint(poly, &boundary.verts[0])) {
+                cell = nextCell(cell);
+                continue;
+            }
+            // A hole whose first vertex lands in this cell lies inside it
+            bool holeInsideCell = false;
+            for (int hi = 0; hi < poly->numHoles; hi++) {
+                H3Index holeCell;
+                H3_CHECK(vec3ToCell(&poly->holes[hi].edges[0].vert, cellRes,
+                                    &holeCell),
+                         iter);
+                if (holeCell == cell) {
+                    holeInsideCell = true;
+                    break;
+                }
+            }
+            if (holeInsideCell) {
+                cell = nextCell(cell);
+                continue;
+            }
+            iter->cell = cell;
+            return;
         }
 
         // OVERLAPPING and center outside - match if we intersect

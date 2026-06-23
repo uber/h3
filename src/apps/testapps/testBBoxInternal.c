@@ -51,6 +51,13 @@ void assertBBox(const BBox *bbox, const BBox *expected) {
     t_assert(geoAlmostEqual(&actualSW, &expectedSW), "SW corner matches");
 }
 
+bool aabbContainsVec3dWithTolerance(const AABB *box, const Vec3d *v) {
+    const double tol = 1e-12;
+    return v->x >= box->min.x - tol && v->x <= box->max.x + tol &&
+           v->y >= box->min.y - tol && v->y <= box->max.y + tol &&
+           v->z >= box->min.z - tol && v->z <= box->max.z + tol;
+}
+
 SUITE(BBox) {
     TEST(posLatPosLng) {
         LatLng verts[] = {{0.8, 0.3}, {0.7, 0.6}, {1.1, 0.7}, {1.0, 0.2}};
@@ -496,5 +503,36 @@ SUITE(BBox) {
         aabbUpdateWithArcExtrema(&box, &v1, &v2, &normal);
         t_assert(box.min.y < minYBefore,
                  "Arc extrema expands bounding box for intermediate point");
+    }
+
+    TEST(aabbArcExtremaBoundsTiltedArc) {
+        Vec3d normal = {1.0, 1.0, 1.0};
+        vec3Normalize(&normal);
+
+        Vec3d basis1 = {1.0, -1.0, 0.0};
+        vec3Normalize(&basis1);
+        Vec3d basis2 = vec3Cross(normal, basis1);
+        vec3Normalize(&basis2);
+
+        const double start = -1.25;
+        const double end = 1.25;
+        Vec3d v1 = vec3LinComb(cos(start), basis1, sin(start), basis2);
+        Vec3d v2 = vec3LinComb(cos(end), basis1, sin(end), basis2);
+        Vec3d edgeCross = vec3Cross(v1, v2);
+
+        AABB box;
+        aabbEmptyInverted(&box);
+        aabbUpdateWithVec3d(&box, &v1);
+        aabbUpdateWithVec3d(&box, &v2);
+        aabbUpdateWithArcExtrema(&box, &v1, &v2, &edgeCross);
+
+        for (int i = 0; i <= 128; i++) {
+            double t = (double)i / 128.0;
+            double angle = start + (end - start) * t;
+            Vec3d sample = vec3LinComb(cos(angle), basis1, sin(angle), basis2);
+
+            t_assert(aabbContainsVec3dWithTolerance(&box, &sample),
+                     "Arc extrema AABB contains sampled great-circle point");
+        }
     }
 }

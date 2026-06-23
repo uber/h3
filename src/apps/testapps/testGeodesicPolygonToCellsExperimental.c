@@ -240,6 +240,14 @@ static int64_t _geodesicFillSorted(const GeoPolygon *polygon, int res,
     return n;
 }
 
+// Whether `target` appears in a cell array.
+static bool _containsCell(const H3Index *cells, int64_t n, H3Index target) {
+    for (int64_t i = 0; i < n; i++) {
+        if (cells[i] == target) return true;
+    }
+    return false;
+}
+
 SUITE(geodesicPolygonToCellsExperimental) {
     sfGeoPolygon.geoloop = sfGeoLoop;
     sfGeoPolygon.numHoles = 0;
@@ -592,5 +600,73 @@ SUITE(geodesicPolygonToCellsExperimental) {
                                    CONTAINMENT_OVERLAPPING, &size, NULL);
         t_assert(err == E_DOMAIN,
                  "all-vertices-on-great-circle loop is rejected");
+    }
+
+    // Regression: A polygon far smaller than a cell contains that cell's center
+    TEST(geodesicFullRejectsPolygonSmallerThanCell) {
+        const int res = 5;
+        LatLng seed = {H3_EXPORT(degsToRads)(37.5),
+                       H3_EXPORT(degsToRads)(-122.0)};
+        H3Index cell;
+        t_assertSuccess(H3_EXPORT(latLngToCell)(&seed, res, &cell));
+
+        LatLng center;
+        t_assertSuccess(H3_EXPORT(cellToLatLng)(cell, &center));
+
+        // Tiny triangle centered on the cell center, well inside the cell
+        const double d = 0.0002;  // radians, ~1.3 km
+        LatLng triVerts[] = {{center.lat + d, center.lng},
+                             {center.lat - d, center.lng + d},
+                             {center.lat - d, center.lng - d}};
+        GeoLoop triLoop = {.numVerts = 3, .verts = triVerts};
+        GeoPolygon triPolygon = {.geoloop = triLoop, .numHoles = 0};
+
+        int64_t overlapCount =
+            geodesicFillCount(&triPolygon, res, CONTAINMENT_OVERLAPPING);
+        t_assert(overlapCount >= 1, "tiny polygon overlaps its enclosing cell");
+
+        int64_t fullCount =
+            geodesicFillCount(&triPolygon, res, CONTAINMENT_FULL);
+        t_assert(fullCount == 0,
+                 "a polygon smaller than a cell fully contains no cell");
+    }
+
+    // Regression: A small hole that does not contain the cell center
+    TEST(geodesicFullRespectsHoleInsideCell) {
+        const int res = 5;
+        LatLng seed = {H3_EXPORT(degsToRads)(37.5),
+                       H3_EXPORT(degsToRads)(-117.5)};
+        H3Index cell;
+        t_assertSuccess(H3_EXPORT(latLngToCell)(&seed, res, &cell));
+
+        LatLng center;
+        t_assertSuccess(H3_EXPORT(cellToLatLng)(cell, &center));
+
+        // A tiny hole offsetnorth of the cell center: entirely inside
+        // the cell, but not covering the center, and crossing no cell edge.
+        const double off = 0.0005;
+        const double hr = 0.0001;
+        LatLng holeVerts2[] = {{center.lat + off + hr, center.lng},
+                               {center.lat + off - hr, center.lng + hr},
+                               {center.lat + off - hr, center.lng - hr}};
+        GeoLoop tinyHole = {.numVerts = 3, .verts = holeVerts2};
+        GeoPolygon holed = {
+            .geoloop = sfGeoLoop, .numHoles = 1, .holes = &tinyHole};
+
+        H3Index *noHole = NULL;
+        H3Index *withHole = NULL;
+        int64_t nNo =
+            _geodesicFillSorted(&sfGeoPolygon, res, CONTAINMENT_FULL, &noHole);
+        int64_t nWith =
+            _geodesicFillSorted(&holed, res, CONTAINMENT_FULL, &withHole);
+        t_assert(nNo > 0 && nWith >= 0, "geodesic fills succeeded");
+
+        t_assert(_containsCell(noHole, nNo, cell),
+                 "cell is fully contained when there is no hole");
+        t_assert(!_containsCell(withHole, nWith, cell),
+                 "cell is not fully contained once a hole sits inside it");
+
+        free(noHole);
+        free(withHole);
     }
 }

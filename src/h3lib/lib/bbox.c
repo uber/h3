@@ -356,10 +356,11 @@ void aabbUpdateWithArcExtrema(AABB *aabb, const Vec3d *v1, const Vec3d *v2,
     for (int i = 0; i < 3; ++i) {
         const Vec3d *axis = &UNIT_AXES[i];
 
-        // Find the vector in the great circle plane that is perpendicular
-        // to the current Cartesian axis. This vector points to a potential
-        // extremum.
-        Vec3d extremum_dir = vec3Cross(*axis, normal);
+        // Project the current Cartesian axis onto the great-circle plane. The
+        // projected direction and its opposite are where that coordinate is
+        // extremized on the circle.
+        Vec3d axisCrossNormal = vec3Cross(*axis, normal);
+        Vec3d extremum_dir = vec3Cross(normal, axisCrossNormal);
         double extremum_mag_sq = vec3Dot(extremum_dir, extremum_dir);
 
         // If the axis is nearly aligned with the normal, there's no unique
