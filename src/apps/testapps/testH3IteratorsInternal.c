@@ -126,4 +126,15 @@ SUITE(h3IteratorsInternal) {
         test_ordered(2);
         test_ordered(3);
     }
+
+    TEST(iterator_cell_pent_skipped) {
+        IterCellsChildren iter = iterInitBaseCellNum(4, 1);
+        setH3Index(&iter.h, 1, 4, 2);
+        H3Index expected;
+        setH3Index(&expected, 1, 4, 2);
+        iterStepChild(&iter);
+        t_assert(
+            iter.h == expected,
+            "iterator returns a valid cell after h is set to a modified value");
+    }
 }

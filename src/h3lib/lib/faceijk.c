@@ -473,7 +473,12 @@ static void _hex2dToVec3(const Vec2d *v, int face, int res, int substrate,
     // scale accordingly if this is a substrate grid
     if (substrate) {
         r *= M_ONETHIRD;
-        if (isResolutionClassIII(res)) r *= M_RSQRT7;
+        // Never occurs because every case where this function is called with
+        // substrate=1, the res has been adjusted by _faceIjkPentToVerts, which
+        // adjusts the res by +1, making it no longer Class III.
+        if (NEVER(isResolutionClassIII(res))) {
+            r *= M_RSQRT7;
+        }
     }
 
     r *= RES0_U_GNOMONIC;
