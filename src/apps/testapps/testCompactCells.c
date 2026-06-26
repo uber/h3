@@ -441,6 +441,19 @@ SUITE(compactCells) {
         t_assertSuccess(H3_EXPORT(compactCells)(bad, output, numHex));
     }
 
+    TEST(compactCells_parentError3) {
+        const int numHex = 3;
+        H3Index bad[] = {0x81283ffffffffff, 0, 0};
+        H3Index output[] = {0, 0, 0};
+
+        t_assertSuccess(H3_EXPORT(compactCells)(bad, output, numHex));
+        t_assert(output[0] == 0x81283ffffffffff,
+                 "output contains expected cell");
+        for (int i = 1; i < numHex; i++) {
+            t_assert(output[i] == 0, "output contains nulls");
+        }
+    }
+
     TEST(uncompactCells_wrongRes) {
         int numHex = 3;
         H3Index someHexagons[] = {0, 0, 0};
