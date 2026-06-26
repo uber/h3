@@ -131,7 +131,7 @@ SUITE(h3IteratorsInternal) {
         IterCellsChildren iter = iterInitBaseCellNum(4, 1);
         setH3Index(&iter.h, 1, 4, 2);
         H3Index expected;
-        setH3Index(&expected, 1, 4, 2);
+        setH3Index(&expected, 1, 4, 3);
         iterStepChild(&iter);
         t_assert(
             iter.h == expected,
