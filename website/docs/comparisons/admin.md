@@ -21,7 +21,7 @@ The varying size of partitions means the center of a partition may be unrelated 
 
 ## ZIP Codes vs H3 comparison
 
-<iframe width="100%" height="500px" src="https://studio.unfolded.ai/public/72504bc0-184e-4ba0-b10b-72fdf61e2c33/embed" frameborder="0" allowfullscreen></iframe>
+<iframe width="100%" height="500px" src="https://studio.foursquare.com/public/72504bc0-184e-4ba0-b10b-72fdf61e2c33/embed" frameborder="0" allowfullscreen></iframe>
 
 ZIP Codes on the left, H3 on the right. Data: [New York City 2015 Street Tree Census](https://data.cityofnewyork.us/Environment/2015-Street-Tree-Census-Tree-Data/uvpi-gqnh)
 

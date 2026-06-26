@@ -19,6 +19,6 @@ H3 cell indexes are designed to be 64 bit integers, which can be rendered and tr
 
 ## Geohash vs H3 Comparison
 
-<iframe width="100%" height="500px" src="https://studio.unfolded.ai/public/009a4f1e-2b74-4c0f-a156-95051c6583f3/embed" frameborder="0" allowfullscreen></iframe>
+<iframe width="100%" height="500px" src="https://studio.foursquare.com/public/009a4f1e-2b74-4c0f-a156-95051c6583f3/embed" frameborder="0" allowfullscreen></iframe>
 
 Geohash on the left, H3 on the right. Data: [San Francisco Street Tree List](https://data.sfgov.org/City-Infrastructure/Street-Tree-List/tkzw-k3nq)

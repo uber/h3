@@ -27,7 +27,7 @@ Mode 0 contains a special index, `H3_NULL`, which is unique: it is bit-equivalen
 This index indicates, *specifically*, an invalid, missing, or uninitialized H3 index;
 it is analogous to `NaN` in floating point.
 It should be used instead of an arbitrary Mode 0 index, due to its uniqueness and easy identifiability.
-A mode 0 index could also indicate an [error code](../library/errors) has been provided instead of a valid H3 index.
+A mode 0 index could also indicate an [error code](../errors.md) has been provided instead of a valid H3 index.
 
 ## Bit layout of H3Index
 
