@@ -1,5 +1,5 @@
-const math = require('remark-math');
-const katex = require('rehype-katex');
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 
 /** @type {import('@docusaurus/types').DocusaurusConfig} */
 module.exports = {
@@ -8,7 +8,13 @@ module.exports = {
   url: 'https://h3geo.org',
   baseUrl: '/',
   onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
+  onBrokenAnchors: 'throw',
+  markdown: {
+    hooks: {
+      onBrokenMarkdownLinks: 'throw',
+    },
+  },
+  onDuplicateRoutes: 'throw',
   favicon: 'favicon.ico',
   organizationName: 'uber', // Usually your GitHub org/user name.
   projectName: 'h3', // Usually your repo name.
@@ -105,7 +111,7 @@ module.exports = {
             },
             {
               label: 'More bindings',
-              href: 'docs/community/bindings',
+              to: 'docs/community/bindings',
             },
           ],
         },
@@ -127,8 +133,8 @@ module.exports = {
       '@docusaurus/preset-classic',
       {
         docs: {
-          remarkPlugins: [math],
-          rehypePlugins: [katex],
+          remarkPlugins: [remarkMath],
+          rehypePlugins: [rehypeKatex],
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl: ({docPath}) => {
             // Per docusaurus, apply changes to the "next" version, not the current one
