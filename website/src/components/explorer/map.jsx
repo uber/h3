@@ -29,7 +29,8 @@ const INITIAL_VIEW_STATE = {
   minZoom: 0,
 };
 
-const MAP_STYLE = "mapbox://styles/mapbox/light-v11";
+const LIGHT_MAP_STYLE = "mapbox://styles/mapbox/light-v11";
+const DARK_MAP_STYLE = "mapbox://styles/mapbox/dark-v11";
 
 /**
  *
@@ -38,7 +39,6 @@ const MAP_STYLE = "mapbox://styles/mapbox/light-v11";
  * @param {object | null} opts.inputGeoJson
  * @param {boolean} opts.userValidHex
  * @param {Object} [opts.initialViewState]
- * @param {string} [opts.mapStyle]
  * @param {({ hex: string }) => void | undefined} [opts.objectOnClick]
  * @param {({ coordinate: [number, number], zoom: number, resolution: number }) => void | undefined} [opts.coordinateOnClick]
  * @param {string[] | undefined} [opts.previewCells]
@@ -50,7 +50,6 @@ export function ExplorerMap(opts) {
     inputGeoJson = null,
     userValidHex = false,
     initialViewState = INITIAL_VIEW_STATE,
-    mapStyle = MAP_STYLE,
     objectOnClick = undefined,
     coordinateOnClick = undefined,
     previewCells = undefined,
@@ -148,8 +147,9 @@ export function ExplorerMap(opts) {
         new GeoJsonLayer({
           id: "userinput",
           data: inputGeoJson,
-          getFillColor: [0, 0, 0],
-          getLineColor: [100, 100, 100],
+          getFillColor: colorMode === "dark" ? [250, 250, 250] : [0, 0, 0],
+          getLineColor:
+            colorMode === "dark" ? [220, 220, 220] : [100, 100, 100],
           getLineWidth: 1,
           lineWidthMinPixels: 1,
           lineWidthUnits: "pixels",
@@ -173,7 +173,8 @@ export function ExplorerMap(opts) {
           extruded: false,
           filled: false,
           stroked: true,
-          getLineColor: [120, 120, 120],
+          getLineColor:
+            colorMode === "dark" ? [140, 140, 140] : [120, 120, 120],
           getLineWidth: 2,
           lineWidthUnits: "pixels",
           lineWidthMinPixels: 1,
@@ -198,14 +199,15 @@ export function ExplorerMap(opts) {
           extruded: false,
           filled: false,
           stroked: true,
-          getLineColor: [0, 0, 0],
+          getLineColor: colorMode === "dark" ? [255, 255, 255] : [0, 0, 0],
           getLineWidth: 2,
           lineWidthUnits: "pixels",
           lineWidthMinPixels: 2,
           highPrecision: true,
           pickable: true,
           filled: true,
-          getFillColor: [0, 0, 0, 30],
+          getFillColor:
+            colorMode === "dark" ? [255, 255, 255, 30] : [0, 0, 0, 30],
         }),
         ...inputPreviewLayers,
         ...inputGeoJsonLayers,
@@ -284,7 +286,7 @@ export function ExplorerMap(opts) {
         interactive={false}
         projection={"mercator"}
         mapboxAccessToken={context.siteConfig.customFields.mapboxAccessToken}
-        mapStyle={mapStyle}
+        mapStyle={colorMode === "dark" ? DARK_MAP_STYLE : LIGHT_MAP_STYLE}
       />
     </DeckGL>
   );
