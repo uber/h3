@@ -30,22 +30,22 @@
 SUITE(polygonToCells_reported) {
     // fuzzer crash due to inconsistent handling of CONTAINMENT_OVERLAPPING
     TEST(fuzzer_crash) {
-        uint8_t data[] = {
-            0xff, 0xff, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,  0x0,
-            0x0,  0x0,  0x0, 0x0, 0x0, 0x0, 0x0, 0xa, 0x0, 0x0,  0xff,
-            0xff, 0x0,  0x0, 0x0, 0xa, 0xa, 0xa, 0xa, 0xa, 0xff,
+        // The vertices below are the exact doubles that the original fuzzer
+        // input (a raw byte buffer reinterpreted as LatLng) decoded to on a
+        // little-endian host. Spelling them out as hex-float literals makes
+        // the test decode identical values on every architecture regardless
+        // of byte order, instead of reinterpreting raw bytes (see #964).
+        LatLng verts[] = {
+            {0x0.000000000ffffp-1022, 0x0p+0},
+            {0x1.fff00000ap-1008, -0x1.a0a0a0a0ap+1009},
         };
 
         uint8_t res = 0;
-        size_t vertsSize = sizeof(data);
-        int numVerts = vertsSize / sizeof(LatLng);
-
         GeoPolygon geoPolygon;
         geoPolygon.numHoles = 0;
         geoPolygon.holes = NULL;
-        geoPolygon.geoloop.numVerts = numVerts;
-        // Offset by 1 since *data was used for `res`, above.
-        geoPolygon.geoloop.verts = (LatLng *)(data);
+        geoPolygon.geoloop.numVerts = 2;
+        geoPolygon.geoloop.verts = verts;
 
         uint32_t flags = CONTAINMENT_OVERLAPPING;
         int64_t sz;

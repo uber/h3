@@ -6,6 +6,8 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+### Fixed
+- Fixed the `polygonToCells` fuzzer regression test to use explicit double literals instead of reinterpreting raw bytes, so it is portable across endianness (#964)
 
 ## [4.5.0] - 2026-05-21
 ### Added
