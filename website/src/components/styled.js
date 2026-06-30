@@ -10,13 +10,13 @@ export const DemoContainer = styled.div`
   .deck-tooltip {
     position: absolute;
     padding: 4px 12px;
-    background: rgba(0, 0, 0, 0.8);
-    color: var(--ifm-color-white);
+    border-radius: 4px;
     max-width: 300px;
     font-size: 12px;
     z-index: 9;
     pointer-events: none;
     white-space: nowrap;
+    cursor: pointer;
   }
 `;
 
@@ -50,9 +50,12 @@ export const BannerContainer = styled(Container)`
   z-index: 0;
   width: auto;
   max-width: 20em;
-  background-color: white;
+  background-color: ${({ colorMode }) =>
+    colorMode === "dark" ? "black" : "white"};
+  color: ${({ colorMode }) => (colorMode === "dark" ? "white" : "black")};
   border-radius: 20px;
   padding: 1rem;
+  font-size: 12px;
 `;
 
 export const HeroExampleContainer = styled.div`

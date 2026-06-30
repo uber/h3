@@ -1,6 +1,6 @@
 // Contains code adapted from https://observablehq.com/@nrabinowitz/h3-index-inspector under the ISC license
 
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import {
   cellToBoundary,
   cellToParent,
@@ -62,27 +62,68 @@ function cellUnits(hex) {
     : { area: UNITS.m2, dist: UNITS.m };
 }
 
-function ClickableH3Index({ hex, setUserInput }) {
+function ClickableH3Index({ hex, setUserInput, onHoverCells }) {
   const onClick = useCallback(() => {
     setUserInput(hex);
-  }, [hex, setUserInput]);
+    if (onHoverCells) {
+      onHoverCells([]);
+    }
+  }, [hex, setUserInput, onHoverCells]);
+
+  const onMouseEnter = useCallback(() => {
+    if (onHoverCells) {
+      onHoverCells([hex]);
+    }
+  }, [onHoverCells]);
+  const onMouseLeave = useCallback(() => {
+    if (onHoverCells) {
+      onHoverCells([]);
+    }
+  }, [onHoverCells]);
 
   return (
-    <a onClick={onClick} style={{ cursor: "pointer" }}>
+    <a
+      onClick={onClick}
+      style={{ cursor: "pointer" }}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
       {hex}
     </a>
   );
 }
 
-function ClickableH3IndexList({ hexes, setUserInput, showAll = true }) {
+function ClickableH3IndexList({
+  hexes,
+  setUserInput,
+  showAll = true,
+  onHoverCells,
+}) {
   const onShowAllClick = useCallback(() => {
     setUserInput(hexes.join(", "));
   }, [hexes, setUserInput]);
+
+  const showAllOnMouseEnter = useCallback(() => {
+    if (onHoverCells) {
+      onHoverCells(hexes);
+    }
+  }, [onHoverCells]);
+  const showAllOnMouseLeave = useCallback(() => {
+    if (onHoverCells) {
+      onHoverCells([]);
+    }
+  }, [onHoverCells]);
+
   return (
     <>
       {hexes.map((hex, index) => {
         const link = (
-          <ClickableH3Index key={hex} setUserInput={setUserInput} hex={hex} />
+          <ClickableH3Index
+            key={hex}
+            setUserInput={setUserInput}
+            hex={hex}
+            onHoverCells={onHoverCells}
+          />
         );
         if (index === 0) {
           return link;
@@ -93,7 +134,12 @@ function ClickableH3IndexList({ hexes, setUserInput, showAll = true }) {
       {showAll ? (
         <>
           &nbsp;
-          <a onClick={onShowAllClick} style={{ cursor: "pointer" }}>
+          <a
+            onClick={onShowAllClick}
+            style={{ cursor: "pointer" }}
+            onMouseEnter={showAllOnMouseEnter}
+            onMouseLeave={showAllOnMouseLeave}
+          >
             (show all)
           </a>
         </>
@@ -110,6 +156,7 @@ export function SelectedHexDetails({
   splitUserInput,
   showNavigation = true,
   showDetails = true,
+  onHoverCells,
 }) {
   if (splitUserInput.length === 1) {
     const hex = splitUserInput[0];
@@ -141,7 +188,6 @@ export function SelectedHexDetails({
 
     return (
       <p style={{ marginBottom: "0" }}>
-        Lat./Lng.: <tt>{coords}</tt>
         {showCellId ? (
           <>
             <br />
@@ -149,11 +195,15 @@ export function SelectedHexDetails({
           </>
         ) : null}
         {showNavigation ? (
-          <>
-            <br />
+          <details>
+            <summary>Relations</summary>
             Parent:{" "}
             {parent ? (
-              <ClickableH3Index hex={parent} setUserInput={setUserInput} />
+              <ClickableH3Index
+                hex={parent}
+                setUserInput={setUserInput}
+                onHoverCells={onHoverCells}
+              />
             ) : (
               <tt>(none)</tt>
             )}
@@ -163,6 +213,7 @@ export function SelectedHexDetails({
               <ClickableH3IndexList
                 hexes={children}
                 setUserInput={setUserInput}
+                onHoverCells={onHoverCells}
               />
             ) : (
               <tt>(none)</tt>
@@ -172,15 +223,18 @@ export function SelectedHexDetails({
             <ClickableH3IndexList
               hexes={neighbors}
               setUserInput={setUserInput}
+              onHoverCells={onHoverCells}
             />
             <br />
-          </>
+          </details>
         ) : (
           <></>
         )}
         {showDetails ? (
           <details>
             <summary>Details</summary>
+            Lat./Lng.: <tt>{coords}</tt>
+            <br />
             Resolution: <tt>{res}</tt>
             <br />
             Base cell: <tt>{baseCell}</tt>
@@ -208,6 +262,7 @@ export function SelectedHexDetails({
           hexes={splitUserInput}
           setUserInput={setUserInput}
           showAll={false}
+          onHoverCells={onHoverCells}
         />
       </p>
     );

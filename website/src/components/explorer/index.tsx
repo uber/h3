@@ -1,6 +1,6 @@
 // Contains code adapted from https://observablehq.com/@nrabinowitz/h3-index-inspector under the ISC license
 
-import React, { useCallback, useMemo, ReactNode } from "react";
+import React, { useCallback, useMemo, ReactNode, useState } from "react";
 import { isValidCell, latLngToCell, getResolution } from "h3-js";
 import {
   Banner,
@@ -15,6 +15,7 @@ import { WhereAmIButton } from "./where-am-i";
 import geojson2h3 from "geojson2h3";
 import wkt from "wkt";
 import { Feature, MultiPolygon, Polygon } from "geojson";
+import { useColorMode } from "@docusaurus/theme-common";
 
 const CELL_COUNT_THRESHOLD = 50;
 const CELL_COUNT_UPPER_THRESHOLD = 5000;
@@ -217,6 +218,8 @@ function zoomToResolution(zoom: number) {
 export default function HomeExporer({ children }: { children: ReactNode }) {
   const [userInput, setUserInput] = useQueryState("hex", "");
   const [userResolution, setUserResolution] = useQueryState<number>("res", -1);
+  const [previewCells, setPreviewCells] = useState<string[]>([]);
+  const { colorMode } = useColorMode();
 
   const { splitUserInput, showCellId, inputGeoJson, showResolutionInput } =
     useMemo(
@@ -285,10 +288,11 @@ export default function HomeExporer({ children }: { children: ReactNode }) {
               userValidHex={userValidHex}
               objectOnClick={objectOnClick}
               coordinateOnClick={coordinateOnClick}
+              previewCells={previewCells}
             />
           </DemoContainer>
         </HeroExampleContainer>
-        <BannerContainer>
+        <BannerContainer colorMode={colorMode}>
           <textarea
             value={userInput}
             onChange={(e) => {
@@ -309,8 +313,9 @@ export default function HomeExporer({ children }: { children: ReactNode }) {
               splitUserInput={splitUserInput}
               showCellId={showCellId}
               setUserInput={setUserInput}
-              showNavigation={false}
+              showNavigation={true}
               showDetails={true}
+              onHoverCells={setPreviewCells}
             />
           ) : null}
           {showResolutionInput !== null ? (
