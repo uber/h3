@@ -16,7 +16,6 @@ export const DemoContainer = styled.div`
     z-index: 9;
     pointer-events: none;
     white-space: nowrap;
-    cursor: pointer;
   }
 `;
 
