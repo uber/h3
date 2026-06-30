@@ -74,7 +74,7 @@ function ClickableH3Index({ hex, setUserInput, onHoverCells }) {
     if (onHoverCells) {
       onHoverCells([hex]);
     }
-  }, [onHoverCells]);
+  }, [hex, onHoverCells]);
   const onMouseLeave = useCallback(() => {
     if (onHoverCells) {
       onHoverCells([]);
@@ -107,7 +107,7 @@ function ClickableH3IndexList({
     if (onHoverCells) {
       onHoverCells(hexes);
     }
-  }, [onHoverCells]);
+  }, [hexes, onHoverCells]);
   const showAllOnMouseLeave = useCallback(() => {
     if (onHoverCells) {
       onHoverCells([]);
