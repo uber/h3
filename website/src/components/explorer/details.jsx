@@ -1,6 +1,6 @@
 // Contains code adapted from https://observablehq.com/@nrabinowitz/h3-index-inspector under the ISC license
 
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback } from "react";
 import {
   cellToBoundary,
   cellToParent,
