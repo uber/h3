@@ -249,7 +249,7 @@ export function ExplorerMap(opts) {
         if (objectOnClick) {
           objectOnClick({ hex: object.hex });
         }
-      } else if (object && object instanceof string) {
+      } else if (object && typeof object === "string") {
         if (objectOnClick) {
           objectOnClick({ hex: object });
         }
