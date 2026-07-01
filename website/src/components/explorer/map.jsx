@@ -17,6 +17,7 @@ import { MOBILE_CUTOFF_WINDOW_WIDTH } from "../common";
 import { useHex } from "./useHex";
 import { GeoJsonLayer } from "deck.gl";
 import { PathStyleExtension } from "@deck.gl/extensions";
+import { useColorMode } from "@docusaurus/theme-common";
 
 const INITIAL_VIEW_STATE = {
   longitude: -74.012,
@@ -28,7 +29,8 @@ const INITIAL_VIEW_STATE = {
   minZoom: 0,
 };
 
-const MAP_STYLE = "mapbox://styles/mapbox/light-v11";
+const LIGHT_MAP_STYLE = "mapbox://styles/mapbox/light-v11";
+const DARK_MAP_STYLE = "mapbox://styles/mapbox/dark-v11";
 
 /**
  *
@@ -37,9 +39,9 @@ const MAP_STYLE = "mapbox://styles/mapbox/light-v11";
  * @param {object | null} opts.inputGeoJson
  * @param {boolean} opts.userValidHex
  * @param {Object} [opts.initialViewState]
- * @param {string} [opts.mapStyle]
  * @param {({ hex: string }) => void | undefined} [opts.objectOnClick]
  * @param {({ coordinate: [number, number], zoom: number, resolution: number }) => void | undefined} [opts.coordinateOnClick]
+ * @param {string[] | undefined} [opts.previewCells]
  * @returns
  */
 export function ExplorerMap(opts) {
@@ -48,9 +50,9 @@ export function ExplorerMap(opts) {
     inputGeoJson = null,
     userValidHex = false,
     initialViewState = INITIAL_VIEW_STATE,
-    mapStyle = MAP_STYLE,
     objectOnClick = undefined,
     coordinateOnClick = undefined,
+    previewCells = undefined,
   } = opts;
   const context = useDocusaurusContext();
   const [currentInitialViewState, setCurrentInitialViewState] =
@@ -58,6 +60,7 @@ export function ExplorerMap(opts) {
   const [deckLoaded, setDeckLoaded] = useState(false);
   const deckRef = useRef();
   const [windowWidth, setWindowWidth] = useState(null);
+  const { colorMode } = useColorMode();
 
   useEffect(() => {
     const updateWidth = () => {
@@ -144,8 +147,9 @@ export function ExplorerMap(opts) {
         new GeoJsonLayer({
           id: "userinput",
           data: inputGeoJson,
-          getFillColor: [0, 0, 0],
-          getLineColor: [100, 100, 100],
+          getFillColor: colorMode === "dark" ? [250, 250, 250] : [0, 0, 0],
+          getLineColor:
+            colorMode === "dark" ? [220, 220, 220] : [100, 100, 100],
           getLineWidth: 1,
           lineWidthMinPixels: 1,
           lineWidthUnits: "pixels",
@@ -154,6 +158,31 @@ export function ExplorerMap(opts) {
           filled: false,
           // @ts-expect-error
           getDashArray: [5, 1],
+          dashJustified: true,
+          dashGapPickable: true,
+          extensions: [new PathStyleExtension({ dash: true })],
+        }),
+      ]
+    : [];
+  const inputPreviewLayers = previewCells
+    ? [
+        new H3HexagonLayer({
+          id: "previewhex",
+          data: previewCells.map((hex) => ({ hex })),
+          getHexagon: (d) => d.hex,
+          extruded: false,
+          filled: false,
+          stroked: true,
+          getLineColor:
+            colorMode === "dark" ? [140, 140, 140] : [120, 120, 120],
+          getLineWidth: 2,
+          lineWidthUnits: "pixels",
+          lineWidthMinPixels: 1,
+          highPrecision: true,
+          pickable: false,
+          filled: false,
+          // @ts-expect-error
+          getDashArray: [5, 5],
           dashJustified: true,
           dashGapPickable: true,
           extensions: [new PathStyleExtension({ dash: true })],
@@ -170,26 +199,41 @@ export function ExplorerMap(opts) {
           extruded: false,
           filled: false,
           stroked: true,
-          getLineColor: [0, 0, 0],
+          getLineColor: colorMode === "dark" ? [255, 255, 255] : [0, 0, 0],
           getLineWidth: 2,
           lineWidthUnits: "pixels",
           lineWidthMinPixels: 2,
           highPrecision: true,
           pickable: true,
           filled: true,
-          getFillColor: [0, 0, 0, 30],
+          getFillColor:
+            colorMode === "dark" ? [255, 255, 255, 30] : [0, 0, 0, 30],
         }),
+        ...inputPreviewLayers,
         ...inputGeoJsonLayers,
       ]
     : backgroundHexLayers;
 
-  const getTooltip = useCallback(({ object }) => {
-    if (object && object.hex) {
-      return {
-        html: `<tt>${object.hex}</tt>`,
-      };
-    }
-  }, []);
+  const getTooltip = useCallback(
+    ({ object }) => {
+      if (object && object.hex) {
+        return {
+          html: `<tt>${object.hex}</tt>`,
+          style:
+            colorMode === "dark"
+              ? {
+                  backgroundColor: "black",
+                  color: "white",
+                }
+              : {
+                  backgroundColor: "white",
+                  color: "black",
+                },
+        };
+      }
+    },
+    [colorMode],
+  );
 
   const getCursor = useCallback(({ isHovering }) => {
     if (isHovering) {
@@ -205,7 +249,7 @@ export function ExplorerMap(opts) {
         if (objectOnClick) {
           objectOnClick({ hex: object.hex });
         }
-      } else if (object && object instanceof string) {
+      } else if (object && typeof object === "string") {
         if (objectOnClick) {
           objectOnClick({ hex: object });
         }
@@ -242,7 +286,7 @@ export function ExplorerMap(opts) {
         interactive={false}
         projection={"mercator"}
         mapboxAccessToken={context.siteConfig.customFields.mapboxAccessToken}
-        mapStyle={mapStyle}
+        mapStyle={colorMode === "dark" ? DARK_MAP_STYLE : LIGHT_MAP_STYLE}
       />
     </DeckGL>
   );
