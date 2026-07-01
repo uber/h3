@@ -350,7 +350,7 @@ SUITE(BBox) {
                  "bboxHexEstimate of invalid resolution fails");
     }
 
-    TEST(bboxHexEstimate_invalidRes) {
+    TEST(bboxHexEstimate_invalidLatitudeDifference) {
         int64_t numHexagons;
         BBox bbox = {1.0, 1.0, 0.0, 1.0};
         t_assert(bboxHexEstimate(&bbox, 1, &numHexagons) == E_FAILED,
