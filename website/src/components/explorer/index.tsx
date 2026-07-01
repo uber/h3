@@ -1,6 +1,6 @@
 // Contains code adapted from https://observablehq.com/@nrabinowitz/h3-index-inspector under the ISC license
 
-import React, { useCallback, useMemo, ReactNode, useState } from "react";
+import React, { useCallback, useMemo, ReactNode, useState, useId } from "react";
 import { isValidCell, latLngToCell, getResolution } from "h3-js";
 import {
   Banner,
@@ -220,6 +220,7 @@ export default function HomeExporer({ children }: { children: ReactNode }) {
   const [userResolution, setUserResolution] = useQueryState<number>("res", -1);
   const [previewCells, setPreviewCells] = useState<string[]>([]);
   const { colorMode } = useColorMode();
+  const resolutionInputId = useId();
 
   const { splitUserInput, showCellId, inputGeoJson, showResolutionInput } =
     useMemo(
@@ -320,12 +321,14 @@ export default function HomeExporer({ children }: { children: ReactNode }) {
           ) : null}
           {showResolutionInput !== null ? (
             <div>
+              <label htmlFor={resolutionInputId}>Resolution:</label>
               <input
+                id={resolutionInputId}
                 type="number"
                 min="0"
                 max="15"
-                placeholder="Resolution"
-                value={`${userResolution}`}
+                placeholder="Auto"
+                value={`${userResolution !== -1 ? userResolution : ""}`}
                 onChange={(e) => {
                   try {
                     const res = parseInt(e.target.value, 10);
@@ -336,6 +339,9 @@ export default function HomeExporer({ children }: { children: ReactNode }) {
                     // Ignore
                     console.error(err);
                   }
+                }}
+                style={{
+                  marginLeft: "0.25em",
                 }}
               />
             </div>
