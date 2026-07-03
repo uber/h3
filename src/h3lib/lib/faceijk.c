@@ -106,6 +106,57 @@ static const double faceAxesAzRadsCII[NUM_ICOSA_FACES][3] = {
      4.455774101589558636},  // face 19
 };
 
+/** @brief cos() of faceAxesAzRadsCII[face][0], precomputed so that
+ * _hex2dToVec3 can fold the azimuth rotation via angle-addition identities
+ * instead of calling trigonometric functions at runtime. */
+static const double faceAxesAzCosCII[NUM_ICOSA_FACES] = {
+    0.788009569751167649,   // face  0
+    0.866401433586563408,   // face  1
+    0.710763263049737914,   // face  2
+    0.908769985419362936,   // face  3
+    0.988331085171010204,   // face  4
+    -0.901005312456077068,  // face  5
+    -0.987444678057217362,  // face  6
+    -0.924406653735056372,  // face  7
+    -0.938439199481898689,  // face  8
+    -0.990440965699942555,  // face  9
+    0.938439199481898800,   // face 10
+    0.990440965699942555,   // face 11
+    0.901005312456076957,   // face 12
+    0.987444678057217362,   // face 13
+    0.924406653735056261,   // face 14
+    -0.908769985419362936,  // face 15
+    -0.988331085171010315,  // face 16
+    -0.788009569751167871,  // face 17
+    -0.866401433586563408,  // face 18
+    -0.710763263049737803,  // face 19
+};
+
+/** @brief sin() of faceAxesAzRadsCII[face][0], precomputed companion to
+ * faceAxesAzCosCII (see _hex2dToVec3). */
+static const double faceAxesAzSinCII[NUM_ICOSA_FACES] = {
+    -0.615662990588665915,  // face  0
+    -0.499348130945884039,  // face  1
+    0.703431292948280107,   // face  2
+    0.417297392276648305,   // face  3
+    -0.152320931210038646,  // face  4
+    0.433808053090219803,   // face  5
+    0.157965210652467103,   // face  6
+    -0.381408361904082449,  // face  7
+    -0.345444451215782433,  // face  8
+    0.137937280904638832,   // face  9
+    -0.345444451215782378,  // face 10
+    0.137937280904638693,   // face 11
+    0.433808053090219969,   // face 12
+    0.157965210652467297,   // face 13
+    -0.381408361904082782,  // face 14
+    0.417297392276648416,   // face 15
+    -0.152320931210038285,  // face 16
+    -0.615662990588665582,  // face 17
+    -0.499348130945884094,  // face 18
+    0.703431292948280218,   // face 19
+};
+
 /** @brief Definition of which faces neighbor each other. */
 static const FaceOrientIJK faceNeighbors[NUM_ICOSA_FACES][4] = {
     {
@@ -380,23 +431,6 @@ static inline void _vec3TangentBasis(Vec3d p, Vec3d *north, Vec3d *east) {
 }
 
 /**
- * Calculates the azimuth from p1 to p2.
- * @param p1 The first vector.
- * @param p2 The second vector.
- * @return The azimuth in radians.
- */
-static inline double _vec3AzimuthRads(Vec3d p1, Vec3d p2) {
-    Vec3d northDir, eastDir;
-    _vec3TangentBasis(p1, &northDir, &eastDir);
-
-    // project p2 onto tangent plane at p1
-    Vec3d p2Proj = vec3LinComb(1.0, p2, -vec3Dot(p2, p1), p1);
-    vec3Normalize(&p2Proj);
-
-    return atan2(vec3Dot(p2Proj, eastDir), vec3Dot(p2Proj, northDir));
-}
-
-/**
  * Encodes a coordinate on the sphere to the corresponding icosahedral face and
  * containing 2D hex coordinates relative to that face center.
  *
@@ -412,25 +446,66 @@ static void _vec3ToHex2d(const Vec3d *p, int res, int *face, Vec2d *v) {
     double sqd;
     _vec3ToClosestFace(p, face, &sqd);
 
-    // cos(r) = 1 - 2 * sin^2(r/2) = 1 - 2 * (sqd / 4) = 1 - sqd/2
-    double r = acos(1 - sqd * 0.5);
-
-    if (r < EPSILON) {
+    // Face-center guard. The original computed r = acos(1 - sqd/2) and tested
+    // r < EPSILON; with acos eliminated below we re-express it on sqd. The
+    // exact equivalent (sqd < 2*(1 - cos(EPSILON))) underflows to 0 for the
+    // tiny EPSILON used here, so use the leading-order form sqd < EPSILON^2
+    // (since 1 - cos(eps) ~= eps^2/2). At the face center the tangent
+    // projection below is the zero vector, which would otherwise yield NaN.
+    if (sqd < EPSILON * EPSILON) {
         v->x = v->y = 0.0;
         return;
     }
 
-    // now have face and r, now find CCW theta from CII i-axis
-    double theta = _posAngleRads(
-        faceAxesAzRadsCII[*face][0] -
-        _posAngleRads(_vec3AzimuthRads(faceCenterPoint[*face], *p)));
+    // Perform gnomonic scaling of r directly: r = tan(acos(x)) with
+    // x = 1 - sqd/2 = cos(r). Using tan(acos x) = sqrt(1 - x^2) / x and
+    // factoring 1 - x^2 = (1 - x)(1 + x) with (1 - x) = sqd/2 computed exactly
+    // (avoids cancellation near a face center). This replaces both acos and tan
+    // with a single sqrt.
+    double halfSqd = sqd * 0.5;
+    double x = 1.0 - halfSqd;
+    double r = sqrt(halfSqd * (2.0 - halfSqd)) / x;
 
-    // adjust theta for Class III (odd resolutions)
-    if (isResolutionClassIII(res))
-        theta = _posAngleRads(theta - M_AP7_ROT_RADS);
+    // Find theta as a CCW azimuth from the CII i-axis. The azimuth is only
+    // needed as cos/sin, so take them straight from the tangent-plane
+    // components instead of going through atan2 + two normalizations:
+    //   north = pole - (pole.fc) fc   (pole = {0,0,1}; left un-normalized)
+    //   east  = north x fc            (|east| == |north|, also un-normalized)
+    //   proj  = p - (p.fc) fc         (left un-normalized)
+    // Then cosAz = (proj.north)/hyp, sinAz = (proj.east)/hyp. Skipping the
+    // normalizations is exact: north and east share the same magnitude, so the
+    // common |north|*|proj| factor in proj.north / proj.east cancels in hyp.
+    Vec3d fc = faceCenterPoint[*face];
+    Vec3d north = {-fc.z * fc.x, -fc.z * fc.y, 1.0 - fc.z * fc.z};
+    Vec3d east = vec3Cross(north, fc);
+    double pdotfc = vec3Dot(*p, fc);
+    Vec3d proj = {p->x - pdotfc * fc.x, p->y - pdotfc * fc.y,
+                  p->z - pdotfc * fc.z};
+    double nComp = vec3Dot(proj, north);
+    double eComp = vec3Dot(proj, east);
+    double hyp = sqrt(nComp * nComp + eComp * eComp);
+    double cosAz = nComp / hyp;
+    double sinAz = eComp / hyp;
 
-    // perform gnomonic scaling of r
-    r = tan(r);
+    // theta = faceAxesAzRadsCII[face][0] - azimuth, folded via the
+    // angle-subtraction identity against the precomputed per-face cos/sin:
+    //   cos(A - az) = cosA*cosAz + sinA*sinAz
+    //   sin(A - az) = sinA*cosAz - cosA*sinAz
+    // _posAngleRads range-reduction is unnecessary since cos/sin are periodic.
+    double cosA = faceAxesAzCosCII[*face];
+    double sinA = faceAxesAzSinCII[*face];
+    double cosTheta = cosA * cosAz + sinA * sinAz;
+    double sinTheta = sinA * cosAz - cosA * sinAz;
+
+    // adjust theta for Class III (odd resolutions): theta -= M_AP7_ROT_RADS,
+    // folded via the same angle-subtraction identity. Use temporaries so the
+    // second line does not read the already-updated cosTheta.
+    if (isResolutionClassIII(res)) {
+        double nc = cosTheta * M_COS_AP7_ROT + sinTheta * M_SIN_AP7_ROT;
+        double ns = sinTheta * M_COS_AP7_ROT - cosTheta * M_SIN_AP7_ROT;
+        cosTheta = nc;
+        sinTheta = ns;
+    }
 
     // scale for current resolution length u
     r *= INV_RES0_U_GNOMONIC;
@@ -439,8 +514,8 @@ static void _vec3ToHex2d(const Vec3d *p, int res, int *face, Vec2d *v) {
     // we now have (r, theta) in hex2d with theta ccw from x-axes
 
     // convert to local x,y
-    v->x = r * cos(theta);
-    v->y = r * sin(theta);
+    v->x = r * cosTheta;
+    v->y = r * sinTheta;
 }
 
 /**
@@ -465,7 +540,13 @@ static void _hex2dToVec3(const Vec2d *v, int face, int res, int substrate,
         return;
     }
 
-    double theta = atan2(v->y, v->x);
+    // Instead of computing theta = atan2(v->y, v->x) and later taking its
+    // cos/sin, take the direction cosines straight from the vector:
+    //   cos(theta) = v->x / r,  sin(theta) = v->y / r
+    // (r here is the unscaled magnitude, before the per-resolution scaling
+    // below overwrites it.)
+    double cosTheta = v->x / r;
+    double sinTheta = v->y / r;
 
     // scale for current resolution length u
     for (int i = 0; i < res; i++) r *= M_RSQRT7;
@@ -478,24 +559,47 @@ static void _hex2dToVec3(const Vec2d *v, int face, int res, int substrate,
 
     r *= RES0_U_GNOMONIC;
 
-    // perform inverse gnomonic scaling of r
-    r = atan(r);
+    // Perform inverse gnomonic scaling of r. The original code computed
+    // r = atan(r) and then cos(r)/sin(r); using the identities
+    //   cos(atan r) = 1 / sqrt(1 + r*r),  sin(atan r) = r / sqrt(1 + r*r)
+    // we obtain cosR/sinR directly with a single sqrt and no transcendentals.
+    double invHyp = 1.0 / sqrt(1.0 + r * r);
+    double cosR = invHyp;
+    double sinR = r * invHyp;
 
     // adjust theta for Class III
     // if a substrate grid, then it's already been adjusted for Class III
-    if (!substrate && isResolutionClassIII(res))
-        theta = _posAngleRads(theta + M_AP7_ROT_RADS);
+    // theta += M_AP7_ROT_RADS, folded in via the angle-addition identity:
+    //   cos(theta + a) = cosTheta*cos(a) - sinTheta*sin(a)
+    //   sin(theta + a) = sinTheta*cos(a) + cosTheta*sin(a)
+    if (!substrate && isResolutionClassIII(res)) {
+        double nc = cosTheta * M_COS_AP7_ROT - sinTheta * M_SIN_AP7_ROT;
+        double ns = sinTheta * M_COS_AP7_ROT + cosTheta * M_SIN_AP7_ROT;
+        cosTheta = nc;
+        sinTheta = ns;
+    }
 
-    // find theta as an azimuth
-    theta = _posAngleRads(faceAxesAzRadsCII[face][0] - theta);
+    // find theta as an azimuth: theta = faceAxesAzRadsCII[face][0] - theta,
+    // folded in via the angle-subtraction identity (a = face azimuth):
+    //   cos(a - theta) = cos(a)*cosTheta + sin(a)*sinTheta
+    //   sin(a - theta) = sin(a)*cosTheta - cos(a)*sinTheta
+    // _posAngleRads range-reduction is unnecessary since cos/sin are periodic.
+    {
+        double a_cos = faceAxesAzCosCII[face];
+        double a_sin = faceAxesAzSinCII[face];
+        double nc = a_cos * cosTheta + a_sin * sinTheta;
+        double ns = a_sin * cosTheta - a_cos * sinTheta;
+        cosTheta = nc;
+        sinTheta = ns;
+    }
 
     // now find the point at (r,theta) from the face center
     Vec3d northDir, eastDir;
     _vec3TangentBasis(faceCenterPoint[face], &northDir, &eastDir);
 
-    Vec3d dir = vec3LinComb(cos(theta), northDir, sin(theta), eastDir);
+    Vec3d dir = vec3LinComb(cosTheta, northDir, sinTheta, eastDir);
 
-    *v3 = vec3LinComb(cos(r), faceCenterPoint[face], sin(r), dir);
+    *v3 = vec3LinComb(cosR, faceCenterPoint[face], sinR, dir);
     vec3Normalize(v3);
 }
 
