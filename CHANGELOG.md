@@ -18,6 +18,7 @@ The public API of this library consists of the functions declared in file
 - `reverseDirectedEdge` function (#1098)
 - Bidirectional `gridPathCells` (#1111)
 - `h3.pc` pkg-config file (#1115)
+- Geodesic coverage flag for `polygonToCellsExperimental` that follows great-circle edges when covering very large polygons. This mode is significantly slower than the planar algorithm, so prefer lower resolutions when using it.
 
 ### Changed
 - `cellsToLinkedMultiPolygon` now uses `cellsToMultiPolygon` internally (#1126, #1133, #1136)

@@ -1222,6 +1222,28 @@ H3Error H3_EXPORT(cellToBoundary)(H3Index h3, CellBoundary *cb) {
 }
 
 /**
+ * Determines the cell boundary in spherical coordinates for an H3 index.
+ *
+ * @param h3 The H3 index.
+ * @param cb The boundary of the H3 cell in spherical coordinates.
+ */
+H3Error cellToGeodesicBoundary(H3Index h3, GeodesicCellBoundary *cb) {
+    FaceIJK fijk;
+    H3Error e = _h3ToFaceIjk(h3, &fijk);
+    if (e) {
+        return e;
+    }
+    if (H3_EXPORT(isPentagon)(h3)) {
+        _faceIjkPentToCellBoundaryGeodesic(&fijk, H3_GET_RESOLUTION(h3), 0,
+                                           NUM_PENT_VERTS, cb);
+    } else {
+        _faceIjkToCellBoundaryGeodesic(&fijk, H3_GET_RESOLUTION(h3), 0,
+                                       NUM_HEX_VERTS, cb);
+    }
+    return E_SUCCESS;
+}
+
+/**
  * Returns the max number of possible icosahedron faces an H3 index
  * may intersect.
  *
