@@ -96,7 +96,8 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         geoPolygon.numHoles = originalNumHoles;
         run(&geoPolygon, flags, res);
 
-        // Don't run polygon without holes twice
+        // If polygon has no holes - it has already been tested
+        // Don't test it again
         if (originalNumHoles == 0) {
             continue;
         }

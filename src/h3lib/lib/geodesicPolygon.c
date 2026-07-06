@@ -22,6 +22,10 @@
 
 #include "alloc.h"
 #include "constants.h"
+
+// Tolerance for classifying arc endpoints as being on the same side of a
+// great-circle plane. See _geodesicEdgesCross for derivation.
+static const double SIDE_EPS = 1e-28;
 #include "geodesicPolygonInternal.h"
 #include "h3api.h"
 
@@ -49,13 +53,12 @@ static bool _geodesicEdgesCross(const Vec3d *a1, const Vec3d *a2,
     // ~2e-32 in FP due to per-operand rounding (~1e-16 per dot product, two
     // of them multiplied together).  EPSILON*EPSILON = 1e-32 sits right at
     // that noise floor, so some coincident pairs exceed it and are wrongly
-    // rejected.  Use 1e-28 — four orders of magnitude above machine_epsilon^2
-    // (~5e-32) but far below the smallest genuine same-side product observed
-    // in practice (~1e-18) — so coincident arcs reliably fall through to the
-    // collinear-overlap check while non-coincident same-side pairs still
-    // early-exit.
-    const double sideEps = 1e-28;
-    if ((b1Side * b2Side > sideEps) || (a1Side * a2Side > sideEps)) {
+    // rejected.  SIDE_EPS sits four orders of magnitude above
+    // machine_epsilon^2 (~5e-32) but far below the smallest genuine same-side
+    // product observed in practice (~1e-18) — so coincident arcs reliably
+    // fall through to the collinear-overlap check while non-coincident
+    // same-side pairs still early-exit.
+    if ((b1Side * b2Side > SIDE_EPS) || (a1Side * a2Side > SIDE_EPS)) {
         return false;
     }
 
