@@ -543,6 +543,49 @@ SUITE(polygonInternal) {
         H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
     }
 
+    TEST(normalizeMultiPolygonNestedDonuts2) {
+        LatLng verts[] = {{0.2, 0.2}, {0.2, -0.2}, {-0.2, -0.2}, {-0.2, 0.2}};
+        LinkedGeoLoop *outer = malloc(sizeof(*outer));
+        assert(outer != NULL);
+        createLinkedLoop(outer, &verts[0], 4);
+
+        LatLng verts2[] = {{0.1, 0.1}, {-0.1, 0.1}, {-0.1, -0.1}, {0.1, -0.1}};
+        LinkedGeoLoop *inner = malloc(sizeof(*inner));
+        assert(inner != NULL);
+        createLinkedLoop(inner, &verts2[0], 4);
+
+        LatLng verts3[] = {{0.6, 0.6}, {0.6, -0.6}, {-0.6, -0.6}, {-0.6, 0.6}};
+        LinkedGeoLoop *outerBig = malloc(sizeof(*outerBig));
+        assert(outerBig != NULL);
+        createLinkedLoop(outerBig, &verts3[0], 4);
+
+        LatLng verts4[] = {{0.5, 0.5}, {-0.5, 0.5}, {-0.5, -0.5}, {0.5, -0.5}};
+        LinkedGeoLoop *innerBig = malloc(sizeof(*innerBig));
+        assert(innerBig != NULL);
+        createLinkedLoop(innerBig, &verts4[0], 4);
+
+        LinkedGeoPolygon polygon = {0};
+        addLinkedLoop(&polygon, outer);
+        addLinkedLoop(&polygon, innerBig);
+        addLinkedLoop(&polygon, outerBig);
+        addLinkedLoop(&polygon, inner);
+
+        t_assertSuccess(normalizeMultiPolygon(&polygon));
+
+        t_assert(countLinkedPolygons(&polygon) == 2, "Polygon count correct");
+        t_assert(countLinkedLoops(&polygon) == 2,
+                 "Loop count on first polygon correct");
+        t_assert(polygon.first == outer, "Got expected outer loop");
+        t_assert(polygon.first->next == inner, "Got expected inner loop");
+        t_assert(countLinkedLoops(polygon.next) == 2,
+                 "Loop count on second polygon correct");
+        t_assert(polygon.next->first == outerBig, "Got expected outer loop");
+        t_assert(polygon.next->first->next == innerBig,
+                 "Got expected inner loop");
+
+        H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
+    }
+
     TEST(normalizeMultiPolygonNoOuterLoops) {
         LatLng verts1[] = {{0, 0}, {1, 1}, {0, 1}};
 
