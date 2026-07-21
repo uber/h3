@@ -30,6 +30,7 @@
 #include "coordijk.h"
 #include "h3Index.h"
 #include "latLng.h"
+#include "mathExtensions.h"
 #include "vec3d.h"
 
 /** square root of 7 and inverse square root of 7 */
@@ -438,9 +439,11 @@ static void _vec3ToHex2d(const Vec3d *p, int res, int *face, Vec2d *v) {
 
     // we now have (r, theta) in hex2d with theta ccw from x-axes
 
-    // convert to local x,y
-    v->x = r * cos(theta);
-    v->y = r * sin(theta);
+    // convert to local x,y (both the sine and cosine of theta are needed)
+    double sinTheta, cosTheta;
+    _sincos(theta, &sinTheta, &cosTheta);
+    v->x = r * cosTheta;
+    v->y = r * sinTheta;
 }
 
 /**
@@ -489,13 +492,18 @@ static void _hex2dToVec3(const Vec2d *v, int face, int res, int substrate,
     // find theta as an azimuth
     theta = _posAngleRads(faceAxesAzRadsCII[face][0] - theta);
 
-    // now find the point at (r,theta) from the face center
+    // now find the point at (r,theta) from the face center. Both theta and r
+    // are used for their sine and cosine, so compute each pair together.
     Vec3d northDir, eastDir;
     _vec3TangentBasis(faceCenterPoint[face], &northDir, &eastDir);
 
-    Vec3d dir = vec3LinComb(cos(theta), northDir, sin(theta), eastDir);
+    double sinTheta, cosTheta, sinR, cosR;
+    _sincos(theta, &sinTheta, &cosTheta);
+    _sincos(r, &sinR, &cosR);
 
-    *v3 = vec3LinComb(cos(r), faceCenterPoint[face], sin(r), dir);
+    Vec3d dir = vec3LinComb(cosTheta, northDir, sinTheta, eastDir);
+
+    *v3 = vec3LinComb(cosR, faceCenterPoint[face], sinR, dir);
     vec3Normalize(v3);
 }
 
