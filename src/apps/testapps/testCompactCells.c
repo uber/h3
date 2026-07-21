@@ -118,7 +118,6 @@ SUITE(compactCells) {
             0x81013ffffffffff, 0x81017ffffffffff,
             0x8101bffffffffff};
         for (int idx = 0; idx < arrSize; idx++) {
-            printf("%llx\n", compressed[idx]);
             if (compressed[idx]) {
                 bool found = false;
                 for (int idx2 = 0; !found && idx2 < arrSize; idx2++) {
