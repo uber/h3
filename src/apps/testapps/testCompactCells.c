@@ -92,6 +92,54 @@ SUITE(compactCells) {
         free(children);
     }
 
+    TEST(res0childrenExceptOne) {
+        H3Index parent;
+        setH3Index(&parent, 0, 0, 0);
+
+        int64_t arrSize;
+        t_assertSuccess(H3_EXPORT(cellToChildrenSize)(parent, 1, &arrSize));
+
+        H3Index *children = calloc(arrSize, sizeof(H3Index));
+        t_assertSuccess(H3_EXPORT(cellToChildren)(parent, 1, children));
+        H3Index removed = 0x81007ffffffffff;
+        for (int idx = 0; idx < arrSize; idx++) {
+            if (children[idx] == removed) {
+                children[idx] = 0;
+                break;
+            }
+        }
+
+        H3Index *compressed = calloc(arrSize, sizeof(H3Index));
+        t_assertSuccess(H3_EXPORT(compactCells(children, compressed, arrSize)));
+        int presentCount = 0;
+        H3Index expected[] = {
+            0x81003ffffffffff, 0 /* removed: 0x81007ffffffffff*/,
+            0x8100bffffffffff, 0x8100fffffffffff,
+            0x81013ffffffffff, 0x81017ffffffffff,
+            0x8101bffffffffff};
+        for (int idx = 0; idx < arrSize; idx++) {
+            printf("%llx\n", compressed[idx]);
+            if (compressed[idx]) {
+                bool found = false;
+                for (int idx2 = 0; !found && idx2 < arrSize; idx2++) {
+                    if (expected[idx2] == compressed[idx]) {
+                        expected[idx2] =
+                            0;  // Don't allow this cell more than once
+                        found = true;
+                    }
+                }
+                t_assert(found, "should be in expected set exactly once");
+                t_assert(compressed[idx] != parent, "should not get parent");
+                t_assert(compressed[idx] != removed,
+                         "should not get removed cell");
+                presentCount++;
+            }
+        }
+        t_assert(presentCount == 6, "expected number of cells returned");
+        free(compressed);
+        free(children);
+    }
+
     TEST(allRes1) {
         const int64_t numRes0 = 122;
         const int64_t numRes1 = 842;
