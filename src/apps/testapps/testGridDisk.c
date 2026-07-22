@@ -333,6 +333,8 @@ SUITE(gridDisk) {
     TEST(gridDiskInvalidKSubsequence) {
         H3Index h;
         setH3Index(&h, 2, 4, 0);
+        // Make the indexing digits be `10`, which is invalid
+        // because it has a leading non-zero 1 under a pentagon base cell.
         H3_SET_INDEX_DIGIT(h, 1, K_AXES_DIGIT);
 
         int k = 1;
