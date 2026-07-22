@@ -101,7 +101,7 @@ SUITE(gridRingUnsafe) {
                  "Should return an error when starting at a pentagon");
     }
 
-    TEST(onPentagon) {
+    TEST(invalidPentagon) {
         H3Index index = 0x8009fffffffffff;
         H3_SET_RESOLUTION(index, 2);
         H3_SET_INDEX_DIGIT(index, 1, K_AXES_DIGIT);
@@ -111,7 +111,7 @@ SUITE(gridRingUnsafe) {
                  "Should return an error when starting at a pentagon");
     }
 
-    TEST(onPentagon) {
+    TEST(invalidPentagon2) {
         H3Index index = 0x8009fffffffffff;
         H3_SET_RESOLUTION(index, 2);
         H3_SET_INDEX_DIGIT(index, 1, INVALID_DIGIT);
