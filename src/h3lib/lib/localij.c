@@ -257,7 +257,9 @@ H3Error cellToLocalIjk(H3Index origin, H3Index h3, CoordIJK *out) {
         // Perform necessary translation
         _ijkAdd(&indexFijk.coord, &offset, &indexFijk.coord);
         _ijkNormalize(&indexFijk.coord);
-    } else if (originOnPent && indexOnPent) {
+    } else if (originOnPent && ALWAYS(indexOnPent)) {
+        // Since the base cells are the same, indexOnPent above is ALWAYS
+        // since originOnPent is already being checked.
         // If the origin and index are on pentagon, and we checked that the base
         // cells are the same or neighboring, then they must be the same base
         // cell.
@@ -475,7 +477,9 @@ H3Error localIjkToCell(H3Index origin, const CoordIJK *ijk, H3Index *out) {
                 *out = _h3Rotate60ccw(*out);
             }
         }
-    } else if (originOnPent && indexOnPent) {
+    } else if (originOnPent && ALWAYS(indexOnPent)) {
+        // Since the base cells are the same (dir == CENTER_DIGIT), indexOnPent
+        // above is ALWAYS since originOnPent is already being checked.
         const int originLeadingDigit = _h3LeadingNonZeroDigit(origin);
         const int indexLeadingDigit = _h3LeadingNonZeroDigit(*out);
 
