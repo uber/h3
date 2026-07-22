@@ -330,6 +330,20 @@ SUITE(gridDisk) {
         free(neighbors);
     }
 
+    TEST(gridDiskInvalidKSubsequence) {
+        H3Index h;
+        setH3Index(&h, 2, 4, 0);
+        H3_SET_INDEX_DIGIT(h, 1, K_AXES_DIGIT);
+
+        int k = 1;
+        int64_t kSz;
+        t_assertSuccess(H3_EXPORT(maxGridDiskSize)(k, &kSz));
+        H3Index *neighbors = calloc(kSz, sizeof(H3Index));
+        t_assert(H3_EXPORT(gridDisk)(h, k, neighbors) == E_FAILED,
+                 "gridDisk returns error for invalid k subsequence input");
+        free(neighbors);
+    }
+
     TEST(gridDiskInvalidDigit) {
         int k = 2;
         int64_t kSz;

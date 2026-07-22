@@ -558,7 +558,8 @@ H3Error h3NeighborRotations(H3Index origin, Direction dir, int *rotations,
                     current = _h3Rotate60cw(current);
                     *rotations = *rotations + 5;
                 } else {
-                    // TODO: Should never occur, but is reachable by fuzzer
+                    // Could occur on invalid inputs that were already within
+                    // the deleted k subsequence
                     return E_FAILED;
                 }
             }
