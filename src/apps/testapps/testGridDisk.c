@@ -341,6 +341,37 @@ SUITE(gridDisk) {
         free(neighbors);
     }
 
+    TEST(gridDiskInvalid2) {
+        H3Index index = 0x8009fffffffffff;
+        H3_SET_RESOLUTION(index, 2);
+        H3_SET_INDEX_DIGIT(index, 1, INVALID_DIGIT);
+        H3_SET_INDEX_DIGIT(index, 2, CENTER_DIGIT);
+
+        int k = 2;
+        int64_t kSz;
+        t_assertSuccess(H3_EXPORT(maxGridDiskSize)(k, &kSz));
+        H3Index *neighbors = calloc(kSz, sizeof(H3Index));
+        t_assert(H3_EXPORT(gridDisk)(index, k, neighbors) == E_CELL_INVALID,
+                 "gridDisk returns error for invalid input");
+        free(neighbors);
+    }
+
+    TEST(gridDiskUnsafeInvalid3) {
+        H3Index index = 0x8009fffffffffff;
+        H3_SET_RESOLUTION(index, 2);
+        H3_SET_INDEX_DIGIT(index, 1, INVALID_DIGIT);
+        H3_SET_INDEX_DIGIT(index, 2, K_AXES_DIGIT);
+
+        int k = 2;
+        int64_t kSz;
+        t_assertSuccess(H3_EXPORT(maxGridDiskSize)(k, &kSz));
+        H3Index *neighbors = calloc(kSz, sizeof(H3Index));
+        t_assert(
+            H3_EXPORT(gridDiskUnsafe)(index, k, neighbors) == E_CELL_INVALID,
+            "gridDisk returns error for invalid input");
+        free(neighbors);
+    }
+
     TEST(gridDiskDistances_invalidK) {
         H3Index index = 0x811d7ffffffffff;
         t_assert(
