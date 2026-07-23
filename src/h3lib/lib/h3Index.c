@@ -590,7 +590,6 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
             // to track how many times a parent is duplicated
             for (int64_t i = 0; i < numRemainingHexes; i++) {
                 H3Index currIndex = remainingHexes[i];
-                // TODO: This case is coverable (reachable by fuzzer)
                 if (currIndex != 0) {
                     // If the reserved bits were set by the caller, the
                     // algorithm below may encounter undefined behavior
@@ -699,7 +698,6 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
         int64_t uncompactableCount = 0;
         for (int64_t i = 0; i < numRemainingHexes; i++) {
             H3Index currIndex = remainingHexes[i];
-            // TODO: This case is coverable (reachable by fuzzer)
             if (currIndex != H3_NULL) {
                 bool isUncompactable = true;
                 // Resolution 0 cells always uncompactable, and trying to take
