@@ -8,7 +8,7 @@ includePaths:
 excludePaths:
  - src/apps/.*
 
-# 1 minute
-timeout: 60000
+# 5 minutes
+timeout: 300000
 
 compilationDatabasePath: compile_commands.json

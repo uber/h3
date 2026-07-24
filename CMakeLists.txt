@@ -63,6 +63,9 @@ option(BUILD_GENERATORS "Build code generation applications." ON)
 option(ENABLE_LIBFUZZER "Build fuzzers with libFuzzer support." OFF)
 option(ENABLE_MUTATION "Build library and tests with mutation testing support." OFF)
 
+set(MULL_ROOT "/opt/homebrew/opt/mull@19" CACHE STRING "Root of Mull installation")
+set(MULL_VERSION "19" CACHE STRING "Mull LLVM version")
+
 # These options exist for integration with OSS-Fuzz, so that the fuzzer options
 # can be passed through only to the fuzzer executables but not the H3 library,
 # since passing those options to the library too may result in too many
@@ -132,8 +135,7 @@ if(NOT MSVC)
         list(APPEND H3_LINK_FLAGS -fsanitize=fuzzer,address,undefined)
     endif()
     if(ENABLE_MUTATION)
-        list(APPEND H3_COMPILE_FLAGS $<$<CONFIG:Debug>:-fpass-plugin=/opt/homebrew/opt/mull@19/lib/mull-ir-frontend-19 -grecord-command-line>)
-        list(APPEND H3_LINK_FLAGS $<$<CONFIG:Debug>:-fpass-plugin=/opt/homebrew/opt/mull@19/lib/mull-ir-frontend-19 -grecord-command-line>)
+        list(APPEND H3_COMPILE_FLAGS $<$<CONFIG:Debug>:-fpass-plugin="${MULL_ROOT}/lib/mull-ir-frontend-${MULL_VERSION}" -grecord-command-line>)
     endif()
 endif()
 

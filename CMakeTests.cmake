@@ -68,9 +68,9 @@ if(ENABLE_MUTATION)
             clean-mutation
             # Before running mutation, clear all counters
             # TODO: Use ADDITIONAL_MAKE_CLEAN_FILES?
-            COMMAND rm -rf '${CMAKE_CURRENT_BINARY_DIR}/mutation-report'
+            COMMAND rm -rf '${CMAKE_CURRENT_BINARY_DIR}/h3-mutation-report'
             COMMENT "Deleting mutation reports")
-    set(mutation_runner mull-runner-19 --allow-surviving -reporters IDE -reporters SQLite -report-dir '${CMAKE_CURRENT_BINARY_DIR}/h3-mutation-report' -report-name h3-report)
+    set(mutation_runner "MULL_ENV=${CMAKE_CURRENT_SOURCE_DIR}/mull.yml" "${MULL_ROOT}/bin/mull-runner-${MULL_VERSION}" --allow-surviving -reporters IDE -reporters SQLite -report-dir '${CMAKE_CURRENT_BINARY_DIR}/h3-mutation-report' -report-name h3-report)
 endif()
 
 macro(add_h3_memory_test name srcfile)

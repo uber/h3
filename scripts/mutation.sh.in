@@ -24,4 +24,4 @@ fi
 src_dir=${1:-"Missing source directory"}
 binary_dir=${2:-"Missing binary directory"}
 
-mull-reporter-19 h3-mutation-report/h3-report.sqlite
+MULL_ENV="$src_dir/mull.yml" "${MULL_ROOT}/mull-reporter-${MULL_VERSION}" h3-mutation-report/h3-report.sqlite
