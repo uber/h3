@@ -513,7 +513,7 @@ SUITE(polygonToCells) {
         free(hexagons);
     }
 
-    TEST(polygonToCells) {
+    TEST(polygonToCells_oneNanVertex) {
         int64_t numHexagons;
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(&invalidSfGeoPolygon,
                                                          9, 0, &numHexagons));
@@ -526,7 +526,7 @@ SUITE(polygonToCells) {
         free(hexagons);
     }
 
-    TEST(polygonToCellsHole) {
+    TEST(polygonToCells_oneNanHoleVertex) {
         int64_t numHexagons;
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(&invalidHoleGeoPolygon,
                                                          9, 0, &numHexagons));
