@@ -1,0 +1,14 @@
+mutators:
+ - cxx_arithmetic
+ - cxx_calls
+
+includePaths:
+ - src/h3lib/.*$
+
+excludePaths:
+ - src/apps/.*
+
+# 1 minute
+timeout: 60000
+
+compilationDatabasePath: compile_commands.json

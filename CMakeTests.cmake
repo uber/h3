@@ -54,6 +54,25 @@ if(ENABLE_COVERAGE)
         COMMENT "Zeroing counters")
 endif()
 
+if(ENABLE_MUTATION)
+    file(
+            GENERATE
+            OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/scripts/mutation.sh"
+            INPUT "${CMAKE_CURRENT_SOURCE_DIR}/scripts/mutation.sh.in")
+    add_custom_target(
+            mutation
+            COMMAND
+            bash "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/scripts/mutation.sh"
+            "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}")
+    add_custom_target(
+            clean-mutation
+            # Before running mutation, clear all counters
+            # TODO: Use ADDITIONAL_MAKE_CLEAN_FILES?
+            COMMAND rm -rf '${CMAKE_CURRENT_BINARY_DIR}/mutation-report'
+            COMMENT "Deleting mutation reports")
+    set(mutation_runner mull-runner-19 --allow-surviving -reporters IDE -reporters SQLite -report-dir '${CMAKE_CURRENT_BINARY_DIR}/h3-mutation-report' -report-name h3-report)
+endif()
+
 macro(add_h3_memory_test name srcfile)
     # Like other test code, but these need to be linked against a different copy
     # of the H3 library which has known intercepted allocator functions.
@@ -109,6 +128,16 @@ macro(add_h3_test name srcfile)
 
         add_dependencies(coverage ${name}_coverage${test_number})
         add_dependencies(${name}_coverage${test_number} clean-coverage)
+    endif()
+
+    if(ENABLE_MUTATION AND NOT "${name}" MATCHES "Exhaustive$")
+        add_custom_target(
+            ${name}_mutation${test_number}
+            COMMAND ${mutation_runner} "$<TARGET_FILE:${name}>"
+            COMMENT "Running ${name}_mutation${test_number}")
+
+        add_dependencies(mutation ${name}_mutation${test_number})
+        add_dependencies(${name}_mutation${test_number} clean-mutation)
     endif()
 endmacro()
 
