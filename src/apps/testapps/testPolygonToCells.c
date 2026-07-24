@@ -54,6 +54,19 @@ static LatLng invalid2Verts[] = {{NAN, NAN}, {-NAN, -NAN}};
 static GeoLoop invalid2GeoLoop = {.numVerts = 2, .verts = invalid2Verts};
 static GeoPolygon invalid2GeoPolygon;
 
+static LatLng invalidSfVerts[] = {
+    {0.659966917655, -2.1364398519396},  {NAN, -2.1359434279405},
+    {0.6583348114025, -2.1354884206045}, {0.6581220034068, -2.1382437718946},
+    {0.6594479998527, -2.1384597563896}, {0.6599990002976, -2.1376771158464}};
+static GeoLoop invalidSfGeoLoop = {.numVerts = 6, .verts = invalidSfVerts};
+static GeoPolygon invalidSfGeoPolygon;
+
+static LatLng invalidHoleVerts[] = {{0.6595072188743, -2.1371053983433},
+                                    {0.6591482046471, NAN},
+                                    {0.6592295020837, -2.1365222838402}};
+static GeoLoop invalidHoleGeoLoop = {.numVerts = 3, .verts = invalidHoleVerts};
+static GeoPolygon invalidHoleGeoPolygon;
+
 static LatLng pointVerts[] = {{0, 0}};
 static GeoLoop pointGeoLoop = {.numVerts = 1, .verts = pointVerts};
 static GeoPolygon pointGeoPolygon;
@@ -158,6 +171,13 @@ SUITE(polygonToCells) {
 
     lineGeoPolygon.geoloop = lineGeoLoop;
     lineGeoPolygon.numHoles = 0;
+
+    invalidSfGeoPolygon.geoloop = invalidSfGeoLoop;
+    invalidSfGeoPolygon.numHoles = 0;
+
+    invalidHoleGeoPolygon.geoloop = sfGeoLoop;
+    invalidHoleGeoPolygon.numHoles = 1;
+    invalidHoleGeoPolygon.holes = &invalidHoleGeoLoop;
 
     // --------------------------------------------
     // maxPolygonToCellsSize
@@ -490,6 +510,32 @@ SUITE(polygonToCells) {
         t_assert(H3_EXPORT(polygonToCells)(&invalidGeoPolygon, 9, 0,
                                            hexagons) == E_FAILED,
                  "Invalid geo polygon cannot be evaluated");
+        free(hexagons);
+    }
+
+    TEST(polygonToCells) {
+        int64_t numHexagons;
+        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(&invalidSfGeoPolygon,
+                                                         9, 0, &numHexagons));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+
+        t_assert(H3_EXPORT(polygonToCells)(&invalidSfGeoPolygon, 9, 0,
+                                           hexagons) == E_FAILED,
+                 "Partially NAN geo polygon cannot be evaluated");
+
+        free(hexagons);
+    }
+
+    TEST(polygonToCellsHole) {
+        int64_t numHexagons;
+        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(&invalidHoleGeoPolygon,
+                                                         9, 0, &numHexagons));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+
+        t_assert(H3_EXPORT(polygonToCells)(&invalidHoleGeoPolygon, 9, 0,
+                                           hexagons) == E_FAILED,
+                 "Partially NAN geo polygon cannot be evaluated (hole)");
+
         free(hexagons);
     }
 
