@@ -135,7 +135,7 @@ if(NOT MSVC)
         list(APPEND H3_LINK_FLAGS -fsanitize=fuzzer,address,undefined)
     endif()
     if(ENABLE_MUTATION)
-        list(APPEND H3_COMPILE_FLAGS $<$<CONFIG:Debug>:-fpass-plugin="${MULL_ROOT}/lib/mull-ir-frontend-${MULL_VERSION}" -grecord-command-line>)
+        list(APPEND H3_COMPILE_FLAGS $<$<CONFIG:Debug>:-fpass-plugin=${MULL_ROOT}/lib/mull-ir-frontend-${MULL_VERSION} -grecord-command-line>)
     endif()
 endif()
 

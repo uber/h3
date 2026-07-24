@@ -130,7 +130,11 @@ macro(add_h3_test name srcfile)
         add_dependencies(${name}_coverage${test_number} clean-coverage)
     endif()
 
-    if(ENABLE_MUTATION AND NOT "${name}" MATCHES "Exhaustive$")
+    if(ENABLE_MUTATION
+            # Too slow
+            AND NOT "${name}" MATCHES "Exhaustive$"
+            # Too slow
+            AND NOT "${name}" STREQUAL "testPolygonToCellsExperimental")
         add_custom_target(
             ${name}_mutation${test_number}
             COMMAND ${mutation_runner} "$<TARGET_FILE:${name}>"
