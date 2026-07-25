@@ -1,4 +1,5 @@
 mutators:
+# - cxx_all
  - cxx_arithmetic
  - cxx_calls
 

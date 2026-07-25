@@ -55,15 +55,10 @@ if(ENABLE_COVERAGE)
 endif()
 
 if(ENABLE_MUTATION)
-    file(
-            GENERATE
-            OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/scripts/mutation.sh"
-            INPUT "${CMAKE_CURRENT_SOURCE_DIR}/scripts/mutation.sh.in")
     add_custom_target(
             mutation
             COMMAND
-            bash "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/scripts/mutation.sh"
-            "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}")
+            MULL_ENV="${CMAKE_CURRENT_SOURCE_DIR}/mull.yml" "${MULL_ROOT}/bin/mull-reporter-${MULL_VERSION}" "${CMAKE_CURRENT_BINARY_DIR}/h3-mutation-report/h3-report.sqlite" -reporters Elements -reporters IDE)
     add_custom_target(
             clean-mutation
             # Before running mutation, clear all counters
@@ -133,8 +128,17 @@ macro(add_h3_test name srcfile)
     if(ENABLE_MUTATION
             # Too slow
             AND NOT "${name}" MATCHES "Exhaustive$"
+            # Slow but doable <= 1hr
+            # AND NOT "${name}" STREQUAL "testCellToLocalIjInternal"
+            # AND NOT "${name}" STREQUAL "testCompactCells"
+            # AND NOT "${name}" STREQUAL "testCellToChildPos"
             # Too slow
-            AND NOT "${name}" STREQUAL "testPolygonToCellsExperimental")
+            AND NOT "${name}" STREQUAL "testPolygonToCells"
+            AND NOT "${name}" STREQUAL "testPolygonToCellsExperimental"
+            AND NOT "${name}" STREQUAL "testPolygonToCellsReportedExperimental"
+            # Too slow on startup
+            AND NOT "${name}" STREQUAL "testGosperIter"
+    )
         add_custom_target(
             ${name}_mutation${test_number}
             COMMAND ${mutation_runner} "$<TARGET_FILE:${name}>"
