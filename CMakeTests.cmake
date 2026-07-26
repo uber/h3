@@ -55,17 +55,15 @@ if(ENABLE_COVERAGE)
 endif()
 
 if(ENABLE_MUTATION)
-    add_custom_target(
-            mutation
-            COMMAND
-            MULL_ENV="${CMAKE_CURRENT_SOURCE_DIR}/mull.yml" "${MULL_ROOT}/bin/mull-reporter-${MULL_VERSION}" "${CMAKE_CURRENT_BINARY_DIR}/h3-mutation-report/h3-report.sqlite" -reporters Elements -reporters IDE)
+    set(mutation_report_dir "${CMAKE_CURRENT_BINARY_DIR}/h3-mutation-report")
     add_custom_target(
             clean-mutation
             # Before running mutation, clear all counters
-            # TODO: Use ADDITIONAL_MAKE_CLEAN_FILES?
-            COMMAND rm -rf '${CMAKE_CURRENT_BINARY_DIR}/h3-mutation-report'
+            # TODO: Use ADDITIONAL_MAKE_CLEAN_FILES or BYPRODUCYS?
+            COMMAND ${CMAKE_COMMAND} -E rm -rf '${mutation_report_dir}'
             COMMENT "Deleting mutation reports")
-    set(mutation_runner "MULL_ENV=${CMAKE_CURRENT_SOURCE_DIR}/mull.yml" "${MULL_ROOT}/bin/mull-runner-${MULL_VERSION}" --allow-surviving -reporters IDE -reporters SQLite -report-dir '${CMAKE_CURRENT_BINARY_DIR}/h3-mutation-report' -report-name h3-report)
+    set(mutation_runner "MULL_ENV=${CMAKE_CURRENT_SOURCE_DIR}/mull.yml" "${MULL_ROOT}/bin/mull-runner-${MULL_VERSION}" --allow-surviving -reporters IDE -reporters SQLite -report-dir '${mutation_report_dir}' -report-name h3-report)
+    set_property(GLOBAL PROPERTY H3_MUTATION_DONE_MARKERS "")
 endif()
 
 macro(add_h3_memory_test name srcfile)
@@ -141,13 +139,15 @@ macro(add_h3_test name srcfile)
             # Too slow on startup
             AND NOT "${name}" STREQUAL "testGosperIter"
     )
-        add_custom_target(
-            ${name}_mutation${test_number}
+        set(mutation_done "${MUTATION_REPORT_DIR}/${name}_${test_number}.done")
+        add_custom_command(
+            OUTPUT "${mutation_done}"
             COMMAND ${mutation_runner} "$<TARGET_FILE:${name}>"
+            COMMAND ${CMAKE_COMMAND} -E touch "${mutation_done}"
+            DEPENDS ${name}
+            WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
             COMMENT "Running ${name}_mutation${test_number}")
-
-        add_dependencies(mutation ${name}_mutation${test_number})
-        add_dependencies(${name}_mutation${test_number} clean-mutation)
+        set_property(GLOBAL APPEND PROPERTY H3_MUTATION_DONE_MARKERS "${mutation_done}")
     endif()
 endmacro()
 
@@ -175,13 +175,15 @@ macro(add_h3_test_with_file name srcfile argfile)
     endif()
 
     if(ENABLE_MUTATION)
-        add_custom_target(
-                ${name}_mutation${test_number}
+        set(mutation_done "${MUTATION_REPORT_DIR}/${name}_${test_number}.done")
+        add_custom_command(
+                OUTPUT "${mutation_done}"
                 COMMAND ${mutation_runner} "$<TARGET_FILE:${name}>" ${argfile}
+                COMMAND ${CMAKE_COMMAND} -E touch "${mutation_done}"
+                DEPENDS ${name}
+                WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
                 COMMENT "Running ${name}_mutation${test_number}")
-
-        add_dependencies(mutation ${name}_mutation${test_number})
-        add_dependencies(${name}_mutation${test_number} clean-mutation)
+        set_property(GLOBAL APPEND PROPERTY H3_MUTATION_DONE_MARKERS "${mutation_done}")
     endif()
 endmacro()
 
@@ -219,13 +221,15 @@ macro(add_h3_test_with_arg name srcfile arg)
     endif()
 
     if(ENABLE_MUTATION)
-        add_custom_target(
-                ${name}_mutation${test_number}
+        set(mutation_done "${MUTATION_REPORT_DIR}/${name}_${test_number}.done")
+        add_custom_command(
+                OUTPUT "${mutation_done}"
                 COMMAND ${mutation_runner} "$<TARGET_FILE:${name}>" ${arg}
+                COMMAND ${CMAKE_COMMAND} -E touch "${mutation_done}"
+                DEPENDS ${name}
+                WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
                 COMMENT "Running ${name}_mutation${test_number}")
-
-        add_dependencies(mutation ${name}_mutation${test_number})
-        add_dependencies(${name}_mutation${test_number} clean-mutation)
+        set_property(GLOBAL APPEND PROPERTY H3_MUTATION_DONE_MARKERS "${mutation_done}")
     endif()
 endmacro()
 
@@ -354,3 +358,12 @@ if(BUILD_ALLOC_TESTS)
 endif()
 
 add_custom_target(test-fast COMMAND ctest -E Exhaustive)
+
+if(ENABLE_MUTATION)
+    get_property(mutation_done_markers GLOBAL PROPERTY H3_MUTATION_DONE_MARKERS)
+    add_custom_target(mutation
+        DEPENDS ${mutation_done_markers}
+        COMMAND
+        MULL_ENV="${CMAKE_CURRENT_SOURCE_DIR}/mull.yml" "${MULL_ROOT}/bin/mull-reporter-${MULL_VERSION}" "${mutation_report_dir}/h3-report.sqlite" -reporters Elements -reporters IDE
+        COMMENT "Aggregating mutation results")
+endif()
