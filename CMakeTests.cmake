@@ -126,16 +126,18 @@ macro(add_h3_test name srcfile)
     endif()
 
     if(ENABLE_MUTATION
+            AND (ENABLE_MUTATION_SLOW OR (
+                    # Slow but doable <= 1hr
+                    NOT "${name}" STREQUAL "testCellToLocalIjInternal"
+                    AND NOT "${name}" STREQUAL "testCompactCells"
+                    AND NOT "${name}" STREQUAL "testCellToChildPos"
+                    # Too slow
+                    AND NOT "${name}" STREQUAL "testPolygonToCells"
+                    AND NOT "${name}" STREQUAL "testPolygonToCellsExperimental"
+                    AND NOT "${name}" STREQUAL "testPolygonToCellsReportedExperimental"
+            ))
             # Too slow
             AND NOT "${name}" MATCHES "Exhaustive$"
-            # Slow but doable <= 1hr
-            # AND NOT "${name}" STREQUAL "testCellToLocalIjInternal"
-            # AND NOT "${name}" STREQUAL "testCompactCells"
-            # AND NOT "${name}" STREQUAL "testCellToChildPos"
-            # Too slow
-            AND NOT "${name}" STREQUAL "testPolygonToCells"
-            AND NOT "${name}" STREQUAL "testPolygonToCellsExperimental"
-            AND NOT "${name}" STREQUAL "testPolygonToCellsReportedExperimental"
             # Too slow on startup
             AND NOT "${name}" STREQUAL "testGosperIter"
     )
@@ -151,15 +153,11 @@ endmacro()
 
 macro(add_h3_test_with_file name srcfile argfile)
     add_h3_test_common(${name} ${srcfile})
-    # add a special command (so we don't need to read the test file from the
-    # test program)
-    set(dump_command "cat")
 
     add_test(
         NAME ${name}_test${test_number}
         COMMAND
-            ${SHELL}
-            "${dump_command} ${argfile} | ${TEST_WRAPPER_STR} $<TARGET_FILE:${name}>"
+            ${TEST_WRAPPER_STR} $<TARGET_FILE:${name}> ${argfile}
     )
 
     if(PRINT_TEST_FILES)
@@ -169,11 +167,21 @@ macro(add_h3_test_with_file name srcfile argfile)
     if(ENABLE_COVERAGE)
         add_custom_target(
             ${name}_coverage${test_number}
-            COMMAND ${name} < ${argfile} > /dev/null
+            COMMAND ${name} ${argfile}
             COMMENT "Running ${name}_coverage${test_number}")
 
         add_dependencies(coverage ${name}_coverage${test_number})
         add_dependencies(${name}_coverage${test_number} clean-coverage)
+    endif()
+
+    if(ENABLE_MUTATION)
+        add_custom_target(
+                ${name}_mutation${test_number}
+                COMMAND ${mutation_runner} "$<TARGET_FILE:${name}>" ${argfile}
+                COMMENT "Running ${name}_mutation${test_number}")
+
+        add_dependencies(mutation ${name}_mutation${test_number})
+        add_dependencies(${name}_mutation${test_number} clean-mutation)
     endif()
 endmacro()
 
@@ -208,6 +216,16 @@ macro(add_h3_test_with_arg name srcfile arg)
 
         add_dependencies(coverage ${name}_coverage${test_number})
         add_dependencies(${name}_coverage${test_number} clean-coverage)
+    endif()
+
+    if(ENABLE_MUTATION)
+        add_custom_target(
+                ${name}_mutation${test_number}
+                COMMAND ${mutation_runner} "$<TARGET_FILE:${name}>" ${arg}
+                COMMENT "Running ${name}_mutation${test_number}")
+
+        add_dependencies(mutation ${name}_mutation${test_number})
+        add_dependencies(${name}_mutation${test_number} clean-mutation)
     endif()
 endmacro()
 

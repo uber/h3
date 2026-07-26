@@ -2,6 +2,10 @@ mutators:
 # - cxx_all
  - cxx_arithmetic
  - cxx_calls
+ - cxx_comparison
+ - cxx_logical
+ - cxx_arithmetic_assignment
+ - cxx_boundary
 
 includePaths:
  - src/h3lib/.*$
@@ -13,3 +17,6 @@ excludePaths:
 timeout: 300000
 
 compilationDatabasePath: compile_commands.json
+
+parallelization:
+  executionWorkers: 4

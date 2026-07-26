@@ -62,6 +62,7 @@ option(BUILD_GENERATORS "Build code generation applications." ON)
 # frontend for afl++ is provided instead.
 option(ENABLE_LIBFUZZER "Build fuzzers with libFuzzer support." OFF)
 option(ENABLE_MUTATION "Build library and tests with mutation testing support." OFF)
+option(ENABLE_MUTATION_SLOW "Run some slower tests through mutation testing." OFF)
 
 set(MULL_ROOT "/opt/homebrew/opt/mull@19" CACHE STRING "Root of Mull installation")
 set(MULL_VERSION "19" CACHE STRING "Mull LLVM version")
