@@ -157,7 +157,7 @@ macro(add_h3_test_with_file name srcfile argfile)
     add_test(
         NAME ${name}_test${test_number}
         COMMAND
-            ${TEST_WRAPPER_STR} $<TARGET_FILE:${name}> ${argfile}
+            ${TEST_WRAPPER} $<TARGET_FILE:${name}> ${argfile}
     )
 
     if(PRINT_TEST_FILES)
