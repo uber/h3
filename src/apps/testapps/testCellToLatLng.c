@@ -67,7 +67,7 @@ int main(int argc, char *argv[]) {
     while (1) {
         // get an index from stdin
         if (!fgets(buff, BUFF_SIZE, in)) {
-            if (feof(stdin))
+            if (feof(in))
                 break;
             else
                 error("reading input from stdin");
