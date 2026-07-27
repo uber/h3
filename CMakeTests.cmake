@@ -139,7 +139,7 @@ macro(add_h3_test name srcfile)
             # Too slow on startup
             AND NOT "${name}" STREQUAL "testGosperIter"
     )
-        set(mutation_done "${MUTATION_REPORT_DIR}/${name}_${test_number}.done")
+        set(mutation_done "${mutation_report_dir}/${name}_${test_number}.done")
         add_custom_command(
             OUTPUT "${mutation_done}"
             COMMAND ${mutation_runner} "$<TARGET_FILE:${name}>"
@@ -175,7 +175,7 @@ macro(add_h3_test_with_file name srcfile argfile)
     endif()
 
     if(ENABLE_MUTATION)
-        set(mutation_done "${MUTATION_REPORT_DIR}/${name}_${test_number}.done")
+        set(mutation_done "${mutation_report_dir}/${name}_${test_number}.done")
         add_custom_command(
                 OUTPUT "${mutation_done}"
                 COMMAND ${mutation_runner} "$<TARGET_FILE:${name}>" ${argfile}
@@ -222,7 +222,7 @@ macro(add_h3_test_with_arg name srcfile arg)
 
 #    h3NeighborRotations test disabled for slowness
 #    if(ENABLE_MUTATION)
-#        set(mutation_done "${MUTATION_REPORT_DIR}/${name}_${test_number}.done")
+#        set(mutation_done "${mutation_report_dir}/${name}_${test_number}.done")
 #        add_custom_command(
 #                OUTPUT "${mutation_done}"
 #                COMMAND ${mutation_runner} "$<TARGET_FILE:${name}>" ${arg}
