@@ -221,7 +221,7 @@ macro(add_h3_test_with_arg name srcfile arg)
     endif()
 
     # h3NeighborRotations tests run but are slow
-    if(ENABLE_MUTATION and ENABLE_MUTATION_SLOW)
+    if(ENABLE_MUTATION AND ENABLE_MUTATION_SLOW)
         set(mutation_done "${mutation_report_dir}/${name}_${test_number}.done")
         add_custom_command(
                 OUTPUT "${mutation_done}"
