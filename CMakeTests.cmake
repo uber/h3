@@ -62,7 +62,17 @@ if(ENABLE_MUTATION)
             # TODO: Use ADDITIONAL_MAKE_CLEAN_FILES or BYPRODUCYS?
             COMMAND ${CMAKE_COMMAND} -E rm -rf '${mutation_report_dir}'
             COMMENT "Deleting mutation reports")
-    set(mutation_runner "MULL_ENV=${CMAKE_CURRENT_SOURCE_DIR}/mull.yml" "${MULL_ROOT}/bin/mull-runner-${MULL_VERSION}" --allow-surviving -reporters IDE -reporters SQLite -report-dir '${mutation_report_dir}' -report-name h3-report)
+    set(mutation_runner
+            "H3_MULL_SKIP_DB=${mutation_report_dir}/h3-report.sqlite"
+            "MULL_ENV=${CMAKE_CURRENT_SOURCE_DIR}/mull.yml"
+            "${MULL_ROOT}/bin/mull-runner-${MULL_VERSION}"
+            --allow-surviving
+            -reporters IDE
+            -reporters SQLite
+            -report-dir '${mutation_report_dir}'
+            -report-name h3-report
+            --test-program "${CMAKE_CURRENT_SOURCE_DIR}/scripts/mull_wrapper.sh"
+    )
     set_property(GLOBAL PROPERTY H3_MUTATION_DONE_MARKERS "")
 endif()
 
@@ -142,7 +152,7 @@ macro(add_h3_test name srcfile)
         set(mutation_done "${mutation_report_dir}/${name}_${test_number}.done")
         add_custom_command(
             OUTPUT "${mutation_done}"
-            COMMAND ${mutation_runner} "$<TARGET_FILE:${name}>"
+            COMMAND "H3_MULL_REAL_EXEC=$<TARGET_FILE:${name}>" ${mutation_runner} "$<TARGET_FILE:${name}>"
             COMMAND ${CMAKE_COMMAND} -E touch "${mutation_done}"
             DEPENDS ${name}
             WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
@@ -178,7 +188,7 @@ macro(add_h3_test_with_file name srcfile argfile)
         set(mutation_done "${mutation_report_dir}/${name}_${test_number}.done")
         add_custom_command(
                 OUTPUT "${mutation_done}"
-                COMMAND ${mutation_runner} "$<TARGET_FILE:${name}>" ${argfile}
+                COMMAND "H3_MULL_REAL_EXEC=$<TARGET_FILE:${name}>" ${mutation_runner} "$<TARGET_FILE:${name}>" ${argfile}
                 COMMAND ${CMAKE_COMMAND} -E touch "${mutation_done}"
                 DEPENDS ${name}
                 WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
@@ -225,7 +235,7 @@ macro(add_h3_test_with_arg name srcfile arg)
         set(mutation_done "${mutation_report_dir}/${name}_${test_number}.done")
         add_custom_command(
                 OUTPUT "${mutation_done}"
-                COMMAND ${mutation_runner} "$<TARGET_FILE:${name}>" ${arg}
+                COMMAND "H3_MULL_REAL_EXEC=$<TARGET_FILE:${name}>" ${mutation_runner} "$<TARGET_FILE:${name}>" ${arg}
                 COMMAND ${CMAKE_COMMAND} -E touch "${mutation_done}"
                 DEPENDS ${name}
                 WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
