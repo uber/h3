@@ -56,6 +56,7 @@ endif()
 
 if(ENABLE_MUTATION)
     set(mutation_report_dir "${CMAKE_CURRENT_BINARY_DIR}/mutation")
+    file(MAKE_DIRECTORY "${mutation_report_dir}")
     add_custom_target(
             clean-mutation
             # Before running mutation, clear all counters
