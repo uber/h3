@@ -60,53 +60,7 @@ static const Vec3d faceCenterPoint[NUM_ICOSA_FACES] = {
     {-0.1092625278784796, 0.4811951572873210, -0.8697775121287253},   // face 19
 };
 
-/** @brief icosahedron face ijk axes as azimuth in radians from face center to
- * vertex 0/1/2 respectively
- */
-static const double faceAxesAzRadsCII[NUM_ICOSA_FACES][3] = {
-    {5.619958268523939882, 3.525563166130744542,
-     1.431168063737548730},  // face  0
-    {5.760339081714187279, 3.665943979320991689,
-     1.571548876927796127},  // face  1
-    {0.780213654393430055, 4.969003859179821079,
-     2.874608756786625655},  // face  2
-    {0.430469363979999913, 4.619259568766391033,
-     2.524864466373195467},  // face  3
-    {6.130269123335111400, 4.035874020941915804,
-     1.941478918548720291},  // face  4
-    {2.692877706530642877, 0.598482604137447119,
-     4.787272808923838195},  // face  5
-    {2.982963003477243874, 0.888567901084048369,
-     5.077358105870439581},  // face  6
-    {3.532912002790141181, 1.438516900396945656,
-     5.627307105183336758},  // face  7
-    {3.494305004259568154, 1.399909901866372864,
-     5.588700106652763840},  // face  8
-    {3.003214169499538391, 0.908819067106342928,
-     5.097609271892733906},  // face  9
-    {5.930472956509811562, 3.836077854116615875,
-     1.741682751723420374},  // face 10
-    {0.138378484090254847, 4.327168688876645809,
-     2.232773586483450311},  // face 11
-    {0.448714947059150361, 4.637505151845541521,
-     2.543110049452346120},  // face 12
-    {0.158629650112549365, 4.347419854898940135,
-     2.253024752505744869},  // face 13
-    {5.891865957979238535, 3.797470855586042958,
-     1.703075753192847583},  // face 14
-    {2.711123289609793325, 0.616728187216597771,
-     4.805518392002988683},  // face 15
-    {3.294508837434268316, 1.200113735041072948,
-     5.388903939827463911},  // face 16
-    {3.804819692245439833, 1.710424589852244509,
-     5.899214794638635174},  // face 17
-    {3.664438879055192436, 1.570043776661997111,
-     5.758833981448388027},  // face 18
-    {2.361378999196363184, 0.266983896803167583,
-     4.455774101589558636},  // face 19
-};
-
-/** @brief cos() of faceAxesAzRadsCII[face][0], precomputed so that
+/** @brief cos() of the per-face CII azimuth to vertex 0, precomputed so that
  * _hex2dToVec3 can fold the azimuth rotation via angle-addition identities
  * instead of calling trigonometric functions at runtime. */
 static const double faceAxesAzCosCII[NUM_ICOSA_FACES] = {
@@ -132,8 +86,8 @@ static const double faceAxesAzCosCII[NUM_ICOSA_FACES] = {
     -0.710763263049737803,  // face 19
 };
 
-/** @brief sin() of faceAxesAzRadsCII[face][0], precomputed companion to
- * faceAxesAzCosCII (see _hex2dToVec3). */
+/** @brief sin() of the per-face CII azimuth to vertex 0, precomputed companion
+ * to faceAxesAzCosCII (see _hex2dToVec3). */
 static const double faceAxesAzSinCII[NUM_ICOSA_FACES] = {
     -0.615662990588665915,  // face  0
     -0.499348130945884039,  // face  1
@@ -487,7 +441,7 @@ static void _vec3ToHex2d(const Vec3d *p, int res, int *face, Vec2d *v) {
     double cosAz = nComp / hyp;
     double sinAz = eComp / hyp;
 
-    // theta = faceAxesAzRadsCII[face][0] - azimuth, folded via the
+    // theta = (per-face CII azimuth to vertex 0) - azimuth, folded via the
     // angle-subtraction identity against the precomputed per-face cos/sin:
     //   cos(A - az) = cosA*cosAz + sinA*sinAz
     //   sin(A - az) = sinA*cosAz - cosA*sinAz
@@ -579,8 +533,8 @@ static void _hex2dToVec3(const Vec2d *v, int face, int res, int substrate,
         sinTheta = ns;
     }
 
-    // find theta as an azimuth: theta = faceAxesAzRadsCII[face][0] - theta,
-    // folded in via the angle-subtraction identity (a = face azimuth):
+    // find theta as an azimuth: theta = (per-face CII azimuth to vertex 0) -
+    // theta, folded in via the angle-subtraction identity (a = face azimuth):
     //   cos(a - theta) = cos(a)*cosTheta + sin(a)*sinTheta
     //   sin(a - theta) = sin(a)*cosTheta - cos(a)*sinTheta
     // _posAngleRads range-reduction is unnecessary since cos/sin are periodic.
