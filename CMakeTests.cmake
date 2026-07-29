@@ -55,7 +55,7 @@ if(ENABLE_COVERAGE)
 endif()
 
 if(ENABLE_MUTATION)
-    set(mutation_report_dir "${CMAKE_CURRENT_BINARY_DIR}/h3-mutation-report")
+    set(mutation_report_dir "${CMAKE_CURRENT_BINARY_DIR}/mutation")
     add_custom_target(
             clean-mutation
             # Before running mutation, clear all counters

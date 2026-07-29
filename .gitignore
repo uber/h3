@@ -94,7 +94,7 @@ coverage.info
 coverage.cleaned.info
 
 # Mutation testing
-h3-mutation-test/
+mutation/
 
 # IDEs (CodeBlocks/CLion/VSCode)
 *.cbp
