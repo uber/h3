@@ -108,6 +108,18 @@ if(ENABLE_WARNINGS)
     endif()
 endif()
 
+# Disable floating-point contraction (FMA fusion) so H3 geometry is
+# bit-reproducible across compilers and optimization levels. GCC defaults to
+# -ffp-contract=fast and Clang to =on; that difference fuses multiply-adds
+# differently and shifts results by ~1 ULP -- e.g. cellAreaKm2 of
+# 85283473fffffff prints 265.0925581283 (no contraction) vs 265.0925581282
+# (fast) -- which breaks exact-match tests and makes the same cell yield
+# different geometry on different platforms. MSVC does not contract by default
+# (/fp:precise) and does not accept this flag.
+if(NOT MSVC)
+    list(APPEND H3_COMPILE_FLAGS -ffp-contract=off)
+endif()
+
 if(NOT MSVC)
     # Compiler options are set only on non-Windows, since these options are not
     # correct for MSVC.
