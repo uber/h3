@@ -21,3 +21,8 @@ make mutation
 
 This should produce a final report with a mutation score. Note that not all tests are run through
 the mutation testing pipeline, specifically tests that use data files.
+
+Note: You will want to run mutation in serial. Mull already runs each mutation in
+parallel, and the H3 test scripts help exclude mutations that have already been tested.
+The intention is then you would switch on ENABLE_MUTATION_SLOW=1 and run `make mutation`
+once more.
