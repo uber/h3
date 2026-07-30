@@ -816,6 +816,10 @@ H3Error H3_EXPORT(uncompactCellsSize)(const H3Index *compactedSet,
             // The parent res does not contain `res`.
             return E_RES_MISMATCH;
         }
+        if (ADD_INT64S_OVERFLOWS(numOut, childrenSize)) {
+            // numOut + childrenSize would overflow
+            return E_MEMORY_ALLOC;
+        }
         numOut += childrenSize;
     }
     *out = numOut;
