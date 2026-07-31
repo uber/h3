@@ -943,7 +943,9 @@ H3Error _getEdgeHexagons(const GeoLoop *geoloop, int64_t numHexagons, int res,
                 (destination.lng * j * invNumHexesEst);
             H3Index pointHex;
             H3Error e = H3_EXPORT(latLngToCell)(&interpolate, res, &pointHex);
-            if (e) {
+            if (NEVER(e)) {
+                // Any case that would cause latLngToCell to return an error
+                // would cause lineHexEstimate to return an error, above.
                 return e;
             }
             // A simple hash to store the hexagon, or move to another place if
