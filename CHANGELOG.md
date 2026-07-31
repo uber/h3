@@ -6,6 +6,9 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+### Fixed
+- Fixed the `polygonToCells` fuzzer regression test to use explicit double literals instead of reinterpreting raw bytes, so it is portable across endianness (#964)
+- No longer emit a CMake warning about a missing `clang-format`/`clang-tidy` when the user explicitly set `ENABLE_FORMAT=OFF`/`ENABLE_LINTING=OFF` (#1158)
 
 ## [4.5.0] - 2026-05-21
 ### Added
@@ -100,7 +103,7 @@ The public API of this library consists of the functions declared in file
 - Removed a duplicated include preprocessor directive (#682)
 - Improvements to the fuzzer suite and their automatic runs in CI (#671, #674, #687)
 - Increased test coverage (#642)
-- Added a fuzzer targetting internal `algos.c` functions (#675)
+- Added a fuzzer targeting internal `algos.c` functions (#675)
 
 ## [4.0.0] - 2022-08-23
 ### Breaking changes
@@ -393,7 +396,7 @@ The public API of this library consists of the functions declared in file
 ### Added
 - Added a `make install` target.
 ### Changed
-- Improved compatability with building on Windows.
+- Improved compatibility with building on Windows.
 - Fixed various cases where the test suite could crash or not compile.
 
 ## [3.0.0] - 2018-01-08

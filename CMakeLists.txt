@@ -425,6 +425,14 @@ add_h3_library(h3 "")
 
 # Automatic code formatting Give preference to clang-format-14
 find_program(CLANG_FORMAT_PATH NAMES clang-format-14 clang-format)
+# Warn about a missing clang-format only if the user did not disable formatting
+# themselves. Must be checked before cmake_dependent_option overrides
+# ENABLE_FORMAT when clang-format is not found.
+if(DEFINED ENABLE_FORMAT AND NOT ENABLE_FORMAT)
+    set(format_explicitly_disabled TRUE)
+else()
+    set(format_explicitly_disabled FALSE)
+endif()
 cmake_dependent_option(
     ENABLE_FORMAT "Enable running clang-format before compiling" ON
     "CLANG_FORMAT_PATH" OFF)
@@ -438,19 +446,24 @@ if(ENABLE_FORMAT)
         COMMENT "Formatting sources")
     # Always do formatting
     add_dependencies(h3 format)
-elseif(NOT CLANG_FORMAT_PATH)
+elseif(NOT CLANG_FORMAT_PATH AND NOT format_explicitly_disabled)
     message(WARNING "clang-format was not detected, "
                     "so automatic source code reformatting is disabled")
 endif()
 
-option(ENABLE_LINTING "Run clang-tidy on source files" ON)
 find_program(CLANG_TIDY_PATH "clang-tidy")
+# Same as above: only warn when linting was not disabled by the user
+if(DEFINED ENABLE_LINTING AND NOT ENABLE_LINTING)
+    set(linting_explicitly_disabled TRUE)
+else()
+    set(linting_explicitly_disabled FALSE)
+endif()
 cmake_dependent_option(
     ENABLE_LINTING "Enable running clang-tidy on sources during compilation" ON
     "CLANG_TIDY_PATH" OFF)
 if(ENABLE_LINTING)
     set_target_properties(h3 PROPERTIES C_CLANG_TIDY "${CLANG_TIDY_PATH}")
-elseif(NOT CLANG_TIDY_PATH)
+elseif(NOT CLANG_TIDY_PATH AND NOT linting_explicitly_disabled)
     message(WARNING "clang-tidy was not detected, "
                     "so source code linting is disabled")
 endif()

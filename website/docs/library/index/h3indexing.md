@@ -15,8 +15,8 @@ An `H3Index` is the 64-bit integer representation of an H3 index, which may be o
 
 * Mode 0 is reserved and indicates an [invalid H3 index](#invalid-index).
 * Mode 1 is an *[H3 Cell](./cell.md)* (Hexagon/Pentagon) index.
-* Mode 2 is an *[H3 Directed Edge](./directededge.md)* (Cell A -> Cell B) index.
-* Mode 3 is planned to be a bidirectional edge (Cell A <-> Cell B).
+* Mode 2 is an *[H3 Directed Edge](./directededge.md)* (Cell A -&gt; Cell B) index.
+* Mode 3 is planned to be a bidirectional edge (Cell A &lt;-&gt; Cell B).
 * Mode 4 is an *[H3 Vertex](./vertex.md)* (i.e. a single vertex of an H3 Cell).
 
 The canonical string representation of an `H3Index` is the hexadecimal representation of the integer, using lowercase letters. The string representation is variable length (no zero padding) and is not prefixed or suffixed.

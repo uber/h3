@@ -24,5 +24,5 @@ validated, may change between versions of the library. As a result the specific 
 
 ## Function renaming
 
-The [`H3_PREFIX`](./compilation-options#H3_PREFIX) exists to rename all functions in the H3 public API with a prefix chosen at compile time. The default is to have no prefix.
+The [`H3_PREFIX`](./compilation-options#h3_prefix) exists to rename all functions in the H3 public API with a prefix chosen at compile time. The default is to have no prefix.
 This can be needed when linking multiple copies of the H3 library in order to avoid naming collisions. Internal functions and symbols are not renamed.

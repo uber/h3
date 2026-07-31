@@ -1,5 +1,5 @@
 {
-  "version-3.x/someSidebar": [
+  "someSidebar": [
     {
       "collapsed": true,
       "type": "category",
@@ -7,7 +7,7 @@
       "items": [
         {
           "type": "doc",
-          "id": "version-3.x/README"
+          "id": "README"
         },
         {
           "collapsed": true,
@@ -16,23 +16,23 @@
           "items": [
             {
               "type": "doc",
-              "id": "version-3.x/highlights/aggregation"
+              "id": "highlights/aggregation"
             },
             {
               "type": "doc",
-              "id": "version-3.x/highlights/joining"
+              "id": "highlights/joining"
             },
             {
               "type": "doc",
-              "id": "version-3.x/highlights/flowmodel"
+              "id": "highlights/flowmodel"
             },
             {
               "type": "doc",
-              "id": "version-3.x/highlights/ml"
+              "id": "highlights/ml"
             },
             {
               "type": "doc",
-              "id": "version-3.x/highlights/indexing"
+              "id": "highlights/indexing"
             }
           ]
         },
@@ -43,33 +43,33 @@
           "items": [
             {
               "type": "doc",
-              "id": "version-3.x/comparisons/s2"
+              "id": "comparisons/s2"
             },
             {
               "type": "doc",
-              "id": "version-3.x/comparisons/geohash"
+              "id": "comparisons/geohash"
             },
             {
               "type": "doc",
-              "id": "version-3.x/comparisons/hexbin"
+              "id": "comparisons/hexbin"
             },
             {
               "type": "doc",
-              "id": "version-3.x/comparisons/admin"
+              "id": "comparisons/admin"
             },
             {
               "type": "doc",
-              "id": "version-3.x/comparisons/placekey"
+              "id": "comparisons/placekey"
             }
           ]
         },
         {
           "type": "doc",
-          "id": "version-3.x/installation"
+          "id": "installation"
         },
         {
           "type": "doc",
-          "id": "version-3.x/quickstart"
+          "id": "quickstart"
         }
       ]
     },
@@ -80,31 +80,31 @@
       "items": [
         {
           "type": "doc",
-          "id": "version-3.x/api/indexing"
+          "id": "api/indexing"
         },
         {
           "type": "doc",
-          "id": "version-3.x/api/inspection"
+          "id": "api/inspection"
         },
         {
           "type": "doc",
-          "id": "version-3.x/api/traversal"
+          "id": "api/traversal"
         },
         {
           "type": "doc",
-          "id": "version-3.x/api/hierarchy"
+          "id": "api/hierarchy"
         },
         {
           "type": "doc",
-          "id": "version-3.x/api/regions"
+          "id": "api/regions"
         },
         {
           "type": "doc",
-          "id": "version-3.x/api/uniedge"
+          "id": "api/uniedge"
         },
         {
           "type": "doc",
-          "id": "version-3.x/api/misc"
+          "id": "api/misc"
         }
       ]
     },
@@ -115,19 +115,19 @@
       "items": [
         {
           "type": "doc",
-          "id": "version-3.x/community/bindings"
+          "id": "community/bindings"
         },
         {
           "type": "doc",
-          "id": "version-3.x/community/libraries"
+          "id": "community/libraries"
         },
         {
           "type": "doc",
-          "id": "version-3.x/community/tutorials"
+          "id": "community/tutorials"
         },
         {
           "type": "doc",
-          "id": "version-3.x/community/applications"
+          "id": "community/applications"
         }
       ]
     },
@@ -138,35 +138,35 @@
       "items": [
         {
           "type": "doc",
-          "id": "version-3.x/core-library/overview"
+          "id": "core-library/overview"
         },
         {
           "type": "doc",
-          "id": "version-3.x/core-library/restable"
+          "id": "core-library/restable"
         },
         {
           "type": "doc",
-          "id": "version-3.x/core-library/h3Indexing"
+          "id": "core-library/h3Indexing"
         },
         {
           "type": "doc",
-          "id": "version-3.x/core-library/coordsystems"
+          "id": "core-library/coordsystems"
         },
         {
           "type": "doc",
-          "id": "version-3.x/core-library/creating-bindings"
+          "id": "core-library/creating-bindings"
         },
         {
           "type": "doc",
-          "id": "version-3.x/core-library/custom-alloc"
+          "id": "core-library/custom-alloc"
         },
         {
           "type": "doc",
-          "id": "version-3.x/core-library/usage"
+          "id": "core-library/usage"
         },
         {
           "type": "doc",
-          "id": "version-3.x/core-library/filters"
+          "id": "core-library/filters"
         },
         {
           "collapsed": true,
@@ -175,15 +175,15 @@
           "items": [
             {
               "type": "doc",
-              "id": "version-3.x/core-library/geoToH3desc"
+              "id": "core-library/geoToH3desc"
             },
             {
               "type": "doc",
-              "id": "version-3.x/core-library/h3ToGeoDesc"
+              "id": "core-library/h3ToGeoDesc"
             },
             {
               "type": "doc",
-              "id": "version-3.x/core-library/h3ToGeoBoundaryDesc"
+              "id": "core-library/h3ToGeoBoundaryDesc"
             }
           ]
         }

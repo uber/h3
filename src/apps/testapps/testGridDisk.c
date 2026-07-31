@@ -330,6 +330,22 @@ SUITE(gridDisk) {
         free(neighbors);
     }
 
+    TEST(gridDiskInvalidKSubsequence) {
+        H3Index h;
+        setH3Index(&h, 2, 4, 0);
+        // Make the indexing digits be `10`, which is invalid
+        // because it has a leading non-zero 1 under a pentagon base cell.
+        H3_SET_INDEX_DIGIT(h, 1, K_AXES_DIGIT);
+
+        int k = 1;
+        int64_t kSz;
+        t_assertSuccess(H3_EXPORT(maxGridDiskSize)(k, &kSz));
+        H3Index *neighbors = calloc(kSz, sizeof(H3Index));
+        t_assert(H3_EXPORT(gridDisk)(h, k, neighbors) == E_FAILED,
+                 "gridDisk returns error for invalid k subsequence input");
+        free(neighbors);
+    }
+
     TEST(gridDiskInvalidDigit) {
         int k = 2;
         int64_t kSz;
@@ -338,6 +354,37 @@ SUITE(gridDisk) {
         t_assert(H3_EXPORT(gridDisk)(0x4d4b00fe5c5c3030, k, neighbors) ==
                      E_CELL_INVALID,
                  "gridDisk returns error for invalid input");
+        free(neighbors);
+    }
+
+    TEST(gridDiskInvalid2) {
+        H3Index index = 0x8009fffffffffff;
+        H3_SET_RESOLUTION(index, 2);
+        H3_SET_INDEX_DIGIT(index, 1, INVALID_DIGIT);
+        H3_SET_INDEX_DIGIT(index, 2, CENTER_DIGIT);
+
+        int k = 2;
+        int64_t kSz;
+        t_assertSuccess(H3_EXPORT(maxGridDiskSize)(k, &kSz));
+        H3Index *neighbors = calloc(kSz, sizeof(H3Index));
+        t_assert(H3_EXPORT(gridDisk)(index, k, neighbors) == E_CELL_INVALID,
+                 "gridDisk returns error for invalid input");
+        free(neighbors);
+    }
+
+    TEST(gridDiskUnsafeInvalid3) {
+        H3Index index = 0x8009fffffffffff;
+        H3_SET_RESOLUTION(index, 2);
+        H3_SET_INDEX_DIGIT(index, 1, INVALID_DIGIT);
+        H3_SET_INDEX_DIGIT(index, 2, K_AXES_DIGIT);
+
+        int k = 2;
+        int64_t kSz;
+        t_assertSuccess(H3_EXPORT(maxGridDiskSize)(k, &kSz));
+        H3Index *neighbors = calloc(kSz, sizeof(H3Index));
+        t_assert(
+            H3_EXPORT(gridDiskUnsafe)(index, k, neighbors) == E_CELL_INVALID,
+            "gridDisk returns error for invalid input");
         free(neighbors);
     }
 

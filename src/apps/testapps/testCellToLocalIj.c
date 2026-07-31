@@ -207,6 +207,16 @@ SUITE(h3ToLocalIj) {
                  "Negative I and J components fail");
     }
 
+    TEST(cellToLocalIj_invalidDigit_otherBC) {
+        H3Index index = 0x820897fffffffff;
+        H3_SET_INDEX_DIGIT(index, 1, INVALID_DIGIT);
+        H3Index other = 0x821f67fffffffff;
+        CoordIJ ij = {.i = 0, .j = 0};
+        t_assert(
+            H3_EXPORT(cellToLocalIj)(index, other, 0, &ij) == E_CELL_INVALID,
+            "cellToLocalIj invalid origin");
+    }
+
     TEST(localIjToCell_overflow_i) {
         for (int res = 0; res <= MAX_H3_RES; res++) {
             H3Index origin;

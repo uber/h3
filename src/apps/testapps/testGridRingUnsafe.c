@@ -101,6 +101,26 @@ SUITE(gridRingUnsafe) {
                  "Should return an error when starting at a pentagon");
     }
 
+    TEST(invalidPentagon) {
+        H3Index index = 0x8009fffffffffff;
+        H3_SET_RESOLUTION(index, 2);
+        H3_SET_INDEX_DIGIT(index, 1, K_AXES_DIGIT);
+        H3_SET_INDEX_DIGIT(index, 2, CENTER_DIGIT);
+        H3Index kp2[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+        t_assert(H3_EXPORT(gridRingUnsafe)(index, 2, kp2) == E_FAILED,
+                 "Should return an error when starting at a pentagon");
+    }
+
+    TEST(invalidPentagon2) {
+        H3Index index = 0x8009fffffffffff;
+        H3_SET_RESOLUTION(index, 2);
+        H3_SET_INDEX_DIGIT(index, 1, INVALID_DIGIT);
+        H3_SET_INDEX_DIGIT(index, 2, K_AXES_DIGIT);
+        H3Index kp2[] = {0, 0, 0, 0, 0, 0};
+        t_assert(H3_EXPORT(gridRingUnsafe)(index, 1, kp2) == E_CELL_INVALID,
+                 "Should return an error when starting at a pentagon");
+    }
+
     TEST(gridRingUnsafe_matches_gridDiskDistancesSafe) {
         for (int res = 0; res < 2; res++) {
             for (int i = 0; i < NUM_BASE_CELLS; i++) {

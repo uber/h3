@@ -312,7 +312,7 @@ public class H3Exception extends Exception {
     public static String messageFromErrorCode(long errorCode) {
         switch (errorCode) {
             case 4: // E_RES_INVALID
-                return "Resolution arugment was invalid";
+                return "Resolution argument was invalid";
             // elided ...
         }
     }
