@@ -184,7 +184,13 @@ endforeach()
 file(GLOB all_ic_files tests/inputfiles/res*ic.txt)
 foreach(file ${all_ic_files})
     add_h3_test_with_file(testCellToLatLng src/apps/testapps/testCellToLatLng.c
-                          ${file})
+            ${file})
+endforeach()
+
+file(GLOB all_inspection_files tests/inputfiles/inspection/*.txt)
+foreach(file ${all_inspection_files})
+    add_h3_test_with_arg(testInspection src/apps/testapps/testInspection.c
+            ${file})
 endforeach()
 
 file(GLOB all_centers tests/inputfiles/rand*centers.txt)

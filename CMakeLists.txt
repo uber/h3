@@ -284,6 +284,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testDescribeH3Error.c
     src/apps/testapps/testGosperIter.c
     src/apps/testapps/testGeoLoopArea.c
+    src/apps/testapps/testInspection.c
     src/apps/miscapps/cellToBoundaryHier.c
     src/apps/miscapps/cellToLatLngHier.c
     src/apps/miscapps/generateBaseCellNeighbors.c
