@@ -203,4 +203,29 @@ SUITE(polygonToCells_reported) {
         t_assert(actualNumIndexes == 8, "got expected polygonToCells size");
         free(hexagons);
     }
+
+    TEST(fuzzer_exerciseFailed) {
+        // Exercise a case in polygonToCells where lineHexEstimate succeeds,
+        // but latLngToCell fails. In this case, the calculation of
+        // interpolate.lng results in -inf.
+        LatLng verts[] = {{1.4312639710669513e-281, -6.8543926671287102e-229},
+                          {-1.5871363643635851e-151, -2.9080744501807555e+306}};
+
+        uint8_t res = 2;
+        GeoPolygon geoPolygon;
+        geoPolygon.numHoles = 0;
+        geoPolygon.holes = NULL;
+        geoPolygon.geoloop.numVerts = 2;
+        geoPolygon.geoloop.verts = verts;
+
+        int64_t sz;
+        t_assertSuccess(
+            H3_EXPORT(maxPolygonToCellsSize)(&geoPolygon, res, 0, &sz));
+        t_assert(sz == 3402, "Expected output count");
+        H3Index *out = calloc(sz, sizeof(H3Index));
+        t_assert(
+            H3_EXPORT(polygonToCells)(&geoPolygon, res, 0, out) == E_FAILED,
+            "failed");
+        free(out);
+    }
 }
