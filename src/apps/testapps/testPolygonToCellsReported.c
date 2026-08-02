@@ -223,9 +223,9 @@ SUITE(polygonToCells_reported) {
             H3_EXPORT(maxPolygonToCellsSize)(&geoPolygon, res, 0, &sz));
         t_assert(sz == 3402, "Expected output count");
         H3Index *out = calloc(sz, sizeof(H3Index));
-        t_assert(
-            H3_EXPORT(polygonToCells)(&geoPolygon, res, 0, out) == E_FAILED,
-            "failed");
+        t_assert(H3_EXPORT(polygonToCells)(&geoPolygon, res, 0, out) ==
+                     E_LATLNG_DOMAIN,
+                 "failed");
         free(out);
     }
 }

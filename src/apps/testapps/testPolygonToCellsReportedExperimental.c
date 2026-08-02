@@ -72,7 +72,7 @@ SUITE(polygonToCells_reported) {
 
         for (int res = 0; res < 3; res++) {
             int64_t polygonToCellsSize;
-            t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(
+            t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
                 &worldGeoPolygon, res, CONTAINMENT_CENTER,
                 &polygonToCellsSize));
             H3Index *polygonToCellsOut =
@@ -85,7 +85,7 @@ SUITE(polygonToCells_reported) {
                 countNonNullIndexes(polygonToCellsOut, polygonToCellsSize);
 
             int64_t polygonToCellsSize2;
-            t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(
+            t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
                 &worldGeoPolygon2, res, CONTAINMENT_CENTER,
                 &polygonToCellsSize2));
             H3Index *polygonToCellsOut2 =
@@ -140,7 +140,7 @@ SUITE(polygonToCells_reported) {
 
         int res = 7;
         int64_t numHexagons;
-        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(
+        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
             &testPolygon, res, CONTAINMENT_CENTER, &numHexagons));
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
@@ -169,7 +169,7 @@ SUITE(polygonToCells_reported) {
 
         int res = 7;
         int64_t numHexagons;
-        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(
+        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
             &testPolygon, res, CONTAINMENT_CENTER, &numHexagons));
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
@@ -195,7 +195,7 @@ SUITE(polygonToCells_reported) {
 
         int res = 13;
         int64_t numHexagons;
-        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(
+        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
             &testPolygon, res, CONTAINMENT_CENTER, &numHexagons));
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
@@ -228,7 +228,7 @@ SUITE(polygonToCells_reported) {
 
         int res = 5;
         int64_t numHexagons;
-        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(
+        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
             &testPolygon, res, CONTAINMENT_CENTER, &numHexagons));
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
@@ -238,5 +238,30 @@ SUITE(polygonToCells_reported) {
 
         t_assert(actualNumIndexes == 8, "got expected polygonToCells size");
         free(hexagons);
+    }
+
+    TEST(fuzzer_exerciseFailed) {
+        // Exercise a case which would fail polygonToCells, but not this
+        // algorithm.
+        LatLng verts[] = {{1.4312639710669513e-281, -6.8543926671287102e-229},
+                          {-1.5871363643635851e-151, -2.9080744501807555e+306}};
+
+        uint8_t res = 2;
+        GeoPolygon geoPolygon;
+        geoPolygon.numHoles = 0;
+        geoPolygon.holes = NULL;
+        geoPolygon.geoloop.numVerts = 2;
+        geoPolygon.geoloop.verts = verts;
+
+        int64_t sz;
+        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+            &geoPolygon, res, 0, &sz));
+        t_assert(sz == 0, "Expected output count");
+        H3Index *out = calloc(sz, sizeof(H3Index));
+        t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(&geoPolygon, res,
+                                                              0, sz, out));
+        int64_t actualNumIndexes = countNonNullIndexes(out, sz);
+        t_assert(actualNumIndexes == 0, "got expected polygonToCells size");
+        free(out);
     }
 }
