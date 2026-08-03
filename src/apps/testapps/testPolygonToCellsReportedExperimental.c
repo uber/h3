@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <float.h>
 #include <stdlib.h>
 
 #include "algos.h"
@@ -243,8 +244,7 @@ SUITE(polygonToCells_reported) {
     TEST(fuzzer_exerciseFailed) {
         // Exercise a case which would fail polygonToCells, but not this
         // algorithm.
-        LatLng verts[] = {{1.4312639710669513e-281, -6.8543926671287102e-229},
-                          {-1.5871363643635851e-151, -2.9080744501807555e+306}};
+        LatLng verts[] = {{DBL_MIN, -DBL_MIN}, {0, -DBL_MAX}};
 
         uint8_t res = 2;
         GeoPolygon geoPolygon;
