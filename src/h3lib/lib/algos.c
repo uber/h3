@@ -232,20 +232,10 @@ H3Error H3_EXPORT(gridDiskDistances)(H3Index origin, int k, H3Index *out,
         // Fast algo failed, fall back to slower, correct algo
         // and also wipe out array because contents untrustworthy
         memset(out, 0, maxIdx * sizeof(H3Index));
-        if (distances == NULL) {
-            distances = H3_MEMORY(calloc)(maxIdx, sizeof(int));
-            if (!distances) {
-                return E_MEMORY_ALLOC;
-            }
-            H3Error result =
-                _gridDiskDistancesInternal(origin, k, out, distances, maxIdx);
-            H3_MEMORY(free)(distances);
-            return result;
-        } else {
+        if (distances != NULL) {
             memset(distances, 0, maxIdx * sizeof(int));
-            return _gridDiskDistancesInternal(origin, k, out, distances,
-                                              maxIdx);
         }
+        return _gridDiskDistancesInternal(origin, k, out, distances, maxIdx);
     } else {
         return E_SUCCESS;
     }
@@ -263,7 +253,7 @@ H3Error H3_EXPORT(gridDiskDistances)(H3Index origin, int k, H3Index *out,
  *                     H3Index or 0.
  * @param  distances   Scratch area, with elements paralleling the out array.
  *                     Elements indicate ijk distance from the origin cell to
- *                     the output cell.
+ *                     the output cell. May be NULL.
  * @param  maxIdx      Size of out and scratch arrays (must be
  * maxGridDiskSize(k))
  */
@@ -277,23 +267,26 @@ H3Error _gridDiskDistancesInternal(H3Index origin2, int k, H3Index *out,
         return E_MEMORY_ALLOC;
     }
     out[0] = origin2;
-    distances[0] = 0;
+    if (distances != NULL) {
+        distances[0] = 0;
+    }
     int64_t off2 = origin2 % maxIdx;
     // No resolution needed here: it's the first index to be placed in seen
     seen[off2] = origin2;
 
     size_t front = -1, back = 0;
+    // Don't rely on `distances` being available, instead record when we can
+    // stop consuming the queue.
+    int currK = 0;
+    size_t currKEnds = 0;
 
     // When front == back, we have evaluated everything in the queue and no new
     // cells need to be visited.
     while (front != back) {
         ++front;
-        if (front == maxIdx) {
-            front = 0;
-        }
+        assert(front != maxIdx);
         H3Index origin = out[front];
-        int curK = distances[front];
-        if (curK == k) {
+        if (currK == k) {
             // Does not need to be explored, edge of disk
             continue;
         }
@@ -321,13 +314,18 @@ H3Error _gridDiskDistancesInternal(H3Index origin2, int k, H3Index *out,
                     seen[off] = nextNeighbor;
 
                     back++;
-                    if (back == maxIdx) {
-                        back = 0;
-                    }
+                    assert(back != maxIdx);
                     out[back] = nextNeighbor;
-                    distances[back] = curK + 1;
+                    if (distances != NULL) {
+                        distances[back] = currK + 1;
+                    }
                 }
             }
+        }
+
+        if (front == currKEnds) {
+            currKEnds = back;
+            currK++;
         }
     }
     H3_MEMORY(free)(seen);
