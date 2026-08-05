@@ -221,6 +221,8 @@ SUITE(gridDisk) {
                 int inList = 0;
                 for (int j = 0; j < 37; j++) {
                     if (k2[i] == expectedK2[j]) {
+                        printf("%llx %d %d %d %d\n", k2[i], i, j, k2Dist[i],
+                               expectedK2Dist[j]);
                         t_assert(k2Dist[i] == expectedK2Dist[j],
                                  "distance is as expected");
                         inList++;
