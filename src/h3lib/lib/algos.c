@@ -38,10 +38,7 @@
 #include "linkedGeo.h"
 #include "polygon.h"
 
-/*
- * Return codes from gridDiskUnsafe and related functions.
- */
-
+#define HASH_SET_CAPACITY_FACTOR 2
 #define MAX_ONE_RING_SIZE 7
 #define POLYGON_TO_CELLS_BUFFER 12
 
@@ -257,22 +254,28 @@ H3Error H3_EXPORT(gridDiskDistances)(H3Index origin, int k, H3Index *out,
  * @param  maxIdx      Size of out and scratch arrays (must be
  * maxGridDiskSize(k))
  */
-H3Error _gridDiskDistancesInternal(H3Index origin2, int k, H3Index *out,
+H3Error _gridDiskDistancesInternal(H3Index origin, int k, H3Index *out,
                                    int *distances, int64_t maxIdx) {
     // We reuse `out` as the queue, and use `seen` to mark already visited cells
-    // Note: a factor could be passed here to reduce the probability of hash
-    // table collision.
-    H3Index *seen = H3_MEMORY(calloc)(maxIdx, sizeof(H3Index));
+    // A factor is passed here to reduce the probability of hash table
+    // collision. maxIdx is at maximum 569707381193162 because that is number of
+    // cells at res 15.
+    assert(maxIdx <= 569707381193162);
+    size_t maxSeen = maxIdx * HASH_SET_CAPACITY_FACTOR;
+    assert(maxSeen >= maxIdx);
+    // maxSeen is at maximum num-cells-at-res-15 * 2:
+    assert(maxSeen <= 1139414762386324);
+    H3Index *seen = H3_MEMORY(calloc)(maxSeen, sizeof(H3Index));
     if (!seen) {
         return E_MEMORY_ALLOC;
     }
-    out[0] = origin2;
+    out[0] = origin;
     if (distances != NULL) {
         distances[0] = 0;
     }
-    int64_t off2 = origin2 % maxIdx;
+    size_t originOffset = H3_HASH(origin, maxSeen);
     // No resolution needed here: it's the first index to be placed in seen
-    seen[off2] = origin2;
+    seen[originOffset] = origin;
 
     size_t front = -1, back = 0;
     // Don't rely on `distances` being available, instead record when we can
@@ -306,12 +309,12 @@ H3Error _gridDiskDistancesInternal(H3Index origin2, int k, H3Index *out,
 
                 // Check if we have already seen this. If so, we don't need to
                 // add it to the queue
-                int64_t off = nextNeighbor % maxIdx;
-                while (seen[off] != 0 && seen[off] != nextNeighbor) {
-                    off = (off + 1) % maxIdx;
+                int64_t offset = H3_HASH(nextNeighbor, maxSeen);
+                while (seen[offset] != 0 && seen[offset] != nextNeighbor) {
+                    offset = (offset + 1) % maxSeen;
                 }
-                if (seen[off] != nextNeighbor) {
-                    seen[off] = nextNeighbor;
+                if (seen[offset] != nextNeighbor) {
+                    seen[offset] = nextNeighbor;
 
                     back++;
                     assert(back != maxIdx);
