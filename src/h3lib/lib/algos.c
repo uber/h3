@@ -278,8 +278,8 @@ H3Error _gridDiskDistancesInternal(H3Index origin, int k, H3Index *out,
     seen[originOffset] = origin;
 
     size_t front = -1, back = 0;
-    // Don't rely on `distances` being available, instead record when we can
-    // stop consuming the queue.
+    // Record when we can stop consuming the queue (`distances` isn't reused
+    // for this because it may be NULL.)
     int currK = 0;
     size_t currKEnds = 0;
 

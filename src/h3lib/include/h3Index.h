@@ -164,7 +164,7 @@
             (((uint64_t)(digit))                                            \
              << ((MAX_H3_RES - (res)) * H3_PER_DIGIT_OFFSET)))
 
-#define H3_HASH(h3, max) ((((h3)&0xFFFFFFFF) ^ ((h3) >> 32)) % (max))
+#define H3_HASH(h3, max) ((h3) % (max))
 
 void setH3Index(H3Index *h, int res, int baseCell, Direction initDigit);
 int isResolutionClassIII(int r);
