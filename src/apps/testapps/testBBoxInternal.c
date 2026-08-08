@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+/** @file testBBoxInternal.c
+ * @brief Tests the internal bounding box helpers used by polyfill.
+ */
+
 #include <math.h>
 #include <stdlib.h>
 
@@ -23,6 +27,7 @@
 #include "polygon.h"
 #include "test.h"
 #include "utility.h"
+#include "vec3d.h"
 
 void assertBBoxFromGeoLoop(const GeoLoop *geoloop, const BBox *expected,
                            const LatLng *inside, const LatLng *outside) {
@@ -44,6 +49,13 @@ void assertBBox(const BBox *bbox, const BBox *expected) {
     LatLng actualSW = {.lat = bbox->south, .lng = bbox->west};
     LatLng expectedSW = {.lat = expected->south, .lng = expected->west};
     t_assert(geoAlmostEqual(&actualSW, &expectedSW), "SW corner matches");
+}
+
+bool aabbContainsVec3dWithTolerance(const AABB *box, const Vec3d *v) {
+    const double tol = 1e-12;
+    return v->x >= box->min.x - tol && v->x <= box->max.x + tol &&
+           v->y >= box->min.y - tol && v->y <= box->max.y + tol &&
+           v->z >= box->min.z - tol && v->z <= box->max.z + tol;
 }
 
 SUITE(BBox) {
@@ -440,5 +452,87 @@ SUITE(BBox) {
         BBox expected = {1.0, 0.0, -M_PI + 0.9, M_PI - 0.1};
         scaleBBox(&bbox, 2);
         assertBBox(&bbox, &expected);
+    }
+
+    TEST(aabbEmptyInvertedState) {
+        AABB box;
+        aabbEmptyInverted(&box);
+        t_assert(box.min.x == 1.0 && box.min.y == 1.0 && box.min.z == 1.0,
+                 "Inverted box initializes min values to 1");
+        t_assert(box.max.x == -1.0 && box.max.y == -1.0 && box.max.z == -1.0,
+                 "Inverted box initializes max values to -1");
+    }
+
+    TEST(aabbVec3Updates) {
+        AABB box;
+        aabbEmptyInverted(&box);
+
+        Vec3d first = {0.5, -0.25, 0.75};
+        Vec3d second = {-0.25, 0.5, -0.5};
+
+        aabbUpdateWithVec3d(&box, &first);
+        t_assert(box.min.x == 0.5 && box.max.x == 0.5,
+                 "Single point updates x");
+        t_assert(box.min.y == -0.25 && box.max.y == -0.25,
+                 "Single point updates y");
+        t_assert(box.min.z == 0.75 && box.max.z == 0.75,
+                 "Single point updates z");
+
+        aabbUpdateWithVec3d(&box, &second);
+        t_assert(box.min.x == -0.25 && box.max.x == 0.5,
+                 "Second point expands x range");
+        t_assert(box.min.y == -0.25 && box.max.y == 0.5,
+                 "Second point expands y range");
+        t_assert(box.min.z == -0.5 && box.max.z == 0.75,
+                 "Second point expands z range");
+    }
+
+    TEST(aabbArcExtrema) {
+        const LatLng ll1 = {-0.15745782909055106, -1.4432851587832365};
+        const LatLng ll2 = {0.36335746078285036, -1.680739052834902};
+        Vec3d v1 = latLngToVec3(ll1);
+        Vec3d v2 = latLngToVec3(ll2);
+        Vec3d normal = vec3Cross(v1, v2);
+
+        AABB box;
+        aabbEmptyInverted(&box);
+        aabbUpdateWithVec3d(&box, &v1);
+        aabbUpdateWithVec3d(&box, &v2);
+
+        double minYBefore = box.min.y;
+        aabbUpdateWithArcExtrema(&box, &v1, &v2, &normal);
+        t_assert(box.min.y < minYBefore,
+                 "Arc extrema expands bounding box for intermediate point");
+    }
+
+    TEST(aabbArcExtremaBoundsTiltedArc) {
+        Vec3d normal = {1.0, 1.0, 1.0};
+        vec3Normalize(&normal);
+
+        Vec3d basis1 = {1.0, -1.0, 0.0};
+        vec3Normalize(&basis1);
+        Vec3d basis2 = vec3Cross(normal, basis1);
+        vec3Normalize(&basis2);
+
+        const double start = -1.25;
+        const double end = 1.25;
+        Vec3d v1 = vec3LinComb(cos(start), basis1, sin(start), basis2);
+        Vec3d v2 = vec3LinComb(cos(end), basis1, sin(end), basis2);
+        Vec3d edgeCross = vec3Cross(v1, v2);
+
+        AABB box;
+        aabbEmptyInverted(&box);
+        aabbUpdateWithVec3d(&box, &v1);
+        aabbUpdateWithVec3d(&box, &v2);
+        aabbUpdateWithArcExtrema(&box, &v1, &v2, &edgeCross);
+
+        for (int i = 0; i <= 128; i++) {
+            double t = (double)i / 128.0;
+            double angle = start + (end - start) * t;
+            Vec3d sample = vec3LinComb(cos(angle), basis1, sin(angle), basis2);
+
+            t_assert(aabbContainsVec3dWithTolerance(&box, &sample),
+                     "Arc extrema AABB contains sampled great-circle point");
+        }
     }
 }

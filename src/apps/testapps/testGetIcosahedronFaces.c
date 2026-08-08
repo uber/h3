@@ -21,6 +21,7 @@
 #include <stdlib.h>
 
 #include "baseCells.h"
+#include "faceijk.h"
 #include "h3Index.h"
 #include "h3api.h"
 #include "test.h"
