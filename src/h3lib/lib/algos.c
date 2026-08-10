@@ -304,7 +304,7 @@ H3Error _gridDiskDistancesInternal(H3Index origin, int k, H3Index *out,
                 // E_PENTAGON is an expected case when trying to traverse
                 // off of pentagons.
                 if (neighborResult != E_SUCCESS) {
-                    H3_MEMORY(free)(seen)
+                    H3_MEMORY(free)(seen);
                     return neighborResult;
                 }
 
