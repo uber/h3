@@ -27,7 +27,7 @@ jobs:
         env:
           MapboxAccessToken: ${{ secrets.MapboxAccessToken }}
         run: |
-          yarn
+          yarn --frozen-lockfile
           yarn build
 
       - name: Formatting check
