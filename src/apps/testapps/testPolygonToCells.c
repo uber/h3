@@ -149,6 +149,78 @@ static void fillIndex_assertions(H3Index h) {
     }
 }
 
+static int64_t findCellIndex(const H3Index *cells, int64_t size, H3Index cell) {
+    for (int64_t i = 0; i < size; i++) {
+        if (cells[i] == cell) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+static int countCellComponents(const H3Index *cells, int64_t size) {
+    enum { oneRingSize = 7 };
+
+    // polygonToCells output is sized by maxPolygonToCellsSize and is mostly
+    // H3_NULL, so gather the cells that were actually produced first. The
+    // neighbor lookups below then scan only those, rather than the estimate.
+    H3Index *found = calloc(size, sizeof(H3Index));
+    assert(found != NULL);
+    int64_t numFound = 0;
+    for (int64_t i = 0; i < size; i++) {
+        if (cells[i] != H3_NULL) {
+            found[numFound++] = cells[i];
+        }
+    }
+    if (numFound == 0) {
+        free(found);
+        return 0;
+    }
+
+    bool *visited = calloc(numFound, sizeof(bool));
+    int64_t *queue = calloc(numFound, sizeof(int64_t));
+    assert(visited != NULL);
+    assert(queue != NULL);
+
+    int components = 0;
+    for (int64_t i = 0; i < numFound; i++) {
+        if (visited[i]) {
+            continue;
+        }
+
+        components++;
+        int64_t read = 0;
+        int64_t write = 0;
+        queue[write++] = i;
+        visited[i] = true;
+
+        while (read < write) {
+            H3Index ring[oneRingSize];
+            for (int j = 0; j < oneRingSize; j++) {
+                ring[j] = H3_NULL;
+            }
+            H3_EXPORT(gridDisk)(found[queue[read++]], 1, ring);
+
+            for (int j = 0; j < oneRingSize; j++) {
+                if (ring[j] == H3_NULL) {
+                    continue;
+                }
+
+                int64_t neighborIndex = findCellIndex(found, numFound, ring[j]);
+                if (neighborIndex >= 0 && !visited[neighborIndex]) {
+                    visited[neighborIndex] = true;
+                    queue[write++] = neighborIndex;
+                }
+            }
+        }
+    }
+
+    free(queue);
+    free(visited);
+    free(found);
+    return components;
+}
+
 SUITE(polygonToCells) {
     sfGeoPolygon.geoloop = sfGeoLoop;
     sfGeoPolygon.numHoles = 0;
@@ -477,6 +549,34 @@ SUITE(polygonToCells) {
         }
         t_assert(found == 1, "one index found");
         t_assert(numPentagons == 1, "one pentagon found");
+        free(hexagons);
+    }
+
+    TEST(polygonToCellsNonContiguous) {
+        // Two blocks joined by a corridor far narrower than a resolution 7
+        // cell, so the polygon is contiguous but its cell set is not.
+        LatLng verts[] = {
+            {0.010, 0.000},    {0.010, 0.010}, {0.005001, 0.010},
+            {0.005001, 0.060}, {0.010, 0.060}, {0.010, 0.070},
+            {0.000, 0.070},    {0.000, 0.060}, {0.005000, 0.060},
+            {0.005000, 0.010}, {0.000, 0.010}, {0.000, 0.000},
+        };
+        GeoLoop geoloop = {.numVerts = 12, .verts = verts};
+        GeoPolygon polygon = {.geoloop = geoloop, .numHoles = 0};
+
+        int64_t numHexagons;
+        t_assertSuccess(
+            H3_EXPORT(maxPolygonToCellsSize)(&polygon, 7, 0, &numHexagons));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+
+        t_assertSuccess(H3_EXPORT(polygonToCells)(&polygon, 7, 0, hexagons));
+        int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
+
+        t_assert(actualNumIndexes > 0,
+                 "got cells for non-contiguous polygonToCells case");
+        t_assert(countCellComponents(hexagons, numHexagons) == 2,
+                 "got two non-contiguous polygonToCells components");
+
         free(hexagons);
     }
 
