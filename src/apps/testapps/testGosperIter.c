@@ -81,24 +81,37 @@ void check_edge_correctness(H3Index h, int childRes) {
     }
 }
 
+// The endpoints and length of one edge. Both come from the edge's boundary,
+// so deriving them together lets a loop walk compute each boundary once
+// rather than recomputing it for every neighboring pair.
+typedef struct {
+    LatLng start;
+    LatLng end;
+    double length;
+} EdgeGeometry;
+
+static void getEdgeGeometry(H3Index edge, EdgeGeometry *out) {
+    CellBoundary bd;
+    t_assertSuccess(H3_EXPORT(directedEdgeToBoundary)(edge, &bd));
+
+    out->start = bd.verts[0];
+    out->end = bd.verts[bd.numVerts - 1];
+    out->length = 0.0;
+    for (int i = 0; i < bd.numVerts - 1; i++) {
+        out->length +=
+            H3_EXPORT(greatCircleDistanceRads)(&bd.verts[i], &bd.verts[i + 1]);
+    }
+}
+
 // Check that edge_a's last vertex matches edge_b's first vertex,
 // i.e. the edges connect end-to-start. Tolerance is relative to
 // the shorter edge length to handle varying resolutions.
 // TODO: Replace floating-point distance check with exact vertex comparison
 // once an edgeToVertexes function exists.
-bool do_edges_connect(H3Index edge_a, H3Index edge_b) {
-    double len_a, len_b;
-    H3_EXPORT(edgeLengthRads)(edge_a, &len_a);
-    H3_EXPORT(edgeLengthRads)(edge_b, &len_b);
-    double tol = MIN(len_a, len_b) / 1000.0;
-
-    CellBoundary bd_a, bd_b;
-    t_assertSuccess(H3_EXPORT(directedEdgeToBoundary)(edge_a, &bd_a));
-    t_assertSuccess(H3_EXPORT(directedEdgeToBoundary)(edge_b, &bd_b));
-
-    LatLng end_a = bd_a.verts[bd_a.numVerts - 1];
-    LatLng start_b = bd_b.verts[0];
-    double dist = H3_EXPORT(greatCircleDistanceRads)(&end_a, &start_b);
+bool do_edges_connect(const EdgeGeometry *edge_a, const EdgeGeometry *edge_b) {
+    double tol = MIN(edge_a->length, edge_b->length) / 1000.0;
+    double dist =
+        H3_EXPORT(greatCircleDistanceRads)(&edge_a->end, &edge_b->start);
 
     return dist < tol;
 }
@@ -108,18 +121,21 @@ bool do_edges_connect(H3Index edge_a, H3Index edge_b) {
 //   2. loop closes (returns to where it started)
 void check_loop_valid(H3Index h, int childRes) {
     IterEdgesGosper iter = iterInitGosper(h, childRes);
-    H3Index first_edge = iter.e;
-    H3Index prev_edge = iter.e;
+    EdgeGeometry first_edge, prev_edge, cur_edge;
+    getEdgeGeometry(iter.e, &first_edge);
+    prev_edge = first_edge;
     iterStepGosper(&iter);
 
     while (iter.e) {
-        t_assert(do_edges_connect(prev_edge, iter.e), "edges should connect");
+        getEdgeGeometry(iter.e, &cur_edge);
+        t_assert(do_edges_connect(&prev_edge, &cur_edge),
+                 "edges should connect");
 
-        prev_edge = iter.e;
+        prev_edge = cur_edge;
         iterStepGosper(&iter);
     }
 
-    t_assert(do_edges_connect(prev_edge, first_edge), "loop should close");
+    t_assert(do_edges_connect(&prev_edge, &first_edge), "loop should close");
 }
 
 void check_gosper_island(H3Index h, int childRes) {

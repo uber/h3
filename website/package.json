@@ -14,7 +14,7 @@
     "write-heading-ids": "docusaurus write-heading-ids",
     "format": "prettier --write src"
   },
-  "dependencies": {
+  "devDependencies": {
     "@babel/helper-get-function-arity": "^7.16.7",
     "@docusaurus/core": "^3.10.1",
     "@docusaurus/preset-classic": "^3.10.1",
