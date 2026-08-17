@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <float.h>
 #include <stdlib.h>
 
 #include "algos.h"
@@ -202,5 +203,30 @@ SUITE(polygonToCells_reported) {
 
         t_assert(actualNumIndexes == 8, "got expected polygonToCells size");
         free(hexagons);
+    }
+
+    TEST(fuzzer_exerciseFailed) {
+        // Exercise a case in polygonToCells where lineHexEstimate succeeds,
+        // but latLngToCell fails. In this case, the calculation of
+        // interpolate.lng results in -inf.
+        LatLng verts[] = {{DBL_MIN, -DBL_MIN}, {0, -DBL_MAX}};
+
+        uint8_t res = 2;
+        GeoPolygon geoPolygon;
+        geoPolygon.numHoles = 0;
+        geoPolygon.holes = NULL;
+        geoPolygon.geoloop.numVerts = 2;
+        geoPolygon.geoloop.verts = verts;
+
+        int64_t sz;
+        t_assertSuccess(
+            H3_EXPORT(maxPolygonToCellsSize)(&geoPolygon, res, 0, &sz));
+        // Exact output count is not important, since it will fail
+        t_assert(sz >= 0, "Expected some output count");
+        H3Index *out = calloc(sz, sizeof(H3Index));
+        t_assert(H3_EXPORT(polygonToCells)(&geoPolygon, res, 0, out) ==
+                     E_LATLNG_DOMAIN,
+                 "failed");
+        free(out);
     }
 }
