@@ -1,7 +1,12 @@
 // Contains code adapted from https://observablehq.com/@nrabinowitz/h3-index-inspector under the ISC license
 
 import React, { useCallback, useMemo, ReactNode, useState, useId } from "react";
-import { isValidCell, latLngToCell, getResolution } from "h3-js";
+import {
+  isValidCell,
+  isValidDirectedEdge,
+  latLngToCell,
+  getResolution,
+} from "h3-js";
 import {
   Banner,
   BannerContainer,
@@ -9,7 +14,7 @@ import {
   DemoContainer,
 } from "../styled";
 import { useQueryState } from "use-location-state";
-import { SelectedHexDetails } from "./details";
+import { SelectedEdgeDetails, SelectedHexDetails } from "./details";
 import { ExplorerMap } from "./map";
 import { WhereAmIButton } from "./where-am-i";
 import { doSplitUserInput } from "./parseInput";
@@ -31,18 +36,27 @@ export default function HomeExporer({ children }: { children: ReactNode }) {
       () => doSplitUserInput(userInput, userResolution),
       [userInput, userResolution],
     );
-  const userValidHex = useMemo(
-    () => splitUserInput.map(isValidCell).includes(true),
+  // Cell and edge indexes are kept apart from here on. The cell functions used
+  // below and in the details panel return plausible but meaningless values for
+  // an edge index rather than throwing, so an edge reaching them shows up as
+  // wrong data rather than an error.
+  const cells = useMemo(
+    () => splitUserInput.filter(isValidCell),
     [splitUserInput],
   );
+  const edges = useMemo(
+    () => splitUserInput.filter(isValidDirectedEdge),
+    [splitUserInput],
+  );
+  const userValidInput = cells.length > 0 || edges.length > 0;
   const constantResolution = useMemo(() => {
-    const resAsSet = new Set(splitUserInput.map(getResolution));
+    const resAsSet = new Set(cells.map(getResolution));
     if (resAsSet.size === 1) {
       return [...resAsSet][0];
     } else {
       return undefined;
     }
-  }, [splitUserInput]);
+  }, [cells]);
 
   const objectOnClick = useCallback(
     ({ hex }: { hex: string }) => {
@@ -88,9 +102,10 @@ export default function HomeExporer({ children }: { children: ReactNode }) {
         <HeroExampleContainer>
           <DemoContainer>
             <ExplorerMap
-              userInput={splitUserInput}
+              userInput={cells}
+              userEdges={edges}
               inputGeoJson={inputGeoJson}
-              userValidHex={userValidHex}
+              userValidInput={userValidInput}
               objectOnClick={objectOnClick}
               coordinateOnClick={coordinateOnClick}
               previewCells={previewCells}
@@ -113,9 +128,9 @@ export default function HomeExporer({ children }: { children: ReactNode }) {
               resize: "vertical",
             }}
           />
-          {splitUserInput.length ? (
+          {cells.length ? (
             <SelectedHexDetails
-              splitUserInput={splitUserInput}
+              splitUserInput={cells}
               showCellId={showCellId}
               setUserInput={setUserInput}
               showNavigation={true}
@@ -123,6 +138,7 @@ export default function HomeExporer({ children }: { children: ReactNode }) {
               onHoverCells={setPreviewCells}
             />
           ) : null}
+          {edges.length === 1 ? <SelectedEdgeDetails edge={edges[0]} /> : null}
           {showResolutionInput !== null ? (
             <div>
               <label htmlFor={resolutionInputId}>Resolution:</label>

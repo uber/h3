@@ -1,6 +1,6 @@
 // Contains code adapted from https://observablehq.com/@nrabinowitz/h3-index-inspector under the ISC license
 
-import { isValidCell, latLngToCell } from "h3-js";
+import { isValidCell, isValidDirectedEdge, latLngToCell } from "h3-js";
 import geojson2h3 from "geojson2h3";
 import wkt from "wkt";
 import { Feature, MultiPolygon, Polygon } from "geojson";
@@ -51,7 +51,7 @@ function maybeDecimalCell(input: string) {
   return null;
 }
 
-function maybePrefixedHexCell(input: string) {
+function maybePrefixedHex(input: string) {
   if (input && input.startsWith("0x")) {
     return input.substring(2);
   }
@@ -126,6 +126,7 @@ export function doSplitUserInput(userInput: string, userResolution: number) {
     // Valid hexadecimal cell ID
     // Valid hexadecimal cell ID, prefixed by 0x
     // Valid decimal cell ID
+    // Valid hexadecimal directed edge ID, optionally prefixed by 0x
     // lat,lng coordinate pairs
 
     const resultPolygon = tryParsePolygonInput(userInput, userResolution);
@@ -143,19 +144,28 @@ export function doSplitUserInput(userInput: string, userResolution: number) {
       const currentInput = fullyTrim(split[i]);
       const nextInput = fullyTrim(split[i + 1]);
       const cellIdFromDecimal = maybeDecimalCell(currentInput);
-      const cellIdFromPrefixedHex = maybePrefixedHexCell(currentInput);
+      const indexFromPrefixedHex = maybePrefixedHex(currentInput);
 
       if (isValidCell(currentInput)) {
         result.push(currentInput);
       } else if (
-        cellIdFromPrefixedHex !== null &&
-        isValidCell(cellIdFromPrefixedHex)
+        indexFromPrefixedHex !== null &&
+        isValidCell(indexFromPrefixedHex)
       ) {
-        result.push(cellIdFromPrefixedHex);
+        result.push(indexFromPrefixedHex);
         showCellId = true;
       } else if (cellIdFromDecimal) {
         result.push(cellIdFromDecimal);
         // Show what the cell ID would look like normally
+        showCellId = true;
+      } else if (isValidDirectedEdge(currentInput)) {
+        result.push(currentInput);
+      } else if (
+        indexFromPrefixedHex !== null &&
+        isValidDirectedEdge(indexFromPrefixedHex)
+      ) {
+        result.push(indexFromPrefixedHex);
+        // Show what the edge ID would look like normally
         showCellId = true;
       } else if (
         i < split.length - 1 &&
