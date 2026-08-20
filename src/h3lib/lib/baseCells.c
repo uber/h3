@@ -875,7 +875,7 @@ void _baseCellToFaceIjk(int baseCell, FaceIJK *h) {
  *          cell is not found on the given face
  */
 int _baseCellToCCWrot60(int baseCell, int face) {
-    if (face < 0 || face > NUM_ICOSA_FACES) return INVALID_ROTATIONS;
+    if (face < 0 || face >= NUM_ICOSA_FACES) return INVALID_ROTATIONS;
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
             for (int k = 0; k < 3; k++) {
