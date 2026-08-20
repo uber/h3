@@ -15,6 +15,8 @@ import {
   cellArea,
   edgeLength,
   originToDirectedEdges,
+  getDirectedEdgeOrigin,
+  getDirectedEdgeDestination,
   UNITS,
 } from "h3-js";
 
@@ -147,6 +149,37 @@ function ClickableH3IndexList({
         <></>
       )}
     </>
+  );
+}
+
+export function SelectedEdgeDetails({ edge, showDetails = true }) {
+  // getResolution reports -1 for an edge index, so take it from the origin cell.
+  const origin = getDirectedEdgeOrigin(edge);
+  const destination = getDirectedEdgeDestination(edge);
+  const res = getResolution(origin);
+  const units = cellUnits(origin);
+  const floatPrecision = res / 3 + 7;
+  const length = edgeLength(edge, units.dist).toPrecision(floatPrecision);
+
+  return (
+    <p style={{ marginBottom: "0" }}>
+      <br />
+      Directed edge: <tt>{edge}</tt>
+      {showDetails ? (
+        <details>
+          <summary>Details</summary>
+          Resolution: <tt>{res}</tt>
+          <br />
+          Origin: <tt>{origin}</tt>
+          <br />
+          Destination: <tt>{destination}</tt>
+          <br />
+          Edge Length: <tt>{length}</tt> {units.dist}
+        </details>
+      ) : (
+        <></>
+      )}
+    </p>
   );
 }
 
