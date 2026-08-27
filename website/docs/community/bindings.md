@@ -88,6 +88,10 @@ As a C library, bindings can be made to call H3 functions from different program
 
 - [travisbrady/ocaml-h3](https://github.com/travisbrady/ocaml-h3)
 
+## Odin
+
+- [yeongjukang/h3-odin](https://github.com/yeongjukang/h3-odin)
+
 ## Perl
 
 - [mrdvt92/perl-Geo-H3](https://metacpan.org/pod/Geo::H3)
