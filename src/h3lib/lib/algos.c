@@ -38,10 +38,7 @@
 #include "linkedGeo.h"
 #include "polygon.h"
 
-/*
- * Return codes from gridDiskUnsafe and related functions.
- */
-
+#define HASH_SET_CAPACITY_FACTOR 2
 #define MAX_ONE_RING_SIZE 7
 #define POLYGON_TO_CELLS_BUFFER 12
 
@@ -232,21 +229,10 @@ H3Error H3_EXPORT(gridDiskDistances)(H3Index origin, int k, H3Index *out,
         // Fast algo failed, fall back to slower, correct algo
         // and also wipe out array because contents untrustworthy
         memset(out, 0, maxIdx * sizeof(H3Index));
-
-        if (distances == NULL) {
-            distances = H3_MEMORY(calloc)(maxIdx, sizeof(int));
-            if (!distances) {
-                return E_MEMORY_ALLOC;
-            }
-            H3Error result = _gridDiskDistancesInternal(origin, k, out,
-                                                        distances, maxIdx, 0);
-            H3_MEMORY(free)(distances);
-            return result;
-        } else {
+        if (distances != NULL) {
             memset(distances, 0, maxIdx * sizeof(int));
-            return _gridDiskDistancesInternal(origin, k, out, distances, maxIdx,
-                                              0);
         }
+        return _gridDiskDistancesInternal(origin, k, out, distances, maxIdx);
     } else {
         return E_SUCCESS;
     }
@@ -264,49 +250,89 @@ H3Error H3_EXPORT(gridDiskDistances)(H3Index origin, int k, H3Index *out,
  *                     H3Index or 0.
  * @param  distances   Scratch area, with elements paralleling the out array.
  *                     Elements indicate ijk distance from the origin cell to
- *                     the output cell
+ *                     the output cell. May be NULL.
  * @param  maxIdx      Size of out and scratch arrays (must be
  * maxGridDiskSize(k))
- * @param  curK        Current distance from the origin
  */
 H3Error _gridDiskDistancesInternal(H3Index origin, int k, H3Index *out,
-                                   int *distances, int64_t maxIdx, int curK) {
-    // Put origin in the output array. out is used as a hash set.
-    int64_t off = origin % maxIdx;
-    while (out[off] != 0 && out[off] != origin) {
-        off = (off + 1) % maxIdx;
+                                   int *distances, int64_t maxIdx) {
+    // We reuse `out` as the queue, and use `seen` to mark already visited cells
+    // A factor is passed here to reduce the probability of hash table
+    // collision. maxIdx is at maximum 569707381193162 because that is number of
+    // cells at res 15.
+    assert(maxIdx <= 569707381193162);
+    size_t maxSeen = maxIdx * HASH_SET_CAPACITY_FACTOR;
+    assert(maxSeen >= maxIdx);
+    // maxSeen is at maximum num-cells-at-res-15 * 2:
+    assert(maxSeen <= 1139414762386324);
+    H3Index *seen = H3_MEMORY(calloc)(maxSeen, sizeof(H3Index));
+    if (!seen) {
+        return E_MEMORY_ALLOC;
     }
+    out[0] = origin;
+    if (distances != NULL) {
+        distances[0] = 0;
+    }
+    size_t originOffset = H3_HASH(origin, maxSeen);
+    // No resolution needed here: it's the first index to be placed in seen
+    seen[originOffset] = origin;
 
-    // We either got a free slot in the hash set or hit a duplicate
-    // We might need to process the duplicate anyways because we got
-    // here on a longer path before.
-    if (out[off] == origin && distances[off] <= curK) return E_SUCCESS;
+    size_t front = -1, back = 0;
+    // Record when we can stop consuming the queue (`distances` isn't reused
+    // for this because it may be NULL.)
+    int currK = 0;
+    size_t currKEnds = 0;
 
-    out[off] = origin;
-    distances[off] = curK;
+    // When front == back, we have evaluated everything in the queue and no new
+    // cells need to be visited.
+    while (front != back) {
+        ++front;
+        assert(front != maxIdx);
+        H3Index origin = out[front];
+        if (currK == k) {
+            // Does not need to be explored, edge of disk
+            continue;
+        }
 
-    // Base case: reached an index k away from the origin.
-    if (curK >= k) return E_SUCCESS;
+        // Add all neighbors to queue
+        for (int i = 0; i < 6; i++) {
+            int rotations = 0;
+            H3Index nextNeighbor;
+            H3Error neighborResult = h3NeighborRotations(
+                origin, DIRECTIONS[i], &rotations, &nextNeighbor);
+            if (neighborResult != E_PENTAGON) {
+                // E_PENTAGON is an expected case when trying to traverse
+                // off of pentagons.
+                if (neighborResult != E_SUCCESS) {
+                    H3_MEMORY(free)(seen);
+                    return neighborResult;
+                }
 
-    // Recurse to all neighbors in no particular order.
-    for (int i = 0; i < 6; i++) {
-        int rotations = 0;
-        H3Index nextNeighbor;
-        H3Error neighborResult = h3NeighborRotations(origin, DIRECTIONS[i],
-                                                     &rotations, &nextNeighbor);
-        if (neighborResult != E_PENTAGON) {
-            // E_PENTAGON is an expected case when trying to traverse off of
-            // pentagons.
-            if (neighborResult != E_SUCCESS) {
-                return neighborResult;
-            }
-            neighborResult = _gridDiskDistancesInternal(
-                nextNeighbor, k, out, distances, maxIdx, curK + 1);
-            if (neighborResult) {
-                return neighborResult;
+                // Check if we have already seen this. If so, we don't need to
+                // add it to the queue
+                int64_t offset = H3_HASH(nextNeighbor, maxSeen);
+                while (seen[offset] != 0 && seen[offset] != nextNeighbor) {
+                    offset = (offset + 1) % maxSeen;
+                }
+                if (seen[offset] != nextNeighbor) {
+                    seen[offset] = nextNeighbor;
+
+                    back++;
+                    assert(back != maxIdx);
+                    out[back] = nextNeighbor;
+                    if (distances != NULL) {
+                        distances[back] = currK + 1;
+                    }
+                }
             }
         }
+
+        if (front == currKEnds) {
+            currKEnds = back;
+            currK++;
+        }
     }
+    H3_MEMORY(free)(seen);
     return E_SUCCESS;
 }
 
@@ -331,7 +357,7 @@ H3Error H3_EXPORT(gridDiskDistancesSafe)(H3Index origin, int k, H3Index *out,
     if (err) {
         return err;
     }
-    return _gridDiskDistancesInternal(origin, k, out, distances, maxIdx, 0);
+    return _gridDiskDistancesInternal(origin, k, out, distances, maxIdx);
 }
 
 /**
@@ -412,8 +438,8 @@ H3Error _gridRingInternal(H3Index origin, int k, H3Index *out) {
         return E_MEMORY_ALLOC;
     }
 
-    err = _gridDiskDistancesInternal(origin, k, disk_out, disk_distances,
-                                     maxIdx, 0);
+    err =
+        _gridDiskDistancesInternal(origin, k, disk_out, disk_distances, maxIdx);
     if (err) {
         H3_MEMORY(free)(disk_out);
         H3_MEMORY(free)(disk_distances);
