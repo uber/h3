@@ -36,6 +36,7 @@
 #include "h3api.h"
 #include "latLng.h"
 #include "linkedGeo.h"
+#include "mathExtensions.h"
 #include "polygon.h"
 
 /*
@@ -887,8 +888,11 @@ H3Error H3_EXPORT(maxPolygonToCellsSize)(const GeoPolygon *geoPolygon, int res,
     // This algorithm assumes that the number of vertices is usually less than
     // the number of hexagons, but when it's wrong, this will keep it from
     // failing
-    int totalVerts = geoloop.numVerts;
+    int64_t totalVerts = geoloop.numVerts;
     for (int i = 0; i < geoPolygon->numHoles; i++) {
+        if (ADD_INT64S_OVERFLOWS(totalVerts, geoPolygon->holes[i].numVerts)) {
+            return E_MEMORY_ALLOC;
+        }
         totalVerts += geoPolygon->holes[i].numVerts;
     }
     if (numHexagons < totalVerts) numHexagons = totalVerts;
