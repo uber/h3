@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "cJSON.h"
 #include "constants.h"
 #include "h3Index.h"
 #include "latLng.h"
@@ -100,35 +101,111 @@ int main(int argc, char *argv[]) {
         error("could not open test file");
     }
 
-    char h3Str[BUFF_SIZE];
+    char jsonStr[BUFF_SIZE];
     while (1) {
-        int res, baseCell, validCell, validIndex, resClassIII, pentagon,
-            icosaFaceCount;
-        if (fscanf(f, "%s %d %d %d %d %d %d %d\n", h3Str, &res, &baseCell,
-                   &validCell, &validIndex, &resClassIII, &pentagon,
-                   &icosaFaceCount) != 8) {
+        if (!fgets(jsonStr, BUFF_SIZE, f)) {
             if (feof(f)) {
                 break;
             }
-            error(
-                "parsing input (should be \"H3Index res baseCell validCell "
-                "validIndex resClassIII pentagon icosaFaceCount\")");
+            error("reading input");
         }
 
-        int *faces = calloc(icosaFaceCount, sizeof(int));
-        for (int i = 0; i < icosaFaceCount; i++) {
-            if (i != 0) fgetc(f);
-            if (fscanf(f, "%d", &faces[i]) != 1) {
-                error("parsing input (failed to read expected icosa face)");
+        cJSON *json = cJSON_Parse(jsonStr);
+        if (json == NULL) {
+            const char *errorStr = cJSON_GetErrorPtr();
+            if (errorStr != NULL) {
+                fprintf(stderr, "Error before: %s\n", errorStr);
+            }
+            exit(1);
+        }
+
+        const char *h3Str;
+        int res, baseCell, validCell, validIndex, resClassIII, pentagon,
+            icosaFaceCount;
+        int *faces = NULL;
+
+        cJSON *h3StrJson = cJSON_GetObjectItemCaseSensitive(json, "index");
+        if (!cJSON_IsString(h3StrJson) || h3StrJson->valuestring == NULL) {
+            error("getting name");
+        }
+        h3Str = h3StrJson->valuestring;
+        cJSON *resJson = cJSON_GetObjectItemCaseSensitive(json, "res");
+        if (!cJSON_IsNumber(resJson)) {
+            error("getting res");
+        }
+        res = resJson->valueint;
+        cJSON *baseCellJson =
+            cJSON_GetObjectItemCaseSensitive(json, "baseCell");
+        if (!cJSON_IsNumber(baseCellJson)) {
+            error("getting baseCell");
+        }
+        baseCell = baseCellJson->valueint;
+        cJSON *validCellJson =
+            cJSON_GetObjectItemCaseSensitive(json, "validCell");
+        if (!cJSON_IsBool(validCellJson)) {
+            error("getting validCell");
+        }
+        validCell = cJSON_IsTrue(validCellJson);
+        cJSON *validIndexJson =
+            cJSON_GetObjectItemCaseSensitive(json, "validIndex");
+        if (!cJSON_IsBool(validIndexJson)) {
+            error("getting validIndex");
+        }
+        validIndex = cJSON_IsTrue(validIndexJson);
+        cJSON *resClassIIIJson =
+            cJSON_GetObjectItemCaseSensitive(json, "resClassIII");
+        if (!cJSON_IsBool(resClassIIIJson)) {
+            error("getting resClassIII");
+        }
+        resClassIII = cJSON_IsTrue(resClassIIIJson);
+        cJSON *pentagonJson =
+            cJSON_GetObjectItemCaseSensitive(json, "pentagon");
+        if (!cJSON_IsBool(pentagonJson)) {
+            error("getting pentagon");
+        }
+        pentagon = cJSON_IsTrue(pentagonJson);
+
+        if (cJSON_HasObjectItem(json, "faceError")) {
+            cJSON *faceErrorJson =
+                cJSON_GetObjectItemCaseSensitive(json, "faceError");
+            if (!cJSON_IsNumber(faceErrorJson)) {
+                error("getting faceError");
+            }
+            icosaFaceCount = faceErrorJson->valueint;
+        } else {
+            cJSON *facesJson = cJSON_GetObjectItemCaseSensitive(json, "faces");
+            if (!cJSON_IsArray(facesJson)) {
+                error("getting faces");
+            }
+            icosaFaceCount = cJSON_GetArraySize(facesJson);
+            faces = calloc(icosaFaceCount, sizeof(int));
+            int faceIndex = 0;
+            cJSON *faceJson;
+            cJSON_ArrayForEach(faceJson, facesJson) {
+                if (!cJSON_IsNumber(faceJson)) {
+                    error("getting face");
+                }
+
+                faces[faceIndex] = faceJson->valueint;
+                faceIndex++;
             }
         }
 
-        int *digits = calloc(res, sizeof(int));
-        for (int i = 0; i < res; i++) {
-            if (i != 0) fgetc(f);
-            if (fscanf(f, "%d", &digits[i]) != 1) {
-                error("parsing input (failed to read expected digits)");
+        cJSON *digitsJson = cJSON_GetObjectItemCaseSensitive(json, "digits");
+        if (!cJSON_IsArray(digitsJson)) {
+            error("getting digits");
+        }
+        int digitsCount = cJSON_GetArraySize(digitsJson);
+        int *digits = calloc(digitsCount, sizeof(int));
+        int digitIndex = 0;
+        cJSON *digitJson;
+        cJSON_ArrayForEach(digitJson, digitsJson) {
+            if (!cJSON_IsNumber(digitJson)) {
+                error("getting digit");
             }
+
+            digits[digitIndex] = digitJson->valueint;
+            digitIndex++;
         }
 
         H3Index h3;
@@ -139,6 +216,8 @@ int main(int argc, char *argv[]) {
 
         free(faces);
         free(digits);
+
+        cJSON_Delete(json);
     }
 
     fclose(f);
