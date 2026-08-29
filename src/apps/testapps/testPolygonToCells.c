@@ -16,6 +16,7 @@
 
 #include <assert.h>
 #include <math.h>
+#include <stdint.h>
 #include <stdlib.h>
 
 #include "algos.h"
@@ -281,6 +282,22 @@ SUITE(polygonToCells) {
         t_assert(H3_EXPORT(maxPolygonToCellsSize)(&invalid2GeoPolygon, 9, 0,
                                                   &numHexagons) == E_FAILED,
                  "Cannot determine cell size to invalid geo polygon with NaNs");
+    }
+
+    TEST(maxPolygonToCellsSizeHoleVertsOverflow) {
+        // holes[i].verts are not read by maxPolygonToCellsSize, only numVerts,
+        // so oversized counts exercise the vertex accumulation without
+        // allocation
+        GeoLoop bigHole = {.numVerts = INT32_MAX, .verts = NULL};
+        GeoLoop holes[] = {bigHole, bigHole, bigHole};
+        GeoPolygon polygon = {
+            .geoloop = sfGeoLoop, .numHoles = 3, .holes = holes};
+
+        int64_t numHexagons;
+        t_assertSuccess(
+            H3_EXPORT(maxPolygonToCellsSize)(&polygon, 9, 0, &numHexagons));
+        t_assert(numHexagons >= 3LL * INT32_MAX,
+                 "hole vertex counts accumulate without overflowing");
     }
 
     TEST(maxPolygonToCellsSizePoint) {
