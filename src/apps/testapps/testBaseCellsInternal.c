@@ -33,6 +33,8 @@ SUITE(baseCellsInternal) {
                  "should return invalid rotation for invalid face");
         t_assert(_baseCellToCCWrot60(16, -1) == INVALID_ROTATIONS,
                  "should return invalid rotation for invalid face (negative)");
+        t_assert(_baseCellToCCWrot60(16, NUM_ICOSA_FACES) == INVALID_ROTATIONS,
+                 "should return invalid rotation for one past the last face");
         t_assert(_baseCellToCCWrot60(1, 0) == INVALID_ROTATIONS,
                  "should return invalid rotation for base cell not appearing "
                  "on face");

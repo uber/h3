@@ -1,7 +1,12 @@
 // Contains code adapted from https://observablehq.com/@nrabinowitz/h3-index-inspector under the ISC license
 
 import React, { useCallback, useMemo, ReactNode, useState, useId } from "react";
-import { isValidCell, latLngToCell, getResolution } from "h3-js";
+import {
+  isValidCell,
+  isValidDirectedEdge,
+  latLngToCell,
+  getResolution,
+} from "h3-js";
 import {
   Banner,
   BannerContainer,
@@ -9,207 +14,11 @@ import {
   DemoContainer,
 } from "../styled";
 import { useQueryState } from "use-location-state";
-import { SelectedHexDetails } from "./details";
+import { SelectedEdgeDetails, SelectedHexDetails } from "./details";
 import { ExplorerMap } from "./map";
 import { WhereAmIButton } from "./where-am-i";
-import geojson2h3 from "geojson2h3";
-import wkt from "wkt";
-import { Feature, MultiPolygon, Polygon } from "geojson";
+import { doSplitUserInput } from "./parseInput";
 import { useColorMode } from "@docusaurus/theme-common";
-
-const CELL_COUNT_THRESHOLD = 50;
-const CELL_COUNT_UPPER_THRESHOLD = 5000;
-
-function fullyTrim(str: string) {
-  if (!str) {
-    return "";
-  }
-
-  return str.trim();
-}
-
-function fullyUnwrap(str: string) {
-  if (!str) {
-    return "";
-  }
-
-  str = str.trim();
-  // Remove any JSON wrapper characters
-  str = str.replaceAll("[", " ");
-  str = str.replaceAll("]", " ");
-  str = str.replaceAll('"', " ");
-  str = str.replaceAll("'", " ");
-  str = str.replaceAll(",", " ");
-
-  // Remove any Python set wrapper
-  str = str.replaceAll("{", " ");
-  str = str.replaceAll("}", " ");
-
-  return str;
-}
-
-function maybeDecimalCell(input: string) {
-  try {
-    if (/^\d+$/.test(input)) {
-      const asBigInt = BigInt(input);
-      const asHex = asBigInt.toString(16);
-      if (isValidCell(asHex)) {
-        return asHex;
-      }
-    }
-  } catch {
-    // Ignore
-  }
-  return null;
-}
-
-function maybePrefixedHexCell(input: string) {
-  if (input && input.startsWith("0x")) {
-    return input.substring(2);
-  }
-  return null;
-}
-
-function geoJsonToCells(
-  geoJson: Feature | Polygon | MultiPolygon,
-  userResolution: number,
-) {
-  // TODO: Handle point geometries, lines, etc. Only polygons and multipolygons supported.
-  // TODO: Pass containment in to featureToH3Set.
-  if (geoJson.type === "Polygon" || geoJson.type === "MultiPolygon") {
-    geoJson = {
-      type: "Feature",
-      geometry: geoJson,
-    } as Feature;
-  }
-
-  const hasUserResolution = userResolution !== -1;
-
-  for (let res = 0; res < 16; res++) {
-    const cells = geojson2h3.featureToH3Set(geoJson, res);
-    if (
-      (!hasUserResolution &&
-        (cells.length > CELL_COUNT_THRESHOLD || res === 15)) ||
-      (hasUserResolution &&
-        (cells.length > CELL_COUNT_UPPER_THRESHOLD || res === userResolution))
-    ) {
-      return {
-        splitUserInput: cells,
-        showCellId: false,
-        showResolutionInput: res,
-        inputGeoJson: geoJson,
-      };
-    }
-  }
-  return null;
-}
-
-function tryParsePolygonInput(input: string, userResolution: number) {
-  try {
-    const parsed = JSON.parse(input) as Feature;
-    if (parsed && parsed.type) {
-      const geoJsonResult = geoJsonToCells(parsed, userResolution);
-      if (geoJsonResult) {
-        return geoJsonResult;
-      }
-    }
-  } catch {
-    // No-op
-  }
-
-  try {
-    const parsed = wkt.parse(input) as Feature;
-    if (parsed && parsed.type) {
-      const wktResult = geoJsonToCells(parsed, userResolution);
-      if (wktResult) {
-        return wktResult;
-      }
-    }
-  } catch {
-    // No-op
-  }
-}
-
-function doSplitUserInput(userInput: string, userResolution: number) {
-  if (userInput) {
-    // Acceptable inputs, in order of test preference:
-    // GeoJSON
-    // WKT
-    // Valid hexadecimal cell ID
-    // Valid hexadecimal cell ID, prefixed by 0x
-    // Valid decimal cell ID
-    // lat,lng coordinate pairs
-
-    const resultPolygon = tryParsePolygonInput(userInput, userResolution);
-    if (resultPolygon) {
-      return resultPolygon;
-    }
-
-    let showCellId = false;
-    let showResolutionInput = null;
-    const unwrapAnyArray = fullyUnwrap(userInput);
-    const split = unwrapAnyArray.split(/\s/).filter((str) => str !== "");
-    const result = [];
-
-    for (let i = 0; i < split.length; i++) {
-      const currentInput = fullyTrim(split[i]);
-      const nextInput = fullyTrim(split[i + 1]);
-      const cellIdFromDecimal = maybeDecimalCell(currentInput);
-      const cellIdFromPrefixedHex = maybePrefixedHexCell(currentInput);
-
-      if (isValidCell(currentInput)) {
-        result.push(currentInput);
-      } else if (
-        cellIdFromPrefixedHex !== null &&
-        isValidCell(cellIdFromPrefixedHex)
-      ) {
-        result.push(cellIdFromPrefixedHex);
-        showCellId = true;
-      } else if (cellIdFromDecimal) {
-        result.push(cellIdFromDecimal);
-        // Show what the cell ID would look like normally
-        showCellId = true;
-      } else if (
-        i < split.length - 1 &&
-        Number.isFinite(Number.parseFloat(currentInput)) &&
-        Number.isFinite(Number.parseFloat(nextInput))
-      ) {
-        const lat = Number.parseFloat(currentInput);
-        const lng = Number.parseFloat(nextInput);
-
-        if (userResolution === -1) {
-          // Note this order is important for picking to work correctly
-          for (let res = 0; res < 16; res++) {
-            result.push(latLngToCell(lat, lng, res));
-          }
-
-          // We don't need to set showCellId, because we are showing multiple cell IDs
-          // anyways, so they will be clickable.
-        } else {
-          result.push(latLngToCell(lat, lng, userResolution));
-          showCellId = true;
-        }
-        showResolutionInput = -1;
-        // consumed, skip next coordinate
-        i++;
-      }
-    }
-
-    return {
-      splitUserInput: result,
-      showResolutionInput,
-      showCellId,
-      inputGeoJson: null,
-    };
-  }
-
-  return {
-    splitUserInput: [],
-    showCellId: false,
-    showResolutionInput: null,
-    inputGeoJson: null,
-  };
-}
 
 function zoomToResolution(zoom: number) {
   return Math.max(Math.min(zoom / 1.5, 15), 0);
@@ -227,18 +36,27 @@ export default function HomeExporer({ children }: { children: ReactNode }) {
       () => doSplitUserInput(userInput, userResolution),
       [userInput, userResolution],
     );
-  const userValidHex = useMemo(
-    () => splitUserInput.map(isValidCell).includes(true),
+  // Cell and edge indexes are kept apart from here on. The cell functions used
+  // below and in the details panel return plausible but meaningless values for
+  // an edge index rather than throwing, so an edge reaching them shows up as
+  // wrong data rather than an error.
+  const cells = useMemo(
+    () => splitUserInput.filter(isValidCell),
     [splitUserInput],
   );
+  const edges = useMemo(
+    () => splitUserInput.filter(isValidDirectedEdge),
+    [splitUserInput],
+  );
+  const userValidInput = cells.length > 0 || edges.length > 0;
   const constantResolution = useMemo(() => {
-    const resAsSet = new Set(splitUserInput.map(getResolution));
+    const resAsSet = new Set(cells.map(getResolution));
     if (resAsSet.size === 1) {
       return [...resAsSet][0];
     } else {
       return undefined;
     }
-  }, [splitUserInput]);
+  }, [cells]);
 
   const objectOnClick = useCallback(
     ({ hex }: { hex: string }) => {
@@ -284,9 +102,10 @@ export default function HomeExporer({ children }: { children: ReactNode }) {
         <HeroExampleContainer>
           <DemoContainer>
             <ExplorerMap
-              userInput={splitUserInput}
+              userInput={cells}
+              userEdges={edges}
               inputGeoJson={inputGeoJson}
-              userValidHex={userValidHex}
+              userValidInput={userValidInput}
               objectOnClick={objectOnClick}
               coordinateOnClick={coordinateOnClick}
               previewCells={previewCells}
@@ -309,9 +128,9 @@ export default function HomeExporer({ children }: { children: ReactNode }) {
               resize: "vertical",
             }}
           />
-          {splitUserInput.length ? (
+          {cells.length ? (
             <SelectedHexDetails
-              splitUserInput={splitUserInput}
+              splitUserInput={cells}
               showCellId={showCellId}
               setUserInput={setUserInput}
               showNavigation={true}
@@ -319,6 +138,7 @@ export default function HomeExporer({ children }: { children: ReactNode }) {
               onHoverCells={setPreviewCells}
             />
           ) : null}
+          {edges.length === 1 ? <SelectedEdgeDetails edge={edges[0]} /> : null}
           {showResolutionInput !== null ? (
             <div>
               <label htmlFor={resolutionInputId}>Resolution:</label>
