@@ -124,6 +124,7 @@ macro(add_h3_test_with_file name srcfile argfile)
             ${SHELL}
             "${dump_command} ${argfile} | ${TEST_WRAPPER_STR} $<TARGET_FILE:${name}>"
     )
+    set_tests_properties(${name}_test${test_number} PROPERTIES LABELS File)
 
     if(PRINT_TEST_FILES)
         message("${name}_test${test_number} - ${argfile}")
@@ -156,9 +157,14 @@ macro(add_h3_cli_test name h3_args expect_string)
 endmacro()
 
 macro(add_h3_test_with_arg name srcfile arg)
+    # Optional third argument: label to add to this test
     add_h3_test_common(${name} ${srcfile})
     add_test(NAME ${name}_test${test_number}
              COMMAND ${TEST_WRAPPER} $<TARGET_FILE:${name}> ${arg})
+    if(${ARGC} GREATER 3)
+        set_tests_properties(${name}_test${test_number} PROPERTIES LABELS ${ARGV3})
+    endif()
+
     if(PRINT_TEST_FILES)
         message("${name}_test${test_number} - ${arg}")
     endif()
@@ -187,10 +193,10 @@ foreach(file ${all_ic_files})
             ${file})
 endforeach()
 
-file(GLOB all_inspection_files tests/inputfiles/inspection/*.txt)
+file(GLOB all_inspection_files tests/inputfiles/inspection/*.json)
 foreach(file ${all_inspection_files})
     add_h3_test_with_arg(testInspection src/apps/testapps/testInspection.c
-            ${file})
+            ${file} File)
 endforeach()
 
 file(GLOB all_centers tests/inputfiles/rand*centers.txt)
@@ -304,4 +310,7 @@ if(BUILD_ALLOC_TESTS)
     add_h3_memory_test(testH3Memory src/apps/testapps/testH3Memory.c)
 endif()
 
+# Just tests that don't exhaustively test the grid
 add_custom_target(test-fast COMMAND ctest -E Exhaustive)
+# Just tests that use input data files for their assertions
+add_custom_target(test-files COMMAND ctest -L File)

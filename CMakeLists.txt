@@ -197,12 +197,12 @@ set(APP_SOURCE_FILES
     src/apps/applib/include/utility.h
     src/apps/applib/include/args.h
     src/apps/applib/include/aflHarness.h
-    src/apps/applib/include/cJSON.h
     src/apps/applib/lib/kml.c
     src/apps/applib/lib/utility.c
-    src/apps/applib/lib/args.c
-    src/apps/applib/lib/cJSON.c)
-set(TEST_APP_SOURCE_FILES src/apps/applib/include/test.h
+    src/apps/applib/lib/args.c)
+set(TEST_APP_SOURCE_FILES src/apps/applib/include/cJSON.h
+                          src/apps/applib/include/test.h
+                          src/apps/applib/lib/cJSON.c
                           src/apps/applib/lib/test.c)
 set(EXAMPLE_SOURCE_FILES
     examples/index.c examples/distance.c examples/neighbors.c
