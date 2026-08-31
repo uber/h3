@@ -900,6 +900,9 @@ H3Error H3_EXPORT(maxPolygonToCellsSize)(const GeoPolygon *geoPolygon, int res,
     // resolution, the line tracing needs an extra buffer than the estimator
     // function provides (but beefing that up to cover causes most situations to
     // overallocate memory)
+    if (ADD_INT64S_OVERFLOWS(numHexagons, POLYGON_TO_CELLS_BUFFER)) {
+        return E_MEMORY_ALLOC;
+    }
     numHexagons += POLYGON_TO_CELLS_BUFFER;
     *out = numHexagons;
     return E_SUCCESS;
