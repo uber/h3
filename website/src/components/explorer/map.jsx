@@ -11,11 +11,11 @@ import { Map } from "react-map-gl";
 import DeckGL from "@deck.gl/react";
 import { H3HexagonLayer } from "@deck.gl/geo-layers";
 import { WebMercatorViewport, FlyToInterpolator, MapView } from "@deck.gl/core";
-import { cellToBoundary } from "h3-js";
+import { cellToBoundary, directedEdgeToBoundary } from "h3-js";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import { MOBILE_CUTOFF_WINDOW_WIDTH } from "../common";
 import { useHex } from "./useHex";
-import { GeoJsonLayer } from "deck.gl";
+import { GeoJsonLayer, PathLayer } from "deck.gl";
 import { PathStyleExtension } from "@deck.gl/extensions";
 import { useColorMode } from "@docusaurus/theme-common";
 
@@ -36,8 +36,9 @@ const DARK_MAP_STYLE = "mapbox://styles/mapbox/dark-v11";
  *
  * @param {Object} opts
  * @param {string[]} opts.userInput
+ * @param {string[]} [opts.userEdges]
  * @param {object | null} opts.inputGeoJson
- * @param {boolean} opts.userValidHex
+ * @param {boolean} opts.userValidInput
  * @param {Object} [opts.initialViewState]
  * @param {({ hex: string }) => void | undefined} [opts.objectOnClick]
  * @param {({ coordinate: [number, number], zoom: number, resolution: number }) => void | undefined} [opts.coordinateOnClick]
@@ -47,8 +48,9 @@ const DARK_MAP_STYLE = "mapbox://styles/mapbox/dark-v11";
 export function ExplorerMap(opts) {
   const {
     userInput = [],
+    userEdges = [],
     inputGeoJson = null,
-    userValidHex = false,
+    userValidInput = false,
     initialViewState = INITIAL_VIEW_STATE,
     objectOnClick = undefined,
     coordinateOnClick = undefined,
@@ -74,7 +76,7 @@ export function ExplorerMap(opts) {
   }, [setWindowWidth]);
 
   useEffect(() => {
-    if (userValidHex && deckRef.current) {
+    if (userValidInput && deckRef.current) {
       const { width, height } = deckRef.current.deck;
 
       const viewport = new WebMercatorViewport({ width, height });
@@ -83,8 +85,11 @@ export function ExplorerMap(opts) {
       let maxX = -Infinity;
       let maxY = -Infinity;
 
-      for (const hex of userInput) {
-        const coords = cellToBoundary(hex, true);
+      const boundaries = [
+        ...userInput.map((hex) => cellToBoundary(hex, true)),
+        ...userEdges.map((edge) => directedEdgeToBoundary(edge, true)),
+      ];
+      for (const coords of boundaries) {
         for (const coord of coords) {
           if (coord[0] < minX) {
             minX = coord[0];
@@ -124,7 +129,7 @@ export function ExplorerMap(opts) {
         });
       }
     }
-  }, [userInput, userValidHex, deckLoaded]);
+  }, [userInput, userEdges, userValidInput, deckLoaded]);
 
   const addSelectedHexes = useCallback(
     (hex) => {
@@ -190,7 +195,25 @@ export function ExplorerMap(opts) {
       ]
     : [];
 
-  const layers = userValidHex
+  // Directed edges are line geometry, so they need a path layer rather than the
+  // hexagon layer used for cells. Reusing the `hex` key keeps the tooltip and
+  // click-to-toggle handlers below working for edges without special casing.
+  const inputEdgeLayers = userEdges.length
+    ? [
+        new PathLayer({
+          id: "useredge",
+          data: userEdges.map((hex) => ({ hex })),
+          getPath: (d) => directedEdgeToBoundary(d.hex, true),
+          getColor: colorMode === "dark" ? [255, 255, 255] : [0, 0, 0],
+          getWidth: 3,
+          widthUnits: "pixels",
+          widthMinPixels: 3,
+          pickable: true,
+        }),
+      ]
+    : [];
+
+  const layers = userValidInput
     ? [
         new H3HexagonLayer({
           id: "userhex",
@@ -209,6 +232,7 @@ export function ExplorerMap(opts) {
           getFillColor:
             colorMode === "dark" ? [255, 255, 255, 30] : [0, 0, 0, 30],
         }),
+        ...inputEdgeLayers,
         ...inputPreviewLayers,
         ...inputGeoJsonLayers,
       ]

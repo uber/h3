@@ -16,6 +16,7 @@
 
 #include <assert.h>
 #include <math.h>
+#include <stdint.h>
 #include <stdlib.h>
 
 #include "algos.h"
@@ -53,6 +54,19 @@ static GeoPolygon invalidGeoPolygon;
 static LatLng invalid2Verts[] = {{NAN, NAN}, {-NAN, -NAN}};
 static GeoLoop invalid2GeoLoop = {.numVerts = 2, .verts = invalid2Verts};
 static GeoPolygon invalid2GeoPolygon;
+
+static LatLng invalidSfVerts[] = {
+    {0.659966917655, -2.1364398519396},  {NAN, -2.1359434279405},
+    {0.6583348114025, -2.1354884206045}, {0.6581220034068, -2.1382437718946},
+    {0.6594479998527, -2.1384597563896}, {0.6599990002976, -2.1376771158464}};
+static GeoLoop invalidSfGeoLoop = {.numVerts = 6, .verts = invalidSfVerts};
+static GeoPolygon invalidSfGeoPolygon;
+
+static LatLng invalidHoleVerts[] = {{0.6595072188743, -2.1371053983433},
+                                    {0.6591482046471, NAN},
+                                    {0.6592295020837, -2.1365222838402}};
+static GeoLoop invalidHoleGeoLoop = {.numVerts = 3, .verts = invalidHoleVerts};
+static GeoPolygon invalidHoleGeoPolygon;
 
 static LatLng pointVerts[] = {{0, 0}};
 static GeoLoop pointGeoLoop = {.numVerts = 1, .verts = pointVerts};
@@ -136,6 +150,78 @@ static void fillIndex_assertions(H3Index h) {
     }
 }
 
+static int64_t findCellIndex(const H3Index *cells, int64_t size, H3Index cell) {
+    for (int64_t i = 0; i < size; i++) {
+        if (cells[i] == cell) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+static int countCellComponents(const H3Index *cells, int64_t size) {
+    enum { oneRingSize = 7 };
+
+    // polygonToCells output is sized by maxPolygonToCellsSize and is mostly
+    // H3_NULL, so gather the cells that were actually produced first. The
+    // neighbor lookups below then scan only those, rather than the estimate.
+    H3Index *found = calloc(size, sizeof(H3Index));
+    assert(found != NULL);
+    int64_t numFound = 0;
+    for (int64_t i = 0; i < size; i++) {
+        if (cells[i] != H3_NULL) {
+            found[numFound++] = cells[i];
+        }
+    }
+    if (numFound == 0) {
+        free(found);
+        return 0;
+    }
+
+    bool *visited = calloc(numFound, sizeof(bool));
+    int64_t *queue = calloc(numFound, sizeof(int64_t));
+    assert(visited != NULL);
+    assert(queue != NULL);
+
+    int components = 0;
+    for (int64_t i = 0; i < numFound; i++) {
+        if (visited[i]) {
+            continue;
+        }
+
+        components++;
+        int64_t read = 0;
+        int64_t write = 0;
+        queue[write++] = i;
+        visited[i] = true;
+
+        while (read < write) {
+            H3Index ring[oneRingSize];
+            for (int j = 0; j < oneRingSize; j++) {
+                ring[j] = H3_NULL;
+            }
+            H3_EXPORT(gridDisk)(found[queue[read++]], 1, ring);
+
+            for (int j = 0; j < oneRingSize; j++) {
+                if (ring[j] == H3_NULL) {
+                    continue;
+                }
+
+                int64_t neighborIndex = findCellIndex(found, numFound, ring[j]);
+                if (neighborIndex >= 0 && !visited[neighborIndex]) {
+                    visited[neighborIndex] = true;
+                    queue[write++] = neighborIndex;
+                }
+            }
+        }
+    }
+
+    free(queue);
+    free(visited);
+    free(found);
+    return components;
+}
+
 SUITE(polygonToCells) {
     sfGeoPolygon.geoloop = sfGeoLoop;
     sfGeoPolygon.numHoles = 0;
@@ -158,6 +244,13 @@ SUITE(polygonToCells) {
 
     lineGeoPolygon.geoloop = lineGeoLoop;
     lineGeoPolygon.numHoles = 0;
+
+    invalidSfGeoPolygon.geoloop = invalidSfGeoLoop;
+    invalidSfGeoPolygon.numHoles = 0;
+
+    invalidHoleGeoPolygon.geoloop = sfGeoLoop;
+    invalidHoleGeoPolygon.numHoles = 1;
+    invalidHoleGeoPolygon.holes = &invalidHoleGeoLoop;
 
     // --------------------------------------------
     // maxPolygonToCellsSize
@@ -189,6 +282,22 @@ SUITE(polygonToCells) {
         t_assert(H3_EXPORT(maxPolygonToCellsSize)(&invalid2GeoPolygon, 9, 0,
                                                   &numHexagons) == E_FAILED,
                  "Cannot determine cell size to invalid geo polygon with NaNs");
+    }
+
+    TEST(maxPolygonToCellsSizeHoleVertsOverflow) {
+        // holes[i].verts are not read by maxPolygonToCellsSize, only numVerts,
+        // so oversized counts exercise the vertex accumulation without
+        // allocation
+        GeoLoop bigHole = {.numVerts = INT32_MAX, .verts = NULL};
+        GeoLoop holes[] = {bigHole, bigHole, bigHole};
+        GeoPolygon polygon = {
+            .geoloop = sfGeoLoop, .numHoles = 3, .holes = holes};
+
+        int64_t numHexagons;
+        t_assertSuccess(
+            H3_EXPORT(maxPolygonToCellsSize)(&polygon, 9, 0, &numHexagons));
+        t_assert(numHexagons >= 3LL * INT32_MAX,
+                 "hole vertex counts accumulate without overflowing");
     }
 
     TEST(maxPolygonToCellsSizePoint) {
@@ -460,6 +569,34 @@ SUITE(polygonToCells) {
         free(hexagons);
     }
 
+    TEST(polygonToCellsNonContiguous) {
+        // Two blocks joined by a corridor far narrower than a resolution 7
+        // cell, so the polygon is contiguous but its cell set is not.
+        LatLng verts[] = {
+            {0.010, 0.000},    {0.010, 0.010}, {0.005001, 0.010},
+            {0.005001, 0.060}, {0.010, 0.060}, {0.010, 0.070},
+            {0.000, 0.070},    {0.000, 0.060}, {0.005000, 0.060},
+            {0.005000, 0.010}, {0.000, 0.010}, {0.000, 0.000},
+        };
+        GeoLoop geoloop = {.numVerts = 12, .verts = verts};
+        GeoPolygon polygon = {.geoloop = geoloop, .numHoles = 0};
+
+        int64_t numHexagons;
+        t_assertSuccess(
+            H3_EXPORT(maxPolygonToCellsSize)(&polygon, 7, 0, &numHexagons));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+
+        t_assertSuccess(H3_EXPORT(polygonToCells)(&polygon, 7, 0, hexagons));
+        int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
+
+        t_assert(actualNumIndexes > 0,
+                 "got cells for non-contiguous polygonToCells case");
+        t_assert(countCellComponents(hexagons, numHexagons) == 2,
+                 "got two non-contiguous polygonToCells components");
+
+        free(hexagons);
+    }
+
     TEST(invalidFlags) {
         int64_t numHexagons;
         for (uint32_t flags = CONTAINMENT_INVALID; flags <= 32; flags++) {
@@ -490,6 +627,32 @@ SUITE(polygonToCells) {
         t_assert(H3_EXPORT(polygonToCells)(&invalidGeoPolygon, 9, 0,
                                            hexagons) == E_FAILED,
                  "Invalid geo polygon cannot be evaluated");
+        free(hexagons);
+    }
+
+    TEST(polygonToCells_oneNanVertex) {
+        int64_t numHexagons;
+        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(&invalidSfGeoPolygon,
+                                                         9, 0, &numHexagons));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+
+        t_assert(H3_EXPORT(polygonToCells)(&invalidSfGeoPolygon, 9, 0,
+                                           hexagons) == E_FAILED,
+                 "Partially NAN geo polygon cannot be evaluated");
+
+        free(hexagons);
+    }
+
+    TEST(polygonToCells_oneNanHoleVertex) {
+        int64_t numHexagons;
+        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(&invalidHoleGeoPolygon,
+                                                         9, 0, &numHexagons));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+
+        t_assert(H3_EXPORT(polygonToCells)(&invalidHoleGeoPolygon, 9, 0,
+                                           hexagons) == E_FAILED,
+                 "Partially NAN geo polygon cannot be evaluated (hole)");
+
         free(hexagons);
     }
 
