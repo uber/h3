@@ -620,6 +620,23 @@ SUITE(compactCells) {
         free(children);
     }
 
+    TEST(uncompactCells_sizeOverflow) {
+        H3Index origin = 0x8019fffffffffff;
+        size_t sz = 2000000;
+
+        H3Index *data = calloc(sz, sizeof(H3Index));
+        for (size_t i = 0; i < sz; i++) {
+            data[i] = origin;
+        }
+
+        int64_t childrenSz;
+        t_assert(H3_EXPORT(uncompactCellsSize)(data, sz, 15, &childrenSz) ==
+                     E_MEMORY_ALLOC,
+                 "uncompactCellsSize overflow");
+
+        free(data);
+    }
+
     TEST(pentagon) {
         H3Index pentagon;
         setH3Index(&pentagon, 1, 4, 0);
