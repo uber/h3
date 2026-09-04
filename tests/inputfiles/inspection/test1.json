@@ -1,0 +1,4 @@
+{"index":"81283ffffffffff","res":1,"baseCell":20,"validCell":true,"validIndex":true,"resClassIII":true,"pentagon": false,"faces":[7], "digits": [0]}
+{"index":"804dfffffffffff","res":0,"baseCell":38,"validCell":true,"validIndex":true,"resClassIII":false,"pentagon": true,"faces":[2,7,12,8,3], "digits": []}
+{"index":"fffffffffffffff","res":15,"baseCell":127,"validCell":false,"validIndex":false,"resClassIII":true,"pentagon":false,"faceError":-1, "digits": [7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7]}
+{"index":"0","res":0,"baseCell":0,"validCell":false,"validIndex":false,"resClassIII":false,"pentagon":false,"faceError":-1, "digits": []}

@@ -200,7 +200,9 @@ set(APP_SOURCE_FILES
     src/apps/applib/lib/kml.c
     src/apps/applib/lib/utility.c
     src/apps/applib/lib/args.c)
-set(TEST_APP_SOURCE_FILES src/apps/applib/include/test.h
+set(TEST_APP_SOURCE_FILES src/apps/applib/include/cJSON.h
+                          src/apps/applib/include/test.h
+                          src/apps/applib/lib/cJSON.c
                           src/apps/applib/lib/test.c)
 set(EXAMPLE_SOURCE_FILES
     examples/index.c examples/distance.c examples/neighbors.c
@@ -284,6 +286,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testDescribeH3Error.c
     src/apps/testapps/testGosperIter.c
     src/apps/testapps/testGeoLoopArea.c
+    src/apps/testapps/testInspection.c
     src/apps/miscapps/cellToBoundaryHier.c
     src/apps/miscapps/cellToLatLngHier.c
     src/apps/miscapps/generateBaseCellNeighbors.c
@@ -331,6 +334,13 @@ set(OTHER_SOURCE_FILES
 set(ALL_SOURCE_FILES
     ${LIB_SOURCE_FILES} ${APP_SOURCE_FILES} ${TEST_APP_SOURCE_FILES}
     ${H3_BIN_SOURCE_FILES} ${OTHER_SOURCE_FILES})
+
+# These files are vendored and should not be formatted so it is easy to check
+# they match upstream.
+set(ALL_FORMAT_SOURCE_FILES ${ALL_SOURCE_FILES})
+list(REMOVE_ITEM ALL_FORMAT_SOURCE_FILES
+    src/apps/applib/include/cJSON.h
+    src/apps/applib/lib/cJSON.c)
 
 # This is done for quality control purposes (to detect if any source files are
 # missing from our list), but is not done as the authoritative list as per CMake
@@ -440,7 +450,7 @@ if(ENABLE_FORMAT)
     # Format
     add_custom_target(
         format
-        COMMAND ${CLANG_FORMAT_PATH} -style=file -i ${ALL_SOURCE_FILES}
+        COMMAND ${CLANG_FORMAT_PATH} -style=file -i ${ALL_FORMAT_SOURCE_FILES}
                 ${EXAMPLE_SOURCE_FILES} ${UNCONFIGURED_API_HEADER}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMENT "Formatting sources")
