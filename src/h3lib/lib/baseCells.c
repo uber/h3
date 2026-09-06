@@ -820,13 +820,22 @@ const BaseCellData baseCellData[NUM_BASE_CELLS] = {
     {{18, {1, 0, 0}}, 0, {0, 0}}     // base cell 121
 };
 
+/** @brief Pentagon flag for each base cell.
+ *
+ * Duplicates the isPentagon field of baseCellData in a form that is cheap to
+ * index on hot paths. testBaseCellsInternal asserts the two agree. */
+const bool baseCellIsPentagon[NUM_BASE_CELL_VALUES] = {
+    [4] = true,  [14] = true, [24] = true,  [38] = true,
+    [49] = true, [58] = true, [63] = true,  [72] = true,
+    [83] = true, [97] = true, [107] = true, [117] = true};
+
 /** @brief Return whether or not the indicated base cell is a pentagon. */
 int _isBaseCellPentagon(int baseCell) {
     if (baseCell < 0 || baseCell >= NUM_BASE_CELLS) {
         // Base cells less than zero can not be represented in an index
         return false;
     }
-    return baseCellData[baseCell].isPentagon;
+    return baseCellIsPentagon[baseCell];
 }
 
 /** @brief Return whether the indicated base cell is a pentagon where all
