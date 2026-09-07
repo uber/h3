@@ -11,11 +11,11 @@ import { Map } from "react-map-gl";
 import DeckGL from "@deck.gl/react";
 import { H3HexagonLayer } from "@deck.gl/geo-layers";
 import { WebMercatorViewport, FlyToInterpolator, MapView } from "@deck.gl/core";
-import { cellToBoundary, directedEdgeToBoundary } from "h3-js";
+import { cellToBoundary, directedEdgeToBoundary, vertexToLatLng } from "h3-js";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import { MOBILE_CUTOFF_WINDOW_WIDTH } from "../common";
 import { useHex } from "./useHex";
-import { GeoJsonLayer, PathLayer } from "deck.gl";
+import { GeoJsonLayer, PathLayer, ScatterplotLayer } from "deck.gl";
 import { PathStyleExtension } from "@deck.gl/extensions";
 import { useColorMode } from "@docusaurus/theme-common";
 
@@ -35,8 +35,9 @@ const DARK_MAP_STYLE = "mapbox://styles/mapbox/dark-v11";
 /**
  *
  * @param {Object} opts
- * @param {string[]} opts.userInput
+ * @param {string[]} [opts.userInput]
  * @param {string[]} [opts.userEdges]
+ * @param {string[]} [opts.userVertexes]
  * @param {object | null} opts.inputGeoJson
  * @param {boolean} opts.userValidInput
  * @param {Object} [opts.initialViewState]
@@ -49,6 +50,7 @@ export function ExplorerMap(opts) {
   const {
     userInput = [],
     userEdges = [],
+    userVertexes = [],
     inputGeoJson = null,
     userValidInput = false,
     initialViewState = INITIAL_VIEW_STATE,
@@ -88,17 +90,23 @@ export function ExplorerMap(opts) {
       const boundaries = [
         ...userInput.map((hex) => cellToBoundary(hex, true)),
         ...userEdges.map((edge) => directedEdgeToBoundary(edge, true)),
+        ...userVertexes.map((vertex) => {
+          const latLng = vertexToLatLng(vertex);
+          return [[latLng[1], latLng[0]]];
+        }),
       ];
       for (const coords of boundaries) {
         for (const coord of coords) {
           if (coord[0] < minX) {
             minX = coord[0];
-          } else if (coord[0] > maxX) {
+          }
+          if (coord[0] > maxX) {
             maxX = coord[0];
           }
           if (coord[1] < minY) {
             minY = coord[1];
-          } else if (coord[1] > maxY) {
+          }
+          if (coord[1] > maxY) {
             maxY = coord[1];
           }
         }
@@ -112,12 +120,16 @@ export function ExplorerMap(opts) {
         width > 1 &&
         height > 1
       ) {
+        const hasVertex = userVertexes.length > 0;
         const { latitude, longitude, zoom } = viewport.fitBounds(
           [
             [minX, minY],
             [maxX, maxY],
           ],
-          { padding: 96 },
+          {
+            maxZoom: hasVertex ? 22 : undefined,
+            padding: 96,
+          },
         );
 
         setCurrentInitialViewState({
@@ -129,7 +141,7 @@ export function ExplorerMap(opts) {
         });
       }
     }
-  }, [userInput, userEdges, userValidInput, deckLoaded]);
+  }, [userInput, userEdges, userVertexes, userValidInput, deckLoaded]);
 
   const addSelectedHexes = useCallback(
     (hex) => {
@@ -213,6 +225,27 @@ export function ExplorerMap(opts) {
       ]
     : [];
 
+  const inputVertexLayers = userVertexes.length
+    ? [
+        new ScatterplotLayer({
+          id: "uservertex",
+          data: userVertexes.map((hex) => ({ hex })),
+          getPosition: (v) => {
+            const latLng = vertexToLatLng(v.hex);
+            return [latLng[1], latLng[0]];
+          },
+          filled: true,
+          stroked: false,
+          getFillColor: colorMode === "dark" ? [255, 255, 255] : [0, 0, 0],
+          getRadius: 3,
+          radiusMinPixels: 2,
+          radiusUnits: "pixels",
+          radiusScale: 1,
+          pickable: true,
+        }),
+      ]
+    : [];
+
   const layers = userValidInput
     ? [
         new H3HexagonLayer({
@@ -232,6 +265,7 @@ export function ExplorerMap(opts) {
           getFillColor:
             colorMode === "dark" ? [255, 255, 255, 30] : [0, 0, 0, 30],
         }),
+        ...inputVertexLayers,
         ...inputEdgeLayers,
         ...inputPreviewLayers,
         ...inputGeoJsonLayers,

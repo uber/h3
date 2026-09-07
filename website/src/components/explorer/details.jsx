@@ -18,6 +18,7 @@ import {
   getDirectedEdgeOrigin,
   getDirectedEdgeDestination,
   UNITS,
+  vertexToLatLng,
 } from "h3-js";
 
 const THREE_BITS = 7; // 1 | 2 | 4
@@ -153,6 +154,7 @@ function ClickableH3IndexList({
 }
 
 export function SelectedEdgeDetails({ edge, showDetails = true }) {
+  // TODO: Will be fixed in next release
   // getResolution reports -1 for an edge index, so take it from the origin cell.
   const origin = getDirectedEdgeOrigin(edge);
   const destination = getDirectedEdgeDestination(edge);
@@ -175,6 +177,32 @@ export function SelectedEdgeDetails({ edge, showDetails = true }) {
           Destination: <tt>{destination}</tt>
           <br />
           Edge Length: <tt>{length}</tt> {units.dist}
+        </details>
+      ) : (
+        <></>
+      )}
+    </p>
+  );
+}
+
+export function SelectedVertexDetails({ vertex, showDetails = true }) {
+  // TODO: Will be fixed in next release
+  // getResolution reports -1 for a vertex index,
+  const res = 15;
+  const floatPrecision = res / 3 + 7;
+
+  const coords = vertexToLatLng(vertex)
+    .map((n) => n.toPrecision(floatPrecision))
+    .join(", ");
+
+  return (
+    <p style={{ marginBottom: "0" }}>
+      <br />
+      Vertex: <tt>{vertex}</tt>
+      {showDetails ? (
+        <details>
+          <summary>Details</summary>
+          Coords: <tt>{coords}</tt>
         </details>
       ) : (
         <></>
