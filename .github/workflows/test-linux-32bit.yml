@@ -1,0 +1,47 @@
+name: test-linux-32bit
+
+on:
+  push:
+    branches: [master, stable-*]
+  pull_request:
+    branches: [master, stable-*]
+
+jobs:
+  gcc-tests:
+    name: gcc ${{ matrix.build_type }} 32bit
+    runs-on: "ubuntu-latest"
+    env:
+      CC: gcc
+
+    strategy:
+      matrix:
+        build_type: ["Debug", "Release"]
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install toolchain
+        run: |
+          sudo apt update
+          sudo apt-get install gcc-multilib libc6-dev-i386 doxygen graphviz clang-format-14
+
+      - name: Configure build
+        run: cmake -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_C_FLAGS="-m32" -DCMAKE_EXE_LINKER_FLAGS="-m32" -DCMAKE_SHARED_LINKED_FLAGS="-m32" -DWARNINGS_AS_ERRORS=ON .
+
+      - name: Build
+        working-directory: build
+        run: make
+
+      - name: Tests
+        working-directory: build
+        run: |
+          make test
+          sudo make install
+
+      - name: Examples
+        run: |
+          mkdir build/examples
+          cd build/examples
+          cmake -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} ../../examples
+          make
+          env CTEST_OUTPUT_ON_FAILURE=1 make test 
