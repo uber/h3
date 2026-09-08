@@ -632,8 +632,14 @@ SUITE(polygonToCells) {
 
     TEST(polygonToCells_oneNanVertex) {
         int64_t numHexagons;
-        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(&invalidSfGeoPolygon,
-                                                         9, 0, &numHexagons));
+        t_assert(H3_EXPORT(maxPolygonToCellsSize)(&invalidSfGeoPolygon, 9, 0,
+                                                  &numHexagons) == E_FAILED,
+                 "Partially NAN geo polygon cannot be evaluated");
+
+        // That call failed, so use the "valid version" of that polygon
+        // to test polygonToCells.
+        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(&sfGeoPolygon, 9, 0,
+                                                         &numHexagons));
         H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
 
         t_assert(H3_EXPORT(polygonToCells)(&invalidSfGeoPolygon, 9, 0,
