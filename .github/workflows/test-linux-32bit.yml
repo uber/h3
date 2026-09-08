@@ -45,3 +45,46 @@ jobs:
           cmake -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_C_FLAGS="-m32 -msse2 -mfpmath=sse" -DCMAKE_EXE_LINKER_FLAGS="-m32" -DCMAKE_SHARED_LINKER_FLAGS="-m32" ../../examples
           make
           env CTEST_OUTPUT_ON_FAILURE=1 make test 
+
+  clang-tests:
+    name: clang ${{ matrix.build_type }} 32bit  ${{ matrix.compile_opt }}
+    runs-on: "ubuntu-latest"
+    env:
+      CC: clang
+
+    strategy:
+      matrix:
+        # See Clang docs for more information on the sanitizers:
+        # https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html
+        # MemorySanitizer doesn't appear to support x86
+        compile_opt: ["", "-fsanitize=undefined,float-divide-by-zero -fno-sanitize-recover=undefined,float-divide-by-zero", "-fsanitize=address -fno-sanitize-recover=address"]
+        build_type: ["Debug", "Release"]
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install toolchain
+        run: |
+          sudo apt update
+          sudo apt-get install gcc-multilib libc6-dev-i386 doxygen graphviz clang-format-14
+
+      - name: Configure build
+        run: cmake -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DWARNINGS_AS_ERRORS=ON -DCMAKE_C_FLAGS="-m32 -msse2 -mfpmath=sse ${{ matrix.compile_opt }}" -DCMAKE_EXE_LINKER_FLAGS="-m32" -DCMAKE_SHARED_LINKER_FLAGS="-m32" .
+
+      - name: Build
+        working-directory: build
+        run: make
+
+      - name: Tests
+        working-directory: build
+        run: |
+          make CTEST_OUTPUT_ON_FAILURE=1 test
+          sudo make install
+
+      - name: Examples
+        run: |
+          mkdir build/examples
+          cd build/examples
+          cmake -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_C_FLAGS="-m32 -msse2 -mfpmath=sse ${{ matrix.compile_opt }}" -DCMAKE_EXE_LINKER_FLAGS="-m32" -DCMAKE_SHARED_LINKER_FLAGS="-m32" ../../examples
+          make
+          env CTEST_OUTPUT_ON_FAILURE=1 make test
