@@ -22,11 +22,6 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include <float.h>
-
-#if FLT_EVAL_METHOD != 0
-#warning H3 being compiled with FLT_EVAL_METHOD != 0 (i.e. extended precision double math) is not recommended.
-#endif
 
 /**
  * MAX returns the maximum of two values.
