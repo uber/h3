@@ -20,6 +20,7 @@
 #ifndef MATHEXTENSIONS_H
 #define MATHEXTENSIONS_H
 
+#include <math.h>
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -27,6 +28,25 @@
  * MAX returns the maximum of two values.
  */
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
+
+/**
+ * Simultaneously compute the sine and cosine of an angle.
+ *
+ * Several coordinate transforms need both sin(x) and cos(x) of the same angle.
+ * Computing them together lets the math library share the argument reduction
+ * and polynomial evaluation, which is faster than two independent sin()/cos()
+ * calls while returning identical values. The compiler builtin lowers to a
+ * single libm `sincos` call where one exists and falls back to separate
+ * sin()/cos() otherwise, so this stays portable.
+ */
+static inline void _sincos(double x, double *s, double *c) {
+#if defined(__GNUC__) || defined(__clang__)
+    __builtin_sincos(x, s, c);
+#else
+    *s = sin(x);
+    *c = cos(x);
+#endif
+}
 
 /**
  * MIN returns the minimum of two values.
