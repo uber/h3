@@ -20,8 +20,14 @@
 #ifndef MATHEXTENSIONS_H
 #define MATHEXTENSIONS_H
 
+#include <float.h>
 #include <stdbool.h>
 #include <stdint.h>
+
+#if (FLT_EVAL_METHOD != 0) && (FLT_EVAL_METHOD != 1) && \
+    !defined(H3_SKIP_FLT_EVAL_METHOD_CHECK)
+#error H3 being compiled with FLT_EVAL_METHOD != 0 or 1 (i.e. extended precision double math) is not recommended.
+#endif
 
 /**
  * MAX returns the maximum of two values.

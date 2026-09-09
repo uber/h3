@@ -26,7 +26,8 @@ jobs:
           sudo apt-get install gcc-multilib libc6-dev-i386
 
       - name: Configure build
-        run: cmake -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_C_FLAGS="-m32 -msse2 -mfpmath=sse" -DCMAKE_EXE_LINKER_FLAGS="-m32" -DCMAKE_SHARED_LINKER_FLAGS="-m32" -DWARNINGS_AS_ERRORS=ON .
+        # run: cmake -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_C_FLAGS="-m32 -msse2 -mfpmath=sse" -DCMAKE_EXE_LINKER_FLAGS="-m32" -DCMAKE_SHARED_LINKER_FLAGS="-m32" -DWARNINGS_AS_ERRORS=ON .
+        run: cmake -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_C_FLAGS="-m32" -DCMAKE_EXE_LINKER_FLAGS="-m32" -DCMAKE_SHARED_LINKER_FLAGS="-m32" -DWARNINGS_AS_ERRORS=ON .
 
       - name: Build
         working-directory: build
