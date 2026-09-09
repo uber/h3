@@ -26,6 +26,16 @@
 
 #if (FLT_EVAL_METHOD != 0) && (FLT_EVAL_METHOD != 1) && \
     !defined(H3_SKIP_FLT_EVAL_METHOD_CHECK)
+/*
+ * FLT_EVAL_METHOD of 0 or 1 are compatible with H3, because 0 uses the width of
+ * the float or double type, and 1 uses the width of the double type (which is
+ * fine because as a general rule H3 uses doubles.) 2 indicates extended
+ * precision and is not recommended because some behavior in our test suite is
+ * not compatible with it. -1 indicates indeterminate.
+ *
+ * For a lot of cases, overriding this check and using extended precision will
+ * in fact work. However, edge cases are not tested and could have issues.
+ */
 #error H3 being compiled with FLT_EVAL_METHOD != 0 or 1 (i.e. extended precision double math) is not recommended.
 #endif
 
