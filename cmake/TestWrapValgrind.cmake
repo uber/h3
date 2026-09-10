@@ -31,7 +31,4 @@ if(WRAP_VALGRIND)
         ${VALGRIND} --track-origins=yes --leak-check=full --error-exitcode=99
         CACHE STRING "Wrapper executable for tests and benchmarks")
     mark_as_advanced(TEST_WRAPPER)
-    # Convert from semicolon separated list of values to a form that can be used
-    # by a shell.
-    string(REPLACE ";" " " TEST_WRAPPER_STR "${TEST_WRAPPER}")
 endif()

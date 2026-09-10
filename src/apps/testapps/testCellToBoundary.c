@@ -94,28 +94,35 @@ int readBoundary(FILE *f, CellBoundary *b) {
 
 int main(int argc, char *argv[]) {
     // check command line args
-    if (argc > 1) {
+    if (argc > 2) {
         fprintf(stderr, "usage: %s\n", argv[0]);
         exit(1);
+    }
+
+    FILE *in = stdin;
+    if (argc == 2) {
+        in = fopen(argv[1], "r");
     }
 
     // process the indexes on stdin
     char buff[BUFF_SIZE];
     while (1) {
         // get an index from stdin
-        if (!fgets(buff, BUFF_SIZE, stdin)) {
-            if (feof(stdin))
+        if (!fgets(buff, BUFF_SIZE, in)) {
+            if (feof(in))
                 break;
             else
-                error("reading input H3 index from stdin");
+                error("reading input H3 index from in");
         }
 
         H3Index h3;
         t_assertSuccess(H3_EXPORT(stringToH3)(buff, &h3));
 
         CellBoundary b;
-        readBoundary(stdin, &b);
+        readBoundary(in, &b);
 
         t_assertBoundary(h3, &b);
     }
+
+    fclose(in);
 }

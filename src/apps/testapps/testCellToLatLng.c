@@ -51,9 +51,14 @@ void assertExpected(H3Index h1, const LatLng *g1) {
 
 int main(int argc, char *argv[]) {
     // check command line args
-    if (argc > 1) {
+    if (argc > 2) {
         fprintf(stderr, "usage: %s\n", argv[0]);
         exit(1);
+    }
+
+    FILE *in = stdin;
+    if (argc == 2) {
+        in = fopen(argv[1], "r");
     }
 
     // process the indexes and lat/lngs on stdin
@@ -61,8 +66,8 @@ int main(int argc, char *argv[]) {
     char h3Str[BUFF_SIZE];
     while (1) {
         // get an index from stdin
-        if (!fgets(buff, BUFF_SIZE, stdin)) {
-            if (feof(stdin))
+        if (!fgets(buff, BUFF_SIZE, in)) {
+            if (feof(in))
                 break;
             else
                 error("reading input from stdin");
@@ -80,4 +85,6 @@ int main(int argc, char *argv[]) {
 
         assertExpected(h3, &coord);
     }
+
+    fclose(in);
 }
