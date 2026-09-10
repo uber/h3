@@ -175,13 +175,6 @@ void GENERIC_LOOP_ALGO(bboxFrom)(const TYPE *loop, BBox *bbox) {
 
         lat = coord.lat;
         lng = coord.lng;
-        if (!isfinite(lat) || !isfinite(lng)) {
-            bbox->south = NAN;
-            bbox->west = NAN;
-            bbox->north = NAN;
-            bbox->east = NAN;
-            break;
-        }
         if (lat < bbox->south) bbox->south = lat;
         if (lng < bbox->west) bbox->west = lng;
         if (lat > bbox->north) bbox->north = lat;

@@ -44,7 +44,7 @@ jobs:
           cd build/examples
           cmake -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_C_FLAGS="-m32 -msse2 -mfpmath=sse" -DCMAKE_EXE_LINKER_FLAGS="-m32" -DCMAKE_SHARED_LINKER_FLAGS="-m32" ../../examples
           make
-          env CTEST_OUTPUT_ON_FAILURE=1 make test 
+          env CTEST_OUTPUT_ON_FAILURE=1 make test
 
   clang-tests:
     name: clang ${{ matrix.build_type }} 32bit  ${{ matrix.compile_opt }}
