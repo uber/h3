@@ -72,6 +72,8 @@ set(H3_FUZZER_EXTRA_OPTIONS
     ""
     CACHE STRING "Extra compilation options for fuzzers particularly.")
 mark_as_advanced(H3_FUZZER_EXTRA_OPTIONS)
+option(H3_SKIP_FLT_EVAL_METHOD_CHECK "Skip checking FLT_EVAL_METHOD" OFF)
+mark_as_advanced(H3_SKIP_FLT_EVAL_METHOD_CHECK)
 
 if(WIN32)
     # Use bash (usually from Git for Windows) for piping results
@@ -399,6 +401,9 @@ function(add_h3_library name h3_alloc_prefix_override)
         set(has_alloc_prefix YES)
         target_compile_definitions(${name}
                                    PUBLIC H3_ALLOC_PREFIX=${H3_ALLOC_PREFIX})
+    endif()
+    if(H3_SKIP_FLT_EVAL_METHOD_CHECK)
+        target_compile_definitions(${name} PUBLIC H3_SKIP_FLT_EVAL_METHOD_CHECK=1)
     endif()
     # Mac OSX defaults to not looking up undefined symbols dynamically, so
     # enable that explicitly. Windows needs something similar.
