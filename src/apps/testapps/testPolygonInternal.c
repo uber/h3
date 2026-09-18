@@ -211,6 +211,18 @@ SUITE(polygonInternal) {
         t_assert(bboxEquals(&result, &expected), "Got expected bbox");
     }
 
+    TEST(bboxFromGeoLoopClampsOutOfRangeLatitude) {
+        // Extreme latitudes must clamp to +/- pi/2 so polyfill estimates
+        // cannot explode (GitHub issue 1225).
+        LatLng verts[] = {{0.0, 0.0}, {-1.61264e179, 0.0}};
+        GeoLoop geoloop = {.numVerts = 2, .verts = verts};
+
+        BBox result;
+        bboxFromGeoLoop(&geoloop, &result);
+        t_assert(result.north == 0.0, "north unchanged when in range");
+        t_assert(result.south == -M_PI_2, "south clamped to -pi/2");
+    }
+
     TEST(bboxesFromGeoPolygon) {
         LatLng verts[] = {{0.8, 0.3}, {0.7, 0.6}, {1.1, 0.7}, {1.0, 0.2}};
         GeoLoop geoloop = {.numVerts = 4, .verts = verts};
