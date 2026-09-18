@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/** @file benchmarkPolygonToCellsExperimental.c
+ * @brief Benchmarks the experimental polygon-to-cells traversal.
+ */
 #include "algos.h"
 #include "benchmark.h"
 #include "h3api.h"
