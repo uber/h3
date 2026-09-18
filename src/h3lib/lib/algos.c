@@ -367,6 +367,13 @@ H3Error H3_EXPORT(maxGridRingSize)(int k, int64_t *out) {
  * @return 0 if successful; nonzero otherwise.
  */
 H3Error H3_EXPORT(gridRing)(H3Index origin, int k, H3Index *out) {
+    // Validate k and size the wipe below in int64_t before touching out: with
+    // a negative k, 6 * k became a size_t of about 1.8e19 in the memset.
+    int64_t ringSize;
+    H3Error sizeError = H3_EXPORT(maxGridRingSize)(k, &ringSize);
+    if (sizeError) {
+        return sizeError;
+    }
     // Optimistically try the faster gridDiskUnsafe algorithm first
     const H3Error failed = H3_EXPORT(gridRingUnsafe)(origin, k, out);
     if (!failed) {
@@ -374,7 +381,7 @@ H3Error H3_EXPORT(gridRing)(H3Index origin, int k, H3Index *out) {
     }
     // Fast algo failed, fall back to slower, correct algo
     // and also wipe out array because contents untrustworthy
-    memset(out, 0, 6 * k * sizeof(H3Index));
+    memset(out, 0, ringSize * sizeof(H3Index));
     return _gridRingInternal(origin, k, out);
 }
 
