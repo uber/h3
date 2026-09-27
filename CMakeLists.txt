@@ -108,6 +108,19 @@ if(ENABLE_WARNINGS)
     endif()
 endif()
 
+option(ENABLE_LTO "Enable interprocedural optimization for Release builds." ON)
+if(ENABLE_LTO)
+    include(CheckIPOSupported)
+    check_ipo_supported(RESULT H3_IPO_SUPPORTED
+                        OUTPUT H3_IPO_CHECK_OUTPUT
+                        LANGUAGES C)
+    if(H3_IPO_SUPPORTED)
+        set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE ON)
+    else()
+        message(STATUS "IPO/LTO is not supported: ${H3_IPO_CHECK_OUTPUT}")
+    endif()
+endif()
+
 if(NOT MSVC)
     # Compiler options are set only on non-Windows, since these options are not
     # correct for MSVC.
@@ -371,6 +384,19 @@ function(add_h3_library name h3_alloc_prefix_override)
     target_compile_options(${name} PRIVATE ${H3_COMPILE_FLAGS})
     target_link_libraries(${name} PRIVATE ${H3_LINK_FLAGS})
     target_compile_features(${name} PUBLIC c_std_99)
+    if(ENABLE_LTO AND H3_IPO_SUPPORTED AND NOT BUILD_SHARED_LIBS)
+        if(MSVC OR CMAKE_C_COMPILER_ID MATCHES "Clang")
+            set_target_properties(
+                ${name} PROPERTIES INTERPROCEDURAL_OPTIMIZATION_RELEASE OFF)
+        endif()
+    endif()
+    if(ENABLE_LTO AND H3_IPO_SUPPORTED AND NOT BUILD_SHARED_LIBS AND NOT MSVC)
+        target_compile_options(
+            ${name}
+            PRIVATE
+                $<$<AND:$<CONFIG:Release>,$<COMPILE_LANG_AND_ID:C,GNU>>:-ffat-lto-objects>
+        )
+    endif()
 
     find_library(M_LIB m)
     if(NOT(M_LIB))
