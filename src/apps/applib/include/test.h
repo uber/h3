@@ -29,6 +29,12 @@ extern int globalTestCount;
 extern const char *currentSuiteName;
 extern const char *currentTestName;
 
+#ifdef H3_MUTATION_TEST
+#define T_ASSERT_PRINT
+#else
+#define T_ASSERT_PRINT printf(".")
+#endif  // H3_MUTATION_TEST
+
 #define t_assert(condition, msg)                                           \
     do {                                                                   \
         if (!(condition)) {                                                \
@@ -38,7 +44,7 @@ extern const char *currentTestName;
             exit(1);                                                       \
         }                                                                  \
         globalTestCount++;                                                 \
-        printf(".");                                                       \
+        T_ASSERT_PRINT;                                                    \
     } while (0)
 
 #define t_assertSuccess(condition) t_assert(!(condition), "expected E_SUCCESS")
