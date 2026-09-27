@@ -43,5 +43,28 @@ SUITE(baseCellsInternal) {
     TEST(isBaseCellPentagon_invalid) {
         t_assert(_isBaseCellPentagon(-1) == false,
                  "isBaseCellPentagon handles negative");
+        t_assert(_isBaseCellPentagon(NUM_BASE_CELLS) == false,
+                 "isBaseCellPentagon handles too large");
+    }
+
+    TEST(baseCellIsPentagon_matchesBaseCellData) {
+        // baseCellIsPentagon duplicates the isPentagon field of baseCellData so
+        // that hot paths get a compact lookup. Nothing in the type system keeps
+        // the two in sync, so assert it here.
+        for (int bc = 0; bc < NUM_BASE_CELLS; bc++) {
+            t_assert(
+                baseCellIsPentagon[bc] == (bool)baseCellData[bc].isPentagon,
+                "baseCellIsPentagon agrees with baseCellData");
+        }
+    }
+
+    TEST(baseCellIsPentagon_paddingIsFalse) {
+        // The array covers the whole 7 bit base cell range so an unvalidated
+        // base cell number read out of an H3Index cannot index out of bounds.
+        // Everything past the real base cells must read false.
+        for (int bc = NUM_BASE_CELLS; bc < NUM_BASE_CELL_VALUES; bc++) {
+            t_assert(baseCellIsPentagon[bc] == false,
+                     "padding entries are not pentagons");
+        }
     }
 }

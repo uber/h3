@@ -6,6 +6,9 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+### Changed
+- The pentagon lookup table is now defined once as `baseCellIsPentagon` in `baseCells.c` instead of being duplicated as a private copy in `h3Index.c`, with a test asserting it stays in sync with `baseCellData` (#984)
+
 ### Fixed
 - Avoid signed integer overflow when accumulating vertex counts in `maxPolygonToCellsSize` (#1204)
 - Fixed the `polygonToCells` fuzzer regression test to use explicit double literals instead of reinterpreting raw bytes, so it is portable across endianness (#964)
