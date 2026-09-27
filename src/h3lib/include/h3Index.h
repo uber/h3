@@ -21,6 +21,7 @@
 #define H3INDEX_H
 
 #include "faceijk.h"
+#include "geodesicCellBoundary.h"
 #include "h3api.h"
 
 // define's of constants and macros for bitwise manipulation of H3Index's.
@@ -181,5 +182,6 @@ DECLSPEC H3Index _zeroIndexDigits(H3Index h, int start, int end);
 
 H3Error vec3ToCell(const Vec3d *v, int res, H3Index *out);
 H3Error cellToVec3(H3Index h3, Vec3d *v);
+H3Error cellToGeodesicBoundary(H3Index h3, GeodesicCellBoundary *cb);
 
 #endif

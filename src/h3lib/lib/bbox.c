@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 Uber Technologies, Inc.
+ * Copyright 2016-2021, 2026 Uber Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,8 @@
 #include "constants.h"
 #include "h3Index.h"
 #include "latLng.h"
+#include "sphereCapTables.h"
+#include "vec3d.h"
 
 /**
  * Width of the bounding box, in rads
@@ -308,4 +310,81 @@ void bboxNormalization(const BBox *a, const BBox *b,
                       : aIsTransmeridian ? NORMALIZE_EAST
                       : aToBTrendsEast   ? NORMALIZE_WEST
                                          : NORMALIZE_EAST;
+}
+
+void aabbEmptyInverted(AABB *box) {
+    box->min.x = box->min.y = box->min.z = 1.0;
+    box->max.x = box->max.y = box->max.z = -1.0;
+}
+
+void aabbUpdateWithVec3d(AABB *aabb, const Vec3d *v) {
+    aabb->min.x = fmin(aabb->min.x, v->x);
+    aabb->min.y = fmin(aabb->min.y, v->y);
+    aabb->min.z = fmin(aabb->min.z, v->z);
+    aabb->max.x = fmax(aabb->max.x, v->x);
+    aabb->max.y = fmax(aabb->max.y, v->y);
+    aabb->max.z = fmax(aabb->max.z, v->z);
+}
+
+static inline bool _isOnArcRobust(const Vec3d *p, const Vec3d *v1,
+                                  const Vec3d *v2, const Vec3d *n) {
+    Vec3d c1 = vec3Cross(*v1, *p);
+    Vec3d c2 = vec3Cross(*p, *v2);
+    // If p is on the arc, the cross products of (v1, p) and (p, v2)
+    // should be in the same direction as the normal vector n.
+    // Using a small tolerance for floating point errors.
+    return vec3Dot(c1, *n) >= -EPSILON && vec3Dot(c2, *n) >= -EPSILON;
+}
+
+void aabbUpdateWithArcExtrema(AABB *aabb, const Vec3d *v1, const Vec3d *v2,
+                              const Vec3d *n) {
+    // It is assumed that the AABB has already been updated with the arc's
+    // endpoints (v1 and v2) before this function is called.
+
+    // Normalize the normal vector for stable projection calculations.
+    // If the normal is near-zero (degenerate edge, e.g. v1 == v2), there are
+    // no meaningful extrema to find — the AABB from the endpoints suffices.
+    Vec3d normal = *n;
+    if (vec3NormSq(normal) < EPSILON * EPSILON) {
+        return;
+    }
+    vec3Normalize(&normal);
+
+    static const Vec3d UNIT_AXES[3] = {
+        {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 1.0}};
+
+    for (int i = 0; i < 3; ++i) {
+        const Vec3d *axis = &UNIT_AXES[i];
+
+        // Project the current Cartesian axis onto the great-circle plane. The
+        // projected direction and its opposite are where that coordinate is
+        // extremized on the circle.
+        Vec3d axisCrossNormal = vec3Cross(*axis, normal);
+        Vec3d extremum_dir = vec3Cross(normal, axisCrossNormal);
+        double extremum_mag_sq = vec3Dot(extremum_dir, extremum_dir);
+
+        // If the axis is nearly aligned with the normal, there's no unique
+        // extremum to find.
+        if (extremum_mag_sq < EPSILON * EPSILON) {
+            continue;
+        }
+        vec3Normalize(&extremum_dir);
+
+        if (_isOnArcRobust(&extremum_dir, v1, v2, &normal)) {
+            aabbUpdateWithVec3d(aabb, &extremum_dir);
+        }
+
+        // Check the opposite point on the great circle as well.
+        Vec3d neg_extremum_dir = {-extremum_dir.x, -extremum_dir.y,
+                                  -extremum_dir.z};
+        if (_isOnArcRobust(&neg_extremum_dir, v1, v2, &normal)) {
+            aabbUpdateWithVec3d(aabb, &neg_extremum_dir);
+        }
+    }
+}
+
+/** Create a bounding sphere cap for a cell. */
+H3Error cellToSphereCap(H3Index cell, SphereCap *out) {
+    out->cosRadius = PRECOMPUTED_COS_RADIUS[H3_GET_RESOLUTION(cell)];
+    return cellToVec3(cell, &out->center);
 }
