@@ -63,7 +63,7 @@ The public API of this library consists of the functions declared in file
 ## [4.2.0] - 2024-12-04
 ### Added
 - Added experimental new algorithm for `polygonToCells`, called `polygonToCellsExperimental`, that supports more containment flags and is more memory-efficient (#785, #800, #947)
-- `h3` binary for shell scripts ready for use (#818, #826, #846, #923, #924, #931, #933, #934)
+- `h3` binary for shell scripts ready for use (#818, #826, #846, #923, #924, #931, #933)
 
 ### Fixed
 - Fixed compacting all or many resolution 1 cells (#919)
@@ -95,7 +95,7 @@ The public API of this library consists of the functions declared in file
 - Fixed possible signed integer overflow in `maxGridDiskSize` (#686)
 - Fixed possible use of uninitialized values in `cellToVertex` (#683, #690)
 - Fixed possible out of bounds read in `localIjToCell` (#684)
-- Fixed possible memory leak in `polygonToCells` (#685)
+- Fixed possible memory leak in `compactCells` (#685)
 - Fixed possible out of bounds read in `areNeighborCells` (#677)
 - Fixed possible memory leak in `cellsToLinkedMultiPolygon` (#673)
 
@@ -255,6 +255,7 @@ The public API of this library consists of the functions declared in file
 ## [3.5.0] - 2019-07-22
 ### Added
 - CMake options for excluding filter applications or benchmarks from the build. (#247)
+- `h3GetFaces` function to find icosahedron faces for an index, and helper function `maxFaceCount` (#253)
 ### Changed
 - Argument parsing for all filter applications is more flexible. (#238)
 ### Fixed
