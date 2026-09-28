@@ -167,6 +167,32 @@ double _hexRadiusKm(H3Index h3Index) {
 }
 
 /**
+ * pentagonRadiusKm returns the radius in km of a pentagon at the given
+ * resolution, which is the most-distorted (smallest) cell at that resolution
+ * and is used as the basis for the sizing estimates below. All pentagons at a
+ * resolution share the same radius, so the values are precomputed with
+ * `_hexRadiusKm(getPentagons(res)[0])`; see testBBoxInternal for the check
+ * that the table matches.
+ * @param res Resolution
+ * @param out Pentagon radius in km
+ * @return E_RES_DOMAIN if the resolution is out of range
+ */
+H3Error pentagonRadiusKm(int res, double *out) {
+    static const double radii[] = {
+        1036.8608883908707,    352.38042092835178,   137.46443347244914,
+        48.675383061726158,    19.418771575016173,   6.9201111097628285,
+        2.7696466086906253,    0.98790479085671501,  0.39557272779273944,
+        0.14111533138635762,   0.056508531105417925, 0.020159048894566572,
+        0.0080726093703533675, 0.002879858326408549, 0.001153229135046892,
+        0.00041140821069532511};
+    if (res < 0 || res > MAX_H3_RES) {
+        return E_RES_DOMAIN;
+    }
+    *out = radii[res];
+    return E_SUCCESS;
+}
+
+/**
  * bboxHexEstimate returns an estimated number of hexagons that fit
  *                 within the cartesian-projected bounding box
  *
@@ -177,19 +203,17 @@ double _hexRadiusKm(H3Index h3Index) {
  */
 H3Error bboxHexEstimate(const BBox *bbox, int res, int64_t *out) {
     // Get the area of the pentagon as the maximally-distorted area possible
-    H3Index pentagons[12] = {0};
-    H3Error pentagonsErr = H3_EXPORT(getPentagons)(res, pentagons);
-    if (pentagonsErr) {
-        return pentagonsErr;
+    double radiusKm;
+    H3Error radiusErr = pentagonRadiusKm(res, &radiusKm);
+    if (radiusErr) {
+        return radiusErr;
     }
-    double pentagonRadiusKm = _hexRadiusKm(pentagons[0]);
     // Area of a regular hexagon is 3/2*sqrt(3) * r * r
     // The pentagon has the most distortion (smallest edges) and shares its
     // edges with hexagons, so the most-distorted hexagons have this area,
     // shrunk by 20% off chance that the bounding box perfectly bounds a
     // pentagon.
-    double pentagonAreaKm2 =
-        0.8 * (2.59807621135 * pentagonRadiusKm * pentagonRadiusKm);
+    double pentagonAreaKm2 = 0.8 * (2.59807621135 * radiusKm * radiusKm);
 
     // Then get the area of the bounding box of the geoloop in question
     LatLng p1, p2;
@@ -235,15 +259,14 @@ H3Error bboxHexEstimate(const BBox *bbox, int res, int64_t *out) {
 H3Error lineHexEstimate(const LatLng *origin, const LatLng *destination,
                         int res, int64_t *out) {
     // Get the area of the pentagon as the maximally-distorted area possible
-    H3Index pentagons[12] = {0};
-    H3Error pentagonsErr = H3_EXPORT(getPentagons)(res, pentagons);
-    if (pentagonsErr) {
-        return pentagonsErr;
+    double radiusKm;
+    H3Error radiusErr = pentagonRadiusKm(res, &radiusKm);
+    if (radiusErr) {
+        return radiusErr;
     }
-    double pentagonRadiusKm = _hexRadiusKm(pentagons[0]);
 
     double dist = H3_EXPORT(greatCircleDistanceKm)(origin, destination);
-    double distCeil = ceil(dist / (2 * pentagonRadiusKm));
+    double distCeil = ceil(dist / (2 * radiusKm));
     if (!isfinite(distCeil)) {
         return E_FAILED;
     }

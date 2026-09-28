@@ -343,11 +343,34 @@ SUITE(BBox) {
         t_assert(!bboxEquals(&bbox, &west), "Not equals different west");
     }
 
+    TEST(pentagonRadiusKm_matchesComputed) {
+        for (int res = 0; res <= MAX_H3_RES; res++) {
+            H3Index pentagons[12] = {0};
+            t_assertSuccess(H3_EXPORT(getPentagons)(res, pentagons));
+            double expected = _hexRadiusKm(pentagons[0]);
+            double actual;
+            t_assertSuccess(pentagonRadiusKm(res, &actual));
+            t_assert(actual == expected,
+                     "pentagonRadiusKm table matches computed radius");
+        }
+    }
+
+    TEST(pentagonRadiusKm_invalidRes) {
+        double radius;
+        t_assert(pentagonRadiusKm(-1, &radius) == E_RES_DOMAIN,
+                 "pentagonRadiusKm of negative resolution fails");
+        t_assert(pentagonRadiusKm(MAX_H3_RES + 1, &radius) == E_RES_DOMAIN,
+                 "pentagonRadiusKm of too-large resolution fails");
+    }
+
     TEST(bboxHexEstimate_invalidRes) {
         int64_t numHexagons;
         BBox bbox = {1.0, 0.0, 1.0, 0.0};
         t_assert(bboxHexEstimate(&bbox, -1, &numHexagons) == E_RES_DOMAIN,
                  "bboxHexEstimate of invalid resolution fails");
+        t_assert(bboxHexEstimate(&bbox, MAX_H3_RES + 1, &numHexagons) ==
+                     E_RES_DOMAIN,
+                 "bboxHexEstimate of too-large resolution fails");
     }
 
     TEST(bboxHexEstimate_invalidLatitudeDifference) {
@@ -384,6 +407,9 @@ SUITE(BBox) {
         t_assert(lineHexEstimate(&origin, &destination, -1, &numHexagons) ==
                      E_RES_DOMAIN,
                  "lineHexEstimate of invalid resolution fails");
+        t_assert(lineHexEstimate(&origin, &destination, MAX_H3_RES + 1,
+                                 &numHexagons) == E_RES_DOMAIN,
+                 "lineHexEstimate of too-large resolution fails");
     }
 
     TEST(scaleBBox_noop) {
