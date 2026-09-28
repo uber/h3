@@ -150,7 +150,7 @@ static const Direction NEW_ADJUSTMENT_III[7][7] = {
     {CENTER_DIGIT, K_AXES_DIGIT, CENTER_DIGIT, CENTER_DIGIT, IK_AXES_DIGIT,
      IK_AXES_DIGIT, CENTER_DIGIT},
     {CENTER_DIGIT, CENTER_DIGIT, IJ_AXES_DIGIT, CENTER_DIGIT, I_AXES_DIGIT,
-     IJ_AXES_DIGIT, CENTER_DIGIT}};
+     CENTER_DIGIT, IJ_AXES_DIGIT}};
 
 /**
  * k value which will encompass all cells at resolution 15.
@@ -924,7 +924,7 @@ H3Error H3_EXPORT(maxPolygonToCellsSize)(const GeoPolygon *geoPolygon, int res,
  * @param geoloop The geoloop (or hole) to be traced
  * @param numHexagons The maximum number of hexagons possible for the geoloop
  *                    (also the bounds of the search and found arrays)
- * @param res The Hexagon resolution (0-15)
+ * @param res The hexagon resolution (0-15)
  * @param numSearchHexes The number of hexagons found so far to be searched
  * @param search The block of memory containing the hexagons to search from
  * @param found The block of memory containing the hexagons found from the
