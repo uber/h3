@@ -63,7 +63,7 @@ The public API of this library consists of the functions declared in file
 ## [4.2.0] - 2024-12-04
 ### Added
 - Added experimental new algorithm for `polygonToCells`, called `polygonToCellsExperimental`, that supports more containment flags and is more memory-efficient (#785, #800, #947)
-- `h3` binary for shell scripts ready for use (#818, #826, #846, #923, #924, #931, #933)
+- `h3` binary for shell scripts ready for use (#818, #826, #846, #923, #924, #931, #933, #934)
 
 ### Fixed
 - Fixed compacting all or many resolution 1 cells (#919)
@@ -112,6 +112,7 @@ The public API of this library consists of the functions declared in file
 - Functions that can experience errors now have an `H3Error` return value. (#617, #586, #581, #551, #550, #509, #505, #507, #508, #503, #478, #468, #436, #359)
 - Cell count parameters use `int64_t` instead of `int`.
 - `polygonToCells` (previously `polyfill`) accepts a flags argument for future expansion. (#570)
+- `cellToLocalIj` and `localIjToCell` accept a mode argument for future expansion. (#586)
 - `exactEdgeLength` functions renamed to `edgeLength` (#639)
 
 ### Fixed
@@ -123,7 +124,7 @@ The public API of this library consists of the functions declared in file
 - The file `CMakeTests.cmake` is no longer included if `ENABLE_TESTING` is off. (#609)
 
 ### Added
-- Vertex mode and associated functions: (#422, #420, #417, #415)
+- Vertex mode and associated functions: (#422, #420, #417)
     - `cellToVertex(cell, vertexNum)`
     - `cellToVertexes(cell, out)`
     - `vertexToLatLng(vertex, out)`
@@ -145,7 +146,7 @@ The public API of this library consists of the functions declared in file
 
 ## [4.0.0-rc4] - 2022-07-25
 ### Breaking changes
-- `distance*` functions (`distanceKm`, etc) renamed to `greatCircleDistance`. (#622)
+- `distance*` functions (`distanceKm`, etc) renamed to `greatCircleDistance*`. (#622)
 - Error code `E_MEMORY` renamed to `E_MEMORY_ALLOC`. (#617)
 
 ## [4.0.0-rc3] - 2022-06-03
@@ -171,11 +172,12 @@ The public API of this library consists of the functions declared in file
 - `polygonToCells` (previously `polyfill`) accepts a flags argument for future expansion. (#570)
 
 ### Added
-- Vertex mode and associated functions: (#422, #420, #417, #415)
+- Vertex mode and associated functions: (#422, #420, #417)
     - `cellToVertex(cell, vertexNum)`
     - `cellToVertexes(cell, out)`
     - `vertexToLatLng(vertex, out)`
     - `isValidVertex(vertex)` 
+- `h3` CLI application. (#556, #497)
 
 ### Fixed
 - A number of issues detected via unit tests and fuzzers were fixed. (#568, #562, #558, #559, #560, #430)
@@ -201,6 +203,7 @@ The public API of this library consists of the functions declared in file
     - `cellAreaRads2`
     - `cellAreaKm2`
     - `cellAreaM2`
+    - `pointDistRads`
     - `pointDistKm`
     - `pointDistM`
     - `exactEdgeLengthRads`
@@ -252,7 +255,6 @@ The public API of this library consists of the functions declared in file
 ## [3.5.0] - 2019-07-22
 ### Added
 - CMake options for excluding filter applications or benchmarks from the build. (#247)
-- `h3GetFaces` function for getting icosahedron faces for an index, and helper function `maxFaceCount` (#253)
 ### Changed
 - Argument parsing for all filter applications is more flexible. (#238)
 ### Fixed
@@ -262,19 +264,18 @@ The public API of this library consists of the functions declared in file
 ### Changed
 - Local coordinate spaces cannot cross more than one icosahedron edge. (#234)
 - All dynamic internal memory allocations happen on the heap instead of the stack. (#235)
-- Argument parsing for all filter applications is more flexible. (#227)
+- Argument parsing for `h3ToGeo`, `geoToH3`, and `h3ToGeoBoundary` is more flexible. (#227)
 
 ## [3.4.3] - 2019-05-02
 ### Added
 - `localIjToH3` filter application (#222)
 - An option to print distances in the `kRing` filter application (#222)
 ### Changed
-- Arguments parsing for all filter applications is more flexible. (#224)
+- Arguments parsing for `kRing` filter application is more flexible. (#224)
 ### Fixed
-- Fix printing program name in `h3ToHier` error messages. (#254)
-- `bboxHexRadius` scaling factor adjusted to guarantee containment for `polyfill`. (#279)
-- `polyfill` new algorithm for up to 3x perf boost. (#282)
-- Fix CMake targets for KML generation. (#285)
+- `benchmarkPolyfill` allocates its memory on the heap (#198)
+- Fixed constraints of vertex longitudes (#213)
+- Zero only input to `uncompact` does not produce an error (#223)
 
 ## [3.4.2] - 2019-02-21
 ### Changed
@@ -297,8 +298,8 @@ The public API of this library consists of the functions declared in file
 
 ## [3.2.0] - 2018-10-04
 ### Added
-- `experimentalH3ToLocalIj` and `experimentalLocalIjToH3` functions for getting an index from local IJ coordinates. (#102)
-- `experimentalLocalIjToH3` function for getting an index from local IJ coordinates. (#102)
+- `experimentalH3ToLocalIj` function for getting local coordinates for an index. (#102)
+- `experimentalLocalIjToH3` function for getting an index from local coordinates. (#102)
 - Benchmarks for the kRing method for k's of size 10, 20, 30, and 40. (#142, #144)
 ### Changed
 - Internal `h3ToIjk` function renamed to `h3ToLocalIjk`. (#102)
@@ -309,7 +310,7 @@ The public API of this library consists of the functions declared in file
 ## [3.1.1] - 2018-08-29
 ### Fixed
 - Fixed bounding box bug for polygons crossing the antimeridian (#130)
-- Normalize output of h3SetToMultiPolygon to align with the GeoJSON spec, ensuring that each polygon has only one outer loop, followed by any holes (#131)
+- Normalize output of h3SetToMultiPolygon to align with the GeoJSON spec, ensuring that each polygon has only one outer loop, followed by holes (#131)
 ### Changed
 - Longitude outputs are now guaranteed to be in the range [-Pi, Pi]. (#93)
 - Implemented closed form formula for maxKringSize. Source: https://oeis.org/A003215 (#138)
@@ -319,8 +320,8 @@ The public API of this library consists of the functions declared in file
 ### Added
 - `h3Distance` function for determining the grid distance between H3 indexes (#83)
 - Internal `h3ToIjk` function for getting IJK+ coordinates from an index (#83)
-- Internal `ijkDistance` function for determining the IJK+ grid distance between two indexes (#83)
-- `h3ToIjk` filter application for experimenting with IJK+ coordinates (#83)
+- Internal `ijkDistance` function for determining the grid distance between IJK+ coordinates (#83)
+- `h3ToIjk` filter application for experimenting with `h3ToIjk` (#83)
 ### Fixed
 - Don't require a C++ compiler (#107)
 ### Changed
@@ -366,22 +367,21 @@ The public API of this library consists of the functions declared in file
 
 ## [3.0.3] - 2018-03-19
 ### Added
-- CMake config installation for use of h3 from CMake projects.
+- CMake config installation to ease use of h3 from CMake projects.
 - Add CMake toolchain file to set build options upfront.
 - Add CMake `C_CLANG_TIDY` property to integrate clang-tidy checks during build.
-- YouCompleteMe completion plugin to load project flags.
+- YouCompleteMe completion support.
 ### Changed
 - Improved resilience to out of range inputs.
-- Minimum CMake version to 3.1 (#185)
+- Minimum CMake version to 3.1.
 - Set `CMAKE_C_STANDARD` to `11` instead of using compiler flag `-std=c1x`.
-- Use `CMAKE_INSTALL_LIBDIR` when choosing where to install library files. (#819)
-- File globbing in CMake in favor of listing source files. (#818)
-
+- Use `CMAKE_POSITION_INDEPENDENT_CODE` instead of using compiler flag `-fPIC`.
+- Rename library target from `h3.1` to `h3` with `SONAME` property of 1.
 ### Removed
-- Removed `H3_COMPILER` option in favor of built-in `CMAKE_C_COMPILER`. (#819)
-- Removed `BUILD_STATIC` CMake option in favor of `BUILD_SHARED_LIBS`. (#820)
-- Removed `ENABLE_TESTS` CMake option in favor of `BUILD_TESTING`. (#821)
-- File globbing in CMake in favor of listing source files. (#818)
+- CMake `H3_COMPILER` option in favor of built-in `CMAKE_C_COMPILER`.
+- CMake `BUILD_STATIC` option in favor of built-in `BUILD_SHARED_LIBS`.
+- CMake `ENABLE_TESTS` option in favor of built-in `BUILD_TESTING`.
+- File globbing in CMake in favor of listing source files.
 
 ## [3.0.2] - 2018-01-24
 ### Removed
