@@ -159,6 +159,7 @@ The public API of this library consists of the functions declared in file
 ## [4.0.0-rc2] - 2022-03-16
 ### Breaking changes
 - `experimentalH3ToLocalIj` and `experimentalLocalIjToH3` renamed to `cellToLocalIj` and `localIjToCell` respectively. (#586)
+- `cellToLocalIj` and `localIjToCell` accept a mode argument for future expansion. (#586)
 - `cellToCenterChild` (previously `h3ToCenterChild`) returns an error code. (#581)
 
 ### Added
@@ -170,7 +171,6 @@ The public API of this library consists of the functions declared in file
 - Functions that can experience errors now have an `H3Error` return value. (#551, #550, #509, #505, #507, #508, #503, #478, #468, #436, #359)
 - Cell count parameters use `int64_t` instead of `int`.
 - `polygonToCells` (previously `polyfill`) accepts a flags argument for future expansion. (#570)
-- `cellToLocalIj` and `localIjToCell` accept a mode argument for future expansion. (#586)
 
 ### Added
 - Vertex mode and associated functions: (#422, #420, #417)
