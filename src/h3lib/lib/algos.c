@@ -139,8 +139,8 @@ static const Direction NEW_DIGIT_III[7][7] = {
 static const Direction NEW_ADJUSTMENT_III[7][7] = {
     {CENTER_DIGIT, CENTER_DIGIT, CENTER_DIGIT, CENTER_DIGIT, CENTER_DIGIT,
      CENTER_DIGIT, CENTER_DIGIT},
-    {CENTER_DIGIT, K_AXES_DIGIT, CENTER_DIGIT, JK_AXES_DIGIT, CENTER_DIGIT,
-     K_AXES_DIGIT, CENTER_DIGIT},
+    {CENTER_DIGIT, CENTER_DIGIT, CENTER_DIGIT, CENTER_DIGIT, JK_AXES_DIGIT,
+     CENTER_DIGIT, K_AXES_DIGIT, CENTER_DIGIT},
     {CENTER_DIGIT, CENTER_DIGIT, J_AXES_DIGIT, J_AXES_DIGIT, CENTER_DIGIT,
      CENTER_DIGIT, IJ_AXES_DIGIT},
     {CENTER_DIGIT, JK_AXES_DIGIT, J_AXES_DIGIT, JK_AXES_DIGIT, CENTER_DIGIT,
@@ -854,6 +854,20 @@ H3Error H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index *out) {
     if (lastIndex != origin) {
         return E_PENTAGON;
     }
+    // Check that the ring contains no duplicate cells. When the ring wraps
+    // around a pentagon without visiting it, the traversal is distorted but
+    // still returns to the starting cell, so the check above does not detect
+    // the distortion. A correct ring consists of exactly 6 * k distinct
+    // cells, so any duplicate indicates pentagonal distortion occurred and
+    // we should report failure.
+    // See https://github.com/uber/h3/issues/1241
+    for (int i = 0; i < idx; i++) {
+        for (int j = i + 1; j < idx; j++) {
+            if (out[i] == out[j]) {
+                return E_PENTAGON;
+            }
+        }
+    }
     return E_SUCCESS;
 }
 
@@ -908,9 +922,9 @@ H3Error H3_EXPORT(maxPolygonToCellsSize)(const GeoPolygon *geoPolygon, int res,
  * for the polygonToCells algorithm to execute on.
  *
  * @param geoloop The geoloop (or hole) to be traced
- * @param numHexagons The maximum number of hexagons possible for the geoloop
+ * @param numHexagons The maximum number of hexagons possible
  *                    (also the bounds of the search and found arrays)
- * @param res The hexagon resolution (0-15)
+ * @param res The Hexagon resolution (0-15)
  * @param numSearchHexes The number of hexagons found so far to be searched
  * @param search The block of memory containing the hexagons to search from
  * @param found The block of memory containing the hexagons found from the
