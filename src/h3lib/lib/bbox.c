@@ -171,8 +171,9 @@ double _hexRadiusKm(H3Index h3Index) {
  * resolution, which is the most-distorted (smallest) cell at that resolution
  * and is used as the basis for the sizing estimates below. All pentagons at a
  * resolution share the same radius, so the values are precomputed with
- * `_hexRadiusKm(getPentagons(res)[0])`; see testBBoxInternal for the check
- * that the table matches.
+ * `_hexRadiusKm(getPentagons(res)[0])` and frozen here so the size estimates
+ * are the same on every platform; see testBBoxInternal for the check that the
+ * table matches the computed value.
  * @param res Resolution
  * @param out Pentagon radius in km
  * @return E_RES_DOMAIN if the resolution is out of range
