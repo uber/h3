@@ -43,7 +43,7 @@ The public API of this library consists of the functions declared in file
 ### Added
 - `getIndexDigit` function for inspecting specific index digits of an H3 index. (#1024, #1042)
 - `isValidIndex` function (#1056, #1079)
-- `constructCell` function (#1063, #1064, #1078)
+- `constructCell` function (#1063, #1074, #1078)
 - New `H3_INDEX_INVALID`, `E_BASE_CELL_DOMAIN`, `E_DIGIT_DOMAIN`, `E_DELETED_DIGIT` error codes and `H3_ERROR_END` (#1063, #1064, #1065)
 
 ### Changed
