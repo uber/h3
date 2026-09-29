@@ -1020,6 +1020,7 @@ H3Error H3_EXPORT(polygonToCells)(const GeoPolygon *geoPolygon, int res,
     // such as deciding based on which polygon has the greatest overlapping area
     // of the hexagon, or the most number of contained points on the hexagon
     // (using the center point as a tiebreaker).
+    //
     // But if the polygons are convex, both of these more complex algorithms can
     // be reduced down to checking whether or not the center of the hexagon is
     // contained in the polygon, and so this is the approach that this
