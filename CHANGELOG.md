@@ -7,12 +7,8 @@ The public API of this library consists of the functions declared in file
 
 ## [Unreleased]
 ### Fixed
-- Avoid signed integer overflow when accumulating vertex counts in `maxPolygonToCellsSize` (#1204)
 - Fixed the `polygonToCells` fuzzer regression test to use explicit double literals instead of reinterpreting raw bytes, so it is portable across endianness (#964)
 - No longer emit a CMake warning about a missing `clang-format`/`clang-tidy` when the user explicitly set `ENABLE_FORMAT=OFF`/`ENABLE_LINTING=OFF` (#1158)
-- Fixed an out of bounds read in `_baseCellToCCWrot60` when passed a face index equal to `NUM_ICOSA_FACES` (#978)
-- Fixed the `stringToInt` CLI subcommand truncating 16 digit indexes, such as directed edges and vertexes (#1243)
-- Fixed `gridRing` silently returning incorrect results when the ring wraps around a pentagon without intersecting it; `gridRingUnsafe` now detects this pentagonal distortion and returns an error so that `gridRing` falls back to the correct algorithm (#1241)
 
 ## [4.5.0] - 2026-05-21
 ### Added
