@@ -36,7 +36,6 @@
 #include "h3api.h"
 #include "latLng.h"
 #include "linkedGeo.h"
-#include "mathExtensions.h"
 #include "polygon.h"
 
 /*
@@ -114,7 +113,7 @@ static const Direction NEW_ADJUSTMENT_II[7][7] = {
 /**
  * New traversal direction when traversing along class III grids.
  *
- * Current digit -> direction -> new ap7 move (at coarser level).
+ * Current digit -> direction -> new digit.
  */
 static const Direction NEW_DIGIT_III[7][7] = {
     {CENTER_DIGIT, K_AXES_DIGIT, J_AXES_DIGIT, JK_AXES_DIGIT, I_AXES_DIGIT,
@@ -148,7 +147,7 @@ static const Direction NEW_ADJUSTMENT_III[7][7] = {
      CENTER_DIGIT, CENTER_DIGIT},
     {CENTER_DIGIT, CENTER_DIGIT, CENTER_DIGIT, CENTER_DIGIT, I_AXES_DIGIT,
      IK_AXES_DIGIT, I_AXES_DIGIT},
-    {CENTER_DIGIT, K_AXES_DIGIT, CENTER_DIGIT, CENTER_DIGIT, IK_AXES_DIGIT,
+    {CENTER_DIGIT, CENTER_DIGIT, CENTER_DIGIT, CENTER_DIGIT, IK_AXES_DIGIT,
      IK_AXES_DIGIT, CENTER_DIGIT},
     {CENTER_DIGIT, CENTER_DIGIT, IJ_AXES_DIGIT, CENTER_DIGIT, I_AXES_DIGIT,
      CENTER_DIGIT, IJ_AXES_DIGIT}};
@@ -902,11 +901,8 @@ H3Error H3_EXPORT(maxPolygonToCellsSize)(const GeoPolygon *geoPolygon, int res,
     // This algorithm assumes that the number of vertices is usually less than
     // the number of hexagons, but when it's wrong, this will keep it from
     // failing
-    int64_t totalVerts = geoloop.numVerts;
+    int totalVerts = geoloop.numVerts;
     for (int i = 0; i < geoPolygon->numHoles; i++) {
-        if (ADD_INT64S_OVERFLOWS(totalVerts, geoPolygon->holes[i].numVerts)) {
-            return E_MEMORY_ALLOC;
-        }
         totalVerts += geoPolygon->holes[i].numVerts;
     }
     if (numHexagons < totalVerts) numHexagons = totalVerts;
@@ -914,9 +910,6 @@ H3Error H3_EXPORT(maxPolygonToCellsSize)(const GeoPolygon *geoPolygon, int res,
     // resolution, the line tracing needs an extra buffer than the estimator
     // function provides (but beefing that up to cover causes most situations to
     // overallocate memory)
-    if (ADD_INT64S_OVERFLOWS(numHexagons, POLYGON_TO_CELLS_BUFFER)) {
-        return E_MEMORY_ALLOC;
-    }
     numHexagons += POLYGON_TO_CELLS_BUFFER;
     *out = numHexagons;
     return E_SUCCESS;
@@ -1130,6 +1123,7 @@ H3Error H3_EXPORT(polygonToCells)(const GeoPolygon *geoPolygon, int res,
                     // If this branch is reached, we have exceeded the maximum
                     // number of hexagons possible and need to clean up the
                     // allocated memory.
+                    // TODO: Reachable via fuzzer
                     if (loopCount > numHexagons) {
                         H3_MEMORY(free)(search);
                         H3_MEMORY(free)(found);
