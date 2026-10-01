@@ -865,7 +865,7 @@ SUBCOMMAND(gridDistance,
     if (err) {
         return err;
     }
-    printf("%" PRIx64 "\n", distance);
+    printf("%" PRId64 "\n", distance);
     return E_SUCCESS;
 }
 
