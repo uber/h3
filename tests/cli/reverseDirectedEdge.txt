@@ -1,2 +1,2 @@
 add_h3_cli_test(testCliReverseDirectedEdge
-                "reverseDirectedEdge -c 115283473fffffff" "165283477fffffff")
+                "reverseDirectedEdge -c 115283473fffffff -f newline" "165283477fffffff")
