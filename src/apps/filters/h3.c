@@ -448,13 +448,30 @@ SUBCOMMAND(intToString, "Converts an H3 index in int form to string form") {
     return E_SUCCESS;
 }
 
-SUBCOMMAND(isValidCell, "Checks if the provided H3 index is actually valid") {
+SUBCOMMAND(isValidCell, "Checks if the provided H3 index is a valid cell") {
     DEFINE_FORMAT_ARG(
         "'json' for true or false, 'numeric' for 1 or 0 (Default: json)");
     DEFINE_CELL_ARG(cell, cellArg);
     Arg *args[] = {&isValidCellArg, &helpArg, &cellArg, &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     bool isValid = H3_EXPORT(isValidCell)(cell);
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        printf("%s\n", isValid ? "true" : "false");
+    } else if (strcmp(format, "numeric") == 0) {
+        printf("%d\n", isValid);
+    } else {
+        return E_FAILED;
+    }
+    return E_SUCCESS;
+}
+
+SUBCOMMAND(isValidIndex, "Checks if the provided H3 index is actually valid") {
+    DEFINE_FORMAT_ARG(
+        "'json' for true or false, 'numeric' for 1 or 0 (Default: json)");
+    DEFINE_INDEX_ARG(index, indexArg);
+    Arg *args[] = {&isValidIndexArg, &helpArg, &indexArg, &formatArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    bool isValid = H3_EXPORT(isValidIndex)(index);
     if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
         printf("%s\n", isValid ? "true" : "false");
     } else if (strcmp(format, "numeric") == 0) {
@@ -3014,6 +3031,7 @@ SUBCOMMAND_INDEX(constructCell)
 SUBCOMMAND_INDEX(stringToInt)
 SUBCOMMAND_INDEX(intToString)
 SUBCOMMAND_INDEX(isValidCell)
+SUBCOMMAND_INDEX(isValidIndex)
 SUBCOMMAND_INDEX(isResClassIII)
 SUBCOMMAND_INDEX(isPentagon)
 SUBCOMMAND_INDEX(getIcosahedronFaces)
