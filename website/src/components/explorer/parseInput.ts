@@ -1,6 +1,11 @@
 // Contains code adapted from https://observablehq.com/@nrabinowitz/h3-index-inspector under the ISC license
 
-import { isValidCell, isValidDirectedEdge, latLngToCell } from "h3-js";
+import {
+  isValidCell,
+  isValidDirectedEdge,
+  isValidVertex,
+  latLngToCell,
+} from "h3-js";
 import geojson2h3 from "geojson2h3";
 import wkt from "wkt";
 import { Feature, MultiPolygon, Polygon } from "geojson";
@@ -127,6 +132,7 @@ export function doSplitUserInput(userInput: string, userResolution: number) {
     // Valid hexadecimal cell ID, prefixed by 0x
     // Valid decimal cell ID
     // Valid hexadecimal directed edge ID, optionally prefixed by 0x
+    // Valid hexadecimal vertex ID, optionally prefixed by 0x
     // lat,lng coordinate pairs
 
     const resultPolygon = tryParsePolygonInput(userInput, userResolution);
@@ -163,6 +169,15 @@ export function doSplitUserInput(userInput: string, userResolution: number) {
       } else if (
         indexFromPrefixedHex !== null &&
         isValidDirectedEdge(indexFromPrefixedHex)
+      ) {
+        result.push(indexFromPrefixedHex);
+        // Show what the edge ID would look like normally
+        showCellId = true;
+      } else if (isValidVertex(currentInput)) {
+        result.push(currentInput);
+      } else if (
+        indexFromPrefixedHex !== null &&
+        isValidVertex(indexFromPrefixedHex)
       ) {
         result.push(indexFromPrefixedHex);
         // Show what the edge ID would look like normally
