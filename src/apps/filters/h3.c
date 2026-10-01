@@ -2098,7 +2098,8 @@ SUBCOMMAND(cellsToDirectedEdge,
 }
 
 SUBCOMMAND(reverseDirectedEdge,
-           "Returns the directed edge index representing the same edge in the opposite direction") {
+           "Returns the directed edge index representing the same edge in the "
+           "opposite direction") {
     DEFINE_FORMAT_ARG(
         "'json' for \"CELL\"\\n, 'newline' for CELL\\n "
         "(Default: json)");
