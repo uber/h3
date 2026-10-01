@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { Map } from "react-map-gl";
+import { Map } from "react-map-gl/mapbox";
 import DeckGL from "@deck.gl/react";
 import { H3HexagonLayer } from "@deck.gl/geo-layers";
 import { WebMercatorViewport, FlyToInterpolator, MapView } from "@deck.gl/core";
@@ -294,11 +294,22 @@ export function ExplorerMap(opts) {
       onViewStateChange={({ viewState }) => {
         hexHandleResize(viewState);
       }}
+      onResize={({ width, height }) => {
+        if (deckRef.current?.deck) {
+          hexHandleResize({
+            ...deckRef.current?.deck.viewState,
+            width,
+            height,
+          });
+        }
+      }}
       views={new MapView({ repeat: true })}
       getTooltip={getTooltip}
       getCursor={getCursor}
       onClick={onClick}
-      onLoad={() => setDeckLoaded(true)}
+      onLoad={() => {
+        setDeckLoaded(true);
+      }}
       controller={{
         dragPan: windowWidth && windowWidth >= MOBILE_CUTOFF_WINDOW_WIDTH,
         dragRotate: false,
