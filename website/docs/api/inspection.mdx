@@ -347,20 +347,17 @@ function example() {
 </TabItem>
 <TabItem value="python">
 
-:::note
-
-This function may not be available in all bindings.
-
-:::
+```py
+h3.construct_cell(base_cell_number, *digits)
+h3.construct_cell(base_cell_number, *digits, res=res)
+```
 
 </TabItem>
 <TabItem value="go">
 
-:::note
-
-This function may not be available in all bindings.
-
-:::
+```go
+h3.ConstructCell(res, baseCellNumber, digits)
+```
 
 </TabItem>
 <TabItem value="duckdb">
@@ -466,12 +463,20 @@ h3_string_to_h3(h)
 </TabItem>
 <TabItem value="shell">
 
-:::note
+```sh
+$ h3 stringToInt --help
+h3: Converts an H3 index in string form to integer form
+H3 4.5.0
 
-The H3 CLI supports only the string representation of an H3 index.
+	stringToInt	Converts an H3 index in string form to integer form
+	-h, --help	Show this help message.
+	-c, --cell <cell>	Required. H3 Cell Index
+```
 
-:::
-
+```bash
+$ h3 stringToInt -c 85283473fffffff
+599686042433355775
+```
 
 </TabItem>
 </Tabs>
@@ -542,11 +547,20 @@ h3_h3_to_string(h)
 </TabItem>
 <TabItem value="shell">
 
-:::note
+```sh
+$ h3 intToString --help
+h3: Converts an H3 index in int form to string form
+H3 4.5.0
 
-The H3 CLI supports only the string representation of an H3 index.
+	intToString	Converts an H3 index in int form to string form
+	-h, --help	Show this help message.
+	-c, --cell <cell>	Required. H3 Cell Index
+```
 
-:::
+```bash
+$ h3 intToString -c 599686042433355775
+85283473fffffff
+```
 
 </TabItem>
 </Tabs>
@@ -679,29 +693,30 @@ boolean isValidIndex(String h3Address);
 </TabItem>
 <TabItem value="javascript">
 
-:::note
+```js
+h3.isValidIndex(h)
+```
 
-This function may not be available in all bindings.
-
-:::
+```js live
+function example() {
+  const h = '85283473fffffff';
+  return h3.isValidIndex(h);
+}
+```
 
 </TabItem>
 <TabItem value="python">
 
-:::note
-
-This function may not be available in all bindings.
-
-:::
+```py
+h3.is_valid_index(h)
+```
 
 </TabItem>
 <TabItem value="go">
 
-:::note
-
-This function may not be available in all bindings.
-
-:::
+```go
+h3.IsValidIndex(h)
+```
 
 </TabItem>
 <TabItem value="duckdb">
@@ -709,6 +724,15 @@ This function may not be available in all bindings.
 ```sql
 h3_is_valid_index(h)
 ```
+
+</TabItem>
+<TabItem value="shell">
+
+:::note
+
+This function is not exposed.
+
+:::
 
 </TabItem>
 </Tabs>
