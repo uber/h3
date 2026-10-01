@@ -624,7 +624,7 @@ h3_is_valid_cell(h)
 
 ```sh
 $ h3 isValidCell --help
-h3: Checks if the provided H3 index is actually valid
+h3: Checks if the provided H3 index is a valid cell
 H3 4.1.0
 
 	isValidCell	Checks if the provided H3 index is actually valid
@@ -708,6 +708,25 @@ This function may not be available in all bindings.
 
 ```sql
 h3_is_valid_index(h)
+```
+
+</TabItem>
+<TabItem value="shell">
+
+```sh
+$ h3 isValidIndex --help
+h3: Checks if the provided H3 index is actually valid
+H3 4.1.0
+
+	isValidIndex	Checks if the provided H3 index is actually valid
+	-h, --help	Show this help message.
+	-i, --index <index>	Required. H3 Index
+	-f, --format <FMT>	'json' for true or false, 'numeric' for 1 or 0 (Default: json)
+```
+
+```bash
+$ h3 isValidIndex -c 85283473fffffff
+true
 ```
 
 </TabItem>
