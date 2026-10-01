@@ -595,7 +595,8 @@ $ h3 childPosToCell -p 42 -c 85283473fffffff -r 7
 
 Compacts a collection of H3 cells by recursively replacing children cells
 with their parents if all children are present.
-Input cells must all share the same resolution.
+Input cells must all share the same resolution, and must not contain the
+same cell more than once: a duplicated cell returns `E_DUPLICATE_INPUT`.
 
 <Tabs
   groupId="language"

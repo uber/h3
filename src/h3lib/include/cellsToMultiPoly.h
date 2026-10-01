@@ -28,6 +28,7 @@
 #include <stdint.h>
 
 #include "alloc.h"
+#include "h3Index.h"
 #include "h3api.h"
 #include "mathExtensions.h"
 
@@ -128,20 +129,6 @@ static inline int cmp_SortablePoly(const void *pa, const void *pb) {
     if (a->outerArea < b->outerArea) return 1;
 
     return 0;  // equal area
-}
-
-/*
-Compare H3Index values, interpreting them as uint64s.
-
-Note that, usually, we only use this ordering when we know that the
-cells in the set are all the same resolution.
-*/
-static inline int cmp_uint64(const void *a, const void *b) {
-    H3Index ha = *(const H3Index *)a;
-    H3Index hb = *(const H3Index *)b;
-    if (ha < hb) return -1;
-    if (ha > hb) return +1;
-    return 0;
 }
 
 /*

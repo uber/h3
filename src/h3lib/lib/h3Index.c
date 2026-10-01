@@ -551,19 +551,12 @@ H3Error H3_EXPORT(cellToCenterChild)(H3Index h, int childRes, H3Index *child) {
  * @param compactedSet The output array of compressed hexagons (preallocated)
  * @param numHexes The size of the input and output arrays (possible that no
  * contiguous regions exist in the set at all and no compression possible)
- * @return an error code on bad input data
+ * @return E_DUPLICATE_INPUT if the input set contains the same cell more than
+ * once, or another error code on bad input data
  */
 H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
                                 const int64_t numHexes) {
     if (numHexes == 0) {
-        return E_SUCCESS;
-    }
-    int res = H3_GET_RESOLUTION(h3Set[0]);
-    if (res == 0) {
-        // No compaction possible, just copy the set to output
-        for (int64_t i = 0; i < numHexes; i++) {
-            compactedSet[i] = h3Set[i];
-        }
         return E_SUCCESS;
     }
     H3Index *remainingHexes = H3_MEMORY(malloc)(numHexes * sizeof(H3Index));
@@ -571,6 +564,31 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
         return E_MEMORY_ALLOC;
     }
     memcpy(remainingHexes, h3Set, numHexes * sizeof(H3Index));
+
+    // Reject duplicates first: the loop below counts occurrences of each
+    // parent, not distinct children, so a repeated child can complete a parent
+    // the input never covered.
+    qsort(remainingHexes, numHexes, sizeof(H3Index), cmp_uint64);
+    for (int64_t i = 1; i < numHexes; i++) {
+        // H3_NULL is not a cell and is tolerated in the input, so repeats of it
+        // are not duplicate cells.
+        if (remainingHexes[i] != H3_NULL &&
+            remainingHexes[i] == remainingHexes[i - 1]) {
+            H3_MEMORY(free)(remainingHexes);
+            return E_DUPLICATE_INPUT;
+        }
+    }
+    memcpy(remainingHexes, h3Set, numHexes * sizeof(H3Index));
+
+    int res = H3_GET_RESOLUTION(h3Set[0]);
+    if (res == 0) {
+        // No compaction possible, just copy the set to output
+        for (int64_t i = 0; i < numHexes; i++) {
+            compactedSet[i] = h3Set[i];
+        }
+        H3_MEMORY(free)(remainingHexes);
+        return E_SUCCESS;
+    }
     H3Index *hashSetArray = H3_MEMORY(calloc)(numHexes, sizeof(H3Index));
     if (!hashSetArray) {
         H3_MEMORY(free)(remainingHexes);

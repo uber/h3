@@ -23,6 +23,20 @@
 #include "faceijk.h"
 #include "h3api.h"
 
+/*
+Compare H3Index values, interpreting them as uint64s.
+
+Note that, usually, we only use this ordering when we know that the
+cells in the set are all the same resolution.
+*/
+static inline int cmp_uint64(const void *a, const void *b) {
+    H3Index ha = *(const H3Index *)a;
+    H3Index hb = *(const H3Index *)b;
+    if (ha < hb) return -1;
+    if (ha > hb) return +1;
+    return 0;
+}
+
 // define's of constants and macros for bitwise manipulation of H3Index's.
 
 /** The number of bits in an H3 index. */
