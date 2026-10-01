@@ -290,6 +290,18 @@ SUITE(gridRing) {
                  "negative k is invalid");
     }
 
+    TEST(gridRing_invalidK) {
+        // A negative k must be rejected before the output array is wiped;
+        // the heap buffer makes the former out-of-bounds memset fault.
+        H3Index *out = calloc(1, sizeof(H3Index));
+        t_assert(H3_EXPORT(gridRing)(sfHex, -1, out) == E_DOMAIN,
+                 "negative k is invalid");
+        t_assert(H3_EXPORT(gridRing)(sfHex, -5, out) == E_DOMAIN,
+                 "negative k is invalid (larger magnitude)");
+        t_assert(out[0] == 0, "gridRing did not write to the output array");
+        free(out);
+    }
+
     TEST(maxGridRingSize_identity) {
         int64_t sz;
         t_assertSuccess(H3_EXPORT(maxGridRingSize)(0, &sz));

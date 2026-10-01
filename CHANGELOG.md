@@ -7,6 +7,7 @@ The public API of this library consists of the functions declared in file
 
 ## [Unreleased]
 ### Fixed
+- Fixed an out of bounds write in `gridRing` when passed a negative `k`: the fallback path wiped the output array with a width computed from `6 * k`, which for a negative `k` becomes a `size_t` of about 1.8e19. The width now comes from `maxGridRingSize`, which validates `k` and computes in 64 bits
 - Avoid signed integer overflow when accumulating vertex counts in `maxPolygonToCellsSize` (#1204)
 - Fixed the `polygonToCells` fuzzer regression test to use explicit double literals instead of reinterpreting raw bytes, so it is portable across endianness (#964)
 - No longer emit a CMake warning about a missing `clang-format`/`clang-tidy` when the user explicitly set `ENABLE_FORMAT=OFF`/`ENABLE_LINTING=OFF` (#1158)
