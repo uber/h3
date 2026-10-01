@@ -2097,6 +2097,29 @@ SUBCOMMAND(cellsToDirectedEdge,
     return E_SUCCESS;
 }
 
+SUBCOMMAND(reverseDirectedEdge,
+           "Returns the directed edge index representing the same edge in the opposite direction") {
+    DEFINE_FORMAT_ARG(
+        "'json' for \"CELL\"\\n, 'newline' for CELL\\n "
+        "(Default: json)");
+    DEFINE_CELL_ARG(cell, cellArg);
+    Arg *args[] = {&reverseDirectedEdgeArg, &cellArg, &helpArg, &formatArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    H3Index out = 0;
+    H3Error err = H3_EXPORT(reverseDirectedEdge)(cell, &out);
+    if (err != E_SUCCESS) {
+        return err;
+    }
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        printf("\"%" PRIx64 "\"\n", out);
+    } else if (strcmp(format, "newline") == 0) {
+        h3Println(out);
+    } else {
+        return E_FAILED;
+    }
+    return E_SUCCESS;
+}
+
 SUBCOMMAND(isValidDirectedEdge,
            "Checks if the provided H3 directed edge is actually valid") {
     DEFINE_FORMAT_ARG(
@@ -3046,6 +3069,7 @@ SUBCOMMAND_INDEX(cellsToMultiPolygon)
 SUBCOMMAND_INDEX(areNeighborCells)
 SUBCOMMAND_INDEX(cellsToDirectedEdge)
 SUBCOMMAND_INDEX(isValidDirectedEdge)
+SUBCOMMAND_INDEX(reverseDirectedEdge)
 SUBCOMMAND_INDEX(getDirectedEdgeOrigin)
 SUBCOMMAND_INDEX(getDirectedEdgeDestination)
 SUBCOMMAND_INDEX(directedEdgeToCells)
