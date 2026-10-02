@@ -71,6 +71,15 @@ static LatLng lineVerts[] = {{0.6595072188743, -2.1371053983433},
 static GeoLoop lineGeoLoop = {.numVerts = 2, .verts = lineVerts};
 static GeoPolygon lineGeoPolygon;
 
+static LatLng polarBandVerts[] = {
+    {85 * M_PI / 180, 0},
+    {85 * M_PI / 180, 179 * M_PI / 180},
+    {89.9 * M_PI / 180, 179 * M_PI / 180},
+    {89.9 * M_PI / 180, 0},
+};
+static GeoLoop polarBandGeoLoop = {.numVerts = 4, .verts = polarBandVerts};
+static GeoPolygon polarBandGeoPolygon;
+
 static GeoPolygon nullHoleGeoPolygon;
 static GeoPolygon pointHoleGeoPolygon;
 static GeoPolygon lineHoleGeoPolygon;
@@ -190,6 +199,9 @@ SUITE(polygonToCells) {
 
     lineGeoPolygon.geoloop = lineGeoLoop;
     lineGeoPolygon.numHoles = 0;
+
+    polarBandGeoPolygon.geoloop = polarBandGeoLoop;
+    polarBandGeoPolygon.numHoles = 0;
 
     TEST(polygonToCells_ZeroSize) {
         t_assert(H3_EXPORT(polygonToCellsExperimental)(&sfGeoPolygon, 9,
@@ -374,6 +386,24 @@ SUITE(polygonToCells) {
 
         t_assert(actualNumIndexes == 0,
                  "got expected polygonToCells size (empty)");
+        free(hexagons);
+    }
+
+    TEST(polygonToCells_polarBand) {
+        // Exercise a misestimation in bboxHexEstimate
+        int64_t numHexagons;
+        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+            &polarBandGeoPolygon, 9, CONTAINMENT_CENTER, &numHexagons));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+
+        t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
+            &polarBandGeoPolygon, 9, CONTAINMENT_CENTER, numHexagons,
+            hexagons));
+        int64_t actualNumIndexes = countNonNullIndexes(hexagons, numHexagons);
+
+        t_assert(actualNumIndexes == 4171389,
+                 "got expected polygonToCells size");
+
         free(hexagons);
     }
 

@@ -193,6 +193,15 @@ void GENERIC_LOOP_ALGO(bboxFrom)(const TYPE *loop, BBox *bbox) {
         bbox->east = maxNegLng;
         bbox->west = minPosLng;
     }
+    // Latitudes outside [-pi/2, pi/2] are not on the sphere. Clamp so
+    // polyfill size estimates cannot explode on out-of-range vertices
+    // (see GitHub issue #1225).
+    if (bbox->north > M_PI_2) {
+        bbox->north = M_PI_2;
+    }
+    if (bbox->south < -M_PI_2) {
+        bbox->south = -M_PI_2;
+    }
 }
 
 /**

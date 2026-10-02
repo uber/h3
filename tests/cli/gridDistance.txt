@@ -1,2 +1,4 @@
 add_h3_cli_test(testCliGridDistance
                 "gridDistance -o 85283473fffffff -d 8528342bfffffff" "2")
+add_h3_cli_test(testCliGridDistanceDecimal
+                "gridDistance -o 85283473fffffff -d 85291ac7fffffff" "10")

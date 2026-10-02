@@ -42,6 +42,15 @@ static inline bool ADD_INT32S_OVERFLOWS(int32_t a, int32_t b) {
     }
 }
 
+/** Evaluates to true if a + b would overflow for int64 */
+static inline bool ADD_INT64S_OVERFLOWS(int64_t a, int64_t b) {
+    if (a > 0) {
+        return INT64_MAX - a < b;
+    } else {
+        return INT64_MIN - a > b;
+    }
+}
+
 /** Evaluates to true if a - b would overflow for int32 */
 static inline bool SUB_INT32S_OVERFLOWS(int32_t a, int32_t b) {
     if (a >= 0) {

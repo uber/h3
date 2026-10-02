@@ -410,14 +410,14 @@ SUBCOMMAND(constructCell,
 }
 
 SUBCOMMAND(stringToInt, "Converts an H3 index in string form to integer form") {
-    char *rawCell = calloc(16, sizeof(char));
+    char *rawCell = calloc(17, sizeof(char));
     if (rawCell == NULL) {
         fprintf(stderr, "Failed to allocate memory for the H3 index");
         exit(1);
     }
     Arg rawCellArg = {.names = {"-c", "--cell"},
                       .required = true,
-                      .scanFormat = "%15s",
+                      .scanFormat = "%16s",
                       .valueName = "cell",
                       .value = rawCell,
                       .helpText = "H3 Cell Index"};
@@ -865,7 +865,7 @@ SUBCOMMAND(gridDistance,
     if (err) {
         return err;
     }
-    printf("%" PRIx64 "\n", distance);
+    printf("%" PRId64 "\n", distance);
     return E_SUCCESS;
 }
 

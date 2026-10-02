@@ -16,6 +16,7 @@
 
 #include <assert.h>
 #include <math.h>
+#include <stdint.h>
 #include <stdlib.h>
 
 #include "algos.h"
@@ -74,6 +75,15 @@ static GeoPolygon pointGeoPolygon;
 static LatLng lineVerts[] = {{0, 0}, {1, 0}};
 static GeoLoop lineGeoLoop = {.numVerts = 2, .verts = lineVerts};
 static GeoPolygon lineGeoPolygon;
+
+static LatLng polarBandVerts[] = {
+    {85 * M_PI / 180, 0},
+    {85 * M_PI / 180, 179 * M_PI / 180},
+    {89.9 * M_PI / 180, 179 * M_PI / 180},
+    {89.9 * M_PI / 180, 0},
+};
+static GeoLoop polarBandGeoLoop = {.numVerts = 4, .verts = polarBandVerts};
+static GeoPolygon polarBandGeoPolygon;
 
 /**
  * Return true if the cell crosses the meridian.
@@ -251,6 +261,9 @@ SUITE(polygonToCells) {
     invalidHoleGeoPolygon.numHoles = 1;
     invalidHoleGeoPolygon.holes = &invalidHoleGeoLoop;
 
+    polarBandGeoPolygon.geoloop = polarBandGeoLoop;
+    polarBandGeoPolygon.numHoles = 0;
+
     // --------------------------------------------
     // maxPolygonToCellsSize
     // --------------------------------------------
@@ -281,6 +294,22 @@ SUITE(polygonToCells) {
         t_assert(H3_EXPORT(maxPolygonToCellsSize)(&invalid2GeoPolygon, 9, 0,
                                                   &numHexagons) == E_FAILED,
                  "Cannot determine cell size to invalid geo polygon with NaNs");
+    }
+
+    TEST(maxPolygonToCellsSizeHoleVertsOverflow) {
+        // holes[i].verts are not read by maxPolygonToCellsSize, only numVerts,
+        // so oversized counts exercise the vertex accumulation without
+        // allocation
+        GeoLoop bigHole = {.numVerts = INT32_MAX, .verts = NULL};
+        GeoLoop holes[] = {bigHole, bigHole, bigHole};
+        GeoPolygon polygon = {
+            .geoloop = sfGeoLoop, .numHoles = 3, .holes = holes};
+
+        int64_t numHexagons;
+        t_assertSuccess(
+            H3_EXPORT(maxPolygonToCellsSize)(&polygon, 9, 0, &numHexagons));
+        t_assert(numHexagons >= 3LL * INT32_MAX,
+                 "hole vertex counts accumulate without overflowing");
     }
 
     TEST(maxPolygonToCellsSizePoint) {
@@ -342,6 +371,20 @@ SUITE(polygonToCells) {
 
         t_assert(actualNumIndexes == 0,
                  "got expected polygonToCells size (empty)");
+        free(hexagons);
+    }
+
+    TEST(polygonToCells_polarBand) {
+        // Exercise a misestimation in bboxHexEstimate
+        int64_t numHexagons;
+        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSize)(&polarBandGeoPolygon,
+                                                         9, 0, &numHexagons));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+
+        t_assert(H3_EXPORT(polygonToCells)(&polarBandGeoPolygon, 9, 0,
+                                           hexagons) == E_FAILED,
+                 "polar band mis-estimates the number of cells");
+
         free(hexagons);
     }
 
