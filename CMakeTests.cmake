@@ -193,7 +193,7 @@ foreach(file ${all_ic_files})
             ${file})
 endforeach()
 
-file(GLOB all_inspection_files tests/inputfiles/inspection/*.json)
+file(GLOB all_inspection_files tests/inputfiles/inspection/*.jsonl)
 foreach(file ${all_inspection_files})
     add_h3_test_with_arg(testInspection src/apps/testapps/testInspection.c
             ${file} File)
