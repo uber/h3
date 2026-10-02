@@ -855,6 +855,20 @@ H3Error H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index *out) {
     if (lastIndex != origin) {
         return E_PENTAGON;
     }
+    // Check that the ring contains no duplicate cells. When the ring wraps
+    // around a pentagon without visiting it, the traversal is distorted but
+    // still returns to the starting cell, so the check above does not detect
+    // the distortion. A correct ring consists of exactly 6 * k distinct
+    // cells, so any duplicate indicates pentagonal distortion occurred and
+    // we should report failure.
+    // See https://github.com/uber/h3/issues/1241
+    for (int i = 0; i < idx; i++) {
+        for (int j = i + 1; j < idx; j++) {
+            if (out[i] == out[j]) {
+                return E_PENTAGON;
+            }
+        }
+    }
     return E_SUCCESS;
 }
 

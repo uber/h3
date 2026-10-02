@@ -22,6 +22,12 @@
 #include "h3api.h"
 #include "test.h"
 
+static int cmpH3Index(const void *a, const void *b) {
+    H3Index x = *(const H3Index *)a;
+    H3Index y = *(const H3Index *)b;
+    return (x > y) - (x < y);
+}
+
 SUITE(gridRing) {
     LatLng sf = {0.659966917655, 2 * 3.14159 - 2.1364398519396};
     H3Index sfHex;
@@ -281,6 +287,65 @@ SUITE(gridRing) {
 
                 free(children);
             }
+        }
+    }
+
+    TEST(gridRing_pentagonWrappedRing) {
+        // Regression test for https://github.com/uber/h3/issues/1241
+        // Rings around this origin wrap around a pentagon without stepping
+        // on it for some values of k; gridRing must still produce exactly
+        // the cells at grid distance k (i.e. gridDisk(k) - gridDisk(k-1)).
+        LatLng originLatLng = {0.0, 0.0};
+        H3Index origin;
+        t_assertSuccess(H3_EXPORT(latLngToCell)(&originLatLng, 1, &origin));
+
+        for (int k = 1; k <= 18; k++) {
+            int64_t ringSz;
+            t_assertSuccess(H3_EXPORT(maxGridRingSize)(k, &ringSz));
+            H3Index *ring = calloc(ringSz, sizeof(H3Index));
+            t_assertSuccess(H3_EXPORT(gridRing)(origin, k, ring));
+
+            int64_t diskSz;
+            t_assertSuccess(H3_EXPORT(maxGridDiskSize)(k, &diskSz));
+            int64_t innerSz;
+            t_assertSuccess(H3_EXPORT(maxGridDiskSize)(k - 1, &innerSz));
+            H3Index *disk = calloc(diskSz, sizeof(H3Index));
+            H3Index *inner = calloc(innerSz, sizeof(H3Index));
+            t_assertSuccess(H3_EXPORT(gridDisk)(origin, k, disk));
+            t_assertSuccess(H3_EXPORT(gridDisk)(origin, k - 1, inner));
+
+            qsort(ring, ringSz, sizeof(H3Index), cmpH3Index);
+            qsort(disk, diskSz, sizeof(H3Index), cmpH3Index);
+            qsort(inner, innerSz, sizeof(H3Index), cmpH3Index);
+
+            // Zeros sort to the front of the ring; skip them.
+            int64_t ringPos = 0;
+            while (ringPos < ringSz && ring[ringPos] == 0) {
+                ringPos++;
+            }
+
+            // Walk the sorted disk, skipping anything in the sorted inner
+            // disk; what remains is the expected ring, in sorted order.
+            for (int64_t i = 0, j = 0; i < diskSz; i++) {
+                if (disk[i] == 0) {
+                    continue;
+                }
+                while (j < innerSz && inner[j] < disk[i]) {
+                    j++;
+                }
+                if (j < innerSz && inner[j] == disk[i]) {
+                    continue;
+                }
+                t_assert(ringPos < ringSz, "ring contains all expected cells");
+                t_assert(ring[ringPos] == disk[i],
+                         "ring matches gridDisk difference");
+                ringPos++;
+            }
+            t_assert(ringPos == ringSz, "ring contains no unexpected cells");
+
+            free(ring);
+            free(disk);
+            free(inner);
         }
     }
 
