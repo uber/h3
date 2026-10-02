@@ -110,6 +110,9 @@ H3Error geoLoopAreaRads2(GeoLoop loop, double *out) {
  * @return        E_SUCCESS on success, or an error code otherwise
  */
 H3Error H3_EXPORT(cellAreaRads2)(H3Index cell, double *out) {
+    if (!out) {
+        return E_FAILED;
+    }
     CellBoundary cb;
     H3Error err = H3_EXPORT(cellToBoundary)(cell, &cb);
     if (err) {
@@ -200,6 +203,9 @@ H3Error geoMultiPolygonAreaRads2(GeoMultiPolygon mpoly, double *out) {
  * @return        E_SUCCESS on success, or an error code otherwise
  */
 H3Error H3_EXPORT(cellAreaKm2)(H3Index cell, double *out) {
+    if (!out) {
+        return E_FAILED;
+    }
     H3Error err = H3_EXPORT(cellAreaRads2)(cell, out);
     if (!err) {
         *out *= EARTH_RADIUS_KM * EARTH_RADIUS_KM;
@@ -215,6 +221,9 @@ H3Error H3_EXPORT(cellAreaKm2)(H3Index cell, double *out) {
  * @return        E_SUCCESS on success, or an error code otherwise
  */
 H3Error H3_EXPORT(cellAreaM2)(H3Index cell, double *out) {
+    if (!out) {
+        return E_FAILED;
+    }
     H3Error err = H3_EXPORT(cellAreaKm2)(cell, out);
     if (!err) {
         *out *= 1000 * 1000;

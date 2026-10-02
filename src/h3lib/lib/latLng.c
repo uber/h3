@@ -169,6 +169,9 @@ double normalizeLng(const double lng,
  * @return    the great circle distance in radians between a and b
  */
 double H3_EXPORT(greatCircleDistanceRads)(const LatLng *a, const LatLng *b) {
+    if (!a || !b) {
+        return 0.0;
+    }
     double sinLat = sin((b->lat - a->lat) * 0.5);
     double sinLng = sin((b->lng - a->lng) * 0.5);
 
@@ -186,6 +189,9 @@ double H3_EXPORT(greatCircleDistanceRads)(const LatLng *a, const LatLng *b) {
  * @return    the great circle distance in kilometers between a and b
  */
 double H3_EXPORT(greatCircleDistanceKm)(const LatLng *a, const LatLng *b) {
+    if (!a || !b) {
+        return 0.0;
+    }
     return H3_EXPORT(greatCircleDistanceRads)(a, b) * EARTH_RADIUS_KM;
 }
 
@@ -198,6 +204,9 @@ double H3_EXPORT(greatCircleDistanceKm)(const LatLng *a, const LatLng *b) {
  * @return    the great circle distance in meters between a and b
  */
 double H3_EXPORT(greatCircleDistanceM)(const LatLng *a, const LatLng *b) {
+    if (!a || !b) {
+        return 0.0;
+    }
     return H3_EXPORT(greatCircleDistanceKm)(a, b) * 1000;
 }
 
@@ -210,6 +219,9 @@ double H3_EXPORT(greatCircleDistanceM)(const LatLng *a, const LatLng *b) {
  */
 
 H3Error H3_EXPORT(getHexagonAreaAvgKm2)(int res, double *out) {
+    if (!out) {
+        return E_FAILED;
+    }
     static const double areas[] = {
         4.357449416078383e+06, 6.097884417941332e+05, 8.680178039899720e+04,
         1.239343465508816e+04, 1.770347654491307e+03, 2.529038581819449e+02,
@@ -225,6 +237,9 @@ H3Error H3_EXPORT(getHexagonAreaAvgKm2)(int res, double *out) {
 }
 
 H3Error H3_EXPORT(getHexagonAreaAvgM2)(int res, double *out) {
+    if (!out) {
+        return E_FAILED;
+    }
     static const double areas[] = {
         4.357449416078390e+12, 6.097884417941339e+11, 8.680178039899731e+10,
         1.239343465508818e+10, 1.770347654491309e+09, 2.529038581819452e+08,
@@ -240,6 +255,9 @@ H3Error H3_EXPORT(getHexagonAreaAvgM2)(int res, double *out) {
 }
 
 H3Error H3_EXPORT(getHexagonEdgeLengthAvgKm)(int res, double *out) {
+    if (!out) {
+        return E_FAILED;
+    }
     static const double lens[] = {
         1281.256011, 483.0568391, 182.5129565, 68.97922179,
         26.07175968, 9.854090990, 3.724532667, 1.406475763,
@@ -253,6 +271,9 @@ H3Error H3_EXPORT(getHexagonEdgeLengthAvgKm)(int res, double *out) {
 }
 
 H3Error H3_EXPORT(getHexagonEdgeLengthAvgM)(int res, double *out) {
+    if (!out) {
+        return E_FAILED;
+    }
     static const double lens[] = {
         1281256.011, 483056.8391, 182512.9565, 68979.22179,
         26071.75968, 9854.090990, 3724.532667, 1406.475763,
@@ -266,6 +287,9 @@ H3Error H3_EXPORT(getHexagonEdgeLengthAvgM)(int res, double *out) {
 }
 
 H3Error H3_EXPORT(getNumCells)(int res, int64_t *out) {
+    if (!out) {
+        return E_FAILED;
+    }
     if (res < 0 || res > MAX_H3_RES) {
         return E_RES_DOMAIN;
     }
@@ -281,6 +305,9 @@ H3Error H3_EXPORT(getNumCells)(int res, int64_t *out) {
  * @return        E_SUCCESS on success, or an error code otherwise
  */
 H3Error H3_EXPORT(edgeLengthRads)(H3Index edge, double *length) {
+    if (!length) {
+        return E_FAILED;
+    }
     CellBoundary cb;
 
     H3Error err = H3_EXPORT(directedEdgeToBoundary)(edge, &cb);
@@ -305,9 +332,15 @@ H3Error H3_EXPORT(edgeLengthRads)(H3Index edge, double *length) {
  * @return        E_SUCCESS on success, or an error code otherwise
  */
 H3Error H3_EXPORT(edgeLengthKm)(H3Index edge, double *length) {
+    if (!length) {
+        return E_FAILED;
+    }
     H3Error err = H3_EXPORT(edgeLengthRads)(edge, length);
+    if (err) {
+        return err;
+    }
     *length = *length * EARTH_RADIUS_KM;
-    return err;
+    return E_SUCCESS;
 }
 
 /**
@@ -318,7 +351,13 @@ H3Error H3_EXPORT(edgeLengthKm)(H3Index edge, double *length) {
  * @return        E_SUCCESS on success, or an error code otherwise
  */
 H3Error H3_EXPORT(edgeLengthM)(H3Index edge, double *length) {
+    if (!length) {
+        return E_FAILED;
+    }
     H3Error err = H3_EXPORT(edgeLengthKm)(edge, length);
+    if (err) {
+        return err;
+    }
     *length = *length * 1000;
-    return err;
+    return E_SUCCESS;
 }

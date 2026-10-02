@@ -114,6 +114,9 @@ int H3_EXPORT(getBaseCellNumber)(H3Index h) { return H3_GET_BASE_CELL(h); }
  * @return 0 (E_SUCCESS) on success, or another value otherwise.
  */
 H3Error H3_EXPORT(getIndexDigit)(H3Index h, int res, int *out) {
+    if (!out) {
+        return E_FAILED;
+    }
     if (res < 1 || res > MAX_H3_RES) {
         return E_RES_DOMAIN;
     }
@@ -134,6 +137,9 @@ H3Error H3_EXPORT(getIndexDigit)(H3Index h, int res, int *out) {
  **/
 H3Error H3_EXPORT(constructCell)(int res, int baseCellNumber, const int *digits,
                                  H3Index *out) {
+    if (!out || (res > 0 && !digits)) {
+        return E_FAILED;
+    }
     if (res < 0 || res > MAX_H3_RES) {
         return E_RES_DOMAIN;
     }
@@ -177,6 +183,9 @@ H3Error H3_EXPORT(constructCell)(int res, int baseCellNumber, const int *digits,
  * @param out Output: The H3 index corresponding to the string argument
  */
 H3Error H3_EXPORT(stringToH3)(const char *str, H3Index *out) {
+    if (!str || !out) {
+        return E_FAILED;
+    }
     H3Index h = H3_NULL;
     // If failed, h will be unmodified and we should return H3_NULL anyways.
     int read = sscanf(str, "%" PRIx64, &h);
@@ -194,6 +203,9 @@ H3Error H3_EXPORT(stringToH3)(const char *str, H3Index *out) {
  * @param sz Size of the buffer `str`
  */
 H3Error H3_EXPORT(h3ToString)(H3Index h, char *str, size_t sz) {
+    if (!str) {
+        return E_FAILED;
+    }
     // An unsigned 64 bit integer will be expressed in at most
     // 16 digits plus 1 for the null terminator.
     if (sz < 17) {
@@ -414,6 +426,9 @@ void setH3Index(H3Index *hp, int res, int baseCell, Direction initDigit) {
  * @param out Output: H3Index of the parent
  */
 H3Error H3_EXPORT(cellToParent)(H3Index h, int parentRes, H3Index *out) {
+    if (!out) {
+        return E_FAILED;
+    }
     int childRes = H3_GET_RESOLUTION(h);
     if (parentRes < 0 || parentRes > MAX_H3_RES) {
         return E_RES_DOMAIN;
@@ -458,6 +473,9 @@ static bool _hasChildAtRes(H3Index h, int childRes) {
  * pentagons correctly)
  */
 H3Error H3_EXPORT(cellToChildrenSize)(H3Index h, int childRes, int64_t *out) {
+    if (!out) {
+        return E_FAILED;
+    }
     if (!_hasChildAtRes(h, childRes)) return E_RES_DOMAIN;
 
     int n = childRes - H3_GET_RESOLUTION(h);
@@ -497,6 +515,9 @@ H3Index makeDirectChild(H3Index h, int cellNumber) {
  * @param children H3Index* the memory to store the resulting addresses in
  */
 H3Error H3_EXPORT(cellToChildren)(H3Index h, int childRes, H3Index *children) {
+    if (!children) {
+        return E_FAILED;
+    }
     int64_t i = 0;
     for (IterCellsChildren iter = iterInitParent(h, childRes); iter.h;
          iterStepChild(&iter)) {
@@ -534,6 +555,9 @@ H3Index _zeroIndexDigits(H3Index h, int start, int end) {
  * @return 0 (E_SUCCESS) on success
  */
 H3Error H3_EXPORT(cellToCenterChild)(H3Index h, int childRes, H3Index *child) {
+    if (!child) {
+        return E_FAILED;
+    }
     if (!_hasChildAtRes(h, childRes)) return E_RES_DOMAIN;
 
     h = _zeroIndexDigits(h, H3_GET_RESOLUTION(h) + 1, childRes);
@@ -555,8 +579,14 @@ H3Error H3_EXPORT(cellToCenterChild)(H3Index h, int childRes, H3Index *child) {
  */
 H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
                                 const int64_t numHexes) {
+    if (numHexes < 0) {
+        return E_DOMAIN;
+    }
     if (numHexes == 0) {
         return E_SUCCESS;
+    }
+    if (!h3Set || !compactedSet) {
+        return E_FAILED;
     }
     int res = H3_GET_RESOLUTION(h3Set[0]);
     if (res == 0) {
@@ -779,6 +809,15 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
 H3Error H3_EXPORT(uncompactCells)(const H3Index *compactedSet,
                                   const int64_t numCompacted, H3Index *outSet,
                                   const int64_t numOut, const int res) {
+    if (numCompacted < 0 || numOut < 0) {
+        return E_DOMAIN;
+    }
+    if (numCompacted == 0) {
+        return E_SUCCESS;
+    }
+    if (!compactedSet || (numOut > 0 && !outSet)) {
+        return E_FAILED;
+    }
     int64_t i = 0;
 
     for (int64_t j = 0; j < numCompacted; j++) {
@@ -806,6 +845,15 @@ H3Error H3_EXPORT(uncompactCells)(const H3Index *compactedSet,
 H3Error H3_EXPORT(uncompactCellsSize)(const H3Index *compactedSet,
                                       const int64_t numCompacted, const int res,
                                       int64_t *out) {
+    if (!out) {
+        return E_FAILED;
+    }
+    if (numCompacted < 0) {
+        return E_DOMAIN;
+    }
+    if (numCompacted > 0 && !compactedSet) {
+        return E_FAILED;
+    }
     int64_t numOut = 0;
     for (int64_t i = 0; i < numCompacted; i++) {
         if (compactedSet[i] == H3_NULL) continue;
@@ -1040,6 +1088,9 @@ H3Index _faceIjkToH3(const FaceIJK *fijk, int res) {
  * @returns E_SUCCESS (0) on success, another value otherwise
  */
 H3Error H3_EXPORT(latLngToCell)(const LatLng *g, int res, H3Index *out) {
+    if (!g || !out) {
+        return E_FAILED;
+    }
     if (res < 0 || res > MAX_H3_RES) {
         return E_RES_DOMAIN;
     }
@@ -1063,6 +1114,9 @@ H3Error H3_EXPORT(latLngToCell)(const LatLng *g, int res, H3Index *out) {
  * @returns E_SUCCESS on success, another value otherwise
  */
 H3Error vec3ToCell(const Vec3d *v, int res, H3Index *out) {
+    if (!v || !out) {
+        return E_FAILED;
+    }
     if (res < 0 || res > MAX_H3_RES) {
         return E_RES_DOMAIN;
     }
@@ -1177,6 +1231,9 @@ H3Error _h3ToFaceIjk(H3Index h, FaceIJK *fijk) {
  * @return E_SUCCESS on success, or another H3Error code on failure.
  */
 H3Error cellToVec3(H3Index h3, Vec3d *v) {
+    if (!v) {
+        return E_FAILED;
+    }
     FaceIJK fijk;
     H3Error e = _h3ToFaceIjk(h3, &fijk);
     if (e) {
@@ -1193,6 +1250,9 @@ H3Error cellToVec3(H3Index h3, Vec3d *v) {
  * @param g The spherical coordinates of the H3 cell center.
  */
 H3Error H3_EXPORT(cellToLatLng)(H3Index h3, LatLng *g) {
+    if (!g) {
+        return E_FAILED;
+    }
     Vec3d v;
     H3Error e = cellToVec3(h3, &v);
     if (e) {
@@ -1209,6 +1269,9 @@ H3Error H3_EXPORT(cellToLatLng)(H3Index h3, LatLng *g) {
  * @param cb The boundary of the H3 cell in spherical coordinates.
  */
 H3Error H3_EXPORT(cellToBoundary)(H3Index h3, CellBoundary *cb) {
+    if (!cb) {
+        return E_FAILED;
+    }
     FaceIJK fijk;
     H3Error e = _h3ToFaceIjk(h3, &fijk);
     if (e) {
@@ -1231,6 +1294,9 @@ H3Error H3_EXPORT(cellToBoundary)(H3Index h3, CellBoundary *cb) {
  * @return int count of faces
  */
 H3Error H3_EXPORT(maxFaceCount)(H3Index h3, int *out) {
+    if (!out) {
+        return E_FAILED;
+    }
     // a pentagon always intersects 5 faces, a hexagon never intersects more
     // than 2 (but may only intersect 1)
     *out = H3_EXPORT(isPentagon)(h3) ? 5 : 2;
@@ -1247,6 +1313,9 @@ H3Error H3_EXPORT(maxFaceCount)(H3Index h3, int *out) {
  * @param out Output array. Must be of size maxFaceCount(h3).
  */
 H3Error H3_EXPORT(getIcosahedronFaces)(H3Index h3, int *out) {
+    if (!out) {
+        return E_FAILED;
+    }
     int res = H3_GET_RESOLUTION(h3);
     int isPent = H3_EXPORT(isPentagon)(h3);
 
@@ -1335,6 +1404,9 @@ int H3_EXPORT(pentagonCount)(void) { return NUM_PENTAGONS; }
  * @param out Output array. Must be of size pentagonCount().
  */
 H3Error H3_EXPORT(getPentagons)(int res, H3Index *out) {
+    if (!out) {
+        return E_FAILED;
+    }
     if (res < 0 || res > MAX_H3_RES) {
         return E_RES_DOMAIN;
     }
@@ -1385,6 +1457,9 @@ static H3Error validateChildPos(int64_t childPos, H3Index parent,
  * list of children
  */
 H3Error H3_EXPORT(cellToChildPos)(H3Index child, int parentRes, int64_t *out) {
+    if (!out) {
+        return E_FAILED;
+    }
     int childRes = H3_GET_RESOLUTION(child);
     // Get the parent at res. This will catch any resolution errors
     H3Index originalParent;
@@ -1466,6 +1541,9 @@ H3Error H3_EXPORT(cellToChildPos)(H3Index child, int parentRes, int64_t *out) {
  */
 H3Error H3_EXPORT(childPosToCell)(int64_t childPos, H3Index parent,
                                   int childRes, H3Index *child) {
+    if (!child) {
+        return E_FAILED;
+    }
     // Validate resolution
     if (childRes < 0 || childRes > MAX_H3_RES) {
         return E_RES_DOMAIN;

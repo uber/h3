@@ -167,6 +167,9 @@ static const int K_ALL_CELLS_AT_RES_15 = 13780510;
  * @param out   size in indexes
  */
 H3Error H3_EXPORT(maxGridDiskSize)(int k, int64_t *out) {
+    if (!out) {
+        return E_FAILED;
+    }
     if (k < 0) {
         return E_DOMAIN;
     }
@@ -343,6 +346,9 @@ H3Error H3_EXPORT(gridDiskDistancesSafe)(H3Index origin, int k, H3Index *out,
  * @param out   size in indexes
  */
 H3Error H3_EXPORT(maxGridRingSize)(int k, int64_t *out) {
+    if (!out) {
+        return E_FAILED;
+    }
     if (k < 0) {
         return E_DOMAIN;
     }
@@ -367,6 +373,9 @@ H3Error H3_EXPORT(maxGridRingSize)(int k, int64_t *out) {
  * @return 0 if successful; nonzero otherwise.
  */
 H3Error H3_EXPORT(gridRing)(H3Index origin, int k, H3Index *out) {
+    if (!out) {
+        return E_FAILED;
+    }
     // Optimistically try the faster gridDiskUnsafe algorithm first
     const H3Error failed = H3_EXPORT(gridRingUnsafe)(origin, k, out);
     if (!failed) {
@@ -663,6 +672,9 @@ H3Error H3_EXPORT(gridDiskUnsafe)(H3Index origin, int k, H3Index *out) {
  */
 H3Error H3_EXPORT(gridDiskDistancesUnsafe)(H3Index origin, int k, H3Index *out,
                                            int *distances) {
+    if (!out) {
+        return E_FAILED;
+    }
     // Return codes:
     // 1 Pentagon was encountered
     // 2 Pentagon distortion (deleted k subsequence) was encountered
@@ -759,6 +771,12 @@ H3Error H3_EXPORT(gridDiskDistancesUnsafe)(H3Index origin, int k, H3Index *out,
  */
 H3Error H3_EXPORT(gridDisksUnsafe)(H3Index *h3Set, int length, int k,
                                    H3Index *out) {
+    if (length < 0) {
+        return E_DOMAIN;
+    }
+    if (length > 0 && (!h3Set || !out)) {
+        return E_FAILED;
+    }
     H3Index *segment;
     int64_t segmentSize;
     H3Error err = H3_EXPORT(maxGridDiskSize)(k, &segmentSize);
@@ -788,6 +806,9 @@ H3Error H3_EXPORT(gridDisksUnsafe)(H3Index *h3Set, int length, int k,
  * @return 0 if successful; nonzero otherwise.
  */
 H3Error H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index *out) {
+    if (!out) {
+        return E_FAILED;
+    }
     if (k < 0) {
         return E_DOMAIN;
     }
@@ -872,6 +893,9 @@ H3Error H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index *out) {
  */
 H3Error H3_EXPORT(maxPolygonToCellsSize)(const GeoPolygon *geoPolygon, int res,
                                          uint32_t flags, int64_t *out) {
+    if (!geoPolygon || !out) {
+        return E_FAILED;
+    }
     H3Error flagErr = validatePolygonFlags(flags);
     if (flagErr) {
         return flagErr;
@@ -996,6 +1020,9 @@ H3Error _getEdgeHexagons(const GeoLoop *geoloop, int64_t numHexagons, int res,
  */
 H3Error H3_EXPORT(polygonToCells)(const GeoPolygon *geoPolygon, int res,
                                   uint32_t flags, H3Index *out) {
+    if (!geoPolygon || !out) {
+        return E_FAILED;
+    }
     H3Error flagErr = validatePolygonFlags(flags);
     if (flagErr) {
         return flagErr;
@@ -1186,6 +1213,9 @@ H3Error H3_EXPORT(polygonToCells)(const GeoPolygon *geoPolygon, int res,
 H3Error H3_EXPORT(cellsToLinkedMultiPolygon)(const H3Index *h3Set,
                                              const int numHexes,
                                              LinkedGeoPolygon *out) {
+    if (!out) {
+        return E_FAILED;
+    }
     GeoMultiPolygon mpoly;
     H3Error err = H3_EXPORT(cellsToMultiPolygon)(h3Set, numHexes, &mpoly);
     if (err) {
@@ -1201,6 +1231,7 @@ H3Error H3_EXPORT(cellsToLinkedMultiPolygon)(const H3Index *h3Set,
  * responsible for freeing memory allocated to input GeoLoop struct.
  */
 void destroyGeoLoop(GeoLoop *loop) {
+    if (!loop) return;
     H3_MEMORY(free)(loop->verts);
     loop->verts = NULL;
     loop->numVerts = 0;
@@ -1211,6 +1242,7 @@ void destroyGeoLoop(GeoLoop *loop) {
  * responsible for freeing memory allocated to input GeoPolygon struct.
  */
 void destroyGeoPolygon(GeoPolygon *poly) {
+    if (!poly) return;
     destroyGeoLoop(&poly->geoloop);
     for (int i = 0; i < poly->numHoles; i++) {
         destroyGeoLoop(&poly->holes[i]);
@@ -1225,6 +1257,9 @@ void destroyGeoPolygon(GeoPolygon *poly) {
  * responsible for freeing memory allocated to input GeoMultiPolygon struct.
  */
 void H3_EXPORT(destroyGeoMultiPolygon)(GeoMultiPolygon *mpoly) {
+    if (!mpoly) {
+        return;
+    }
     for (int i = 0; i < mpoly->numPolygons; i++) {
         destroyGeoPolygon(&mpoly->polygons[i]);
     }
