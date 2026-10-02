@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [master, stable-*]
 
+permissions:
+  contents: read
+
 jobs:
   pkg-config:
     name: pkg-config on ${{ matrix.os }}
