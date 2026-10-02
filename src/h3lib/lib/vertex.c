@@ -210,6 +210,9 @@ static const int revNeighborDirectionsHex[NUM_DIGITS] = {
  * @param out Output: The vertex index
  */
 H3Error H3_EXPORT(cellToVertex)(H3Index cell, int vertexNum, H3Index *out) {
+    if (!out) {
+        return E_FAILED;
+    }
     int cellIsPentagon = H3_EXPORT(isPentagon)(cell);
     int cellNumVerts = cellIsPentagon ? NUM_PENT_VERTS : NUM_HEX_VERTS;
     int res = H3_GET_RESOLUTION(cell);
@@ -298,6 +301,9 @@ H3Error H3_EXPORT(cellToVertex)(H3Index cell, int vertexNum, H3Index *out) {
  * @param vertexes  Array to hold vertex output. Must have length >= 6.
  */
 H3Error H3_EXPORT(cellToVertexes)(H3Index cell, H3Index *vertexes) {
+    if (!vertexes) {
+        return E_FAILED;
+    }
     // Get all vertexes. If the cell is a pentagon, will fill the final slot
     // with H3_NULL.
     bool isPent = H3_EXPORT(isPentagon)(cell);
@@ -320,6 +326,9 @@ H3Error H3_EXPORT(cellToVertexes)(H3Index cell, H3Index *vertexes) {
  * @param coord  Output geo coordinate
  */
 H3Error H3_EXPORT(vertexToLatLng)(H3Index vertex, LatLng *coord) {
+    if (!coord) {
+        return E_FAILED;
+    }
     // Get the vertex number and owner from the vertex
     int vertexNum = H3_GET_RESERVED_BITS(vertex);
     H3Index owner = vertex;

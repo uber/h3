@@ -19,6 +19,9 @@ static inline H3Error validateCellSet(const H3Index *cells,
     if (numCells == 0) {
         return E_SUCCESS;
     }
+    if (!cells) {
+        return E_FAILED;
+    }
 
     // Check that all cells are valid and have the same resolution
     int res = H3_EXPORT(getResolution)(cells[0]);
@@ -606,6 +609,9 @@ static H3Error createMultiPolygon(SortableLoopSet loopset,
 H3Error H3_EXPORT(cellsToMultiPolygon)(const H3Index *cells,
                                        const int64_t numCells,
                                        GeoMultiPolygon *out) {
+    if (!out) {
+        return E_FAILED;
+    }
     H3Error err =
         checkCellsToMultiPolyOverflow(numCells, HASH_TABLE_MULTIPLIER);
     if (err) return err;

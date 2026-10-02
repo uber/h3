@@ -110,6 +110,9 @@ void destroyLinkedGeoLoop(LinkedGeoLoop *loop) {
  * @param polygon Pointer to the first polygon in the structure
  */
 void H3_EXPORT(destroyLinkedMultiPolygon)(LinkedGeoPolygon *polygon) {
+    if (!polygon) {
+        return;
+    }
     // flag to skip the input polygon
     bool skip = true;
     LinkedGeoPolygon *nextPolygon;

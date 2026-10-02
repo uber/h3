@@ -37,6 +37,9 @@
  */
 H3Error H3_EXPORT(areNeighborCells)(H3Index origin, H3Index destination,
                                     int *out) {
+    if (!out) {
+        return E_FAILED;
+    }
     // Make sure they're hexagon indexes
     if (H3_GET_MODE(origin) != H3_CELL_MODE ||
         H3_GET_MODE(destination) != H3_CELL_MODE) {
@@ -130,7 +133,10 @@ H3Error H3_EXPORT(areNeighborCells)(H3Index origin, H3Index destination,
  * @param out Output: The directed edge H3Index.
  */
 H3Error H3_EXPORT(cellsToDirectedEdge)(H3Index origin, H3Index destination,
-                                       H3Index *out) {
+                                        H3Index *out) {
+    if (!out) {
+        return E_FAILED;
+    }
     // Determine the IJK direction from the origin to the destination
     Direction direction = directionForNeighbor(origin, destination);
 
@@ -154,6 +160,9 @@ H3Error H3_EXPORT(cellsToDirectedEdge)(H3Index origin, H3Index destination,
  * @param out Output: The origin H3 hexagon index
  */
 H3Error H3_EXPORT(getDirectedEdgeOrigin)(H3Index edge, H3Index *out) {
+    if (!out) {
+        return E_FAILED;
+    }
     if (H3_GET_MODE(edge) != H3_DIRECTEDEDGE_MODE) {
         return E_DIR_EDGE_INVALID;
     }
@@ -170,6 +179,9 @@ H3Error H3_EXPORT(getDirectedEdgeOrigin)(H3Index edge, H3Index *out) {
  * @param out Output: The destination H3 hexagon index
  */
 H3Error H3_EXPORT(getDirectedEdgeDestination)(H3Index edge, H3Index *out) {
+    if (!out) {
+        return E_FAILED;
+    }
     Direction direction = H3_GET_RESERVED_BITS(edge);
     int rotations = 0;
     H3Index origin;
@@ -213,6 +225,9 @@ int H3_EXPORT(isValidDirectedEdge)(H3Index edge) {
  */
 H3Error H3_EXPORT(directedEdgeToCells)(H3Index edge,
                                        H3Index *originDestination) {
+    if (!originDestination) {
+        return E_FAILED;
+    }
     H3Error originResult =
         H3_EXPORT(getDirectedEdgeOrigin)(edge, &originDestination[0]);
     if (originResult) {
@@ -232,6 +247,9 @@ H3Error H3_EXPORT(directedEdgeToCells)(H3Index edge,
  * @param edges The memory to store all of the edges inside.
  */
 H3Error H3_EXPORT(originToDirectedEdges)(H3Index origin, H3Index *edges) {
+    if (!edges) {
+        return E_FAILED;
+    }
     // Determine if the origin is a pentagon and special treatment needed.
     int isPent = H3_EXPORT(isPentagon)(origin);
 
@@ -256,6 +274,9 @@ H3Error H3_EXPORT(originToDirectedEdges)(H3Index origin, H3Index *edges) {
  * @param cb The cellboundary object to store the edge coordinates.
  */
 H3Error H3_EXPORT(directedEdgeToBoundary)(H3Index edge, CellBoundary *cb) {
+    if (!cb) {
+        return E_FAILED;
+    }
     // Get the origin and neighbor direction from the edge
     Direction direction = H3_GET_RESERVED_BITS(edge);
     H3Index origin;
@@ -299,6 +320,9 @@ H3Error H3_EXPORT(directedEdgeToBoundary)(H3Index edge, CellBoundary *cb) {
  * @param out Output: The reversed directed edge index
  */
 H3Error H3_EXPORT(reverseDirectedEdge)(H3Index edge, H3Index *out) {
+    if (!out) {
+        return E_FAILED;
+    }
     H3Index origin, destination;
     H3Error err;
 

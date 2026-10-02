@@ -700,6 +700,9 @@ void iterDestroyPolygon(IterCellsPolygon *iter) {
 H3Error H3_EXPORT(polygonToCellsExperimental)(const GeoPolygon *polygon,
                                               int res, uint32_t flags,
                                               int64_t size, H3Index *out) {
+    if (!polygon || (size > 0 && !out) || size < 0) {
+        return E_FAILED;
+    }
     IterCellsPolygon iter = iterInitPolygon(polygon, res, flags);
     int64_t i = 0;
     for (; iter.cell; iterStepPolygon(&iter)) {
@@ -732,6 +735,9 @@ static double getAverageCellArea(int res) {
 H3Error H3_EXPORT(maxPolygonToCellsSizeExperimental)(const GeoPolygon *polygon,
                                                      int res, uint32_t flags,
                                                      int64_t *out) {
+    if (!polygon || !out) {
+        return E_FAILED;
+    }
     // Special case: 0-vertex polygon
     if (polygon->geoloop.numVerts == 0) {
         *out = 0;

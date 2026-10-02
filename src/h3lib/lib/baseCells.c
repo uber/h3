@@ -929,6 +929,9 @@ int H3_EXPORT(res0CellCount)(void) { return NUM_BASE_CELLS; }
  * @returns E_SUCCESS.
  */
 H3Error H3_EXPORT(getRes0Cells)(H3Index *out) {
+    if (!out) {
+        return E_FAILED;
+    }
     for (int bc = 0; bc < NUM_BASE_CELLS; bc++) {
         H3Index baseCell = H3_INIT;
         H3_SET_MODE(baseCell, H3_CELL_MODE);

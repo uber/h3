@@ -535,6 +535,9 @@ H3Error localIjkToCell(H3Index origin, const CoordIJK *ijk, H3Index *out) {
  */
 H3Error H3_EXPORT(cellToLocalIj)(H3Index origin, H3Index index, uint32_t mode,
                                  CoordIJ *out) {
+    if (!out) {
+        return E_FAILED;
+    }
     if (mode != 0) {
         return E_OPTION_INVALID;
     }
@@ -569,6 +572,9 @@ H3Error H3_EXPORT(cellToLocalIj)(H3Index origin, H3Index index, uint32_t mode,
  */
 H3Error H3_EXPORT(localIjToCell)(H3Index origin, const CoordIJ *ij,
                                  uint32_t mode, H3Index *out) {
+    if (!ij || !out) {
+        return E_FAILED;
+    }
     if (mode != 0) {
         return E_OPTION_INVALID;
     }
@@ -595,6 +601,9 @@ H3Error H3_EXPORT(localIjToCell)(H3Index origin, const CoordIJ *ij,
  * the distance.
  */
 H3Error H3_EXPORT(gridDistance)(H3Index origin, H3Index index, int64_t *out) {
+    if (!out) {
+        return E_FAILED;
+    }
     CoordIJK originIjk, h3Ijk;
     H3Error originError = cellToLocalIjk(origin, origin, &originIjk);
     if (originError) {
@@ -623,6 +632,9 @@ H3Error H3_EXPORT(gridDistance)(H3Index origin, H3Index index, int64_t *out) {
  */
 H3Error H3_EXPORT(gridPathCellsSize)(H3Index start, H3Index end,
                                      int64_t *size) {
+    if (!size) {
+        return E_FAILED;
+    }
     int64_t distance;
     H3Error distanceError = H3_EXPORT(gridDistance)(start, end, &distance);
     if (distanceError) {
@@ -766,6 +778,9 @@ static H3Error gridPathCellsInterpolate(H3Index start, H3Index end,
  * @return 0 on success, or another value on failure.
  */
 H3Error H3_EXPORT(gridPathCells)(H3Index start, H3Index end, H3Index *out) {
+    if (!out) {
+        return E_FAILED;
+    }
     int64_t distance;
     H3Error distanceError = H3_EXPORT(gridDistance)(start, end, &distance);
     // Early exit if we can't calculate the line
