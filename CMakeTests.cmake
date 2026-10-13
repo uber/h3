@@ -54,6 +54,29 @@ if(ENABLE_COVERAGE)
         COMMENT "Zeroing counters")
 endif()
 
+if(ENABLE_MUTATION)
+    set(mutation_report_dir "${CMAKE_CURRENT_BINARY_DIR}/mutation")
+    file(MAKE_DIRECTORY "${mutation_report_dir}")
+    add_custom_target(
+            clean-mutation
+            # Before running mutation, clear all counters
+            # TODO: Use ADDITIONAL_MAKE_CLEAN_FILES or BYPRODUCYS?
+            COMMAND ${CMAKE_COMMAND} -E rm -rf '${mutation_report_dir}'
+            COMMENT "Deleting mutation reports")
+    set(mutation_runner
+            "H3_MULL_SKIP_DB=${mutation_report_dir}/h3-report.sqlite"
+            "MULL_ENV=${CMAKE_CURRENT_SOURCE_DIR}/mull.yml"
+            "${MULL_ROOT}/bin/mull-runner-${MULL_VERSION}"
+            --allow-surviving
+            -reporters IDE
+            -reporters SQLite
+            -report-dir '${mutation_report_dir}'
+            -report-name h3-report
+            --test-program "${CMAKE_CURRENT_SOURCE_DIR}/scripts/mull_wrapper.sh"
+    )
+    set_property(GLOBAL PROPERTY H3_MUTATION_DONE_MARKERS "")
+endif()
+
 macro(add_h3_memory_test name srcfile)
     # Like other test code, but these need to be linked against a different copy
     # of the H3 library which has known intercepted allocator functions.
@@ -110,19 +133,42 @@ macro(add_h3_test name srcfile)
         add_dependencies(coverage ${name}_coverage${test_number})
         add_dependencies(${name}_coverage${test_number} clean-coverage)
     endif()
+
+    if(ENABLE_MUTATION
+            AND (ENABLE_MUTATION_SLOW OR (
+                    # Slow but doable <= 1hr
+                    NOT "${name}" STREQUAL "testCellToLocalIjInternal"
+                    AND NOT "${name}" STREQUAL "testCompactCells"
+                    AND NOT "${name}" STREQUAL "testCellToChildPos"
+                    # Too slow
+                    AND NOT "${name}" STREQUAL "testPolygonToCells"
+                    AND NOT "${name}" STREQUAL "testPolygonToCellsExperimental"
+                    AND NOT "${name}" STREQUAL "testPolygonToCellsReportedExperimental"
+            ))
+            # Too slow
+            AND NOT "${name}" MATCHES "Exhaustive$"
+            # Too slow on startup
+            AND NOT "${name}" STREQUAL "testGosperIter"
+    )
+        set(mutation_done "${mutation_report_dir}/${name}_${test_number}.done")
+        add_custom_command(
+            OUTPUT "${mutation_done}"
+            COMMAND "H3_MULL_REAL_EXEC=$<TARGET_FILE:${name}>" ${mutation_runner} "$<TARGET_FILE:${name}>"
+            COMMAND ${CMAKE_COMMAND} -E touch "${mutation_done}"
+            DEPENDS ${name}
+            WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+            COMMENT "Running ${name}_mutation${test_number}")
+        set_property(GLOBAL APPEND PROPERTY H3_MUTATION_DONE_MARKERS "${mutation_done}")
+    endif()
 endmacro()
 
 macro(add_h3_test_with_file name srcfile argfile)
     add_h3_test_common(${name} ${srcfile})
-    # add a special command (so we don't need to read the test file from the
-    # test program)
-    set(dump_command "cat")
 
     add_test(
         NAME ${name}_test${test_number}
         COMMAND
-            ${SHELL}
-            "${dump_command} ${argfile} | ${TEST_WRAPPER_STR} $<TARGET_FILE:${name}>"
+            ${TEST_WRAPPER} $<TARGET_FILE:${name}> ${argfile}
     )
 
     if(PRINT_TEST_FILES)
@@ -132,11 +178,23 @@ macro(add_h3_test_with_file name srcfile argfile)
     if(ENABLE_COVERAGE)
         add_custom_target(
             ${name}_coverage${test_number}
-            COMMAND ${name} < ${argfile} > /dev/null
+            COMMAND ${name} ${argfile}
             COMMENT "Running ${name}_coverage${test_number}")
 
         add_dependencies(coverage ${name}_coverage${test_number})
         add_dependencies(${name}_coverage${test_number} clean-coverage)
+    endif()
+
+    if(ENABLE_MUTATION)
+        set(mutation_done "${mutation_report_dir}/${name}_${test_number}.done")
+        add_custom_command(
+                OUTPUT "${mutation_done}"
+                COMMAND "H3_MULL_REAL_EXEC=$<TARGET_FILE:${name}>" ${mutation_runner} "$<TARGET_FILE:${name}>" ${argfile}
+                COMMAND ${CMAKE_COMMAND} -E touch "${mutation_done}"
+                DEPENDS ${name}
+                WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+                COMMENT "Running ${name}_mutation${test_number}")
+        set_property(GLOBAL APPEND PROPERTY H3_MUTATION_DONE_MARKERS "${mutation_done}")
     endif()
 endmacro()
 
@@ -171,6 +229,19 @@ macro(add_h3_test_with_arg name srcfile arg)
 
         add_dependencies(coverage ${name}_coverage${test_number})
         add_dependencies(${name}_coverage${test_number} clean-coverage)
+    endif()
+
+    # h3NeighborRotations tests run but are slow
+    if(ENABLE_MUTATION AND ENABLE_MUTATION_SLOW)
+        set(mutation_done "${mutation_report_dir}/${name}_${test_number}.done")
+        add_custom_command(
+                OUTPUT "${mutation_done}"
+                COMMAND "H3_MULL_REAL_EXEC=$<TARGET_FILE:${name}>" ${mutation_runner} "$<TARGET_FILE:${name}>" ${arg}
+                COMMAND ${CMAKE_COMMAND} -E touch "${mutation_done}"
+                DEPENDS ${name}
+                WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+                COMMENT "Running ${name}_mutation${test_number}")
+        set_property(GLOBAL APPEND PROPERTY H3_MUTATION_DONE_MARKERS "${mutation_done}")
     endif()
 endmacro()
 
@@ -299,3 +370,12 @@ if(BUILD_ALLOC_TESTS)
 endif()
 
 add_custom_target(test-fast COMMAND ctest -E Exhaustive)
+
+if(ENABLE_MUTATION)
+    get_property(mutation_done_markers GLOBAL PROPERTY H3_MUTATION_DONE_MARKERS)
+    add_custom_target(mutation
+        DEPENDS ${mutation_done_markers}
+        COMMAND
+        MULL_ENV="${CMAKE_CURRENT_SOURCE_DIR}/mull.yml" "${MULL_ROOT}/bin/mull-reporter-${MULL_VERSION}" "${mutation_report_dir}/h3-report.sqlite" -reporters Elements -reporters IDE
+        COMMENT "Aggregating mutation results")
+endif()

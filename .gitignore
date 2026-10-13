@@ -86,13 +86,15 @@ RunCoverage.cmake
 # Generated coverage runner
 scripts/coverage.sh
 
-
 # CTest / coverage
 CTestTestfile.cmake
 Testing/
 coverage/
 coverage.info
 coverage.cleaned.info
+
+# Mutation testing
+mutation/
 
 # IDEs (CodeBlocks/CLion/VSCode)
 *.cbp
@@ -112,3 +114,5 @@ KML/res*centers.kml
 src/h3lib/include/h3api.h
 src/apps/benchmarks/benchmarkCountries.c
 h3-prof.trace
+
+h3.pc
