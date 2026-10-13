@@ -6,6 +6,7 @@ import {
   isValidDirectedEdge,
   latLngToCell,
   getResolution,
+  isValidVertex,
 } from "h3-js";
 import {
   Banner,
@@ -14,7 +15,11 @@ import {
   DemoContainer,
 } from "../styled";
 import { useQueryState } from "use-location-state";
-import { SelectedEdgeDetails, SelectedHexDetails } from "./details";
+import {
+  SelectedEdgeDetails,
+  SelectedVertexDetails,
+  SelectedHexDetails,
+} from "./details";
 import { ExplorerMap } from "./map";
 import { WhereAmIButton } from "./where-am-i";
 import { doSplitUserInput } from "./parseInput";
@@ -48,7 +53,12 @@ export default function HomeExporer({ children }: { children: ReactNode }) {
     () => splitUserInput.filter(isValidDirectedEdge),
     [splitUserInput],
   );
-  const userValidInput = cells.length > 0 || edges.length > 0;
+  const vertexes = useMemo(
+    () => splitUserInput.filter(isValidVertex),
+    [splitUserInput],
+  );
+  const userValidInput =
+    cells.length > 0 || edges.length > 0 || vertexes.length > 0;
   const constantResolution = useMemo(() => {
     const resAsSet = new Set(cells.map(getResolution));
     if (resAsSet.size === 1) {
@@ -104,6 +114,7 @@ export default function HomeExporer({ children }: { children: ReactNode }) {
             <ExplorerMap
               userInput={cells}
               userEdges={edges}
+              userVertexes={vertexes}
               inputGeoJson={inputGeoJson}
               userValidInput={userValidInput}
               objectOnClick={objectOnClick}
@@ -139,6 +150,9 @@ export default function HomeExporer({ children }: { children: ReactNode }) {
             />
           ) : null}
           {edges.length === 1 ? <SelectedEdgeDetails edge={edges[0]} /> : null}
+          {vertexes.length === 1 ? (
+            <SelectedVertexDetails vertex={vertexes[0]} />
+          ) : null}
           {showResolutionInput !== null ? (
             <div>
               <label htmlFor={resolutionInputId}>Resolution:</label>
