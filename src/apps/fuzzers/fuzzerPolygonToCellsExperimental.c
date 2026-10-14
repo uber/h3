@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** @file
- * @brief Fuzzer program for polygonToCells2 and related functions
+/** @file fuzzerPolygonToCellsExperimental.c
+ * @brief Fuzzes the experimental polygon-to-cells implementation.
  */
 
 #include "aflHarness.h"
@@ -95,6 +95,12 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     for (uint32_t flags = 0; flags < CONTAINMENT_INVALID; flags++) {
         geoPolygon.numHoles = originalNumHoles;
         run(&geoPolygon, flags, res);
+
+        // If polygon has no holes - it has already been tested
+        // Don't test it again
+        if (originalNumHoles == 0) {
+            continue;
+        }
         geoPolygon.numHoles = 0;
         run(&geoPolygon, flags, res);
     }
