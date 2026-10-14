@@ -53,7 +53,10 @@ static inline Vec3d latLngToVec3(LatLng geo) {
 
 static inline LatLng vec3ToLatLng(Vec3d v) {
     LatLng out = {
-        .lat = asin(v.z),
+        // atan2 rather than asin(z): near the poles asin loses about
+        // 1/cos(lat) in precision because it recovers cos(lat) from 1 - z^2,
+        // while sqrt(x^2 + y^2) is cos(lat) at full precision.
+        .lat = atan2(v.z, sqrt(v.x * v.x + v.y * v.y)),
         .lng = atan2(v.y, v.x),
     };
     return out;
