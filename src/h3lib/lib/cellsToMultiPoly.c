@@ -1,5 +1,6 @@
 #include "cellsToMultiPoly.h"
 
+#include <limits.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -362,6 +363,13 @@ static H3Error createSortableLoop(Arc *arc, SortableLoop *sloop) {
         arc = arc->next;
     } while (arc->id != start);
 
+    // GeoLoop.numVerts is an int, so a loop with more vertices than that can
+    // hold cannot be represented without silently truncating the count.
+    if (NEVER(numVerts > INT_MAX)) {
+        H3_MEMORY(free)(verts);
+        return E_MEMORY_ALLOC;
+    }
+
     // This memory ends up in GeoMultiPolygon, to be freed by caller of
     // cellsToMultiPolygon()
     LatLng *reallocVerts = H3_MEMORY(realloc)(verts, sizeof(LatLng) * numVerts);
@@ -372,7 +380,7 @@ static H3Error createSortableLoop(Arc *arc, SortableLoop *sloop) {
     verts = reallocVerts;
 
     sloop->root = getRoot(arc)->id;
-    sloop->loop.numVerts = numVerts;
+    sloop->loop.numVerts = (int)numVerts;
     sloop->loop.verts = verts;
     geoLoopAreaRads2(sloop->loop, &sloop->area);
 
@@ -434,6 +442,12 @@ static int64_t countPolys(SortableLoopSet loopset) {
 // Later, we sort the Polygons by the size of their outer loops.
 static H3Error createSortablePoly(SortableLoop *sloop, int64_t numHoles,
                                   SortablePoly *spoly) {
+    // GeoPolygon.numHoles is an int, so a polygon with more holes than that
+    // can hold cannot be represented without silently truncating the count.
+    if (NEVER(numHoles > INT_MAX)) {
+        return E_MEMORY_ALLOC;
+    }
+
     GeoLoop *holes = NULL;
     if (numHoles > 0) {
         holes = H3_MEMORY(malloc)(sizeof(GeoLoop) * numHoles);
@@ -446,7 +460,7 @@ static H3Error createSortablePoly(SortableLoop *sloop, int64_t numHoles,
     }
 
     spoly->poly.geoloop = sloop[0].loop;
-    spoly->poly.numHoles = numHoles;
+    spoly->poly.numHoles = (int)numHoles;
     spoly->poly.holes = holes;
     spoly->outerArea = sloop[0].area;  // area of outer loop
 
@@ -527,6 +541,11 @@ static H3Error createMultiPolygon(SortableLoopSet loopset,
     }
 
     int64_t numPolys = countPolys(loopset);
+    // GeoMultiPolygon.numPolygons is an int, so more polygons than that can
+    // hold cannot be represented without silently truncating the count.
+    if (NEVER(numPolys > INT_MAX)) {
+        return E_MEMORY_ALLOC;
+    }
     SortablePoly *spolys = H3_MEMORY(malloc)(sizeof(SortablePoly) * numPolys);
     if (!spolys) {
         return E_MEMORY_ALLOC;
@@ -562,7 +581,7 @@ static H3Error createMultiPolygon(SortableLoopSet loopset,
         return E_MEMORY_ALLOC;
     }
 
-    mpoly->numPolygons = numPolys;
+    mpoly->numPolygons = (int)numPolys;
     for (int64_t i = 0; i < numPolys; i++) {
         mpoly->polygons[i] = spolys[i].poly;
     }
