@@ -26,13 +26,12 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "alloc.h"
 #include "h3api.h"
 #include "mathExtensions.h"
-
-// After rough search, 10 seems to minimize compute time for large sets
-#define HASH_TABLE_MULTIPLIER 10
 
 typedef struct Arc {
     H3Index id;
@@ -44,6 +43,9 @@ typedef struct Arc {
     struct Arc *next;
     struct Arc *prev;
 
+    // The arc for the reversed edge, or NULL if it is not in the set
+    struct Arc *twin;
+
     // For union-find datastructure
     // https://en.wikipedia.org/wiki/Disjoint-set_data_structure
     struct Arc *parent;
@@ -53,11 +55,24 @@ typedef struct Arc {
 typedef struct {
     int64_t numArcs;
     Arc *arcs;
-
-    // hash buckets for fast edge/arc lookup
-    int64_t numBuckets;
-    Arc **buckets;
 } ArcSet;
+
+/*
+Sort key for pairing an arc with its twin. An arc and its twin join the same
+two cells, so they share the key (lo, hi): the smaller and larger of the
+edge's origin and destination cells.
+*/
+typedef struct {
+    H3Index lo;
+    H3Index hi;
+    Arc *arc;
+} ArcKey;
+
+// Digit width for sortArcKeys. 11 bits keeps the counts array in L1 cache.
+#define ARC_KEY_RADIX_BITS 11
+#define ARC_KEY_RADIX_SIZE (1 << ARC_KEY_RADIX_BITS)
+// Below this many keys, sortArcKeys uses qsort, which is faster there
+#define ARC_KEY_RADIX_MIN_KEYS 256
 
 typedef struct {
     H3Index root;
@@ -79,25 +94,24 @@ typedef struct {
 /**
  * Check for potential integer overflow in cellsToMultiPolygon allocations.
  *
- * Validates that the two largest allocations won't overflow:
+ * Validates that the two largest allocations, which are live at the same time,
+ * won't overflow together:
  * 1. arcs array: numArcs * sizeof(Arc) where numArcs ~= 6 * numCells
- * 2. buckets array: numBuckets * sizeof(Arc *)
- *                   where numBuckets = numArcs * HASH_TABLE_MULTIPLIER
+ * 2. keys array: 2 * numArcs * sizeof(ArcKey), for the keys and sort scratch
  *
  * @param numCells Number of cells to convert
  * @return E_SUCCESS if allocations are safe, E_MEMORY_BOUNDS if overflow would
  * occur
  */
-static inline H3Error checkCellsToMultiPolyOverflow(int64_t numCells,
-                                                    int64_t hashMultiplier) {
-    // Compute the maximum bytes per cell across both allocations
+static inline H3Error checkCellsToMultiPolyOverflow(int64_t numCells) {
+    // Compute the bytes per cell across both allocations
     uint64_t arcsPerCell = 6 * sizeof(Arc);
-    uint64_t bucketsPerCell = 6 * hashMultiplier * sizeof(Arc *);
-    uint64_t maxBytesPerCell = MAX(arcsPerCell, bucketsPerCell);
+    uint64_t keysPerCell = 2 * 6 * sizeof(ArcKey);
+    uint64_t bytesPerCell = arcsPerCell + keysPerCell;
 
-    // Check if maxBytesPerCell * numCells would overflow size_t, which is what
+    // Check if bytesPerCell * numCells would overflow size_t, which is what
     // is used for allocations. Use SIZE_MAX since size_t may be 32 bits.
-    if (numCells > 0 && numCells > SIZE_MAX / maxBytesPerCell) {
+    if (numCells > 0 && numCells > SIZE_MAX / bytesPerCell) {
         return E_MEMORY_BOUNDS;
     }
 
@@ -117,6 +131,105 @@ static inline int cmp_SortableLoop(const void *pa, const void *pb) {
     if (a->area > b->area) return 1;
 
     return 0;  // same root and equal area
+}
+
+static inline int cmp_ArcKey(const void *pa, const void *pb) {
+    const ArcKey *a = (const ArcKey *)pa;
+    const ArcKey *b = (const ArcKey *)pb;
+
+    if (a->lo < b->lo) return -1;
+    if (a->lo > b->lo) return 1;
+
+    if (a->hi < b->hi) return -1;
+    if (a->hi > b->hi) return 1;
+
+    return 0;  // same pair of cells
+}
+
+/*
+Find the lowest and highest set bits of `x`.
+For x == 0, `low` is 64 and `high` is -1.
+*/
+static inline void bitRange(uint64_t x, int *low, int *high) {
+    *low = 0;
+    while (*low < 64 && !((x >> *low) & 1)) {
+        (*low)++;
+    }
+    *high = 63;
+    while (*high >= 0 && !((x >> *high) & 1)) {
+        (*high)--;
+    }
+}
+
+static inline uint64_t arcKeyDigit(const ArcKey *key, int word, int shift) {
+    uint64_t x = word ? key->lo : key->hi;
+    return (x >> shift) & (ARC_KEY_RADIX_SIZE - 1);
+}
+
+/*
+Sort keys by (lo, hi), in the order of cmp_ArcKey, with a least significant
+digit radix sort.
+
+Bits that are equal in every key don't affect the order, so each word is
+sorted only over the range of bits that varies, ARC_KEY_RADIX_BITS per pass.
+For cells of one resolution, the mode, resolution, and unused digit bits never
+vary, and neither do the leading digits of a compact region.
+
+Small inputs use qsort instead, since each radix pass has a fixed cost.
+
+@param keys Keys to sort
+@param scratch Buffer with room for `n` keys
+@param n Number of keys
+@param counts Buffer with room for ARC_KEY_RADIX_SIZE counts
+@return Whichever of `keys` or `scratch` holds the sorted keys
+*/
+static inline ArcKey *sortArcKeys(ArcKey *keys, ArcKey *scratch, int64_t n,
+                                  int64_t *counts) {
+    if (n < ARC_KEY_RADIX_MIN_KEYS) {
+        qsort(keys, n, sizeof(ArcKey), cmp_ArcKey);
+        return keys;
+    }
+
+    uint64_t loOr = 0, loAnd = UINT64_MAX;
+    uint64_t hiOr = 0, hiAnd = UINT64_MAX;
+    for (int64_t i = 0; i < n; i++) {
+        loOr |= keys[i].lo;
+        loAnd &= keys[i].lo;
+        hiOr |= keys[i].hi;
+        hiAnd &= keys[i].hi;
+    }
+
+    // Sort on the less significant word first
+    uint64_t varying[2] = {hiOr ^ hiAnd, loOr ^ loAnd};
+    for (int word = 0; word < 2; word++) {
+        int low, high;
+        bitRange(varying[word], &low, &high);
+
+        for (int shift = low; shift <= high; shift += ARC_KEY_RADIX_BITS) {
+            memset(counts, 0, ARC_KEY_RADIX_SIZE * sizeof(int64_t));
+            for (int64_t i = 0; i < n; i++) {
+                counts[arcKeyDigit(&keys[i], word, shift)]++;
+            }
+
+            // Turn counts into starting offsets
+            int64_t total = 0;
+            for (int64_t d = 0; d < ARC_KEY_RADIX_SIZE; d++) {
+                int64_t count = counts[d];
+                counts[d] = total;
+                total += count;
+            }
+
+            for (int64_t i = 0; i < n; i++) {
+                scratch[counts[arcKeyDigit(&keys[i], word, shift)]++] = keys[i];
+            }
+
+            ArcKey *tmp = keys;
+            keys = scratch;
+            scratch = tmp;
+        }
+    }
+
+    return keys;
 }
 
 static inline int cmp_SortablePoly(const void *pa, const void *pb) {
@@ -152,10 +265,6 @@ static inline void destroyArcSet(ArcSet *arcset) {
     if (arcset->arcs) {
         H3_MEMORY(free)(arcset->arcs);
         arcset->arcs = NULL;
-    }
-    if (arcset->buckets) {
-        H3_MEMORY(free)(arcset->buckets);
-        arcset->buckets = NULL;
     }
 }
 

@@ -6,6 +6,9 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+### Changed
+- `cellsToMultiPolygon` and `cellsToLinkedMultiPolygon` pair edges by sorting instead of with a hash table, which is up to 40% faster and uses about 19% less peak memory on large inputs (#1254)
+
 ### Fixed
 - Avoid signed integer overflow when accumulating vertex counts in `maxPolygonToCellsSize` (#1204)
 - Fixed the `polygonToCells` fuzzer regression test to use explicit double literals instead of reinterpreting raw bytes, so it is portable across endianness (#964)
