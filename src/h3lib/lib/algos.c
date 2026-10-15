@@ -372,9 +372,14 @@ H3Error H3_EXPORT(gridRing)(H3Index origin, int k, H3Index *out) {
     if (!failed) {
         return E_SUCCESS;
     }
+    int64_t ringSize;
+    H3Error err = H3_EXPORT(maxGridRingSize)(k, &ringSize);
+    if (err) {
+        return err;
+    }
     // Fast algo failed, fall back to slower, correct algo
     // and also wipe out array because contents untrustworthy
-    memset(out, 0, 6 * k * sizeof(H3Index));
+    memset(out, 0, ringSize * sizeof(H3Index));
     return _gridRingInternal(origin, k, out);
 }
 

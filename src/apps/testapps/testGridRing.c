@@ -284,6 +284,12 @@ SUITE(gridRing) {
         }
     }
 
+    TEST(gridRing_negativeK) {
+        H3Index out[6] = {0};
+        t_assert(H3_EXPORT(gridRing)(sfHex, -1, out) == E_DOMAIN,
+                 "negative k is invalid");
+    }
+
     TEST(maxGridRingSize_invalid) {
         int64_t sz;
         t_assert(H3_EXPORT(maxGridRingSize)(-1, &sz) == E_DOMAIN,
