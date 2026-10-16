@@ -96,13 +96,11 @@ SUITE(latLng) {
 
         t_assert(fabs(rads - expectedRads) < EPSILON_RAD * 1000,
                  "Antipodal distance in radians");
-        t_assert(
-            fabs(km - expectedKm) < EPSILON_RAD * 1000 * EARTH_RADIUS_KM,
-            "Antipodal distance in kilometers");
-        t_assert(
-            fabs(m - expectedKm * 1000) <
-                EPSILON_RAD * 1000 * EARTH_RADIUS_KM * 1000,
-            "Antipodal distance in meters");
+        t_assert(fabs(km - expectedKm) < EPSILON_RAD * 1000 * EARTH_RADIUS_KM,
+                 "Antipodal distance in kilometers");
+        t_assert(fabs(m - expectedKm * 1000) <
+                     EPSILON_RAD * 1000 * EARTH_RADIUS_KM * 1000,
+                 "Antipodal distance in meters");
     }
 
     TEST(doubleConstants) {
