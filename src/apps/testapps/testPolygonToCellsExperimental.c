@@ -447,6 +447,40 @@ SUITE(polygonToCells) {
         free(hexagons);
     }
 
+    TEST(polygonToCellsCellBoundary_FullContainment) {
+        // A polygon that is one cell's boundary. Its neighbor
+        // 0x837c12fffffffff shares an edge, and the neighbor's first vertex
+        // lies on the polygon, so testing that vertex for containment used to
+        // report the neighbor as fully contained.
+        H3Index cell = 0x837c16fffffffff;
+        CellBoundary boundary;
+        t_assertSuccess(H3_EXPORT(cellToBoundary)(cell, &boundary));
+        // Round trip through degrees, as a GeoJSON polygon would
+        for (int i = 0; i < boundary.numVerts; i++) {
+            boundary.verts[i].lat = H3_EXPORT(degsToRads)(
+                H3_EXPORT(radsToDegs)(boundary.verts[i].lat));
+            boundary.verts[i].lng = H3_EXPORT(degsToRads)(
+                H3_EXPORT(radsToDegs)(boundary.verts[i].lng));
+        }
+        GeoLoop cellGeoLoop = {.numVerts = boundary.numVerts,
+                               .verts = boundary.verts};
+        GeoPolygon cellGeoPolygon = {.geoloop = cellGeoLoop, .numHoles = 0};
+
+        int64_t numHexagons;
+        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+            &cellGeoPolygon, 3, CONTAINMENT_FULL, &numHexagons));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+
+        t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
+            &cellGeoPolygon, 3, CONTAINMENT_FULL, numHexagons, hexagons));
+        for (int64_t i = 0; i < numHexagons; i++) {
+            t_assert(hexagons[i] == H3_NULL || hexagons[i] == cell,
+                     "only the cell itself can be fully contained");
+        }
+
+        free(hexagons);
+    }
+
     TEST(polygonToCellsContainsPolygon_FullContainment) {
         int64_t numHexagons;
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
