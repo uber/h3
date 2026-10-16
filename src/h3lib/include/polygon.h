@@ -71,7 +71,7 @@ bool lineCrossesLine(const LatLng *a1, const LatLng *a2, const LatLng *b1,
 
 /**
  * Create a bounding box from a GeoLoop
- * @param geoloop Input GeoLoop
+ * @param loop    Input GeoLoop
  * @param bbox     Output bbox
  */
 void bboxFromGeoLoop(const GeoLoop *loop, BBox *bbox);
@@ -92,6 +92,6 @@ bool pointInsideGeoLoop(const GeoLoop *loop, const BBox *bbox,
  * @param loop  The loop to check
  * @return      Whether the loop is clockwise
  */
-bool isClockwiseGeoLoop(const GeoLoop *geoloop);
+bool isClockwiseGeoLoop(const GeoLoop *loop);
 
 #endif
