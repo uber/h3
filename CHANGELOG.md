@@ -14,6 +14,7 @@ The public API of this library consists of the functions declared in file
 - Fixed an out of bounds read in `_baseCellToCCWrot60` when passed a face index equal to `NUM_ICOSA_FACES` (#978)
 - Fixed the `stringToInt` CLI subcommand truncating 16 digit indexes, such as directed edges and vertexes (#1243)
 - Fixed the `gridDistance` CLI subcommand printing the distance in hexadecimal instead of decimal
+- Fixed signed overflow of the output index in `gridDiskDistancesUnsafe` (and so `gridDisk`) for `k >= 26755`, where `maxGridDiskSize(k)` exceeds `INT32_MAX`. The output indexes in `gridRingUnsafe` and `gridRing` are now 64 bit as well
 
 ## [4.5.0] - 2026-05-21
 ### Added
