@@ -797,6 +797,16 @@ DECLSPEC H3Error H3_EXPORT(cellToVertex)(H3Index origin, int vertexNum,
 DECLSPEC H3Error H3_EXPORT(cellToVertexes)(H3Index origin, H3Index *vertexes);
 /** @} */
 
+/** @defgroup edgeToVertexes edgeToVertexes
+ * Functions for edgeToVertexes
+ * @{
+ */
+/** @brief Returns the start and end vertexes of a directed edge, as H3
+ * indexes */
+DECLSPEC H3Error H3_EXPORT(edgeToVertexes)(H3Index edge, H3Index *v1,
+                                           H3Index *v2);
+/** @} */
+
 /** @defgroup vertexToLatLng vertexToLatLng
  * Functions for vertexToLatLng
  * @{

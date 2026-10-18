@@ -21,6 +21,9 @@
 #include "utility.h"
 #include "vertex.h"
 
+// Fixtures
+static LatLng sfGeo = {0.659966917655, -2.1364398519396};
+
 SUITE(Vertex) {
     TEST(cellToVertex_badVerts) {
         H3Index origin = 0x823d6ffffffffff;
@@ -138,5 +141,96 @@ SUITE(Vertex) {
         H3Index verts[6] = {0};
         t_assert(H3_EXPORT(cellToVertexes)(invalid, verts) == E_FAILED,
                  "cellToVertexes fails for invalid cell");
+    }
+
+    TEST(edgeToVertexes) {
+        H3Index sf;
+        t_assertSuccess(H3_EXPORT(latLngToCell)(&sfGeo, 9, &sf));
+        H3Index ring[7] = {0};
+        t_assertSuccess(H3_EXPORT(gridRingUnsafe)(sf, 1, ring));
+
+        H3Index edge;
+        t_assertSuccess(H3_EXPORT(cellsToDirectedEdge)(sf, ring[0], &edge));
+
+        H3Index v1, v2;
+        t_assertSuccess(H3_EXPORT(edgeToVertexes)(edge, &v1, &v2));
+
+        t_assert(H3_EXPORT(isValidVertex)(v1), "start vertex is valid");
+        t_assert(H3_EXPORT(isValidVertex)(v2), "end vertex is valid");
+        t_assert(v1 != v2, "start and end vertexes differ");
+
+        // Both vertexes should belong to the origin cell
+        H3Index cellVerts[6];
+        t_assertSuccess(H3_EXPORT(cellToVertexes)(sf, cellVerts));
+        int foundV1 = 0, foundV2 = 0;
+        for (int i = 0; i < 6; i++) {
+            if (cellVerts[i] == v1) foundV1 = 1;
+            if (cellVerts[i] == v2) foundV2 = 1;
+        }
+        t_assert(foundV1, "start vertex belongs to the origin cell");
+        t_assert(foundV2, "end vertex belongs to the origin cell");
+
+        // The vertexes should match the ends of the edge boundary
+        CellBoundary boundary;
+        t_assertSuccess(H3_EXPORT(directedEdgeToBoundary)(edge, &boundary));
+        LatLng v1Coord, v2Coord;
+        t_assertSuccess(H3_EXPORT(vertexToLatLng)(v1, &v1Coord));
+        t_assertSuccess(H3_EXPORT(vertexToLatLng)(v2, &v2Coord));
+        t_assert(geoAlmostEqual(&v1Coord, &boundary.verts[0]),
+                 "start vertex matches first boundary point");
+        t_assert(
+            geoAlmostEqual(&v2Coord, &boundary.verts[boundary.numVerts - 1]),
+            "end vertex matches last boundary point");
+    }
+
+    TEST(edgeToVertexes_pentagon) {
+        H3Index pentagon = 0x823007fffffffff;
+        H3Index edges[6] = {0};
+        t_assertSuccess(H3_EXPORT(originToDirectedEdges)(pentagon, edges));
+
+        for (int i = 0; i < 6; i++) {
+            if (edges[i] == H3_NULL) continue;
+
+            H3Index v1, v2;
+            t_assertSuccess(H3_EXPORT(edgeToVertexes)(edges[i], &v1, &v2));
+
+            t_assert(H3_EXPORT(isValidVertex)(v1),
+                     "pentagon start vertex is valid");
+            t_assert(H3_EXPORT(isValidVertex)(v2),
+                     "pentagon end vertex is valid");
+            t_assert(v1 != v2, "pentagon start and end vertexes differ");
+        }
+    }
+
+    TEST(edgeToVertexes_invalid) {
+        H3Index v1, v2;
+
+        // H3_NULL is not a valid edge
+        t_assert(
+            H3_EXPORT(edgeToVertexes)(H3_NULL, &v1, &v2) == E_DIR_EDGE_INVALID,
+            "edgeToVertexes fails on H3_NULL");
+
+        // A cell is not a valid edge
+        H3Index sf;
+        t_assertSuccess(H3_EXPORT(latLngToCell)(&sfGeo, 9, &sf));
+        t_assert(H3_EXPORT(edgeToVertexes)(sf, &v1, &v2) == E_DIR_EDGE_INVALID,
+                 "edgeToVertexes fails on a cell");
+
+        // An edge with an invalid direction is not valid
+        H3Index invalidEdge = sf;
+        H3_SET_MODE(invalidEdge, H3_DIRECTEDEDGE_MODE);
+        H3_SET_RESERVED_BITS(invalidEdge, 0);
+        t_assert(H3_EXPORT(edgeToVertexes)(invalidEdge, &v1, &v2) ==
+                     E_DIR_EDGE_INVALID,
+                 "edgeToVertexes fails on an edge with an invalid direction");
+
+        // The K axis direction is invalid for a pentagon's edges
+        H3Index pentagon = 0x823007fffffffff;
+        H3Index pentagonKEdge = pentagon;
+        H3_SET_MODE(pentagonKEdge, H3_DIRECTEDEDGE_MODE);
+        H3_SET_RESERVED_BITS(pentagonKEdge, K_AXES_DIGIT);
+        t_assert(H3_EXPORT(edgeToVertexes)(pentagonKEdge, &v1, &v2) ==
+                     E_DIR_EDGE_INVALID,
+                 "edgeToVertexes fails on a pentagon's K edge");
     }
 }
