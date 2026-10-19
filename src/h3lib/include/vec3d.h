@@ -27,6 +27,7 @@
 
 #include "h3api.h"
 #include "latLng.h"
+#include "mathExtensions.h"
 
 /** @struct Vec3d
  *  @brief 3D floating point structure
@@ -42,11 +43,16 @@ typedef struct {
 
 /** Convert latitude and longitude to a unit Vec3d on the sphere. */
 static inline Vec3d latLngToVec3(LatLng geo) {
-    double r = cos(geo.lat);
+    // sin and cos of the latitude and of the longitude are each needed as a
+    // pair, so compute them together instead of with four separate calls.
+    double sinLat, cosLat, sinLng, cosLng;
+    _sincos(geo.lat, &sinLat, &cosLat);
+    _sincos(geo.lng, &sinLng, &cosLng);
+    double r = cosLat;
     Vec3d out = {
-        .x = cos(geo.lng) * r,
-        .y = sin(geo.lng) * r,
-        .z = sin(geo.lat),
+        .x = cosLng * r,
+        .y = sinLng * r,
+        .z = sinLat,
     };
     return out;
 }
