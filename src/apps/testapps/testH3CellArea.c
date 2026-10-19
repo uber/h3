@@ -22,6 +22,7 @@
 
 #include <math.h>
 
+#include "area.h"
 #include "h3api.h"
 #include "test.h"
 
@@ -61,6 +62,35 @@ SUITE(h3CellArea) {
             t_assertSuccess(H3_EXPORT(cellAreaRads2)(pairs[i][1], &b));
             t_assert(fabs(a / b - 1.0) < 1e-5,
                      "antimeridian cell area should match neighbor");
+        }
+    }
+
+    TEST(cell_area_antimeridian_rotation) {
+        // Rotating a loop about the polar axis does not change its area.
+        // Compare the area of cells straddling the antimeridian against
+        // their boundaries rotated by 180 degrees, which then sit around
+        // the prime meridian instead, at every resolution.
+        for (int res = 0; res <= MAX_H3_RES; res++) {
+            for (double lat = -89.0; lat <= 89.0; lat += 0.37) {
+                LatLng p = {H3_EXPORT(degsToRads)(lat), M_PI};
+                H3Index cell;
+                t_assertSuccess(H3_EXPORT(latLngToCell)(&p, res, &cell));
+                double area;
+                t_assertSuccess(H3_EXPORT(cellAreaRads2)(cell, &area));
+
+                CellBoundary cb;
+                t_assertSuccess(H3_EXPORT(cellToBoundary)(cell, &cb));
+                for (int i = 0; i < cb.numVerts; i++) {
+                    double lng = cb.verts[i].lng + M_PI;
+                    cb.verts[i].lng = lng > M_PI ? lng - 2.0 * M_PI : lng;
+                }
+                GeoLoop loop = {.numVerts = cb.numVerts, .verts = cb.verts};
+                double rotated;
+                t_assertSuccess(geoLoopAreaRads2(loop, &rotated));
+
+                t_assert(fabs(area / rotated - 1.0) < 1e-6,
+                         "area should not change under rotation");
+            }
         }
     }
 
