@@ -47,6 +47,23 @@ SUITE(h3CellArea) {
         }
     }
 
+    TEST(cell_area_antimeridian) {
+        // Cells straddling the antimeridian at fine resolutions, paired with
+        // an adjacent cell that does not. Their areas must agree closely; a
+        // naive longitude difference across +-180 degrees loses precision
+        // and makes the straddling cell up to several percent off.
+        H3Index pairs[][2] = {{0x8d056898db628bfULL, 0x8d056898db62d7fULL},
+                              {0x8e32b605c51e067ULL, 0x8e32b605c51e15fULL},
+                              {0x8f7f809893b5b9dULL, 0x8f7f809893b5b9cULL}};
+        for (int i = 0; i < 3; i++) {
+            double a, b;
+            t_assertSuccess(H3_EXPORT(cellAreaRads2)(pairs[i][0], &a));
+            t_assertSuccess(H3_EXPORT(cellAreaRads2)(pairs[i][1], &b));
+            t_assert(fabs(a / b - 1.0) < 1e-5,
+                     "antimeridian cell area should match neighbor");
+        }
+    }
+
     TEST(cell_area_invalid) {
         H3Index invalid = 0xFFFFFFFFFFFFFFFF;
         double area;
