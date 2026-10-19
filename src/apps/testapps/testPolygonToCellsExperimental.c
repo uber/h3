@@ -481,6 +481,49 @@ SUITE(polygonToCells) {
         free(hexagons);
     }
 
+    TEST(polygonToCellsDiskTransmeridian_FullContainment) {
+        // The outline of gridDisk(0x83db12fffffffff, 1), whose center cell
+        // crosses the antimeridian. The interior point of that cell has to
+        // unwrap longitudes, or it lands near lng 0 and the cell is rejected.
+        H3Index center = 0x83db12fffffffff;
+        LatLng verts[] = {
+            {-51.494014724, -177.910523935}, {-51.551199475, -178.82092108},
+            {-51.059417423, -179.273054626}, {-51.104684084, 179.811142879},
+            {-51.645277145, 179.330708297},  {-51.681772747, 178.393435597},
+            {-52.217881223, 177.888791675},  {-52.718918739, 178.336016901},
+            {-53.251551051, 177.821114079},  {-53.745959401, 178.276400097},
+            {-53.703125458, 179.249944472},  {-54.186162578, 179.716811956},
+            {-54.130537069, -179.31438885},  {-53.595235789, -178.831064286},
+            {-53.530606161, -177.886403295}, {-52.991159055, -177.428467551},
+            {-52.517133978, -177.898686016}, {-51.974725629, -177.448949522},
+        };
+        int numVerts = sizeof(verts) / sizeof(verts[0]);
+        for (int i = 0; i < numVerts; i++) {
+            verts[i].lat = H3_EXPORT(degsToRads)(verts[i].lat);
+            verts[i].lng = H3_EXPORT(degsToRads)(verts[i].lng);
+        }
+        GeoLoop diskGeoLoop = {.numVerts = numVerts, .verts = verts};
+        GeoPolygon diskGeoPolygon = {.geoloop = diskGeoLoop, .numHoles = 0};
+
+        int64_t numHexagons;
+        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+            &diskGeoPolygon, 3, CONTAINMENT_FULL, &numHexagons));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+
+        t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
+            &diskGeoPolygon, 3, CONTAINMENT_FULL, numHexagons, hexagons));
+        int64_t found = 0;
+        for (int64_t i = 0; i < numHexagons; i++) {
+            if (hexagons[i] == H3_NULL) continue;
+            t_assert(hexagons[i] == center,
+                     "only the center cell is fully contained");
+            found++;
+        }
+        t_assert(found == 1, "the center cell is fully contained");
+
+        free(hexagons);
+    }
+
     TEST(polygonToCellsContainsPolygon_FullContainment) {
         int64_t numHexagons;
         t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
