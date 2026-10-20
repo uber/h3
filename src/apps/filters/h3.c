@@ -40,6 +40,8 @@
 #define BUFFER_SIZE 1500
 #define BUFFER_SIZE_LESS_CELL 1485
 #define BUFFER_SIZE_WITH_NULL 1501
+// Room for 100 cells of 15 characters each, separated by ", "
+#define CELL_LIST_ARG_SIZE_WITH_NULL 1701
 
 #define PARSE_SUBCOMMAND(argc, argv, args)                                  \
     if (parseArgs(argc, argv, sizeof(args) / sizeof(Arg *), args, &helpArg, \
@@ -1187,26 +1189,33 @@ SUBCOMMAND(childPosToCell,
 }
 
 H3Index *readCellsFromFile(FILE *fp, char *buffer, size_t *totalCells) {
-    // It's assumed the buffer is a character array of size 1501 to support up
-    // to 100 cells at a time. If the file pointer is a null pointer, we assume
-    // the buffer has all of the possible cells already stored in it and go from
-    // there. Otherwise we continue reading from the file until it's fully
-    // consumed. On an error, we de-allocate the output buffer and then return
-    // 0. It's the responsibility of the caller to free the returned buffer and
-    // the file pointer otherwise. The output array's filled length is set on
-    // the cellsOffset pointer so it can be used by the caller.
+    // If the file pointer is a null pointer, we assume the buffer is a
+    // NUL-terminated string that has all of the possible cells already stored
+    // in it and go from there. Otherwise it's assumed the buffer is a character
+    // array of at least 1501 bytes holding the first chunk of the file, and we
+    // continue reading from the file until it's fully consumed. On an error,
+    // we de-allocate the output buffer and then return 0. It's the
+    // responsibility of the caller to free the returned buffer and the file
+    // pointer otherwise. The output array's filled length is set on the
+    // cellsOffset pointer so it can be used by the caller.
     H3Index *cells = calloc(128, sizeof(H3Index));
     int cellsLen = 128;
     int bufferOffset = 0;
     int cellsOffset = 0;
     size_t bytesRead = 0;
-    do {
+    // A chunk that more of the file follows is only scanned up to the last 15
+    // bytes, so a cell split across reads can be reassembled in the next
+    // chunk. The final chunk, and a buffer passed in without a file, have
+    // nothing after them and must be scanned to the end, or a cell in those
+    // last 15 bytes would be dropped.
+    bool lastChunk = fp == NULL;
+    int scanEnd = lastChunk ? (int)strlen(buffer) : BUFFER_SIZE_LESS_CELL;
+    while (true) {
         // Always start from the beginning of the buffer
         bufferOffset = 0;
         int lastGoodOffset = 0;
         H3Index cell = 0;
-        while (bufferOffset <
-               BUFFER_SIZE_LESS_CELL) {  // Keep consuming as much as possible
+        while (bufferOffset < scanEnd) {  // Keep consuming as much as possible
             // A valid H3 cell is exactly 15 hexadecomical characters.
             // Determine if we have a match, otherwise increment
             int scanlen = 0;
@@ -1218,13 +1227,8 @@ H3Index *readCellsFromFile(FILE *fp, char *buffer, size_t *totalCells) {
                 bufferOffset += 16;
                 lastGoodOffset = bufferOffset;
             }
-            // If we still don't have a cell and we've reached the end, we reset
-            // the offset and `continue` to trigger another read
-            if (cell == 0 && bufferOffset == BUFFER_SIZE) {
-                bufferOffset = 0;
-                continue;
-            } else if (cell != 0) {
-                // Otherwise, we have a cell to shove into the cells array.
+            if (cell != 0) {
+                // We have a cell to shove into the cells array.
                 cells[cellsOffset] = cell;
                 cellsOffset += 1;
                 // Potentially grow our array
@@ -1238,6 +1242,9 @@ H3Index *readCellsFromFile(FILE *fp, char *buffer, size_t *totalCells) {
                     cells = newCells;
                 }
             }
+        }
+        if (lastChunk) {
+            break;
         }
         // In case there's a valid H3 index that was unfortunately split between
         // buffer reads, we take from the lastGoodOffset and copy the rest to
@@ -1259,11 +1266,7 @@ H3Index *readCellsFromFile(FILE *fp, char *buffer, size_t *totalCells) {
 
         // Read the next chunk from the file, appending after the
         // carried-over tail bytes.
-        if (fp != NULL) {
-            bytesRead = fread(buffer + tailLen, 1, BUFFER_SIZE - tailLen, fp);
-        } else {
-            bytesRead = 0;
-        }
+        bytesRead = fread(buffer + tailLen, 1, BUFFER_SIZE - tailLen, fp);
 
         // When fread returns fewer bytes than requested (final chunk),
         // stale data from the previous read remains in the buffer tail.
@@ -1271,7 +1274,13 @@ H3Index *readCellsFromFile(FILE *fp, char *buffer, size_t *totalCells) {
         // whatever is in the buffer — so zero the entire stale region.
         memset(buffer + tailLen + bytesRead, 0,
                BUFFER_SIZE - tailLen - bytesRead);
-    } while (bytesRead > 0);
+
+        // At the end of the file, scan the carried-over tail one last time.
+        if (bytesRead == 0) {
+            lastChunk = true;
+            scanEnd = tailLen;
+        }
+    }
     *totalCells = cellsOffset;
     return cells;
 }
@@ -1289,11 +1298,11 @@ SUBCOMMAND(compactCells,
         .value = &filename,
         .helpText =
             "The file to load the cells from. Use -- to read from stdin."};
-    char cellStrs[BUFFER_SIZE_WITH_NULL] = {
+    char cellStrs[CELL_LIST_ARG_SIZE_WITH_NULL] = {
         0};  // Up to 100 cells with zero padding
     Arg cellStrsArg = {.names = {"-c", "--cells"},
-                       // TODO: Can I use `BUFFER_SIZE` here somehow?
-                       .scanFormat = "%1500c",
+                       // TODO: Can I use `CELL_LIST_ARG_SIZE_WITH_NULL` here?
+                       .scanFormat = "%1700c",
                        .valueName = "CELLS",
                        .value = &cellStrs,
                        .helpText =
@@ -1397,11 +1406,11 @@ SUBCOMMAND(uncompactCells,
         .value = &filename,
         .helpText =
             "The file to load the cells from. Use -- to read from stdin."};
-    char cellStrs[BUFFER_SIZE_WITH_NULL] = {
+    char cellStrs[CELL_LIST_ARG_SIZE_WITH_NULL] = {
         0};  // Supports up to 100 cells at a time with zero padding
     Arg cellStrsArg = {
         .names = {"-c", "--cells"},
-        .scanFormat = "%1500c",
+        .scanFormat = "%1700c",
         .valueName = "CELLS",
         .value = &cellStrs,
         .helpText =
@@ -1892,10 +1901,10 @@ SUBCOMMAND(cellsToMultiPolygon,
         .value = &filename,
         .helpText =
             "The file to load the cells from. Use -- to read from stdin."};
-    char cellStrs[BUFFER_SIZE_WITH_NULL] = {
+    char cellStrs[CELL_LIST_ARG_SIZE_WITH_NULL] = {
         0};  // Up to 100 cells with zero padding
     Arg cellStrsArg = {.names = {"-c", "--cells"},
-                       .scanFormat = "%1500c",
+                       .scanFormat = "%1700c",
                        .valueName = "CELLS",
                        .value = &cellStrs,
                        .helpText =
