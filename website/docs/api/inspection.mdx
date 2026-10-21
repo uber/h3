@@ -638,7 +638,7 @@ h3_is_valid_cell(h)
 
 ```sh
 $ h3 isValidCell --help
-h3: Checks if the provided H3 index is actually valid
+h3: Checks if the provided H3 index is a valid cell
 H3 4.1.0
 
 	isValidCell	Checks if the provided H3 index is actually valid
@@ -728,11 +728,21 @@ h3_is_valid_index(h)
 </TabItem>
 <TabItem value="shell">
 
-:::note
+```sh
+$ h3 isValidIndex --help
+h3: Checks if the provided H3 index is valid for any mode
+H3 4.5.0
 
-This function is not exposed.
+	isValidIndex	Checks if the provided H3 index is valid for any mode
+	-h, --help	Show this help message.
+	-i, --index <index>	Required. H3 Index.
+	-f, --format <FMT>	'json' for true or false, 'numeric' for 1 or 0 (Default: json)
+```
 
-:::
+```bash
+$ h3 isValidIndex -i 85283473fffffff
+true
+```
 
 </TabItem>
 </Tabs>
