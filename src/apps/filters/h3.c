@@ -469,7 +469,13 @@ SUBCOMMAND(isValidIndex,
            "Checks if the provided H3 index is valid for any mode") {
     DEFINE_FORMAT_ARG(
         "'json' for true or false, 'numeric' for 1 or 0 (Default: json)");
-    DEFINE_INDEX_ARG(index, indexArg);
+    H3Index index = 0;
+    Arg indexArg = {.names = {"-i", "--index"},
+                    .required = true,
+                    .scanFormat = "%" PRIx64,
+                    .valueName = "index",
+                    .value = &index,
+                    .helpText = "H3 Index."};
     Arg *args[] = {&isValidIndexArg, &helpArg, &indexArg, &formatArg};
     PARSE_SUBCOMMAND(argc, argv, args);
     bool isValid = H3_EXPORT(isValidIndex)(index);
