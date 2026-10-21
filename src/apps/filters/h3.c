@@ -410,14 +410,14 @@ SUBCOMMAND(constructCell,
 }
 
 SUBCOMMAND(stringToInt, "Converts an H3 index in string form to integer form") {
-    char *rawCell = calloc(16, sizeof(char));
+    char *rawCell = calloc(17, sizeof(char));
     if (rawCell == NULL) {
         fprintf(stderr, "Failed to allocate memory for the H3 index");
         exit(1);
     }
     Arg rawCellArg = {.names = {"-c", "--cell"},
                       .required = true,
-                      .scanFormat = "%15s",
+                      .scanFormat = "%16s",
                       .valueName = "cell",
                       .value = rawCell,
                       .helpText = "H3 Cell Index"};
@@ -465,7 +465,8 @@ SUBCOMMAND(isValidCell, "Checks if the provided H3 index is a valid cell") {
     return E_SUCCESS;
 }
 
-SUBCOMMAND(isValidIndex, "Checks if the provided H3 index is valid for any mode") {
+SUBCOMMAND(isValidIndex,
+           "Checks if the provided H3 index is valid for any mode") {
     DEFINE_FORMAT_ARG(
         "'json' for true or false, 'numeric' for 1 or 0 (Default: json)");
     DEFINE_INDEX_ARG(index, indexArg);
@@ -882,7 +883,7 @@ SUBCOMMAND(gridDistance,
     if (err) {
         return err;
     }
-    printf("%" PRIx64 "\n", distance);
+    printf("%" PRId64 "\n", distance);
     return E_SUCCESS;
 }
 
@@ -2114,6 +2115,30 @@ SUBCOMMAND(cellsToDirectedEdge,
     return E_SUCCESS;
 }
 
+SUBCOMMAND(reverseDirectedEdge,
+           "Returns the directed edge index representing the same edge in the "
+           "opposite direction") {
+    DEFINE_FORMAT_ARG(
+        "'json' for \"CELL\"\\n, 'newline' for CELL\\n "
+        "(Default: json)");
+    DEFINE_CELL_ARG(cell, cellArg);
+    Arg *args[] = {&reverseDirectedEdgeArg, &cellArg, &helpArg, &formatArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    H3Index out = 0;
+    H3Error err = H3_EXPORT(reverseDirectedEdge)(cell, &out);
+    if (err != E_SUCCESS) {
+        return err;
+    }
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        printf("\"%" PRIx64 "\"\n", out);
+    } else if (strcmp(format, "newline") == 0) {
+        h3Println(out);
+    } else {
+        return E_FAILED;
+    }
+    return E_SUCCESS;
+}
+
 SUBCOMMAND(isValidDirectedEdge,
            "Checks if the provided H3 directed edge is actually valid") {
     DEFINE_FORMAT_ARG(
@@ -3064,6 +3089,7 @@ SUBCOMMAND_INDEX(cellsToMultiPolygon)
 SUBCOMMAND_INDEX(areNeighborCells)
 SUBCOMMAND_INDEX(cellsToDirectedEdge)
 SUBCOMMAND_INDEX(isValidDirectedEdge)
+SUBCOMMAND_INDEX(reverseDirectedEdge)
 SUBCOMMAND_INDEX(getDirectedEdgeOrigin)
 SUBCOMMAND_INDEX(getDirectedEdgeDestination)
 SUBCOMMAND_INDEX(directedEdgeToCells)
