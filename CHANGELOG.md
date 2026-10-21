@@ -6,6 +6,9 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+### Changed
+- The pentagon lookup table is now defined once as `baseCellIsPentagon` in `baseCells.c` instead of being duplicated as a private copy in `h3Index.c`, with a test asserting it stays in sync with `baseCellData` (#984)
+
 ### Fixed
 - Fixed an out of bounds write in `gridRing` when passed a negative `k`: the fallback path wiped the output array with a width computed from `6 * k`, which for a negative `k` becomes a `size_t` of about 1.8e19. The width now comes from `maxGridRingSize`, which validates `k` and computes in 64 bits
 - Avoid signed integer overflow when accumulating vertex counts in `maxPolygonToCellsSize` (#1204)
