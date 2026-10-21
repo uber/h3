@@ -12,3 +12,4 @@ The following applications use H3. Contributions to this list are welcome, pleas
 - [kepler.gl](http://kepler.gl/) - An open source geospatial analysis tool
 - [pydeck](https://deckgl.readthedocs.io/) - High-scale spatial rendering in Python, powered by deck.gl
 - [h3-viewer](https://h3.chotard.com/) - Debugging tool to visualise h3 on mercator projection, powered by deck.gl
+- [cellulite](https://github.com/meilisearch/cellulite) - An open source database using LMDB as storage that stores GeoJSON. Can be used standalone or inside [Meilisearch](https://www.meilisearch.com/)
