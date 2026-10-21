@@ -6,6 +6,7 @@ import { polygonToCells } from "h3-js";
 import { useCallback, useEffect, useState } from "react";
 import { throttle } from "./utils";
 import { PathStyleExtension } from "@deck.gl/extensions";
+import { useColorMode } from "@docusaurus/theme-common";
 
 export type OurViewState = {
   width: number;
@@ -140,6 +141,7 @@ export interface UseHexProps {
 }
 
 export const useHex = ({ resolutionFrozen, addSelectedHexes }: UseHexProps) => {
+  const { colorMode } = useColorMode();
   const [hexagons, setHexagons] = useState<string[]>([]);
   const [hexagons1, setHexagons1] = useState<string[]>([]);
   const [hexagons2, setHexagons2] = useState<string[]>([]);
@@ -155,7 +157,8 @@ export const useHex = ({ resolutionFrozen, addSelectedHexes }: UseHexProps) => {
         extruded: false,
         getHexagon: (d: string) => d,
         getFillColor: [0, 0, 0, 1],
-        getLineColor: [0, 0, 0, 100],
+        getLineColor:
+          colorMode === "dark" ? [255, 255, 255, 100] : [0, 0, 0, 100],
         getLineWidth: 2,
         lineWidthMinPixels: 2,
         highPrecision: true,
@@ -179,7 +182,8 @@ export const useHex = ({ resolutionFrozen, addSelectedHexes }: UseHexProps) => {
               extruded: false,
               getHexagon: (d: string) => d,
               getFillColor: [0, 0, 0, 1],
-              getLineColor: [50, 50, 50, 75],
+              getLineColor:
+                colorMode === "dark" ? [200, 200, 200, 75] : [50, 50, 50, 75],
               getLineWidth: 1,
               lineWidthMinPixels: 1,
               highPrecision: true,
@@ -200,7 +204,10 @@ export const useHex = ({ resolutionFrozen, addSelectedHexes }: UseHexProps) => {
               extruded: false,
               getHexagon: (d: string) => d,
               getFillColor: [0, 0, 0, 1],
-              getLineColor: [100, 100, 100, 50],
+              getLineColor:
+                colorMode === "dark"
+                  ? [150, 150, 150, 50]
+                  : [100, 100, 100, 50],
               getLineWidth: 1,
               lineWidthMinPixels: 1,
               highPrecision: true,
@@ -220,7 +227,7 @@ export const useHex = ({ resolutionFrozen, addSelectedHexes }: UseHexProps) => {
           ]
         : []),
     ]);
-  }, [addSelectedHexes, hexagons, hexagons1, hexagons2]);
+  }, [addSelectedHexes, hexagons, hexagons1, hexagons2, colorMode]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleResize = useCallback(
