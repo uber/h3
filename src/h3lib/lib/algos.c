@@ -428,7 +428,7 @@ H3Error _gridRingInternal(H3Index origin, int k, H3Index *out) {
         return err;
     }
 
-    int current_idx = 0;
+    int64_t current_idx = 0;
     for (int64_t i = 0; i < maxIdx; ++i) {
         if (disk_out[i] != 0 && disk_distances[i] == k) {
             out[current_idx++] = disk_out[i];
@@ -681,7 +681,7 @@ H3Error H3_EXPORT(gridDiskDistancesUnsafe)(H3Index origin, int k, H3Index *out,
     }
 
     // k must be >= 0, so origin is always needed
-    int idx = 0;
+    int64_t idx = 0;
     out[idx] = origin;
     if (distances) {
         distances[idx] = 0;
@@ -803,7 +803,7 @@ H3Error H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index *out) {
         out[0] = origin;
         return E_SUCCESS;
     }
-    int idx = 0;
+    int64_t idx = 0;
     // Number of 60 degree ccw rotations to perform on the direction (based on
     // which faces have been crossed.)
     int rotations = 0;
