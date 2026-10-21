@@ -465,7 +465,7 @@ SUBCOMMAND(isValidCell, "Checks if the provided H3 index is a valid cell") {
     return E_SUCCESS;
 }
 
-SUBCOMMAND(isValidIndex, "Checks if the provided H3 index is actually valid") {
+SUBCOMMAND(isValidIndex, "Checks if the provided H3 index is valid for any mode") {
     DEFINE_FORMAT_ARG(
         "'json' for true or false, 'numeric' for 1 or 0 (Default: json)");
     DEFINE_INDEX_ARG(index, indexArg);
