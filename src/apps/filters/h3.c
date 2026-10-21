@@ -774,7 +774,9 @@ SUBCOMMAND(gridRing,
         printf(" ]\n");
     } else if (strcmp(format, "newline") == 0) {
         for (int64_t i = 0; i < len; i++) {
-            h3Println(out[i]);
+            if (out[i] != 0) {
+                h3Println(out[i]);
+            }
         }
     } else {
         free(out);
