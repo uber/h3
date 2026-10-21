@@ -1,0 +1,23 @@
+mutators:
+# - cxx_all
+ - cxx_arithmetic
+ - cxx_calls
+ - cxx_comparison
+ - cxx_logical
+ - cxx_arithmetic_assignment
+ - cxx_boundary
+
+includePaths:
+ - src/h3lib/.*$
+
+excludePaths:
+ - src/apps/.*
+
+# 5 minutes
+timeout: 300000
+
+compilationDatabasePath: compile_commands.json
+
+# Modify this to control resources used for testing:
+# parallelization:
+#   executionWorkers: 4

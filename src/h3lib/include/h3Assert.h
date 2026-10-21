@@ -57,6 +57,7 @@
 ** can insure that all cases are evaluated.
 */
 #if defined(H3_COVERAGE_TEST) || defined(H3_DEBUG)
+// TODO: This may need exclusions from mutation testing if used.
 extern unsigned int h3CoverageCounter;
 #define testcase(X)                              \
     if (X) {                                     \
