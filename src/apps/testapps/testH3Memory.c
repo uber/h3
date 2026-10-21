@@ -141,10 +141,10 @@ SUITE(h3Memory) {
         t_assert(actualAllocCalls == 0, "gridRing did not call alloc");
         t_assert(actualFreeCalls == 0, "gridRing did not call free");
 
-        resetMemoryCounters(2);
+        resetMemoryCounters(3);
         t_assertSuccess(H3_EXPORT(gridRing)(pentagon, k, gridRingOutput));
-        t_assert(actualAllocCalls == 2, "gridRing called alloc 2 times");
-        t_assert(actualFreeCalls == 2, "gridRing called free 2 times");
+        t_assert(actualAllocCalls == 3, "gridRing called alloc 2 times");
+        t_assert(actualFreeCalls == 3, "gridRing called free 2 times");
 
         resetMemoryCounters(0);
         failAlloc = true;
@@ -160,6 +160,13 @@ SUITE(h3Memory) {
             "gridRing returns E_MEMORY_ALLOC");
         t_assert(actualAllocCalls == 2, "gridRing called alloc 2 times");
         t_assert(actualFreeCalls == 1, "gridRing called free 1 time");
+
+        resetMemoryCounters(2);
+        t_assert(
+            H3_EXPORT(gridRing)(pentagon, k, gridRingOutput) == E_MEMORY_ALLOC,
+            "gridRing returns E_MEMORY_ALLOC");
+        t_assert(actualAllocCalls == 3, "gridRing called alloc 3 times");
+        t_assert(actualFreeCalls == 2, "gridRing called free 2 times");
 
         free(gridRingOutput);
     }
