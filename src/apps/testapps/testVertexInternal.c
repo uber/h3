@@ -95,4 +95,42 @@ SUITE(VertexInternal) {
         t_assert(directionForNeighbor(origin, origin) == INVALID_DIGIT,
                  "not neighbors (all ones)");
     }
+
+    TEST(vertexRotations_allPentagonBaseCells) {
+        // vertexRotations (static, reached here via vertexNumForDirection
+        // and directionForVertexNum) looks up each pentagon base cell in the
+        // pentagonDirectionFaces table. Exercise every one of the
+        // NUM_PENTAGONS base cells - including both polar pentagons (which
+        // take the extra CCW rotation branch) and the rest (which can hit
+        // the deleted-subsequence rotation branches) - to document that the
+        // lookup always finds a match across the full input domain, for
+        // every valid (non-K) direction.
+        H3Index pentagons[NUM_PENTAGONS] = {0};
+        t_assertSuccess(H3_EXPORT(getPentagons)(0, pentagons));
+
+        for (int p = 0; p < NUM_PENTAGONS; p++) {
+            H3Index pentagon = pentagons[p];
+            t_assert(H3_EXPORT(isPentagon)(pentagon), "index is a pentagon");
+
+            int vertexNums[NUM_PENT_VERTS] = {0};
+            for (Direction dir = J_AXES_DIGIT; dir < NUM_DIGITS; dir++) {
+                int vertexNum = vertexNumForDirection(pentagon, dir);
+                t_assert(vertexNum >= 0 && vertexNum < NUM_PENT_VERTS,
+                         "vertex number appears valid for every pentagon "
+                         "base cell");
+
+                Direction roundTrip =
+                    directionForVertexNum(pentagon, vertexNum);
+                t_assert(roundTrip == dir,
+                         "direction round-trips through vertex number for "
+                         "every pentagon base cell");
+
+                vertexNums[vertexNum] = 1;
+            }
+            for (int v = 0; v < NUM_PENT_VERTS; v++) {
+                t_assert(vertexNums[v],
+                         "every pentagon vertex number is reachable");
+            }
+        }
+    }
 }
