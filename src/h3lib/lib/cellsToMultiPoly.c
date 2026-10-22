@@ -52,29 +52,6 @@ static inline H3Error validateCellSet(const H3Index *cells,
     return E_SUCCESS;
 }
 
-/**
- * Hash an H3Index to a bucket index for hash table lookups.
- *
- * Uses a mixing function based on SplitMix64 to ensure good distribution
- * of hash values.
- *
- * @param x H3Index value to hash
- * @param n Number of hash table buckets
- * @return Bucket index in range [0, n-1]
- *
- * Reference: Steele et al., "Fast splittable pseudorandom number generators"
- * OOPSLA 2014. https://doi.org/10.1145/2660193.2660195
- */
-static inline uint64_t hashEdge(H3Index x, uint64_t n) {
-    x ^= x >> 30;
-    x *= 0xbf58476d1ce4e5b9ULL;
-    x ^= x >> 27;
-    x *= 0x94d049bb133111ebULL;
-    x ^= x >> 31;
-
-    return x % n;
-}
-
 static int64_t getNumEdges(const H3Index *cells, const int64_t numCells) {
     int64_t numEdges = 6 * numCells;
 
@@ -129,6 +106,7 @@ static inline H3Error cellToEdgeArcs(H3Index h, Arc *arcs,
         arcs[i].id = edges[i];
         arcs[i].isRemoved = false;
         arcs[i].isVisited = false;
+        arcs[i].twin = NULL;
 
         // initialize union-find datastructure
         // all edges in loop have same parent: first edge
@@ -149,21 +127,78 @@ static inline H3Error cellToEdgeArcs(H3Index h, Arc *arcs,
     return E_SUCCESS;
 }
 
-static H3Error createArcSet(const H3Index *cells, const int64_t numCells,
-                            ArcSet *arcset) {
-    int64_t numArcs = getNumEdges(cells, numCells);
-    int64_t numBuckets = numArcs * HASH_TABLE_MULTIPLIER;
+// Key an arc by the pair of cells its edge joins; its twin gets the same key
+static inline H3Error arcToKey(Arc *arc, ArcKey *key) {
+    H3Index origin, destination;
 
-    arcset->numArcs = numArcs;
-    arcset->numBuckets = numBuckets;
-    arcset->arcs = H3_MEMORY(malloc)(numArcs * sizeof(Arc));
-    if (!arcset->arcs) {
+    H3Error err = H3_EXPORT(getDirectedEdgeOrigin)(arc->id, &origin);
+    if (NEVER(err)) {
+        return err;
+    }
+    err = H3_EXPORT(getDirectedEdgeDestination)(arc->id, &destination);
+    if (NEVER(err)) {
+        return err;
+    }
+
+    key->lo = MIN(origin, destination);
+    key->hi = MAX(origin, destination);
+    key->arc = arc;
+
+    return E_SUCCESS;
+}
+
+/*
+Set `twin` on every arc whose reversed edge is also in the set.
+
+Sorting the arc keys makes twins adjacent, so one linear scan pairs them.
+This uses less memory than a hash table, with more cache-friendly access.
+A key appears at most twice, since the cells are distinct and two cells
+share at most one edge.
+*/
+static H3Error pairArcs(ArcSet arcset) {
+    // First half holds the keys, second half is scratch space for sorting
+    ArcKey *keys = H3_MEMORY(malloc)(2 * arcset.numArcs * sizeof(ArcKey));
+    if (!keys) {
         return E_MEMORY_ALLOC;
     }
 
-    arcset->buckets = H3_MEMORY(calloc)(numBuckets, sizeof(Arc *));
-    if (!arcset->buckets) {
-        destroyArcSet(arcset);
+    int64_t *counts = H3_MEMORY(malloc)(ARC_KEY_RADIX_SIZE * sizeof(int64_t));
+    if (!counts) {
+        H3_MEMORY(free)(keys);
+        return E_MEMORY_ALLOC;
+    }
+
+    for (int64_t i = 0; i < arcset.numArcs; i++) {
+        H3Error err = arcToKey(&arcset.arcs[i], &keys[i]);
+        if (NEVER(err)) {
+            H3_MEMORY(free)(counts);
+            H3_MEMORY(free)(keys);
+            return err;
+        }
+    }
+
+    ArcKey *sorted =
+        sortArcKeys(keys, &keys[arcset.numArcs], arcset.numArcs, counts);
+
+    for (int64_t i = 1; i < arcset.numArcs; i++) {
+        if (cmp_ArcKey(&sorted[i - 1], &sorted[i]) == 0) {
+            sorted[i - 1].arc->twin = sorted[i].arc;
+            sorted[i].arc->twin = sorted[i - 1].arc;
+        }
+    }
+
+    H3_MEMORY(free)(counts);
+    H3_MEMORY(free)(keys);
+    return E_SUCCESS;
+}
+
+static H3Error createArcSet(const H3Index *cells, const int64_t numCells,
+                            ArcSet *arcset) {
+    int64_t numArcs = getNumEdges(cells, numCells);
+
+    arcset->numArcs = numArcs;
+    arcset->arcs = H3_MEMORY(malloc)(numArcs * sizeof(Arc));
+    if (!arcset->arcs) {
         return E_MEMORY_ALLOC;
     }
 
@@ -178,30 +213,13 @@ static H3Error createArcSet(const H3Index *cells, const int64_t numCells,
         j += numEdges;
     }
 
-    for (int64_t i = 0; i < arcset->numArcs; i++) {
-        // hash edge to initial bucket
-        int64_t j = hashEdge(arcset->arcs[i].id, arcset->numBuckets);
-
-        // linear probe to find next open bucket. wraps around if needed.
-        while (arcset->buckets[j] != NULL) {
-            j = (j + 1) % arcset->numBuckets;
-        }
-        arcset->buckets[j] = &arcset->arcs[i];
+    H3Error err = pairArcs(*arcset);
+    if (err) {
+        destroyArcSet(arcset);
+        return err;
     }
 
     return E_SUCCESS;
-}
-
-static inline Arc *findArc(ArcSet arcset, H3Index e) {
-    int64_t j = hashEdge(e, arcset.numBuckets);
-
-    // hash + linear probe to find edge
-    while (arcset.buckets[j] != NULL && arcset.buckets[j]->id != e) {
-        j = (j + 1) % arcset.numBuckets;
-    }
-
-    // returns NULL if edge not found
-    return arcset.buckets[j];
 }
 
 // Part of union-find data structure
@@ -244,7 +262,7 @@ Update the doubly-linked loop list to maintain valid loops.
 Merge the connected components of edge pairs; each connected component
 denotes a separate polygon (outer loop and holes).
 */
-static H3Error cancelArcPairs(ArcSet arcset) {
+static void cancelArcPairs(ArcSet arcset) {
     for (int64_t i = 0; i < arcset.numArcs; i++) {
         Arc *a = &arcset.arcs[i];
 
@@ -253,13 +271,7 @@ static H3Error cancelArcPairs(ArcSet arcset) {
             continue;
         }
 
-        H3Index reversedEdge;
-        H3Error err = H3_EXPORT(reverseDirectedEdge)(a->id, &reversedEdge);
-        if (NEVER(err)) {
-            return err;
-        }
-
-        Arc *b = findArc(arcset, reversedEdge);
+        Arc *b = a->twin;
         if (!b) {
             // The reversed edge was *not* in the set, so there's nothing to do.
             continue;
@@ -284,8 +296,6 @@ static H3Error cancelArcPairs(ArcSet arcset) {
         // update parent to merge into a single connected component
         unionArcs(a, b);
     }
-
-    return E_SUCCESS;
 }
 
 static inline void resetVisited(ArcSet arcset) {
@@ -606,8 +616,7 @@ static H3Error createMultiPolygon(SortableLoopSet loopset,
 H3Error H3_EXPORT(cellsToMultiPolygon)(const H3Index *cells,
                                        const int64_t numCells,
                                        GeoMultiPolygon *out) {
-    H3Error err =
-        checkCellsToMultiPolyOverflow(numCells, HASH_TABLE_MULTIPLIER);
+    H3Error err = checkCellsToMultiPolyOverflow(numCells);
     if (err) return err;
 
     err = validateCellSet(cells, numCells);
@@ -627,11 +636,7 @@ H3Error H3_EXPORT(cellsToMultiPolygon)(const H3Index *cells,
 
     // Cancel out pairs of edges, updating the doubly-linked loops and merging
     // them into a single connected component
-    err = cancelArcPairs(arcset);
-    if (NEVER(err)) {
-        destroyArcSet(&arcset);
-        return err;
-    }
+    cancelArcPairs(arcset);
 
     /*
     Extract all loops and sort them by:
