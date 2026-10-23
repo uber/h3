@@ -360,10 +360,8 @@ SUITE(compactCells) {
         free(children);
     }
 
-    TEST(compactCells_duplicateIgnored) {
-        // Test that duplicated cells are not rejected by compactCells.
-        // This is not necessarily desired - just asserting the
-        // existing behavior.
+    TEST(compactCells_duplicateRejected) {
+        // A duplicated cell is rejected rather than compacted.
         H3Index h3;
         int res = 10;
         // Arbitrary index
@@ -379,10 +377,33 @@ SUITE(compactCells) {
 
         H3Index *output = calloc(arrSize, sizeof(H3Index));
 
-        t_assertSuccess(H3_EXPORT(compactCells)(children, output, arrSize));
+        t_assert(H3_EXPORT(compactCells)(children, output, arrSize) ==
+                     E_DUPLICATE_INPUT,
+                 "compactCells fails on duplicate input (repeated child)");
 
         free(output);
         free(children);
+    }
+
+    TEST(compactCells_duplicateNeverCoversMore) {
+        H3Index parent;
+        setH3Index(&parent, 8, 20, 0);
+        H3Index children[7];
+        t_assertSuccess(H3_EXPORT(cellToChildren)(parent, 9, children));
+
+        H3Index duplicated[7] = {children[0], children[0], children[0],
+                                 children[0], children[0], children[0],
+                                 children[1]};
+        H3Index output[7] = {0};
+        t_assert(
+            H3_EXPORT(compactCells)(duplicated, output, 7) == E_DUPLICATE_INPUT,
+            "compactCells fails on a duplicate set that reaches a full "
+            "child count");
+        for (int i = 0; i < 7; i++) {
+            t_assert(output[i] != parent,
+                     "compactCells never emits a parent the input did not "
+                     "fully cover");
+        }
     }
 
     TEST(compactCells_empty) {
@@ -485,7 +506,27 @@ SUITE(compactCells) {
                          0x7,
                          0x400000000};
         H3Index output[43] = {0};
-        t_assertSuccess(H3_EXPORT(compactCells)(bad, output, numHex));
+        t_assert(
+            H3_EXPORT(compactCells)(bad, output, numHex) == E_DUPLICATE_INPUT,
+            "compactCells rejects this duplicated invalid input");
+    }
+
+    TEST(compactCells_parentCountOverflow) {
+        H3Index parent;
+        setH3Index(&parent, 8, 20, 0);
+        H3Index children[7];
+        t_assertSuccess(H3_EXPORT(cellToChildren)(parent, 9, children));
+        H3Index grandchildren[7];
+        t_assertSuccess(
+            H3_EXPORT(cellToChildren)(children[0], 10, grandchildren));
+
+        H3Index mixed[8] = {children[1],      grandchildren[0],
+                            grandchildren[1], grandchildren[2],
+                            grandchildren[3], grandchildren[4],
+                            grandchildren[5], grandchildren[6]};
+        H3Index output[8] = {0};
+        t_assert(H3_EXPORT(compactCells)(mixed, output, 8) == E_DUPLICATE_INPUT,
+                 "compactCells reports a parent counted past a full child set");
     }
 
     TEST(compactCells_parentError3) {
