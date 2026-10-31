@@ -824,17 +824,17 @@ h3_reverse_directed_edge(edge)
 ```sh
 $ h3 reverseDirectedEdge --help
 h3: Returns the directed edge index representing the same edge in the opposite direction
-H3 4.1.0
+H3 4.5.0
 
-  reverseDirectedEdge Returns the directed edge index representing the same edge in the opposite direction
-  -e, --edge <EDGE> Required. Directed edge H3 index
-  -h, --help  Show this help message.
-  -f, --format <FMT>  'json' for "EDGE"\n, 'newline' for EDGE\n (Default: json)
+        reverseDirectedEdge     Returns the directed edge index representing the same edge in the opposite direction
+        -c, --cell <index>      Required. H3 Cell
+        -h, --help      Show this help message.
+        -f, --format <FMT>      'json' for "CELL"\n, 'newline' for CELL\n (Default: json)
 ```
 
 ```bash
-$ h3 reverseDirectedEdge -e 115283473fffffff
-"115283477fffffff"
+$ h3 reverseDirectedEdge -c 115283473fffffff
+"165283477fffffff"
 ```
 
 </TabItem>
