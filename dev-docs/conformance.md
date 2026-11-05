@@ -121,10 +121,14 @@ tests/inputfiles/
   sets/curated.jsonl
   regions/polygons.jsonl
   regions/curated.jsonl
+  edges/cells.jsonl
+  vertexes/cells.jsonl
+  floats/edges.jsonl
+  floats/vertexes.jsonl
 ```
 
-The remaining groups of the suite (`edges`, `vertexes`, the other `floats`
-files and `digests`) are added group by group; the generator already writes all
+The remaining files of the suite (`floats/distances.jsonl`,
+`floats/resolutions.jsonl` and `digests`) are added group by group; the generator already writes all
 of them, and each is specified here when its files land.
 
 `manifest.json` is the only file a consumer opens by name. Every record file
@@ -276,9 +280,9 @@ Example:
 
 The floating-point functions, every value compared under the manifest
 tolerances: points by angular distance, measures by relative error.
-Subjects are valid cells (see Sampling). Further `floats` files cover
-directed edges, vertexes, great-circle distances and the per-resolution
-averages.
+Subjects are valid cells and the edges and vertexes drawn from them (see
+Sampling). Further `floats` files cover great-circle distances and the
+per-resolution averages.
 
 `floats/cells.jsonl`, one line per cell:
 
@@ -296,6 +300,24 @@ Example:
 
 ```json
 {"index":"8009fffffffffff","center":[64.700000127934885,10.536199075467678],"boundary":[[63.095054077525454,-10.444977544778341],[55.706768465152265,5.5236465492903184],[58.401544870352687,25.082722326707898],[68.929957881939814,31.831280499087402],[73.310223685444001,0.32561035194323518]],"areaRads2":0.063123898710068072,"areaKm2":2562182.1629555039,"areaM2":2562182162955.5039,"interiorRes":2,"interior":[[63.897527102730166,0.045610765344669346],[60.203384296543575,8.0299228123789987],[61.55077249914379,17.809460701087787],[66.814979004937356,21.183739787277538],[69.00511190668945,5.4309047137054565]],"interiorCells":["82091ffffffffff","82098ffffffffff","8208affffffffff","8208c7fffffffff","820957fffffffff"]}
+```
+
+`floats/edges.jsonl`, one line per directed edge:
+
+| Key | Function | Type |
+|---|---|---|
+| `index` | the subject edge | index string |
+| `lengthRads`, `lengthKm`, `lengthM` | `edgeLengthRads`, `edgeLengthKm`, `edgeLengthM` | number |
+| `boundary` | `directedEdgeToBoundary(index)` | sequence of points, in the reference's order |
+
+`floats/vertexes.jsonl`, one line per vertex: `index` and `latLng`, which
+is `vertexToLatLng(index)`.
+
+Examples:
+
+```json
+{"index":"14001fffffffffff","lengthRads":0.19076599177033998,"lengthKm":1215.3715034438708,"lengthM":1215371.5034438707,"boundary":[[73.310223685444001,0.32561035194323518],[68.929957881939828,31.831280499087395]]}
+{"index":"23001fffffffffff","latLng":[87.364695323196472,145.55819769133689]}
 ```
 
 ### `traversal`
@@ -494,6 +516,49 @@ Example:
 
 ```json
 {"id":"8009fffffffffff:1","polygon":{"outer":[[63.41604328760733,-6.2487422207291372],[57.505414797708795,6.5261570545257905],[59.661235921869135,22.173417676459856],[68.083966331138825,27.572264214363457],[71.588178973942178,2.3677280966481229]],"holes":[]},"res":1,"cells":["81083ffffffffff","8108bffffffffff","8108fffffffffff","81093ffffffffff","81097ffffffffff","8109bffffffffff"],"center":["81083ffffffffff","8108bffffffffff","8108fffffffffff","81093ffffffffff","81097ffffffffff","8109bffffffffff"],"full":["81083ffffffffff"],"overlapping":["81083ffffffffff","8108bffffffffff","8108fffffffffff","81093ffffffffff","81097ffffffffff","8109bffffffffff"],"overlappingBbox":["81013ffffffffff","81017ffffffffff","81073ffffffffff","81077ffffffffff","8107bffffffffff","81083ffffffffff","8108bffffffffff","8108fffffffffff","81093ffffffffff","81097ffffffffff","8109bffffffffff","81113ffffffffff","81117ffffffffff","81193ffffffffff","81197ffffffffff","811f3ffffffffff","811f7ffffffffff"],"multiPolygon":[{"outer":[[56.632952719050827,18.275235951757786],[58.401544870352701,25.082722326707874],[62.478113451924763,24.517172437523488],[64.873036611864293,31.517537185292614],[68.929957881939814,31.831280499087395],[70.052151519508882,20.597244293835026],[73.487456497717517,14.551845028116778],[73.310223685443972,0.32561035194322951],[69.273859191908159,-1.6665855042241828],[67.153547845205082,-10.558792289389457],[63.095054077525454,-10.444977544778338],[61.545509577880757,-2.2975260876218235],[57.689497374592854,-0.93158716351061854],[55.70676846515228,5.5236465492903095],[58.130531165851423,11.555977692900695]],"holes":[]}]}
+```
+
+### `edges`
+
+One line per **valid cell**, paired with a `target` drawn from its 1-disk.
+The target is the cell itself about one time in seven, which makes
+`cellsToDirectedEdge` fail with `E_NOT_NEIGHBORS`.
+
+| Key | Function | Type |
+|---|---|---|
+| `index` | the subject cell | index string |
+| `edges` | `originToDirectedEdges(index)`, with `0` padding removed | set of index strings |
+| `destinations` | `getDirectedEdgeDestination(e)` for each `e` in `edges`, in the written (ascending) order | sequence of index strings |
+| `target` | the second cell of the pair | index string |
+| `edge` | `cellsToDirectedEdge(index, target)` | index string, or error |
+
+A consumer must also check that `isValidDirectedEdge(e)` holds and
+`getDirectedEdgeOrigin(e) == index` for every `e` in `edges`.
+
+Example:
+
+```json
+{"index":"8005fffffffffff","edges":["11005fffffffffff","12005fffffffffff","13005fffffffffff","14005fffffffffff","15005fffffffffff","16005fffffffffff"],"destinations":["800dfffffffffff","8015fffffffffff","8017fffffffffff","8001fffffffffff","8003fffffffffff","800bfffffffffff"],"target":"8003fffffffffff","edge":"15005fffffffffff"}
+```
+
+### `vertexes`
+
+One line per **valid cell**. A pentagon has no vertex number 5, so
+`cellToVertex` fails with `E_DOMAIN` there.
+
+| Key | Function | Type |
+|---|---|---|
+| `index` | the subject cell | index string |
+| `vertexes` | `cellToVertexes(index)`, with `0` padding removed | set of index strings |
+| `byNumber` | `cellToVertex(index, n)` for `n` from 0 to 5, in that order | sequence of six entries, each an index string or error |
+
+A consumer must also check that `isValidVertex(v)` holds for every `v` in
+`vertexes`. `vertexToLatLng` belongs to the floats group.
+
+Example:
+
+```json
+{"index":"8009fffffffffff","vertexes":["20001fffffffffff","21009fffffffffff","22009fffffffffff","25001fffffffffff","25007fffffffffff"],"byNumber":["25007fffffffffff","21009fffffffffff","22009fffffffffff","20001fffffffffff","25001fffffffffff",{"err":"E_DOMAIN"}]}
 ```
 
 ## Curated files
@@ -712,6 +777,13 @@ vertex of `cellToBoundary` in its order. Degrees are what the file holds, so
 a generator converts the points to its implementation's units rather than
 interpolating in radians.
 
+`edges.jsonl`: valid-cell subjects with `n` = 16. Then for each subject,
+take its `originToDirectedEdges` array (six slots, a zero where a pentagon
+has no edge) and twice: draw 6 and emit the edge at that slot if it is
+non-zero and was not already emitted for this subject.
+
+`vertexes.jsonl`: the same with `cellToVertexes`.
+
 ### `traversal/cells.jsonl`
 
 Valid-cell subjects with `n` = 16. Then for each subject, `target` is drawn
@@ -778,6 +850,15 @@ For each subject `h` at resolution `res`, four lines:
 3. the same outer loop with one hole, the boundary of
    `cellToCenterChild(h, res + 1)` scaled by 1.2, filled at `res + 2`;
 4. the boundary of `h` scaled by 1.2 with no hole, filled at 16.
+
+### `edges/cells.jsonl`
+
+Valid-cell subjects with `n` = 16. Then for each subject, `target` is drawn
+from its 1-disk.
+
+### `vertexes/cells.jsonl`
+
+Valid-cell subjects with `n` = 16. No further draws.
 
 ### Curated files
 
