@@ -99,6 +99,32 @@ bool pointInsidePolygon(const GeoPolygon *geoPolygon, const BBox *bboxes,
 }
 
 /**
+ * The mean of a cell boundary's vertices, which is inside the boundary for
+ * convex shapes such as cells and bounding boxes. Longitudes are unwrapped
+ * around the first vertex so boundaries crossing the antimeridian work.
+ * @param  boundary The cell boundary
+ * @return          A point inside the boundary
+ */
+static LatLng cellBoundaryInteriorPoint(const CellBoundary *boundary) {
+    double firstLng = boundary->verts[0].lng;
+    LatLng sum = {0, 0};
+    for (int i = 0; i < boundary->numVerts; i++) {
+        double dLng = boundary->verts[i].lng - firstLng;
+        if (dLng > M_PI) {
+            dLng -= M_2PI;
+        } else if (dLng < -M_PI) {
+            dLng += M_2PI;
+        }
+        sum.lat += boundary->verts[i].lat;
+        sum.lng += dLng;
+    }
+    LatLng interior = {
+        .lat = sum.lat / boundary->numVerts,
+        .lng = constrainLng(firstLng + sum.lng / boundary->numVerts)};
+    return interior;
+}
+
+/**
  * Whether a cell boundary is completely contained by a polygon.
  * @param  geoPolygon The polygon to test
  * @param  bboxes     The bboxes for the main geoloop and each of its holes
@@ -111,6 +137,14 @@ bool cellBoundaryInsidePolygon(const GeoPolygon *geoPolygon, const BBox *bboxes,
     // First test a single point. Note that this fails fast if point is outside
     // bounding box.
     if (!pointInsidePolygon(geoPolygon, &bboxes[0], &boundary->verts[0])) {
+        return false;
+    }
+
+    // The vertex can lie on the polygon's edge, where the test above can go
+    // either way, e.g. for a cell next to the polygon that shares that edge.
+    // A point inside the boundary settles it.
+    LatLng interior = cellBoundaryInteriorPoint(boundary);
+    if (!pointInsidePolygon(geoPolygon, &bboxes[0], &interior)) {
         return false;
     }
 
