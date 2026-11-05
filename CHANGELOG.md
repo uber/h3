@@ -15,6 +15,7 @@ The public API of this library consists of the functions declared in file
 - Fixed the `stringToInt` CLI subcommand truncating 16 digit indexes, such as directed edges and vertexes (#1243)
 - Fixed the `gridDistance` CLI subcommand printing the distance in hexadecimal instead of decimal
 - Fixed `cellToLatLng` and `cellToBoundary` losing precision in latitude near the poles; the worst error is now within a few units in the last place everywhere instead of growing as 1/cos(latitude)
+- Fixed the `polygonToCells` and `maxPolygonToCellsSize` CLI subcommands stopping partway through a polygon file when a 1500 byte read chunk ended between tokens
 
 ## [4.5.0] - 2026-05-21
 ### Added
