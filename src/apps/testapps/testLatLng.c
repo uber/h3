@@ -82,6 +82,27 @@ SUITE(latLng) {
                  "Distance with wrapped longitude and swapped arguments");
     }
 
+    TEST(distanceRads_antipodal) {
+        LatLng p1;
+        setGeoDegs(&p1, 12, 0);
+        LatLng p2;
+        setGeoDegs(&p2, -12, 180);
+
+        const double expectedRads = M_PI;
+        const double expectedKm = expectedRads * EARTH_RADIUS_KM;
+        const double rads = H3_EXPORT(greatCircleDistanceRads)(&p1, &p2);
+        const double km = H3_EXPORT(greatCircleDistanceKm)(&p1, &p2);
+        const double m = H3_EXPORT(greatCircleDistanceM)(&p1, &p2);
+
+        t_assert(fabs(rads - expectedRads) < EPSILON_RAD * 1000,
+                 "Antipodal distance in radians");
+        t_assert(fabs(km - expectedKm) < EPSILON_RAD * 1000 * EARTH_RADIUS_KM,
+                 "Antipodal distance in kilometers");
+        t_assert(fabs(m - expectedKm * 1000) <
+                     EPSILON_RAD * 1000 * EARTH_RADIUS_KM * 1000,
+                 "Antipodal distance in meters");
+    }
+
     TEST(doubleConstants) {
         // Simple checks for ordering of values
         testDecreasingFunction(H3_EXPORT(getHexagonAreaAvgKm2),
