@@ -423,4 +423,52 @@ SUITE(cellsToLinkedMultiPolygon) {
             H3_EXPORT(cellsToLinkedMultiPolygon)(cells, numCells, &polygon));
         H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
     }
+
+    TEST(twoNeighborsPolar) {
+        // https://github.com/uber/h3/issues/1046
+        LinkedGeoPolygon polygon;
+        H3Index set[] = {0x8001fffffffffff, 0x8003fffffffffff};
+        int numHexes = ARRAY_SIZE(set);
+
+        t_assertSuccess(
+            H3_EXPORT(cellsToLinkedMultiPolygon)(set, numHexes, &polygon));
+
+        t_assert(countLinkedPolygons(&polygon) == 1,
+                 "Two neighbors form a single polygon");
+
+        for (LinkedGeoPolygon *poly = &polygon; poly != NULL;
+             poly = poly->next) {
+            for (LinkedGeoLoop *loop = poly->first; loop != NULL;
+                 loop = loop->next) {
+                t_assert(countLinkedCoords(loop) >= 3,
+                         "Loop is not degenerate");
+            }
+        }
+
+        H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
+    }
+
+    TEST(twoNeighborsAntimeridian) {
+        // https://github.com/uber/h3/issues/1046
+        LinkedGeoPolygon polygon;
+        H3Index set[] = {0x8037fffffffffff, 0x8051fffffffffff};
+        int numHexes = ARRAY_SIZE(set);
+
+        t_assertSuccess(
+            H3_EXPORT(cellsToLinkedMultiPolygon)(set, numHexes, &polygon));
+
+        t_assert(countLinkedPolygons(&polygon) == 1,
+                 "Two neighbors form a single polygon");
+
+        for (LinkedGeoPolygon *poly = &polygon; poly != NULL;
+             poly = poly->next) {
+            for (LinkedGeoLoop *loop = poly->first; loop != NULL;
+                 loop = loop->next) {
+                t_assert(countLinkedCoords(loop) >= 3,
+                         "Loop is not degenerate");
+            }
+        }
+
+        H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
+    }
 }
