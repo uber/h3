@@ -6,15 +6,30 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+### Added
+- Added `reverseDirectedEdge` to H3 CLI. (#1252)
+- Added `isValidIndex` to H3 CLI (#1251)
+- Added NDJSON-file based test suite (#1230)
+
+### Changed
+- Added internal Gosper island iterator (#1098, #1215)
+- Test coverage improvements (#1183, #1184, #1185, #1186, #1192, #1193, #1194, #1195, #1196, #1207, #1210, #1214)
+- All website dependencies are marked as `devDependencies` as they are not part of the C build process (#1206)
+- Added 32 bit Linux builds to CI (#1237)
+
 ### Fixed
-- Fixed an out of bounds write in `gridRing` when passed a negative `k`: the fallback path wiped the output array with a width computed from `6 * k`, which for a negative `k` becomes a `size_t` of about 1.8e19. The width now comes from `maxGridRingSize`, which validates `k` and computes in 64 bits
-- Avoid signed integer overflow when accumulating vertex counts in `maxPolygonToCellsSize` (#1204)
-- Fixed the `polygonToCells` fuzzer regression test to use explicit double literals instead of reinterpreting raw bytes, so it is portable across endianness (#964)
-- No longer emit a CMake warning about a missing `clang-format`/`clang-tidy` when the user explicitly set `ENABLE_FORMAT=OFF`/`ENABLE_LINTING=OFF` (#1158)
-- Fixed an out of bounds read in `_baseCellToCCWrot60` when passed a face index equal to `NUM_ICOSA_FACES` (#978)
+- Fixed an out of bounds write in `gridRing` when passed a negative `k` (#1235)
+- Avoid signed integer overflow when accumulating vertex counts in `maxPolygonToCellsSize` (#1204, #1231)
+- Fixed the `polygonToCells` fuzzer regression test to use explicit double literals instead of reinterpreting raw bytes, so it is portable across endianness (#964, #1182)
+- No longer emit a CMake warning about a missing `clang-format`/`clang-tidy` when the user explicitly set `ENABLE_FORMAT=OFF`/`ENABLE_LINTING=OFF` (#1158, #1191)
+- Fixed an out of bounds read in `_baseCellToCCWrot60` when passed a face index equal to `NUM_ICOSA_FACES` (#978, #1224)
 - Fixed the `stringToInt` CLI subcommand truncating 16 digit indexes, such as directed edges and vertexes (#1243)
-- Fixed the `gridDistance` CLI subcommand printing the distance in hexadecimal instead of decimal
-- Fixed `cellToLatLng` and `cellToBoundary` losing precision in latitude near the poles; the worst error is now within a few units in the last place everywhere instead of growing as 1/cos(latitude)
+- Fixed the `gridDistance` CLI subcommand printing the distance in hexadecimal instead of decimal (#1244)
+- Fixed `cellToLatLng` and `cellToBoundary` losing precision in latitude near the poles; the worst error is now within a few units in the last place everywhere instead of growing as `1/cos(latitude)` (#1255)
+- Fixed `cellAreaM2` CLI test not setting the C locale (#1176)
+- Clamp polygon bbox latitudes to the valid sphere range, fixing `polygonToCellsExperimental` spending a long time on tiny input (#1226)
+- Fixed `clang-tidy` deprecated setting error (#1216)
+- Fixed possible signed integer overflow in `uncompactCellsSize` (#1205)
 
 ## [4.5.0] - 2026-05-21
 ### Added
