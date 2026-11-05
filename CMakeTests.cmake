@@ -193,11 +193,24 @@ foreach(file ${all_ic_files})
             ${file})
 endforeach()
 
-file(GLOB all_inspection_files tests/inputfiles/inspection/*.jsonl)
-foreach(file ${all_inspection_files})
-    add_h3_test_with_arg(testInspection src/apps/testapps/testInspection.c
-            ${file} File)
+# Conformance suite (dev-docs/conformance.md): one runner per record type,
+# run once per record file of its group, plus a check of the manifest.
+add_h3_test_with_arg(testConformanceManifest
+                     src/apps/testapps/testConformanceManifest.c
+                     ${CMAKE_CURRENT_SOURCE_DIR}/tests/inputfiles/manifest.json
+                     File)
+
+file(GLOB conformance_files tests/inputfiles/inspection/*.jsonl)
+foreach(file ${conformance_files})
+    add_h3_test_with_arg(testConformanceInspection
+                         src/apps/testapps/testConformanceInspection.c ${file}
+                         File)
 endforeach()
+
+add_h3_test_with_arg(testConformanceFloatsCells
+                     src/apps/testapps/testConformanceFloatsCells.c
+                     ${CMAKE_CURRENT_SOURCE_DIR}/tests/inputfiles/floats/cells.jsonl
+                     File)
 
 file(GLOB all_centers tests/inputfiles/rand*centers.txt)
 foreach(file ${all_centers})
@@ -272,6 +285,7 @@ add_h3_test(testH3IteratorsInternal src/apps/testapps/testH3IteratorsInternal.c)
 add_h3_test(testMathExtensionsInternal
             src/apps/testapps/testMathExtensionsInternal.c)
 add_h3_test(testDescribeH3Error src/apps/testapps/testDescribeH3Error.c)
+add_h3_test(testSha256 src/apps/testapps/testSha256.c)
 add_h3_test(testGosperIter src/apps/testapps/testGosperIter.c)
 add_h3_test(testGeoLoopArea src/apps/testapps/testGeoLoopArea.c)
 

@@ -1,0 +1,17 @@
+{"index":"85283473fffffff","res":5,"baseCell":20,"validCell":true,"validIndex":true,"resClassIII":true,"pentagon":false,"faces":[7],"digits":[0,6,4,3,4,7,7,7,7,7,7,7,7,7,7],"construct":"85283473fffffff"}
+{"index":"85283473ffff","res":0,"baseCell":4,"validCell":false,"validIndex":false,"resClassIII":false,"pentagon":true,"faces":[0,1,2,3,4],"digits":[1,2,2,4,0,6,4,3,4,7,7,7,7,7,7],"construct":"8009fffffffffff"}
+{"index":"115283473fffffff","res":5,"baseCell":20,"validCell":false,"validIndex":true,"resClassIII":true,"pentagon":false,"faces":[7],"digits":[0,6,4,3,4,7,7,7,7,7,7,7,7,7,7],"construct":"85283473fffffff"}
+{"index":"22528340bfffffff","res":5,"baseCell":20,"validCell":false,"validIndex":true,"resClassIII":true,"pentagon":false,"faces":[7],"digits":[0,6,4,0,2,7,7,7,7,7,7,7,7,7,7],"construct":"8528340bfffffff"}
+{"index":"8f754e64992d6d6","res":15,"baseCell":58,"validCell":true,"validIndex":true,"resClassIII":true,"pentagon":false,"faces":[9],"digits":[5,1,6,3,1,1,1,4,4,5,5,3,3,2,6],"construct":"8f754e64992d6d6"}
+{"index":"81743ffffffffff","res":1,"baseCell":58,"validCell":true,"validIndex":true,"resClassIII":true,"pentagon":true,"faces":[3,4,8,9,13],"digits":[0,7,7,7,7,7,7,7,7,7,7,7,7,7,7],"construct":"81743ffffffffff"}
+{"index":"8928342e20fffff","res":9,"baseCell":20,"validCell":true,"validIndex":true,"resClassIII":true,"pentagon":false,"faces":[7],"digits":[0,6,4,1,3,4,2,0,3,7,7,7,7,7,7],"construct":"8928342e20fffff"}
+{"index":"5","res":0,"baseCell":0,"validCell":false,"validIndex":false,"resClassIII":false,"pentagon":false,"faces":[1],"digits":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,5],"construct":"8001fffffffffff"}
+{"index":"200f202020202020","res":0,"baseCell":121,"validCell":false,"validIndex":false,"resClassIII":false,"pentagon":false,"faces":[18],"digits":[0,0,2,0,0,4,0,1,0,0,2,0,0,4,0],"construct":"80f3fffffffffff"}
+{"index":"80c3fffffffffff","res":0,"baseCell":97,"validCell":true,"validIndex":true,"resClassIII":false,"pentagon":true,"faces":[8,12,13,17,18],"digits":[7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],"construct":"80c3fffffffffff"}
+{"index":"8f283080dcb0ae2","res":15,"baseCell":20,"validCell":true,"validIndex":true,"resClassIII":true,"pentagon":false,"faces":[7],"digits":[0,6,0,4,0,1,5,6,2,6,0,5,3,4,2],"construct":"8f283080dcb0ae2"}
+{"index":"88283080ddfffff","res":8,"baseCell":20,"validCell":true,"validIndex":true,"resClassIII":false,"pentagon":false,"faces":[7],"digits":[0,6,0,4,0,1,5,6,7,7,7,7,7,7,7],"construct":"88283080ddfffff"}
+{"index":"81083ffffffffff","res":1,"baseCell":4,"validCell":true,"validIndex":true,"resClassIII":true,"pentagon":true,"faces":[0,1,2,3,4],"digits":[0,7,7,7,7,7,7,7,7,7,7,7,7,7,7],"construct":"81083ffffffffff"}
+{"index":"81087ffffffffff","res":1,"baseCell":4,"validCell":false,"validIndex":false,"resClassIII":true,"pentagon":false,"faces":[1,2],"digits":[1,7,7,7,7,7,7,7,7,7,7,7,7,7,7],"construct":{"err":"E_DELETED_DIGIT"}}
+{"index":"82080ffffffffff","res":2,"baseCell":4,"validCell":false,"validIndex":false,"resClassIII":false,"pentagon":false,"faces":[1],"digits":[0,1,7,7,7,7,7,7,7,7,7,7,7,7,7],"construct":{"err":"E_DELETED_DIGIT"}}
+{"index":"8029fffffffffff","res":0,"baseCell":20,"validCell":true,"validIndex":true,"resClassIII":false,"pentagon":false,"faces":[7],"digits":[7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],"construct":"8029fffffffffff"}
+{"index":"85283472fffffff","res":5,"baseCell":20,"validCell":false,"validIndex":false,"resClassIII":true,"pentagon":false,"faces":[7],"digits":[0,6,4,3,4,5,7,7,7,7,7,7,7,7,7],"construct":"85283473fffffff"}
