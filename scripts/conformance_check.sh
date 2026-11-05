@@ -3,7 +3,9 @@
 # the first argument and compares the discrete record files against the
 # committed ones under tests/inputfiles. Files under floats/ are judged by
 # the runners under tolerance and are not byte-compared: a compiler or libm
-# change may legitimately move their last digit. See dev-docs/conformance.md.
+# change may legitimately move their last digit. Files under regions/ are
+# compared with their polygon coordinates removed for the same reason, so
+# only the fills are byte-compared. See dev-docs/conformance.md.
 #
 #   conformance_check.sh <path-to-mkConformance> [group-or-file]...
 #
@@ -35,11 +37,32 @@ done
 
 "$generator" -o "$out" "${args[@]}"
 
+# Prints a regions file without its polygon and multiPolygon values.
+discrete() {
+    python3 -c '
+import json, sys
+for line in open(sys.argv[1]):
+    record = json.loads(line)
+    record.pop("polygon", None)
+    record.pop("multiPolygon", None)
+    print(json.dumps(record, sort_keys=True))
+' "$1"
+}
+
 status=0
 for file in $(cd "$out" && find . -name '*.jsonl' | sort); do
     file=${file#./}
     case "$file" in
         floats/*) continue ;;
+        regions/*)
+            discrete "$out/$file" > "$out/regenerated.discrete"
+            discrete "$committed/$file" > "$out/committed.discrete"
+            if ! cmp -s "$out/regenerated.discrete" "$out/committed.discrete"; then
+                echo "conformance_check: $file differs from the committed file" >&2
+                status=1
+            fi
+            continue
+            ;;
     esac
     if ! cmp -s "$out/$file" "$committed/$file"; then
         echo "conformance_check: $file differs from the committed file" >&2

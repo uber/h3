@@ -119,10 +119,12 @@ tests/inputfiles/
   hierarchy/curated.jsonl
   sets/sets.jsonl
   sets/curated.jsonl
+  regions/polygons.jsonl
+  regions/curated.jsonl
 ```
 
-The remaining groups of the suite (`edges`, `vertexes`, `regions`, the
-other `floats` files and `digests`) are added group by group; the generator already writes all
+The remaining groups of the suite (`edges`, `vertexes`, the other `floats`
+files and `digests`) are added group by group; the generator already writes all
 of them, and each is specified here when its files land.
 
 `manifest.json` is the only file a consumer opens by name. Every record file
@@ -451,6 +453,49 @@ Example:
 {"id":"duplicate:81083ffffffffff","input":["820807fffffffff","820817fffffffff","82081ffffffffff","820827fffffffff","82082ffffffffff","820837fffffffff","820807fffffffff"],"compact":{"err":"E_DUPLICATE_INPUT"},"uncompactRes":2,"uncompact":["820807fffffffff","820817fffffffff","82081ffffffffff","820827fffffffff","82082ffffffffff","820837fffffffff"]}
 ```
 
+### `regions`
+
+One line per **polygon and fill resolution**. Polygons are scaled cell
+boundaries (see Sampling), so each has five to ten vertices and may have one
+hole; the `id` is the source cell, the fill resolution, and `:hole` when
+present. A fill resolution of 16 gives the `E_RES_DOMAIN` rows.
+
+| Key | Function | Type |
+|---|---|---|
+| `id` | `<cell>:<res>` or `<cell>:<res>:hole` | string |
+| `polygon` | the input: `{"outer": loop, "holes": [loop, ...]}`, each loop a sequence of points | object |
+| `res` | the fill resolution | integer |
+| `cells` | `polygonToCells(polygon, res, 0)`, with `0` padding removed | set of index strings, or error |
+| `center`, `full`, `overlapping`, `overlappingBbox` | `polygonToCellsExperimental(polygon, res, mode)` for containment modes 0 to 3, with `0` padding removed | set of index strings, or error |
+| `multiPolygon` | `cellsToLinkedMultiPolygon(cells)` when `cells` succeeded, otherwise the same error | sequence of `{"outer": loop, "holes": [loop, ...]}`, or error |
+
+`multiPolygon` is compared by structure and by points. The polygons are a
+sequence, in the reference's order of decreasing outer-loop area. Within a
+polygon the outer loop is a sequence of points that may start at any vertex,
+compared point by point with the angular tolerance, and the holes are a set
+of such loops. The `cells` fed to `cellsToLinkedMultiPolygon` are passed in
+ascending order. When `cells` is empty, `multiPolygon` is the empty
+sequence; the reference's output structure then holds no loops.
+
+Scaling the boundaries matters (see Sampling): a polygon that is exactly a cell boundary
+puts the finer cells' vertices on its edges, and whether `full` and
+`overlapping` count such a cell then depends on rounding, in the reference as
+much as in a port. The scaled polygons keep every cell vertex clear of the
+polygon edges.
+
+One reference behaviour is deliberately absent. The classic
+`polygonToCells` fails with `E_FAILED` when `maxPolygonToCellsSize`
+underestimates the fill, which its own tests show for a band from 85 to
+89.9 degrees north spanning 179 degrees of longitude. An implementation
+without a fixed output buffer returns the cells instead, and that is the
+better answer, so no such polygon is in the suite.
+
+Example:
+
+```json
+{"id":"8009fffffffffff:1","polygon":{"outer":[[63.41604328760733,-6.2487422207291372],[57.505414797708795,6.5261570545257905],[59.661235921869135,22.173417676459856],[68.083966331138825,27.572264214363457],[71.588178973942178,2.3677280966481229]],"holes":[]},"res":1,"cells":["81083ffffffffff","8108bffffffffff","8108fffffffffff","81093ffffffffff","81097ffffffffff","8109bffffffffff"],"center":["81083ffffffffff","8108bffffffffff","8108fffffffffff","81093ffffffffff","81097ffffffffff","8109bffffffffff"],"full":["81083ffffffffff"],"overlapping":["81083ffffffffff","8108bffffffffff","8108fffffffffff","81093ffffffffff","81097ffffffffff","8109bffffffffff"],"overlappingBbox":["81013ffffffffff","81017ffffffffff","81073ffffffffff","81077ffffffffff","8107bffffffffff","81083ffffffffff","8108bffffffffff","8108fffffffffff","81093ffffffffff","81097ffffffffff","8109bffffffffff","81113ffffffffff","81117ffffffffff","81193ffffffffff","81197ffffffffff","811f3ffffffffff","811f7ffffffffff"],"multiPolygon":[{"outer":[[56.632952719050827,18.275235951757786],[58.401544870352701,25.082722326707874],[62.478113451924763,24.517172437523488],[64.873036611864293,31.517537185292614],[68.929957881939814,31.831280499087395],[70.052151519508882,20.597244293835026],[73.487456497717517,14.551845028116778],[73.310223685443972,0.32561035194322951],[69.273859191908159,-1.6665855042241828],[67.153547845205082,-10.558792289389457],[63.095054077525454,-10.444977544778338],[61.545509577880757,-2.2975260876218235],[57.689497374592854,-0.93158716351061854],[55.70676846515228,5.5236465492903095],[58.130531165851423,11.555977692900695]],"holes":[]}]}
+```
+
 ## Curated files
 
 Seeded sampling gives coverage density but is blind to the particular inputs
@@ -543,6 +588,33 @@ The `id` is `curated:<name>`; the `input` is in the record, in this order.
 | `multipolygon_test5` | the 128 res 5 cells of `multipolygon_test5.txt` | 6 | inputfiles |
 | `pentagon_children` | the six children of the res 1 pentagon `81083ffffffffff` | 3 | hand |
 | `res0` | `getRes0Cells` in the reference's order | 1 | hand |
+
+### `regions/curated.jsonl`
+
+The `id` is `<name>:<res>`, with `:hole` appended when the polygon has a
+hole. The polygon is in the record, in degrees; fixtures the reference holds
+in radians were converted once with `%.17g`, and a generator starts from the
+degrees as it does for the sampled polygons.
+
+| Name | Polygon | Source |
+|---|---|---|
+| `sf:9` | the six-vertex San Francisco fixture `sfVerts` | tests |
+| `sf:9:hole` | the same with the three-vertex `holeVerts` hole | tests |
+| `empty:9` | `emptyVerts`, three points within 1e-9 of each other | tests |
+| `primeMeridian:7` | `primeMeridianVerts`, a square on the prime meridian | tests |
+| `transmeridian:7` | `transMeridianVerts`, the same square on the antimeridian | tests |
+| `transmeridian:7:hole` | with the `transMeridianHoleVerts` hole | tests |
+| `transmeridianInner:7` | that hole as a polygon of its own | tests |
+| `transmeridianComplex:4` | the six-vertex antimeridian polygon | tests |
+| `h3_136:13` | the four-vertex polygon of reference issue 136 | tests |
+| `h3_595:5` | the polygon of reference issue 595, whose first vertex has exactly the latitude of the center of `85283473fffffff` | tests |
+| `h3js_67:7`, `h3js_67_second:7` | the two rectangles of h3-js issue 67 | tests |
+| `westHemisphere:0`, `:1`, `:2` | longitudes -180 to 0, latitudes -90 to 90 | tests |
+| `eastHemisphere:0`, `:1`, `:2` | longitudes 0 to 180; with the west, every cell | tests |
+| `point:5` | one vertex at the origin | tests |
+| `line:5` | two vertices, the origin and one radian north | tests |
+| `cliTriangle:7` | `polygon_test1.txt`, three vertices in San Francisco | inputfiles |
+| `cliDecagon:7` | `polygon_test2.txt`, ten vertices in San Francisco | inputfiles |
 
 ## Sampling
 
@@ -680,6 +752,33 @@ kinds are written in the order of the kinds table. Only `holes` draws: draw 3
 to get a count from 1 to 3, then that many times draw 37 and clear that slot
 of the `gridDisk(cell, 3)` array; a slot that is already zero stays zero.
 
+### `regions/polygons.jsonl`
+
+Subjects:
+
+1. `getPentagons(res)` for `res` 0, 4, 8 and 12, in the order the reference
+   returns them. No draws.
+2. For `res` 0 through 13, three times: draw cells at `res` until
+   `isValidCell` accepts one, and emit it.
+
+Sorted ascending and deduplicated as above. No further draws.
+
+"The boundary of `h` scaled by `f`" is `cellToBoundary(h)` with every vertex
+moved away from `cellToLatLng(h)` by the factor `f`, computed in degrees:
+with center `(clat, clng)` and vertex `(vlat, vlng)`, the new vertex is
+`(clat + f * (vlat - clat), wrap(clng + f * wrap(vlng - clng)))`, where
+`wrap` adds or subtracts 360 to bring a value into [-180, 180]. Vertex order
+is kept. Degrees are what the file holds, so a generator converts the scaled
+degrees to its implementation's units rather than scaling in radians.
+
+For each subject `h` at resolution `res`, four lines:
+
+1. the boundary of `h` scaled by 0.8, filled at `res + 1`;
+2. the boundary of `h` scaled by 1.2, filled at `res + 2`;
+3. the same outer loop with one hole, the boundary of
+   `cellToCenterChild(h, res + 1)` scaled by 1.2, filled at `res + 2`;
+4. the boundary of `h` scaled by 1.2 with no hole, filled at 16.
+
 ### Curated files
 
 No draws. The subjects are the tables under Curated files, written in the
@@ -719,7 +818,9 @@ regenerates the suite into a temporary directory and compares the discrete
 files byte for byte against the committed ones; CI runs it on Linux x86-64
 with gcc on every change. `floats` files are excluded from the byte
 comparison on purpose, since the runners already judge them under
-tolerance.
+tolerance, and `regions` files are compared with their `polygon` and
+`multiPolygon` values removed, since those carry the same last-digit
+drift; the fills are still compared exactly.
 
 ## Consumers
 

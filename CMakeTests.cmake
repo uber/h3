@@ -241,6 +241,13 @@ foreach(file ${conformance_files})
                          src/apps/testapps/testConformanceSets.c ${file} File)
 endforeach()
 
+file(GLOB conformance_files tests/inputfiles/regions/*.jsonl)
+foreach(file ${conformance_files})
+    add_h3_test_with_arg(testConformanceRegions
+                         src/apps/testapps/testConformanceRegions.c ${file}
+                         File)
+endforeach()
+
 add_h3_test_with_arg(testConformanceFloatsCells
                      src/apps/testapps/testConformanceFloatsCells.c
                      ${CMAKE_CURRENT_SOURCE_DIR}/tests/inputfiles/floats/cells.jsonl
