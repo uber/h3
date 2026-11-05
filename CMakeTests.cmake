@@ -248,9 +248,30 @@ foreach(file ${conformance_files})
                          File)
 endforeach()
 
+file(GLOB conformance_files tests/inputfiles/edges/*.jsonl)
+foreach(file ${conformance_files})
+    add_h3_test_with_arg(testConformanceEdges
+                         src/apps/testapps/testConformanceEdges.c ${file} File)
+endforeach()
+
+file(GLOB conformance_files tests/inputfiles/vertexes/*.jsonl)
+foreach(file ${conformance_files})
+    add_h3_test_with_arg(testConformanceVertexes
+                         src/apps/testapps/testConformanceVertexes.c ${file}
+                         File)
+endforeach()
+
 add_h3_test_with_arg(testConformanceFloatsCells
                      src/apps/testapps/testConformanceFloatsCells.c
                      ${CMAKE_CURRENT_SOURCE_DIR}/tests/inputfiles/floats/cells.jsonl
+                     File)
+add_h3_test_with_arg(testConformanceFloatsEdges
+                     src/apps/testapps/testConformanceFloatsEdges.c
+                     ${CMAKE_CURRENT_SOURCE_DIR}/tests/inputfiles/floats/edges.jsonl
+                     File)
+add_h3_test_with_arg(testConformanceFloatsVertexes
+                     src/apps/testapps/testConformanceFloatsVertexes.c
+                     ${CMAKE_CURRENT_SOURCE_DIR}/tests/inputfiles/floats/vertexes.jsonl
                      File)
 
 file(GLOB all_centers tests/inputfiles/rand*centers.txt)
