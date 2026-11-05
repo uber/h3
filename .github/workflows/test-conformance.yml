@@ -1,0 +1,33 @@
+name: test-conformance
+
+# The deep run of the conformance digests runners (dev-docs/conformance.md):
+# every pull request stops at resolution 5 and one million patterns, this
+# job goes to resolution 6 and ten million patterns.
+on:
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+jobs:
+  digests:
+    name: Conformance digests to resolution 6
+    runs-on: ubuntu-latest
+    env:
+      CC: gcc
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Configure build
+        run: cmake -Bbuild -DCMAKE_BUILD_TYPE=Release -DWARNINGS_AS_ERRORS=ON -DENABLE_DOCS=OFF .
+
+      - name: Build
+        working-directory: build
+        run: make
+
+      - name: Digests runners
+        working-directory: build
+        env:
+          H3_CONFORMANCE_DIGESTS_MAXRES: 6
+          H3_CONFORMANCE_PATTERNS_MAXCOUNT: 10000000
+        run: ctest --output-on-failure -R testConformanceDigests
