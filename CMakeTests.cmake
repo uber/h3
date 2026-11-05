@@ -207,6 +207,27 @@ foreach(file ${conformance_files})
                          File)
 endforeach()
 
+file(GLOB conformance_files tests/inputfiles/traversal/*.jsonl)
+foreach(file ${conformance_files})
+    add_h3_test_with_arg(testConformanceTraversal
+                         src/apps/testapps/testConformanceTraversal.c ${file}
+                         File)
+endforeach()
+
+file(GLOB conformance_files tests/inputfiles/unsafe/*.jsonl)
+foreach(file ${conformance_files})
+    add_h3_test_with_arg(testConformanceUnsafe
+                         src/apps/testapps/testConformanceUnsafe.c ${file}
+                         File)
+endforeach()
+
+file(GLOB conformance_files tests/inputfiles/localij/*.jsonl)
+foreach(file ${conformance_files})
+    add_h3_test_with_arg(testConformanceLocalIj
+                         src/apps/testapps/testConformanceLocalIj.c ${file}
+                         File)
+endforeach()
+
 add_h3_test_with_arg(testConformanceFloatsCells
                      src/apps/testapps/testConformanceFloatsCells.c
                      ${CMAKE_CURRENT_SOURCE_DIR}/tests/inputfiles/floats/cells.jsonl

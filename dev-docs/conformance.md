@@ -110,11 +110,16 @@ tests/inputfiles/
   inspection/cells.jsonl
   inspection/curated.jsonl
   floats/cells.jsonl
+  traversal/cells.jsonl
+  traversal/curated.jsonl
+  unsafe/cells.jsonl
+  localij/pairs.jsonl
+  localij/curated.jsonl
 ```
 
-The remaining groups of the suite (`hierarchy`, `traversal`, `unsafe`,
-`edges`, `vertexes`, `localij`, `sets`, `regions`, the other `floats` files
-and `digests`) are added group by group; the generator already writes all
+The remaining groups of the suite (`hierarchy`, `edges`, `vertexes`,
+`sets`, `regions`, the other `floats` files and `digests`) are added group
+by group; the generator already writes all
 of them, and each is specified here when its files land.
 
 `manifest.json` is the only file a consumer opens by name. Every record file
@@ -288,6 +293,88 @@ Example:
 {"index":"8009fffffffffff","center":[64.700000127934885,10.536199075467678],"boundary":[[63.095054077525454,-10.444977544778341],[55.706768465152265,5.5236465492903184],[58.401544870352687,25.082722326707898],[68.929957881939814,31.831280499087402],[73.310223685444001,0.32561035194323518]],"areaRads2":0.063123898710068072,"areaKm2":2562182.1629555039,"areaM2":2562182162955.5039,"interiorRes":2,"interior":[[63.897527102730166,0.045610765344669346],[60.203384296543575,8.0299228123789987],[61.55077249914379,17.809460701087787],[66.814979004937356,21.183739787277538],[69.00511190668945,5.4309047137054565]],"interiorCells":["82091ffffffffff","82098ffffffffff","8208affffffffff","8208c7fffffffff","820957fffffffff"]}
 ```
 
+### `traversal`
+
+One line per **valid cell and target**. The sampled file draws the target
+from the cell's 3-disk; the curated file pairs cells by hand, so a target
+there may be far away or not a valid cell.
+`gridDistance` and `gridPathCells` fail with `E_FAILED` when the pair
+straddles a pentagon or is otherwise too far apart in local coordinates;
+those rows are the group's error cases.
+
+Only the rings are recorded. The `k`-disk is the cell together with rings 1
+through `k`, and `gridDiskDistances(index, k)` grouped by distance is the
+cell, then ring 1, and so on, so a consumer checks `gridDisk` and
+`gridDiskDistances` for `k` 1 to 3 against sets it builds from the rings.
+
+| Key | Function | Type |
+|---|---|---|
+| `index` | the subject cell | index string |
+| `ring1`, `ring2`, `ring3` | `gridRing(index, k)` for `k` 1, 2, 3, with `0` padding removed | set of index strings |
+| `target` | the second cell of the pair | index string |
+| `distance` | `gridDistance(index, target)` | integer, or error |
+| `path` | `gridPathCells(index, target)`, `gridPathCellsSize` entries | sequence of index strings, or error |
+| `neighbor` | `areNeighborCells(index, target)` | boolean, or error |
+
+Example:
+
+```json
+{"index":"8001fffffffffff","ring1":["8003fffffffffff","8005fffffffffff","8007fffffffffff","8009fffffffffff","800bfffffffffff","8011fffffffffff"],"ring2":["800dfffffffffff","800ffffffffffff","8013fffffffffff","8015fffffffffff","8017fffffffffff","8019fffffffffff","801bfffffffffff","801ffffffffffff","8021fffffffffff","8025fffffffffff","802dfffffffffff"],"ring3":["801dfffffffffff","8023fffffffffff","8027fffffffffff","8029fffffffffff","802bfffffffffff","802ffffffffffff","8031fffffffffff","8033fffffffffff","8035fffffffffff","8039fffffffffff","803bfffffffffff","803dfffffffffff","803ffffffffffff","8041fffffffffff","8043fffffffffff","8053fffffffffff"],"target":"8005fffffffffff","distance":1,"path":["8001fffffffffff","8005fffffffffff"],"neighbor":true}
+```
+
+### `unsafe`
+
+One line per **valid cell**. `gridDiskUnsafe` and `gridRingUnsafe` walk
+the grid in a spiral and refuse with `E_PENTAGON` when the walk meets a
+pentagon, where the safe functions fall back to a slower search. Which
+origins and `k` are refused is a property of the reference's walk, not of
+the geometry. The disk walk refuses when any cell it visits is a pentagon.
+The ring walk steps `k` cells outward along one axis, circles the ring, and
+refuses when a cell on either leg is a pentagon or when the circuit fails to
+return to its first cell, which is how it notices distortion from a pentagon
+it never steps on. In the generated file the two decisions agree for every
+subject; both are recorded because they are separate walks and an
+implementation can reproduce one without the other. This file records the
+decision. It does not repeat the cells, because
+when the unsafe function succeeds the reference returns exactly the safe
+function's cells; an implementation checks its unsafe output against its own
+safe output, which `traversal` and the digests cover. `gridDiskDistancesUnsafe`
+is the function `gridDiskUnsafe` calls and `gridDisksUnsafe` is a loop over
+it, so neither has a key: they refuse exactly when `diskUnsafe` does.
+
+| Key | Function | Type |
+|---|---|---|
+| `index` | the subject cell | index string |
+| `diskUnsafe` | `gridDiskUnsafe(index, k)` for `k` 1, 2, 3, in that order | sequence of three: `true` on success, or error |
+| `ringUnsafe` | `gridRingUnsafe(index, k)` for `k` 1, 2, 3, in that order | sequence of three: `true` on success, or error |
+
+Example:
+
+```json
+{"index":"8003fffffffffff","diskUnsafe":[true,{"err":"E_PENTAGON"},{"err":"E_PENTAGON"}],"ringUnsafe":[true,{"err":"E_PENTAGON"},{"err":"E_PENTAGON"}]}
+```
+
+### `localij`
+
+One line per **(origin, target) pair** of valid cells at the same
+resolution; the line's subject is the pair. Mode is always 0. Pairs that
+cross too many base cells fail with `E_FAILED`, and those rows are the
+group's error cases.
+
+| Key | Function | Type |
+|---|---|---|
+| `index` | the origin cell | index string |
+| `target` | the cell being located | index string |
+| `ij` | `cellToLocalIj(index, target, 0)` | `{"i": integer, "j": integer}`, or error |
+| `cell` | `localIjToCell(index, ij, 0)` when `ij` succeeded; otherwise the same error as `ij` | index string, or error |
+
+Example:
+
+```json
+{"index":"8003fffffffffff","target":"8013fffffffffff","ij":{"i":-1,"j":0},"cell":"8013fffffffffff"}
+{"index":"8003fffffffffff","target":"8001fffffffffff","ij":{"i":1,"j":0},"cell":"8001fffffffffff"}
+```
+
 ## Curated files
 
 Seeded sampling gives coverage density but is blind to the particular inputs
@@ -324,6 +411,42 @@ input directory (`tests/inputfiles/`), and *hand* a choice made here.
 | `82080ffffffffff` | hand | its res 2 center child with digit 2 set to `1` |
 | `8029fffffffffff` | tests | the res 0 `gridDisk` fixture |
 | `85283472fffffff` | cli | an `areNeighborCells` target whose digit 6 is not `7` |
+
+### `traversal/curated.jsonl`
+
+| Origin | Target | Source | Why |
+|---|---|---|---|
+| `85283473fffffff` | `8528342bfffffff` | cli | the `gridDistance` and `gridPathCells` example |
+| `85283473fffffff` | `85291ac7fffffff` | cli | the far `gridDistance` example |
+| `85283473fffffff` | `85283477fffffff` | cli | the `areNeighborCells` true example |
+| `85283473fffffff` | `85283472fffffff` | cli | an invalid target |
+| `85285aa7fffffff` | `851d9b1bfffffff` | tests | a `gridPathCells` fixture across faces |
+| `820807fffffffff` | `8208e7fffffffff` | tests | a `gridPathCells` fixture from a pentagon |
+| `8411b61ffffffff` | `84016d3ffffffff` | tests | a `gridPathCells` fixture |
+| `820c4ffffffffff` | `821ce7fffffffff` | tests | a `gridDistance` fixture |
+| `832830fffffffff` | `822837fffffffff` | tests | a resolution mismatch |
+| `832830fffffffff` | `832834fffffffff` | tests | a `gridDistance` fixture |
+| `8029fffffffffff` | `8051fffffffffff` | tests | res 0 cells on different faces |
+| `80c3fffffffffff` | `80c3fffffffffff` | hand | a pentagon to itself |
+| `81083ffffffffff` | `8108bffffffffff` | hand | a res 1 pentagon to its neighbour |
+| `8f283080dcb0ae2` | `8f283080dcb0ae2` | hand | a res 15 cell to itself |
+
+### `localij/curated.jsonl`
+
+| Origin | Target | Source | Why |
+|---|---|---|---|
+| `85283473fffffff` | `8528342bfffffff` | cli | the `cellToLocalIj` example, `[25, 13]` |
+| `8029fffffffffff` | `8029fffffffffff` | tests | a res 0 origin to itself |
+| `8029fffffffffff` | `8051fffffffffff` | tests | res 0 cells on different faces |
+| `820897fffffffff` | `821f67fffffffff` | tests | a `cellToLocalIj` fixture near a pentagon |
+| `85283473fffffff` | `85291ac7fffffff` | cli | the far pair |
+| `832830fffffffff` | `832834fffffffff` | tests | a `gridDistance` fixture |
+| `820807fffffffff` | `8208e7fffffffff` | tests | a pentagon origin |
+| `80c3fffffffffff` | `80c3fffffffffff` | hand | a pentagon to itself |
+| `81083ffffffffff` | `8108bffffffffff` | hand | a res 1 pentagon to its neighbour |
+| `85285aa7fffffff` | `851d9b1bfffffff` | tests | a pair across faces |
+| `85283473fffffff` | `85283472fffffff` | cli | an invalid target |
+| `200f202020202020` | `85283473fffffff` | tests | an invalid origin |
 
 ## Sampling
 
@@ -420,6 +543,28 @@ interior points are computed in degrees, with factor 0.5: with center
 vertex of `cellToBoundary` in its order. Degrees are what the file holds, so
 a generator converts the points to its implementation's units rather than
 interpolating in radians.
+
+### `traversal/cells.jsonl`
+
+Valid-cell subjects with `n` = 16. Then for each subject, `target` is drawn
+from its 3-disk.
+
+### `unsafe/cells.jsonl`
+
+Valid-cell subjects with `n` = 16. Then, with no further draws, every
+non-zero cell of `gridDisk(p, 4)` for every pentagon `p` at every resolution
+0 through 15, in `getPentagons` order. The whole list is sorted ascending and
+deduplicated again. The 4-disks put every cell within one step of the
+largest disk or ring the file asks about, which is where the unsafe
+traversals change their answer.
+
+### `localij/pairs.jsonl`
+
+Valid-cell subjects with `n` = 16 are the origins. Then for each origin, a
+near target is drawn from its 3-disk, and a far target is drawn by drawing
+cells at the origin's resolution until `isValidCell` accepts one. The origin
+is written with the near target, then with the far target unless the two
+targets are the same cell.
 
 ### Curated files
 
