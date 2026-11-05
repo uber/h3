@@ -34,6 +34,8 @@ jobs:
 
       - name: Tests
         working-directory: build
+        env:
+          CTEST_OUTPUT_ON_FAILURE: 1
         run: |
           make test
           sudo make install
