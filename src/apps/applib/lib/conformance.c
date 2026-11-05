@@ -162,6 +162,19 @@ int conformanceMain(int argc, char *argv[], void (*check)(const cJSON *)) {
     return 0;
 }
 
+int64_t conformanceEnvInt(const char *name, int64_t defaultValue) {
+    const char *value = getenv(name);
+    if (!value || !*value) {
+        return defaultValue;
+    }
+    char *end;
+    long long parsed = strtoll(value, &end, 10);
+    if (*end) {
+        conformanceFail("%s=%s: not an integer", name, value);
+    }
+    return (int64_t)parsed;
+}
+
 /* ---- JSON accessors ---- */
 
 cJSON *jsonItem(const cJSON *object, const char *key) {

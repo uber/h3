@@ -58,6 +58,26 @@
       "records": 924,
       "sha256": "841e16cf458ace7e7c0237692ef2b668db859192199b6a98bd1a918244ea1787"
     },
+    "floats/distances.jsonl": {
+      "records": 1083,
+      "sha256": "ec6f723946190d6a8b69a78b92fb8d41f13fb0d74b3b1c4056bb957068a597ce"
+    },
+    "floats/resolutions.jsonl": {
+      "records": 17,
+      "sha256": "71fa251992dff7f0e61dca2c7671e0fba95e6f0708ec48e419157b92dd27b91c"
+    },
+    "digests/resolutions.jsonl": {
+      "records": 8,
+      "sha256": "a9b4866dffa54c9b5575b90969a1d86294b105fffdcac920348dddab2b0e43e7"
+    },
+    "digests/baseCells.jsonl": {
+      "records": 976,
+      "sha256": "4c537319ed1fb10fd79402a7dcb358b9ae449781dd449d0b549485d85a615e18"
+    },
+    "digests/patterns.jsonl": {
+      "records": 3,
+      "sha256": "4cf33f69cb3f0c75d7f88509d328812db8395ab746cda3a57bb1b9c2bf9c64dd"
+    },
     "inspection/curated.jsonl": {
       "records": 17,
       "sha256": "f4dc78a7588498b2a96c782f60957ab55ebd56cc90d7dd5bf5d18fddd9c25d8c"
