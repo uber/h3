@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-14, macos-15, macos-latest]
+        os: [macos-15, macos-15-intel, macos-latest]
         build_type: ["Debug", "Release"]
 
     steps:
