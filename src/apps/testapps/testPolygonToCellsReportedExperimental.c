@@ -28,7 +28,7 @@
 
 // Tests for specific polygonToCells examples
 
-SUITE(polygonToCells_reported) {
+SUITE(polygonToCellsExperimental_reported) {
     // fuzzer crash due to inconsistent handling of CONTAINMENT_OVERLAPPING
     TEST(fuzzer_crash) {
         // The vertices below are the exact doubles that the original fuzzer

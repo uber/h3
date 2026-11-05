@@ -86,7 +86,7 @@ static void childBBox_assertions(H3Index h3) {
     }
 }
 
-SUITE(cellToBBox) {
+SUITE(cellToBBoxExhaustive) {
     TEST(cellBBox_correctness) {
         iterateAllIndexesAtRes(0, cellBBox_assertions);
         iterateAllIndexesAtRes(1, cellBBox_assertions);
