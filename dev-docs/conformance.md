@@ -125,11 +125,12 @@ tests/inputfiles/
   vertexes/cells.jsonl
   floats/edges.jsonl
   floats/vertexes.jsonl
+  floats/distances.jsonl
+  floats/resolutions.jsonl
+  digests/resolutions.jsonl
+  digests/baseCells.jsonl
+  digests/patterns.jsonl
 ```
-
-The remaining files of the suite (`floats/distances.jsonl`,
-`floats/resolutions.jsonl` and `digests`) are added group by group; the generator already writes all
-of them, and each is specified here when its files land.
 
 `manifest.json` is the only file a consumer opens by name. Every record file
 is listed in it with its line count and SHA-256, and a consumer must refuse a
@@ -280,9 +281,8 @@ Example:
 
 The floating-point functions, every value compared under the manifest
 tolerances: points by angular distance, measures by relative error.
-Subjects are valid cells and the edges and vertexes drawn from them (see
-Sampling). Further `floats` files cover great-circle distances and the
-per-resolution averages.
+Subjects are valid cells and the edges, vertexes and center pairs drawn
+from them (see Sampling).
 
 `floats/cells.jsonl`, one line per cell:
 
@@ -313,11 +313,29 @@ Example:
 `floats/vertexes.jsonl`, one line per vertex: `index` and `latLng`, which
 is `vertexToLatLng(index)`.
 
+`floats/distances.jsonl`, one line per pair of cells `index` and `target`:
+`a` and `b` are their centers as the reference computed them, and `rads`,
+`km` and `m` are `greatCircleDistanceRads`, `Km` and `M` of `a` and `b`. A
+consumer measures between the points in the file, not between centers it
+computes itself, so the test is of the distance function alone. The target
+may be the cell itself, giving an expected distance of exactly zero, but is
+never nearly antipodal to the subject.
+
+`floats/resolutions.jsonl`, one line per resolution 0 through 16:
+`hexagonAreaKm2`, `hexagonAreaM2`, `edgeLengthKm` and `edgeLengthM` are
+`getHexagonAreaAvgKm2`, `getHexagonAreaAvgM2`, `getHexagonEdgeLengthAvgKm`
+and `getHexagonEdgeLengthAvgM`, each a number or an error; the row for 16
+is the `E_RES_DOMAIN` case.
+
 Examples:
 
 ```json
+{"index":"8009fffffffffff","center":[64.700000127934885,10.536199075467678],"boundary":[[63.095054077525454,-10.444977544778341],[55.706768465152265,5.5236465492903184],[58.401544870352687,25.082722326707898],[68.929957881939814,31.831280499087402],[73.310223685444001,0.32561035194323518]],"areaRads2":0.063123898710068072,"areaKm2":2562182.1629555039,"areaM2":2562182162955.5039,"interiorRes":2,"interior":[[63.897527102730166,0.045610765344669346],[60.203384296543575,8.0299228123789987],[61.55077249914379,17.809460701087787],[66.814979004937356,21.183739787277538],[69.00511190668945,5.4309047137054565]],"interiorCells":["82091ffffffffff","82098ffffffffff","8208affffffffff","8208c7fffffffff","820957fffffffff"]}
 {"index":"14001fffffffffff","lengthRads":0.19076599177033998,"lengthKm":1215.3715034438708,"lengthM":1215371.5034438707,"boundary":[[73.310223685444001,0.32561035194323518],[68.929957881939828,31.831280499087395]]}
 {"index":"23001fffffffffff","latLng":[87.364695323196472,145.55819769133689]}
+{"index":"8021fffffffffff","target":"8021fffffffffff","a":[46.041894318837713,71.527903299099236],"b":[46.041894318837713,71.527903299099236],"rads":0,"km":0,"m":0}
+{"res":0,"hexagonAreaKm2":4357449.4160783831,"hexagonAreaM2":4357449416078.3901,"edgeLengthKm":1281.2560109999999,"edgeLengthM":1281256.0109999999}
+{"res":16,"hexagonAreaKm2":{"err":"E_RES_DOMAIN"},"hexagonAreaM2":{"err":"E_RES_DOMAIN"},"edgeLengthKm":{"err":"E_RES_DOMAIN"},"edgeLengthM":{"err":"E_RES_DOMAIN"}}
 ```
 
 ### `traversal`
@@ -561,6 +579,108 @@ Example:
 {"index":"8009fffffffffff","vertexes":["20001fffffffffff","21009fffffffffff","22009fffffffffff","25001fffffffffff","25007fffffffffff"],"byNumber":["25007fffffffffff","21009fffffffffff","22009fffffffffff","20001fffffffffff","25001fffffffffff",{"err":"E_DOMAIN"}]}
 ```
 
+### `digests`
+
+Digests over **every cell at resolutions 0 through 7**, 115,664,014 cells
+in all, so the group checks the whole grid at those resolutions without
+storing it, plus a digest over a stream of arbitrary 64-bit words for the
+validity functions. Two files hold the same thirteen per-cell streams at
+two levels:
+
+- `digests/baseCells.jsonl`: one line per resolution and base cell,
+  `{"res", "baseCell", "count", "digests"}`, each stream run over the cells
+  of that resolution descending from that base cell, in ascending order.
+  This is the primary digest: a mismatch localises to one subtree, which a
+  bisecting rerun of the generator resolves.
+- `digests/resolutions.jsonl`: one line per resolution, `{"res", "count",
+  "digests"}`, where `count` is the sum of the 122 base-cell counts and each
+  stream's digest is the SHA-256 of the 122 per-base-cell hex digests of that
+  stream, as 64-character lowercase ASCII strings concatenated in base-cell
+  order with nothing between them. Ascending order over all cells is
+  base-cell order then digit order, so this fixes every line of the
+  resolution in sequence while letting the 122 subtrees be computed in any
+  order or in parallel; resolution 7 is 98.8 million cells and takes about
+  an hour on one core.
+
+`digests` is an object from stream name to hex SHA-256. Every stream has
+one line per cell, starting with the cell. The `polygons` stream exists
+only for resolutions 0 through 2, so those rows have thirteen keys and
+finer rows twelve. The streams are:
+
+| Stream | Fields after the cell, for a cell at resolution `r` |
+|---|---|
+| `cells` | none |
+| `parents` | `cellToParent(cell, p)` for `p` from `r - 1` down to 0 |
+| `children` | `cellToCenterChild(cell, r + 1)`, `cellToChildrenSize(cell, r + 1)`, `cellToChildPos(cell, 0)`, then `childPosToCell(thatPos, parent0, r)` where `parent0` is the resolution-0 ancestor |
+| `inspection` | `getBaseCellNumber`, `isPentagon`, `isResClassIII`, then `getIcosahedronFaces` as a set |
+| `disks` | `gridDisk(cell, 1)` as a set, `\|`, `gridDisk(cell, 2)` as a set, `\|`, `gridDisk(cell, 3)` as a set |
+| `rings` | the same with `gridRing` |
+| `distances` | `gridDistance(cell, m)` for each `m` of the 3-disk in ascending order, each an integer or an error name |
+| `edges` | for each edge of `originToDirectedEdges(cell)` in ascending order, the edge then `getDirectedEdgeDestination(edge)`; then `\|`; then `areNeighborCells(cell, m)` for each `m` of the 1-disk in ascending order, each `1`, `0` or an error name |
+| `vertexes` | `cellToVertexes(cell)` as a set |
+| `localIj` | `cellToLocalIj(origin, cell, 0)` as `i j`, or an error name, where `origin` is `cellToCenterChild(parent0, r)` (`parent0` itself at resolution 0) |
+| `compact` | `compactCells` of `cellToChildren(cell, r + 1)` sorted ascending with its last entry removed, as a set |
+| `roundTrip` | `latLngToCell(cellToLatLng(cell), r)` |
+| `polygons` (`r` ≤ 2 only) | the cell's boundary scaled about its center by 0.8, exactly as `regions/polygons.jsonl` scales it, filled at resolution `r + 2` by `polygonToCellsExperimental` in the `center`, `full`, `overlapping` and `overlappingBbox` modes, each as a set, then the same for the boundary scaled by 1.2; the eight sets separated by `\|` |
+
+Line examples, for the resolution-1 pentagon `81083ffffffffff`, in the
+`cells`, `parents`, `children`, `inspection`, `rings`, `edges`, `localIj`,
+`compact` and `roundTrip` streams:
+
+```
+81083ffffffffff
+81083ffffffffff 8009fffffffffff
+81083ffffffffff 820807fffffffff 6 0 81083ffffffffff
+81083ffffffffff 4 1 1 0 1 2 3 4
+81083ffffffffff 8108bffffffffff 8108fffffffffff 81093ffffffffff 81097ffffffffff 8109bffffffffff | 81013ffffffffff 81017ffffffffff 81073ffffffffff 81077ffffffffff 81113ffffffffff 81117ffffffffff 81193ffffffffff 81197ffffffffff 811f3ffffffffff 811f7ffffffffff | 81003ffffffffff 81007ffffffffff 8101bffffffffff 81063ffffffffff 81067ffffffffff 8107bffffffffff 81103ffffffffff 81107ffffffffff 8111bffffffffff 81183ffffffffff 81187ffffffffff 8119bffffffffff 811e3ffffffffff 811e7ffffffffff 811fbffffffffff
+81083ffffffffff 121083ffffffffff 8108bffffffffff 131083ffffffffff 8108fffffffffff 141083ffffffffff 81093ffffffffff 151083ffffffffff 81097ffffffffff 161083ffffffffff 8109bffffffffff | 0 1 1 1 1 1
+81083ffffffffff 0 0
+81083ffffffffff 820807fffffffff 820817fffffffff 82081ffffffffff 820827fffffffff 82082ffffffffff
+81083ffffffffff 81083ffffffffff
+```
+
+`roundTrip` lines repeat the cell whenever its center maps back to it, which
+is the property being checked. The `compact` stream exercises a set that
+must not merge; a full set of children compacting to the cell is covered by
+`sets`.
+
+Example record:
+
+```json
+{"res":0,"count":122,"digests":{"cells":"...","children":"...","compact":"...","disks":"...","distances":"...","edges":"...","inspection":"...","localIj":"...","parents":"...","rings":"...","roundTrip":"...","vertexes":"..."}}
+```
+
+Enumerating resolution 6 takes minutes in a port and resolution 7 half an
+hour on one core, so a runner may stop earlier by default and offer a way to
+go further; the runners stop at resolution 3 unless
+`H3_CONFORMANCE_DIGESTS_MAXRES` says otherwise.
+
+`digests/patterns.jsonl` covers the validity functions on inputs that are
+not cells: one line per tier, `{"count", "digests"}`, where `count` is
+100000, 1000000 or 10000000 and `digests` has the single stream
+`validity`. The stream is one line per 64-bit pattern, drawn as the
+Sampling section describes, and the three digests are over the first
+`count` lines of the **same** stream, so a runner computes all three in one
+pass. Each line is the pattern in lowercase hex without leading zeros, then
+`isValidCell`, `isValidIndex`, `isValidDirectedEdge` and `isValidVertex`
+as `1` or `0`:
+
+The first four lines of the stream, the first of which is a cell whose
+mode was set to 2 and so is a valid directed edge:
+
+```
+14936b6b3283ffff 0 1 1 0
+88458d11ffffffff 0 0 0 0
+ce26cf46aa5f563 0 0 0 0
+8462c443fffffff 0 0 0 0
+```
+
+Uniform random words are almost always invalid on the mode bits alone, so
+most patterns are a valid cell with one field disturbed, which is where
+validators that only check the mode and resolution are caught out. The runner
+stops at the one-million tier unless `H3_CONFORMANCE_PATTERNS_MAXCOUNT`
+says otherwise.
+
 ## Curated files
 
 Seeded sampling gives coverage density but is blind to the particular inputs
@@ -784,6 +904,17 @@ non-zero and was not already emitted for this subject.
 
 `vertexes.jsonl`: the same with `cellToVertexes`.
 
+`distances.jsonl`: valid-cell subjects with `n` = 16. Then for each
+subject, a near target is drawn from its 3-disk and a far target is drawn by
+drawing cells at the subject's resolution until `isValidCell` accepts one
+whose center is not within 1e-3 radians of antipodal to the subject's (the
+haversine formula is ill-conditioned there, so such a pair could not be
+checked to tolerance); the subject is written with the near target, then
+with the far target unless the two are the same cell.
+
+`resolutions.jsonl`: one line per resolution 0 through 16, in that order.
+No draws.
+
 ### `traversal/cells.jsonl`
 
 Valid-cell subjects with `n` = 16. Then for each subject, `target` is drawn
@@ -860,6 +991,35 @@ from its 1-disk.
 
 Valid-cell subjects with `n` = 16. No further draws.
 
+### `digests/resolutions.jsonl` and `digests/baseCells.jsonl`
+
+One line per resolution 0 through 7, in that order, and within
+`baseCells.jsonl` one line per base cell 0 through 121 for each resolution.
+No draws; the inputs are every cell at the resolution, enumerated as
+`cellToChildren(baseCell, res)` for each base cell in order, each sorted
+ascending. The resolution line is derived from the base-cell lines as the
+`digests` group states.
+
+### `digests/patterns.jsonl`
+
+Ten million patterns from one generator, each drawn as follows. Draw 8 for
+the kind. Kind 0: one draw is the pattern. Otherwise draw 16 for a
+resolution, then draw a valid cell at it (draw cells at that resolution
+until `isValidCell` accepts one), then:
+
+| Kind | Mutation of the valid cell |
+|---|---|
+| 1 | draw 16, store it in the mode bits 59-62 |
+| 2 | draw 8, store it in the reserved bits 56-58 |
+| 3 | draw 16, store it in the resolution bits 52-55 |
+| 4 | draw 128, store it in the base cell bits 45-51 |
+| 5 | draw 15 and add 1 for a digit position `p` from 1 to 15, then draw 8 and store it in digit slot `p` (bits `3*(15-p)` to `3*(15-p)+2`) |
+| 6 | set bit 63 |
+| 7 | draw 2: on 1 store `4` (vertex) in the mode bits, otherwise `2` (directed edge); then draw 8 and store it in the reserved bits |
+
+A digest is recorded after the 100,000th, the 1,000,000th and the
+10,000,000th pattern.
+
 ### Curated files
 
 No draws. The subjects are the tables under Curated files, written in the
@@ -893,6 +1053,31 @@ so. Expect a diff only when the library's behaviour changed; a diff in a
 discrete file is a behaviour change to explain in the pull request, and a
 diff in a `floats` file that the runners still accept is last-bit drift
 between the machine that generated the files and this one.
+
+The digests runners recompute every stream from the library, which is
+most of the suite's cost: resolution 3 takes a second, 4 about six
+seconds, 5 about a minute and 7 about an hour per file on one core. They
+stop at resolution 3 unless `H3_CONFORMANCE_DIGESTS_MAXRES` says
+otherwise, and the patterns runner at the one-million tier unless
+`H3_CONFORMANCE_PATTERNS_MAXCOUNT` does; the gcc Linux Release CI job
+goes to resolution 5 on every change and a weekly job
+(`test-conformance.yml`) to resolution 6 and ten million patterns. The
+`test-fast` target, which the Valgrind job runs, leaves the digests
+runners out along with the exhaustive tests: under Valgrind a polygon
+fill costs most of a second and the polygons stream makes thousands of
+them even at resolution 2.
+
+`mkConformance` writes digests for resolutions 0 through 6 in one process.
+Resolution 7 is produced separately by
+`scripts/conformance_digests.sh <path-to-mkConformance> 7`, which runs one
+generator process per base cell (`mkConformance --digests <res> <first>
+<last>` prints base-cell rows to standard output), concatenates the rows
+in base-cell order, derives the resolution row from them (`mkConformance
+--resolution-row <res>` reads base-cell rows on standard input), replaces
+that resolution's rows in the two digest files and rewrites the manifest
+(`mkConformance --manifest`). On twelve cores it takes a few minutes. Run
+it again after a full regeneration, which does not keep the resolution 7
+rows.
 
 `scripts/conformance_check.sh <path-to-mkConformance> [group]...`
 regenerates the suite into a temporary directory and compares the discrete

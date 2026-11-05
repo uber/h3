@@ -40,6 +40,9 @@
 #define CONFORMANCE_ANGULAR_DEG 1e-12
 /** Relative tolerance on lengths and areas. */
 #define CONFORMANCE_RELATIVE 1e-9
+/** The seed the committed suite was generated from, which the patterns
+ * digest replays. */
+#define CONFORMANCE_SEED UINT64_C(20260929)
 
 /** The units of a length or area output, for the tolerance floor. */
 typedef enum {
@@ -76,6 +79,10 @@ void conformanceFail(const char *format, ...);
 /** Runs `check` on every record of the file named by argv[1] and returns the
  * process exit status. */
 int conformanceMain(int argc, char *argv[], void (*check)(const cJSON *));
+
+/** Reads an integer from the environment, or returns the default when the
+ * variable is unset. A value that is not an integer is a failure. */
+int64_t conformanceEnvInt(const char *name, int64_t defaultValue);
 
 /** Shorthand for a conformance assertion with a message. */
 #define c_assert(condition, message)                        \

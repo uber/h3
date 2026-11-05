@@ -273,6 +273,30 @@ add_h3_test_with_arg(testConformanceFloatsVertexes
                      src/apps/testapps/testConformanceFloatsVertexes.c
                      ${CMAKE_CURRENT_SOURCE_DIR}/tests/inputfiles/floats/vertexes.jsonl
                      File)
+add_h3_test_with_arg(testConformanceFloatsDistances
+                     src/apps/testapps/testConformanceFloatsDistances.c
+                     ${CMAKE_CURRENT_SOURCE_DIR}/tests/inputfiles/floats/distances.jsonl
+                     File)
+add_h3_test_with_arg(testConformanceFloatsResolutions
+                     src/apps/testapps/testConformanceFloatsResolutions.c
+                     ${CMAKE_CURRENT_SOURCE_DIR}/tests/inputfiles/floats/resolutions.jsonl
+                     File)
+
+# The digests runners recompute every stream from the library; they stop at
+# resolution 3 and one million patterns unless H3_CONFORMANCE_DIGESTS_MAXRES
+# and H3_CONFORMANCE_PATTERNS_MAXCOUNT say otherwise.
+add_h3_test_with_arg(testConformanceDigestsResolutions
+                     src/apps/testapps/testConformanceDigestsResolutions.c
+                     ${CMAKE_CURRENT_SOURCE_DIR}/tests/inputfiles/digests/resolutions.jsonl
+                     File)
+add_h3_test_with_arg(testConformanceDigestsBaseCells
+                     src/apps/testapps/testConformanceDigestsBaseCells.c
+                     ${CMAKE_CURRENT_SOURCE_DIR}/tests/inputfiles/digests/baseCells.jsonl
+                     File)
+add_h3_test_with_arg(testConformanceDigestsPatterns
+                     src/apps/testapps/testConformanceDigestsPatterns.c
+                     ${CMAKE_CURRENT_SOURCE_DIR}/tests/inputfiles/digests/patterns.jsonl
+                     File)
 
 file(GLOB all_centers tests/inputfiles/rand*centers.txt)
 foreach(file ${all_centers})
@@ -386,7 +410,9 @@ if(BUILD_ALLOC_TESTS)
     add_h3_memory_test(testH3Memory src/apps/testapps/testH3Memory.c)
 endif()
 
-# Just tests that don't exhaustively test the grid
-add_custom_target(test-fast COMMAND ctest -E Exhaustive)
+# Just tests that don't exhaustively test the grid. The conformance digests
+# runners enumerate every cell up to a resolution and are excluded too.
+add_custom_target(test-fast COMMAND ctest -E "Exhaustive|ConformanceDigests"
+                  VERBATIM)
 # Just tests that use input data files for their assertions
 add_custom_target(test-files COMMAND ctest -L File)
