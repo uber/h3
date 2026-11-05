@@ -33,7 +33,7 @@
 #include "test.h"
 #include "utility.h"
 
-SUITE(h3ToLocalIj) {
+SUITE(cellToLocalIj) {
     // Some indexes that represent base cells. Base cells
     // are hexagons except for `pent1`.
     H3Index bc1 = H3_INIT;

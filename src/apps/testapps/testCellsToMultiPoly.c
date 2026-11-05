@@ -142,7 +142,7 @@ static void check_global_poly(GeoMultiPolygon mpoly) {
     t_assert(area == 4 * M_PI, "Exact area expected");
 }
 
-SUITE(edgeCellToPoly) {
+SUITE(cellsToMultiPoly) {
     TEST(three_polygons) {
         double rel_tol = 1e-15;
         // Results in 3 polygons: 0 holes, 1 hole, 3 holes

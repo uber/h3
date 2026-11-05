@@ -159,7 +159,7 @@ static void fillIndex_assertions(H3Index h) {
     }
 }
 
-SUITE(polygonToCells) {
+SUITE(polygonToCellsExperimental) {
     sfGeoPolygon.geoloop = sfGeoLoop;
     sfGeoPolygon.numHoles = 0;
 
