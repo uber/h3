@@ -1,0 +1,4 @@
+# The conformance suite is hashed byte for byte (tests/inputfiles/manifest.json);
+# never convert its line endings on checkout.
+*.jsonl -text
+tests/inputfiles/manifest.json -text
