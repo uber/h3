@@ -42,6 +42,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "conformanceGen.h"
 #include "h3api.h"
 #include "sha256.h"
 
@@ -50,23 +51,6 @@
 #define DEFAULT_SEED UINT64_C(20260929)
 #define ANGULAR_DEG_TOLERANCE "1e-12"
 #define RELATIVE_TOLERANCE "1e-9"
-
-#define MAX_RES 15
-#define NUM_BASE_CELLS 122
-#define NUM_DIGITS 7
-#define NUM_MODES 16
-#define NUM_HEX_EDGES 6
-#define NUM_PENTAGONS 12
-#define MAX_INDEX_LEN 17
-
-#define MODE_OFFSET 59
-#define RES_OFFSET 52
-#define BASE_CELL_OFFSET 45
-#define RESERVED_OFFSET 56
-#define DIGIT_BITS 3
-#define DIGIT_MASK UINT64_C(7)
-#define HIGH_BIT (UINT64_C(1) << 63)
-#define CELL_MODE 1
 
 /* Sample sizes; see conformance.md, "Sampling". */
 #define RANDOM_CELLS_PER_RES 48
@@ -81,36 +65,11 @@
 #define REGIONS_MAX_RES 13
 #define REGIONS_PENTAGON_STEP 4
 #define REGIONS_CELLS_PER_RES 3
-#define DIGESTS_MAX_RES 6
-#define DIGESTS_SLICE_MAX_RES 7
-#define POLYGONS_MAX_RES 2
-#define POLYGONS_FILL_STEP 2
-#define NUM_CONTAINMENT_MODES 4
-#define PATTERN_KINDS 8
-#define PATTERN_TIERS 3
 #define FLOATS_INTERIOR 0.5
 #define FLOATS_DRAWS_PER_CELL 2
 #define FLOATS_ANTIPODE_MARGIN 1e-3
 #define FLOATS_PI 3.14159265358979323846
-#define NUM_ICOSA_FACES 20
-#define REGIONS_SHRINK 0.8
-#define REGIONS_EXPAND 1.2
 #define MAX_HOLES 3
-#define MAX_DISK_K 3
-#define NUM_VERTEX_NUMBERS 6
-
-static const char *const H3_ERROR_NAMES[] = {
-    "E_SUCCESS",          "E_FAILED",
-    "E_DOMAIN",           "E_LATLNG_DOMAIN",
-    "E_RES_DOMAIN",       "E_CELL_INVALID",
-    "E_DIR_EDGE_INVALID", "E_UNDIR_EDGE_INVALID",
-    "E_VERTEX_INVALID",   "E_PENTAGON",
-    "E_DUPLICATE_INPUT",  "E_NOT_NEIGHBORS",
-    "E_RES_MISMATCH",     "E_MEMORY_ALLOC",
-    "E_MEMORY_BOUNDS",    "E_OPTION_INVALID",
-    "E_INDEX_INVALID",    "E_BASE_CELL_DOMAIN",
-    "E_DIGIT_DOMAIN",     "E_DELETED_DIGIT",
-};
 
 /* Hand-picked inputs included regardless of seed. */
 static const uint64_t FIXED_INDEXES[] = {
@@ -132,67 +91,8 @@ static void fail(const char *message) {
 static void must(H3Error err) {
     if (err) {
         fprintf(stderr, "mkConformance: unexpected H3 error %s\n",
-                H3_ERROR_NAMES[err]);
+                conformanceErrorName(err));
         exit(1);
-    }
-}
-
-/* ---- pseudo-random source (conformance.md, "Pseudo-random source") ---- */
-
-typedef struct {
-    uint64_t state;
-} Splitmix64;
-
-static uint64_t draw(Splitmix64 *rng) {
-    rng->state += UINT64_C(0x9e3779b97f4a7c15);
-    uint64_t z = rng->state;
-    z = (z ^ (z >> 30)) * UINT64_C(0xbf58476d1ce4e5b9);
-    z = (z ^ (z >> 27)) * UINT64_C(0x94d049bb133111eb);
-    return z ^ (z >> 31);
-}
-
-static int drawN(Splitmix64 *rng, int n) {
-    return (int)(draw(rng) % (uint64_t)n);
-}
-
-/* ---- index construction (conformance.md, "Index construction") ---- */
-
-static unsigned digitShift(int r) {
-    return (unsigned)((MAX_RES - r) * DIGIT_BITS);
-}
-
-static uint64_t buildIndex(int mode, int res, int baseCell, const int *digits) {
-    uint64_t index = (uint64_t)mode << MODE_OFFSET |
-                     (uint64_t)res << RES_OFFSET |
-                     (uint64_t)baseCell << BASE_CELL_OFFSET;
-    for (int r = 1; r <= MAX_RES; r++) {
-        uint64_t digit = r <= res ? (uint64_t)digits[r - 1] : DIGIT_MASK;
-        index |= digit << digitShift(r);
-    }
-    return index;
-}
-
-static uint64_t setField(uint64_t index, unsigned offset, unsigned width,
-                         uint64_t value) {
-    uint64_t mask = ((UINT64_C(1) << width) - 1) << offset;
-    return (index & ~mask) | ((value << offset) & mask);
-}
-
-static uint64_t drawCell(Splitmix64 *rng, int res) {
-    int baseCell = drawN(rng, NUM_BASE_CELLS);
-    int digits[MAX_RES];
-    for (int i = 0; i < res; i++) {
-        digits[i] = drawN(rng, NUM_DIGITS);
-    }
-    return buildIndex(CELL_MODE, res, baseCell, digits);
-}
-
-static uint64_t drawValidCell(Splitmix64 *rng, int res) {
-    for (;;) {
-        uint64_t index = drawCell(rng, res);
-        if (H3_EXPORT(isValidCell)(index)) {
-            return index;
-        }
     }
 }
 
@@ -213,17 +113,6 @@ static void push(IndexList *list, uint64_t index) {
         }
     }
     list->items[list->len++] = index;
-}
-
-static int compareIndexes(const void *a, const void *b) {
-    uint64_t x = *(const uint64_t *)a, y = *(const uint64_t *)b;
-    return x < y ? -1 : x > y;
-}
-
-static int compareInts(const void *a, const void *b) {
-    int left = *(const int *)a;
-    int right = *(const int *)b;
-    return (left > right) - (left < right);
 }
 
 static void sortAndDedup(IndexList *list) {
@@ -334,7 +223,7 @@ static void printIndex(FILE *out, H3Index h) {
 }
 
 static void printError(FILE *out, H3Error err) {
-    fprintf(out, "{\"err\":\"%s\"}", H3_ERROR_NAMES[err]);
+    fprintf(out, "{\"err\":\"%s\"}", conformanceErrorName(err));
 }
 
 static void printBool(FILE *out, int value) {
@@ -442,9 +331,6 @@ static void sampleHierarchy(IndexList *list, Splitmix64 *rng) {
 static void sampleTraversal(IndexList *list, Splitmix64 *rng) {
     sampleCells(list, rng, TRAVERSAL_CELLS_PER_RES);
 }
-
-/* diskSize is H3_EXPORT(maxGridDiskSize)(k) for small k. */
-static int diskSize(int k) { return 1 + 3 * k * (k + 1); }
 
 /* drawDiskTarget draws slots of the origin's k-disk, as gridDisk fills it,
  * until a non-zero one comes up. */
@@ -1202,41 +1088,6 @@ static void writeRegionsRecord(FILE *out, H3Index h, const GeoPolygon *polygon,
     writeRegionsRecordNamed(out, id, polygon, res);
 }
 
-/* wrapDegrees brings a longitude difference or value into [-180, 180]. */
-static double wrapDegrees(double lng) {
-    if (lng > 180.0) {
-        return lng - 360.0;
-    }
-    if (lng < -180.0) {
-        return lng + 360.0;
-    }
-    return lng;
-}
-
-/* scaledBoundary fills loop with the cell's boundary scaled about its center
- * by factor, computed in degrees so that a consumer parsing the written
- * degrees starts from the same values, then converted back to radians for
- * the reference. */
-static void scaledBoundary(H3Index h, double factor, CellBoundary *loop) {
-    LatLng center;
-    must(H3_EXPORT(cellToLatLng)(h, &center));
-    double centerLat = H3_EXPORT(radsToDegs)(center.lat);
-    double centerLng = H3_EXPORT(radsToDegs)(center.lng);
-
-    must(H3_EXPORT(cellToBoundary)(h, loop));
-    for (int i = 0; i < loop->numVerts; i++) {
-        double lat =
-            centerLat +
-            factor * (H3_EXPORT(radsToDegs)(loop->verts[i].lat) - centerLat);
-        double lng = wrapDegrees(
-            centerLng +
-            factor * wrapDegrees(H3_EXPORT(radsToDegs)(loop->verts[i].lng) -
-                                 centerLng));
-        loop->verts[i].lat = H3_EXPORT(degsToRads)(lat);
-        loop->verts[i].lng = H3_EXPORT(degsToRads)(lng);
-    }
-}
-
 /* writeRegionsSubject writes the cell's boundary shrunk and filled one
  * resolution finer, expanded and filled two finer, the same with the expanded
  * center child cut out, then expanded at an invalid resolution. */
@@ -1270,335 +1121,6 @@ static void writeRegionsSubject(FILE *out, H3Index h, Splitmix64 *rng) {
 
 static FILE *createFile(const char *path);
 
-/* Line is one text line of a digest stream, built field by field. */
-typedef struct {
-    char *buf;
-    size_t len;
-    size_t cap;
-} Line;
-
-static void lineAppend(Line *line, const char *text) {
-    size_t n = strlen(text);
-    if (line->len + n + 1 > line->cap) {
-        size_t cap = line->cap ? line->cap : 256;
-        while (line->len + n + 1 > cap) {
-            cap *= 2;
-        }
-        char *buf = realloc(line->buf, cap);
-        if (!buf) {
-            fail("out of memory");
-        }
-        line->buf = buf;
-        line->cap = cap;
-    }
-    memcpy(line->buf + line->len, text, n + 1);
-    line->len += n;
-}
-
-/* lineStart begins a line with the subject cell. */
-static void lineStart(Line *line, H3Index h) {
-    char buf[MAX_INDEX_LEN];
-    must(H3_EXPORT(h3ToString)(h, buf, sizeof buf));
-    line->len = 0;
-    lineAppend(line, buf);
-}
-
-static void lineIndex(Line *line, H3Index h) {
-    char buf[MAX_INDEX_LEN];
-    must(H3_EXPORT(h3ToString)(h, buf, sizeof buf));
-    lineAppend(line, " ");
-    lineAppend(line, buf);
-}
-
-static void lineInt(Line *line, int64_t value) {
-    char buf[32];
-    snprintf(buf, sizeof buf, " %" PRId64, value);
-    lineAppend(line, buf);
-}
-
-static void lineError(Line *line, H3Error err) {
-    lineAppend(line, " ");
-    lineAppend(line, H3_ERROR_NAMES[err]);
-}
-
-/* lineIndexSet appends the distinct non-zero entries in ascending order,
- * sorting and compacting the array in place, and returns how many. */
-static int64_t lineIndexSet(Line *line, H3Index *indexes, int64_t count) {
-    int64_t kept = 0;
-    for (int64_t i = 0; i < count; i++) {
-        if (indexes[i]) {
-            indexes[kept++] = indexes[i];
-        }
-    }
-    qsort(indexes, (size_t)kept, sizeof *indexes, compareIndexes);
-    int64_t unique = 0;
-    for (int64_t i = 0; i < kept; i++) {
-        if (!unique || indexes[unique - 1] != indexes[i]) {
-            indexes[unique++] = indexes[i];
-        }
-    }
-    for (int64_t i = 0; i < unique; i++) {
-        lineIndex(line, indexes[i]);
-    }
-    return unique;
-}
-
-/* The digest streams, in the order their keys are written. */
-enum {
-    S_CELLS,
-    S_CHILDREN,
-    S_COMPACT,
-    S_DISKS,
-    S_DISTANCES,
-    S_EDGES,
-    S_INSPECTION,
-    S_LOCAL_IJ,
-    S_PARENTS,
-    S_POLYGONS,
-    S_RINGS,
-    S_ROUND_TRIP,
-    S_VERTEXES,
-    NUM_STREAMS
-};
-
-static const char *const STREAM_KEYS[NUM_STREAMS] = {
-    "cells", "children",   "compact",  "disks",   "distances",
-    "edges", "inspection", "localIj",  "parents", "polygons",
-    "rings", "roundTrip",  "vertexes",
-};
-
-/* The pattern counts at which digests/patterns.jsonl records a digest. */
-static const int64_t PATTERN_COUNTS[PATTERN_TIERS] = {100000, 1000000,
-                                                      10000000};
-
-/* hasPolygons reports whether the polygons stream exists at a resolution. */
-static bool hasPolygons(int res) { return res <= POLYGONS_MAX_RES; }
-
-/* lineFill appends polygonToCellsExperimental of the polygon as a set. */
-static void lineFill(Line *line, const GeoPolygon *polygon, int res,
-                     uint32_t flags) {
-    int64_t size;
-    must(H3_EXPORT(maxPolygonToCellsSizeExperimental)(polygon, res, flags,
-                                                      &size));
-    H3Index *cells = calloc(size ? (size_t)size : 1, sizeof *cells);
-    if (!cells) {
-        fail("out of memory");
-    }
-    must(H3_EXPORT(polygonToCellsExperimental)(polygon, res, flags, size,
-                                               cells));
-    lineIndexSet(line, cells, size);
-    free(cells);
-}
-
-/* absorb terminates the line and feeds it to one stream's digest. */
-static void absorb(Sha256 *streams, int stream, Line *line) {
-    lineAppend(line, "\n");
-    sha256Update(&streams[stream], (const uint8_t *)line->buf, line->len);
-}
-
-/* digestCell appends one cell's line to every stream. */
-static void digestCell(Sha256 *streams, Line *line, H3Index h, int res) {
-    lineStart(line, h);
-    absorb(streams, S_CELLS, line);
-
-    H3Index parent0;
-    must(H3_EXPORT(cellToParent)(h, 0, &parent0));
-
-    lineStart(line, h);
-    for (int parentRes = res - 1; parentRes >= 0; parentRes--) {
-        H3Index parent;
-        must(H3_EXPORT(cellToParent)(h, parentRes, &parent));
-        lineIndex(line, parent);
-    }
-    absorb(streams, S_PARENTS, line);
-
-    lineStart(line, h);
-    {
-        H3Index center;
-        must(H3_EXPORT(cellToCenterChild)(h, res + 1, &center));
-        lineIndex(line, center);
-        int64_t size;
-        must(H3_EXPORT(cellToChildrenSize)(h, res + 1, &size));
-        lineInt(line, size);
-        int64_t pos;
-        must(H3_EXPORT(cellToChildPos)(h, 0, &pos));
-        lineInt(line, pos);
-        H3Index back;
-        must(H3_EXPORT(childPosToCell)(pos, parent0, res, &back));
-        lineIndex(line, back);
-    }
-    absorb(streams, S_CHILDREN, line);
-
-    lineStart(line, h);
-    {
-        lineInt(line, H3_EXPORT(getBaseCellNumber)(h));
-        lineInt(line, H3_EXPORT(isPentagon)(h));
-        lineInt(line, H3_EXPORT(isResClassIII)(h));
-        int faceCount;
-        must(H3_EXPORT(maxFaceCount)(h, &faceCount));
-        int faces[NUM_ICOSA_FACES];
-        for (int i = 0; i < NUM_ICOSA_FACES; i++) {
-            faces[i] = -1;
-        }
-        must(H3_EXPORT(getIcosahedronFaces)(h, faces));
-        qsort(faces, (size_t)faceCount, sizeof faces[0], compareInts);
-        for (int i = 0; i < faceCount; i++) {
-            if (faces[i] >= 0) {
-                lineInt(line, faces[i]);
-            }
-        }
-    }
-    absorb(streams, S_INSPECTION, line);
-
-    H3Index disk3[1 + 3 * MAX_DISK_K * (MAX_DISK_K + 1)] = {0};
-    int64_t disk3Count = 0;
-    lineStart(line, h);
-    for (int k = 1; k <= MAX_DISK_K; k++) {
-        H3Index disk[1 + 3 * MAX_DISK_K * (MAX_DISK_K + 1)] = {0};
-        must(H3_EXPORT(gridDisk)(h, k, disk));
-        if (k > 1) {
-            lineAppend(line, " |");
-        }
-        int64_t kept = lineIndexSet(line, disk, diskSize(k));
-        if (k == MAX_DISK_K) {
-            memcpy(disk3, disk, sizeof disk3);
-            disk3Count = kept;
-        }
-    }
-    absorb(streams, S_DISKS, line);
-
-    lineStart(line, h);
-    for (int k = 1; k <= MAX_DISK_K; k++) {
-        H3Index ring[1 + 3 * MAX_DISK_K * (MAX_DISK_K + 1)] = {0};
-        must(H3_EXPORT(gridRing)(h, k, ring));
-        if (k > 1) {
-            lineAppend(line, " |");
-        }
-        lineIndexSet(line, ring, diskSize(k));
-    }
-    absorb(streams, S_RINGS, line);
-
-    lineStart(line, h);
-    for (int64_t i = 0; i < disk3Count; i++) {
-        int64_t distance;
-        H3Error err = H3_EXPORT(gridDistance)(h, disk3[i], &distance);
-        if (err) {
-            lineError(line, err);
-        } else {
-            lineInt(line, distance);
-        }
-    }
-    absorb(streams, S_DISTANCES, line);
-
-    lineStart(line, h);
-    {
-        H3Index edges[NUM_HEX_EDGES] = {0};
-        must(H3_EXPORT(originToDirectedEdges)(h, edges));
-        int64_t edgeCount = lineIndexSet(line, edges, NUM_HEX_EDGES);
-        line->len = 0; /* rebuild: edges interleaved with destinations */
-        lineStart(line, h);
-        for (int64_t i = 0; i < edgeCount; i++) {
-            H3Index destination;
-            must(H3_EXPORT(getDirectedEdgeDestination)(edges[i], &destination));
-            lineIndex(line, edges[i]);
-            lineIndex(line, destination);
-        }
-        lineAppend(line, " |");
-        H3Index disk1[7] = {0};
-        must(H3_EXPORT(gridDisk)(h, 1, disk1));
-        Line scratch = {0};
-        int64_t diskCount = lineIndexSet(&scratch, disk1, 7);
-        free(scratch.buf);
-        for (int64_t i = 0; i < diskCount; i++) {
-            int neighbor;
-            H3Error err = H3_EXPORT(areNeighborCells)(h, disk1[i], &neighbor);
-            if (err) {
-                lineError(line, err);
-            } else {
-                lineInt(line, neighbor);
-            }
-        }
-    }
-    absorb(streams, S_EDGES, line);
-
-    lineStart(line, h);
-    {
-        H3Index vertexes[NUM_VERTEX_NUMBERS] = {0};
-        must(H3_EXPORT(cellToVertexes)(h, vertexes));
-        lineIndexSet(line, vertexes, NUM_VERTEX_NUMBERS);
-    }
-    absorb(streams, S_VERTEXES, line);
-
-    lineStart(line, h);
-    {
-        H3Index origin = parent0;
-        if (res > 0) {
-            must(H3_EXPORT(cellToCenterChild)(parent0, res, &origin));
-        }
-        CoordIJ ij;
-        H3Error err = H3_EXPORT(cellToLocalIj)(origin, h, 0, &ij);
-        if (err) {
-            lineError(line, err);
-        } else {
-            lineInt(line, ij.i);
-            lineInt(line, ij.j);
-        }
-    }
-    absorb(streams, S_LOCAL_IJ, line);
-
-    lineStart(line, h);
-    {
-        int64_t size;
-        must(H3_EXPORT(cellToChildrenSize)(h, res + 1, &size));
-        H3Index *children = calloc((size_t)size, sizeof *children);
-        H3Index *compacted = calloc((size_t)size, sizeof *compacted);
-        if (!children || !compacted) {
-            fail("out of memory");
-        }
-        must(H3_EXPORT(cellToChildren)(h, res + 1, children));
-        qsort(children, (size_t)size, sizeof *children, compareIndexes);
-        must(H3_EXPORT(compactCells)(children, compacted, size - 1));
-        lineIndexSet(line, compacted, size - 1);
-        free(children);
-        free(compacted);
-    }
-    absorb(streams, S_COMPACT, line);
-
-    lineStart(line, h);
-    {
-        LatLng center;
-        must(H3_EXPORT(cellToLatLng)(h, &center));
-        H3Index back;
-        must(H3_EXPORT(latLngToCell)(&center, res, &back));
-        lineIndex(line, back);
-    }
-    absorb(streams, S_ROUND_TRIP, line);
-
-    if (hasPolygons(res)) {
-        lineStart(line, h);
-        const double factors[] = {REGIONS_SHRINK, REGIONS_EXPAND};
-        for (int f = 0; f < 2; f++) {
-            CellBoundary loop;
-            scaledBoundary(h, factors[f], &loop);
-            GeoPolygon polygon = {{loop.numVerts, loop.verts}, 0, NULL};
-            for (uint32_t flags = 0; flags < NUM_CONTAINMENT_MODES; flags++) {
-                if (f || flags) {
-                    lineAppend(line, " |");
-                }
-                lineFill(line, &polygon, res + POLYGONS_FILL_STEP, flags);
-            }
-        }
-        absorb(streams, S_POLYGONS, line);
-    }
-}
-
-/* finalizeStreams writes each stream's hex digest. */
-static void finalizeStreams(Sha256 *streams, char hex[NUM_STREAMS][65]) {
-    for (int i = 0; i < NUM_STREAMS; i++) {
-        sha256Final(&streams[i], hex[i]);
-    }
-}
-
 /* printDigests prints the "digests" object from hex digests and closes the
  * row. */
 static void printDigests(FILE *out, char hex[NUM_STREAMS][65], int res) {
@@ -1612,72 +1134,12 @@ static void printDigests(FILE *out, char hex[NUM_STREAMS][65], int res) {
     fputs("}}\n", out);
 }
 
-/* digestBaseCell runs every stream over the cells of res descending from
- * baseCell, in ascending order, and returns their count. */
-static int64_t digestBaseCell(int res, int baseCell, Line *line,
-                              char hex[NUM_STREAMS][65]) {
-    H3Index base = buildIndex(CELL_MODE, 0, baseCell, NULL);
-    int64_t count;
-    must(H3_EXPORT(cellToChildrenSize)(base, res, &count));
-    H3Index *cells = calloc((size_t)count, sizeof *cells);
-    if (!cells) {
-        fail("out of memory");
-    }
-    must(H3_EXPORT(cellToChildren)(base, res, cells));
-    qsort(cells, (size_t)count, sizeof *cells, compareIndexes);
-
-    Sha256 streams[NUM_STREAMS];
-    for (int i = 0; i < NUM_STREAMS; i++) {
-        sha256Init(&streams[i]);
-    }
-    for (int64_t i = 0; i < count; i++) {
-        digestCell(streams, line, cells[i], res);
-    }
-    free(cells);
-    finalizeStreams(streams, hex);
-    return count;
-}
-
 /* printBaseCellRow prints one digests/baseCells.jsonl line. */
 static void printBaseCellRow(FILE *out, int res, int baseCell, int64_t count,
                              char hex[NUM_STREAMS][65]) {
     fprintf(out, "{\"res\":%d,\"baseCell\":%d,\"count\":%" PRId64, res,
             baseCell, count);
     printDigests(out, hex, res);
-}
-
-/* ResolutionDigest accumulates one digests/resolutions.jsonl line: per
- * stream, the SHA-256 over the 122 per-base-cell hex digests of that stream
- * in base-cell order (conformance.md, "digests"). */
-typedef struct {
-    Sha256 streams[NUM_STREAMS];
-    int64_t count;
-    int next;
-} ResolutionDigest;
-
-static void resolutionInit(ResolutionDigest *digest) {
-    for (int i = 0; i < NUM_STREAMS; i++) {
-        sha256Init(&digest->streams[i]);
-    }
-    digest->count = 0;
-    digest->next = 0;
-}
-
-/* resolutionAdd absorbs one base cell's digests, which must arrive in
- * base-cell order. */
-static void resolutionAdd(ResolutionDigest *digest, int res, int baseCell,
-                          int64_t count, char hex[NUM_STREAMS][65]) {
-    if (baseCell != digest->next) {
-        fail("base-cell rows out of order");
-    }
-    digest->next++;
-    digest->count += count;
-    for (int i = 0; i < NUM_STREAMS; i++) {
-        if (i == S_POLYGONS && !hasPolygons(res)) {
-            continue;
-        }
-        sha256Update(&digest->streams[i], (const uint8_t *)hex[i], 64);
-    }
 }
 
 /* printResolutionRow prints the accumulated line once every base cell has
@@ -1752,42 +1214,6 @@ static void writeResolutionRow(int res) {
         }
     }
     printResolutionRow(stdout, res, &digest);
-}
-
-/* drawPattern draws one 64-bit word for the validity stream (conformance.md,
- * "digests/patterns.jsonl"): uniform, or a valid cell with one field
- * mutated. */
-static uint64_t drawPattern(Splitmix64 *rng) {
-    int kind = drawN(rng, PATTERN_KINDS);
-    if (kind == 0) {
-        return draw(rng);
-    }
-    uint64_t cell = drawValidCell(rng, drawN(rng, MAX_RES + 1));
-    switch (kind) {
-        case 1:
-            return setField(cell, MODE_OFFSET, 4,
-                            (uint64_t)drawN(rng, NUM_MODES));
-        case 2:
-            return setField(cell, RESERVED_OFFSET, 3, (uint64_t)drawN(rng, 8));
-        case 3:
-            return setField(cell, RES_OFFSET, 4,
-                            (uint64_t)drawN(rng, MAX_RES + 1));
-        case 4:
-            return setField(cell, BASE_CELL_OFFSET, 7,
-                            (uint64_t)drawN(rng, 128));
-        case 5: {
-            int position = 1 + drawN(rng, MAX_RES);
-            return setField(cell, digitShift(position), DIGIT_BITS,
-                            (uint64_t)drawN(rng, NUM_DIGITS + 1));
-        }
-        case 6:
-            return cell | HIGH_BIT;
-        default: {
-            uint64_t mode = drawN(rng, 2) ? 4 : 2;
-            cell = setField(cell, MODE_OFFSET, 4, mode);
-            return setField(cell, RESERVED_OFFSET, 3, (uint64_t)drawN(rng, 8));
-        }
-    }
 }
 
 /* writePatternsFile writes digests/patterns.jsonl: one validity digest per
@@ -2555,7 +1981,8 @@ static void writeCuratedPolygons(const char *outDir, FileInfo *info) {
     finishFile(out, path, info);
 }
 
-/* writeCuratedFiles writes the six curated files and their manifest entries. */
+/* writeCuratedFiles writes the six curated files and their manifest entries.
+ */
 static void writeCuratedFiles(const char *outDir, uint64_t seed,
                               FileInfo *files) {
     files[0] = (FileInfo){"inspection/curated.jsonl", 0, ""};
