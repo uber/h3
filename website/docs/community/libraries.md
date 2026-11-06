@@ -14,6 +14,8 @@ The following libraries use H3 via one of its bindings. Contributions to this li
 ## Python
 
 - [nmandery/h3ronpy](https://github.com/nmandery/h3ronpy) - Raster to H3 conversion, smoothing of linked polygons.
+- [UJJAWAL-01/h3-lowpoints](https://github.com/UJJAWAL-01/h3-lowpoints) - Find closed depressions in elevation data and map them on H3 hexagons
+
 
 ## Rust
 
