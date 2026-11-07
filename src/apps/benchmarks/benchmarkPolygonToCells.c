@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include <math.h>
+#include <stdlib.h>
+
 #include "algos.h"
 #include "benchmark.h"
 #include "h3api.h"
@@ -104,7 +107,30 @@ LatLng southernVerts[] = {{0.6367481147484843, -2.1290865397798906},
 GeoLoop southernGeoLoop;
 GeoPolygon southernGeoPolygon;
 
+// A densified circle with many short edges. Each edge traces roughly one
+// cell at res 4 or 5, so the per-edge sizing estimate in polygonToCells
+// dominates the tracing step.
+#define CIRCLE_NUM_VERTS 4000
+LatLng circleVerts[CIRCLE_NUM_VERTS];
+GeoLoop circleGeoLoop;
+GeoPolygon circleGeoPolygon;
+
 BEGIN_BENCHMARKS();
+
+// Centered on San Francisco, radius roughly 300 km (in radians).
+{
+    const double centerLat = 0.659966917655;
+    const double centerLng = -2.1364398519396;
+    const double radius = 300.0 / 6371.0;
+    for (int i = 0; i < CIRCLE_NUM_VERTS; i++) {
+        double theta = 2.0 * M_PI * i / CIRCLE_NUM_VERTS;
+        circleVerts[i].lat = centerLat + radius * sin(theta);
+        circleVerts[i].lng = centerLng + radius * cos(theta) / cos(centerLat);
+    }
+}
+circleGeoLoop.numVerts = CIRCLE_NUM_VERTS;
+circleGeoLoop.verts = circleVerts;
+circleGeoPolygon.geoloop = circleGeoLoop;
 
 sfGeoLoop.numVerts = 6;
 sfGeoLoop.verts = sfVerts;
@@ -140,6 +166,24 @@ BENCHMARK(polygonToCellsSouthernExpansion, 10, {
     hexagons = calloc(numHexagons, sizeof(H3Index));
     H3_EXPORT(polygonToCells)(&southernGeoPolygon, 9, 0, hexagons);
     free(hexagons);
+});
+
+BENCHMARK(polygonToCellsCircle4000VertsRes4, 100, {
+    H3_EXPORT(maxPolygonToCellsSize)(&circleGeoPolygon, 4, 0, &numHexagons);
+    hexagons = calloc(numHexagons, sizeof(H3Index));
+    H3_EXPORT(polygonToCells)(&circleGeoPolygon, 4, 0, hexagons);
+    free(hexagons);
+});
+
+BENCHMARK(polygonToCellsCircle4000VertsRes5, 100, {
+    H3_EXPORT(maxPolygonToCellsSize)(&circleGeoPolygon, 5, 0, &numHexagons);
+    hexagons = calloc(numHexagons, sizeof(H3Index));
+    H3_EXPORT(polygonToCells)(&circleGeoPolygon, 5, 0, hexagons);
+    free(hexagons);
+});
+
+BENCHMARK(maxPolygonToCellsSizeSF, 10000, {
+    H3_EXPORT(maxPolygonToCellsSize)(&sfGeoPolygon, 9, 0, &numHexagons);
 });
 
 END_BENCHMARKS();
