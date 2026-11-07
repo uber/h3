@@ -44,4 +44,32 @@ SUITE(baseCellsInternal) {
         t_assert(_isBaseCellPentagon(-1) == false,
                  "isBaseCellPentagon handles negative");
     }
+
+    TEST(getBaseCellNeighbor_invalid) {
+        t_assert(_getBaseCellNeighbor(NUM_BASE_CELLS, CENTER_DIGIT) ==
+                     INVALID_BASE_CELL,
+                 "getBaseCellNeighbor handles one past the last base cell");
+        t_assert(_getBaseCellNeighbor(-1, CENTER_DIGIT) == INVALID_BASE_CELL,
+                 "getBaseCellNeighbor handles negative base cell");
+    }
+
+    TEST(baseCellToFaceIjk_invalid) {
+        FaceIJK fijk = {1, {1, 1, 1}};
+        _baseCellToFaceIjk(NUM_BASE_CELLS, &fijk);
+        t_assert(fijk.face == 0 && fijk.coord.i == 0 && fijk.coord.j == 0 &&
+                     fijk.coord.k == 0,
+                 "baseCellToFaceIjk zeroes output for one past the last base "
+                 "cell");
+        _baseCellToFaceIjk(-1, &fijk);
+        t_assert(fijk.face == 0 && fijk.coord.i == 0 && fijk.coord.j == 0 &&
+                     fijk.coord.k == 0,
+                 "baseCellToFaceIjk zeroes output for negative base cell");
+    }
+
+    TEST(baseCellIsCwOffset_invalid) {
+        t_assert(_baseCellIsCwOffset(NUM_BASE_CELLS, 0) == false,
+                 "baseCellIsCwOffset handles one past the last base cell");
+        t_assert(_baseCellIsCwOffset(-1, 0) == false,
+                 "baseCellIsCwOffset handles negative base cell");
+    }
 }
