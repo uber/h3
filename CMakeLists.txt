@@ -280,6 +280,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testGridPathCellsExhaustive.c
     src/apps/testapps/testH3CellArea.c
     src/apps/testapps/testH3CellAreaExhaustive.c
+    src/apps/testapps/testExactProjectionExhaustive.c
     src/apps/testapps/testCoordIjInternal.c
     src/apps/testapps/testCoordIjkInternal.c
     src/apps/testapps/testH3Memory.c

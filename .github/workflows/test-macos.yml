@@ -19,8 +19,11 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - name: Install MPFR
+        run: brew install mpfr
+
       - name: Configure build
-        run: cmake -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.build_type}} -DWARNINGS_AS_ERRORS=ON .
+        run: cmake -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.build_type}} -DWARNINGS_AS_ERRORS=ON -DENABLE_EXACT_PROJECTION_TEST=ON .
 
       - name: Build
         working-directory: build
