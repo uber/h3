@@ -17,6 +17,8 @@
  * @brief Benchmarks comparing cellsToLinkedMultiPolygon and cellsToMultiPolygon
  */
 
+#include <inttypes.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "benchmark.h"
@@ -148,6 +150,49 @@ BEGIN_BENCHMARKS();
     BENCHMARK_DIRECT(colorado, 100);
 
     free(cells);
+}
+
+{
+    // Uncompact a single cell to a finer res for a larger input
+    H3Index h = 0x8075fffffffffff;
+    int child_res = 6;
+
+    int64_t numCells;
+    H3_EXPORT(cellToChildrenSize)(h, child_res, &numCells);
+
+    H3Index *cells = malloc(numCells * sizeof(H3Index));
+    H3_EXPORT(cellToChildren)(h, child_res, cells);
+
+    BENCHMARK_DIRECT(manyChildrenRes6, 5);
+
+    free(cells);
+}
+
+{
+    // Filled-in k-disks of increasing size at res 9
+    H3Index origin = 0x89283082813ffff;
+    int ks[] = {50, 100, 200};
+    int iters[] = {20, 10, 5};
+
+    for (int d = 0; d < 3; d++) {
+        int64_t maxCells;
+        H3_EXPORT(maxGridDiskSize)(ks[d], &maxCells);
+
+        H3Index *cells = calloc(maxCells, sizeof(H3Index));
+        H3_EXPORT(gridDisk)(origin, ks[d], cells);
+
+        int64_t numCells = 0;
+        for (int64_t j = 0; j < maxCells; j++) {
+            if (cells[j] != H3_NULL) {
+                cells[numCells++] = cells[j];
+            }
+        }
+
+        printf("gridDisk k=%d (%" PRId64 " cells):\n", ks[d], numCells);
+        BENCHMARK_DIRECT(gridDisk, iters[d]);
+
+        free(cells);
+    }
 }
 
 END_BENCHMARKS();
