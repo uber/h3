@@ -315,6 +315,47 @@ H3Error H3_EXPORT(cellToVertexes)(H3Index cell, H3Index *vertexes) {
 }
 
 /**
+ * Get the start and end vertexes of a directed edge, as H3 indexes. The
+ * vertexes are ordered according to the right-hand rule: the start vertex
+ * is the first topological vertex of the edge's origin cell in the edge's
+ * direction, and the end vertex is the next vertex in CCW order.
+ * @param edge Directed edge to get the vertexes for
+ * @param v1   Output: The start vertex index
+ * @param v2   Output: The end vertex index
+ */
+H3Error H3_EXPORT(edgeToVertexes)(H3Index edge, H3Index *v1, H3Index *v2) {
+    // Validate the edge and get its origin cell
+    if (!H3_EXPORT(isValidDirectedEdge)(edge)) {
+        return E_DIR_EDGE_INVALID;
+    }
+    H3Index origin;
+    H3Error originError = H3_EXPORT(getDirectedEdgeOrigin)(edge, &origin);
+    if (originError) {
+        return originError;
+    }
+
+    // Get the first (start) vertex number for the edge's direction
+    Direction direction = H3_GET_RESERVED_BITS(edge);
+    int startVertexNum = vertexNumForDirection(origin, direction);
+    // This is unreachable, since isValidDirectedEdge validates the direction
+    if (NEVER(startVertexNum == INVALID_VERTEX_NUM)) {
+        return E_DIR_EDGE_INVALID;
+    }
+
+    // The second (end) vertex is the next one in CCW order
+    int cellNumVerts =
+        H3_EXPORT(isPentagon)(origin) ? NUM_PENT_VERTS : NUM_HEX_VERTS;
+    int endVertexNum = (startVertexNum + 1) % cellNumVerts;
+
+    // Convert the vertex numbers to H3 vertex indexes
+    H3Error v1Error = H3_EXPORT(cellToVertex)(origin, startVertexNum, v1);
+    if (v1Error) {
+        return v1Error;
+    }
+    return H3_EXPORT(cellToVertex)(origin, endVertexNum, v2);
+}
+
+/**
  * Get the geocoordinates of an H3 vertex
  * @param vertex H3 index describing a vertex
  * @param coord  Output geo coordinate
