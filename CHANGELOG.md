@@ -7,7 +7,7 @@ The public API of this library consists of the functions declared in file
 
 ## [Unreleased]
 ### Added
-- `edgeToVertexes` function, returning the two vertexes at the ends of a directed edge (#1071, #421)
+- `edgeToVertexes` function, returning the two vertexes at the ends of a directed edge (#1071, #421, #1272)
 
 ### Fixed
 - Fixed an out of bounds write in `gridRing` when passed a negative `k`: the fallback path wiped the output array with a width computed from `6 * k`, which for a negative `k` becomes a `size_t` of about 1.8e19. The width now comes from `maxGridRingSize`, which validates `k` and computes in 64 bits
