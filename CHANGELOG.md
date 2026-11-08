@@ -16,6 +16,7 @@ The public API of this library consists of the functions declared in file
 - Test coverage improvements (#1183, #1184, #1185, #1186, #1192, #1193, #1194, #1195, #1196, #1207, #1210, #1214)
 - All website dependencies are marked as `devDependencies` as they are not part of the C build process (#1206)
 - Added 32 bit Linux builds to CI (#1237)
+- Replace the retired macos-14 CI runner with macos-15-intel (#1292)
 
 ### Fixed
 - Fixed an out of bounds write in `gridRing` when passed a negative `k` (#1235)
