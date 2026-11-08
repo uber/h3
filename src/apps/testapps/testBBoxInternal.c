@@ -46,7 +46,7 @@ void assertBBox(const BBox *bbox, const BBox *expected) {
     t_assert(geoAlmostEqual(&actualSW, &expectedSW), "SW corner matches");
 }
 
-SUITE(BBox) {
+SUITE(BBoxInternal) {
     TEST(posLatPosLng) {
         LatLng verts[] = {{0.8, 0.3}, {0.7, 0.6}, {1.1, 0.7}, {1.0, 0.2}};
         const GeoLoop geoloop = {.numVerts = 4, .verts = verts};
