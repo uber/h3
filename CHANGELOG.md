@@ -31,6 +31,7 @@ The public API of this library consists of the functions declared in file
 - Clamp polygon bbox latitudes to the valid sphere range, fixing `polygonToCellsExperimental` spending a long time on tiny input (#1226)
 - Fixed `clang-tidy` deprecated setting error (#1216)
 - Fixed possible signed integer overflow in `uncompactCellsSize` (#1205)
+- Fixed incorrect test suite names (#1294)
 
 ## [4.5.0] - 2026-05-21
 ### Added
