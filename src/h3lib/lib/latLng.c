@@ -174,6 +174,15 @@ double H3_EXPORT(greatCircleDistanceRads)(const LatLng *a, const LatLng *b) {
 
     double A = sinLat * sinLat + cos(a->lat) * cos(b->lat) * sinLng * sinLng;
 
+    // A is mathematically in [0, 1], but rounding can push it fractionally
+    // outside that range (e.g. just above 1 for near-antipodal points),
+    // which makes sqrt() below return NaN.
+    if (A > 1) {
+        A = 1;
+    } else if (A < 0) {
+        A = 0;
+    }
+
     return 2 * atan2(sqrt(A), sqrt(1 - A));
 }
 
