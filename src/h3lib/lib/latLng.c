@@ -179,7 +179,9 @@ double H3_EXPORT(greatCircleDistanceRads)(const LatLng *a, const LatLng *b) {
     // which makes sqrt() below return NaN.
     if (A > 1) {
         A = 1;
-    } else if (NEVER(A < 0)) {
+    } else if (A < 0) {
+        // Reachable with out-of-range lat/lng, which this public API does
+        // not validate; the fuzzer corpus hits it. Not a NEVER() case.
         A = 0;
     }
 
