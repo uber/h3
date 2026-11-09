@@ -299,6 +299,35 @@ add_h3_test(testH3CellAreaExhaustive
 add_h3_test(testCellToBBoxExhaustive
             src/apps/testapps/testCellToBBoxExhaustive.c)
 
+# Compares the projection against an exact evaluation, so it needs MPFR. It is
+# built only when MPFR is found, and nothing else in the build uses MPFR.
+find_path(MPFR_INCLUDE_DIR mpfr.h)
+find_library(MPFR_LIBRARY mpfr)
+find_library(GMP_LIBRARY gmp)
+if(MPFR_INCLUDE_DIR
+   AND MPFR_LIBRARY
+   AND GMP_LIBRARY)
+    set(MPFR_FOUND ON)
+else()
+    set(MPFR_FOUND OFF)
+endif()
+option(ENABLE_EXACT_PROJECTION_TEST
+       "Build the test comparing the projection against MPFR" ${MPFR_FOUND})
+if(ENABLE_EXACT_PROJECTION_TEST)
+    if(NOT MPFR_FOUND)
+        message(
+            FATAL_ERROR "ENABLE_EXACT_PROJECTION_TEST requires MPFR and GMP")
+    endif()
+    add_h3_test(testExactProjectionExhaustive
+                src/apps/testapps/testExactProjectionExhaustive.c)
+    target_include_directories(testExactProjectionExhaustive
+                               PRIVATE ${MPFR_INCLUDE_DIR})
+    target_link_libraries(testExactProjectionExhaustive
+                          PRIVATE ${MPFR_LIBRARY} ${GMP_LIBRARY})
+else()
+    message(STATUS "MPFR not found, skipping testExactProjectionExhaustive")
+endif()
+
 file(GLOB cli_tests tests/cli/*.txt)
 foreach(file ${cli_tests})
     include(${file})

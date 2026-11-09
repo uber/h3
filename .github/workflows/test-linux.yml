@@ -31,13 +31,13 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Install Doxygen
+      - name: Install Doxygen and MPFR
         run: |
           sudo apt update
-          sudo apt-get install doxygen graphviz clang-format-14
+          sudo apt-get install doxygen graphviz clang-format-14 libmpfr-dev
 
       - name: Configure build
-        run: cmake -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DWARNINGS_AS_ERRORS=ON .
+        run: cmake -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DWARNINGS_AS_ERRORS=ON -DENABLE_EXACT_PROJECTION_TEST=ON .
 
       - name: Formatting check
         working-directory: build
@@ -102,7 +102,9 @@ jobs:
           sudo apt-get install doxygen graphviz clang-format-14
 
       - name: Configure build
-        run: cmake -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DWARNINGS_AS_ERRORS=ON -DCMAKE_C_FLAGS="${{ matrix.compile_opt }}" .
+        # MPFR is not instrumented for the sanitizers, so the exact projection
+        # test runs in the gcc jobs only
+        run: cmake -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DWARNINGS_AS_ERRORS=ON -DCMAKE_C_FLAGS="${{ matrix.compile_opt }}" -DENABLE_EXACT_PROJECTION_TEST=OFF .
 
       - name: Formatting check
         working-directory: build
