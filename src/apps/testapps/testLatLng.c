@@ -113,6 +113,23 @@ SUITE(latLng) {
         t_assert(isfinite(poleDist), "Pole-to-pole distance is finite");
         t_assert(fabs(poleDist - M_PI) < EPSILON_RAD,
                  "Pole-to-pole distance is pi");
+
+        // Guard against an overly broad clamp: a point just short of
+        // antipodal should resolve to its actual angle, not pi.
+        LatLng nearA;
+        setGeoDegs(&nearA, 0, 0);
+        LatLng nearB;
+        setGeoDegs(&nearB, 0, 179.9999);
+        double nearDist = H3_EXPORT(greatCircleDistanceRads)(&nearA, &nearB);
+        double expectedNearDist = H3_EXPORT(degsToRads)(179.9999);
+        t_assert(isfinite(nearDist), "Near-antipodal distance is finite");
+        // Comparing a haversine-computed distance against a direct degree
+        // conversion needs a looser tolerance than EPSILON_RAD, same as the
+        // existing distance-vs-degsToRads comparison above.
+        t_assert(fabs(nearDist - expectedNearDist) < EPSILON_RAD * 1000,
+                 "Near-antipodal distance matches the actual angle");
+        t_assert(fabs(nearDist - M_PI) > EPSILON_RAD,
+                 "Near-antipodal distance is distinguishable from pi");
     }
 
     TEST(doubleConstants) {
