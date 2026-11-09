@@ -43,3 +43,15 @@ add_h3_cli_test(
     "uncompactCells -r 5 -c \\\\`cat ${PROJECT_SOURCE_DIR}/tests/inputfiles/uncompact_test3.txt\\\\` -f newline | tr -s '\\\\r\\\\n' ',' | tr -s '\\\\n' ','"
     "85283447fffffff,8528340ffffffff,8528340bfffffff,85283457fffffff,85283443fffffff,8528344ffffffff,852836b7fffffff,8528342bfffffff,8528343bfffffff,85283407fffffff,85283403fffffff,8528341bfffffff,85283463fffffff,85283467fffffff,8528346bfffffff,8528346ffffffff,85283473fffffff,85283477fffffff,8528347bfffffff,"
 )
+add_h3_cli_test(
+    testCliUncompactCellsArg100Cells
+    "uncompactCells -r 1 -c \"\\\\`cat ${PROJECT_SOURCE_DIR}/tests/inputfiles/uncompact_test4.txt\\\\`\" -f newline | wc -l | tr -d ' '"
+    "100")
+add_h3_cli_test(
+    testCliUncompactCellsFileCellInLast15Bytes
+    "uncompactCells -r 1 -i ${PROJECT_SOURCE_DIR}/tests/inputfiles/uncompact_test5.txt -f newline | wc -l | tr -d ' '"
+    "93")
+add_h3_cli_test(
+    testCliUncompactCellsStdinCellInLast15Bytes
+    "uncompactCells -r 1 -i -- < ${PROJECT_SOURCE_DIR}/tests/inputfiles/uncompact_test5.txt -f newline | wc -l | tr -d ' '"
+    "93")
