@@ -7,6 +7,7 @@ The public API of this library consists of the functions declared in file
 
 ## [Unreleased]
 ### Fixed
+- Fixed `polygonToCellsExperimental` with `CONTAINMENT_FULL` returning a cell outside the polygon when that cell's first vertex lies on the polygon's edge, as happens for neighbors of a polygon built from H3 cells. `cellBoundaryInsidePolygon` now also tests a point inside the boundary
 - Fixed an out of bounds write in `gridRing` when passed a negative `k`: the fallback path wiped the output array with a width computed from `6 * k`, which for a negative `k` becomes a `size_t` of about 1.8e19. The width now comes from `maxGridRingSize`, which validates `k` and computes in 64 bits
 - Avoid signed integer overflow when accumulating vertex counts in `maxPolygonToCellsSize` (#1204)
 - Fixed the `polygonToCells` fuzzer regression test to use explicit double literals instead of reinterpreting raw bytes, so it is portable across endianness (#964)
