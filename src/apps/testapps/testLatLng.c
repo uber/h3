@@ -132,6 +132,23 @@ SUITE(latLng) {
                  "Near-antipodal distance is distinguishable from pi");
     }
 
+    TEST(distanceRads_hugeInputsClampNegativeA) {
+        // greatCircleDistanceRads has no precondition that lat/lng be valid
+        // angles. For most out-of-range inputs A stays >= 0 (the haversine
+        // identity A = sin^2(centralAngle/2) holds for any real lat/lng),
+        // but at a large enough magnitude sin()/cos() argument reduction
+        // itself loses all precision and A can go negative. These specific
+        // values are one such case, found by search and confirmed stable
+        // at -O0 and -O2.
+        LatLng a = {.lat = 7.3976404290321633e+52,
+                    .lng = 7.2102191236323398e+52};
+        LatLng b = {.lat = -6.8262031828527172e+52,
+                    .lng = 4.7762907518189019e+52};
+        double dist = H3_EXPORT(greatCircleDistanceRads)(&a, &b);
+        t_assert(isfinite(dist), "Huge-input distance is finite, not NaN");
+        t_assert(fabs(dist) < EPSILON_RAD, "Huge-input distance clamps to 0");
+    }
+
     TEST(doubleConstants) {
         // Simple checks for ordering of values
         testDecreasingFunction(H3_EXPORT(getHexagonAreaAvgKm2),
