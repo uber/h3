@@ -20,6 +20,14 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
+// Pull in the platform's math constants first so the fallbacks below only apply
+// where the platform provides none (e.g. MSVC without _USE_MATH_DEFINES).
+// Otherwise a translation unit that reaches this header before <math.h> defines
+// M_PI/M_PI_2 with fewer digits than the platform, which Clang modules flag as
+// an ambiguous macro expansion (the token sequences differ even though the
+// values are identical).
+#include <math.h>
+
 #ifndef M_PI
 /** pi */
 #define M_PI 3.14159265358979323846
