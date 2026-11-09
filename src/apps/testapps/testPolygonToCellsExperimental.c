@@ -455,7 +455,11 @@ SUITE(polygonToCells) {
         H3Index cell = 0x837c16fffffffff;
         CellBoundary boundary;
         t_assertSuccess(H3_EXPORT(cellToBoundary)(cell, &boundary));
-        // Round trip through degrees, as a GeoJSON polygon would
+        // Round trip through degrees, as a GeoJSON polygon would. This is not
+        // a no-op: with the exact radians from cellToBoundary the shared
+        // vertex is not inside the polygon, and the test passes even without
+        // the fix. After the round trip it lands inside, which is the case
+        // that used to report the neighbor as fully contained.
         for (int i = 0; i < boundary.numVerts; i++) {
             boundary.verts[i].lat = H3_EXPORT(degsToRads)(
                 H3_EXPORT(radsToDegs)(boundary.verts[i].lat));
