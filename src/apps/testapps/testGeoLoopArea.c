@@ -201,6 +201,39 @@ SUITE(geoLoopArea) {
         _compareArea(verts, ARRAY_SIZE(verts), t * M_PI);
     }
 
+    TEST(antimeridianTriangle) {
+        /*
+        A small triangle straddling the antimeridian should have the same
+        area as the same triangle straddling the prime meridian. The
+        longitude step across +-180 degrees must not be lost to rounding of
+        the raw difference, which is close to 2*pi.
+
+        Two edges cross the antimeridian with different longitude steps, so
+        their rounding errors do not cancel as they would for a rectangle.
+        */
+        double lat = 0.5;
+        double h = 1e-7;
+        LatLng antimeridian[] = {
+            {lat - h, M_PI - h},
+            {lat - h, -M_PI + h},
+            {lat + h, -M_PI + 3 * h},
+        };
+        LatLng prime[] = {
+            {lat - h, -h},
+            {lat - h, h},
+            {lat + h, 3 * h},
+        };
+        GeoLoop a = {.verts = antimeridian,
+                     .numVerts = ARRAY_SIZE(antimeridian)};
+        GeoLoop b = {.verts = prime, .numVerts = ARRAY_SIZE(prime)};
+
+        double areaA, areaB;
+        t_assertSuccess(geoLoopAreaRads2(a, &areaA));
+        t_assertSuccess(geoLoopAreaRads2(b, &areaB));
+        t_assert(fabs(areaA / areaB - 1.0) < 1e-6,
+                 "area should not depend on longitude");
+    }
+
     TEST(degenerateLoop2) {
         // Note that `geoLoopAreaRads2()` works without error on degenerate
         // loops, returning 0 area.

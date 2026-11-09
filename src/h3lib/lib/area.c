@@ -37,7 +37,15 @@ static inline double cagnoli(LatLng x, LatLng y) {
     double sa = sin(x.lat) * sin(y.lat);
     double ca = cos(x.lat) * cos(y.lat);
 
+    // For an edge crossing the antimeridian, the raw difference is close to
+    // +-2*pi, and the true (tiny) longitude step is lost to the ulp of 2*pi.
+    // Shift both longitudes to the same side of the antimeridian first so
+    // that the subtraction is between two nearby values; sin and cos are
+    // 2*pi-periodic, so the result is mathematically unchanged.
     double d = y.lng - x.lng;
+    if (d > M_PI || d < -M_PI) {
+        d = (y.lng - copysign(M_PI, y.lng)) - (x.lng - copysign(M_PI, x.lng));
+    }
     double sd = sin(d);
     double cd = cos(d);
 

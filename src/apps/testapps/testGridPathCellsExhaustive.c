@@ -112,7 +112,7 @@ static void gridPathCells_gridDisk_assertions(H3Index h3) {
     free(neighbors);
 }
 
-SUITE(gridPathCells) {
+SUITE(gridPathCellsExhaustive) {
     TEST(gridPathCells_gridDisk) {
         iterateAllIndexesAtRes(0, gridPathCells_gridDisk_assertions);
         iterateAllIndexesAtRes(1, gridPathCells_gridDisk_assertions);

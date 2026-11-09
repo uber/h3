@@ -21,7 +21,7 @@
 
 #define PADDED_COUNT 16
 
-SUITE(getPentagons) {
+SUITE(pentagonIndexes) {
     TEST(propertyTests) {
         int expectedCount = H3_EXPORT(pentagonCount)();
 
