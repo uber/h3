@@ -714,18 +714,6 @@ H3Error H3_EXPORT(polygonToCellsExperimental)(const GeoPolygon *polygon,
 
 static int MAX_SIZE_CELL_THRESHOLD = 10;
 
-static double getAverageCellArea(int res) {
-    double hexAreaKm2;
-    H3_EXPORT(getHexagonAreaAvgKm2)(res, &hexAreaKm2);
-    return hexAreaKm2;
-}
-
-static double getAverageEdgeLength(int res) {
-    double edgeLengthKm;
-    H3_EXPORT(getHexagonEdgeLengthAvgKm)(res, &edgeLengthKm);
-    return edgeLengthKm;
-}
-
 /**
  * maxPolygonToCellsSize returns the number of cells to allocate space for
  * when performing a polygonToCells on the given GeoJSON-like data structure.
@@ -774,11 +762,15 @@ H3Error H3_EXPORT(maxPolygonToCellsSizeExperimental)(const GeoPolygon *polygon,
     // of the number of cells at various resolutions that would fit in the
     // polygon, both by area and along its longest dimension. All we need here
     // is a general order of magnitude.
-    while (iter._res > 0 &&
-           (polygonBBoxAreaKm2 / getAverageCellArea(iter._res - 1) >
-                MAX_SIZE_CELL_THRESHOLD ||
-            polygonBBoxSpanKm / getAverageEdgeLength(iter._res - 1) >
-                MAX_SIZE_CELL_THRESHOLD)) {
+    while (iter._res > 0) {
+        double cellAreaKm2;
+        double edgeLengthKm;
+        H3_EXPORT(getHexagonAreaAvgKm2)(iter._res - 1, &cellAreaKm2);
+        H3_EXPORT(getHexagonEdgeLengthAvgKm)(iter._res - 1, &edgeLengthKm);
+        if (polygonBBoxAreaKm2 / cellAreaKm2 <= MAX_SIZE_CELL_THRESHOLD &&
+            polygonBBoxSpanKm / edgeLengthKm <= MAX_SIZE_CELL_THRESHOLD) {
+            break;
+        }
         iter._res--;
     }
 
