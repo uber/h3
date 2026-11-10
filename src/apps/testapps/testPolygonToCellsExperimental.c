@@ -1144,7 +1144,7 @@ SUITE(polygonToCellsExperimental) {
         // All vertices on the equator: the bounding box has zero area. The
         // size estimate used to pick its working resolution from the area
         // alone, so it would walk every res 15 cell along the whole line.
-        LatLng longLineVerts[] = {{0, 0}, {0, M_PI_4}, {0, M_PI_2}};
+        LatLng longLineVerts[] = {{0, 0}, {0, M_PI / 4}, {0, M_PI / 2}};
         GeoLoop longLineLoop = {.numVerts = 3, .verts = longLineVerts};
         GeoPolygon longLinePolygon = {.geoloop = longLineLoop, .numHoles = 0};
         for (uint32_t flags = 0; flags < CONTAINMENT_INVALID; flags++) {
