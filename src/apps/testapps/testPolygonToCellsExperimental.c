@@ -159,6 +159,28 @@ static void fillIndex_assertions(H3Index h) {
     }
 }
 
+/**
+ * Assert that the experimental size estimate for a degenerate (zero area)
+ * polygon is sufficient for the overlapping fill at the given res, and is not
+ * more than maxRatio times the actual number of cells produced.
+ */
+static void assertDegenerateEstimateIsTight(const GeoPolygon *polygon, int res,
+                                            int64_t maxRatio) {
+    int64_t numHexagons;
+    t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+        polygon, res, CONTAINMENT_OVERLAPPING, &numHexagons));
+    // Fail before trying to allocate an absurd estimate
+    t_assert(numHexagons < 100000000, "estimate is a plausible allocation");
+    H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+    t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
+        polygon, res, CONTAINMENT_OVERLAPPING, numHexagons, hexagons));
+    int64_t actual = countNonNullIndexes(hexagons, numHexagons);
+    free(hexagons);
+    t_assert(actual > 0, "degenerate polygon produces cells");
+    t_assert(numHexagons <= maxRatio * actual,
+             "estimate is within a small factor of the actual count");
+}
+
 SUITE(polygonToCellsExperimental) {
     sfGeoPolygon.geoloop = sfGeoLoop;
     sfGeoPolygon.numHoles = 0;
@@ -1156,22 +1178,24 @@ SUITE(polygonToCellsExperimental) {
 
         // A line long enough to make the estimate coarsen its working
         // resolution (just over MAX_SIZE_SPAN_THRESHOLD res 14 edge lengths)
-        // must still produce an estimate that is sufficient for the fill
+        // must still produce a sufficient estimate, and coarsening must not
+        // inflate it by more than a small factor over the actual count
         LatLng mediumLineVerts[] = {{0, 0}, {0, 0.00135}, {0, 0.0027}};
         GeoLoop mediumLineLoop = {.numVerts = 3, .verts = mediumLineVerts};
         GeoPolygon mediumLinePolygon = {.geoloop = mediumLineLoop,
                                         .numHoles = 0};
-        int64_t mediumNumHexagons;
-        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
-            &mediumLinePolygon, 15, CONTAINMENT_OVERLAPPING,
-            &mediumNumHexagons));
-        H3Index *mediumHexagons = calloc(mediumNumHexagons, sizeof(H3Index));
-        t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
-            &mediumLinePolygon, 15, CONTAINMENT_OVERLAPPING, mediumNumHexagons,
-            mediumHexagons));
-        t_assert(countNonNullIndexes(mediumHexagons, mediumNumHexagons) > 0,
-                 "medium line produces cells");
-        free(mediumHexagons);
+        assertDegenerateEstimateIsTight(&mediumLinePolygon, 15, 10);
+
+        // A short line near the pole spanning 90 degrees of longitude. The
+        // longitude span must be scaled by latitude when deciding whether to
+        // coarsen: unscaled, this ~17 km line looks ~10,000 km long and the
+        // estimate explodes into the trillions.
+        double polarLat = H3_EXPORT(degsToRads)(89.9);
+        LatLng polarLineVerts[] = {
+            {polarLat, 0}, {polarLat, M_PI / 4}, {polarLat, M_PI / 2}};
+        GeoLoop polarLineLoop = {.numVerts = 3, .verts = polarLineVerts};
+        GeoPolygon polarLinePolygon = {.geoloop = polarLineLoop, .numHoles = 0};
+        assertDegenerateEstimateIsTight(&polarLinePolygon, 15, 10);
 
         // A short line should still produce a sufficient estimate
         LatLng shortLineVerts[] = {{0, 0}, {0, 0.00015}, {0, 0.0003}};
