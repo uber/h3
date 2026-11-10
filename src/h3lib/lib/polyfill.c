@@ -720,6 +720,12 @@ static double getAverageCellArea(int res) {
     return hexAreaKm2;
 }
 
+static double getAverageEdgeLength(int res) {
+    double edgeLengthKm;
+    H3_EXPORT(getHexagonEdgeLengthAvgKm)(res, &edgeLengthKm);
+    return edgeLengthKm;
+}
+
 /**
  * maxPolygonToCellsSize returns the number of cells to allocate space for
  * when performing a polygonToCells on the given GeoJSON-like data structure.
@@ -756,12 +762,23 @@ H3Error H3_EXPORT(maxPolygonToCellsSizeExperimental)(const GeoPolygon *polygon,
         cos(fmin(fabs(polygonBBox->north), fabs(polygonBBox->south))) *
         EARTH_RADIUS_KM * EARTH_RADIUS_KM;
 
+    // Also get a (very) rough length of the longer side of the bounding box.
+    // The area alone is not enough: a very thin or degenerate polygon (e.g. all
+    // vertices on the same latitude) has near-zero area, but the iterator
+    // below still has to visit every cell along its length.
+    double polygonBBoxSpanKm =
+        fmax(bboxHeightRads(polygonBBox), bboxWidthRads(polygonBBox)) *
+        EARTH_RADIUS_KM;
+
     // Determine the res for the size estimate, based on a (very) rough estimate
     // of the number of cells at various resolutions that would fit in the
-    // polygon. All we need here is a general order of magnitude.
+    // polygon, both by area and along its longest dimension. All we need here
+    // is a general order of magnitude.
     while (iter._res > 0 &&
-           polygonBBoxAreaKm2 / getAverageCellArea(iter._res - 1) >
-               MAX_SIZE_CELL_THRESHOLD) {
+           (polygonBBoxAreaKm2 / getAverageCellArea(iter._res - 1) >
+                MAX_SIZE_CELL_THRESHOLD ||
+            polygonBBoxSpanKm / getAverageEdgeLength(iter._res - 1) >
+                MAX_SIZE_CELL_THRESHOLD)) {
         iter._res--;
     }
 

@@ -1140,6 +1140,35 @@ SUITE(polygonToCellsExperimental) {
         free(hexagons);
     }
 
+    TEST(maxPolygonToCellsSizeExperimentalDegenerate) {
+        // All vertices on the equator: the bounding box has zero area. The
+        // size estimate used to pick its working resolution from the area
+        // alone, so it would walk every res 15 cell along the whole line.
+        LatLng longLineVerts[] = {{0, 0}, {0, M_PI_4}, {0, M_PI_2}};
+        GeoLoop longLineLoop = {.numVerts = 3, .verts = longLineVerts};
+        GeoPolygon longLinePolygon = {.geoloop = longLineLoop, .numHoles = 0};
+        for (uint32_t flags = 0; flags < CONTAINMENT_INVALID; flags++) {
+            int64_t numHexagons;
+            t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+                &longLinePolygon, 15, flags, &numHexagons));
+            t_assert(numHexagons > 0, "degenerate polygon has an estimate");
+        }
+
+        // A short line should still produce a sufficient estimate
+        LatLng shortLineVerts[] = {{0, 0}, {0, 0.00015}, {0, 0.0003}};
+        GeoLoop shortLineLoop = {.numVerts = 3, .verts = shortLineVerts};
+        GeoPolygon shortLinePolygon = {.geoloop = shortLineLoop, .numHoles = 0};
+        for (uint32_t flags = 0; flags < CONTAINMENT_INVALID; flags++) {
+            int64_t numHexagons;
+            t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+                &shortLinePolygon, 12, flags, &numHexagons));
+            H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+            t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
+                &shortLinePolygon, 12, flags, numHexagons, hexagons));
+            free(hexagons);
+        }
+    }
+
     TEST(fillIndex) {
         iterateAllIndexesAtRes(0, fillIndex_assertions);
         iterateAllIndexesAtRes(1, fillIndex_assertions);
