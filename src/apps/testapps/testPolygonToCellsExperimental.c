@@ -1154,6 +1154,25 @@ SUITE(polygonToCellsExperimental) {
             t_assert(numHexagons > 0, "degenerate polygon has an estimate");
         }
 
+        // A line long enough to make the estimate coarsen its working
+        // resolution (just over MAX_SIZE_SPAN_THRESHOLD res 14 edge lengths)
+        // must still produce an estimate that is sufficient for the fill
+        LatLng mediumLineVerts[] = {{0, 0}, {0, 0.00135}, {0, 0.0027}};
+        GeoLoop mediumLineLoop = {.numVerts = 3, .verts = mediumLineVerts};
+        GeoPolygon mediumLinePolygon = {.geoloop = mediumLineLoop,
+                                        .numHoles = 0};
+        int64_t mediumNumHexagons;
+        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+            &mediumLinePolygon, 15, CONTAINMENT_OVERLAPPING,
+            &mediumNumHexagons));
+        H3Index *mediumHexagons = calloc(mediumNumHexagons, sizeof(H3Index));
+        t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
+            &mediumLinePolygon, 15, CONTAINMENT_OVERLAPPING, mediumNumHexagons,
+            mediumHexagons));
+        t_assert(countNonNullIndexes(mediumHexagons, mediumNumHexagons) > 0,
+                 "medium line produces cells");
+        free(mediumHexagons);
+
         // A short line should still produce a sufficient estimate
         LatLng shortLineVerts[] = {{0, 0}, {0, 0.00015}, {0, 0.0003}};
         GeoLoop shortLineLoop = {.numVerts = 3, .verts = shortLineVerts};
