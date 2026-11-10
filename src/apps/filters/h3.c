@@ -44,7 +44,7 @@
 #define PARSE_SUBCOMMAND(argc, argv, args)                                  \
     if (parseArgs(argc, argv, sizeof(args) / sizeof(Arg *), args, &helpArg, \
                   args[0]->helpText)) {                                     \
-        return E_SUCCESS;                                                   \
+        return helpArg.found ? E_SUCCESS : E_FAILED;                        \
     }
 
 #define SUBCOMMAND(name, help)                            \
