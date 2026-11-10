@@ -34,13 +34,16 @@
         });                                                                 \
     } while (0)
 
-#define BENCHMARK_DIRECT(NAME, ITERS)                                \
-    do {                                                             \
-        BENCHMARK(direct_##NAME, ITERS, {                            \
-            GeoMultiPolygon mpoly;                                   \
-            H3_EXPORT(cellsToMultiPolygon)(cells, numCells, &mpoly); \
-            H3_EXPORT(destroyGeoMultiPolygon)(&mpoly);               \
-        });                                                          \
+#define BENCHMARK_DIRECT(NAME, ITERS)                                    \
+    do {                                                                 \
+        BENCHMARK(direct_##NAME, ITERS, {                                \
+            GeoMultiPolygon mpoly;                                       \
+            H3Error err =                                                \
+                H3_EXPORT(cellsToMultiPolygon)(cells, numCells, &mpoly); \
+            if (!err) {                                                  \
+                H3_EXPORT(destroyGeoMultiPolygon)(&mpoly);               \
+            }                                                            \
+        });                                                              \
     } while (0)
 
 BEGIN_BENCHMARKS();
