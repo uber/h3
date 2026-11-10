@@ -147,7 +147,7 @@ int _parseArgsList(int argc, char *argv[], int numArgs, Arg *args[],
                     return PARSE_ARGS_MISSING_VALUE;
                 }
 
-                if (!sscanf(argv[i], args[j]->scanFormat, args[j]->value)) {
+                if (sscanf(argv[i], args[j]->scanFormat, args[j]->value) != 1) {
                     *errorMessage = "Failed to parse argument";
                     *errorDetail = argName;
                     return PARSE_ARGS_FAILED_PARSE;
