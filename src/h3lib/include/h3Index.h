@@ -20,6 +20,7 @@
 #ifndef H3INDEX_H
 #define H3INDEX_H
 
+#include "baseCells.h"
 #include "faceijk.h"
 #include "h3api.h"
 
@@ -165,14 +166,45 @@
              << ((MAX_H3_RES - (res)) * H3_PER_DIGIT_OFFSET)))
 
 void setH3Index(H3Index *h, int res, int baseCell, Direction initDigit);
-int isResolutionClassIII(int r);
+
+/**
+ * Returns whether or not a resolution is a Class III grid. Note that odd
+ * resolutions are Class III and even resolutions are Class II.
+ * @param res The H3 resolution.
+ * @return 1 if the resolution is a Class III grid, and 0 if the resolution is
+ *         a Class II grid.
+ */
+static inline int isResolutionClassIII(int res) { return res % 2; }
 
 // Internal functions
+
+/**
+ * Returns the highest resolution non-zero digit in an H3Index.
+ * @param h The H3Index.
+ * @return The highest resolution non-zero digit in the H3Index.
+ */
+static inline Direction _h3LeadingNonZeroDigit(H3Index h) {
+    for (int r = 1; r <= H3_GET_RESOLUTION(h); r++)
+        if (H3_GET_INDEX_DIGIT(h, r)) return H3_GET_INDEX_DIGIT(h, r);
+
+    // if we're here it's all 0's
+    return CENTER_DIGIT;
+}
+
+/**
+ * Internal, inlinable implementation of `isPentagon`, for use within the
+ * library.
+ * @param h The H3Index to check.
+ * @return Returns 1 if it is a pentagon, otherwise 0.
+ */
+static inline int _h3IsPentagon(H3Index h) {
+    return _isBaseCellPentagon(H3_GET_BASE_CELL(h)) &&
+           !_h3LeadingNonZeroDigit(h);
+}
 
 int _h3ToFaceIjkWithInitializedFijk(H3Index h, FaceIJK *fijk);
 H3Error _h3ToFaceIjk(H3Index h, FaceIJK *fijk);
 H3Index _faceIjkToH3(const FaceIJK *fijk, int res);
-Direction _h3LeadingNonZeroDigit(H3Index h);
 H3Index _h3RotatePent60ccw(H3Index h);
 H3Index _h3RotatePent60cw(H3Index h);
 H3Index _h3Rotate60ccw(H3Index h);
