@@ -2012,13 +2012,17 @@ SUBCOMMAND(cellsToMultiPolygon,
                 printf("(");
                 LinkedLatLng *currLatLng = currLoop->first;
                 while (currLatLng) {
-                    printf("%f %f",
+                    printf("%f %f, ",
                            H3_EXPORT(radsToDegs)(currLatLng->vertex.lng),
                            H3_EXPORT(radsToDegs)(currLatLng->vertex.lat));
                     currLatLng = currLatLng->next;
-                    if (currLatLng) {
-                        printf(", ");
-                    }
+                }
+                // WKT has the first and last points match, so re-print the
+                // first one
+                if (currLoop->first) {
+                    printf("%f %f",
+                           H3_EXPORT(radsToDegs)(currLoop->first->vertex.lng),
+                           H3_EXPORT(radsToDegs)(currLoop->first->vertex.lat));
                 }
                 currLoop = currLoop->next;
                 if (currLoop) {
