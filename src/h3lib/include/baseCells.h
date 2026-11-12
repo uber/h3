@@ -49,14 +49,33 @@ extern const BaseCellData baseCellData[NUM_BASE_CELLS];
 #define INVALID_ROTATIONS -1
 
 // Internal functions
-int _isBaseCellPentagon(int baseCell);
-bool _isBaseCellPolarPentagon(int baseCell);
 int _faceIjkToBaseCell(const FaceIJK *h);
 int _faceIjkToBaseCellCCWrot60(const FaceIJK *h);
 int _baseCellToCCWrot60(int baseCell, int face);
 void _baseCellToFaceIjk(int baseCell, FaceIJK *h);
-bool _baseCellIsCwOffset(int baseCell, int testFace);
 int _getBaseCellNeighbor(int baseCell, Direction dir);
 Direction _getBaseCellDirection(int originBaseCell, int destinationBaseCell);
+
+/** @brief Return whether or not the indicated base cell is a pentagon. */
+static inline int _isBaseCellPentagon(int baseCell) {
+    if (baseCell < 0 || baseCell >= NUM_BASE_CELLS) {
+        // Base cells less than zero can not be represented in an index
+        return false;
+    }
+    return baseCellData[baseCell].isPentagon;
+}
+
+/** @brief Return whether the indicated base cell is a pentagon where all
+ * neighbors are oriented towards it. */
+static inline bool _isBaseCellPolarPentagon(int baseCell) {
+    return baseCell == 4 || baseCell == 117;
+}
+
+/** @brief Return whether or not the tested face is a cw offset face.
+ */
+static inline bool _baseCellIsCwOffset(int baseCell, int testFace) {
+    return baseCellData[baseCell].cwOffsetPent[0] == testFace ||
+           baseCellData[baseCell].cwOffsetPent[1] == testFace;
+}
 
 #endif

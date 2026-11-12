@@ -613,7 +613,7 @@ H3Error h3NeighborRotations(H3Index origin, Direction dir, int *rotations,
  * probably acceptable.
  */
 Direction directionForNeighbor(H3Index origin, H3Index destination) {
-    bool isPent = H3_EXPORT(isPentagon)(origin);
+    bool isPent = _h3IsPentagon(origin);
     // Checks each neighbor, in order, to determine which direction the
     // destination neighbor is located. Skips CENTER_DIGIT since that
     // would be the origin; skips deleted K direction for pentagons.
@@ -688,7 +688,7 @@ H3Error H3_EXPORT(gridDiskDistancesUnsafe)(H3Index origin, int k, H3Index *out,
     }
     idx++;
 
-    if (H3_EXPORT(isPentagon)(origin)) {
+    if (_h3IsPentagon(origin)) {
         // Pentagon was encountered; bail out as user doesn't want this.
         return E_PENTAGON;
     }
@@ -715,7 +715,7 @@ H3Error H3_EXPORT(gridDiskDistancesUnsafe)(H3Index origin, int k, H3Index *out,
                 return neighborResult;
             }
 
-            if (H3_EXPORT(isPentagon)(origin)) {
+            if (_h3IsPentagon(origin)) {
                 // Pentagon was encountered; bail out as user doesn't want this.
                 return E_PENTAGON;
             }
@@ -744,7 +744,7 @@ H3Error H3_EXPORT(gridDiskDistancesUnsafe)(H3Index origin, int k, H3Index *out,
             }
         }
 
-        if (H3_EXPORT(isPentagon)(origin)) {
+        if (_h3IsPentagon(origin)) {
             // Pentagon was encountered; bail out as user doesn't want this.
             return E_PENTAGON;
         }
@@ -808,7 +808,7 @@ H3Error H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index *out) {
     // which faces have been crossed.)
     int rotations = 0;
     // Scratch structure for checking for pentagons
-    if (H3_EXPORT(isPentagon)(origin)) {
+    if (_h3IsPentagon(origin)) {
         // Pentagon was encountered; bail out as user doesn't want this.
         return E_PENTAGON;
     }
@@ -822,7 +822,7 @@ H3Error H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index *out) {
             return neighborResult;
         }
 
-        if (H3_EXPORT(isPentagon)(origin)) {
+        if (_h3IsPentagon(origin)) {
             return E_PENTAGON;
         }
     }
@@ -849,7 +849,7 @@ H3Error H3_EXPORT(gridRingUnsafe)(H3Index origin, int k, H3Index *out) {
                 out[idx] = origin;
                 idx++;
 
-                if (H3_EXPORT(isPentagon)(origin)) {
+                if (_h3IsPentagon(origin)) {
                     return E_PENTAGON;
                 }
             }
