@@ -299,6 +299,10 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testConformanceHierarchy.c
     src/apps/testapps/testConformanceSets.c
     src/apps/testapps/testConformanceRegions.c
+    src/apps/testapps/testConformanceEdges.c
+    src/apps/testapps/testConformanceVertexes.c
+    src/apps/testapps/testConformanceFloatsEdges.c
+    src/apps/testapps/testConformanceFloatsVertexes.c
     src/apps/testapps/testConformanceManifest.c
     src/apps/testapps/mkConformance.c
     src/apps/miscapps/cellToBoundaryHier.c
