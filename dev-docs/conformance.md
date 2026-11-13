@@ -115,11 +115,14 @@ tests/inputfiles/
   unsafe/cells.jsonl
   localij/pairs.jsonl
   localij/curated.jsonl
+  hierarchy/cells.jsonl
+  hierarchy/curated.jsonl
+  sets/sets.jsonl
+  sets/curated.jsonl
 ```
 
-The remaining groups of the suite (`hierarchy`, `edges`, `vertexes`,
-`sets`, `regions`, the other `floats` files and `digests`) are added group
-by group; the generator already writes all
+The remaining groups of the suite (`edges`, `vertexes`, `regions`, the
+other `floats` files and `digests`) are added group by group; the generator already writes all
 of them, and each is specified here when its files land.
 
 `manifest.json` is the only file a consumer opens by name. Every record file
@@ -375,6 +378,79 @@ Example:
 {"index":"8003fffffffffff","target":"8001fffffffffff","ij":{"i":1,"j":0},"cell":"8001fffffffffff"}
 ```
 
+### `hierarchy`
+
+One line per **valid cell**. Resolution bounds are the only source of errors:
+a resolution-0 cell has no parents, and a resolution-15 cell has no children.
+
+| Key | Function | Type |
+|---|---|---|
+| `index` | the subject cell | index string |
+| `parents` | `cellToParent(index, r)` for `r` from 0 to `res - 1`, in that order | sequence of index strings |
+| `centerChild` | `cellToCenterChild(index, res + 1)` | index string, or error |
+| `children` | `cellToChildren(index, res + 1)`, with `0` padding removed | set of index strings, or error |
+| `childPos` | `cellToChildPos(index, 0)` | integer, or error |
+
+A consumer must also check the round trip `childPosToCell(childPos, parents[0],
+res) == index` (using `index` itself as the parent when `res` is 0) whenever
+`childPos` succeeded.
+
+Example:
+
+```json
+{"index":"8100bffffffffff","parents":["8001fffffffffff"],"centerChild":"820087fffffffff","children":["820087fffffffff","82008ffffffffff","820097fffffffff","82009ffffffffff","8200a7fffffffff","8200affffffffff","8200b7fffffffff"],"childPos":2}
+```
+
+### `sets`
+
+One line per **input set**, built from a subject cell in one of six kinds.
+The `id` is the kind and the cell, joined by `:`. `input` is a sequence
+because duplicates and invalid entries are part of the test; the two
+function outputs are sets.
+
+| Key | Function | Type |
+|---|---|---|
+| `id` | `<kind>:<cell>` | string |
+| `input` | the cells passed to both functions, in order | sequence of index strings |
+| `compact` | `compactCells(input)` | set of index strings, or error |
+| `uncompactRes` | the resolution passed to `uncompactCells` | integer |
+| `uncompact` | `uncompactCells(input, uncompactRes)` | set of index strings, or `true` when that set is `input` as a set, or error |
+
+When `uncompactRes` is the resolution of `input`, `uncompactCells` returns
+the input itself, and the file writes `true` rather than repeating it. A
+consumer that reads `true` compares against `input` with padding removed,
+sorted and deduplicated.
+
+The kinds, for a subject at resolution `res`:
+
+| Kind | `input` | `uncompactRes` |
+|---|---|---|
+| `children` | `cellToChildren(cell, min(res + 2, 15))` | `min(res + 2, 15)` |
+| `disk` | `gridDisk(cell, 2)` in slot order | `res + 1` |
+| `holes` | `gridDisk(cell, 3)` in slot order with one to three slots cleared (see Sampling) | `res` |
+| `duplicate` | `cellToChildren(p, res(p) + 1)` followed by its first entry again, where `p` is the cell, or its parent when `res` is 15 | `res(p) + 1` |
+| `invalid` | `gridDisk(cell, 1)` in slot order followed by the cell with reserved bits 56-58 set to `001` | `res` |
+| `coarse` | `gridDisk(cell, 1)` in slot order | `res - 1` |
+
+Padding is removed from every input. `duplicate` fails `compactCells` with
+`E_DUPLICATE_INPUT`; `invalid` fails it with `E_CELL_INVALID` except at
+resolution 0, where the reference copies the input through unchecked;
+`coarse` fails `uncompactCells` with `E_RES_MISMATCH`, as does `disk` at
+resolution 15. Mixed-resolution input to `compactCells` is outside its
+contract and is not sampled.
+
+A consumer must also check the round trip `uncompactCells(compact, r) ==
+input` as sets, where `r` is the finest resolution in `input`, whenever
+`compact` succeeded and every entry of `input` is a valid cell.
+
+Example:
+
+```json
+{"id":"coarse:8009fffffffffff","input":["8007fffffffffff","8009fffffffffff","8019fffffffffff","8001fffffffffff","801ffffffffffff","8011fffffffffff"],"compact":["8001fffffffffff","8007fffffffffff","8009fffffffffff","8011fffffffffff","8019fffffffffff","801ffffffffffff"],"uncompactRes":-1,"uncompact":{"err":"E_RES_MISMATCH"}}
+{"id":"children:8f0800000000000","input":["8f0800000000000"],"compact":["8f0800000000000"],"uncompactRes":15,"uncompact":true}
+{"id":"duplicate:81083ffffffffff","input":["820807fffffffff","820817fffffffff","82081ffffffffff","820827fffffffff","82082ffffffffff","820837fffffffff","820807fffffffff"],"compact":{"err":"E_DUPLICATE_INPUT"},"uncompactRes":2,"uncompact":["820807fffffffff","820817fffffffff","82081ffffffffff","820827fffffffff","82082ffffffffff","820837fffffffff"]}
+```
+
 ## Curated files
 
 Seeded sampling gives coverage density but is blind to the particular inputs
@@ -447,6 +523,26 @@ input directory (`tests/inputfiles/`), and *hand* a choice made here.
 | `85285aa7fffffff` | `851d9b1bfffffff` | tests | a pair across faces |
 | `85283473fffffff` | `85283472fffffff` | cli | an invalid target |
 | `200f202020202020` | `85283473fffffff` | tests | an invalid origin |
+
+### `hierarchy/curated.jsonl`
+
+`88283080ddfffff`, `8f283080dcb0ae2`, `81083ffffffffff`, `820807fffffffff`,
+`85283473fffffff`, `80c3fffffffffff`, `8928342e20fffff`, `8029fffffffffff`:
+the `cellToChildren` fixtures, a res 15 cell, a res 1 pentagon and its
+res 2 center child, the command-line cells, and res 0 cells.
+
+### `sets/curated.jsonl`
+
+The `id` is `curated:<name>`; the `input` is in the record, in this order.
+
+| Name | `input` | `uncompactRes` | Source |
+|---|---|---|---|
+| `compact_test1` | the 19 res 5 cells of `compact_test1.txt`, which include all seven children of `8428347ffffffff` | 6 | inputfiles |
+| `multipolygon_test3` | the 6 res 5 cells of `multipolygon_test3.txt`, a ring without its center | 6 | inputfiles |
+| `multipolygon_test4` | the 7 cells of `multipolygon_test4.txt`, that ring and a distant cell | 6 | inputfiles |
+| `multipolygon_test5` | the 128 res 5 cells of `multipolygon_test5.txt` | 6 | inputfiles |
+| `pentagon_children` | the six children of the res 1 pentagon `81083ffffffffff` | 3 | hand |
+| `res0` | `getRes0Cells` in the reference's order | 1 | hand |
 
 ## Sampling
 
@@ -565,6 +661,24 @@ near target is drawn from its 3-disk, and a far target is drawn by drawing
 cells at the origin's resolution until `isValidCell` accepts one. The origin
 is written with the near target, then with the far target unless the two
 targets are the same cell.
+
+### `hierarchy/cells.jsonl`
+
+Valid-cell subjects with `n` = 32. No further draws.
+
+### `sets/sets.jsonl`
+
+Subjects:
+
+1. `getPentagons(res)` for `res` 0 through 15, in the order the reference
+   returns them. No draws.
+2. For `res` 0 through 15, twice: draw cells at `res` until `isValidCell`
+   accepts one, and emit it.
+
+Sorted ascending and deduplicated as above. Then for each subject, the six
+kinds are written in the order of the kinds table. Only `holes` draws: draw 3
+to get a count from 1 to 3, then that many times draw 37 and clear that slot
+of the `gridDisk(cell, 3)` array; a slot that is already zero stays zero.
 
 ### Curated files
 

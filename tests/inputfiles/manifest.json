@@ -14,6 +14,10 @@
       "records": 1885,
       "sha256": "e00831912dd33c6625dde15ad2d870a275e04fc3129e8f18e107f4a9dae60388"
     },
+    "hierarchy/cells.jsonl": {
+      "records": 781,
+      "sha256": "6d3eca0087bec94f860f8d95a5da1a43d201178d1739ac7ee242395d70927e5e"
+    },
     "traversal/cells.jsonl": {
       "records": 542,
       "sha256": "36f802c11c0afa8e557c231351df755c4c14ae9ffe5a9f70f47fe88bc4f6b7ae"
@@ -26,6 +30,10 @@
       "records": 1084,
       "sha256": "807c5e319e26a03788c7f8164830a035865647cbe771c58241146d1e73fb084d"
     },
+    "sets/sets.jsonl": {
+      "records": 1344,
+      "sha256": "6e9a77106d69e66a653334461c808a4faffeaa5b135eeae12ba88ce1e852e67b"
+    },
     "floats/cells.jsonl": {
       "records": 542,
       "sha256": "c7e98c8a9925acbfd1e0b0b80bde7d08359b696a7819c873075a7a8e41fa034c"
@@ -34,6 +42,10 @@
       "records": 17,
       "sha256": "f4dc78a7588498b2a96c782f60957ab55ebd56cc90d7dd5bf5d18fddd9c25d8c"
     },
+    "hierarchy/curated.jsonl": {
+      "records": 8,
+      "sha256": "7104df57020c398fae2032965487cf32d461c2640ce7cd3d5603e8713a3439f3"
+    },
     "traversal/curated.jsonl": {
       "records": 14,
       "sha256": "16f628b5fab33c4311f689c3c929a779a53bcd65acd3c49d3df8234a931aaac6"
@@ -41,6 +53,10 @@
     "localij/curated.jsonl": {
       "records": 12,
       "sha256": "b0af9d2044ee639e525fb2f3a33ee215bd35de4266c8f5bc250e517be2ebdc64"
+    },
+    "sets/curated.jsonl": {
+      "records": 6,
+      "sha256": "e8e193cd2f710bc1833407b71ec5ba7a012c6b11346e0d67d67adcdbb4b993c9"
     }
   }
 }
