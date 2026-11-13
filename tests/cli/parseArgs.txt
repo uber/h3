@@ -1,0 +1,13 @@
+add_h3_cli_test(testCliParseArgsUnknownArgument
+                "cellToLatLng -c 8928342e20fffff --bogus 2>/dev/null; echo $?"
+                "1")
+add_h3_cli_test(testCliParseArgsMissingRequired
+                "cellToLatLng 2>/dev/null; echo $?" "1")
+add_h3_cli_test(testCliParseArgsFailedParse
+                "getResolution -c zzz 2>/dev/null; echo $?" "1")
+add_h3_cli_test(testCliParseArgsMissingValue
+                "getResolution -c 2>/dev/null; echo $?" "1")
+add_h3_cli_test(testCliParseArgsHelp
+                "cellToLatLng --help >/dev/null; echo $?" "0")
+add_h3_cli_test(testCliParseArgsHelpWithUnknownArgument
+                "cellToLatLng --help --bogus >/dev/null 2>&1; echo $?" "1")

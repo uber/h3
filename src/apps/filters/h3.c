@@ -41,10 +41,15 @@
 #define BUFFER_SIZE_LESS_CELL 1485
 #define BUFFER_SIZE_WITH_NULL 1501
 
-#define PARSE_SUBCOMMAND(argc, argv, args)                                  \
-    if (parseArgs(argc, argv, sizeof(args) / sizeof(Arg *), args, &helpArg, \
-                  args[0]->helpText)) {                                     \
-        return E_SUCCESS;                                                   \
+#define PARSE_SUBCOMMAND(argc, argv, args)                            \
+    switch (parseArgs(argc, argv, sizeof(args) / sizeof(Arg *), args, \
+                      &helpArg, args[0]->helpText)) {                 \
+        case PARSE_ARGS_SUCCESS:                                      \
+            break;                                                    \
+        case PARSE_ARGS_HELP:                                         \
+            return E_SUCCESS;                                         \
+        default:                                                      \
+            return E_FAILED;                                          \
     }
 
 #define SUBCOMMAND(name, help)                            \
