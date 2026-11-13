@@ -62,6 +62,9 @@ jobs:
           make test
           sudo make install
 
+      - name: Conformance suite regeneration check
+        run: scripts/conformance_check.sh build/bin/mkConformance
+
         # Note the packages aren't used to test the examples below
       - name: Test packaging
         working-directory: build

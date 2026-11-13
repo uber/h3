@@ -199,13 +199,15 @@ set(APP_SOURCE_FILES
     src/apps/applib/include/utility.h
     src/apps/applib/include/args.h
     src/apps/applib/include/aflHarness.h
+    src/apps/applib/include/sha256.h
     src/apps/applib/lib/kml.c
     src/apps/applib/lib/utility.c
-    src/apps/applib/lib/args.c)
-set(TEST_APP_SOURCE_FILES src/apps/applib/include/cJSON.h
-                          src/apps/applib/include/test.h
-                          src/apps/applib/lib/cJSON.c
-                          src/apps/applib/lib/test.c)
+    src/apps/applib/lib/args.c
+    src/apps/applib/lib/sha256.c)
+set(TEST_APP_SOURCE_FILES
+    src/apps/applib/include/cJSON.h src/apps/applib/include/conformance.h
+    src/apps/applib/include/test.h src/apps/applib/lib/cJSON.c
+    src/apps/applib/lib/conformance.c src/apps/applib/lib/test.c)
 set(EXAMPLE_SOURCE_FILES
     examples/index.c examples/distance.c examples/neighbors.c
     examples/compactCells.c examples/edge.c)
@@ -288,7 +290,11 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testDescribeH3Error.c
     src/apps/testapps/testGosperIter.c
     src/apps/testapps/testGeoLoopArea.c
-    src/apps/testapps/testInspection.c
+    src/apps/testapps/testSha256.c
+    src/apps/testapps/testConformanceInspection.c
+    src/apps/testapps/testConformanceFloatsCells.c
+    src/apps/testapps/testConformanceManifest.c
+    src/apps/testapps/mkConformance.c
     src/apps/miscapps/cellToBoundaryHier.c
     src/apps/miscapps/cellToLatLngHier.c
     src/apps/miscapps/generateBaseCellNeighbors.c
@@ -629,6 +635,10 @@ if(BUILD_GENERATORS AND ENABLE_REQUIRES_ALL_SYMBOLS)
     add_h3_executable(mkRandGeo src/apps/testapps/mkRandGeo.c
                       ${APP_SOURCE_FILES})
     add_h3_executable(mkRandGeoBoundary src/apps/testapps/mkRandGeoBoundary.c
+                      ${APP_SOURCE_FILES})
+    # Generates the conformance suite under tests/inputfiles; see
+    # dev-docs/conformance.md
+    add_h3_executable(mkConformance src/apps/testapps/mkConformance.c
                       ${APP_SOURCE_FILES})
 endif()
 

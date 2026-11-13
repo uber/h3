@@ -1,0 +1,26 @@
+{
+  "format": "h3-conformance/1",
+  "h3Version": "4.5.0",
+  "generator": {
+    "name": "src/apps/testapps/mkConformance.c",
+    "seed": 20260929
+  },
+  "tolerances": {
+    "angularDeg": 1e-12,
+    "relative": 1e-9
+  },
+  "files": {
+    "inspection/cells.jsonl": {
+      "records": 1885,
+      "sha256": "e00831912dd33c6625dde15ad2d870a275e04fc3129e8f18e107f4a9dae60388"
+    },
+    "floats/cells.jsonl": {
+      "records": 542,
+      "sha256": "c7e98c8a9925acbfd1e0b0b80bde7d08359b696a7819c873075a7a8e41fa034c"
+    },
+    "inspection/curated.jsonl": {
+      "records": 17,
+      "sha256": "f4dc78a7588498b2a96c782f60957ab55ebd56cc90d7dd5bf5d18fddd9c25d8c"
+    }
+  }
+}
