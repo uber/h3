@@ -209,7 +209,8 @@ set(TEST_APP_SOURCE_FILES src/apps/applib/include/cJSON.h
 set(EXAMPLE_SOURCE_FILES
     examples/index.c examples/distance.c examples/neighbors.c
     examples/compactCells.c examples/edge.c)
-set(H3_BIN_SOURCE_FILES src/apps/filters/h3.c)
+set(H3_BIN_SOURCE_FILES src/apps/filters/h3.c
+                        src/apps/filters/voxelSubcommands.h)
 set(OTHER_SOURCE_FILES
     src/apps/filters/cellToLatLng.c
     src/apps/filters/cellToLocalIj.c
