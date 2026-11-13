@@ -126,6 +126,8 @@ Arg helpArg = ARG_HELP;
                      .valueName = "FMT",          \
                      .helpText = desc}
 
+#include "voxelSubcommands.h"
+
 /// Indexing subcommands
 
 SUBCOMMAND(cellToLatLng, "Convert an H3Cell to a coordinate") {
@@ -3134,6 +3136,8 @@ SUBCOMMAND_INDEX(greatCircleDistanceRads)
 SUBCOMMAND_INDEX(greatCircleDistanceKm)
 SUBCOMMAND_INDEX(greatCircleDistanceM)
 SUBCOMMAND_INDEX(describeH3Error)
+
+VOXEL_SUBCOMMANDS_INDEX
 
 END_SUBCOMMANDS_INDEX
 
