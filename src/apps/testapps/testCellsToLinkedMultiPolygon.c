@@ -15,6 +15,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "algos.h"
 #include "test.h"
@@ -36,6 +37,34 @@ static LinkedGeoPolygon *findLinkedPolygonByOuterCount(LinkedGeoPolygon *root,
         poly = poly->next;
     }
     return NULL;
+}
+
+/*
+Assert that the children of `parent` at `childRes` are outlined by a
+single polygon with a single loop (no holes).
+*/
+static void assertChildrenSinglePolygon(H3Index parent, int childRes) {
+    int64_t numCells;
+    t_assertSuccess(H3_EXPORT(cellToChildrenSize)(parent, childRes, &numCells));
+    H3Index *cells = calloc(numCells, sizeof(H3Index));
+    t_assertSuccess(H3_EXPORT(cellToChildren)(parent, childRes, cells));
+
+    LinkedGeoPolygon polygon;
+    t_assertSuccess(
+        H3_EXPORT(cellsToLinkedMultiPolygon)(cells, (int)numCells, &polygon));
+    t_assert(countLinkedPolygons(&polygon) == 1, "1 polygon added");
+    t_assert(countLinkedLoops(&polygon) == 1, "1 loop on the first polygon");
+
+    H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
+    free(cells);
+}
+
+static void children_assertions(H3Index h) {
+    assertChildrenSinglePolygon(h, H3_EXPORT(getResolution)(h) + 1);
+}
+
+static void grandchildren_assertions(H3Index h) {
+    assertChildrenSinglePolygon(h, H3_EXPORT(getResolution)(h) + 2);
 }
 
 SUITE(cellsToLinkedMultiPolygon) {
@@ -390,6 +419,17 @@ SUITE(cellsToLinkedMultiPolygon) {
 
             H3_EXPORT(destroyLinkedMultiPolygon)(&polygon);
         }
+    }
+
+    // The children of a cell always form a single polygon with no holes.
+    // Regression test for https://github.com/uber/h3/issues/917, where a
+    // previous implementation matched shared vertexes by hashing their
+    // floating point coordinates, and produced extra loops or polygons for
+    // the children of some pentagons and hexagons.
+    TEST(childrenOfCell) {
+        iterateAllIndexesAtRes(0, children_assertions);
+        iterateAllIndexesAtRes(1, children_assertions);
+        iterateAllIndexesAtRes(0, grandchildren_assertions);
     }
 
     // Global polygon: a continuous band of res-1 cells around the equator.
