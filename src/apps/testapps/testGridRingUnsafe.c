@@ -121,6 +121,25 @@ SUITE(gridRingUnsafe) {
                  "Should return an error when starting at a pentagon");
     }
 
+    TEST(pentagonWrappedRing) {
+        // Regression test for https://github.com/uber/h3/issues/1241
+        // Rings around this origin wrap around a pentagon without stepping
+        // on it for k = 12 through 16. The traversal is distorted but still
+        // returns to the starting cell, so gridRingUnsafe must detect the
+        // distortion (the ring contains duplicate cells) and fail.
+        LatLng originLatLng = {0.0, 0.0};
+        H3Index origin;
+        t_assertSuccess(H3_EXPORT(latLngToCell)(&originLatLng, 1, &origin));
+        int64_t ringSz;
+        t_assertSuccess(H3_EXPORT(maxGridRingSize)(16, &ringSz));
+        H3Index *ring = calloc(ringSz, sizeof(H3Index));
+        for (int k = 12; k <= 16; k++) {
+            t_assert(H3_EXPORT(gridRingUnsafe)(origin, k, ring) == E_PENTAGON,
+                     "Should return an error when wrapping a pentagon");
+        }
+        free(ring);
+    }
+
     TEST(gridRingUnsafe_matches_gridDiskDistancesSafe) {
         for (int res = 0; res < 2; res++) {
             for (int i = 0; i < NUM_BASE_CELLS; i++) {
