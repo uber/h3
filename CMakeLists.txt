@@ -200,10 +200,12 @@ set(APP_SOURCE_FILES
     src/apps/applib/include/args.h
     src/apps/applib/include/aflHarness.h
     src/apps/applib/include/sha256.h
+    src/apps/applib/include/conformanceGen.h
     src/apps/applib/lib/kml.c
     src/apps/applib/lib/utility.c
     src/apps/applib/lib/args.c
-    src/apps/applib/lib/sha256.c)
+    src/apps/applib/lib/sha256.c
+    src/apps/applib/lib/conformanceGen.c)
 set(TEST_APP_SOURCE_FILES
     src/apps/applib/include/cJSON.h src/apps/applib/include/conformance.h
     src/apps/applib/include/test.h src/apps/applib/lib/cJSON.c
@@ -303,6 +305,11 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testConformanceVertexes.c
     src/apps/testapps/testConformanceFloatsEdges.c
     src/apps/testapps/testConformanceFloatsVertexes.c
+    src/apps/testapps/testConformanceFloatsDistances.c
+    src/apps/testapps/testConformanceFloatsResolutions.c
+    src/apps/testapps/testConformanceDigestsResolutions.c
+    src/apps/testapps/testConformanceDigestsBaseCells.c
+    src/apps/testapps/testConformanceDigestsPatterns.c
     src/apps/testapps/testConformanceManifest.c
     src/apps/testapps/mkConformance.c
     src/apps/miscapps/cellToBoundaryHier.c

@@ -58,6 +58,10 @@ jobs:
 
       - name: Tests
         working-directory: build
+        env:
+          # The conformance digests runners recompute every stream from the
+          # library; see dev-docs/conformance.md, "Running and regenerating".
+          H3_CONFORMANCE_DIGESTS_MAXRES: ${{ matrix.build_type == 'Release' && 5 || 3 }}
         run: |
           make test
           sudo make install
