@@ -1565,10 +1565,13 @@ H3Error polygonStringToGeoPolygon(FILE *fp, char *polygonString,
     int64_t curLoop = 0;
     LatLng *verts = calloc(numVerts, sizeof(LatLng));
     int strPos = 0;
-    while (polygonString[strPos] != 0) {
+    while (polygonString[strPos] != 0 || (strPos >= BUFFER_SIZE && fp != 0)) {
         // Load more of the file if we've hit our buffer limit
         if (strPos >= BUFFER_SIZE && fp != 0) {
             int result = fread(polygonString, 1, BUFFER_SIZE, fp);
+            // Stop at the end of what was read, not at stale bytes left
+            // from the previous chunk after a short read
+            polygonString[result] = 0;
             strPos = 0;
             // If we didn't get any data from the file, we're done.
             if (result == 0) {
