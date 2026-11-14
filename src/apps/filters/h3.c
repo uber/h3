@@ -1633,8 +1633,9 @@ H3Error polygonStringToGeoPolygon(FILE *fp, char *polygonString,
         // Must grab the closing ] or we might accidentally parse a partial
         // float across buffer boundaries
         char closeBracket[2] = "]";
-        int result = sscanf(polygonString + strPos, "%lf%*[, \n]%lf%1[]]%n",
-                            &lat, &lng, &closeBracket[0], &count);
+        int result =
+            sscanf(polygonString + strPos, "%lf%*[, \t\n\r]%lf %1[]]%n", &lat,
+                   &lng, &closeBracket[0], &count);
         if (count > 0 && result == 3) {
             verts[curVert].lat = H3_EXPORT(degsToRads)(lat);
             verts[curVert].lng = H3_EXPORT(degsToRads)(lng);
