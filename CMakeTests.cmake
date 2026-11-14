@@ -275,6 +275,12 @@ add_h3_test(testDescribeH3Error src/apps/testapps/testDescribeH3Error.c)
 add_h3_test(testGosperIter src/apps/testapps/testGosperIter.c)
 add_h3_test(testGeoLoopArea src/apps/testapps/testGeoLoopArea.c)
 
+# Voxel tests (docs/adr/0006-coexist-with-upstream-h3.md)
+add_h3_test(testVoxelIndexing src/apps/testapps/testVoxelIndexing.c)
+add_h3_test(testVoxelInspection src/apps/testapps/testVoxelInspection.c)
+add_h3_test(testVoxelBoundariesInternal
+            src/apps/testapps/testVoxelBoundariesInternal.c)
+
 add_h3_test_with_arg(testH3NeighborRotations
                      src/apps/testapps/testH3NeighborRotations.c 0)
 add_h3_test_with_arg(testH3NeighborRotations

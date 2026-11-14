@@ -1,0 +1,7 @@
+add_h3_cli_test(testCliGetLayerNumber "getLayerNumber -v 7c941841406016ca" "2")
+add_h3_cli_test(testCliGetLayerNumberBelowZero
+                "getLayerNumber -v 7c941841406016c6" "-2")
+add_h3_cli_test(
+    testCliGetLayerNumberInvalid
+    "getLayerNumber -v 8928308280fffff 2>&1"
+    "Error 1000: Voxel argument was not valid")

@@ -174,6 +174,8 @@ set(LIB_SOURCE_FILES
     src/h3lib/include/adder.h
     src/h3lib/include/area.h
     src/h3lib/include/cellsToMultiPoly.h
+    src/h3lib/include/h3voxel.h
+    src/h3lib/include/voxel.h
     src/h3lib/lib/h3Assert.c
     src/h3lib/lib/algos.c
     src/h3lib/lib/bbox.c
@@ -192,7 +194,8 @@ set(LIB_SOURCE_FILES
     src/h3lib/lib/faceijk.c
     src/h3lib/lib/baseCells.c
     src/h3lib/lib/area.c
-    src/h3lib/lib/cellsToMultiPoly.c)
+    src/h3lib/lib/cellsToMultiPoly.c
+    src/h3lib/lib/voxel.c)
 set(APP_SOURCE_FILES
     src/apps/applib/include/kml.h
     src/apps/applib/include/benchmark.h
@@ -290,6 +293,9 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testGosperIter.c
     src/apps/testapps/testGeoLoopArea.c
     src/apps/testapps/testInspection.c
+    src/apps/testapps/testVoxelIndexing.c
+    src/apps/testapps/testVoxelInspection.c
+    src/apps/testapps/testVoxelBoundariesInternal.c
     src/apps/miscapps/cellToBoundaryHier.c
     src/apps/miscapps/cellToLatLngHier.c
     src/apps/miscapps/generateBaseCellNeighbors.c
@@ -798,6 +804,12 @@ install(
 # h3api.h header is needed by applications using H3.
 install(
     FILES "${CMAKE_CURRENT_BINARY_DIR}/src/h3lib/include/h3api.h"
+    DESTINATION "${include_install_dir}/h3"
+    COMPONENT libh3-dev)
+
+# Voxel API header, installed next to h3api.h; it includes h3api.h.
+install(
+    FILES "${CMAKE_CURRENT_SOURCE_DIR}/src/h3lib/include/h3voxel.h"
     DESTINATION "${include_install_dir}/h3"
     COMPONENT libh3-dev)
 

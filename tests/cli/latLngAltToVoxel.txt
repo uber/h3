@@ -1,0 +1,12 @@
+add_h3_cli_test(
+    testCliLatLngAltToVoxel
+    "latLngAltToVoxel --lat 37.775938728915946 --lng -122.41795063018799 --alt 1000 -r 9 -f newline"
+    "7c941841406016ca")
+add_h3_cli_test(
+    testCliLatLngAltToVoxelBelowZero
+    "latLngAltToVoxel --lat 37.775938728915946 --lng -122.41795063018799 --alt -500 -r 9"
+    "\"7c941841406016c6\"")
+add_h3_cli_test(
+    testCliLatLngAltToVoxelOutOfRange
+    "latLngAltToVoxel --lat 37.775938728915946 --lng -122.41795063018799 --alt 500000000 -r 9 2>&1"
+    "Error 1001: Altitude argument was outside the altitude range of the resolution, or the resolution has no voxels")

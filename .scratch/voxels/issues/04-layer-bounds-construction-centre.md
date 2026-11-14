@@ -13,3 +13,7 @@
 - [ ] `voxelToCenter` returns the footprint's centre lat/lng and the altitude midway between floor and ceiling; locating that point returns the same voxel
 - [ ] `cellAndLayerToVoxel` agrees with `latLngAltToVoxel` for the same footprint and altitude
 - [ ] CLI subcommands for each new function, with one smoke test each
+
+## Comments
+
+From ticket 02: layer boundaries are defined by the internal `layerFloorM`, and locating snaps against it, so every floor locates into its own layer on a given platform. `testVoxelBoundariesInternal` checks every boundary at res 0-10 through that internal function. Once `voxelToAltitudeBounds` exists, rewrite that test against the public function (feeding each floor back through `latLngAltToVoxel`) and drop the internal one; `voxelToAltitudeBounds` must return `layerFloorM` values exactly.

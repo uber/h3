@@ -106,7 +106,7 @@ struct Subcommand {
             H3Error err = subcommands[i].subcommand(argc, argv);             \
             if (err != 0) {                                                  \
                 fprintf(stderr, "Error %i: %s\n", err,                       \
-                        H3_EXPORT(describeH3Error)(err));                    \
+                        DESCRIBE_CLI_ERROR(err));                            \
             }                                                                \
             return err;                                                      \
         }                                                                    \

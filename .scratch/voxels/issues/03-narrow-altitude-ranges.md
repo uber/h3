@@ -13,3 +13,7 @@
 - [ ] Each narrow range's floor and ceiling are boundaries of the next coarser resolution's layers (checked through the public API)
 - [ ] A ship at sea level (an ellipsoidal altitude of about −106 m, the geoid low) gets a voxel at every resolution 0–13
 - [ ] CLI subcommand for `getAltitudeRange`, with a smoke test
+
+## Comments
+
+From ticket 02: the CLI help strings for `latLngAltToVoxel` ("Resolution, 0-10 inclusive.") and `getVoxelResolution` ("(0 - 10)") need updating to 0-13 once narrow ranges land. `layerRange` (internal) is the single place that decides which resolutions have voxels and their layer numbers.

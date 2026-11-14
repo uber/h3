@@ -1,0 +1,5 @@
+add_h3_cli_test(testCliVoxelToFootprint
+                "voxelToFootprint -v 7c941841406016ca -f newline"
+                "8928308280fffff")
+add_h3_cli_test(testCliVoxelToFootprintJson
+                "voxelToFootprint -v 7c941841406016ca" "\"8928308280fffff\"")

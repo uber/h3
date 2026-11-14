@@ -1,0 +1,6 @@
+add_h3_cli_test(testCliGetVoxelResolution
+                "getVoxelResolution -v 7c941841406016ca" "9")
+add_h3_cli_test(
+    testCliGetVoxelResolutionInvalid
+    "getVoxelResolution -v 8928308280fffff 2>&1"
+    "Error 1000: Voxel argument was not valid")
