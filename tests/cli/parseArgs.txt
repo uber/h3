@@ -11,3 +11,10 @@ add_h3_cli_test(testCliParseArgsHelp
                 "cellToLatLng --help >/dev/null; echo $?" "0")
 add_h3_cli_test(testCliParseArgsHelpWithUnknownArgument
                 "cellToLatLng --help --bogus >/dev/null 2>&1; echo $?" "1")
+add_h3_cli_test(testCliParseArgsGeneralHelp "--help >/dev/null; echo $?" "0")
+add_h3_cli_test(testCliParseArgsGeneralHelpWithUnknownArgument
+                "--help --bogus >/dev/null 2>&1; echo $?" "1")
+add_h3_cli_test(testCliParseArgsShortGeneralHelpWithUnknownArgument
+                "-h --bogus >/dev/null 2>&1; echo $?" "1")
+add_h3_cli_test(testCliParseArgsUnknownTopLevelArgument
+                "--bogus >/dev/null 2>&1; echo $?" "1")
