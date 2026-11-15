@@ -91,13 +91,10 @@ struct Subcommand {
             "calculation. Use h3 <SUBCOMMAND> --help for details on the "      \
             "usage of "                                                        \
             "any subcommand.";                                                 \
-        if (parseArgs(argc, argv, arglen, args, &helpArg, helpText)) {         \
-            free(args);                                                        \
-            return E_SUCCESS;                                                  \
-        } else {                                                               \
-            free(args);                                                        \
-            return E_FAILED;                                                   \
-        }                                                                      \
+        int parseResult =                                                      \
+            parseArgs(argc, argv, arglen, args, &helpArg, helpText);           \
+        free(args);                                                            \
+        return parseResult == PARSE_ARGS_HELP ? E_SUCCESS : E_FAILED;          \
     }
 
 #define DISPATCH_SUBCOMMAND()                                                \

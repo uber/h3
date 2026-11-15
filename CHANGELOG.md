@@ -16,6 +16,7 @@ The public API of this library consists of the functions declared in file
 - Fixed the `stringToInt` CLI subcommand truncating 16 digit indexes, such as directed edges and vertexes (#1243)
 - Fixed the `gridDistance` CLI subcommand printing the distance in hexadecimal instead of decimal
 - Fixed CLI subcommands exiting with status 0 when their arguments could not be parsed (unknown argument, missing required argument, missing or unparseable value). They now exit with a non-zero status; `--help` still exits with 0
+- Fixed `h3 --help` exiting with status 0 when it was also given an unknown argument, such as `h3 --help --bogus`. It now exits with a non-zero status, like the subcommands (#1300)
 - Initialized `dirFaces` in `vertexRotations` to silence a `-Wmaybe-uninitialized` warning on some compilers/toolchains (#458, #582)
 - Fixed `cellToLatLng` and `cellToBoundary` losing precision in latitude near the poles; the worst error is now within a few units in the last place everywhere instead of growing as 1/cos(latitude)
 
