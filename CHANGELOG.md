@@ -15,6 +15,7 @@ The public API of this library consists of the functions declared in file
 - Fixed an out of bounds read in `_baseCellToCCWrot60` when passed a face index equal to `NUM_ICOSA_FACES` (#978)
 - Fixed the `stringToInt` CLI subcommand truncating 16 digit indexes, such as directed edges and vertexes (#1243)
 - Fixed the `gridDistance` CLI subcommand printing the distance in hexadecimal instead of decimal
+- Fixed signed overflow of the output index in `gridDiskDistancesUnsafe` (and so `gridDisk`) for `k >= 26755`, where `maxGridDiskSize(k)` exceeds `INT32_MAX`. The output indexes in `gridRingUnsafe` and `gridRing` are now 64 bit as well (#1270)
 - Fixed CLI subcommands exiting with status 0 when their arguments could not be parsed (unknown argument, missing required argument, missing or unparseable value). They now exit with a non-zero status; `--help` still exits with 0
 - Fixed `h3 --help` exiting with status 0 when it was also given an unknown argument, such as `h3 --help --bogus`. It now exits with a non-zero status, like the subcommands (#1300)
 - Initialized `dirFaces` in `vertexRotations` to silence a `-Wmaybe-uninitialized` warning on some compilers/toolchains (#458, #582)
