@@ -2551,7 +2551,12 @@ SUBCOMMAND(cellAreaRads2,
     if (err) {
         return err;
     }
-    printf("%.10lf\n", area);
+    if (area > 0.0 && area < 1e-6) {
+        // Avoid rounding small high-resolution areas (res 8-15) to zero.
+        printf("%.8g\n", area);
+    } else {
+        printf("%.10lf\n", area);
+    }
     return E_SUCCESS;
 }
 
