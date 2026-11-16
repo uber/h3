@@ -34,7 +34,10 @@ jobs:
       - name: Install Doxygen
         run: |
           sudo apt update
-          sudo apt-get install doxygen graphviz clang-format-14
+          sudo apt-get install doxygen graphviz
+          # Newer Ubuntu releases do not package clang-format-14, so install it
+          # from PyPI. The suffix names the executable clang-format-14.
+          pipx install --suffix=-14 clang-format==14.0.6
 
       - name: Configure build
         run: cmake -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DWARNINGS_AS_ERRORS=ON .
@@ -99,7 +102,10 @@ jobs:
       - name: Install Doxygen
         run: |
           sudo apt update
-          sudo apt-get install doxygen graphviz clang-format-14
+          sudo apt-get install doxygen graphviz
+          # Newer Ubuntu releases do not package clang-format-14, so install it
+          # from PyPI. The suffix names the executable clang-format-14.
+          pipx install --suffix=-14 clang-format==14.0.6
 
       - name: Configure build
         run: cmake -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DWARNINGS_AS_ERRORS=ON -DCMAKE_C_FLAGS="${{ matrix.compile_opt }}" .
