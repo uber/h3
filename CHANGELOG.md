@@ -7,6 +7,7 @@ The public API of this library consists of the functions declared in file
 
 ## [Unreleased]
 ### Fixed
+- Fixed precision loss in `cellAreaRads2`, `cellAreaKm2` and `cellAreaM2` for cells crossing the antimeridian: the longitude difference of an edge across ±180° was close to 2π, so the tiny true step was lost to rounding and cells at resolution 12 and finer came out up to several percent too small. Both longitudes are now shifted to the same side of the antimeridian before subtracting
 - Fixed an out of bounds write in `gridRing` when passed a negative `k`: the fallback path wiped the output array with a width computed from `6 * k`, which for a negative `k` becomes a `size_t` of about 1.8e19. The width now comes from `maxGridRingSize`, which validates `k` and computes in 64 bits
 - Avoid signed integer overflow when accumulating vertex counts in `maxPolygonToCellsSize` (#1204)
 - Fixed the `polygonToCells` fuzzer regression test to use explicit double literals instead of reinterpreting raw bytes, so it is portable across endianness (#964)
@@ -14,7 +15,11 @@ The public API of this library consists of the functions declared in file
 - Fixed an out of bounds read in `_baseCellToCCWrot60` when passed a face index equal to `NUM_ICOSA_FACES` (#978)
 - Fixed the `stringToInt` CLI subcommand truncating 16 digit indexes, such as directed edges and vertexes (#1243)
 - Fixed the `gridDistance` CLI subcommand printing the distance in hexadecimal instead of decimal
-- Fixed signed overflow of the output index in `gridDiskDistancesUnsafe` (and so `gridDisk`) for `k >= 26755`, where `maxGridDiskSize(k)` exceeds `INT32_MAX`. The output indexes in `gridRingUnsafe` and `gridRing` are now 64 bit as well
+- Fixed signed overflow of the output index in `gridDiskDistancesUnsafe` (and so `gridDisk`) for `k >= 26755`, where `maxGridDiskSize(k)` exceeds `INT32_MAX`. The output indexes in `gridRingUnsafe` and `gridRing` are now 64 bit as well (#1270)
+- Fixed CLI subcommands exiting with status 0 when their arguments could not be parsed (unknown argument, missing required argument, missing or unparseable value). They now exit with a non-zero status; `--help` still exits with 0
+- Fixed `h3 --help` exiting with status 0 when it was also given an unknown argument, such as `h3 --help --bogus`. It now exits with a non-zero status, like the subcommands (#1300)
+- Initialized `dirFaces` in `vertexRotations` to silence a `-Wmaybe-uninitialized` warning on some compilers/toolchains (#458, #582)
+- Fixed `cellToLatLng` and `cellToBoundary` losing precision in latitude near the poles; the worst error is now within a few units in the last place everywhere instead of growing as 1/cos(latitude)
 
 ## [4.5.0] - 2026-05-21
 ### Added

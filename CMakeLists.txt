@@ -72,6 +72,8 @@ set(H3_FUZZER_EXTRA_OPTIONS
     ""
     CACHE STRING "Extra compilation options for fuzzers particularly.")
 mark_as_advanced(H3_FUZZER_EXTRA_OPTIONS)
+option(H3_SKIP_FLT_EVAL_METHOD_CHECK "Skip checking FLT_EVAL_METHOD" OFF)
+mark_as_advanced(H3_SKIP_FLT_EVAL_METHOD_CHECK)
 
 if(WIN32)
     # Use bash (usually from Git for Windows) for piping results
@@ -200,7 +202,9 @@ set(APP_SOURCE_FILES
     src/apps/applib/lib/kml.c
     src/apps/applib/lib/utility.c
     src/apps/applib/lib/args.c)
-set(TEST_APP_SOURCE_FILES src/apps/applib/include/test.h
+set(TEST_APP_SOURCE_FILES src/apps/applib/include/cJSON.h
+                          src/apps/applib/include/test.h
+                          src/apps/applib/lib/cJSON.c
                           src/apps/applib/lib/test.c)
 set(EXAMPLE_SOURCE_FILES
     examples/index.c examples/distance.c examples/neighbors.c
@@ -284,6 +288,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testDescribeH3Error.c
     src/apps/testapps/testGosperIter.c
     src/apps/testapps/testGeoLoopArea.c
+    src/apps/testapps/testInspection.c
     src/apps/miscapps/cellToBoundaryHier.c
     src/apps/miscapps/cellToLatLngHier.c
     src/apps/miscapps/generateBaseCellNeighbors.c
@@ -331,6 +336,13 @@ set(OTHER_SOURCE_FILES
 set(ALL_SOURCE_FILES
     ${LIB_SOURCE_FILES} ${APP_SOURCE_FILES} ${TEST_APP_SOURCE_FILES}
     ${H3_BIN_SOURCE_FILES} ${OTHER_SOURCE_FILES})
+
+# These files are vendored and should not be formatted so it is easy to check
+# they match upstream.
+set(ALL_FORMAT_SOURCE_FILES ${ALL_SOURCE_FILES})
+list(REMOVE_ITEM ALL_FORMAT_SOURCE_FILES
+    src/apps/applib/include/cJSON.h
+    src/apps/applib/lib/cJSON.c)
 
 # This is done for quality control purposes (to detect if any source files are
 # missing from our list), but is not done as the authoritative list as per CMake
@@ -400,6 +412,9 @@ function(add_h3_library name h3_alloc_prefix_override)
         target_compile_definitions(${name}
                                    PUBLIC H3_ALLOC_PREFIX=${H3_ALLOC_PREFIX})
     endif()
+    if(H3_SKIP_FLT_EVAL_METHOD_CHECK)
+        target_compile_definitions(${name} PUBLIC H3_SKIP_FLT_EVAL_METHOD_CHECK=1)
+    endif()
     # Mac OSX defaults to not looking up undefined symbols dynamically, so
     # enable that explicitly. Windows needs something similar.
     if(has_alloc_prefix AND APPLE)
@@ -440,7 +455,7 @@ if(ENABLE_FORMAT)
     # Format
     add_custom_target(
         format
-        COMMAND ${CLANG_FORMAT_PATH} -style=file -i ${ALL_SOURCE_FILES}
+        COMMAND ${CLANG_FORMAT_PATH} -style=file -i ${ALL_FORMAT_SOURCE_FILES}
                 ${EXAMPLE_SOURCE_FILES} ${UNCONFIGURED_API_HEADER}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMENT "Formatting sources")

@@ -1,0 +1,5 @@
+add_h3_cli_test(testCliIsValidIndex "isValidIndex -i 85283473fffffff" "true")
+add_h3_cli_test(testCliIsNotValidIndex "isValidIndex -i 85283473ffff" "false")
+add_h3_cli_test(testCliIsValidIndexValidDirectedEdge
+                "isValidIndex -i 115283473fffffff" "true")
+add_h3_cli_test(testCliIsValidIndexVertex "isValidIndex -i 22528340bfffffff" "true")

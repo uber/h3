@@ -80,7 +80,7 @@ static void checkChildren(H3Index h, int res, H3Error expectedError,
     free(children);
 }
 
-SUITE(cellToChildren_new) {
+SUITE(cellToChildren) {
     TEST(oneResStep) {
         H3Index h = 0x88283080ddfffff;
         int res = 9;

@@ -82,6 +82,73 @@ SUITE(latLng) {
                  "Distance with wrapped longitude and swapped arguments");
     }
 
+    TEST(distanceRads_antipodal) {
+        // Antipodal points should give pi radians. The haversine term can
+        // round fractionally above 1 for these inputs, which previously
+        // produced NaN instead.
+        LatLng a;
+        setGeoDegs(&a, 12, 0);
+        LatLng b;
+        setGeoDegs(&b, -12, 180);
+        double dist = H3_EXPORT(greatCircleDistanceRads)(&a, &b);
+        t_assert(isfinite(dist), "Antipodal distance is finite");
+        t_assert(fabs(dist - M_PI) < EPSILON_RAD, "Antipodal distance is pi");
+
+        LatLng equatorA;
+        setGeoDegs(&equatorA, 0, 0);
+        LatLng equatorB;
+        setGeoDegs(&equatorB, 0, 180);
+        double equatorDist =
+            H3_EXPORT(greatCircleDistanceRads)(&equatorA, &equatorB);
+        t_assert(isfinite(equatorDist),
+                 "Equatorial antipodal distance is finite");
+        t_assert(fabs(equatorDist - M_PI) < EPSILON_RAD,
+                 "Equatorial antipodal distance is pi");
+
+        LatLng poleA;
+        setGeoDegs(&poleA, 90, 0);
+        LatLng poleB;
+        setGeoDegs(&poleB, -90, 0);
+        double poleDist = H3_EXPORT(greatCircleDistanceRads)(&poleA, &poleB);
+        t_assert(isfinite(poleDist), "Pole-to-pole distance is finite");
+        t_assert(fabs(poleDist - M_PI) < EPSILON_RAD,
+                 "Pole-to-pole distance is pi");
+
+        // Guard against an overly broad clamp: a point just short of
+        // antipodal should resolve to its actual angle, not pi.
+        LatLng nearA;
+        setGeoDegs(&nearA, 0, 0);
+        LatLng nearB;
+        setGeoDegs(&nearB, 0, 179.9999);
+        double nearDist = H3_EXPORT(greatCircleDistanceRads)(&nearA, &nearB);
+        double expectedNearDist = H3_EXPORT(degsToRads)(179.9999);
+        t_assert(isfinite(nearDist), "Near-antipodal distance is finite");
+        // Comparing a haversine-computed distance against a direct degree
+        // conversion needs a looser tolerance than EPSILON_RAD, same as the
+        // existing distance-vs-degsToRads comparison above.
+        t_assert(fabs(nearDist - expectedNearDist) < EPSILON_RAD * 1000,
+                 "Near-antipodal distance matches the actual angle");
+        t_assert(fabs(nearDist - M_PI) > EPSILON_RAD,
+                 "Near-antipodal distance is distinguishable from pi");
+    }
+
+    TEST(distanceRads_hugeInputsClampNegativeA) {
+        // greatCircleDistanceRads has no precondition that lat/lng be valid
+        // angles. For most out-of-range inputs A stays >= 0 (the haversine
+        // identity A = sin^2(centralAngle/2) holds for any real lat/lng),
+        // but at a large enough magnitude sin()/cos() argument reduction
+        // itself loses all precision and A can go negative. These specific
+        // values are one such case, found by search and confirmed stable
+        // at -O0 and -O2.
+        LatLng a = {.lat = 7.3976404290321633e+52,
+                    .lng = 7.2102191236323398e+52};
+        LatLng b = {.lat = -6.8262031828527172e+52,
+                    .lng = 4.7762907518189019e+52};
+        double dist = H3_EXPORT(greatCircleDistanceRads)(&a, &b);
+        t_assert(isfinite(dist), "Huge-input distance is finite, not NaN");
+        t_assert(fabs(dist) < EPSILON_RAD, "Huge-input distance clamps to 0");
+    }
+
     TEST(doubleConstants) {
         // Simple checks for ordering of values
         testDecreasingFunction(H3_EXPORT(getHexagonAreaAvgKm2),

@@ -36,18 +36,6 @@
 
 #include "h3api.h"
 
-/*
- * Return codes from parseArgs.
- */
-
-#define PARSE_ARGS_SUCCESS 0
-#define PARSE_ARGS_HELP 1
-#define PARSE_ARGS_REPEATED_ARGUMENT 2
-#define PARSE_ARGS_MISSING_VALUE 3
-#define PARSE_ARGS_FAILED_PARSE 4
-#define PARSE_ARGS_UNKNOWN_ARGUMENT 5
-#define PARSE_ARGS_MISSING_REQUIRED 6
-
 /**
  * Parse command line arguments and prints help, if needed.
  *

@@ -68,7 +68,8 @@ static H3Error vertexRotations(H3Index cell, int *out) {
 
     if (_isBaseCellPentagon(baseCell)) {
         // Find the appropriate direction-to-face mapping
-        PentagonDirectionFaces dirFaces;
+        // Zero-initialized to silence a spurious maybe-uninitialized warning.
+        PentagonDirectionFaces dirFaces = {0, {0}};
         // We never hit the end condition
         int p = 0;
         // Don't use a for loop here, for coverage reasons.
