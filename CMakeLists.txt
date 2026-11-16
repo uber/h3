@@ -286,6 +286,7 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testH3IteratorsInternal.c
     src/apps/testapps/testMathExtensionsInternal.c
     src/apps/testapps/testDescribeH3Error.c
+    src/apps/testapps/testArgs.c
     src/apps/testapps/testGosperIter.c
     src/apps/testapps/testGeoLoopArea.c
     src/apps/testapps/testInspection.c

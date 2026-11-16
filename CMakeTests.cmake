@@ -272,6 +272,7 @@ add_h3_test(testH3IteratorsInternal src/apps/testapps/testH3IteratorsInternal.c)
 add_h3_test(testMathExtensionsInternal
             src/apps/testapps/testMathExtensionsInternal.c)
 add_h3_test(testDescribeH3Error src/apps/testapps/testDescribeH3Error.c)
+add_h3_test(testArgs src/apps/testapps/testArgs.c)
 add_h3_test(testGosperIter src/apps/testapps/testGosperIter.c)
 add_h3_test(testGeoLoopArea src/apps/testapps/testGeoLoopArea.c)
 
