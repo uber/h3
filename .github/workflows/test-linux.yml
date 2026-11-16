@@ -41,7 +41,7 @@ jobs:
           echo "$RUNNER_TEMP/dev-tools/bin" >> "$GITHUB_PATH"
 
       - name: Configure build
-        run: cmake -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DWARNINGS_AS_ERRORS=ON .
+        run: cmake -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DWARNINGS_AS_ERRORS=ON -DCLANG_FORMAT_PATH="$RUNNER_TEMP/dev-tools/bin/clang-format" .
 
       - name: Formatting check
         working-directory: build
@@ -110,7 +110,7 @@ jobs:
           echo "$RUNNER_TEMP/dev-tools/bin" >> "$GITHUB_PATH"
 
       - name: Configure build
-        run: cmake -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DWARNINGS_AS_ERRORS=ON -DCMAKE_C_FLAGS="${{ matrix.compile_opt }}" .
+        run: cmake -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DWARNINGS_AS_ERRORS=ON -DCMAKE_C_FLAGS="${{ matrix.compile_opt }}" -DCLANG_FORMAT_PATH="$RUNNER_TEMP/dev-tools/bin/clang-format" .
 
       - name: Formatting check
         working-directory: build

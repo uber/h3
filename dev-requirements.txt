@@ -1,5 +1,7 @@
 # Development tools, pinned so that contributors and CI use the same versions.
 # Install with: pip install -r dev-requirements.txt
+# Python is optional: clang-format of the same major version from another
+# source, such as a clang-format-23 package, works as well.
 #
 # Dependabot opens a pull request when a new version is released. If the new
 # clang-format changes the formatting, run `make format` and add the result to

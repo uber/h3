@@ -82,7 +82,7 @@ before submitting patches for H3 as continuous integration will fail if the form
 
 Only the version of clang-format pinned in [dev-requirements.txt](https://github.com/uber/h3/blob/master/dev-requirements.txt)
 should be used to format the sources as new releases of clang-format can change defaults, causing unintended
-churn of source code formatting. It can be installed with `pip install -r dev-requirements.txt`.
+churn of source code formatting. It can be installed from a package manager, or with `pip install -r dev-requirements.txt`.
 
 ## ENABLE_LINTING
 
