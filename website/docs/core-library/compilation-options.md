@@ -77,11 +77,12 @@ but is rather the documentation for the internal C library functions.
 
 ## ENABLE_FORMAT
 
-Whether to enable using clang-format-14 to format source files before building. This should be enabled
+Whether to enable using clang-format to format source files before building. This should be enabled
 before submitting patches for H3 as continuous integration will fail if the formatting does not match.
 
-Only this version of clang-format should be used to format the sources as new releases of clang-format
-can change defaults, causing unintended churn of source code formatting.
+Only the version of clang-format pinned in [dev-requirements.txt](https://github.com/uber/h3/blob/master/dev-requirements.txt)
+should be used to format the sources as new releases of clang-format can change defaults, causing unintended
+churn of source code formatting. It can be installed with `pip install -r dev-requirements.txt`.
 
 ## ENABLE_LINTING
 

@@ -438,8 +438,9 @@ endfunction()
 # Build the H3 library
 add_h3_library(h3 "")
 
-# Automatic code formatting Give preference to clang-format-14
-find_program(CLANG_FORMAT_PATH NAMES clang-format-14 clang-format)
+# Automatic code formatting. The clang-format version to use is pinned in
+# dev-requirements.txt
+find_program(CLANG_FORMAT_PATH NAMES clang-format)
 # Warn about a missing clang-format only if the user did not disable formatting
 # themselves. Must be checked before cmake_dependent_option overrides
 # ENABLE_FORMAT when clang-format is not found.

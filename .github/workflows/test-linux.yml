@@ -34,10 +34,11 @@ jobs:
       - name: Install Doxygen
         run: |
           sudo apt update
-          sudo apt-get install doxygen graphviz
-          # Newer Ubuntu releases do not package clang-format-14, so install it
-          # from PyPI. The suffix names the executable clang-format-14.
-          pipx install --suffix=-14 clang-format==14.0.6
+          sudo apt-get install doxygen graphviz python3-venv
+          # Install the pinned clang-format ahead of any version on the runner
+          python3 -m venv "$RUNNER_TEMP/dev-tools"
+          "$RUNNER_TEMP/dev-tools/bin/pip" install -r dev-requirements.txt
+          echo "$RUNNER_TEMP/dev-tools/bin" >> "$GITHUB_PATH"
 
       - name: Configure build
         run: cmake -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DWARNINGS_AS_ERRORS=ON .
@@ -45,7 +46,7 @@ jobs:
       - name: Formatting check
         working-directory: build
         run: |
-          clang-format-14 --version
+          clang-format --version
           make format
           git diff --exit-code
 
@@ -102,10 +103,11 @@ jobs:
       - name: Install Doxygen
         run: |
           sudo apt update
-          sudo apt-get install doxygen graphviz
-          # Newer Ubuntu releases do not package clang-format-14, so install it
-          # from PyPI. The suffix names the executable clang-format-14.
-          pipx install --suffix=-14 clang-format==14.0.6
+          sudo apt-get install doxygen graphviz python3-venv
+          # Install the pinned clang-format ahead of any version on the runner
+          python3 -m venv "$RUNNER_TEMP/dev-tools"
+          "$RUNNER_TEMP/dev-tools/bin/pip" install -r dev-requirements.txt
+          echo "$RUNNER_TEMP/dev-tools/bin" >> "$GITHUB_PATH"
 
       - name: Configure build
         run: cmake -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DWARNINGS_AS_ERRORS=ON -DCMAKE_C_FLAGS="${{ matrix.compile_opt }}" .
@@ -113,7 +115,7 @@ jobs:
       - name: Formatting check
         working-directory: build
         run: |
-          clang-format-14 --version
+          clang-format --version
           make format
           git diff --exit-code
 
