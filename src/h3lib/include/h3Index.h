@@ -184,8 +184,11 @@ static inline int isResolutionClassIII(int res) { return res % 2; }
  * @return The highest resolution non-zero digit in the H3Index.
  */
 static inline Direction _h3LeadingNonZeroDigit(H3Index h) {
-    for (int r = 1; r <= H3_GET_RESOLUTION(h); r++)
-        if (H3_GET_INDEX_DIGIT(h, r)) return H3_GET_INDEX_DIGIT(h, r);
+    for (int r = 1; r <= H3_GET_RESOLUTION(h); r++) {
+        if (H3_GET_INDEX_DIGIT(h, r)) {
+            return H3_GET_INDEX_DIGIT(h, r);
+        }
+    }
 
     // if we're here it's all 0's
     return CENTER_DIGIT;
