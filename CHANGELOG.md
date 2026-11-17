@@ -8,6 +8,7 @@ The public API of this library consists of the functions declared in file
 ## [Unreleased]
 ### Fixed
 - Fixed precision loss in `cellAreaRads2`, `cellAreaKm2` and `cellAreaM2` for cells crossing the antimeridian: the longitude difference of an edge across ±180° was close to 2π, so the tiny true step was lost to rounding and cells at resolution 12 and finer came out up to several percent too small. Both longitudes are now shifted to the same side of the antimeridian before subtracting
+- Fixed precision loss in `cellAreaRads2`, `cellAreaKm2` and `cellAreaM2`, and in `geoLoopAreaRads2` and the other polygon area helpers, for loops near the north pole: the Cagnoli terms measure area from the south pole, so for a loop near the north pole they nearly cancel the 4π normalization, and cells at resolution 12 and finer came out up to several percent off. Loops in the northern hemisphere are now evaluated mirrored across the equator
 - Fixed an out of bounds write in `gridRing` when passed a negative `k`: the fallback path wiped the output array with a width computed from `6 * k`, which for a negative `k` becomes a `size_t` of about 1.8e19. The width now comes from `maxGridRingSize`, which validates `k` and computes in 64 bits
 - Avoid signed integer overflow when accumulating vertex counts in `maxPolygonToCellsSize` (#1204)
 - Fixed the `polygonToCells` fuzzer regression test to use explicit double literals instead of reinterpreting raw bytes, so it is portable across endianness (#964)

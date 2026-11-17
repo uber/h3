@@ -21,6 +21,7 @@
 #include "area.h"
 
 #include <math.h>
+#include <stdbool.h>
 
 #include "adder.h"
 #include "constants.h"
@@ -91,9 +92,31 @@ H3Error geoLoopAreaRads2(GeoLoop loop, double *out) {
     // terms
     Adder adder = {};
 
+    // The Cagnoli terms measure area relative to the south pole. For a loop
+    // near the north pole they sum to nearly -4*pi, so the area is what is
+    // left after the 4*pi normalization below, and that cancellation loses
+    // most of its significant digits (a few percent for the smallest cells
+    // at the north pole). A loop whose mean latitude is in the northern
+    // hemisphere is therefore evaluated mirrored across the equator.
+    // Mirroring preserves the enclosed area but reverses the winding, so each
+    // term is negated; the result is mathematically unchanged.
+    double latSum = 0.0;
+    for (int i = 0; i < loop.numVerts; i++) {
+        latSum += loop.verts[i].lat;
+    }
+    bool mirror = latSum > 0.0;
+
     for (int i = 0; i < loop.numVerts; i++) {
         int j = (i + 1) % loop.numVerts;
-        kadd(&adder, cagnoli(loop.verts[i], loop.verts[j]));
+        LatLng x = loop.verts[i];
+        LatLng y = loop.verts[j];
+        if (mirror) {
+            x.lat = -x.lat;
+            y.lat = -y.lat;
+            kadd(&adder, -cagnoli(x, y));
+        } else {
+            kadd(&adder, cagnoli(x, y));
+        }
     }
 
     // The Cagnoli sum above yields a signed area, with the sign switching
