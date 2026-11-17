@@ -1,7 +1,7 @@
 add_h3_cli_test(testCliCellAreaRads2 "cellAreaRads2 -c 85283473fffffff"
                 "0.0000065310")
 add_h3_cli_test(testCliCellAreaRads2Res15 "cellAreaRads2 -c 8f283082800b3b0"
-                "2.2909256e-14")
+                "0.000000000000022909")
 add_h3_cli_test(
     testCliNotCellAreaRads2 "cellAreaRads2 -c 115283473fffffff 2>&1"
     "Error 5: Cell argument was not valid")
