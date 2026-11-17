@@ -70,6 +70,7 @@ As a C library, bindings can be made to call H3 functions from different program
 
 - [uber/h3-js](https://github.com/uber/h3-js)
 - [dfellis/h3-node](https://github.com/dfellis/h3-node)
+- [dfellis/h3-wasm](https://github.com/dfellis/h3-wasm)
 - [realPrimoh/h3-reactnative](https://github.com/realPrimoh/h3-reactnative)
 - [vgorte/react-native-nitro-h3](https://github.com/vgorte/react-native-nitro-h3) - React Native via Nitro Modules
 
