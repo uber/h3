@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="generator" content="Docusaurus v3.10.2">
 <title data-rh="true">Compilation options | H3</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:url" content="https://h3geo.org/docs/core-library/compilation-options"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="Compilation options | H3"><meta data-rh="true" name="description" content="A number of options in CMake can be set when compiling the H3 core library. These are relevant for building"><meta data-rh="true" property="og:description" content="A number of options in CMake can be set when compiling the H3 core library. These are relevant for building"><link data-rh="true" rel="icon" href="/favicon.ico"><link data-rh="true" rel="canonical" href="https://h3geo.org/docs/core-library/compilation-options"><link data-rh="true" rel="alternate" href="https://h3geo.org/docs/core-library/compilation-options" hreflang="en"><link data-rh="true" rel="alternate" href="https://h3geo.org/docs/core-library/compilation-options" hreflang="x-default"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Compilation options","item":"https://h3geo.org/docs/core-library/compilation-options"}]}</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.11/dist/katex.min.css" integrity="sha384-Um5gpz1odJg5Z4HAmzPtgZKdTBHZdw8S29IecapCSB31ligYPhHQZMIlWLYQGVoc" crossorigin="anonymous"><link rel="stylesheet" href="/assets/css/styles.c2692f90.css">
-<script src="/assets/js/runtime~main.b1ee667e.js" defer="defer"></script>
-<script src="/assets/js/main.17b6bddd.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.7212fb94.js" defer="defer"></script>
+<script src="/assets/js/main.007dc43b.js" defer="defer"></script>
 </head>
 <body>
 <svg style="display: none;"><defs>
@@ -48,10 +48,11 @@ building the library as the output of these generators is checked in.</p>
 <p>Whether to build the Doxygen documentation. This is not the same as the <a href="https://github.com/uber/h3/tree/master/website" target="_blank" rel="noopener noreferrer" class="">H3 website</a>,
 but is rather the documentation for the internal C library functions.</p>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="enable_format">ENABLE_FORMAT<a href="#enable_format" class="hash-link" aria-label="Direct link to ENABLE_FORMAT" title="Direct link to ENABLE_FORMAT" translate="no">​</a></h2>
-<p>Whether to enable using clang-format-14 to format source files before building. This should be enabled
+<p>Whether to enable using clang-format to format source files before building. This should be enabled
 before submitting patches for H3 as continuous integration will fail if the formatting does not match.</p>
-<p>Only this version of clang-format should be used to format the sources as new releases of clang-format
-can change defaults, causing unintended churn of source code formatting.</p>
+<p>Only the version of clang-format pinned in <a href="https://github.com/uber/h3/blob/master/dev-requirements.txt" target="_blank" rel="noopener noreferrer" class="">dev-requirements.txt</a>
+should be used to format the sources as new releases of clang-format can change defaults, causing unintended
+churn of source code formatting. It can be installed from a package manager, or with <code>pip install -r dev-requirements.txt</code>.</p>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="enable_linting">ENABLE_LINTING<a href="#enable_linting" class="hash-link" aria-label="Direct link to ENABLE_LINTING" title="Direct link to ENABLE_LINTING" translate="no">​</a></h2>
 <p>Whether to enable using clang-tidy to lint source files when building. Only invoked when
 <a href="https://cmake.org/cmake/help/latest/prop_tgt/LANG_CLANG_TIDY.html" target="_blank" rel="noopener noreferrer" class="">Makefile or Ninja CMake generators</a>
