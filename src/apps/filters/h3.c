@@ -19,6 +19,7 @@
  *  See `h3 --help` for usage.
  */
 
+#include <math.h>
 #include <string.h>
 
 #include "h3api.h"
@@ -2551,7 +2552,13 @@ SUBCOMMAND(cellAreaRads2,
     if (err) {
         return err;
     }
-    printf("%.10lf\n", area);
+    // 10 decimal places round fine resolution cells to zero, so below 1e-6
+    // print as many places as it takes to keep 5 significant digits.
+    int decimals = 10;
+    if (area > 0.0 && area < 1e-6) {
+        decimals = 4 - (int)floor(log10(area));
+    }
+    printf("%.*lf\n", decimals, area);
     return E_SUCCESS;
 }
 
