@@ -23,6 +23,7 @@ The public API of this library consists of the functions declared in file
 - Fixed `h3 --help` exiting with status 0 when it was also given an unknown argument, such as `h3 --help --bogus`. It now exits with a non-zero status, like the subcommands (#1300)
 - Initialized `dirFaces` in `vertexRotations` to silence a `-Wmaybe-uninitialized` warning on some compilers/toolchains (#458, #582)
 - Fixed `cellToLatLng` and `cellToBoundary` losing precision in latitude near the poles; the worst error is now within a few units in the last place everywhere instead of growing as 1/cos(latitude)
+- Fixed `polygonToCellsExperimental` taking time proportional to the area of the polygon's bounding box rather than to the polygon: it descended into every cell overlapping the bounding box, so a thin polygon running diagonally took time quadratic in its length. It now only descends into cells the polygon reaches. The output is unchanged
 
 ## [4.5.0] - 2026-05-21
 ### Added

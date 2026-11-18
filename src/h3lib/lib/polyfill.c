@@ -318,6 +318,52 @@ static H3Index nextCell(H3Index cell) {
 }
 
 /**
+ * Whether the polygon being iterated may reach a bounding box that overlaps
+ * the polygon's own bounding box. A false result means no point of the
+ * bounding box is inside the polygon; a true result is not a guarantee.
+ * @param  iter Iterator holding the polygon and its bounding boxes
+ * @param  bbox Bounding box to test, overlapping the polygon's bounding box
+ * @return      Whether the polygon may intersect the bounding box
+ */
+static bool polygonMayIntersectBBox(const IterCellsPolygonCompact *iter,
+                                    const BBox *bbox) {
+    // Near the poles a bounding box can span most or all longitudes. The
+    // checks below normalize longitudes toward one side of the antimeridian,
+    // which is ambiguous for a box that wide, so don't try to rule it out.
+    if (bboxWidthRads(bbox) > M_PI) {
+        return true;
+    }
+    const GeoPolygon *polygon = iter->_polygon;
+    const BBox *bboxes = iter->_bboxes;
+    CellBoundary bboxBoundary = bboxToCellBoundary(bbox);
+    if (
+        // bbox contains the polygon
+        bboxContainsBBox(bbox, &bboxes[0]) ||
+        // polygon crosses bbox
+        cellBoundaryCrossesPolygon(polygon, bboxes, &bboxBoundary, bbox)) {
+        return true;
+    }
+    // No loop crosses the bbox, so each loop surrounds it, is inside it, or is
+    // apart from it, and the polygon contains the bbox if the outer loop
+    // surrounds it and no hole does. Test this with the center of the bbox
+    // rather than a corner: a loop may run exactly along an edge of the bbox
+    // without crossing it, and a point on a loop can count as outside it.
+    LatLng center;
+    bboxCenter(bbox, &center);
+    if (!pointInsideGeoLoop(&polygon->geoloop, &bboxes[0], &center)) {
+        return false;
+    }
+    for (int i = 0; i < polygon->numHoles; i++) {
+        // A hole inside the bbox may cover the center, but not the bbox
+        if (!bboxContainsBBox(bbox, &bboxes[i + 1]) &&
+            pointInsideGeoLoop(&polygon->holes[i], &bboxes[i + 1], &center)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+/**
  * Internal function - initialize the iterator without stepping to the first
  * value
  */
@@ -397,7 +443,7 @@ IterCellsPolygonCompact iterInitPolygonCompact(const GeoPolygon *polygon,
  * checked for complete child inclusion using a bounding box guaranteed to
  * contain all children.
  * - If the bounding box is contained by the polygon, output is set to the cell
- * - If the bounding box intersects, recurse into the first child
+ * - If the bounding box intersects the polygon, recurse into the first child
  * - Otherwise, continue with the next cell in sequence
  *
  * For cells at the target resolution, a finer-grained check is used according
@@ -566,6 +612,15 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
                         iter->cell = cell;
                         return;
                     }
+                }
+                // Overlapping bounding boxes are not enough to test the
+                // children: a thin diagonal polygon covers very little of its
+                // own bounding box, and descending into every cell there is
+                // quadratic in the length of the polygon. Skip the cell if the
+                // polygon itself does not reach the bounding box.
+                if (!polygonMayIntersectBBox(iter, &bbox)) {
+                    cell = nextCell(cell);
+                    continue;
                 }
                 // Otherwise, the intersecting bbox means we need to test all
                 // children, starting with the first child
