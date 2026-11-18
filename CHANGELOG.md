@@ -15,6 +15,7 @@ The public API of this library consists of the functions declared in file
 - Added NDJSON-file based test suite (#1230)
 
 ### Changed
+- `clang-format` upgraded to version 23. The version is now pinned in `dev-requirements.txt` and can be installed with `pip install -r dev-requirements.txt`. (#1319)
 - Added internal Gosper island iterator (#1098, #1215)
 - Test coverage improvements (#1183, #1184, #1185, #1186, #1192, #1193, #1194, #1195, #1196, #1207, #1210, #1214)
 - All website dependencies are marked as `devDependencies` as they are not part of the C build process (#1206)

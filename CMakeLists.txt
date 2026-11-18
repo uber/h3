@@ -438,8 +438,18 @@ endfunction()
 # Build the H3 library
 add_h3_library(h3 "")
 
-# Automatic code formatting Give preference to clang-format-14
-find_program(CLANG_FORMAT_PATH NAMES clang-format-14 clang-format)
+# Automatic code formatting. The clang-format version to use is pinned in
+# dev-requirements.txt. Give preference to an executable named for that major
+# version, such as clang-format-23, for those with several versions installed.
+set(clang_format_names clang-format)
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/dev-requirements.txt")
+    file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/dev-requirements.txt"
+         clang_format_requirement REGEX "^clang-format==[0-9]+")
+    if(clang_format_requirement MATCHES "^clang-format==([0-9]+)")
+        list(INSERT clang_format_names 0 clang-format-${CMAKE_MATCH_1})
+    endif()
+endif()
+find_program(CLANG_FORMAT_PATH NAMES ${clang_format_names})
 # Warn about a missing clang-format only if the user did not disable formatting
 # themselves. Must be checked before cmake_dependent_option overrides
 # ENABLE_FORMAT when clang-format is not found.

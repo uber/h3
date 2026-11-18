@@ -27,12 +27,10 @@ int64_t size;
 H3_EXPORT(gridPathCellsSize)(startIndex, endFar, &size);
 H3Index *out = calloc(size, sizeof(H3Index));
 
-BENCHMARK(gridPathCellsNear, 10000, {
-    H3_EXPORT(gridPathCells)(startIndex, endNear, out);
-});
-BENCHMARK(gridPathCellsFar, 1000, {
-    H3_EXPORT(gridPathCells)(startIndex, endFar, out);
-});
+BENCHMARK(gridPathCellsNear, 10000,
+          { H3_EXPORT(gridPathCells)(startIndex, endNear, out); });
+BENCHMARK(gridPathCellsFar, 1000,
+          { H3_EXPORT(gridPathCells)(startIndex, endFar, out); });
 
 free(out);
 

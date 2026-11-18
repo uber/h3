@@ -114,7 +114,8 @@ cd h3
 git checkout v$(<VERSION)
 ```
 
-Note: You must install build dependencies for your operating system.
+Note: You must install build dependencies for your operating system. If you intend to contribute to H3,
+also install clang-format in the major version pinned in `dev-requirements.txt`, from your package manager or with `pip install -r dev-requirements.txt`.
 
 <Tabs
   groupId="os"
@@ -135,7 +136,7 @@ First make sure you [have the developer tools installed](http://osxdaily.com/201
 # Installing the bare build requirements
 brew install cmake
 # Installing useful tools for development
-brew install clang-format lcov doxygen
+brew install lcov doxygen
 ```
 
 </TabItem>
@@ -153,7 +154,7 @@ apk add cmake make gcc libtool musl-dev
 # Installing the bare build requirements
 sudo apt install cmake make gcc libtool
 # Installing useful tools for development
-sudo apt install clang-format cmake-curses-gui lcov doxygen
+sudo apt install cmake-curses-gui lcov doxygen
 ```
 
 </TabItem>
