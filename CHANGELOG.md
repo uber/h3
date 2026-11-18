@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
+## [Unreleased]
+
 ## [4.6.0] - 2026-11-18
 ### Added
 - Added `edgeToVertexes` function, returning the two vertexes at the ends of a directed edge (#1071, #421, #1272)
