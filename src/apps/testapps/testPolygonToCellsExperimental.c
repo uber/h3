@@ -181,6 +181,41 @@ static void assertDegenerateEstimateIsTight(const GeoPolygon *polygon, int res,
              "estimate is within a small factor of the actual count");
 }
 
+/**
+ * Assert that the experimental fill with center containment produces exactly
+ * the cells that polygonToCells does, and the expected number of them.
+ */
+static void assertCenterFillMatchesClassic(const GeoPolygon *polygon, int res,
+                                           int64_t expected) {
+    int64_t numExperimental;
+    t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+        polygon, res, CONTAINMENT_CENTER, &numExperimental));
+    H3Index *experimental = calloc(numExperimental, sizeof(H3Index));
+    t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
+        polygon, res, CONTAINMENT_CENTER, numExperimental, experimental));
+
+    int64_t numClassic;
+    t_assertSuccess(
+        H3_EXPORT(maxPolygonToCellsSize)(polygon, res, 0, &numClassic));
+    H3Index *classic = calloc(numClassic, sizeof(H3Index));
+    t_assertSuccess(H3_EXPORT(polygonToCells)(polygon, res, 0, classic));
+
+    t_assert(countNonNullIndexes(experimental, numExperimental) == expected,
+             "got expected polygonToCellsExperimental size");
+    t_assert(countNonNullIndexes(classic, numClassic) == expected,
+             "got expected polygonToCells size");
+    for (int64_t i = 0; i < numClassic; i++) {
+        if (classic[i] == H3_NULL) continue;
+        bool found = false;
+        for (int64_t j = 0; j < numExperimental && !found; j++) {
+            found = experimental[j] == classic[i];
+        }
+        t_assert(found, "cell from polygonToCells is in the experimental fill");
+    }
+    free(experimental);
+    free(classic);
+}
+
 SUITE(polygonToCellsExperimental) {
     sfGeoPolygon.geoloop = sfGeoLoop;
     sfGeoPolygon.numHoles = 0;
@@ -1210,6 +1245,49 @@ SUITE(polygonToCellsExperimental) {
                 &shortLinePolygon, 12, flags, numHexagons, hexagons));
             free(hexagons);
         }
+    }
+
+    TEST(polygonToCellsThinDiagonalLine) {
+        // A line that runs diagonally in lat/lng space covers almost none of
+        // its own bounding box. The fill used to descend into every cell in
+        // that bounding box, here about 7 million res 15 cells, when only the
+        // few thousand along the line can be in the output.
+        LatLng lineVerts[] = {{0.3, 0.3}, {0.3002, 0.3002}, {0.3004, 0.3004}};
+        GeoLoop lineLoop = {.numVerts = 3, .verts = lineVerts};
+        GeoPolygon linePolygon = {.geoloop = lineLoop, .numHoles = 0};
+
+        // The size estimate for this polygon is far larger than the output,
+        // so use a fixed size that is known to be sufficient
+        int64_t numHexagons = 10000;
+        int64_t expected[] = {0, 0, 4276, 8923};
+        for (uint32_t flags = 0; flags < CONTAINMENT_INVALID; flags++) {
+            H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+            t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
+                &linePolygon, 15, flags, numHexagons, hexagons));
+            t_assert(
+                countNonNullIndexes(hexagons, numHexagons) == expected[flags],
+                "got expected polygonToCells size");
+            free(hexagons);
+        }
+    }
+
+    TEST(polygonToCellsThinDiagonalMatchesClassic) {
+        // A thin rectangle running diagonally in lat/lng space
+        LatLng rectVerts[] = {{0.30004, 0.29996},
+                              {0.30114, 0.30106},
+                              {0.30106, 0.30114},
+                              {0.29996, 0.30004}};
+        GeoLoop rectLoop = {.numVerts = 4, .verts = rectVerts};
+        GeoPolygon rectPolygon = {.geoloop = rectLoop, .numHoles = 0};
+        assertCenterFillMatchesClassic(&rectPolygon, 10, 402);
+
+        // A thin sliver across the antimeridian near the north pole, where
+        // cell bounding boxes span most or all longitudes
+        LatLng polarVerts[] = {
+            {1.50, 3.10}, {1.52, -3.10}, {1.521, -3.10}, {1.501, 3.10}};
+        GeoLoop polarLoop = {.numVerts = 4, .verts = polarVerts};
+        GeoPolygon polarPolygon = {.geoloop = polarLoop, .numHoles = 0};
+        assertCenterFillMatchesClassic(&polarPolygon, 9, 1713);
     }
 
     TEST(fillIndex) {

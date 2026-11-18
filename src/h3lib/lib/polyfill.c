@@ -318,6 +318,34 @@ static H3Index nextCell(H3Index cell) {
 }
 
 /**
+ * Whether the polygon being iterated may reach a bounding box that overlaps
+ * the polygon's own bounding box. A false result means no point of the
+ * bounding box is inside the polygon; a true result is not a guarantee.
+ * @param  iter Iterator holding the polygon and its bounding boxes
+ * @param  bbox Bounding box to test, overlapping the polygon's bounding box
+ * @return      Whether the polygon may intersect the bounding box
+ */
+static bool polygonMayIntersectBBox(const IterCellsPolygonCompact *iter,
+                                    const BBox *bbox) {
+    // Near the poles a bounding box can span most or all longitudes. The
+    // checks below normalize longitudes toward one side of the antimeridian,
+    // which is ambiguous for a box that wide, so don't try to rule it out.
+    if (bboxWidthRads(bbox) > M_PI) {
+        return true;
+    }
+    CellBoundary bboxBoundary = bboxToCellBoundary(bbox);
+    return
+        // bbox contains the polygon
+        bboxContainsBBox(bbox, &iter->_bboxes[0]) ||
+        // polygon contains bbox
+        pointInsidePolygon(iter->_polygon, iter->_bboxes,
+                           &bboxBoundary.verts[0]) ||
+        // polygon crosses bbox
+        cellBoundaryCrossesPolygon(iter->_polygon, iter->_bboxes, &bboxBoundary,
+                                   bbox);
+}
+
+/**
  * Internal function - initialize the iterator without stepping to the first
  * value
  */
@@ -397,7 +425,7 @@ IterCellsPolygonCompact iterInitPolygonCompact(const GeoPolygon *polygon,
  * checked for complete child inclusion using a bounding box guaranteed to
  * contain all children.
  * - If the bounding box is contained by the polygon, output is set to the cell
- * - If the bounding box intersects, recurse into the first child
+ * - If the bounding box intersects the polygon, recurse into the first child
  * - Otherwise, continue with the next cell in sequence
  *
  * For cells at the target resolution, a finer-grained check is used according
@@ -567,18 +595,24 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
                         return;
                     }
                 }
-                // Otherwise, the intersecting bbox means we need to test all
-                // children, starting with the first child
-                H3Index child;
-                H3Error childErr =
-                    H3_EXPORT(cellToCenterChild)(cell, cellRes + 1, &child);
-                if (childErr) {
-                    iterErrorPolygonCompact(iter, childErr);
-                    return;
+                // Otherwise, we need to test all children, starting with the
+                // first child, but only if the polygon itself reaches the
+                // bounding box. Overlapping bounding boxes are not enough: a
+                // thin diagonal polygon covers very little of its own bounding
+                // box, and descending into every cell there is quadratic in
+                // the length of the polygon.
+                if (polygonMayIntersectBBox(iter, &bbox)) {
+                    H3Index child;
+                    H3Error childErr =
+                        H3_EXPORT(cellToCenterChild)(cell, cellRes + 1, &child);
+                    if (childErr) {
+                        iterErrorPolygonCompact(iter, childErr);
+                        return;
+                    }
+                    // Restart the loop with the child cell
+                    cell = child;
+                    continue;
                 }
-                // Restart the loop with the child cell
-                cell = child;
-                continue;
             }
         }
 
