@@ -45,9 +45,22 @@ extern const char *currentTestName;
 
 void t_assertBoundary(H3Index h3, const CellBoundary *b1);
 
+/*
+ * SUITE defines main and runTests on the same source line. lcov treats two
+ * functions that start on the same line as inconsistent coverage data and
+ * fails, so main is left out of the coverage instrumentation.
+ */
+#define SUITE_MAIN_ATTRIBUTE
+#ifdef __has_attribute
+#if __has_attribute(no_profile_instrument_function)
+#undef SUITE_MAIN_ATTRIBUTE
+#define SUITE_MAIN_ATTRIBUTE __attribute__((no_profile_instrument_function))
+#endif
+#endif
+
 #define SUITE(NAME)                                         \
     static void runTests(void);                             \
-    int main(void) {                                        \
+    SUITE_MAIN_ATTRIBUTE int main(void) {                   \
         currentSuiteName = #NAME;                           \
         printf("TEST %s\n", #NAME);                         \
         runTests();                                         \

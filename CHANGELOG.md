@@ -6,6 +6,9 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+### Changed
+- `clang-format` upgraded to version 23. The version is now pinned in `dev-requirements.txt` and can be installed with `pip install -r dev-requirements.txt`. (#1319)
+
 ### Added
 - `edgeToVertexes` function, returning the two vertexes at the ends of a directed edge (#1071, #421, #1272)
 
