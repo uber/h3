@@ -183,10 +183,11 @@ static void assertDegenerateEstimateIsTight(const GeoPolygon *polygon, int res,
 
 /**
  * Assert that the experimental fill with center containment produces exactly
- * the cells that polygonToCells does, and the expected number of them.
+ * the cells that polygonToCells does.
+ * @return The number of cells
  */
-static void assertCenterFillMatchesClassic(const GeoPolygon *polygon, int res,
-                                           int64_t expected) {
+static int64_t assertCenterFillMatchesClassic(const GeoPolygon *polygon,
+                                              int res) {
     int64_t numExperimental;
     t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
         polygon, res, CONTAINMENT_CENTER, &numExperimental));
@@ -200,10 +201,9 @@ static void assertCenterFillMatchesClassic(const GeoPolygon *polygon, int res,
     H3Index *classic = calloc(numClassic, sizeof(H3Index));
     t_assertSuccess(H3_EXPORT(polygonToCells)(polygon, res, 0, classic));
 
-    t_assert(countNonNullIndexes(experimental, numExperimental) == expected,
-             "got expected polygonToCellsExperimental size");
-    t_assert(countNonNullIndexes(classic, numClassic) == expected,
-             "got expected polygonToCells size");
+    int64_t count = countNonNullIndexes(classic, numClassic);
+    t_assert(countNonNullIndexes(experimental, numExperimental) == count,
+             "polygonToCellsExperimental size matches polygonToCells");
     for (int64_t i = 0; i < numClassic; i++) {
         if (classic[i] == H3_NULL) continue;
         bool found = false;
@@ -214,6 +214,7 @@ static void assertCenterFillMatchesClassic(const GeoPolygon *polygon, int res,
     }
     free(experimental);
     free(classic);
+    return count;
 }
 
 SUITE(polygonToCellsExperimental) {
@@ -1279,7 +1280,8 @@ SUITE(polygonToCellsExperimental) {
                               {0.29996, 0.30004}};
         GeoLoop rectLoop = {.numVerts = 4, .verts = rectVerts};
         GeoPolygon rectPolygon = {.geoloop = rectLoop, .numHoles = 0};
-        assertCenterFillMatchesClassic(&rectPolygon, 10, 402);
+        t_assert(assertCenterFillMatchesClassic(&rectPolygon, 10) == 402,
+                 "got expected polygonToCells size");
 
         // A thin sliver across the antimeridian near the north pole, where
         // cell bounding boxes span most or all longitudes
@@ -1287,7 +1289,134 @@ SUITE(polygonToCellsExperimental) {
             {1.50, 3.10}, {1.52, -3.10}, {1.521, -3.10}, {1.501, 3.10}};
         GeoLoop polarLoop = {.numVerts = 4, .verts = polarVerts};
         GeoPolygon polarPolygon = {.geoloop = polarLoop, .numHoles = 0};
-        assertCenterFillMatchesClassic(&polarPolygon, 9, 1713);
+        t_assert(assertCenterFillMatchesClassic(&polarPolygon, 9) == 1713,
+                 "got expected polygonToCells size (polar)");
+    }
+
+    TEST(polygonToCellsSidesOnCellBBox) {
+        // Rectangles containing the bounding box of a res 1 cell's children,
+        // with each combination of sides lying exactly on the sides of that
+        // bounding box. The cell's children are in the polygon even though no
+        // side of the polygon crosses the bounding box.
+        BBox bbox;
+        t_assertSuccess(cellToBBox(0x81093ffffffffff, &bbox, true));
+        LatLng center;
+        bboxCenter(&bbox, &center);
+        // A hole inside the bounding box that covers its center, and a hole
+        // just south of the bounding box
+        LatLng centerHoleVerts[] = {{center.lat + 0.03, center.lng + 0.03},
+                                    {center.lat + 0.03, center.lng - 0.03},
+                                    {center.lat - 0.03, center.lng - 0.03},
+                                    {center.lat - 0.03, center.lng + 0.03}};
+        LatLng southHoleVerts[] = {{bbox.south - 0.002, center.lng + 0.03},
+                                   {bbox.south - 0.002, center.lng - 0.03},
+                                   {bbox.south - 0.008, center.lng - 0.03},
+                                   {bbox.south - 0.008, center.lng + 0.03}};
+        GeoLoop holes[] = {{.numVerts = 4, .verts = centerHoleVerts},
+                           {.numVerts = 4, .verts = southHoleVerts}};
+
+        const double margin = 0.01;
+        for (int sides = 0; sides < 16; sides++) {
+            double north = bbox.north + ((sides & 1) ? 0 : margin);
+            double south = bbox.south - ((sides & 2) ? 0 : margin);
+            double east = bbox.east + ((sides & 4) ? 0 : margin);
+            double west = bbox.west - ((sides & 8) ? 0 : margin);
+            LatLng verts[] = {
+                {north, east}, {north, west}, {south, west}, {south, east}};
+            GeoLoop loop = {.numVerts = 4, .verts = verts};
+            GeoPolygon polygon = {.geoloop = loop, .numHoles = 0};
+            int64_t count = assertCenterFillMatchesClassic(&polygon, 2);
+            t_assert(count >= 34, "got expected polygonToCells size");
+
+            // The southern hole only fits where the polygon extends south of
+            // the bounding box. One cell center is in the central hole.
+            GeoPolygon holePolygon = {.geoloop = loop,
+                                      .numHoles = (sides & 2) ? 1 : 2,
+                                      .holes = holes};
+            t_assert(
+                assertCenterFillMatchesClassic(&holePolygon, 2) == count - 1,
+                "got expected polygonToCells size (holes)");
+        }
+    }
+
+    TEST(polygonToCellsWiderThan180Degrees) {
+        // Thin bands spanning most longitudes, with their ends at different
+        // latitudes. Near either end, the bounding box of the band overlaps
+        // the bounding box of a cell on both sides of the cell, while the
+        // band itself is only on one side.
+        LatLng bandVerts[] = {{-0.5, -2.9}, {0.14, 0.1}, {0.78, 3.1},
+                              {0.8, 3.1},   {0.16, 0.1}, {-0.48, -2.9}};
+        GeoLoop bandLoop = {.numVerts = 6, .verts = bandVerts};
+        GeoPolygon bandPolygon = {.geoloop = bandLoop, .numHoles = 0};
+        int64_t expectedBand[] = {378, 2, 762, 1141};
+
+        // The same across the antimeridian, with the ends either side of the
+        // prime meridian
+        LatLng transVerts[] = {{-0.6, 0.05}, {-0.2, 2.2},   {0.2, -2.2},
+                               {0.6, -0.05}, {0.62, -0.05}, {0.22, -2.2},
+                               {-0.18, 2.2}, {-0.58, 0.05}};
+        GeoLoop transLoop = {.numVerts = 8, .verts = transVerts};
+        GeoPolygon transPolygon = {.geoloop = transLoop, .numHoles = 0};
+        int64_t expectedTrans[] = {48, 0, 215, 338};
+
+        for (uint32_t flags = 0; flags < CONTAINMENT_INVALID; flags++) {
+            int64_t numHexagons;
+            t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+                &bandPolygon, 3, flags, &numHexagons));
+            H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+            t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
+                &bandPolygon, 3, flags, numHexagons, hexagons));
+            t_assert(countNonNullIndexes(hexagons, numHexagons) ==
+                         expectedBand[flags],
+                     "got expected polygonToCells size");
+            free(hexagons);
+
+            t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+                &transPolygon, 2, flags, &numHexagons));
+            hexagons = calloc(numHexagons, sizeof(H3Index));
+            t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
+                &transPolygon, 2, flags, numHexagons, hexagons));
+            t_assert(countNonNullIndexes(hexagons, numHexagons) ==
+                         expectedTrans[flags],
+                     "got expected polygonToCells size (transmeridian)");
+            free(hexagons);
+        }
+    }
+
+    TEST(polygonToCellsOverlappingBBoxPastBaseCell) {
+        // The bounding box of this res 1 cell extends north of the bounding
+        // box of its base cell. A thin triangle with one corner in that
+        // overhang stays clear of the base cell's bounding box, although
+        // their bounding boxes overlap.
+        H3Index cell = 0x81313ffffffffff;
+        BBox baseBBox;
+        BBox cellBBox;
+        t_assertSuccess(cellToBBox(baseCellNumToCell(24), &baseBBox, true));
+        t_assertSuccess(cellToBBox(cell, &cellBBox, true));
+        t_assert(cellBBox.north > baseBBox.north,
+                 "cell bbox extends past the base cell bbox");
+
+        double lat = (baseBBox.north + cellBBox.north) / 2;
+        LatLng verts[] = {{lat, (cellBBox.east + cellBBox.west) / 2},
+                          {lat, baseBBox.east + 0.2},
+                          {baseBBox.north - 0.0001, baseBBox.east + 0.2}};
+        GeoLoop loop = {.numVerts = 3, .verts = verts};
+        GeoPolygon polygon = {.geoloop = loop, .numHoles = 0};
+
+        int64_t numHexagons;
+        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+            &polygon, 1, CONTAINMENT_OVERLAPPING_BBOX, &numHexagons));
+        H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+        t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
+            &polygon, 1, CONTAINMENT_OVERLAPPING_BBOX, numHexagons, hexagons));
+        t_assert(countNonNullIndexes(hexagons, numHexagons) == 11,
+                 "got expected polygonToCells size");
+        bool found = false;
+        for (int64_t i = 0; i < numHexagons; i++) {
+            found = found || hexagons[i] == cell;
+        }
+        t_assert(found, "cell whose bbox the polygon reaches is in the output");
+        free(hexagons);
     }
 
     TEST(fillIndex) {

@@ -327,22 +327,44 @@ static H3Index nextCell(H3Index cell) {
  */
 static bool polygonMayIntersectBBox(const IterCellsPolygonCompact *iter,
                                     const BBox *bbox) {
-    // Near the poles a bounding box can span most or all longitudes. The
-    // checks below normalize longitudes toward one side of the antimeridian,
-    // which is ambiguous for a box that wide, so don't try to rule it out.
-    if (bboxWidthRads(bbox) > M_PI) {
+    const GeoPolygon *polygon = iter->_polygon;
+    const BBox *bboxes = iter->_bboxes;
+    // The checks below normalize longitudes toward one side of the
+    // antimeridian, so don't try to rule out a bbox where that is ambiguous:
+    // - Near the poles a bbox can span most or all longitudes.
+    // - A bbox that together with the polygon's bbox spans all longitudes can
+    //   overlap it in two separate ranges of longitude, one on each side, and
+    //   only one of them would be checked.
+    if (bboxWidthRads(bbox) > M_PI ||
+        bboxWidthRads(bbox) + bboxWidthRads(&bboxes[0]) >= M_2PI) {
         return true;
     }
     CellBoundary bboxBoundary = bboxToCellBoundary(bbox);
-    return
+    if (
         // bbox contains the polygon
-        bboxContainsBBox(bbox, &iter->_bboxes[0]) ||
-        // polygon contains bbox
-        pointInsidePolygon(iter->_polygon, iter->_bboxes,
-                           &bboxBoundary.verts[0]) ||
+        bboxContainsBBox(bbox, &bboxes[0]) ||
         // polygon crosses bbox
-        cellBoundaryCrossesPolygon(iter->_polygon, iter->_bboxes, &bboxBoundary,
-                                   bbox);
+        cellBoundaryCrossesPolygon(polygon, bboxes, &bboxBoundary, bbox)) {
+        return true;
+    }
+    // No loop crosses the bbox, so each loop surrounds it, is inside it, or is
+    // apart from it, and the polygon contains the bbox if the outer loop
+    // surrounds it and no hole does. Test this with the center of the bbox
+    // rather than a corner: a loop may run exactly along an edge of the bbox
+    // without crossing it, and a point on a loop can count as outside it.
+    LatLng center;
+    bboxCenter(bbox, &center);
+    if (!pointInsideGeoLoop(&polygon->geoloop, &bboxes[0], &center)) {
+        return false;
+    }
+    for (int i = 0; i < polygon->numHoles; i++) {
+        // A hole inside the bbox may cover the center, but not the bbox
+        if (!bboxContainsBBox(bbox, &bboxes[i + 1]) &&
+            pointInsideGeoLoop(&polygon->holes[i], &bboxes[i + 1], &center)) {
+            return false;
+        }
+    }
+    return true;
 }
 
 /**
@@ -595,24 +617,30 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
                         return;
                     }
                 }
-                // Otherwise, we need to test all children, starting with the
-                // first child, but only if the polygon itself reaches the
-                // bounding box. Overlapping bounding boxes are not enough: a
-                // thin diagonal polygon covers very little of its own bounding
-                // box, and descending into every cell there is quadratic in
-                // the length of the polygon.
-                if (polygonMayIntersectBBox(iter, &bbox)) {
-                    H3Index child;
-                    H3Error childErr =
-                        H3_EXPORT(cellToCenterChild)(cell, cellRes + 1, &child);
-                    if (childErr) {
-                        iterErrorPolygonCompact(iter, childErr);
-                        return;
-                    }
-                    // Restart the loop with the child cell
-                    cell = child;
+                // Overlapping bounding boxes are not enough to test the
+                // children: a thin diagonal polygon covers very little of its
+                // own bounding box, and descending into every cell there is
+                // quadratic in the length of the polygon. Skip the cell if the
+                // polygon itself does not reach the bounding box. Base cells
+                // are not skipped: the bounding box of a res 1 cell, which
+                // overlapping-bbox mode tests, can extend past the bounding
+                // box of its base cell.
+                if (cellRes > 0 && !polygonMayIntersectBBox(iter, &bbox)) {
+                    cell = nextCell(cell);
                     continue;
                 }
+                // Otherwise, the intersecting bbox means we need to test all
+                // children, starting with the first child
+                H3Index child;
+                H3Error childErr =
+                    H3_EXPORT(cellToCenterChild)(cell, cellRes + 1, &child);
+                if (childErr) {
+                    iterErrorPolygonCompact(iter, childErr);
+                    return;
+                }
+                // Restart the loop with the child cell
+                cell = child;
+                continue;
             }
         }
 
