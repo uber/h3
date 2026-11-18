@@ -748,7 +748,7 @@ endif()
 # <prefix>/<CMAKE_INSTALL_LIBDIR>/ * <prefix>/include/
 include(GNUInstallDirs)
 set(config_install_dir "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
-set(include_install_dir "include")
+set(include_install_dir "${CMAKE_INSTALL_INCLUDEDIR}")
 
 set(generated_dir "${CMAKE_CURRENT_BINARY_DIR}/generated")
 
