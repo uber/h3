@@ -46,7 +46,7 @@ jobs:
       - name: Formatting check
         working-directory: build
         run: |
-          clang-format --version
+          "$RUNNER_TEMP/dev-tools/bin/clang-format" --version
           make format
           git diff --exit-code
 
@@ -115,7 +115,7 @@ jobs:
       - name: Formatting check
         working-directory: build
         run: |
-          clang-format --version
+          "$RUNNER_TEMP/dev-tools/bin/clang-format" --version
           make format
           git diff --exit-code
 
