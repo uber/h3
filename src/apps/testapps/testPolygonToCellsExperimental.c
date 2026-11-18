@@ -1290,6 +1290,49 @@ SUITE(polygonToCellsExperimental) {
         assertCenterFillMatchesClassic(&polarPolygon, 9, 1713);
     }
 
+    TEST(polygonToCellsSidesOnCellBBox) {
+        // Rectangles containing the bounding box of a base cell's children,
+        // with each combination of sides lying exactly on the sides of that
+        // bounding box. The cell's children are in the polygon even though no
+        // side of the polygon crosses the bounding box.
+        BBox bbox;
+        t_assertSuccess(cellToBBox(baseCellNumToCell(4), &bbox, true));
+        LatLng center;
+        bboxCenter(&bbox, &center);
+        // A hole inside the bounding box that covers its center, and a hole
+        // just south of the bounding box
+        LatLng centerHoleVerts[] = {{center.lat + 0.1, center.lng + 0.1},
+                                    {center.lat + 0.1, center.lng - 0.1},
+                                    {center.lat - 0.1, center.lng - 0.1},
+                                    {center.lat - 0.1, center.lng + 0.1}};
+        LatLng southHoleVerts[] = {{bbox.south - 0.002, center.lng + 0.1},
+                                   {bbox.south - 0.002, center.lng - 0.1},
+                                   {bbox.south - 0.008, center.lng - 0.1},
+                                   {bbox.south - 0.008, center.lng + 0.1}};
+        GeoLoop holes[] = {{.numVerts = 4, .verts = centerHoleVerts},
+                           {.numVerts = 4, .verts = southHoleVerts}};
+
+        const double margin = 0.01;
+        for (int sides = 0; sides < 16; sides++) {
+            double north = bbox.north + ((sides & 1) ? 0 : margin);
+            double south = bbox.south - ((sides & 2) ? 0 : margin);
+            double east = bbox.east + ((sides & 4) ? 0 : margin);
+            double west = bbox.west - ((sides & 8) ? 0 : margin);
+            LatLng verts[] = {
+                {north, east}, {north, west}, {south, west}, {south, east}};
+            GeoLoop loop = {.numVerts = 4, .verts = verts};
+            GeoPolygon polygon = {.geoloop = loop, .numHoles = 0};
+            assertCenterFillMatchesClassic(&polygon, 1, 18);
+
+            // The southern hole only fits where the polygon extends south of
+            // the bounding box
+            GeoPolygon holePolygon = {.geoloop = loop,
+                                      .numHoles = (sides & 2) ? 1 : 2,
+                                      .holes = holes};
+            assertCenterFillMatchesClassic(&holePolygon, 1, 17);
+        }
+    }
+
     TEST(fillIndex) {
         iterateAllIndexesAtRes(0, fillIndex_assertions);
         iterateAllIndexesAtRes(1, fillIndex_assertions);
