@@ -35,6 +35,8 @@ The public API of this library consists of the functions declared in file
 - Fixed `clang-tidy` deprecated setting error (#1216)
 - Fixed possible signed integer overflow in `uncompactCellsSize` (#1205)
 - Fixed incorrect test suite names (#1294)
+- Fixed CLI exiting with status 0 when an arguments could not be parsed (unknown argument, missing required argument, missing or unparseable value). (#1300, #1312)
+- Initialized `dirFaces` in `vertexRotations` to silence a `-Wmaybe-uninitialized` warning on some compilers/toolchains (#458, #582, #1273)
 
 ## [4.5.0] - 2026-05-21
 ### Added
