@@ -142,7 +142,7 @@ static void check_global_poly(GeoMultiPolygon mpoly) {
     t_assert(relative_diff(area, 4 * M_PI) < 1e-15, "Area of the globe");
 }
 
-SUITE(edgeCellToPoly) {
+SUITE(cellsToMultiPoly) {
     TEST(three_polygons) {
         double rel_tol = 1e-15;
         // Results in 3 polygons: 0 holes, 1 hole, 3 holes
