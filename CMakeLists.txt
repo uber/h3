@@ -296,6 +296,8 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testConformanceTraversal.c
     src/apps/testapps/testConformanceUnsafe.c
     src/apps/testapps/testConformanceLocalIj.c
+    src/apps/testapps/testConformanceHierarchy.c
+    src/apps/testapps/testConformanceSets.c
     src/apps/testapps/testConformanceManifest.c
     src/apps/testapps/mkConformance.c
     src/apps/miscapps/cellToBoundaryHier.c

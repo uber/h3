@@ -228,6 +228,19 @@ foreach(file ${conformance_files})
                          File)
 endforeach()
 
+file(GLOB conformance_files tests/inputfiles/hierarchy/*.jsonl)
+foreach(file ${conformance_files})
+    add_h3_test_with_arg(testConformanceHierarchy
+                         src/apps/testapps/testConformanceHierarchy.c ${file}
+                         File)
+endforeach()
+
+file(GLOB conformance_files tests/inputfiles/sets/*.jsonl)
+foreach(file ${conformance_files})
+    add_h3_test_with_arg(testConformanceSets
+                         src/apps/testapps/testConformanceSets.c ${file} File)
+endforeach()
+
 add_h3_test_with_arg(testConformanceFloatsCells
                      src/apps/testapps/testConformanceFloatsCells.c
                      ${CMAKE_CURRENT_SOURCE_DIR}/tests/inputfiles/floats/cells.jsonl
