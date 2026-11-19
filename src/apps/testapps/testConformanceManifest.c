@@ -90,7 +90,8 @@ int main(int argc, char *argv[]) {
     c_assert(cJSON_IsObject(generator), "generator: not an object");
     c_assert(strlen(jsonString(generator, "name")) > 0,
              "generator.name: empty");
-    c_assert(jsonInt64(generator, "seed") > 0, "generator.seed: not set");
+    c_assert((uint64_t)jsonInt64(generator, "seed") == CONFORMANCE_SEED,
+             "generator.seed: not the seed the runners replay");
 
     const cJSON *tolerances = jsonItem(manifest, "tolerances");
     c_assert(cJSON_IsObject(tolerances), "tolerances: not an object");
