@@ -293,6 +293,9 @@ set(OTHER_SOURCE_FILES
     src/apps/testapps/testSha256.c
     src/apps/testapps/testConformanceInspection.c
     src/apps/testapps/testConformanceFloatsCells.c
+    src/apps/testapps/testConformanceTraversal.c
+    src/apps/testapps/testConformanceUnsafe.c
+    src/apps/testapps/testConformanceLocalIj.c
     src/apps/testapps/testConformanceManifest.c
     src/apps/testapps/mkConformance.c
     src/apps/miscapps/cellToBoundaryHier.c
