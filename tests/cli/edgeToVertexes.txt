@@ -1,0 +1,10 @@
+add_h3_cli_test(
+    testCliEdgeToVertexes "edgeToVertexes -c 115283473fffffff"
+    "[\"255283463fffffff\", \"22528340ffffffff\"]")
+add_h3_cli_test(
+    testCliEdgeToVertexesNewline
+    "edgeToVertexes -c 115283473fffffff -f newline | tr -s '\\\\r\\\\n' ',' | tr -s '\\\\n' ','"
+    "255283463fffffff,22528340ffffffff,")
+add_h3_cli_test(
+    testCliNotEdgeToVertexes "edgeToVertexes -c 85283473fffffff 2>&1"
+    "Error 6: Directed edge argument was not valid")
