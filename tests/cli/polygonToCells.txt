@@ -33,3 +33,8 @@ add_h3_cli_test(
     testCliPolygonToCellsArg2
     "polygonToCells -r 7 -p \"\\\\`cat ${PROJECT_SOURCE_DIR}/tests/inputfiles/polygon_test2.txt\\\\`\" -f newline | tr -s '\\\\r\\\\n' ',' | tr -s '\\\\n' ','"
     "872830828ffffff,87283082effffff,")
+add_h3_cli_test(
+    testCliPolygonToCellsWhitespaceArg
+    "polygonToCells -r 5 -p '[[0,0],[0,1],[1,1 ],[1,0]]' -f newline | tr -s '\\\\r\\\\n' ',' | tr -s '\\\\n' ','"
+    "85754e57fffffff,8575416ffffffff,85754eb3fffffff,85754c53fffffff,85754e07fffffff,85754e13fffffff,8575412bfffffff,85754ecbfffffff,85754c6bfffffff,85754137fffffff,85754ed7fffffff,85754c77fffffff,85754e2bfffffff,85754e87fffffff,85754e37fffffff,85754e93fffffff,85754167fffffff,85754eabfffffff,85754c4bfffffff,85754eb7fffffff,85754c57fffffff,85754e0bfffffff,85754123fffffff,85754ec3fffffff,85754c63fffffff,85754e17fffffff,8575412ffffffff,85754e73fffffff,85754ecffffffff,85754c6ffffffff,85754e23fffffff,8575413bfffffff,85754ccbfffffff,85754edbfffffff,85754c7bfffffff,85754e8bfffffff,85754c2bfffffff,85754e3bfffffff,85754e97fffffff,857548dbfffffff,85754ea3fffffff,85754c43fffffff,85754e53fffffff,85754eaffffffff,85754c4ffffffff,85754e03fffffff,85754ebbfffffff,85754c5bfffffff,85754e0ffffffff,85754127fffffff,85754c0bfffffff,85754337fffffff,85754ec7fffffff,85754c67fffffff,85754e1bfffffff,85754133fffffff,85754e77fffffff,85754ed3fffffff,85754c73fffffff,85754e83fffffff,85754e33fffffff,85754e8ffffffff,857548d3fffffff,85754e9bfffffff,85754ea7fffffff,85754c47fffffff,"
+)
