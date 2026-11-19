@@ -6,6 +6,8 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+### Fixed
+- Fixed precision loss in `cellAreaRads2`, `cellAreaKm2` and `cellAreaM2`, and in `geoLoopAreaRads2` and the other polygon area helpers, for loops near the north pole: the Cagnoli terms measure area from the south pole, so for a loop near the north pole they nearly cancel the 4π normalization, and cells at resolution 12 and finer came out up to several percent off. Loops in the northern hemisphere are now evaluated mirrored across the equator (#1321)
 
 ## [4.6.0] - 2026-11-18
 ### Added

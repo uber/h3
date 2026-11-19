@@ -36,6 +36,18 @@ static void _compareArea(LatLng *verts, int numVerts, double target_area) {
     t_assert(fabs(out - target_area) < tol, "area should match");
 }
 
+/**
+ * Rotates a point 90 degrees about the axis through (0, 90E), carrying the
+ * north pole to (0, 0).
+ */
+static LatLng _rotatePoleToEquator(LatLng p) {
+    double x = cos(p.lat) * cos(p.lng);
+    double y = cos(p.lat) * sin(p.lng);
+    double z = sin(p.lat);
+    LatLng out = {asin(-x), atan2(y, z)};
+    return out;
+}
+
 SUITE(geoLoopArea) {
     TEST(triangle_basic) {
         /*
@@ -232,6 +244,34 @@ SUITE(geoLoopArea) {
         t_assertSuccess(geoLoopAreaRads2(b, &areaB));
         t_assert(fabs(areaA / areaB - 1.0) < 1e-6,
                  "area should not depend on longitude");
+    }
+
+    TEST(northPoleTriangle) {
+        /*
+        A small triangle around the north pole should have the same area as
+        the same triangle rotated onto the equator. Measured from the south
+        pole, the Cagnoli terms of a loop near the north pole sum to nearly
+        -4*pi, and the area must not be lost to the cancellation when 4*pi
+        is added back.
+        */
+        double h = 1e-7;
+        LatLng polar[] = {
+            {M_PI_2 - h, 0.0},
+            {M_PI_2 - h, 2.0 * M_PI / 3.0},
+            {M_PI_2 - 2.0 * h, -2.0 * M_PI / 3.0},
+        };
+        LatLng rotated[ARRAY_SIZE(polar)];
+        for (int i = 0; i < (int)ARRAY_SIZE(polar); i++) {
+            rotated[i] = _rotatePoleToEquator(polar[i]);
+        }
+        GeoLoop a = {.verts = polar, .numVerts = ARRAY_SIZE(polar)};
+        GeoLoop b = {.verts = rotated, .numVerts = ARRAY_SIZE(rotated)};
+
+        double areaA, areaB;
+        t_assertSuccess(geoLoopAreaRads2(a, &areaA));
+        t_assertSuccess(geoLoopAreaRads2(b, &areaB));
+        t_assert(fabs(areaA / areaB - 1.0) < 1e-6,
+                 "area should not depend on distance from the south pole");
     }
 
     TEST(degenerateLoop2) {

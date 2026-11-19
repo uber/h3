@@ -25,6 +25,7 @@
 #include "area.h"
 #include "h3api.h"
 #include "test.h"
+#include "utility.h"
 
 static const double areasKm2[] = {
     2.562182162955496e+06, 4.476842017201860e+05, 6.596162242711056e+04,
@@ -33,6 +34,18 @@ static const double areasKm2[] = {
     7.838600808637444e-02, 1.119834221989390e-02, 1.599777169186614e-03,
     2.285390931423380e-04, 3.264850232091780e-05, 4.664070326136774e-06,
     6.662957615868888e-07};
+
+/**
+ * Rotates a point 90 degrees about the axis through (0, 90E), carrying the
+ * north pole to (0, 0).
+ */
+static LatLng _rotatePoleToEquator(LatLng p) {
+    double x = cos(p.lat) * cos(p.lng);
+    double y = cos(p.lat) * sin(p.lng);
+    double z = sin(p.lat);
+    LatLng out = {asin(-x), atan2(y, z)};
+    return out;
+}
 
 SUITE(h3CellArea) {
     TEST(specific_cell_area) {
@@ -90,6 +103,37 @@ SUITE(h3CellArea) {
 
                 t_assert(fabs(area / rotated - 1.0) < 1e-6,
                          "area should not change under rotation");
+            }
+        }
+    }
+
+    TEST(cell_area_north_pole_rotation) {
+        // Rotating a loop does not change its area. Compare the area of
+        // cells near the north pole against their boundaries rotated onto
+        // the equator, at every resolution. Measured from the south pole,
+        // the Cagnoli terms of a loop near the north pole nearly cancel
+        // the 4*pi normalization, which costs up to several percent.
+        double lats[] = {90.0, 89.9999, 89.999, 89.99, 89.0};
+        for (int res = 0; res <= MAX_H3_RES; res++) {
+            for (int k = 0; k < (int)ARRAY_SIZE(lats); k++) {
+                LatLng p = {H3_EXPORT(degsToRads)(lats[k]), 0.7 * k};
+                H3Index cell;
+                t_assertSuccess(H3_EXPORT(latLngToCell)(&p, res, &cell));
+                double area;
+                t_assertSuccess(H3_EXPORT(cellAreaRads2)(cell, &area));
+
+                CellBoundary cb;
+                t_assertSuccess(H3_EXPORT(cellToBoundary)(cell, &cb));
+                for (int i = 0; i < cb.numVerts; i++) {
+                    cb.verts[i] = _rotatePoleToEquator(cb.verts[i]);
+                }
+                GeoLoop loop = {.numVerts = cb.numVerts, .verts = cb.verts};
+                double rotated;
+                t_assertSuccess(geoLoopAreaRads2(loop, &rotated));
+
+                t_assert(fabs(area / rotated - 1.0) < 1e-8,
+                         "area near the north pole should not change under "
+                         "rotation");
             }
         }
     }
