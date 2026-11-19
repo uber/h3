@@ -1185,7 +1185,7 @@ SUBCOMMAND(childPosToCell,
     Arg posArg = {
         .names = {"-p", "--position"},
         .required = true,
-        .scanFormat = "%" PRIi64,
+        .scanFormat = "%" PRId64,
         .valueName = "pos",
         .value = &pos,
         .helpText =

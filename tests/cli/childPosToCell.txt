@@ -1,3 +1,9 @@
 add_h3_cli_test(
     testCliChildPosToCell
     "childPosToCell -c 85283473fffffff -r 7 -p 42 -f newline" "872834730ffffff")
+add_h3_cli_test(
+    testCliChildPosToCellZeroPadded
+    "childPosToCell -c 85283473fffffff -r 7 -p 042 -f newline" "872834730ffffff")
+add_h3_cli_test(
+    testCliChildPosToCellZeroPaddedNonOctal
+    "childPosToCell -c 85283473fffffff -r 7 -p 08 -f newline" "872834709ffffff")
