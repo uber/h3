@@ -7,19 +7,41 @@ The public API of this library consists of the functions declared in file
 
 ## [Unreleased]
 ### Fixed
+- Fixed precision loss in `cellAreaRads2`, `cellAreaKm2` and `cellAreaM2`, and in `geoLoopAreaRads2` and the other polygon area helpers, for loops near the north pole: the Cagnoli terms measure area from the south pole, so for a loop near the north pole they nearly cancel the 4π normalization, and cells at resolution 12 and finer came out up to several percent off. Loops in the northern hemisphere are now evaluated mirrored across the equator (#1321)
+
+## [4.6.0] - 2026-11-18
+### Added
+- Added `edgeToVertexes` function, returning the two vertexes at the ends of a directed edge (#1071, #421, #1272)
+- Added `reverseDirectedEdge` to H3 CLI. (#1252)
+- Added `isValidIndex` to H3 CLI (#1251)
+- Added NDJSON-file based test suite (#1230)
+
+### Changed
+- `clang-format` upgraded to version 23. The version is now pinned in `dev-requirements.txt` and can be installed with `pip install -r dev-requirements.txt`. (#1319)
+- Added internal Gosper island iterator (#1098, #1215)
+- Test coverage improvements (#1183, #1184, #1185, #1186, #1192, #1193, #1194, #1195, #1196, #1207, #1210, #1214)
+- All website dependencies are marked as `devDependencies` as they are not part of the C build process (#1206)
+- Added 32 bit Linux builds to CI (#1237)
+- Replace the retired macos-14 CI runner with macos-15-intel (#1292)
+
+### Fixed
+- Fixed `maxPolygonToCellsSizeExperimental` taking unbounded time on very thin or degenerate polygons (for example, all vertices on the same latitude): the size estimate now also coarsens its working resolution based on the longest side of the bounding box, not only its area
 - Fixed precision loss in `cellAreaRads2`, `cellAreaKm2` and `cellAreaM2` for cells crossing the antimeridian: the longitude difference of an edge across ±180° was close to 2π, so the tiny true step was lost to rounding and cells at resolution 12 and finer came out up to several percent too small. Both longitudes are now shifted to the same side of the antimeridian before subtracting
-- Fixed precision loss in `cellAreaRads2`, `cellAreaKm2` and `cellAreaM2`, and in `geoLoopAreaRads2` and the other polygon area helpers, for loops near the north pole: the Cagnoli terms measure area from the south pole, so for a loop near the north pole they nearly cancel the 4π normalization, and cells at resolution 12 and finer came out up to several percent off. Loops in the northern hemisphere are now evaluated mirrored across the equator
-- Fixed an out of bounds write in `gridRing` when passed a negative `k`: the fallback path wiped the output array with a width computed from `6 * k`, which for a negative `k` becomes a `size_t` of about 1.8e19. The width now comes from `maxGridRingSize`, which validates `k` and computes in 64 bits
-- Avoid signed integer overflow when accumulating vertex counts in `maxPolygonToCellsSize` (#1204)
-- Fixed the `polygonToCells` fuzzer regression test to use explicit double literals instead of reinterpreting raw bytes, so it is portable across endianness (#964)
-- No longer emit a CMake warning about a missing `clang-format`/`clang-tidy` when the user explicitly set `ENABLE_FORMAT=OFF`/`ENABLE_LINTING=OFF` (#1158)
-- Fixed an out of bounds read in `_baseCellToCCWrot60` when passed a face index equal to `NUM_ICOSA_FACES` (#978)
+- Fixed an out of bounds write in `gridRing` when passed a negative `k` (#1235)
+- Avoid signed integer overflow when accumulating vertex counts in `maxPolygonToCellsSize` (#1204, #1231)
+- Fixed the `polygonToCells` fuzzer regression test to use explicit double literals instead of reinterpreting raw bytes, so it is portable across endianness (#964, #1182)
+- No longer emit a CMake warning about a missing `clang-format`/`clang-tidy` when the user explicitly set `ENABLE_FORMAT=OFF`/`ENABLE_LINTING=OFF` (#1158, #1191)
+- Fixed an out of bounds read in `_baseCellToCCWrot60` when passed a face index equal to `NUM_ICOSA_FACES` (#978, #1224)
 - Fixed the `stringToInt` CLI subcommand truncating 16 digit indexes, such as directed edges and vertexes (#1243)
-- Fixed the `gridDistance` CLI subcommand printing the distance in hexadecimal instead of decimal
-- Fixed CLI subcommands exiting with status 0 when their arguments could not be parsed (unknown argument, missing required argument, missing or unparseable value). They now exit with a non-zero status; `--help` still exits with 0
-- Fixed `h3 --help` exiting with status 0 when it was also given an unknown argument, such as `h3 --help --bogus`. It now exits with a non-zero status, like the subcommands (#1300)
-- Initialized `dirFaces` in `vertexRotations` to silence a `-Wmaybe-uninitialized` warning on some compilers/toolchains (#458, #582)
-- Fixed `cellToLatLng` and `cellToBoundary` losing precision in latitude near the poles; the worst error is now within a few units in the last place everywhere instead of growing as 1/cos(latitude)
+- Fixed the `gridDistance` CLI subcommand printing the distance in hexadecimal instead of decimal (#1244)
+- Fixed `cellToLatLng` and `cellToBoundary` losing precision in latitude near the poles; the worst error is now within a few units in the last place everywhere instead of growing as `1/cos(latitude)` (#1255)
+- Fixed `cellAreaM2` CLI test not setting the C locale (#1176)
+- Clamp polygon bbox latitudes to the valid sphere range, fixing `polygonToCellsExperimental` spending a long time on tiny input (#1226)
+- Fixed `clang-tidy` deprecated setting error (#1216)
+- Fixed possible signed integer overflow in `uncompactCellsSize` (#1205)
+- Fixed incorrect test suite names (#1294)
+- Fixed CLI exiting with status 0 when an arguments could not be parsed (unknown argument, missing required argument, missing or unparseable value). (#1300, #1312)
+- Initialized `dirFaces` in `vertexRotations` to silence a `-Wmaybe-uninitialized` warning on some compilers/toolchains (#458, #582, #1273)
 
 ## [4.5.0] - 2026-05-21
 ### Added
