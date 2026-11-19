@@ -12,3 +12,5 @@ The following applications use H3. Contributions to this list are welcome, pleas
 - [kepler.gl](http://kepler.gl/) - An open source geospatial analysis tool
 - [pydeck](https://deckgl.readthedocs.io/) - High-scale spatial rendering in Python, powered by deck.gl
 - [h3-viewer](https://h3.chotard.com/) - Debugging tool to visualise h3 on mercator projection, powered by deck.gl
+- [Lowpoints explorer](https://ujjawal-01.github.io/h3-lowpoints/explorer/) - Browser map of closed depressions in the lower 48 US states on H3 hexagons, with a rain simulator and 3D views
+
