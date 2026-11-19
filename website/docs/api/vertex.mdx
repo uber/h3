@@ -377,3 +377,79 @@ true
 
 </TabItem>
 </Tabs>
+
+## edgeToVertexes
+
+Returns the start and end vertexes of a directed edge, as H3 indexes.
+
+<Tabs
+  groupId="language"
+  defaultValue="c"
+  values={[
+    {label: 'C', value: 'c'},
+    {label: 'Java', value: 'java'},
+    {label: 'JavaScript (Live)', value: 'javascript'},
+    {label: 'Python', value: 'python'},
+    {label: 'Go', value: 'go'},
+    {label: 'DuckDB', value: 'duckdb'},
+    {label: 'Shell', value: 'shell'},
+  ]
+}>
+<TabItem value="c">
+
+```c
+H3Error edgeToVertexes(H3Index edge, H3Index *v1, H3Index *v2);
+```
+
+Returns 0 (`E_SUCCESS`) on success.
+
+</TabItem>
+<TabItem value="java">
+
+```java
+List<Long> edgeToVertexes(long edge);
+List<String> edgeToVertexes(String edge);
+```
+
+</TabItem>
+<TabItem value="javascript">
+
+```js
+h3.edgeToVertexes(edge)
+```
+
+```js live
+function example() {
+  const e = '115283473fffffff';
+  return h3.edgeToVertexes(e);
+}
+```
+
+</TabItem>
+<TabItem value="python">
+
+```py
+h3.edge_to_vertexes(edge)
+```
+
+</TabItem>
+<TabItem value="go">
+
+```go
+edge.Vertexes()
+```
+
+</TabItem>
+<TabItem value="duckdb">
+
+```sql
+h3_edge_to_vertexes(edge)
+```
+
+</TabItem>
+<TabItem value="shell">
+
+This function is not exposed in the CLI bindings yet.
+
+</TabItem>
+</Tabs>
