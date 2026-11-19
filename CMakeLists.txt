@@ -755,10 +755,10 @@ endif()
 
 # Layout. This works for all platforms: *
 # <prefix>/<CMAKE_INSTALL_LIBDIR>/cmake/<PROJECT-NAME> *
-# <prefix>/<CMAKE_INSTALL_LIBDIR>/ * <prefix>/include/
+# <prefix>/<CMAKE_INSTALL_LIBDIR>/ * <prefix>/<CMAKE_INSTALL_INCLUDEDIR>/
 include(GNUInstallDirs)
 set(config_install_dir "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
-set(include_install_dir "include")
+set(include_install_dir "${CMAKE_INSTALL_INCLUDEDIR}")
 
 set(generated_dir "${CMAKE_CURRENT_BINARY_DIR}/generated")
 
