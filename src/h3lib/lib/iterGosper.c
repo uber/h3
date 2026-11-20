@@ -175,7 +175,7 @@ void iterStepGosper(IterEdgesGosper *iter) {
 // and childRes <= MAX_H3_RES.
 IterEdgesGosper iterInitGosper(H3Index h, int childRes) {
     int parentRes = H3_GET_RESOLUTION(h);
-    bool isPent = H3_EXPORT(isPentagon)(h);
+    bool isPent = _h3IsPentagon(h);
 
     IterEdgesGosper iter = {
         .e = h,

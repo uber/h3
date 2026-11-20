@@ -304,11 +304,11 @@ static H3Index nextCell(H3Index cell) {
         // If not the last sibling of parent, return next sibling
         Direction digit = H3_GET_INDEX_DIGIT(cell, res);
         if (digit < INVALID_DIGIT - 1) {
-            H3_SET_INDEX_DIGIT(cell, res,
-                               digit + ((H3_EXPORT(isPentagon)(parent) &&
-                                         digit == CENTER_DIGIT)
-                                            ? 2  // Skip missing pentagon child
-                                            : 1));
+            H3_SET_INDEX_DIGIT(
+                cell, res,
+                digit + ((_h3IsPentagon(parent) && digit == CENTER_DIGIT)
+                             ? 2  // Skip missing pentagon child
+                             : 1));
             return cell;
         }
         // Move up to the parent for the next loop iteration

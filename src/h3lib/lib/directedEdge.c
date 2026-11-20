@@ -82,7 +82,7 @@ H3Error H3_EXPORT(areNeighborCells)(H3Index origin, H3Index destination,
             }
             if ((originResDigit == K_AXES_DIGIT ||
                  destinationResDigit == K_AXES_DIGIT) &&
-                H3_EXPORT(isPentagon)(originParent)) {
+                _h3IsPentagon(originParent)) {
                 // If these are invalid cells, fail rather than incorrectly
                 // reporting neighbors. For pentagon cells that are actually
                 // neighbors across the deleted subsequence, they will fail the
@@ -198,7 +198,7 @@ int H3_EXPORT(isValidDirectedEdge)(H3Index edge) {
     if (originResult) {
         return 0;
     }
-    if (H3_EXPORT(isPentagon)(origin) && neighborDirection == K_AXES_DIGIT) {
+    if (_h3IsPentagon(origin) && neighborDirection == K_AXES_DIGIT) {
         return 0;
     }
 
@@ -233,7 +233,7 @@ H3Error H3_EXPORT(directedEdgeToCells)(H3Index edge,
  */
 H3Error H3_EXPORT(originToDirectedEdges)(H3Index origin, H3Index *edges) {
     // Determine if the origin is a pentagon and special treatment needed.
-    int isPent = H3_EXPORT(isPentagon)(origin);
+    int isPent = _h3IsPentagon(origin);
 
     // This is actually quite simple. Just modify the bits of the origin
     // slightly for each direction, except the 'k' direction in pentagons,
@@ -283,7 +283,7 @@ H3Error H3_EXPORT(directedEdgeToBoundary)(H3Index edge, CellBoundary *cb) {
         return fijkResult;
     }
     int res = H3_GET_RESOLUTION(origin);
-    int isPent = H3_EXPORT(isPentagon)(origin);
+    int isPent = _h3IsPentagon(origin);
 
     if (isPent) {
         _faceIjkPentToCellBoundary(&fijk, res, startVertex, 2, cb);

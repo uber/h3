@@ -462,7 +462,7 @@ H3Error H3_EXPORT(cellToChildrenSize)(H3Index h, int childRes, int64_t *out) {
 
     int n = childRes - H3_GET_RESOLUTION(h);
 
-    if (H3_EXPORT(isPentagon)(h)) {
+    if (_h3IsPentagon(h)) {
         *out = 1 + 5 * (_ipow(7, n) - 1) / 6;
     } else {
         *out = _ipow(7, n);
@@ -631,8 +631,8 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
                             int count =
                                 H3_GET_RESERVED_BITS(hashSetArray[loc]) + 1;
                             int limitCount = 7;
-                            if (H3_EXPORT(isPentagon)(
-                                    tempIndex & H3_RESERVED_MASK_NEGATIVE)) {
+                            if (_h3IsPentagon(tempIndex &
+                                              H3_RESERVED_MASK_NEGATIVE)) {
                                 limitCount--;
                             }
                             // One is added to count for this check to match
@@ -678,8 +678,7 @@ H3Error H3_EXPORT(compactCells)(const H3Index *h3Set, H3Index *compactedSet,
             if (hashSetArray[i] == 0) continue;
             int count = H3_GET_RESERVED_BITS(hashSetArray[i]) + 1;
             // Include the deleted direction for pentagons as implicitly "there"
-            if (H3_EXPORT(isPentagon)(hashSetArray[i] &
-                                      H3_RESERVED_MASK_NEGATIVE)) {
+            if (_h3IsPentagon(hashSetArray[i] & H3_RESERVED_MASK_NEGATIVE)) {
                 // We need this later on, no need to recalculate
                 H3_SET_RESERVED_BITS(hashSetArray[i], count);
                 // Increment count after setting the reserved bits,
@@ -842,23 +841,7 @@ int H3_EXPORT(isResClassIII)(H3Index h) { return H3_GET_RESOLUTION(h) % 2; }
  * @param h The H3Index to check.
  * @return Returns 1 if it is a pentagon, otherwise 0.
  */
-int H3_EXPORT(isPentagon)(H3Index h) {
-    return _isBaseCellPentagon(H3_GET_BASE_CELL(h)) &&
-           !_h3LeadingNonZeroDigit(h);
-}
-
-/**
- * Returns the highest resolution non-zero digit in an H3Index.
- * @param h The H3Index.
- * @return The highest resolution non-zero digit in the H3Index.
- */
-Direction _h3LeadingNonZeroDigit(H3Index h) {
-    for (int r = 1; r <= H3_GET_RESOLUTION(h); r++)
-        if (H3_GET_INDEX_DIGIT(h, r)) return H3_GET_INDEX_DIGIT(h, r);
-
-    // if we're here it's all 0's
-    return CENTER_DIGIT;
-}
+int H3_EXPORT(isPentagon)(H3Index h) { return _h3IsPentagon(h); }
 
 /**
  * Rotate an H3Index 60 degrees counter-clockwise about a pentagonal center.
@@ -1214,7 +1197,7 @@ H3Error H3_EXPORT(cellToBoundary)(H3Index h3, CellBoundary *cb) {
     if (e) {
         return e;
     }
-    if (H3_EXPORT(isPentagon)(h3)) {
+    if (_h3IsPentagon(h3)) {
         _faceIjkPentToCellBoundary(&fijk, H3_GET_RESOLUTION(h3), 0,
                                    NUM_PENT_VERTS, cb);
     } else {
@@ -1233,7 +1216,7 @@ H3Error H3_EXPORT(cellToBoundary)(H3Index h3, CellBoundary *cb) {
 H3Error H3_EXPORT(maxFaceCount)(H3Index h3, int *out) {
     // a pentagon always intersects 5 faces, a hexagon never intersects more
     // than 2 (but may only intersect 1)
-    *out = H3_EXPORT(isPentagon)(h3) ? 5 : 2;
+    *out = _h3IsPentagon(h3) ? 5 : 2;
     return E_SUCCESS;
 }
 
@@ -1248,7 +1231,7 @@ H3Error H3_EXPORT(maxFaceCount)(H3Index h3, int *out) {
  */
 H3Error H3_EXPORT(getIcosahedronFaces)(H3Index h3, int *out) {
     int res = H3_GET_RESOLUTION(h3);
-    int isPent = H3_EXPORT(isPentagon)(h3);
+    int isPent = _h3IsPentagon(h3);
 
     // We can't use the vertex-based approach here for class II pentagons,
     // because all their vertices are on the icosahedron edges. Their
@@ -1350,15 +1333,6 @@ H3Error H3_EXPORT(getPentagons)(int res, H3Index *out) {
 }
 
 /**
- * Returns whether or not a resolution is a Class III grid. Note that odd
- * resolutions are Class III and even resolutions are Class II.
- * @param res The H3 resolution.
- * @return 1 if the resolution is a Class III grid, and 0 if the resolution is
- *         a Class II grid.
- */
-int isResolutionClassIII(int res) { return res % 2; }
-
-/**
  * Validate a child position in the context of a given parent, returning
  * an error if validation fails.
  */
@@ -1397,7 +1371,7 @@ H3Error H3_EXPORT(cellToChildPos)(H3Index child, int parentRes, int64_t *out) {
     // Define the initial parent. Note that these variables are reassigned
     // within the loop.
     H3Index parent = originalParent;
-    int parentIsPentagon = H3_EXPORT(isPentagon)(parent);
+    int parentIsPentagon = _h3IsPentagon(parent);
 
     // Walk up the resolution digits, incrementing the index
     *out = 0;
@@ -1411,7 +1385,7 @@ H3Error H3_EXPORT(cellToChildPos)(H3Index child, int parentRes, int64_t *out) {
                 return parentError;
             }
 
-            parentIsPentagon = H3_EXPORT(isPentagon)(parent);
+            parentIsPentagon = _h3IsPentagon(parent);
             int rawDigit = H3_GET_INDEX_DIGIT(child, res);
             // Validate the digit before proceeding
             if (rawDigit == INVALID_DIGIT ||
@@ -1488,7 +1462,7 @@ H3Error H3_EXPORT(childPosToCell)(int64_t childPos, H3Index parent,
 
     H3_SET_RESOLUTION(*child, childRes);
 
-    if (H3_EXPORT(isPentagon)(parent)) {
+    if (_h3IsPentagon(parent)) {
         // Pentagon tile logic. Pentagon tiles skip the 1 digit, so the offsets
         // are different
         bool inPent = true;
