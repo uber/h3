@@ -266,6 +266,32 @@ H3Error cellToBBox(H3Index cell, BBox *out, bool coverChildren) {
 }
 
 /**
+ * Check whether the first vertex of a loop falls within the given cell.
+ * Loops with no vertices, or whose first vertex is out of range, are
+ * reported as not in the cell.
+ */
+static H3Error firstVertexInCell(const GeoLoop *loop, H3Index cell, bool *out) {
+    *out = false;
+    if (loop->numVerts <= 0) {
+        return E_SUCCESS;
+    }
+    // We have to check whether the point is in the expected range
+    // first, because out-of-bounds values will yield false
+    // positives with latLngToCell
+    if (!bboxContains(&VALID_RANGE_BBOX, &loop->verts[0])) {
+        return E_SUCCESS;
+    }
+    H3Index loopCell;
+    H3Error err = H3_EXPORT(latLngToCell)(&loop->verts[0],
+                                          H3_GET_RESOLUTION(cell), &loopCell);
+    if (NEVER(err != E_SUCCESS)) {
+        return err;
+    }
+    *out = loopCell == cell;
+    return E_SUCCESS;
+}
+
+/**
  * Get a base cell by number, or H3_NULL if out of bounds
  */
 H3Index baseCellNumToCell(int baseCellNum) {
@@ -454,29 +480,29 @@ void iterStepPolygonCompact(IterCellsPolygonCompact *iter) {
                 // For overlapping, we need to do a quick check to determine
                 // whether the polygon is wholly contained by the cell. We
                 // check the first polygon vertex, which if it is contained
-                // could also mean we simply intersect.
-
-                // Deferencing verts[0] is safe because we check numVerts above
-                LatLng firstVertex = iter->_polygon->geoloop.verts[0];
-
-                // We have to check whether the point is in the expected range
-                // first, because out-of-bounds values will yield false
-                // positives with latLngToCell
-                if (bboxContains(&VALID_RANGE_BBOX, &firstVertex)) {
-                    H3Index polygonCell;
-                    H3Error polygonCellErr = H3_EXPORT(latLngToCell)(
-                        &(iter->_polygon->geoloop.verts[0]), cellRes,
-                        &polygonCell);
-                    if (NEVER(polygonCellErr != E_SUCCESS)) {
-                        // This should be unreachable with the bbox check
-                        iterErrorPolygonCompact(iter, polygonCellErr);
-                        return;
-                    }
-                    if (polygonCell == cell) {
-                        // Set to next output
-                        iter->cell = cell;
-                        return;
-                    }
+                // could also mean we simply intersect. The same goes for
+                // holes: a hole wholly contained by the cell can cover the
+                // cell center without crossing the cell boundary, so neither
+                // the center check above nor the line intersection check
+                // below would find the cell.
+                bool loopInCell;
+                H3Error loopErr = firstVertexInCell(&iter->_polygon->geoloop,
+                                                    cell, &loopInCell);
+                for (int i = 0; loopErr == E_SUCCESS && !loopInCell &&
+                                i < iter->_polygon->numHoles;
+                     i++) {
+                    loopErr = firstVertexInCell(&iter->_polygon->holes[i], cell,
+                                                &loopInCell);
+                }
+                if (NEVER(loopErr != E_SUCCESS)) {
+                    // This should be unreachable with the bbox check
+                    iterErrorPolygonCompact(iter, loopErr);
+                    return;
+                }
+                if (loopInCell) {
+                    // Set to next output
+                    iter->cell = cell;
+                    return;
                 }
             }
             if (mode == CONTAINMENT_FULL || mode == CONTAINMENT_OVERLAPPING ||

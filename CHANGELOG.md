@@ -9,6 +9,9 @@ The public API of this library consists of the functions declared in file
 ### Added
 - Added `edgeToVertexes` to H3 CLI. (#1324)
 
+### Fixed
+- `polygonToCellsExperimental` with `CONTAINMENT_OVERLAPPING` now returns a cell whose center lies in a hole that is wholly inside the cell. (#1326)
+
 ## [4.6.0] - 2026-11-18
 ### Added
 - Added `edgeToVertexes` function, returning the two vertexes at the ends of a directed edge (#1071, #421, #1272)
