@@ -140,6 +140,53 @@ SUITE(directedEdge) {
             H3_EXPORT(areNeighborCells)(dest, origin, &out) == E_CELL_INVALID,
             "Invalid k subsequence origin vs pentagon center child is "
             "rejected");
+
+        // An invalid destination digit is rejected for a non-center origin
+        // too, rather than being reported as not a neighbor.
+        setH3Index(&origin, 5, 0, CENTER_DIGIT);
+        dest = origin;
+        H3_SET_INDEX_DIGIT(origin, 5, JK_AXES_DIGIT);
+        H3_SET_INDEX_DIGIT(dest, 5, INVALID_DIGIT);
+        t_assert(
+            H3_EXPORT(areNeighborCells)(origin, dest, &out) == E_CELL_INVALID,
+            "Invalid index digit destination vs non-center child is rejected");
+    }
+
+    TEST(areNeighborCells_invalidRes1) {
+        // The parent of a resolution 1 cell is a base cell, and the same
+        // digit checks apply.
+        H3Index origin;
+        setH3Index(&origin, 1, 0, CENTER_DIGIT);
+        H3Index dest;
+        setH3Index(&dest, 1, 0, INVALID_DIGIT);
+        int out;
+
+        t_assert(
+            H3_EXPORT(areNeighborCells)(origin, dest, &out) == E_CELL_INVALID,
+            "Invalid index digit destination is rejected at res 1");
+        t_assert(
+            H3_EXPORT(areNeighborCells)(dest, origin, &out) == E_CELL_INVALID,
+            "Invalid index digit origin is rejected at res 1");
+
+        // Previously gridDisk on the deleted k subsequence origin reported
+        // these as neighbors.
+        setH3Index(&origin, 1, 4, K_AXES_DIGIT);
+        setH3Index(&dest, 1, 4, CENTER_DIGIT);
+        t_assert(
+            H3_EXPORT(areNeighborCells)(origin, dest, &out) == E_CELL_INVALID,
+            "Invalid k subsequence origin vs pentagon center child is "
+            "rejected at res 1");
+        t_assert(
+            H3_EXPORT(areNeighborCells)(dest, origin, &out) == E_CELL_INVALID,
+            "Invalid k subsequence destination vs pentagon center child is "
+            "rejected at res 1");
+        setH3Index(&dest, 1, 4, J_AXES_DIGIT);
+        t_assert(
+            H3_EXPORT(areNeighborCells)(origin, dest, &out) == E_CELL_INVALID,
+            "Invalid k subsequence origin is rejected at res 1");
+        t_assert(
+            H3_EXPORT(areNeighborCells)(dest, origin, &out) == E_CELL_INVALID,
+            "Invalid k subsequence destination is rejected at res 1");
     }
 
     TEST(cellsToDirectedEdgeAndFriends) {

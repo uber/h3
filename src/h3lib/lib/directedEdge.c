@@ -60,7 +60,7 @@ H3Error H3_EXPORT(areNeighborCells)(H3Index origin, H3Index destination,
     // of origin and destination parents and then a lookup table of the children
     // is a super-cheap way to possibly determine they are neighbors.
     int parentRes = H3_GET_RESOLUTION(origin) - 1;
-    if (parentRes > 0) {
+    if (parentRes >= 0) {
         // TODO: Return error codes here
         H3Index originParent;
         H3_EXPORT(cellToParent)(origin, parentRes, &originParent);
@@ -73,7 +73,8 @@ H3Error H3_EXPORT(areNeighborCells)(H3Index origin, H3Index destination,
                 H3_GET_INDEX_DIGIT(destination, parentRes + 1);
             if (originResDigit >= INVALID_DIGIT ||
                 destinationResDigit >= INVALID_DIGIT) {
-                // Prevent indexing off the end of the array below
+                // These are invalid cells. For the origin, this also prevents
+                // indexing off the end of the arrays below.
                 return E_CELL_INVALID;
             }
             if ((originResDigit == K_AXES_DIGIT ||
