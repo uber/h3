@@ -820,21 +820,6 @@ const BaseCellData baseCellData[NUM_BASE_CELLS] = {
     {{18, {1, 0, 0}}, 0, {0, 0}}     // base cell 121
 };
 
-/** @brief Return whether or not the indicated base cell is a pentagon. */
-int _isBaseCellPentagon(int baseCell) {
-    if (baseCell < 0 || baseCell >= NUM_BASE_CELLS) {
-        // Base cells less than zero can not be represented in an index
-        return false;
-    }
-    return baseCellData[baseCell].isPentagon;
-}
-
-/** @brief Return whether the indicated base cell is a pentagon where all
- * neighbors are oriented towards it. */
-bool _isBaseCellPolarPentagon(int baseCell) {
-    return baseCell == 4 || baseCell == 117;
-}
-
 /** @brief Find base cell given FaceIJK.
  *
  * Given the face number and a resolution 0 ijk+ coordinate in that face's
@@ -886,13 +871,6 @@ int _baseCellToCCWrot60(int baseCell, int face) {
         }
     }
     return INVALID_ROTATIONS;
-}
-
-/** @brief Return whether or not the tested face is a cw offset face.
- */
-bool _baseCellIsCwOffset(int baseCell, int testFace) {
-    return baseCellData[baseCell].cwOffsetPent[0] == testFace ||
-           baseCellData[baseCell].cwOffsetPent[1] == testFace;
 }
 
 /** @brief Return the neighboring base cell in the given direction.

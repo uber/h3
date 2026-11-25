@@ -58,7 +58,76 @@ typedef struct {
 DECLSPEC IterCellsChildren iterInitParent(H3Index h, int childRes);
 void _iterInitParent(H3Index h, int childRes, IterCellsChildren *iter);
 DECLSPEC IterCellsChildren iterInitBaseCellNum(int baseCellNum, int childRes);
-DECLSPEC void iterStepChild(IterCellsChildren *iter);
+
+// extract the `res` digit (0--7) of the current cell
+static inline int _getResDigit(IterCellsChildren *it, int res) {
+    return H3_GET_INDEX_DIGIT(it->h, res);
+}
+
+// increment the digit (0--7) at location `res`
+// H3_PER_DIGIT_OFFSET == 3
+static inline void _incrementResDigit(IterCellsChildren *it, int res) {
+    H3Index val = 1;
+    val <<= H3_PER_DIGIT_OFFSET * (MAX_H3_RES - res);
+    it->h += val;
+}
+
+/**
+ * Create a fully nulled-out child iterator for when an iterator is exhausted.
+ * This helps minimize the chance that a user will depend on the iterator
+ * internal state after it's exhausted, like the child resolution, for
+ * example.
+ */
+static inline IterCellsChildren _null_iter(void) {
+    return (IterCellsChildren){
+        .h = H3_NULL, ._parentRes = -1, ._skipDigit = -1};
+}
+
+/**
+ * Step a IterCellsChildren to the next child cell.
+ * When the iteration is over, IterCellsChildren.h will be H3_NULL.
+ * Handles iterating through hexagon and pentagon cells.
+ *
+ * See iterators.c for a description of the iteration logic.
+ */
+static inline void iterStepChild(IterCellsChildren *it) {
+    // once h == H3_NULL, the iterator returns an infinite sequence of H3_NULL
+    if (it->h == H3_NULL) return;
+
+    int childRes = H3_GET_RESOLUTION(it->h);
+
+    _incrementResDigit(it, childRes);
+
+    for (int i = childRes; i >= it->_parentRes; i--) {
+        if (i == it->_parentRes) {
+            // if we're modifying the parent resolution digit, then we're done
+            *it = _null_iter();
+            return;
+        }
+
+        // PENTAGON_SKIPPED_DIGIT == 1
+        if (i == it->_skipDigit &&
+            _getResDigit(it, i) == PENTAGON_SKIPPED_DIGIT) {
+            // Then we are iterating through the children of a pentagon cell.
+            // All children of a pentagon have the property that the first
+            // nonzero digit between the parent and child resolutions is
+            // not 1.
+            // I.e., we never see a sequence like 00001.
+            // Thus, we skip the `1` in this digit.
+            _incrementResDigit(it, i);
+            it->_skipDigit -= 1;
+            return;
+        }
+
+        // INVALID_DIGIT == 7
+        if (_getResDigit(it, i) == INVALID_DIGIT) {
+            _incrementResDigit(
+                it, i);  // zeros out it[i] and increments it[i-1] by 1
+        } else {
+            break;
+        }
+    }
+}
 
 /**
  * IterCellsResolution: struct for iterating through all cells at a given
