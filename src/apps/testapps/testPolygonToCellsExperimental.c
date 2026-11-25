@@ -1212,6 +1212,75 @@ SUITE(polygonToCellsExperimental) {
         }
     }
 
+    TEST(polygonToCellsHoleInsideCell_Overlapping) {
+        // A small hole wholly inside one cell and covering its center: the
+        // cell still overlaps the polygon and must be returned.
+        // https://github.com/uber/h3/issues/1326
+        int res = 9;
+        LatLng centerIn = {H3_EXPORT(degsToRads)(47.0),
+                           H3_EXPORT(degsToRads)(8.0)};
+        H3Index cell;
+        t_assertSuccess(H3_EXPORT(latLngToCell)(&centerIn, res, &cell));
+        LatLng center;
+        t_assertSuccess(H3_EXPORT(cellToLatLng)(cell, &center));
+
+        double d = H3_EXPORT(degsToRads)(0.01);
+        double e = H3_EXPORT(degsToRads)(0.0002);
+        LatLng outerVerts[] = {{center.lat - d, center.lng - d},
+                               {center.lat - d, center.lng + d},
+                               {center.lat + d, center.lng + d},
+                               {center.lat + d, center.lng - d}};
+        LatLng innerVerts[] = {{center.lat - e, center.lng - e},
+                               {center.lat - e, center.lng + e},
+                               {center.lat + e, center.lng + e},
+                               {center.lat + e, center.lng - e}};
+        GeoLoop innerLoop = {.numVerts = 4, .verts = innerVerts};
+        GeoPolygon polygon = {.geoloop = {.numVerts = 4, .verts = outerVerts},
+                              .numHoles = 1,
+                              .holes = &innerLoop};
+
+        for (uint32_t mode = 0; mode < CONTAINMENT_INVALID; mode++) {
+            int64_t numHexagons;
+            t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+                &polygon, res, mode, &numHexagons));
+            H3Index *hexagons = calloc(numHexagons, sizeof(H3Index));
+            t_assertSuccess(H3_EXPORT(polygonToCellsExperimental)(
+                &polygon, res, mode, numHexagons, hexagons));
+            bool found = false;
+            for (int64_t i = 0; i < numHexagons; i++) {
+                if (hexagons[i] == cell) {
+                    found = true;
+                }
+            }
+            free(hexagons);
+            if (mode == CONTAINMENT_OVERLAPPING ||
+                mode == CONTAINMENT_OVERLAPPING_BBOX) {
+                t_assert(found, "cell with a hole over its center overlaps");
+            } else {
+                t_assert(!found, "cell center is in the hole");
+            }
+        }
+    }
+
+    TEST(polygonToCellsNegativeHoleVerts_Overlapping) {
+        // A hole with a negative vertex count has no vertices to read; the
+        // overlap check must not dereference its verts pointer.
+        LatLng center = {H3_EXPORT(degsToRads)(47.0),
+                         H3_EXPORT(degsToRads)(8.0)};
+        double d = H3_EXPORT(degsToRads)(0.01);
+        LatLng outerVerts[] = {{center.lat - d, center.lng - d},
+                               {center.lat - d, center.lng + d},
+                               {center.lat + d, center.lng + d},
+                               {center.lat + d, center.lng - d}};
+        GeoLoop badHole = {.numVerts = -1, .verts = NULL};
+        GeoPolygon polygon = {.geoloop = {.numVerts = 4, .verts = outerVerts},
+                              .numHoles = 1,
+                              .holes = &badHole};
+        int64_t numHexagons;
+        t_assertSuccess(H3_EXPORT(maxPolygonToCellsSizeExperimental)(
+            &polygon, 9, CONTAINMENT_OVERLAPPING, &numHexagons));
+    }
+
     TEST(fillIndex) {
         iterateAllIndexesAtRes(0, fillIndex_assertions);
         iterateAllIndexesAtRes(1, fillIndex_assertions);
