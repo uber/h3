@@ -6,6 +6,8 @@ The public API of this library consists of the functions declared in file
 [h3api.h.in](./src/h3lib/include/h3api.h.in).
 
 ## [Unreleased]
+### Added
+- Added `edgeToVertexes` to H3 CLI. (#1324)
 
 ## [4.6.0] - 2026-11-18
 ### Added
