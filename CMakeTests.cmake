@@ -300,32 +300,45 @@ add_h3_test(testCellToBBoxExhaustive
             src/apps/testapps/testCellToBBoxExhaustive.c)
 
 # Compares the projection against an exact evaluation, so it needs MPFR. It is
-# built only when MPFR is found, and nothing else in the build uses MPFR.
+# built only when MPFR is found, and nothing else in the build uses MPFR. The
+# test calls mpfr_fmma and mpfr_fmms, which MPFR added in version 4.0.
 find_path(MPFR_INCLUDE_DIR mpfr.h)
+find_path(GMP_INCLUDE_DIR gmp.h)
 find_library(MPFR_LIBRARY mpfr)
 find_library(GMP_LIBRARY gmp)
+set(MPFR_FOUND OFF)
 if(MPFR_INCLUDE_DIR
+   AND GMP_INCLUDE_DIR
    AND MPFR_LIBRARY
    AND GMP_LIBRARY)
-    set(MPFR_FOUND ON)
-else()
-    set(MPFR_FOUND OFF)
+    file(STRINGS "${MPFR_INCLUDE_DIR}/mpfr.h" mpfr_version_major
+         REGEX "^#[ \t]*define[ \t]+MPFR_VERSION_MAJOR[ \t]+[0-9]+")
+    if(mpfr_version_major MATCHES "MPFR_VERSION_MAJOR[ \t]+([0-9]+)"
+       AND CMAKE_MATCH_1 GREATER_EQUAL 4)
+        set(MPFR_FOUND ON)
+    endif()
 endif()
 option(ENABLE_EXACT_PROJECTION_TEST
        "Build the test comparing the projection against MPFR" ${MPFR_FOUND})
 if(ENABLE_EXACT_PROJECTION_TEST)
     if(NOT MPFR_FOUND)
         message(
-            FATAL_ERROR "ENABLE_EXACT_PROJECTION_TEST requires MPFR and GMP")
+            FATAL_ERROR
+                "ENABLE_EXACT_PROJECTION_TEST requires MPFR 4.0 or later and GMP"
+        )
     endif()
     add_h3_test(testExactProjectionExhaustive
                 src/apps/testapps/testExactProjectionExhaustive.c)
-    target_include_directories(testExactProjectionExhaustive
-                               PRIVATE ${MPFR_INCLUDE_DIR})
+    target_include_directories(
+        testExactProjectionExhaustive PRIVATE ${MPFR_INCLUDE_DIR}
+                                              ${GMP_INCLUDE_DIR})
     target_link_libraries(testExactProjectionExhaustive
                           PRIVATE ${MPFR_LIBRARY} ${GMP_LIBRARY})
 else()
-    message(STATUS "MPFR not found, skipping testExactProjectionExhaustive")
+    message(
+        STATUS
+            "MPFR 4.0 or later not found, skipping testExactProjectionExhaustive"
+    )
 endif()
 
 file(GLOB cli_tests tests/cli/*.txt)
