@@ -37,7 +37,7 @@
 #define M_RSQRT7 0.37796447300922722721451653623418006081576
 
 /** @brief icosahedron face centers in x/y/z on the unit sphere */
-static const Vec3d faceCenterPoint[NUM_ICOSA_FACES] = {
+const Vec3d faceCenterPoint[NUM_ICOSA_FACES] = {
     {0.2199307791404606, 0.6583691780274996, 0.7198475378926182},     // face  0
     {-0.2139234834501421, 0.1478171829550703, 0.9656017935214205},    // face  1
     {0.1092625278784797, -0.4811951572873210, 0.8697775121287253},    // face  2
@@ -63,7 +63,7 @@ static const Vec3d faceCenterPoint[NUM_ICOSA_FACES] = {
 /** @brief icosahedron face ijk axes as azimuth in radians from face center to
  * vertex 0/1/2 respectively
  */
-static const double faceAxesAzRadsCII[NUM_ICOSA_FACES][3] = {
+const double faceAxesAzRadsCII[NUM_ICOSA_FACES][3] = {
     {5.619958268523939882, 3.525563166130744542,
      1.431168063737548730},  // face  0
     {5.760339081714187279, 3.665943979320991689,
@@ -107,7 +107,7 @@ static const double faceAxesAzRadsCII[NUM_ICOSA_FACES][3] = {
 };
 
 /** @brief Definition of which faces neighbor each other. */
-static const FaceOrientIJK faceNeighbors[NUM_ICOSA_FACES][4] = {
+const FaceOrientIJK faceNeighbors[NUM_ICOSA_FACES][4] = {
     {
         // face 0
         {0, {0, 0, 0}, 0},  // central face

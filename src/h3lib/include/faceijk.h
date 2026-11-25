@@ -69,6 +69,16 @@ typedef enum {
     NEW_FACE = 2
 } Overage;
 
+// Internal tables
+
+/** @brief icosahedron face centers in x/y/z on the unit sphere */
+extern const Vec3d faceCenterPoint[NUM_ICOSA_FACES];
+/** @brief icosahedron face ijk axes as azimuth in radians from face center to
+ * vertex 0/1/2 respectively */
+extern const double faceAxesAzRadsCII[NUM_ICOSA_FACES][3];
+/** @brief Definition of which faces neighbor each other. */
+extern const FaceOrientIJK faceNeighbors[NUM_ICOSA_FACES][4];
+
 // Internal functions
 
 void _vec3ToFaceIjk(Vec3d p, int res, FaceIJK *h);
