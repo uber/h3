@@ -34,15 +34,19 @@ jobs:
       - name: Install Doxygen
         run: |
           sudo apt update
-          sudo apt-get install doxygen graphviz clang-format-14
+          sudo apt-get install doxygen graphviz python3-venv
+          # Install the pinned clang-format ahead of any version on the runner
+          python3 -m venv "$RUNNER_TEMP/dev-tools"
+          "$RUNNER_TEMP/dev-tools/bin/pip" install -r dev-requirements.txt
+          echo "$RUNNER_TEMP/dev-tools/bin" >> "$GITHUB_PATH"
 
       - name: Configure build
-        run: cmake -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DWARNINGS_AS_ERRORS=ON .
+        run: cmake -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DWARNINGS_AS_ERRORS=ON -DCLANG_FORMAT_PATH="$RUNNER_TEMP/dev-tools/bin/clang-format" .
 
       - name: Formatting check
         working-directory: build
         run: |
-          clang-format-14 --version
+          "$RUNNER_TEMP/dev-tools/bin/clang-format" --version
           make format
           git diff --exit-code
 
@@ -99,15 +103,19 @@ jobs:
       - name: Install Doxygen
         run: |
           sudo apt update
-          sudo apt-get install doxygen graphviz clang-format-14
+          sudo apt-get install doxygen graphviz python3-venv
+          # Install the pinned clang-format ahead of any version on the runner
+          python3 -m venv "$RUNNER_TEMP/dev-tools"
+          "$RUNNER_TEMP/dev-tools/bin/pip" install -r dev-requirements.txt
+          echo "$RUNNER_TEMP/dev-tools/bin" >> "$GITHUB_PATH"
 
       - name: Configure build
-        run: cmake -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DWARNINGS_AS_ERRORS=ON -DCMAKE_C_FLAGS="${{ matrix.compile_opt }}" .
+        run: cmake -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DWARNINGS_AS_ERRORS=ON -DCMAKE_C_FLAGS="${{ matrix.compile_opt }}" -DCLANG_FORMAT_PATH="$RUNNER_TEMP/dev-tools/bin/clang-format" .
 
       - name: Formatting check
         working-directory: build
         run: |
-          clang-format-14 --version
+          "$RUNNER_TEMP/dev-tools/bin/clang-format" --version
           make format
           git diff --exit-code
 
