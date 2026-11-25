@@ -9,6 +9,9 @@ The public API of this library consists of the functions declared in file
 ### Added
 - Added `edgeToVertexes` to H3 CLI. (#1324)
 
+### Fixed
+- Fixed the `cellAreaRads2` CLI subcommand printing `0.0000000000` for cells at resolution 12 and finer. Areas below 1e-6 are now printed with enough decimal places to keep 5 significant digits (#1307)
+
 ## [4.6.0] - 2026-11-18
 ### Added
 - Added `edgeToVertexes` function, returning the two vertexes at the ends of a directed edge (#1071, #421, #1272)
