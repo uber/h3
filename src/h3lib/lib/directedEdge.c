@@ -71,12 +71,8 @@ H3Error H3_EXPORT(areNeighborCells)(H3Index origin, H3Index destination,
                 H3_GET_INDEX_DIGIT(origin, parentRes + 1);
             Direction destinationResDigit =
                 H3_GET_INDEX_DIGIT(destination, parentRes + 1);
-            if (originResDigit == CENTER_DIGIT ||
-                destinationResDigit == CENTER_DIGIT) {
-                *out = 1;
-                return E_SUCCESS;
-            }
-            if (originResDigit >= INVALID_DIGIT) {
+            if (originResDigit >= INVALID_DIGIT ||
+                destinationResDigit >= INVALID_DIGIT) {
                 // Prevent indexing off the end of the array below
                 return E_CELL_INVALID;
             }
@@ -89,6 +85,11 @@ H3Error H3_EXPORT(areNeighborCells)(H3Index origin, H3Index destination,
                 // optimized check below, but they will be accepted by the
                 // gridDisk check below that.
                 return E_CELL_INVALID;
+            }
+            if (originResDigit == CENTER_DIGIT ||
+                destinationResDigit == CENTER_DIGIT) {
+                *out = 1;
+                return E_SUCCESS;
             }
             // These sets are the relevant neighbors in the clockwise
             // and counter-clockwise

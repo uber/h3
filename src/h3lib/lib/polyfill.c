@@ -713,12 +713,12 @@ H3Error H3_EXPORT(polygonToCellsExperimental)(const GeoPolygon *polygon,
 }
 
 static int MAX_SIZE_CELL_THRESHOLD = 10;
-
-static double getAverageCellArea(int res) {
-    double hexAreaKm2;
-    H3_EXPORT(getHexagonAreaAvgKm2)(res, &hexAreaKm2);
-    return hexAreaKm2;
-}
+// Upper bound on the number of cells the size estimate is willing to walk
+// along the longest side of the polygon's bounding box. This is deliberately
+// much larger than MAX_SIZE_CELL_THRESHOLD: coarsening the working resolution
+// for a thin polygon inflates the estimate by roughly 7x per step, so we only
+// do it when the walk at the finer resolution would be unreasonably long.
+static int MAX_SIZE_SPAN_THRESHOLD = 10000;
 
 /**
  * maxPolygonToCellsSize returns the number of cells to allocate space for
@@ -756,12 +756,35 @@ H3Error H3_EXPORT(maxPolygonToCellsSizeExperimental)(const GeoPolygon *polygon,
         cos(fmin(fabs(polygonBBox->north), fabs(polygonBBox->south))) *
         EARTH_RADIUS_KM * EARTH_RADIUS_KM;
 
+    // Also get a (very) rough length of the longer side of the bounding box.
+    // The area alone is not enough: a very thin or degenerate polygon (e.g. all
+    // vertices on the same latitude) has near-zero area, but the iterator
+    // below still has to visit every cell along its length. The longitude span
+    // is scaled by the latitude of the bounding box edge nearest the equator,
+    // where that span is longest; a box straddling the equator uses the full
+    // span.
+    double cosNearestLat =
+        (polygonBBox->north > 0 && polygonBBox->south < 0)
+            ? 1.0
+            : cos(fmin(fabs(polygonBBox->north), fabs(polygonBBox->south)));
+    double polygonBBoxSpanKm =
+        fmax(bboxHeightRads(polygonBBox),
+             bboxWidthRads(polygonBBox) * cosNearestLat) *
+        EARTH_RADIUS_KM;
+
     // Determine the res for the size estimate, based on a (very) rough estimate
     // of the number of cells at various resolutions that would fit in the
-    // polygon. All we need here is a general order of magnitude.
-    while (iter._res > 0 &&
-           polygonBBoxAreaKm2 / getAverageCellArea(iter._res - 1) >
-               MAX_SIZE_CELL_THRESHOLD) {
+    // polygon, by area and along its longest dimension. All we need here is a
+    // general order of magnitude.
+    while (iter._res > 0) {
+        double cellAreaKm2;
+        double edgeLengthKm;
+        H3_EXPORT(getHexagonAreaAvgKm2)(iter._res - 1, &cellAreaKm2);
+        H3_EXPORT(getHexagonEdgeLengthAvgKm)(iter._res - 1, &edgeLengthKm);
+        if (polygonBBoxAreaKm2 / cellAreaKm2 <= MAX_SIZE_CELL_THRESHOLD &&
+            polygonBBoxSpanKm / edgeLengthKm <= MAX_SIZE_SPAN_THRESHOLD) {
+            break;
+        }
         iter._res--;
     }
 
