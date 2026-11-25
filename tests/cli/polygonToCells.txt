@@ -33,3 +33,7 @@ add_h3_cli_test(
     testCliPolygonToCellsArg2
     "polygonToCells -r 7 -p \"\\\\`cat ${PROJECT_SOURCE_DIR}/tests/inputfiles/polygon_test2.txt\\\\`\" -f newline | tr -s '\\\\r\\\\n' ',' | tr -s '\\\\n' ','"
     "872830828ffffff,87283082effffff,")
+add_h3_cli_test(
+    testCliPolygonToCellsArgTrailingWhitespace
+    "polygonToCells -r 4 -p \"[[0,0],[0,1],[1,1 ],[1,0]]\" -f newline | tr -s '\\\\r\\\\n' ',' | tr -s '\\\\n' ','"
+    "84754ebffffffff,84754e1ffffffff,84754edffffffff,84754e3ffffffff,8475413ffffffff,84754c5ffffffff,84754c7ffffffff,84754e9ffffffff,")
