@@ -10,7 +10,7 @@ The public API of this library consists of the functions declared in file
 - Added `edgeToVertexes` to H3 CLI. (#1324)
 
 ### Fixed
-- `areNeighborCells` returns `E_CELL_INVALID` for more invalid cells that share a parent with the other cell, including at resolution 1, rather than reporting them as neighbors. (#1330)
+- `areNeighborCells` returns `E_CELL_INVALID` for more invalid cells that share a parent with the other cell, including at resolution 1, rather than reporting them as neighbors. (#1330, #1331)
 
 ## [4.6.0] - 2026-11-18
 ### Added
