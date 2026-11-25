@@ -41,10 +41,15 @@
 #define BUFFER_SIZE_LESS_CELL 1485
 #define BUFFER_SIZE_WITH_NULL 1501
 
-#define PARSE_SUBCOMMAND(argc, argv, args)                                  \
-    if (parseArgs(argc, argv, sizeof(args) / sizeof(Arg *), args, &helpArg, \
-                  args[0]->helpText)) {                                     \
-        return E_SUCCESS;                                                   \
+#define PARSE_SUBCOMMAND(argc, argv, args)                            \
+    switch (parseArgs(argc, argv, sizeof(args) / sizeof(Arg *), args, \
+                      &helpArg, args[0]->helpText)) {                 \
+        case PARSE_ARGS_SUCCESS:                                      \
+            break;                                                    \
+        case PARSE_ARGS_HELP:                                         \
+            return E_SUCCESS;                                         \
+        default:                                                      \
+            return E_FAILED;                                          \
     }
 
 #define SUBCOMMAND(name, help)                            \
@@ -86,13 +91,10 @@ struct Subcommand {
             "calculation. Use h3 <SUBCOMMAND> --help for details on the "      \
             "usage of "                                                        \
             "any subcommand.";                                                 \
-        if (parseArgs(argc, argv, arglen, args, &helpArg, helpText)) {         \
-            free(args);                                                        \
-            return E_SUCCESS;                                                  \
-        } else {                                                               \
-            free(args);                                                        \
-            return E_FAILED;                                                   \
-        }                                                                      \
+        int parseResult =                                                      \
+            parseArgs(argc, argv, arglen, args, &helpArg, helpText);           \
+        free(args);                                                            \
+        return parseResult == PARSE_ARGS_HELP ? E_SUCCESS : E_FAILED;          \
     }
 
 #define DISPATCH_SUBCOMMAND()                                                \
@@ -2410,6 +2412,28 @@ SUBCOMMAND(cellToVertexes,
     return E_SUCCESS;
 }
 
+SUBCOMMAND(edgeToVertexes,
+           "Returns the start, end pair of vertexes from the directed edge") {
+    DEFINE_FORMAT_ARG(
+        "'json' for [\"CELL\", ...], 'newline' for CELL\\n... (Default: json)");
+    DEFINE_CELL_ARG(cell, cellArg);
+    Arg *args[] = {&edgeToVertexesArg, &cellArg, &helpArg, &formatArg};
+    PARSE_SUBCOMMAND(argc, argv, args);
+    H3Index out[2] = {0};
+    H3Error err = H3_EXPORT(edgeToVertexes)(cell, &out[0], &out[1]);
+    if (err != E_SUCCESS) {
+        return err;
+    }
+    if (strcmp(format, "json") == 0 || strcmp(format, "") == 0) {
+        printf("[\"%" PRIx64 "\", \"%" PRIx64 "\"]\n", out[0], out[1]);
+    } else if (strcmp(format, "newline") == 0) {
+        printf("%" PRIx64 "\n%" PRIx64 "\n", out[0], out[1]);
+    } else {
+        return E_FAILED;
+    }
+    return E_SUCCESS;
+}
+
 SUBCOMMAND(vertexToLatLng, "Returns the lat, lng pair for the given vertex") {
     DEFINE_FORMAT_ARG(
         "'json' for [lat, lng], 'wkt' for a WKT POINT, 'newline' for "
@@ -3105,6 +3129,7 @@ SUBCOMMAND_INDEX(directedEdgeToBoundary)
 /// Vertex subcommands
 SUBCOMMAND_INDEX(cellToVertex)
 SUBCOMMAND_INDEX(cellToVertexes)
+SUBCOMMAND_INDEX(edgeToVertexes)
 SUBCOMMAND_INDEX(vertexToLatLng)
 SUBCOMMAND_INDEX(isValidVertex)
 

@@ -115,6 +115,31 @@ SUITE(directedEdge) {
             "Invalid k subsequence destination is rejected");
         // Can't test origin and dest both having K_AXES_DIGIT as this will be
         // rejected as the same cell.
+
+        // Pairing an invalid index with the parent's center child must still
+        // be rejected; previously the center-child early return bypassed the
+        // digit checks and incorrectly reported neighbors.
+        setH3Index(&origin, 5, 0, CENTER_DIGIT);
+        dest = origin;
+        H3_SET_INDEX_DIGIT(dest, 5, INVALID_DIGIT);
+        t_assert(
+            H3_EXPORT(areNeighborCells)(origin, dest, &out) == E_CELL_INVALID,
+            "Invalid index digit destination vs center child is rejected");
+        t_assert(
+            H3_EXPORT(areNeighborCells)(dest, origin, &out) == E_CELL_INVALID,
+            "Invalid index digit origin vs center child is rejected");
+
+        setH3Index(&origin, 5, 4, CENTER_DIGIT);
+        dest = origin;
+        H3_SET_INDEX_DIGIT(dest, 5, K_AXES_DIGIT);
+        t_assert(
+            H3_EXPORT(areNeighborCells)(origin, dest, &out) == E_CELL_INVALID,
+            "Invalid k subsequence destination vs pentagon center child is "
+            "rejected");
+        t_assert(
+            H3_EXPORT(areNeighborCells)(dest, origin, &out) == E_CELL_INVALID,
+            "Invalid k subsequence origin vs pentagon center child is "
+            "rejected");
     }
 
     TEST(cellsToDirectedEdgeAndFriends) {

@@ -34,15 +34,19 @@ jobs:
       - name: Install Doxygen and MPFR
         run: |
           sudo apt update
-          sudo apt-get install doxygen graphviz clang-format-14 libmpfr-dev
+          sudo apt-get install doxygen graphviz python3-venv libmpfr-dev
+          # Install the pinned clang-format ahead of any version on the runner
+          python3 -m venv "$RUNNER_TEMP/dev-tools"
+          "$RUNNER_TEMP/dev-tools/bin/pip" install -r dev-requirements.txt
+          echo "$RUNNER_TEMP/dev-tools/bin" >> "$GITHUB_PATH"
 
       - name: Configure build
-        run: cmake -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DWARNINGS_AS_ERRORS=ON -DENABLE_EXACT_PROJECTION_TEST=ON .
+        run: cmake -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DWARNINGS_AS_ERRORS=ON -DCLANG_FORMAT_PATH="$RUNNER_TEMP/dev-tools/bin/clang-format" -DENABLE_EXACT_PROJECTION_TEST=ON .
 
       - name: Formatting check
         working-directory: build
         run: |
-          clang-format-14 --version
+          "$RUNNER_TEMP/dev-tools/bin/clang-format" --version
           make format
           git diff --exit-code
 
@@ -99,17 +103,21 @@ jobs:
       - name: Install Doxygen
         run: |
           sudo apt update
-          sudo apt-get install doxygen graphviz clang-format-14
+          sudo apt-get install doxygen graphviz python3-venv
+          # Install the pinned clang-format ahead of any version on the runner
+          python3 -m venv "$RUNNER_TEMP/dev-tools"
+          "$RUNNER_TEMP/dev-tools/bin/pip" install -r dev-requirements.txt
+          echo "$RUNNER_TEMP/dev-tools/bin" >> "$GITHUB_PATH"
 
       - name: Configure build
         # MPFR is not instrumented for the sanitizers, so the exact projection
         # test runs in the gcc jobs only
-        run: cmake -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DWARNINGS_AS_ERRORS=ON -DCMAKE_C_FLAGS="${{ matrix.compile_opt }}" -DENABLE_EXACT_PROJECTION_TEST=OFF .
+        run: cmake -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DWARNINGS_AS_ERRORS=ON -DCMAKE_C_FLAGS="${{ matrix.compile_opt }}" -DCLANG_FORMAT_PATH="$RUNNER_TEMP/dev-tools/bin/clang-format" -DENABLE_EXACT_PROJECTION_TEST=OFF .
 
       - name: Formatting check
         working-directory: build
         run: |
-          clang-format-14 --version
+          "$RUNNER_TEMP/dev-tools/bin/clang-format" --version
           make format
           git diff --exit-code
 

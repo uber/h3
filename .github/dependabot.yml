@@ -1,0 +1,7 @@
+version: 2
+updates:
+  # Development tools pinned in dev-requirements.txt, such as clang-format
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"

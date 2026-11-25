@@ -89,7 +89,7 @@ static void directedEdge_boundary_assertions(H3Index h3) {
     }
 }
 
-SUITE(directedEdge) {
+SUITE(directedEdgeExhaustive) {
     TEST(directedEdge_correctness) {
         iterateAllIndexesAtRes(0, directedEdge_correctness_assertions);
         iterateAllIndexesAtRes(1, directedEdge_correctness_assertions);
