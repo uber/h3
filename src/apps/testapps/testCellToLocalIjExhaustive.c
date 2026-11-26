@@ -275,7 +275,7 @@ void localIjToH3_traverse_assertions(H3Index h3) {
     }
 }
 
-SUITE(h3ToLocalIj) {
+SUITE(cellToLocalIjExhaustive) {
     TEST(localIjToH3_identity) {
         iterateAllIndexesAtRes(0, localIjToH3_identity_assertions);
         iterateAllIndexesAtRes(1, localIjToH3_identity_assertions);

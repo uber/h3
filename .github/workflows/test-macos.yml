@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-14, macos-15, macos-latest]
+        os: [macos-15, macos-15-intel, macos-latest]
         build_type: ["Debug", "Release"]
 
     steps:
@@ -34,6 +34,8 @@ jobs:
 
       - name: Tests
         working-directory: build
+        env:
+          CTEST_OUTPUT_ON_FAILURE: 1
         run: |
           make test
           sudo make install

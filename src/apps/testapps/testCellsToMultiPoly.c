@@ -137,12 +137,12 @@ static void check_global_poly(GeoMultiPolygon mpoly) {
 
     double area;
     geoMultiPolygonAreaRads2(mpoly, &area);
-    // TODO: probably need some error tolerance, but let's wait to see it fail
-    // first
-    t_assert(area == 4 * M_PI, "Exact area expected");
+    // The sum of the eight triangle areas is 4 pi to within rounding; on x64
+    // macOS it lands one ulp above (12.566370614359174 vs 12.566370614359172).
+    t_assert(relative_diff(area, 4 * M_PI) < 1e-15, "Area of the globe");
 }
 
-SUITE(edgeCellToPoly) {
+SUITE(cellsToMultiPoly) {
     TEST(three_polygons) {
         double rel_tol = 1e-15;
         // Results in 3 polygons: 0 holes, 1 hole, 3 holes

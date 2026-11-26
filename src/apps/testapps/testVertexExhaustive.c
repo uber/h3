@@ -103,7 +103,7 @@ static void cellToVertex_neighbor_assertions(H3Index h3) {
     }
 }
 
-SUITE(Vertex) {
+SUITE(VertexExhaustive) {
     TEST(directionForVertexNum_symmetry) {
         iterateAllIndexesAtRes(0, directionForVertexNum_symmetry_assertions);
         iterateAllIndexesAtRes(1, directionForVertexNum_symmetry_assertions);

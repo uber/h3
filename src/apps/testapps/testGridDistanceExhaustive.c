@@ -74,7 +74,7 @@ static void gridDistance_gridDisk_assertions(H3Index h3) {
     free(neighbors);
 }
 
-SUITE(gridDistance) {
+SUITE(gridDistanceExhaustive) {
     TEST(gridDistance_identity) {
         iterateAllIndexesAtRes(0, gridDistance_identity_assertions);
         iterateAllIndexesAtRes(1, gridDistance_identity_assertions);

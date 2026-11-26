@@ -75,6 +75,18 @@ typedef struct {
     const char *const helpText;
 } Arg;
 
+/*
+ * Return codes from parseArgs.
+ */
+
+#define PARSE_ARGS_SUCCESS 0
+#define PARSE_ARGS_HELP 1
+#define PARSE_ARGS_REPEATED_ARGUMENT 2
+#define PARSE_ARGS_MISSING_VALUE 3
+#define PARSE_ARGS_FAILED_PARSE 4
+#define PARSE_ARGS_UNKNOWN_ARGUMENT 5
+#define PARSE_ARGS_MISSING_REQUIRED 6
+
 // prototypes
 
 int parseArgs(int argc, char *argv[], int numArgs, Arg *args[],
@@ -90,7 +102,7 @@ int _parseArgsList(int argc, char *argv[], int numArgs, Arg *args[],
 // common arguments
 
 #define ARG_HELP \
-    { .names = {"-h", "--help"}, .helpText = "Show this help message." }
+    {.names = {"-h", "--help"}, .helpText = "Show this help message."}
 #define DEFINE_INDEX_ARG(varName, argName) \
     H3Index varName = 0;                   \
     Arg argName = {                        \
@@ -109,7 +121,7 @@ int _parseArgsList(int argc, char *argv[], int numArgs, Arg *args[],
                    .value = &varName,         \
                    .helpText = "H3 Cell"}
 #define ARG_KML \
-    { .names = {"-k", "--kml"}, .helpText = "Print output in KML format." }
+    {.names = {"-k", "--kml"}, .helpText = "Print output in KML format."}
 #define DEFINE_KML_NAME_ARG(varName, argName)      \
     char varName[BUFF_SIZE] = {0};                 \
     Arg argName = {                                \
