@@ -42,6 +42,7 @@ The public API of this library consists of the functions declared in file
 - Fixed incorrect test suite names (#1294)
 - Fixed CLI exiting with status 0 when an arguments could not be parsed (unknown argument, missing required argument, missing or unparseable value). (#1300, #1312)
 - Initialized `dirFaces` in `vertexRotations` to silence a `-Wmaybe-uninitialized` warning on some compilers/toolchains (#458, #582, #1273)
+- Fixed the `polygonToCells` and `maxPolygonToCellsSize` CLI subcommands stopping partway through a polygon file when a 1500 byte read chunk ended between tokens (#1249)
 
 ## [4.5.0] - 2026-05-21
 ### Added
